@@ -63,6 +63,7 @@ namespace Portal
             odataBuilder.EntitySet<Document>("Documents");
             odataBuilder.EntitySet<Treatment>("Treatments");
             odataBuilder.EntitySet<Member>("Members");
+            odataBuilder.EntitySet<MarketingBudget>("MarketingBudgets");
 
             odataBuilder.EntityType<Resource_Language>().HasKey(p => new { p.ResourceID, p.LanguageID });
 
@@ -145,6 +146,18 @@ namespace Portal
             tradeDeliveryContractPriceFilterFunction.Parameter<int?>("tradeAccountId");
             tradeDeliveryContractPriceFilterFunction.Parameter<short?>("destinationCountryId");
             tradeDeliveryContractPriceFilterFunction.Parameter<byte?>("deliveryGroupId");
+
+
+            var marketingBudgetFilterFunction = odataBuilder
+                .EntityType<MarketingBudget>()
+                .Collection
+                .Function("Filter")
+                .ReturnsCollectionFromEntitySet<MarketingBudget>("MarketingBudgets");
+
+            marketingBudgetFilterFunction.Parameter<byte?>("priceListId");
+            marketingBudgetFilterFunction.Parameter<short?>("marketingChannelId");
+            marketingBudgetFilterFunction.Parameter<string>("period");
+
 
             var languageGetExceptFunction = odataBuilder
                 .EntityType<Language>()

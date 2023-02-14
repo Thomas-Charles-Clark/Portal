@@ -9,24 +9,14 @@
 
     @Styles.Render("~/bundles/css/mdc-custom")
 
-    @{
-        if (HttpContext.Current.IsDebuggingEnabled)
-        {
-            <link rel="stylesheet" href="~/Content/mdc/css/mdc-custom.css?t=@(DateTime.Now.Ticks)" />
-        }
-        else
-        {
-            <link rel="stylesheet" href="~/Content/mdc/css/mdc-custom.min.css?t=@(DateTime.Now.Ticks)" />
-        }
-    }
-
     @Scripts.Render("~/bundles/js/kendo-modernizr")
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Material+Icons|Material+Icons+Sharp|Material+Icons+Outlined|Maven+Pro:500" rel="stylesheet">
     <script src="https://kit.fontawesome.com/f14d33a7ec.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
     @Scripts.Render("~/bundles/js/jquery")
     @Scripts.Render("~/bundles/js/popper")
-
+    @Scripts.Render("~/bundles/js/global")
+    @Scripts.Render("~/signalr/hubs")
     @*@Scripts.Render("~/bundles/js/kendo")
         @Scripts.Render("~/bundles/js/kendo-cultures")*@
     <link href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.common-bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -1956,7 +1946,7 @@
 
     @RenderSection("components", required: false)
 
-    <script type="text/javascript">
+<script type="text/javascript">
         var sendTARFComponentViewModel = function (params) {
             var self = this;
 
@@ -2327,6 +2317,11 @@
                         }
                     });
                 }
+            }
+
+           @if (!Request.Url.AbsoluteUri.ToLowerInvariant().Contains("/account/login"))
+            {
+                @:$.get('/api/forceauth/forceAuth');
             }
         }
 
@@ -3058,12 +3053,11 @@
             template: { element: document.getElementById('file-upload-template') }
         })
 
-    </script>
+</script>
 
     <script type="text/javascript">
         var recentlyUsedMembersListener = new ko.subscribable();
     </script>
-    @Scripts.Render("~/bundles/js/global")
     @Html.Partial("Modals/_ConfirmModal")
     @RenderSection("modals", required: false)
     @RenderSection("scripts", required: false)
@@ -3221,10 +3215,6 @@
             }
         });
     </script>
-
-
-
-    @Scripts.Render("~/signalr/hubs")
 
     <script type="text/javascript">
         function foo() {

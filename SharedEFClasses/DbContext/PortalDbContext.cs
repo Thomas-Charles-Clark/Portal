@@ -341,6 +341,10 @@ public DbSet<Lead> Leads { get; set; }
 
         public DbSet<MarketingMessage> MarketingMessages { get; set; }
 
+        public DbSet<MarketingChannelObject> MarketingChannels { get; set; }
+
+        public DbSet<MarketingBudget> MarketingBudgetRecords { get; set; }
+
         #endregion
 
         #region Tasks

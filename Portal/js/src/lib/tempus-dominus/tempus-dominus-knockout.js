@@ -33,13 +33,18 @@
                     }
                 }
             });
+
             valueAccessor().tempusDominus = td;
+
+            if (dateValue) {
+                allBindingsAccessor().value(valueAccessor().tempusDominus.dates.formatInput(new tempusDominus.DateTime(dateValue)));
+            }  
         },
         update: (element, valueAccessor, allBindingsAccessor) => {
             //console.log('tempusDominus observable bindingHandler update hit');
             let displayObservable = ko.unwrap(valueAccessor()); // form dependency on observable
             if (displayObservable) {
-                allBindingsAccessor().value(valueAccessor().tempusDominus.dates.formatInput(valueAccessor().tempusDominus.viewDate));
+                allBindingsAccessor().value(valueAccessor().tempusDominus.dates.formatInput(new tempusDominus.DateTime(displayObservable)));
             } else {
                 if (allBindingsAccessor().value()) {
                     allBindingsAccessor().value(displayObservable);

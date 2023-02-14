@@ -5009,6 +5009,7 @@ select.fulfilment-option {
     .memo.well {
         margin-left: 0;
         padding: 15px;
+        background-image: linear-gradient(to bottom, #f0f7ff 0%, #ddecfb 100%)
     }
 }
 
@@ -7156,7 +7157,7 @@ table.applied-treatment-table {
     height: 0;
     color: white;
     border-left: 20px solid transparent;
-    border-right: 20px solid #fb0000;
+    border-right: 20px solid #91c3fc;
     border-bottom: 20px solid transparent;
 }
 
@@ -8263,6 +8264,12 @@ span.shining.shining-twelve {
         margin-bottom: 1rem;
         gap: 1rem;
 
+        > div:first-of-type {
+            input.text-right {
+                text-align: left;
+            }
+        }
+
         @media (max-width: 1199px) {
             > div {
                 &:first-of-type,
@@ -8327,7 +8334,8 @@ td.popover-container {
     overflow: visible;
 }
 
-#order-enquiry-modal {
+#order-enquiry-modal,
+.basket-status-order-detail-popover {
     .grid-container {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -8338,7 +8346,8 @@ td.popover-container {
     }
 }
 
-#order-enquiry-modal {
+#order-enquiry-modal,
+.basket-status-order-detail-popover {
     cursor: default;
     color: black;
 

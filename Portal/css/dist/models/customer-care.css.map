@@ -1,1 +1,1 @@
-{"version":3,"sources":["models/customer-care.scss"],"names":[],"mappings":"AAAA;EACI;EACA;EACA","file":"customer-care.css","sourcesContent":["span.subtitle {\r\n    font-weight: 400;\r\n    font-size: 12px;\r\n    display: block;\r\n}\r\n"]}
+{"version":3,"sources":["/css/dist/models/customer-care.scss"],"names":[],"mappings":"AAAA;EACI;EACA;EACA","file":"customer-care.css","sourcesContent":["span.subtitle {\r\n    font-weight: 400;\r\n    font-size: 12px;\r\n    display: block;\r\n}\r\n"]}

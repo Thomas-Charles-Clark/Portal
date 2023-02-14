@@ -18,7 +18,7 @@ fieldset[disabled] .form-control
 /*#region Busy Things */
 /* This simply wraps the form-busy and provides relative 
     - providing min height was desirable as well but causes unsightly effects on collapsers... */
-@-webkit-keyframes "sk-stretchdelay" {
+@-webkit-keyframes sk-stretchdelay {
   0%, 40%, 100% {
     -webkit-transform: scaleY(0.2);
     transform: scaleY(0.2);
@@ -28,7 +28,7 @@ fieldset[disabled] .form-control
     transform: scaleY(1);
   }
 }
-@keyframes "sk-stretchdelay" {
+@keyframes sk-stretchdelay {
   0%, 40%, 100% {
     -webkit-transform: scaleY(0.2);
     transform: scaleY(0.2);
@@ -38,7 +38,7 @@ fieldset[disabled] .form-control
     transform: scaleY(1);
   }
 }
-@-webkit-keyframes "uil-ring-anim" {
+@-webkit-keyframes uil-ring-anim {
   0% {
     -ms-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
@@ -54,7 +54,7 @@ fieldset[disabled] .form-control
     transform: rotate(360deg);
   }
 }
-@-webkit-keyframes "uil-ring-anim" {
+@-webkit-keyframes uil-ring-anim {
   0% {
     -ms-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
@@ -70,7 +70,7 @@ fieldset[disabled] .form-control
     transform: rotate(360deg);
   }
 }
-@-moz-keyframes "uil-ring-anim" {
+@-moz-keyframes uil-ring-anim {
   0% {
     -ms-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
@@ -86,7 +86,7 @@ fieldset[disabled] .form-control
     transform: rotate(360deg);
   }
 }
-@-moz-keyframes "uil-ring-anim" {
+@-moz-keyframes uil-ring-anim {
   0% {
     -ms-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
@@ -102,7 +102,7 @@ fieldset[disabled] .form-control
     transform: rotate(360deg);
   }
 }
-@-webkit-keyframes "uil-ring-anim" {
+@-webkit-keyframes uil-ring-anim {
   0% {
     -ms-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
@@ -118,7 +118,7 @@ fieldset[disabled] .form-control
     transform: rotate(360deg);
   }
 }
-@-o-keyframes "uil-ring-anim" {
+@-o-keyframes uil-ring-anim {
   0% {
     -ms-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
@@ -134,7 +134,7 @@ fieldset[disabled] .form-control
     transform: rotate(360deg);
   }
 }
-@keyframes "uil-ring-anim" {
+@keyframes uil-ring-anim {
   0% {
     -ms-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
@@ -150,7 +150,7 @@ fieldset[disabled] .form-control
     transform: rotate(360deg);
   }
 }
-@keyframes "cssload-rotateX" {
+@keyframes cssload-rotateX {
   0% {
     -o-transform: rotateX(0deg);
     -ms-transform: rotateX(0deg);
@@ -168,7 +168,7 @@ fieldset[disabled] .form-control
     transform: rotateX(0deg);
   }
 }
-@-o-keyframes "cssload-rotateX" {
+@-o-keyframes cssload-rotateX {
   0% {
     -o-transform: rotateX(0deg);
     -ms-transform: rotateX(0deg);
@@ -186,7 +186,7 @@ fieldset[disabled] .form-control
     transform: rotateX(0deg);
   }
 }
-@-ms-keyframes "cssload-rotateX" {
+@-ms-keyframes cssload-rotateX {
   0% {
     -o-transform: rotateX(0deg);
     -ms-transform: rotateX(0deg);
@@ -204,7 +204,7 @@ fieldset[disabled] .form-control
     transform: rotateX(0deg);
   }
 }
-@-webkit-keyframes "cssload-rotateX" {
+@-webkit-keyframes cssload-rotateX {
   0% {
     -o-transform: rotateX(0deg);
     -ms-transform: rotateX(0deg);
@@ -222,7 +222,7 @@ fieldset[disabled] .form-control
     transform: rotateX(0deg);
   }
 }
-@-moz-keyframes "cssload-rotateX" {
+@-moz-keyframes cssload-rotateX {
   0% {
     -o-transform: rotateX(0deg);
     -ms-transform: rotateX(0deg);
@@ -317,7 +317,7 @@ fieldset[disabled] .form-control
         display: block;
         margin: 0 auto;
     }*/
-@keyframes "bell-ringer-color" {
+@keyframes bell-ringer-color {
   /*0% {
       color: #3cbf63;
   }
@@ -328,7 +328,7 @@ fieldset[disabled] .form-control
       color: #3cbf63;
   }*/
 }
-@keyframes "bell-ringer" {
+@keyframes bell-ringer {
   0% {
     -ms-transform: rotate(-20deg);
     -moz-transform: rotate(-20deg);
@@ -355,7 +355,7 @@ fieldset[disabled] .form-control
 .navbar-default .navbar-nav > li > #alerting-display:focus {
      background-color: #213d6f;
 }*/
-@-webkit-keyframes "spin" {
+@-webkit-keyframes spin {
   0% {
     -webkit-transform: rotate(0deg);
   }
@@ -363,7 +363,7 @@ fieldset[disabled] .form-control
     -webkit-transform: rotate(360deg);
   }
 }
-@keyframes "spin" {
+@keyframes spin {
   0% {
     transform: rotate(0deg);
   }
@@ -371,7 +371,7 @@ fieldset[disabled] .form-control
     transform: rotate(360deg);
   }
 }
-@keyframes "loading-stripes-move" {
+@keyframes loading-stripes-move {
   0% {
     background-position: 0 0;
   }
@@ -486,6 +486,10 @@ mark {
   transform-origin: center;
   transform: rotate(65deg);
   position: absolute;
+}
+
+.d-block {
+  display: block !important;
 }
 
 .main-heading {

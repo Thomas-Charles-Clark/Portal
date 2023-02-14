@@ -44,6 +44,10 @@ input::-webkit-inner-spin-button {
   padding: 0.375rem 0.75rem;
 }
 
+.page-heading-logo {
+  left: -32px;
+}
+
 .trade-account-selector .panel-heading .panel-title {
   color: #44546b;
 }
@@ -369,5 +373,12 @@ input[type=search]::-webkit-search-results-decoration {
   100% {
     transform: translateX(0%);
   }
+}
+.k-autocomplete.k-state-default,
+.k-dropdown-wrap.k-state-default,
+.k-multiselect-wrap,
+.k-numeric-wrap.k-state-default,
+.k-picker-wrap.k-state-default {
+  border-color: #fff;
 }
 /*# sourceMappingURL=site-new.css.map */

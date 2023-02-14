@@ -1,0 +1,253 @@
+/* Page Template for the exported PDF */
+/*.panel.filters .panel-body {
+    background-color: #fdfdfd;
+}*/
+.page-template {
+  font-family: "Arial", sans-serif;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+.page-template .header {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  right: 30px;
+  border-bottom: 1px solid #888;
+  color: #888;
+}
+.page-template .footer {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  right: 30px;
+  border-top: 1px solid #888;
+  text-align: center;
+  color: #888;
+}
+.page-template .watermark {
+  font-weight: bold;
+  font-size: 400%;
+  text-align: center;
+  margin-top: 30%;
+  color: #aaaaaa;
+  opacity: 0.1;
+  transform: rotate(-35deg) scale(1.7, 1.5);
+}
+
+.slicer {
+  display: inline-block;
+  margin-bottom: 8px;
+  margin-right: 8px;
+  float: left;
+}
+.slicer .panel-heading .clear-selection {
+  float: right;
+  font-size: 18px;
+  color: inherit;
+  cursor: pointer;
+  line-height: 20px;
+  padding: 0 4px;
+}
+.slicer .panel-heading .glyphicon.glyphicon-filter::before {
+  position: absolute;
+  font-size: 14px;
+}
+.slicer .panel-heading .glyphicon.glyphicon-filter span {
+  color: red;
+  position: relative;
+  top: -8px;
+  left: 7px;
+}
+.slicer .list-group-item {
+  padding: 4px;
+}
+.slicer .list-group-item:not(:last-child) {
+  border-bottom: 0;
+}
+.slicer .list-group-item .not-found {
+  width: 32px;
+  height: 32px;
+}
+.slicer .list-group-item span {
+  padding: 7px 0;
+}
+.slicer .list-group-item input[type=radio] {
+  position: relative;
+  top: 1px;
+}
+.slicer .panel-footer {
+  display: none;
+  padding: 4px;
+}
+.slicer .panel-footer .input-group {
+  width: 140px;
+}
+.slicer .panel-footer .input-group .clear-btn {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+.slicer .panel-body {
+  position: relative;
+}
+
+.slicer-list {
+  max-height: 186px;
+  overflow-y: auto;
+  margin-bottom: 0;
+}
+
+.slicer-list.special {
+  border: 1px solid #f6e092;
+}
+
+.slicer-list.list-group {
+  border-radius: 0 0 4px 4px;
+}
+.slicer-list.list-group .list-group-item {
+  border-radius: 0;
+  border-left: 0;
+  border-right: 0;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  user-select: none;
+  cursor: pointer;
+}
+.slicer-list.list-group .list-group-item:hover {
+  background-color: rgba(180, 223, 246, 0.4);
+  border-color: rgba(180, 223, 246, 0.8);
+  z-index: 5;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+  color: #333;
+}
+
+.panel.slicer .panel-heading {
+  cursor: default;
+  padding: 4px 6px;
+}
+.panel.slicer .panel-footer {
+  width: 100%;
+}
+.panel.slicer .panel-footer a {
+  text-overflow: ellipsis;
+  display: inline-block;
+  overflow-x: hidden;
+  max-width: 200px;
+  height: 18px;
+  overflow-y: hidden;
+}
+
+.ui-menu-item-wrapper span.type {
+  float: right;
+  margin-left: 12px;
+}
+
+.li-search .ui-menu-item-wrapper {
+  padding: 10px 1em 10px 8px;
+}
+
+.price-checker-controls span.glyphicon {
+  top: 2px;
+  font-size: 16px;
+}
+.price-checker-controls span.glyphicon-cog {
+  top: 2px;
+  font-size: 16px;
+  text-shadow: none;
+}
+
+.km-switch {
+  border-radius: 4px;
+  width: 60px;
+  height: 22px;
+  vertical-align: middle;
+  background-color: #f6f8f6;
+}
+
+.km-switch-container {
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.km-switch-handle {
+  margin: 0;
+  background-color: seagreen;
+}
+
+.selected-query {
+  font-weight: bold;
+}
+
+.slicer-disabler {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.k-grid .k-grid-header .k-header {
+  white-space: normal;
+  vertical-align: top;
+  position: relative;
+}
+.k-grid .k-grid-header .k-header .k-link {
+  height: auto;
+  text-overflow: clip;
+}
+.k-grid td {
+  padding: 4px 6px;
+}
+
+.k-filter-row th {
+  padding: 4px 6px;
+}
+
+.k-grid-header th.k-header {
+  padding: 4px 6px;
+}
+.k-grid-header .k-link .k-icon.k-i-sort-asc-sm {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+.k-grid-header .k-link .k-icon.k-i-sort-desc-sm {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+#result-grid .k-loading-image {
+  background-image: none;
+}
+
+#query-btns > .btn-success.active {
+  color: #fff;
+  background-color: #486f2d;
+  border-color: #29401a;
+}
+#query-btns > .btn-success.active:hover {
+  background-color: #385623;
+}
+
+.k-multiselect-wrap > .k-i-close {
+  display: none;
+}
+
+.k-multiselect.k-state-focused > .k-multiselect-wrap > .k-i-close {
+  display: none;
+}
+
+.k-multiselect.k-state-hover > .k-multiselect-wrap > .k-i-close {
+  display: none;
+}
+
+.slicer.panel.panel-primary .panel-body {
+  background-color: #f8f8f8;
+}
+
+.clear-filters {
+  line-height: 1.4em;
+}

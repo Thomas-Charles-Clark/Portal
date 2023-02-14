@@ -38,7 +38,7 @@ namespace Portal
                 ).Include("~/css/dist/lib/intl-tel-input/intl-tel-input.css", new CssRewriteUrlTransform()));
 
             bundles.Add(new StyleBundle("~/bundles/css/mdc-custom").Include(
-                      "~/css/dist/models/order-search.css"
+                      "~/css/dist/lib/mdc/mdc-custom.css"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/order-search").Include(
@@ -177,6 +177,10 @@ namespace Portal
                         "~/css/dist/models/marketing-messages.css"
                 ));
 
+            bundles.Add(new StyleBundle("~/bundles/css/marketing-budget").Include(
+                        "~/css/dist/models/marketing-budget.css"
+                ));
+
             bundles.Add(new StyleBundle("~/bundles/css/bare").Include(
                       "~/css/dist/lib/jquery-ui/jquery-ui.css",
                       "~/css/dist/lib/bootstrap-3.3.7/bootstrap-3.3.7.css"
@@ -271,7 +275,10 @@ namespace Portal
                     "~/css/dist/lib/owl-carousel/owl.carousel.min.css",
                     "~/css/dist/lib/owl-carousel/owl.theme.default.min.css"
                 ).Include("~/css/dist/lib/intl-tel-input/intl-tel-input.min.css", new CssRewriteUrlTransform()));
-
+                
+            bundles.Add(new StyleBundle("~/bundles/css/mdc-custom").Include(
+                      "~/css/dist/lib/mdc/mdc-custom.min.css"
+                ));
 
             bundles.Add(new StyleBundle("~/bundles/css/order-search").Include(
                       "~/css/dist/models/order-search.min.css"
@@ -409,6 +416,10 @@ namespace Portal
                         "~/css/dist/models/marketing-messages.min.css"
                 ));
 
+            bundles.Add(new StyleBundle("~/bundles/css/marketing-budget").Include(
+                        "~/css/dist/models/marketing-budget.min.css"
+                ));
+
             bundles.Add(new StyleBundle("~/bundles/css/bare").Include(
                       "~/css/dist/lib/jquery-ui/jquery-ui.min.css",
                       "~/css/dist/lib/bootstrap-3.3.7/bootstrap-3.3.7.min.css"
@@ -515,7 +526,7 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/popper").Include(
-                      "~/js/src/lib/popper/popper.js"
+                      "~/js/src/lib/popper-2.11.6/popper-2.11.6.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/knockout").Include(
@@ -533,7 +544,8 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/jquery").Include(
-                        "~/js/src/lib/jquery-3.1.1/jquery-3.1.1.js"
+                        "~/js/src/lib/jquery-3.1.1/jquery-3.1.1.js",
+                        "~/js/dist/models/extensions.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/jqueryui").Include(
@@ -544,8 +556,8 @@ namespace Portal
 
             bundles.Add(new ScriptBundle("~/bundles/js/jqueryval").Include(
                         "~/js/src/lib/jquery-3.1.1/jquery.validate.js",
-                        "~/js/src/lib/jquery-3.1.1/jquery.validate.unobtrusive.js",
-                        "~/js/src/lib/jquery-3.1.1/jquery.validate-vsdoc.js"
+                        "~/js/src/lib/jquery-3.1.1/jquery.validate.unobtrusive.js"
+                        //"~/js/src/lib/jquery-3.1.1/jquery.validate-vsdoc.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/kendo-modernizr").Include(
@@ -573,6 +585,7 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/tempus-dominus").Include(
+                    "~/js/src/lib/popper-2.11.6/popper-2.11.6.js",
                     "~/js/src/lib/tempus-dominus/tempus-dominus.js",
                     "~/js/src/lib/tempus-dominus/custom-date-format.js",
                     "~/js/src/lib/tempus-dominus/tempus-dominus-knockout.js"
@@ -760,6 +773,10 @@ namespace Portal
                         "~/js/src/models/marketing-messages.js"
                 ));
 
+            bundles.Add(new ScriptBundle("~/bundles/js/marketing-budget").Include(
+                        "~/js/src/models/marketing-budget.js"
+                ));
+
             bundles.Add(new ScriptBundle("~/bundles/js/global").Include(
                         "~/js/src/lib/money/money.js",
                         "~/js/src/lib/moment/moment-with-locales.js",
@@ -856,7 +873,7 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/popper").Include(
-                      "~/js/dist/lib/popper/popper.min.js"
+                      "~/js/dist/lib/popper-2.11.6/popper-2.11.6.min.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/knockout").Include(
@@ -874,7 +891,8 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/jquery").Include(
-                        "~/js/dist/lib/jquery-3.1.1/jquery-3.1.1.min.js"
+                        "~/js/dist/lib/jquery-3.1.1/jquery-3.1.1.min.js",
+                        "~/js/dist/models/extensions.min.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/jqueryui").Include(
@@ -885,8 +903,8 @@ namespace Portal
 
             bundles.Add(new ScriptBundle("~/bundles/js/jqueryval").Include(
                         "~/js/dist/lib/jquery-3.1.1/jquery.validate.min.js",
-                        "~/js/dist/lib/jquery-3.1.1/jquery.validate.unobtrusive.min.js",
-                        "~/js/dist/lib/jquery-3.1.1/jquery.validate-vsdoc.min.js"
+                        "~/js/dist/lib/jquery-3.1.1/jquery.validate.unobtrusive.min.js"
+                        //"~/js/dist/lib/jquery-3.1.1/jquery.validate-vsdoc.min.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/kendo-modernizr").Include(
@@ -914,6 +932,7 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/tempus-dominus").Include(
+                    "~/js/src/lib/popper-2.11.6/popper-2.11.6.min.js",
                     "~/js/dist/lib/tempus-dominus/tempus-dominus.min.js",
                     "~/js/dist/lib/tempus-dominus/custom-date-format.min.js",
                     "~/js/dist/lib/tempus-dominus/tempus-dominus-knockout.min.js"
@@ -1097,6 +1116,10 @@ namespace Portal
                         "~/js/dist/models/ring-fenced-stock.min.js"
                 ));
 
+            bundles.Add(new ScriptBundle("~/bundles/js/marketing-budget").Include(
+                        "~/js/dist/models/marketing-budget.min.js"
+                ));
+
             bundles.Add(new ScriptBundle("~/bundles/js/marketing-messages").Include(
                         "~/js/dist/models/marketing-messages.min.js"
                 ));
@@ -1106,7 +1129,6 @@ namespace Portal
                         "~/js/dist/lib/moment/moment-with-locales.min.js",
                         "~/js/dist/lib/linq/linq.min.js",
                         "~/js/dist/models/functions.min.js",
-                        "~/js/dist/models/extensions.min.js",
                         "~/js/dist/lib/jquery-3.1.1/jquery.signalR.min.js"
                 ));
 

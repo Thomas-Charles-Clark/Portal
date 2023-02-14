@@ -29,6 +29,10 @@ input::-webkit-inner-spin-button {
     padding: $input-padding-y $input-padding-x;
 }
 
+.page-heading-logo {
+    left: -32px;
+}
+
 .trade-account-selector {
     .panel-heading {
         .panel-title {
@@ -443,4 +447,12 @@ input[type="search"]::-webkit-search-results-decoration {
     100% {
         transform: translateX(0%);
     }
+}
+
+.k-autocomplete.k-state-default,
+.k-dropdown-wrap.k-state-default,
+.k-multiselect-wrap,
+.k-numeric-wrap.k-state-default,
+.k-picker-wrap.k-state-default{
+    border-color: $white;
 }

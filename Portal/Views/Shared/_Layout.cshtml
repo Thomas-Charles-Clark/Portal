@@ -25,13 +25,6 @@
     <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
     @Scripts.Render("~/bundles/js/jquery")
 
-    @if (!Request.Url.AbsoluteUri.ToLowerInvariant().Contains("/account/login"))
-    {
-        <script type="text/javascript">
-            $.get('/api/forceauth/forceAuth');
-        </script>
-    }
-
     <link href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.common-bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.mobile.all.min.css" rel="stylesheet" type="text/css" />
     <link href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -1487,7 +1480,7 @@
 
     @RenderSection("components", required: false)
 
-    <script type="text/javascript">
+<script type="text/javascript">
         var sendTARFComponentViewModel = function (params) {
             var self = this;
 
@@ -1858,6 +1851,11 @@
                         }
                     });
                 }
+            }
+
+           @if (!Request.Url.AbsoluteUri.ToLowerInvariant().Contains("/account/login"))
+            {
+                @:$.get('/api/forceauth/forceAuth');
             }
         }
 
@@ -2561,7 +2559,7 @@
             template: { element: document.getElementById('tempus-dominus-datetimepicker-template') }
         });
 
-    </script>
+</script>
 
     <script type="text/javascript">
         var recentlyUsedMembersListener = new ko.subscribable();

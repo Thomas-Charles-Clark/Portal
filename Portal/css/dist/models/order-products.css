@@ -3717,6 +3717,7 @@ select.fulfilment-option {
 .allocation-inner .memo.well {
   margin-left: 0;
   padding: 15px;
+  background-image: linear-gradient(to bottom, #f0f7ff 0%, #ddecfb 100%);
 }
 
 .allocation-assignment {
@@ -5237,7 +5238,7 @@ table.applied-treatment-table > tbody > tr > td > button.close:not(.text) > span
   height: 0;
   color: white;
   border-left: 20px solid transparent;
-  border-right: 20px solid #fb0000;
+  border-right: 20px solid #91c3fc;
   border-bottom: 20px solid transparent;
 }
 
@@ -6071,6 +6072,9 @@ span.shining.shining-twelve {
   margin-bottom: 1rem;
   gap: 1rem;
 }
+#basket-status-search-controls .hstack > div:first-of-type input.text-right {
+  text-align: left;
+}
 @media (max-width: 1199px) {
   #basket-status-search-controls .hstack > div:first-of-type, #basket-status-search-controls .hstack > div:nth-of-type(2) {
     flex: 1;
@@ -6119,65 +6123,79 @@ td.popover-container {
   overflow: visible;
 }
 
-#order-enquiry-modal .grid-container {
+#order-enquiry-modal .grid-container,
+.basket-status-order-detail-popover .grid-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
 }
-#order-enquiry-modal .grid-container > div {
+#order-enquiry-modal .grid-container > div,
+.basket-status-order-detail-popover .grid-container > div {
   grid-column: auto/span 1;
 }
 
-#order-enquiry-modal {
+#order-enquiry-modal,
+.basket-status-order-detail-popover {
   cursor: default;
   color: black;
 }
-#order-enquiry-modal .thumb {
+#order-enquiry-modal .thumb,
+.basket-status-order-detail-popover .thumb {
   margin-right: 0;
   width: 128px;
   height: 128px;
 }
-#order-enquiry-modal .grid-container {
+#order-enquiry-modal .grid-container,
+.basket-status-order-detail-popover .grid-container {
   min-width: 1024px;
   margin-bottom: 2rem;
   grid-template-columns: minmax(400px, auto) 1fr;
   gap: 2rem;
 }
-#order-enquiry-modal .arrow {
+#order-enquiry-modal .arrow,
+.basket-status-order-detail-popover .arrow {
   border-right-color: transparent;
   border-bottom-color: #02255b;
 }
-#order-enquiry-modal .sub-grid-container {
+#order-enquiry-modal .sub-grid-container,
+.basket-status-order-detail-popover .sub-grid-container {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 0.5rem;
 }
-#order-enquiry-modal .sub-grid-container > span {
+#order-enquiry-modal .sub-grid-container > span,
+.basket-status-order-detail-popover .sub-grid-container > span {
   font-size: 14px;
 }
-#order-enquiry-modal .sub-grid-container > span:nth-child(2n+1) {
+#order-enquiry-modal .sub-grid-container > span:nth-child(2n+1),
+.basket-status-order-detail-popover .sub-grid-container > span:nth-child(2n+1) {
   font-weight: bold;
 }
-#order-enquiry-modal h4 {
+#order-enquiry-modal h4,
+.basket-status-order-detail-popover h4 {
   text-decoration: none;
 }
-#order-enquiry-modal .order-import-grid-container {
+#order-enquiry-modal .order-import-grid-container,
+.basket-status-order-detail-popover .order-import-grid-container {
   display: grid;
   grid-template-columns: 120px 1fr;
   gap: 0.5rem;
   margin-bottom: 1rem;
   min-width: 600px;
 }
-#order-enquiry-modal .order-import-grid-container a {
+#order-enquiry-modal .order-import-grid-container a,
+.basket-status-order-detail-popover .order-import-grid-container a {
   display: inline;
 }
-#order-enquiry-modal .download-btn {
+#order-enquiry-modal .download-btn,
+.basket-status-order-detail-popover .download-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   gap: 0.5rem;
 }
-#order-enquiry-modal .download-btn .material-icons {
+#order-enquiry-modal .download-btn .material-icons,
+.basket-status-order-detail-popover .download-btn .material-icons {
   font-size: 22px;
   font-weight: normal;
   top: 1px;

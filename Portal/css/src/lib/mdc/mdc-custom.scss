@@ -28,7 +28,6 @@ $mdc-theme-error: #db0028;
     }
 
 .mdc-validating-field {
-    /*height: 50px;*/
     padding-bottom: 0 !important;
 }
 
@@ -50,7 +49,7 @@ $mdc-theme-error: #db0028;
 
 @keyframes mdc-floating-label-shake-unfloated-custom {
     0% {
-        transform: translateX(calc(0 - 0%))
+        transform: translateX(0)
     }
 
     33% {
@@ -64,7 +63,7 @@ $mdc-theme-error: #db0028;
     }
 
     100% {
-        transform: translateX(calc(0 - 0%))
+        transform: translateX(calc(0));
     }
 }
 
@@ -265,7 +264,6 @@ label.mdc-floating-label {
     .mdc-select .k-dropdown-wrap.k-state-hover {
         background: none;
         background-color: transparent;
-        border: none;
     }
 
 .mdc-select .k-widget.k-dropdown.k-header {
@@ -322,7 +320,6 @@ label.mdc-floating-label {
 }
 
 .mdc-validating-field .mdc-select span.k-input {
-    padding: 8px;
     padding-right: 32px;
     padding-left: 0px;
     display: block;

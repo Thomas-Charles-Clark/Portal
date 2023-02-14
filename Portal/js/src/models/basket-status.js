@@ -47,9 +47,13 @@
     });
 
     self.dgOrderNumber = ko.observable().extend({
+        numberFormatted: {
+            digits: 0,
+            currency: ko.observable({ FormattingCulture: "en-GB" })
+        },
         rateLimit: {
             method: 'notifyWhenChangesStop',
-            timeout: 300
+            timeout: 150
         }
     })
 
@@ -67,7 +71,7 @@
         busy: ko.observable(false),
         enable: ko.observable(true),
         disable: ko.observable(false),
-        clearable: ko.observable(true),
+        showClear: ko.observable(true),
         clearFunction: () => {
             self.customerOrderReference(undefined);
         },
@@ -86,7 +90,7 @@
         busy: ko.observable(false),
         enable: ko.observable(true),
         disable: ko.observable(false),
-        clearable: ko.observable(true),
+        showClear: ko.observable(true),
         clearFunction: () => {
             self.dgOrderNumber(undefined);
         },
@@ -95,7 +99,7 @@
         insertValidationMessages: false,
         decorateInputElement: true,
         enterKey: () => {
-            self.fetch();
+
         }
     };
 
@@ -430,29 +434,30 @@
 
     //#region
 
-    self.from.subscribe(nv => {
-        self.fetch();
-    });
+    //self.from.subscribe(nv => {
+    //    self.fetch();
+    //});
 
-    self.to.subscribe(nv => {
-        self.fetch();
-    });
+    //self.to.subscribe(nv => {
+    //    self.fetch();
+    //});
 
-    self.dgOrderNumber.subscribe(nv => {
-        if (nv !== '') { // the forceNullOnEmpty binding causes this subscription to fire twice on clearing the input: once for '', once for null
-            self.fetch();
-        }
-    });
+    //self.dgOrderNumber.subscribe(nv => {
+    //    if (nv !== '') { // the forceNullOnEmpty binding causes this subscription to fire twice on clearing the input: once for '', once for null
+    //        self.fetch();
+    //    }
+    //});
 
-    self.customerOrderReference.subscribe(nv => {
-        if (nv !== '') { // the forceNullOnEmpty binding causes this subscription to fire twice on clearing the input: once for '', once for null
-            self.fetch();
-        }
-    });
+    //self.customerOrderReference.subscribe(nv => {
+    //    if (nv !== '') { // the forceNullOnEmpty binding causes this subscription to fire twice on clearing the input: once for '', once for null
+    //        self.fetch();
+    //    }
+    //});
 
     self.tradeAccount.subscribe(nv => {
         if (nv) {
-            window.setTimeout(self.fetch, 0);
+            self.dgOrderNumber(undefined);
+            self.customerOrderReference(undefined);
         }
     });
 
@@ -479,40 +484,56 @@
         self.busy(false);
     }
 
-    self.fetch = () => {
-        self.validateSearchNow(true);
-        if (self.searchErrors().length) {
-            self.searchErrors.filter(x => {
-                x.isValid.notifySubscribers(x.isValid());
-            });
-        } else {
-            self.busy(true);
-            fetch('/api/BasketStatusAPI/FetchBasketStatuses', {
-                method: 'POST',
-                headers: window.fetchHeaders,
-                cache: 'no-store',
-                credentials: 'same-origin',
-                body: self.toJSON()
-            })
-                .then(window.handleFetchResponse)
-                .then(data => {
-                    self.validateSearchNow(false);
-                    self.busy(false);
-                    data = data.map(d => {
-                        d.orderDetailPopover = ko.observable();
-                        d.orderImportDetailPopover = ko.observable();
-                        return d;
-                    });
-                    self.data(data);
-                    console.log(data);
-                })
-                .catch(err => {
-                    self.validateSearchNow(false);
-                    self.busy(false);
-                    window.catchFetchError(err);
-                })
+    self.fetch = ko.computed(() => {
+
+        let data = {
+            orderNumber: self.dgOrderNumber(),
+            tradeAccountId: self.tradeAccountId(),
+            customerReference: self.customerOrderReference(),
+            fromDt: self.from(),
+            toDt: self.to()
         }
-    }
+
+        if (!self.busy.peek() && self.tradeAccountId()) {
+            self.validateSearchNow(true);
+            if (self.searchErrors().length) {
+                self.searchErrors.filter(x => {
+                    x.isValid.notifySubscribers(x.isValid());
+                });
+            } else {
+                self.busy(true);
+                fetch('/api/BasketStatusAPI/FetchBasketStatuses', {
+                    method: 'POST',
+                    headers: window.fetchHeaders,
+                    cache: 'no-store',
+                    credentials: 'same-origin',
+                    body: JSON.stringify(data)
+                })
+                    .then(window.handleFetchResponse)
+                    .then(data => {
+                        self.validateSearchNow(false);
+                        self.busy(false);
+                        data = data.map(d => {
+                            d.orderDetailPopover = ko.observable();
+                            d.orderImportDetailPopover = ko.observable();
+                            return d;
+                        });
+                        self.data(data);
+                        console.log(data);
+                    })
+                    .catch(err => {
+                        self.validateSearchNow(false);
+                        self.busy(false);
+                        window.catchFetchError(err);
+                    })
+            }
+        }
+    }, self).extend({
+        rateLimit: {
+            timeout: 50,
+            method: 'notifyWhenChangesStop'
+        }
+    });
 
     self.popoverTemplate = function () {
         return `<div class="popover product-details-popover parcel-estimate-popover basket-status-order-detail-popover" role="tooltip">
@@ -611,24 +632,22 @@
                             width: 82
                         }, {
                             field: 'ProductCode',
-                            title: 'Product',
-                            width: 140
+                            title: 'Product'
                         }, {
                             field: 'QuantityOrdered',
                             title: 'Quantity',
-                            width: 140
+                            width: 80
                         }, {
                             field: 'LineValueCurrency',
                             title: 'Line Value',
-                            width: 140
+                            width: 80
                         }, {
                             field: 'LineDiscountValueCurrency',
                             title: 'Line Discount',
-                            width: 140
+                            width: 80
                         }, {
                             field: 'LineStatus',
-                            title: 'Status',
-                            width: 140
+                            title: 'Status'
                         }, {
                             field: 'FormattingCulture',
                             title: ' ',
@@ -771,18 +790,6 @@
             })
         }
     }
-
-    self.toJS = () => {
-        return {
-            orderNumber: ko.unwrap(self.dgOrderNumber.formatted),
-            tradeAccountId: ko.unwrap(self.tradeAccountId),
-            customerReference: ko.unwrap(self.customerOrderReference),
-            fromDt: ko.unwrap(self.from),
-            toDt: ko.unwrap(self.to)
-        };
-    }
-
-    self.toJSON = () => JSON.stringify(self.toJS());
 
     self.downloadFile = (dataItem) => {
         console.log(dataItem);

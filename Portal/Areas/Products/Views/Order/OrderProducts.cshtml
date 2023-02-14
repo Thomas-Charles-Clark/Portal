@@ -416,7 +416,7 @@
             <span data-bind="text: formatCurrency(priceInc, 2,  formattingCulture, currencyCode)"></span>
         </td>
         <td>
-            <span data-bind="text: LineStatus"></span>
+            <span data-bind="text: status"></span>
         </td>
     </tr>
 </script>
@@ -646,7 +646,7 @@
         </li>
     }
     <li>
-        <a href="#tab-basket-status" data-toggle="tab" data-bind="click: function() { $('#user-masquerade').hide(); memberBasketFetcher.importResultGridWidget().dataSource.read() }">
+        <a href="#tab-basket-status" data-toggle="tab" data-bind="click: function() { $('#user-masquerade').hide(); }">
             Order Enquiry
         </a>
     </li>
@@ -775,42 +775,39 @@
             </div>
         </div>
     </div>
-    @if (User.IsInRole("Super Admin"))
-    {
-        <div id="tab-basket-status" class="tab-pane" data-bind="with: memberBasketFetcher.basketStatus">
-            <div class="blocker" style="display: none;" data-bind="flexVisible: busy, toggleOpacity: busy">
-                <div class="loading-spinner"></div>
-                <h3 class="mt-3">
-                    Please Wait
-                </h3>
+    <div id="tab-basket-status" class="tab-pane" data-bind="with: memberBasketFetcher.basketStatus">
+        <div class="blocker" style="display: none;" data-bind="flexVisible: busy, toggleOpacity: busy">
+            <div class="loading-spinner"></div>
+            <h3 class="mt-3">
+                Please Wait
+            </h3>
+        </div>
+        @Html.Action("TradeAccountSelector", "Component", new { Area = "", CanSearch = true, canCollapse = false, orderProductsExtension = false })
+        <div class="panel panel-primary" style="display: none" data-bind="visible: tradeAccountId">
+            <div class="panel-heading no-padding">
+                <h4 class="panel-title">
+                    <a style="cursor: default;" data-bind="text: 'Search for Orders'"></a>
+                </h4>
+                <div class="clearfix"></div>
             </div>
-            @Html.Action("TradeAccountSelector", "Component", new { Area = "", CanSearch = true, canCollapse = false, orderProductsExtension = false })
-            <div class="panel panel-primary" style="display: none" data-bind="visible: tradeAccountId">
-                <div class="panel-heading no-padding">
-                    <h4 class="panel-title">
-                        <a style="cursor: default;" data-bind="text: 'Search for Orders'"></a>
-                    </h4>
-                    <div class="clearfix"></div>
-                </div>
-                <div class="panel-collapse">
-                    <div class="selector panel-body bg-info">
-                        <div id="basket-status-search-controls" class="d-none pt-3" data-bind="css: { 'd-none': !tradeAccount() }">
-                            <div class="hstack gap-3 mb-3">
-                                <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: dgOrderNumberParams }"></div>
-                                <div data-bind="component: { name: 'mdc-text-field-component', params: customerOrderReferenceParams }"></div>
-                                <div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: fromParams }"></div>
-                                <div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: toParams }"></div>
-                                <button class="btn btn-primary" data-bind="click: fetch">
-                                    Search
-                                </button>
-                            </div>
+            <div class="panel-collapse">
+                <div class="selector panel-body bg-info">
+                    <div id="basket-status-search-controls" class="d-none pt-3" data-bind="css: { 'd-none': !tradeAccount() }">
+                        <div class="hstack gap-3 mb-3">
+                            <div data-bind="component: { name: 'mdc-text-field-numeric-unformatted-component', params: dgOrderNumberParams }"></div>
+                            <div data-bind="component: { name: 'mdc-text-field-component', params: customerOrderReferenceParams }"></div>
+                            <div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: fromParams }"></div>
+                            <div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: toParams }"></div>
+                            <button class="btn btn-primary" data-bind="click: fetch">
+                                Search
+                            </button>
                         </div>
-                        <div class="mt-3" data-bind="kendoGrid: resultGridParams"></div>
                     </div>
+                    <div class="mt-3" data-bind="kendoGrid: resultGridParams"></div>
                 </div>
             </div>
         </div>
-    }
+    </div>
     <div id="tab-imports" class="tab-pane">
         <div class="panel panel-primary" data-bind="with: memberBasketFetcher">
             <div class="panel-heading no-padding">
@@ -900,14 +897,12 @@
         });
     </script>*@
 
-<div id="order-enquiry-modal" class="modal fade" data-backdrop="static" data-keyboard="false" data-bind="with: memberBasketFetcher.basketStatus.orderDetail">
+<div id="order-enquiry-modal" class="modal fade" data-bind="with: memberBasketFetcher.basketStatus.orderDetail">
     <div class="modal-dialog modal-lg modal-xl">
         <div class="modal-content">
             <div class="modal-header grey-blue">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
                 <h4 class="modal-title">
-                    <a class="close pull-right" data-dismiss="modal">
-                        &times;
-                    </a>
                     <span data-bind="html: OrderHead.OrderDescription"></span>
                 </h4>
             </div>

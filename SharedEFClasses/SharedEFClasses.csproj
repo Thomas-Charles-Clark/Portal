@@ -333,6 +333,7 @@
     <Compile Include="Models\InvoiceModels.cs" />
     <Compile Include="Models\DocumentModels.cs" />
     <Compile Include="Models\FurnitureModels.cs" />
+    <Compile Include="Models\MarketingBudgetModels.cs" />
     <Compile Include="Models\MertexLive\Supplier.cs" />
     <Compile Include="Models\MertexLive\Sundry.cs" />
     <Compile Include="Models\MertexLive\QualityLive.cs" />
@@ -393,7 +394,7 @@
     <Compile Include="Models\FacebookLeadModels.cs" />
     <Compile Include="Models\GeneralModels.cs" />
     <Compile Include="Models\LeadsModels.cs" />
-    <Compile Include="Models\MarketingModels.cs" />
+    <Compile Include="Models\MarketingMessageModels.cs" />
     <Compile Include="Models\Office\OfficeModels.cs" />
     <Compile Include="Models\OrderModels.cs" />
     <Compile Include="Models\PortalCache.cs" />

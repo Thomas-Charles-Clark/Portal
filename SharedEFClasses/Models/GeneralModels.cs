@@ -671,6 +671,10 @@ namespace SharedEFClasses.Models.General
 
         [JsonIgnore]
         public virtual ICollection<TradePriceList> TradePriceLists { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("PriceList")]
+        public virtual ICollection<MarketingBudget> MarketingBudgetRecords { get; set; }
     }
 
     public class SalesRepresentative

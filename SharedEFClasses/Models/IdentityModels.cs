@@ -202,6 +202,10 @@ namespace SharedEFClasses.Models
         [InverseProperty("ModifiedMember")]
         public virtual ICollection<RingFencePreAllocation> RingFencePreAllocationsModified { get; set; }
 
+        [JsonIgnore]
+        [InverseProperty("LastModifiedBy")]
+        public virtual ICollection<MarketingBudget> MarketingBudgetRecordsModified { get; set; }
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType

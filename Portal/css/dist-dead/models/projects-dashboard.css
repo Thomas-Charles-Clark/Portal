@@ -1,0 +1,801 @@
+/*.dashboard .btn-group.external .btn,
+.dashboard .btn-group.complete .btn {
+    border-top: 0;
+}*/
+/*.dash-btn:hover {
+    background-color: rgba(168, 187, 245, 0.45);
+}*/
+/*.dash-selected {
+    background-color: rgba(168, 187, 245, 0.25);
+}*/
+/*.k-dropdown-wrap .k-i-close {
+    top: 10px;
+}*/
+/*.k-dropdown-wrap .k-i-close:not(.k-hidden) {
+    display: block !important;
+    color: #000;
+}*/
+/*.k-dropdown-wrap .k-i-close.k-hidden::before {
+    content: "\e006";
+}*/
+/*.sop-search input {
+    border-radius: 4px 0 0 0;
+}
+
+.sop-search .input-group-btn button:last-of-type {
+    border-radius: 0 4px 0 0;
+}*/
+/* Over the pointer-events:none, set the cursor to not-allowed.
+    On this way you will have a more user friendly cursor. */
+/* Clicks are not permitted and change the opacity. */
+/* with thanks: http://hackingui.com/front-end/a-pure-css-solution-for-multiline-text-truncation/ */
+/* styles for '...' */
+/* create the ... */
+/* hide ... if we have text, which is less than or equal to max lines */
+.k-loading-image {
+  background-image: none;
+}
+
+.form-control[disabled] {
+  background-color: #eee;
+}
+
+.k-treeview {
+  user-select: none;
+}
+
+.k-upload.k-state-disabled .k-button {
+  cursor: not-allowed !important;
+}
+.k-upload.k-state-disabled .k-button input {
+  cursor: not-allowed !important;
+}
+
+.k-state-disabled span {
+  color: #777;
+  z-index: 1;
+}
+
+.col-form-label {
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+
+.col-form-span {
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+
+.project-label {
+  margin-right: 10px;
+  width: 130px;
+  text-align: right;
+}
+
+.col-form-span.text-danger.pull-right {
+  margin: 0 12px 0 0;
+}
+
+#main-dashboard-btns .btn-primary {
+  white-space: initial;
+}
+
+.dashboard .btn {
+  white-space: initial;
+}
+.dashboard .btn-group .btn {
+  white-space: initial;
+  padding: 0;
+}
+.dashboard .btn-group:not(.complete) div:first-of-type {
+  border-bottom-left-radius: 0;
+}
+.dashboard .btn-group:not(.complete) div:last-of-type {
+  border-bottom-right-radius: 0;
+}
+.dashboard .btn-group.external div:first-of-type {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.dashboard .btn-group.external div:last-of-type {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.dashboard .btn-group.complete div:first-of-type {
+  border-top-left-radius: 0;
+}
+.dashboard .btn-group.complete div:last-of-type {
+  border-top-right-radius: 0;
+}
+
+.btn-group-sm > .dash-btn {
+  padding-bottom: 18px;
+  border-color: white;
+}
+
+.dash-btn {
+  opacity: 0.75;
+}
+.dash-btn + .dash-btn {
+  border-left: 0;
+}
+.dash-btn:not(.dash-selected):hover {
+  opacity: 0.95;
+}
+.dash-btn span {
+  font-size: 12px;
+  text-shadow: 0 1px 1px black;
+}
+.dash-btn span.dash-count {
+  display: block;
+  font-size: 20px;
+  background-color: transparent;
+  margin-bottom: 12px;
+}
+.dash-btn span.dash-count .dash-external {
+  display: block;
+  background-color: white;
+  color: black;
+  text-shadow: none;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}
+
+.project-inner {
+  padding: 5px 10px 10px 10px;
+  border-color: inherit;
+}
+.project-inner .panel-title:not(.urgent-title) {
+  color: #333;
+}
+.project-inner .panel-heading .panel-title + .panel-title {
+  margin-top: 10px;
+}
+.project-inner .col-form-label {
+  display: block;
+  float: none;
+  padding: 2px 0;
+  line-height: 1;
+}
+.project-inner .col-form-span {
+  display: block;
+  float: none;
+  margin-left: 0;
+  padding: 0;
+}
+
+.dash-selected {
+  opacity: 1;
+  border: 1px solid #000;
+  box-shadow: 1px 1px 4px 1px rgba(0, 0, 0, 0.84);
+  z-index: 10;
+  border-left: 1px solid white !important;
+}
+.dash-selected .dash-count {
+  font-weight: bold;
+}
+
+.prefilter > div {
+  width: 100%;
+}
+.prefilter > span {
+  width: 100%;
+}
+
+.k-dropdowntree-clearable .k-multiselect-wrap {
+  cursor: pointer;
+}
+.k-dropdowntree-clearable .k-multiselect-wrap ul.k-reset li.k-button {
+  padding-left: 0.8em;
+  padding-right: 12px;
+  border: 0;
+}
+.k-dropdowntree-clearable .k-multiselect-wrap ul.k-reset .k-button:hover {
+  background-color: transparent;
+}
+.k-dropdowntree-clearable .k-multiselect-wrap ul.k-reset .k-button.k-state-focused {
+  box-shadow: none;
+}
+
+.k-dropdown-wrap .k-i-close:not(.k-hidden) {
+  display: inline-block;
+  color: #aaa;
+}
+.k-dropdown-wrap .k-readonly {
+  opacity: 1;
+}
+
+.k-dropdown-wrap.k-state-hover .k-i-close:not(.k-hidden) {
+  color: black;
+}
+
+#project-modal textarea {
+  padding: 4px 12px;
+}
+#project-modal textarea.project-note {
+  width: 654px;
+  height: 130px;
+  min-height: 130px;
+  resize: vertical;
+}
+#project-modal .validation-message {
+  margin-top: 0;
+  padding: 7px 0;
+  vertical-align: bottom;
+  margin-right: 10px;
+}
+#project-modal .nudge {
+  margin-left: 15px;
+}
+#project-modal .k-dropdown {
+  width: 240px;
+}
+#project-modal .k-dropdowntree {
+  width: 240px;
+}
+#project-modal .k-datepicker {
+  width: 240px;
+}
+#project-modal .k-pager-wrap .k-dropdown {
+  width: 4.5em;
+}
+#project-modal .project-control-wide {
+  width: 420px;
+  display: inline-block;
+  vertical-align: bottom;
+}
+#project-modal span.date-nudge {
+  position: relative;
+  float: none;
+  display: block;
+  text-align: left;
+  font-size: small;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+#project-lost-modal textarea {
+  padding: 4px 12px;
+}
+#project-lost-modal textarea#lost-comment {
+  width: 100%;
+  height: 130px;
+  min-height: 130px;
+  resize: vertical;
+}
+
+.sop-container {
+  margin-top: -1px;
+  border: 1px solid #ccc;
+  padding: 0.4em;
+  border-radius: 4px 4px 0 0;
+  min-height: 100px;
+  background-color: #f5f5f5;
+}
+
+.sop-search-wrapper {
+  padding: 0.4em;
+  border: 1px solid #ccc;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  background-color: #f5f5f5;
+}
+
+.sop-item {
+  cursor: pointer;
+}
+
+#attachments-list {
+  max-height: 400px;
+  overflow-y: scroll;
+}
+#attachments-list li {
+  padding: 0;
+  margin-right: 5px;
+}
+#attachments-list li a {
+  padding: 15px;
+  display: block;
+}
+#attachments-list li:hover {
+  background-color: #e7f5fc;
+}
+
+#tasks-list {
+  max-height: 400px;
+  overflow-y: scroll;
+}
+
+.attachments-target {
+  padding: 0.4em;
+  border: 1px solid #ccc;
+  border-radius: 4px 4px 0 0;
+  min-height: 100px;
+  background-color: #f5f5f5;
+}
+
+.attachment-item {
+  cursor: pointer;
+  border: 1px solid #ccc;
+}
+
+.k-upload-sync .k-upload-button {
+  margin: 0.4em;
+}
+
+.assign-group {
+  width: 400px;
+}
+
+.assign-dropdown {
+  width: 296px;
+}
+.assign-dropdown .k-dropdown-wrap {
+  border-radius: 4px 0 0 4px;
+}
+.assign-dropdown > .k-widget {
+  width: 100%;
+}
+
+.assign-ext-btn {
+  position: relative;
+}
+
+.k-popup-dropdowntree .k-list-filter {
+  margin: 6px 12px 0;
+}
+
+.project-modal .k-autocomplete > .k-i-close {
+  top: 52%;
+}
+.project-modal .k-dropdown-wrap > .k-i-close {
+  top: 52%;
+}
+.project-modal input[type=checkbox].form-checkbox {
+  margin-top: 0;
+  width: 18px;
+  height: 18px;
+  position: relative;
+  top: 2px;
+  margin-left: 0px;
+  display: inline;
+}
+
+.k-dropdown-wrap.alert-danger > span.k-input {
+  color: #a94442;
+}
+
+#project-stakeholder-modal .form-group {
+  margin-bottom: 5px;
+}
+#project-stakeholder-modal .remaining {
+  display: none;
+}
+#project-stakeholder-modal .validation-message {
+  display: block;
+}
+#project-stakeholder-modal .project-control-wide {
+  width: 100%;
+  display: inline-block;
+  vertical-align: bottom;
+}
+#project-stakeholder-modal .col-form-label {
+  width: 140px;
+  margin-right: 12px;
+  text-align: right;
+}
+
+#credentials-modal-body .validation-message {
+  margin-left: 0;
+}
+
+#external-assignment-modal .validation-message {
+  margin-left: 0;
+}
+
+#edit-external-assignment-modal .validation-message {
+  margin-left: 0;
+}
+
+.k-calendar-wrapper {
+  display: inline-block;
+  vertical-align: top;
+}
+.k-calendar-wrapper .display-span {
+  margin-left: 0;
+  float: none;
+  display: block;
+  text-align: right;
+  margin-bottom: 15px;
+}
+.k-calendar-wrapper .display-span.text-danger {
+  text-align: left;
+  text-indent: 43px;
+}
+
+.k-multiselect-wrap .k-readonly {
+  opacity: 1;
+}
+
+html .k-grid .k-selectable tr:not(.alert-danger):hover {
+  cursor: pointer;
+}
+html .k-grid tr.k-alt:hover {
+  background: #f1f1f1;
+}
+
+#competitor-grid tr:not(.alert-danger):hover {
+  background: transparent;
+}
+
+.modal ul.dropdown-menu {
+  padding: 0;
+}
+.modal ul.dropdown-menu li label {
+  margin-bottom: 0;
+  padding: 4px 8px;
+  cursor: pointer;
+  display: block;
+}
+.modal ul.dropdown-menu li label:hover {
+  background-color: #efefef;
+}
+
+.k-grid .project {
+  margin-bottom: 0;
+  cursor: pointer;
+}
+.k-grid .project * {
+  box-sizing: border-box;
+}
+.k-grid td.project-td {
+  padding: 0;
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+}
+
+.project {
+  cursor: pointer;
+}
+.project .panel-heading {
+  padding: 0 0 10px 0;
+}
+.project .row {
+  color: #333;
+}
+.project hr {
+  margin: 1em 0;
+}
+.project * {
+  cursor: pointer;
+}
+.project:hover .project-inner {
+  background-color: #eff8ff;
+}
+
+#edit-project-modal-body {
+  padding-right: 90px;
+  position: relative;
+}
+
+.edit-project-modal-btns {
+  position: absolute;
+  right: 0;
+}
+.edit-project-modal-btns > .btn:first-child:not(:last-child) {
+  border-radius: 4px 0 0 0;
+}
+
+#edit-project-modal .modal-title span.pull-left {
+  margin-right: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  position: absolute;
+}
+#edit-project-modal .modal-title span.pull-right {
+  margin-right: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+#edit-project-modal .modal-title span.text-success {
+  color: #28e654;
+}
+#edit-project-modal .validation-message {
+  margin-left: 152px;
+}
+
+.text-urgent {
+  font-weight: bold;
+  color: red;
+  margin: 0;
+  margin-top: 12px;
+  display: block;
+  text-transform: uppercase;
+  text-shadow: 0 2px 3px #1b1b1b;
+}
+
+#edit-project-type {
+  display: inline-block;
+}
+
+span.form-control.readonly {
+  line-height: 32px;
+  background-color: #ededed;
+}
+
+.form-control.readonly.fit {
+  display: inline-block;
+  width: auto;
+}
+
+.readonly-half {
+  display: inline-block;
+  width: 64%;
+}
+
+.right-form-group {
+  display: inline-block;
+  vertical-align: top;
+}
+.right-form-group span.date-nudge {
+  text-align: left;
+}
+.right-form-group .col-form-label {
+  margin-left: 0;
+  width: 170px;
+}
+
+.project-id {
+  margin-right: 12px;
+}
+
+.project-outer + .project-outer .project-inner {
+  border-top: 1px solid #ddd;
+}
+
+.grey-heading {
+  color: #333;
+}
+
+.urgent {
+  text-transform: uppercase;
+  color: #bf2c2c;
+}
+
+.urgent-title {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #c31e1e;
+}
+
+input.k-input::placeholder {
+  color: #000;
+}
+
+.k-state-hover .k-input {
+  background-color: #ebebeb;
+}
+
+#projects-grid .k-grid-header {
+  display: none;
+}
+
+.k-grid-subheader {
+  padding: 0 6px;
+  margin: 0;
+  line-height: 64px;
+  font-weight: bold;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.k-widget.k-dropdowntree.k-dropdowntree-clearable {
+  border-radius: 4px;
+}
+
+.short-control {
+  width: 240px;
+}
+
+.project-details-right-label {
+  width: 180px;
+}
+
+.tab-content {
+  padding-top: 15px;
+}
+
+.nav.nav-tabs li {
+  user-select: none;
+}
+.nav.nav-tabs li.disabled {
+  cursor: not-allowed;
+}
+.nav.nav-tabs li.disabled > a[data-toggle=tab] {
+  pointer-events: none;
+  filter: alpha(opacity=65);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  opacity: 0.65;
+}
+
+#stakeholder-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.stakeholder {
+  display: flex;
+  margin-bottom: 15px;
+  cursor: pointer;
+}
+
+.stakeholder-content {
+  padding: 1em;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px 2px rgba(165, 165, 165, 0.25);
+  border-radius: 4px;
+  width: 100%;
+  height: 100%;
+  background-color: #eefbff;
+  position: relative;
+}
+
+.stakeholder-heading .title {
+  margin-top: 0;
+  padding-right: 15px;
+  font-weight: bold;
+}
+.stakeholder-heading button.close {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background-color: grey;
+  border-radius: 0 3px 0 4px;
+}
+.stakeholder-heading button.close span {
+  font-size: 20px;
+  padding: 0 6px;
+  line-height: normal;
+}
+
+.stakeholder-body button.close span {
+  font-size: 20px;
+  padding: 0 6px;
+  line-height: normal;
+}
+.stakeholder-body .col-form-span {
+  margin-left: 0;
+  float: none;
+  display: block;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+.stakeholder-body .col-form-label {
+  margin-left: 0;
+  float: none;
+  display: block;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
+.project-note label.col-form-label {
+  display: block;
+  float: none;
+}
+.project-note p.collapse[aria-expanded=false] {
+  display: block;
+  height: 20px !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: pre-line;
+}
+.project-note p.collapsing[aria-expanded=false] {
+  height: 20px !important;
+  text-overflow: ellipsis;
+  white-space: pre-line;
+}
+.project-note .note-display {
+  padding-right: 1em;
+}
+.project-note p {
+  overflow: hidden;
+  position: relative;
+  text-align: justify;
+  margin-right: -1em;
+  padding-right: 1em;
+}
+.project-note p:before {
+  content: "...";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+.project-note p:after {
+  content: "";
+  position: absolute;
+  right: 0;
+  width: 1em;
+  height: 1em;
+  margin-top: 0.2em;
+  background: white;
+}
+
+.notes-container {
+  overflow-y: auto;
+  max-height: 420px;
+  padding-right: 15px;
+}
+
+tr.stakeholder-body * {
+  cursor: pointer;
+}
+tr.stakeholder-body td {
+  word-break: break-word;
+}
+
+.remaining-width-wrapper .input-group:first-child {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+.remaining-width-wrapper .input-group:last-child {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+#stakeholders-grid {
+  font-size: 13px;
+}
+#stakeholders-grid .popover {
+  color: #000;
+}
+#stakeholders-grid a:active {
+  color: #fff;
+}
+
+#project-description {
+  min-height: 80px;
+  min-width: 420px;
+  max-width: 100%;
+  resize: both;
+}
+
+#stakeholder-association {
+  border-radius: 4px;
+  padding: 0 10px;
+}
+#stakeholder-association button.close.clear-field {
+  position: relative;
+  float: right;
+}
+#stakeholder-association .col-form-span {
+  margin-left: 0;
+}
+#stakeholder-association .col-form-span + .col-form-span {
+  margin-left: 10px;
+}
+
+.k-detail-cell .k-grid td {
+  overflow: visible;
+}
+
+#stakeholder-hint {
+  display: block;
+  text-align: right;
+  line-height: 30px;
+  padding-bottom: 0;
+  padding-top: 4px;
+}
+
+@media (max-width: 991px) {
+  .project-label {
+    text-align: left;
+    width: auto !important;
+  }
+}

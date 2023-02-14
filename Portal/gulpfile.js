@@ -7,6 +7,7 @@ const
     cssmin = require('gulp-cssmin'),
     sass = require('gulp-sass')(require('sass')),
     htmlmin = require('gulp-htmlmin'),
+    filter = require('gulp-filter'),
     terser = require('gulp-terser'),
     sourcemaps = require('gulp-sourcemaps'),
     merge = require('merge-stream'),
@@ -109,7 +110,9 @@ function compilesass() {
     var tasks = getBundlesByInputFileNames(regex.sass).map(function (bundle) {
         return gulp.src(bundle.inputFiles, { since: gulp.lastRun(compilesass), base: '.' })
             .pipe(sourcemaps.init())
-            .pipe(sass().on('error', sass.logError))
+            .pipe(sass({
+                includePaths: ['node_modules']
+            }).on('error', sass.logError))
             .pipe(postcss([gapProperties(), autoprefixer()]))
             .pipe(concat(bundle.inputFiles.length > 1 ? bundle.outputFileName : bundle.inputFiles[0].replace('.scss', '.css')))
             .pipe(sourcemaps.write('.'))
@@ -122,7 +125,17 @@ function wildcardscss() {
     var tasks = gulp
         .src('css/src/**/*.scss', { since: gulp.lastRun(wildcardscss) })
         .pipe(sourcemaps.init())
-        .pipe(sass().on('error', sass.logError))
+        .pipe(sass({
+            includePaths: ['node_modules']
+        }).on('error', sass.logError))
+        .pipe(sourcemaps.mapSources(function (sourcePath, file) {
+            return '/css/dist/' + sourcePath
+        }))
+        .pipe(sourcemaps.write(''))
+        .pipe(gulp.dest('css/dist'))
+        .pipe(filter('**/*.css'))
+        .pipe(cssmin())
+        .pipe(rename({ suffix: '.min' }))
         .pipe(sourcemaps.write(''))
         .pipe(gulp.dest('css/dist'));
 
@@ -192,7 +205,7 @@ gulp.task('watch', function () {
 
     gulp.watch('css/**/*.scss', gulp.series([wildcardscss]));
 
-    gulp.watch('css/**/!(*.min).css', gulp.series([wildcardcss]));
+    //gulp.watch('css/**/!(*.min).css', gulp.series([wildcardcss]));
 
     gulp.watch('js/**/!(*.min).js', gulp.series([wildcardjs]))
 

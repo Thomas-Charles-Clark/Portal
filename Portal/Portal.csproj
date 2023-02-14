@@ -545,6 +545,9 @@
     <Compile Include="Areas\Customers\Controllers\CustomerInviteController.cs" />
     <Compile Include="Areas\Customers\CustomersAreaRegistration.cs" />
     <Compile Include="Areas\Customers\ViewModels\CustomerMaintenanceViewModel.cs" />
+    <Compile Include="Areas\Marketing\Controllers\MarketingBudgetController.cs" />
+    <Compile Include="Areas\Marketing\Controllers\MarketingBudgetAPIController.cs" />
+    <Compile Include="Areas\Marketing\ViewModels\MarketingBudgetViewModel.cs" />
     <Compile Include="Areas\Orders\Controllers\OrderImportAPIController.cs" />
     <Compile Include="Areas\Orders\Controllers\OrderTrackingApiController.cs" />
     <Compile Include="Areas\Orders\Controllers\OrderTrackingController.cs" />
@@ -558,6 +561,7 @@
     <Compile Include="Areas\Products\ViewModels\TreatmentMaintenanceViewModel.cs" />
     <Compile Include="Areas\Products\ViewModels\ProductTypeMaintenanceViewModel.cs" />
     <Compile Include="Controllers\GeneralAPIController.cs" />
+    <Compile Include="Controllers\MarketingBudgetsController.cs" />
     <Compile Include="Service References\PCAFind_v1_10\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1010,476 +1014,612 @@
     <Content Include="Content\tempus-dominus\tempus-dominus.min.css.map">
       <DependentUpon>tempus-dominus.min.css</DependentUpon>
     </Content>
-    <Content Include="css\dist\lib\bootstrap-3.3.7\bootstrap-3.3.7.css" />
-    <Content Include="css\dist\lib\bootstrap-3.3.7\bootstrap-3.3.7.css.map">
+    <Content Include="css\dist-dead\lib\bootstrap-3.3.7\bootstrap-3.3.7.css" />
+    <Content Include="css\dist-dead\lib\bootstrap-3.3.7\bootstrap-3.3.7.css.map">
       <DependentUpon>bootstrap-3.3.7.css</DependentUpon>
     </Content>
-    <Content Include="css\dist\lib\bootstrap-3.3.7\bootstrap-3.3.7.min.css">
+    <Content Include="css\dist-dead\lib\bootstrap-3.3.7\bootstrap-3.3.7.min.css">
       <DependentUpon>bootstrap-3.3.7.css</DependentUpon>
     </Content>
-    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-5.3.1.css" />
-    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-5.3.1.css.map">
+    <Content Include="css\dist-dead\lib\bootstrap-5.3.1\scss\bootstrap-5.3.1.css" />
+    <Content Include="css\dist-dead\lib\bootstrap-5.3.1\scss\bootstrap-5.3.1.css.map">
       <DependentUpon>bootstrap-5.3.1.css</DependentUpon>
     </Content>
-    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-5.3.1.min.css">
+    <Content Include="css\dist-dead\lib\bootstrap-5.3.1\scss\bootstrap-5.3.1.min.css">
       <DependentUpon>bootstrap-5.3.1.css</DependentUpon>
     </Content>
-    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-grid.css" />
-    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-grid.css.map">
+    <Content Include="css\dist-dead\lib\bootstrap-5.3.1\scss\bootstrap-grid.css" />
+    <Content Include="css\dist-dead\lib\bootstrap-5.3.1\scss\bootstrap-grid.css.map">
       <DependentUpon>bootstrap-grid.css</DependentUpon>
     </Content>
-    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-grid.min.css">
+    <Content Include="css\dist-dead\lib\bootstrap-5.3.1\scss\bootstrap-grid.min.css">
       <DependentUpon>bootstrap-grid.css</DependentUpon>
     </Content>
-    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-reboot.css" />
-    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-reboot.css.map">
+    <Content Include="css\dist-dead\lib\bootstrap-5.3.1\scss\bootstrap-reboot.css" />
+    <Content Include="css\dist-dead\lib\bootstrap-5.3.1\scss\bootstrap-reboot.css.map">
       <DependentUpon>bootstrap-reboot.css</DependentUpon>
     </Content>
-    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-reboot.min.css">
+    <Content Include="css\dist-dead\lib\bootstrap-5.3.1\scss\bootstrap-reboot.min.css">
       <DependentUpon>bootstrap-reboot.css</DependentUpon>
     </Content>
-    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-utilities.css" />
-    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-utilities.css.map">
+    <Content Include="css\dist-dead\lib\bootstrap-5.3.1\scss\bootstrap-utilities.css" />
+    <Content Include="css\dist-dead\lib\bootstrap-5.3.1\scss\bootstrap-utilities.css.map">
       <DependentUpon>bootstrap-utilities.css</DependentUpon>
     </Content>
-    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-utilities.min.css">
+    <Content Include="css\dist-dead\lib\bootstrap-5.3.1\scss\bootstrap-utilities.min.css">
       <DependentUpon>bootstrap-utilities.css</DependentUpon>
     </Content>
-    <Content Include="css\dist\lib\bootstrap-icons\bootstrap-icons.css" />
-    <Content Include="css\dist\lib\bootstrap-icons\bootstrap-icons.css.map">
+    <Content Include="css\dist-dead\lib\bootstrap-icons\bootstrap-icons.css" />
+    <Content Include="css\dist-dead\lib\bootstrap-icons\bootstrap-icons.css.map">
       <DependentUpon>bootstrap-icons.css</DependentUpon>
     </Content>
-    <Content Include="css\dist\lib\bootstrap-icons\bootstrap-icons.min.css">
+    <Content Include="css\dist-dead\lib\bootstrap-icons\bootstrap-icons.min.css">
       <DependentUpon>bootstrap-icons.css</DependentUpon>
     </Content>
-    <Content Include="css\dist\lib\bootstrap-switch\bootstrap-switch.css" />
-    <Content Include="css\dist\lib\bootstrap-switch\bootstrap-switch.css.map">
+    <Content Include="css\dist-dead\lib\bootstrap-switch\bootstrap-switch.css" />
+    <Content Include="css\dist-dead\lib\bootstrap-switch\bootstrap-switch.css.map">
       <DependentUpon>bootstrap-switch.css</DependentUpon>
     </Content>
-    <Content Include="css\dist\lib\bootstrap-switch\bootstrap-switch.min.css">
+    <Content Include="css\dist-dead\lib\bootstrap-switch\bootstrap-switch.min.css">
       <DependentUpon>bootstrap-switch.css</DependentUpon>
     </Content>
-    <Content Include="css\dist\lib\codemirror\codemirror.css" />
-    <Content Include="css\dist\lib\codemirror\codemirror.css.map">
+    <Content Include="css\dist-dead\lib\codemirror\codemirror.css" />
+    <Content Include="css\dist-dead\lib\codemirror\codemirror.css.map">
       <DependentUpon>codemirror.css</DependentUpon>
     </Content>
-    <Content Include="css\dist\lib\codemirror\codemirror.min.css">
+    <Content Include="css\dist-dead\lib\codemirror\codemirror.min.css">
       <DependentUpon>codemirror.css</DependentUpon>
     </Content>
-    <Content Include="css\dist\lib\intl-tel-input\intl-tel-input.css" />
-    <Content Include="css\dist\lib\intl-tel-input\intl-tel-input.css.map">
+    <Content Include="css\dist-dead\lib\intl-tel-input\intl-tel-input.css" />
+    <Content Include="css\dist-dead\lib\intl-tel-input\intl-tel-input.css.map">
       <DependentUpon>intl-tel-input.css</DependentUpon>
     </Content>
-    <Content Include="css\dist\lib\intl-tel-input\intl-tel-input.min.css">
+    <Content Include="css\dist-dead\lib\intl-tel-input\intl-tel-input.min.css">
       <DependentUpon>intl-tel-input.css</DependentUpon>
     </Content>
-    <Content Include="css\dist\lib\jquery-ui\jquery-ui.css" />
-    <Content Include="css\dist\lib\jquery-ui\jquery-ui.css.map">
+    <Content Include="css\dist-dead\lib\jquery-ui\jquery-ui.css" />
+    <Content Include="css\dist-dead\lib\jquery-ui\jquery-ui.css.map">
       <DependentUpon>jquery-ui.css</DependentUpon>
     </Content>
-    <Content Include="css\dist\lib\jquery-ui\jquery-ui.min.css">
+    <Content Include="css\dist-dead\lib\jquery-ui\jquery-ui.min.css">
       <DependentUpon>jquery-ui.css</DependentUpon>
     </Content>
-    <Content Include="css\dist\lib\kendo\custom\kendo-custom.css" />
-    <Content Include="css\dist\lib\kendo\custom\kendo-custom.min.css">
+    <Content Include="css\dist-dead\lib\kendo\custom\kendo-custom.css" />
+    <Content Include="css\dist-dead\lib\kendo\custom\kendo-custom.min.css">
       <DependentUpon>kendo-custom.css</DependentUpon>
     </Content>
+    <Content Include="css\dist-dead\lib\mdc\mdc-custom.css" />
+    <Content Include="css\dist-dead\lib\mdc\mdc-custom.min.css" />
+    <Content Include="css\dist-dead\lib\owl-carousel\owl.carousel.css" />
+    <Content Include="css\dist-dead\lib\owl-carousel\owl.carousel.css.map">
+      <DependentUpon>owl.carousel.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\lib\owl-carousel\owl.carousel.min.css">
+      <DependentUpon>owl.carousel.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\lib\owl-carousel\owl.theme.default.css" />
+    <Content Include="css\dist-dead\lib\owl-carousel\owl.theme.default.css.map">
+      <DependentUpon>owl.theme.default.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\lib\owl-carousel\owl.theme.default.min.css">
+      <DependentUpon>owl.theme.default.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\lib\tempus-dominus\tempus-dominus.css" />
+    <Content Include="css\dist-dead\lib\tempus-dominus\tempus-dominus.css.map">
+      <DependentUpon>tempus-dominus.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\lib\tempus-dominus\tempus-dominus.min.css">
+      <DependentUpon>tempus-dominus.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\lib\tiny-slider\tiny-slider.css" />
+    <Content Include="css\dist-dead\lib\tiny-slider\tiny-slider.css.map">
+      <DependentUpon>tiny-slider.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\lib\tiny-slider\tiny-slider.min.css">
+      <DependentUpon>tiny-slider.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\alternative-products.css" />
+    <Content Include="css\dist-dead\models\alternative-products.css.map">
+      <DependentUpon>alternative-products.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\alternative-products.min.css">
+      <DependentUpon>alternative-products.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\application-groups.css" />
+    <Content Include="css\dist-dead\models\application-groups.css.map">
+      <DependentUpon>application-groups.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\application-groups.min.css">
+      <DependentUpon>application-groups.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\basket-status.css" />
+    <Content Include="css\dist-dead\models\basket-status.css.map">
+      <DependentUpon>basket-status.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\basket-status.min.css">
+      <DependentUpon>basket-status.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\business-potential.css" />
+    <Content Include="css\dist-dead\models\business-potential.css.map">
+      <DependentUpon>business-potential.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\business-potential.min.css">
+      <DependentUpon>business-potential.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\care-search.css" />
+    <Content Include="css\dist-dead\models\care-search.css.map">
+      <DependentUpon>care-search.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\care-search.min.css">
+      <DependentUpon>care-search.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\common.css" />
+    <Content Include="css\dist-dead\models\common.css.map">
+      <DependentUpon>common.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\common.min.css">
+      <DependentUpon>common.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\css-shake.css" />
+    <Content Include="css\dist-dead\models\css-shake.css.map">
+      <DependentUpon>css-shake.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\css-shake.min.css">
+      <DependentUpon>css-shake.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\customer-care.css" />
+    <Content Include="css\dist-dead\models\customer-care.css.map">
+      <DependentUpon>customer-care.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\customer-care.min.css">
+      <DependentUpon>customer-care.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\customer-enquiry.css" />
+    <Content Include="css\dist-dead\models\customer-enquiry.css.map">
+      <DependentUpon>customer-enquiry.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\customer-enquiry.min.css">
+      <DependentUpon>customer-enquiry.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\customer-invite.css" />
+    <Content Include="css\dist-dead\models\customer-invite.css.map">
+      <DependentUpon>customer-invite.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\customer-invite.min.css">
+      <DependentUpon>customer-invite.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\customer-maintenance.css" />
+    <Content Include="css\dist-dead\models\customer-maintenance.css.map">
+      <DependentUpon>customer-maintenance.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\customer-maintenance.min.css">
+      <DependentUpon>customer-maintenance.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\customer-ordering-notes.css" />
+    <Content Include="css\dist-dead\models\customer-ordering-notes.css.map">
+      <DependentUpon>customer-ordering-notes.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\customer-ordering-notes.min.css">
+      <DependentUpon>customer-ordering-notes.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\customer-tagging.css" />
+    <Content Include="css\dist-dead\models\customer-tagging.css.map">
+      <DependentUpon>customer-tagging.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\customer-tagging.min.css">
+      <DependentUpon>customer-tagging.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\customer-visit.css" />
+    <Content Include="css\dist-dead\models\customer-visit.css.map">
+      <DependentUpon>customer-visit.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\customer-visit.min.css">
+      <DependentUpon>customer-visit.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\documents-preview.css" />
+    <Content Include="css\dist-dead\models\documents-preview.css.map">
+      <DependentUpon>documents-preview.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\documents-preview.min.css">
+      <DependentUpon>documents-preview.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\download-products.css" />
+    <Content Include="css\dist-dead\models\download-products.css.map">
+      <DependentUpon>download-products.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\download-products.min.css">
+      <DependentUpon>download-products.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\furniture-maintenance.css" />
+    <Content Include="css\dist-dead\models\furniture-maintenance.css.map">
+      <DependentUpon>furniture-maintenance.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\furniture-maintenance.min.css">
+      <DependentUpon>furniture-maintenance.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\gdpr-survey.css" />
+    <Content Include="css\dist-dead\models\gdpr-survey.css.map">
+      <DependentUpon>gdpr-survey.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\gdpr-survey.min.css">
+      <DependentUpon>gdpr-survey.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\invoice-approval-paint.css" />
+    <Content Include="css\dist-dead\models\invoice-approval-paint.css.map">
+      <DependentUpon>invoice-approval-paint.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\invoice-approval-paint.min.css">
+      <DependentUpon>invoice-approval-paint.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\invoice-approval-shared.css" />
+    <Content Include="css\dist-dead\models\invoice-approval-shared.css.map">
+      <DependentUpon>invoice-approval-shared.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\invoice-approval-shared.min.css">
+      <DependentUpon>invoice-approval-shared.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\lead-enquiry.css" />
+    <Content Include="css\dist-dead\models\lead-enquiry.css.map">
+      <DependentUpon>lead-enquiry.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\lead-enquiry.min.css">
+      <DependentUpon>lead-enquiry.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\lead-search.css" />
+    <Content Include="css\dist-dead\models\lead-search.css.map">
+      <DependentUpon>lead-search.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\lead-search.min.css">
+      <DependentUpon>lead-search.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\marketing-messages.css" />
+    <Content Include="css\dist-dead\models\marketing-messages.css.map">
+      <DependentUpon>marketing-messages.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\marketing-messages.min.css">
+      <DependentUpon>marketing-messages.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\member-search.css" />
+    <Content Include="css\dist-dead\models\member-search.css.map">
+      <DependentUpon>member-search.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\member-search.min.css">
+      <DependentUpon>member-search.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\order-import.css" />
+    <Content Include="css\dist-dead\models\order-import.css.map">
+      <DependentUpon>order-import.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\order-import.min.css">
+      <DependentUpon>order-import.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\order-products.css" />
+    <Content Include="css\dist-dead\models\order-products.css.map">
+      <DependentUpon>order-products.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\order-products.min.css">
+      <DependentUpon>order-products.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\order-returns.css" />
+    <Content Include="css\dist-dead\models\order-returns.css.map">
+      <DependentUpon>order-returns.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\order-returns.min.css">
+      <DependentUpon>order-returns.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\order-search.css" />
+    <Content Include="css\dist-dead\models\order-search.css.map">
+      <DependentUpon>order-search.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\order-search.min.css">
+      <DependentUpon>order-search.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\order-tracking.css" />
+    <Content Include="css\dist-dead\models\order-tracking.css.map">
+      <DependentUpon>order-tracking.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\order-tracking.min.css">
+      <DependentUpon>order-tracking.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\price-checker.css" />
+    <Content Include="css\dist-dead\models\price-checker.css.map">
+      <DependentUpon>price-checker.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\price-checker.min.css">
+      <DependentUpon>price-checker.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\pricing-enquiry.css" />
+    <Content Include="css\dist-dead\models\pricing-enquiry.css.map">
+      <DependentUpon>pricing-enquiry.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\pricing-enquiry.min.css">
+      <DependentUpon>pricing-enquiry.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\product-categories.css" />
+    <Content Include="css\dist-dead\models\product-categories.css.map">
+      <DependentUpon>product-categories.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\product-categories.min.css">
+      <DependentUpon>product-categories.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\product-delivery.css" />
+    <Content Include="css\dist-dead\models\product-delivery.css.map">
+      <DependentUpon>product-delivery.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\product-delivery.min.css">
+      <DependentUpon>product-delivery.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\product-maintenance-products.css" />
+    <Content Include="css\dist-dead\models\product-maintenance-products.css.map">
+      <DependentUpon>product-maintenance-products.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\product-maintenance-products.min.css">
+      <DependentUpon>product-maintenance-products.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\product-maintenance-treatments.css" />
+    <Content Include="css\dist-dead\models\product-maintenance-treatments.css.map">
+      <DependentUpon>product-maintenance-treatments.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\product-maintenance-treatments.min.css">
+      <DependentUpon>product-maintenance-treatments.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\product-maintenance.css" />
+    <Content Include="css\dist-dead\models\product-maintenance.css.map">
+      <DependentUpon>product-maintenance.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\product-maintenance.min.css">
+      <DependentUpon>product-maintenance.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\product-type-maintenance.css" />
+    <Content Include="css\dist-dead\models\product-type-maintenance.css.map">
+      <DependentUpon>product-type-maintenance.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\product-type-maintenance.min.css">
+      <DependentUpon>product-type-maintenance.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\projects-dashboard.css" />
+    <Content Include="css\dist-dead\models\projects-dashboard.css.map">
+      <DependentUpon>projects-dashboard.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\projects-dashboard.min.css">
+      <DependentUpon>projects-dashboard.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\recently-used-members.css" />
+    <Content Include="css\dist-dead\models\recently-used-members.css.map">
+      <DependentUpon>recently-used-members.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\recently-used-members.min.css">
+      <DependentUpon>recently-used-members.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\ring-fenced-stock.css" />
+    <Content Include="css\dist-dead\models\ring-fenced-stock.css.map">
+      <DependentUpon>ring-fenced-stock.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\ring-fenced-stock.min.css">
+      <DependentUpon>ring-fenced-stock.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\sales-statistics.css" />
+    <Content Include="css\dist-dead\models\sales-statistics.css.map">
+      <DependentUpon>sales-statistics.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\sales-statistics.min.css">
+      <DependentUpon>sales-statistics.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\sample-request-dg.css" />
+    <Content Include="css\dist-dead\models\sample-request-dg.css.map">
+      <DependentUpon>sample-request-dg.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\sample-request-dg.min.css">
+      <DependentUpon>sample-request-dg.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\sample-request.css" />
+    <Content Include="css\dist-dead\models\sample-request.css.map">
+      <DependentUpon>sample-request.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\sample-request.min.css">
+      <DependentUpon>sample-request.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\site-new.css" />
+    <Content Include="css\dist-dead\models\site-new.css.map">
+      <DependentUpon>site-new.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\site-new.min.css">
+      <DependentUpon>site-new.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\site.css" />
+    <Content Include="css\dist-dead\models\site.css.map">
+      <DependentUpon>site.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\site.min.css">
+      <DependentUpon>site.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\slicer-components.css" />
+    <Content Include="css\dist-dead\models\slicer-components.css.map">
+      <DependentUpon>slicer-components.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\slicer-components.min.css">
+      <DependentUpon>slicer-components.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\stock-viewer.css" />
+    <Content Include="css\dist-dead\models\stock-viewer.css.map">
+      <DependentUpon>stock-viewer.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\stock-viewer.min.css">
+      <DependentUpon>stock-viewer.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\task-search.css" />
+    <Content Include="css\dist-dead\models\task-search.css.map">
+      <DependentUpon>task-search.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\task-search.min.css">
+      <DependentUpon>task-search.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\tasks-dashboard.css" />
+    <Content Include="css\dist-dead\models\tasks-dashboard.css.map">
+      <DependentUpon>tasks-dashboard.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\tasks-dashboard.min.css">
+      <DependentUpon>tasks-dashboard.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\translations.css" />
+    <Content Include="css\dist-dead\models\translations.css.map">
+      <DependentUpon>translations.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\translations.min.css">
+      <DependentUpon>translations.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\visit-booker.css" />
+    <Content Include="css\dist-dead\models\visit-booker.css.map">
+      <DependentUpon>visit-booker.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\visit-booker.min.css">
+      <DependentUpon>visit-booker.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\models\visit-search.css" />
+    <Content Include="css\dist-dead\models\visit-search.css.map">
+      <DependentUpon>visit-search.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist-dead\lib\owl-carousel\ajax-loader.gif" />
+    <Content Include="css\dist-dead\lib\owl-carousel\owl.video.play.png" />
+    <Content Include="css\dist-dead\models\visit-search.min.css">
+      <DependentUpon>visit-search.css</DependentUpon>
+    </Content>
+    <Content Include="css\dist\lib\bootstrap-3.3.7\bootstrap-3.3.7.css" />
+    <Content Include="css\dist\lib\bootstrap-3.3.7\bootstrap-3.3.7.min.css" />
+    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-5.3.1.css" />
+    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-5.3.1.min.css" />
+    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-grid.css" />
+    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-grid.min.css" />
+    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-reboot.css" />
+    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-reboot.min.css" />
+    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-utilities.css" />
+    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-utilities.min.css" />
+    <Content Include="css\dist\lib\bootstrap-icons\bootstrap-icons.css" />
+    <Content Include="css\dist\lib\bootstrap-icons\bootstrap-icons.min.css" />
+    <Content Include="css\dist\lib\bootstrap-switch\bootstrap-switch.css" />
+    <Content Include="css\dist\lib\bootstrap-switch\bootstrap-switch.min.css" />
+    <Content Include="css\dist\lib\codemirror\codemirror.css" />
+    <Content Include="css\dist\lib\codemirror\codemirror.min.css" />
+    <Content Include="css\dist\lib\intl-tel-input\intl-tel-input.css" />
+    <Content Include="css\dist\lib\intl-tel-input\intl-tel-input.min.css" />
+    <Content Include="css\dist\lib\jquery-ui\jquery-ui.css" />
+    <Content Include="css\dist\lib\jquery-ui\jquery-ui.min.css" />
     <Content Include="css\dist\lib\mdc\mdc-custom.css" />
     <Content Include="css\dist\lib\mdc\mdc-custom.min.css" />
     <Content Include="css\dist\lib\owl-carousel\owl.carousel.css" />
-    <Content Include="css\dist\lib\owl-carousel\owl.carousel.css.map">
-      <DependentUpon>owl.carousel.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\lib\owl-carousel\owl.carousel.min.css">
-      <DependentUpon>owl.carousel.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\lib\owl-carousel\owl.carousel.min.css" />
     <Content Include="css\dist\lib\owl-carousel\owl.theme.default.css" />
-    <Content Include="css\dist\lib\owl-carousel\owl.theme.default.css.map">
-      <DependentUpon>owl.theme.default.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\lib\owl-carousel\owl.theme.default.min.css">
-      <DependentUpon>owl.theme.default.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\lib\owl-carousel\owl.theme.default.min.css" />
     <Content Include="css\dist\lib\tempus-dominus\tempus-dominus.css" />
-    <Content Include="css\dist\lib\tempus-dominus\tempus-dominus.css.map">
-      <DependentUpon>tempus-dominus.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\lib\tempus-dominus\tempus-dominus.min.css">
-      <DependentUpon>tempus-dominus.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\lib\tempus-dominus\tempus-dominus.min.css" />
     <Content Include="css\dist\lib\tiny-slider\tiny-slider.css" />
-    <Content Include="css\dist\lib\tiny-slider\tiny-slider.css.map">
-      <DependentUpon>tiny-slider.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\lib\tiny-slider\tiny-slider.min.css">
-      <DependentUpon>tiny-slider.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\lib\tiny-slider\tiny-slider.min.css" />
     <Content Include="css\dist\models\alternative-products.css" />
-    <Content Include="css\dist\models\alternative-products.css.map">
-      <DependentUpon>alternative-products.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\alternative-products.min.css">
-      <DependentUpon>alternative-products.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\alternative-products.min.css" />
     <Content Include="css\dist\models\application-groups.css" />
-    <Content Include="css\dist\models\application-groups.css.map">
-      <DependentUpon>application-groups.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\application-groups.min.css">
-      <DependentUpon>application-groups.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\application-groups.min.css" />
     <Content Include="css\dist\models\basket-status.css" />
-    <Content Include="css\dist\models\basket-status.css.map">
-      <DependentUpon>basket-status.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\basket-status.min.css">
-      <DependentUpon>basket-status.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\basket-status.min.css" />
     <Content Include="css\dist\models\business-potential.css" />
-    <Content Include="css\dist\models\business-potential.css.map">
-      <DependentUpon>business-potential.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\business-potential.min.css">
-      <DependentUpon>business-potential.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\business-potential.min.css" />
     <Content Include="css\dist\models\care-search.css" />
-    <Content Include="css\dist\models\care-search.css.map">
-      <DependentUpon>care-search.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\care-search.min.css">
-      <DependentUpon>care-search.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\care-search.min.css" />
     <Content Include="css\dist\models\common.css" />
-    <Content Include="css\dist\models\common.css.map">
-      <DependentUpon>common.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\common.min.css">
-      <DependentUpon>common.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\common.min.css" />
     <Content Include="css\dist\models\css-shake.css" />
-    <Content Include="css\dist\models\css-shake.css.map">
-      <DependentUpon>css-shake.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\css-shake.min.css">
-      <DependentUpon>css-shake.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\css-shake.min.css" />
     <Content Include="css\dist\models\customer-care.css" />
-    <Content Include="css\dist\models\customer-care.css.map">
-      <DependentUpon>customer-care.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\customer-care.min.css">
-      <DependentUpon>customer-care.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\customer-care.min.css" />
     <Content Include="css\dist\models\customer-enquiry.css" />
-    <Content Include="css\dist\models\customer-enquiry.css.map">
-      <DependentUpon>customer-enquiry.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\customer-enquiry.min.css">
-      <DependentUpon>customer-enquiry.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\customer-enquiry.min.css" />
     <Content Include="css\dist\models\customer-invite.css" />
-    <Content Include="css\dist\models\customer-invite.css.map">
-      <DependentUpon>customer-invite.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\customer-invite.min.css">
-      <DependentUpon>customer-invite.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\customer-invite.min.css" />
     <Content Include="css\dist\models\customer-maintenance.css" />
-    <Content Include="css\dist\models\customer-maintenance.css.map">
-      <DependentUpon>customer-maintenance.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\customer-maintenance.min.css">
-      <DependentUpon>customer-maintenance.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\customer-maintenance.min.css" />
     <Content Include="css\dist\models\customer-ordering-notes.css" />
-    <Content Include="css\dist\models\customer-ordering-notes.css.map">
-      <DependentUpon>customer-ordering-notes.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\customer-ordering-notes.min.css">
-      <DependentUpon>customer-ordering-notes.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\customer-ordering-notes.min.css" />
     <Content Include="css\dist\models\customer-tagging.css" />
-    <Content Include="css\dist\models\customer-tagging.css.map">
-      <DependentUpon>customer-tagging.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\customer-tagging.min.css">
-      <DependentUpon>customer-tagging.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\customer-tagging.min.css" />
     <Content Include="css\dist\models\customer-visit.css" />
-    <Content Include="css\dist\models\customer-visit.css.map">
-      <DependentUpon>customer-visit.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\customer-visit.min.css">
-      <DependentUpon>customer-visit.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\customer-visit.min.css" />
     <Content Include="css\dist\models\documents-preview.css" />
-    <Content Include="css\dist\models\documents-preview.css.map">
-      <DependentUpon>documents-preview.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\documents-preview.min.css">
-      <DependentUpon>documents-preview.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\documents-preview.min.css" />
     <Content Include="css\dist\models\download-products.css" />
-    <Content Include="css\dist\models\download-products.css.map">
-      <DependentUpon>download-products.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\download-products.min.css">
-      <DependentUpon>download-products.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\download-products.min.css" />
     <Content Include="css\dist\models\furniture-maintenance.css" />
-    <Content Include="css\dist\models\furniture-maintenance.css.map">
-      <DependentUpon>furniture-maintenance.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\furniture-maintenance.min.css">
-      <DependentUpon>furniture-maintenance.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\furniture-maintenance.min.css" />
     <Content Include="css\dist\models\gdpr-survey.css" />
-    <Content Include="css\dist\models\gdpr-survey.css.map">
-      <DependentUpon>gdpr-survey.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\gdpr-survey.min.css">
-      <DependentUpon>gdpr-survey.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\gdpr-survey.min.css" />
     <Content Include="css\dist\models\invoice-approval-paint.css" />
-    <Content Include="css\dist\models\invoice-approval-paint.css.map">
-      <DependentUpon>invoice-approval-paint.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\invoice-approval-paint.min.css">
-      <DependentUpon>invoice-approval-paint.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\invoice-approval-paint.min.css" />
     <Content Include="css\dist\models\invoice-approval-shared.css" />
-    <Content Include="css\dist\models\invoice-approval-shared.css.map">
-      <DependentUpon>invoice-approval-shared.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\invoice-approval-shared.min.css">
-      <DependentUpon>invoice-approval-shared.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\invoice-approval-shared.min.css" />
     <Content Include="css\dist\models\lead-enquiry.css" />
-    <Content Include="css\dist\models\lead-enquiry.css.map">
-      <DependentUpon>lead-enquiry.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\lead-enquiry.min.css">
-      <DependentUpon>lead-enquiry.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\lead-enquiry.min.css" />
     <Content Include="css\dist\models\lead-search.css" />
-    <Content Include="css\dist\models\lead-search.css.map">
-      <DependentUpon>lead-search.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\lead-search.min.css">
-      <DependentUpon>lead-search.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\lead-search.min.css" />
+    <Content Include="css\dist\models\marketing-budget.css" />
+    <Content Include="css\dist\models\marketing-budget.min.css" />
     <Content Include="css\dist\models\marketing-messages.css" />
-    <Content Include="css\dist\models\marketing-messages.css.map">
-      <DependentUpon>marketing-messages.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\marketing-messages.min.css">
-      <DependentUpon>marketing-messages.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\marketing-messages.min.css" />
     <Content Include="css\dist\models\member-search.css" />
-    <Content Include="css\dist\models\member-search.css.map">
-      <DependentUpon>member-search.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\member-search.min.css">
-      <DependentUpon>member-search.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\member-search.min.css" />
     <Content Include="css\dist\models\order-import.css" />
-    <Content Include="css\dist\models\order-import.css.map">
-      <DependentUpon>order-import.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\order-import.min.css">
-      <DependentUpon>order-import.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\order-import.min.css" />
     <Content Include="css\dist\models\order-products.css" />
-    <Content Include="css\dist\models\order-products.css.map">
-      <DependentUpon>order-products.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\order-products.min.css">
-      <DependentUpon>order-products.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\order-products.min.css" />
     <Content Include="css\dist\models\order-returns.css" />
-    <Content Include="css\dist\models\order-returns.css.map">
-      <DependentUpon>order-returns.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\order-returns.min.css">
-      <DependentUpon>order-returns.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\order-returns.min.css" />
     <Content Include="css\dist\models\order-search.css" />
-    <Content Include="css\dist\models\order-search.css.map">
-      <DependentUpon>order-search.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\order-search.min.css">
-      <DependentUpon>order-search.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\order-search.min.css" />
     <Content Include="css\dist\models\order-tracking.css" />
-    <Content Include="css\dist\models\order-tracking.css.map">
-      <DependentUpon>order-tracking.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\order-tracking.min.css">
-      <DependentUpon>order-tracking.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\order-tracking.min.css" />
     <Content Include="css\dist\models\price-checker.css" />
-    <Content Include="css\dist\models\price-checker.css.map">
-      <DependentUpon>price-checker.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\price-checker.min.css">
-      <DependentUpon>price-checker.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\price-checker.min.css" />
     <Content Include="css\dist\models\pricing-enquiry.css" />
-    <Content Include="css\dist\models\pricing-enquiry.css.map">
-      <DependentUpon>pricing-enquiry.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\pricing-enquiry.min.css">
-      <DependentUpon>pricing-enquiry.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\pricing-enquiry.min.css" />
     <Content Include="css\dist\models\product-categories.css" />
-    <Content Include="css\dist\models\product-categories.css.map">
-      <DependentUpon>product-categories.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\product-categories.min.css">
-      <DependentUpon>product-categories.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\product-categories.min.css" />
     <Content Include="css\dist\models\product-delivery.css" />
-    <Content Include="css\dist\models\product-delivery.css.map">
-      <DependentUpon>product-delivery.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\product-delivery.min.css">
-      <DependentUpon>product-delivery.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\product-delivery.min.css" />
     <Content Include="css\dist\models\product-maintenance-products.css" />
-    <Content Include="css\dist\models\product-maintenance-products.css.map">
-      <DependentUpon>product-maintenance-products.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\product-maintenance-products.min.css">
-      <DependentUpon>product-maintenance-products.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\product-maintenance-products.min.css" />
     <Content Include="css\dist\models\product-maintenance-treatments.css" />
-    <Content Include="css\dist\models\product-maintenance-treatments.css.map">
-      <DependentUpon>product-maintenance-treatments.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\product-maintenance-treatments.min.css">
-      <DependentUpon>product-maintenance-treatments.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\product-maintenance-treatments.min.css" />
     <Content Include="css\dist\models\product-maintenance.css" />
-    <Content Include="css\dist\models\product-maintenance.css.map">
-      <DependentUpon>product-maintenance.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\product-maintenance.min.css">
-      <DependentUpon>product-maintenance.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\product-maintenance.min.css" />
     <Content Include="css\dist\models\product-type-maintenance.css" />
-    <Content Include="css\dist\models\product-type-maintenance.css.map">
-      <DependentUpon>product-type-maintenance.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\product-type-maintenance.min.css">
-      <DependentUpon>product-type-maintenance.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\product-type-maintenance.min.css" />
     <Content Include="css\dist\models\projects-dashboard.css" />
-    <Content Include="css\dist\models\projects-dashboard.css.map">
-      <DependentUpon>projects-dashboard.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\projects-dashboard.min.css">
-      <DependentUpon>projects-dashboard.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\projects-dashboard.min.css" />
     <Content Include="css\dist\models\recently-used-members.css" />
-    <Content Include="css\dist\models\recently-used-members.css.map">
-      <DependentUpon>recently-used-members.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\recently-used-members.min.css">
-      <DependentUpon>recently-used-members.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\recently-used-members.min.css" />
     <Content Include="css\dist\models\ring-fenced-stock.css" />
-    <Content Include="css\dist\models\ring-fenced-stock.css.map">
-      <DependentUpon>ring-fenced-stock.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\ring-fenced-stock.min.css">
-      <DependentUpon>ring-fenced-stock.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\ring-fenced-stock.min.css" />
     <Content Include="css\dist\models\sales-statistics.css" />
-    <Content Include="css\dist\models\sales-statistics.css.map">
-      <DependentUpon>sales-statistics.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\sales-statistics.min.css">
-      <DependentUpon>sales-statistics.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\sales-statistics.min.css" />
     <Content Include="css\dist\models\sample-request-dg.css" />
-    <Content Include="css\dist\models\sample-request-dg.css.map">
-      <DependentUpon>sample-request-dg.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\sample-request-dg.min.css">
-      <DependentUpon>sample-request-dg.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\sample-request-dg.min.css" />
     <Content Include="css\dist\models\sample-request.css" />
-    <Content Include="css\dist\models\sample-request.css.map">
-      <DependentUpon>sample-request.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\sample-request.min.css">
-      <DependentUpon>sample-request.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\sample-request.min.css" />
     <Content Include="css\dist\models\site-new.css" />
-    <Content Include="css\dist\models\site-new.css.map">
-      <DependentUpon>site-new.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\site-new.min.css">
-      <DependentUpon>site-new.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\site-new.min.css" />
     <Content Include="css\dist\models\site.css" />
-    <Content Include="css\dist\models\site.css.map">
-      <DependentUpon>site.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\site.min.css">
-      <DependentUpon>site.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\site.min.css" />
     <Content Include="css\dist\models\slicer-components.css" />
-    <Content Include="css\dist\models\slicer-components.css.map">
-      <DependentUpon>slicer-components.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\slicer-components.min.css">
-      <DependentUpon>slicer-components.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\slicer-components.min.css" />
     <Content Include="css\dist\models\stock-viewer.css" />
-    <Content Include="css\dist\models\stock-viewer.css.map">
-      <DependentUpon>stock-viewer.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\stock-viewer.min.css">
-      <DependentUpon>stock-viewer.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\stock-viewer.min.css" />
     <Content Include="css\dist\models\task-search.css" />
-    <Content Include="css\dist\models\task-search.css.map">
-      <DependentUpon>task-search.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\task-search.min.css">
-      <DependentUpon>task-search.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\task-search.min.css" />
     <Content Include="css\dist\models\tasks-dashboard.css" />
-    <Content Include="css\dist\models\tasks-dashboard.css.map">
-      <DependentUpon>tasks-dashboard.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\tasks-dashboard.min.css">
-      <DependentUpon>tasks-dashboard.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\tasks-dashboard.min.css" />
     <Content Include="css\dist\models\translations.css" />
-    <Content Include="css\dist\models\translations.css.map">
-      <DependentUpon>translations.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\translations.min.css">
-      <DependentUpon>translations.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\translations.min.css" />
     <Content Include="css\dist\models\visit-booker.css" />
-    <Content Include="css\dist\models\visit-booker.css.map">
-      <DependentUpon>visit-booker.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\models\visit-booker.min.css">
-      <DependentUpon>visit-booker.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\visit-booker.min.css" />
     <Content Include="css\dist\models\visit-search.css" />
-    <Content Include="css\dist\models\visit-search.css.map">
-      <DependentUpon>visit-search.css</DependentUpon>
-    </Content>
-    <Content Include="css\dist\lib\owl-carousel\ajax-loader.gif" />
-    <Content Include="css\dist\lib\owl-carousel\owl.video.play.png" />
-    <Content Include="css\dist\models\visit-search.min.css">
-      <DependentUpon>visit-search.css</DependentUpon>
-    </Content>
+    <Content Include="css\dist\models\visit-search.min.css" />
     <Content Include="css\src\lib\bootstrap-5.3.1\dist\css\bootstrap-grid.css" />
     <Content Include="css\src\lib\bootstrap-5.3.1\dist\css\bootstrap-grid.min.css" />
     <Content Include="css\src\lib\bootstrap-5.3.1\dist\css\bootstrap-grid.rtl.css" />
@@ -1557,9 +1697,146 @@
     <Content Include="css\src\lib\bootstrap-5.3.1\js\src\util\swipe.js" />
     <Content Include="css\src\lib\bootstrap-5.3.1\js\src\util\template-factory.js" />
     <Content Include="css\src\lib\bootstrap-5.3.1\scss\bootstrap-5.3.1.scss" />
-    <None Include="css\src\lib\mdc\mdc-custom.notworking" />
-    <Content Include="css\dist\lib\bootstrap-icons\fonts\bootstrap-icons.woff" />
-    <Content Include="css\dist\lib\bootstrap-icons\fonts\bootstrap-icons.woff2" />
+    <Content Include="Areas\Marketing\Views\MarketingBudget\MarketingBudget.cshtml" />
+    <Content Include="css\dist\lib\bootstrap-3.3.7\bootstrap-3.3.7.css.map" />
+    <Content Include="css\dist\lib\bootstrap-3.3.7\bootstrap-3.3.7.min.css.map" />
+    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-5.3.1.css.map" />
+    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-5.3.1.min.css.map" />
+    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-grid.css.map" />
+    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-grid.min.css.map" />
+    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-reboot.css.map" />
+    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-reboot.min.css.map" />
+    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-utilities.css.map" />
+    <Content Include="css\dist\lib\bootstrap-5.3.1\scss\bootstrap-utilities.min.css.map" />
+    <Content Include="css\dist\lib\bootstrap-icons\bootstrap-icons.css.map" />
+    <Content Include="css\dist\lib\bootstrap-icons\bootstrap-icons.min.css.map" />
+    <Content Include="css\dist\lib\bootstrap-switch\bootstrap-switch.css.map" />
+    <Content Include="css\dist\lib\bootstrap-switch\bootstrap-switch.min.css.map" />
+    <Content Include="css\dist\lib\codemirror\codemirror.css.map" />
+    <Content Include="css\dist\lib\codemirror\codemirror.min.css.map" />
+    <Content Include="css\dist\lib\intl-tel-input\intl-tel-input.css.map" />
+    <Content Include="css\dist\lib\intl-tel-input\intl-tel-input.min.css.map" />
+    <Content Include="css\dist\lib\jquery-ui\jquery-ui.css.map" />
+    <Content Include="css\dist\lib\jquery-ui\jquery-ui.min.css.map" />
+    <Content Include="css\dist\lib\mdc\mdc-custom.css.map" />
+    <Content Include="css\dist\lib\mdc\mdc-custom.min.css.map" />
+    <Content Include="css\dist\lib\owl-carousel\owl.carousel.css.map" />
+    <Content Include="css\dist\lib\owl-carousel\owl.carousel.min.css.map" />
+    <Content Include="css\dist\lib\owl-carousel\owl.theme.default.css.map" />
+    <Content Include="css\dist\lib\owl-carousel\owl.theme.default.min.css.map" />
+    <Content Include="css\dist\lib\tempus-dominus\tempus-dominus.css.map" />
+    <Content Include="css\dist\lib\tempus-dominus\tempus-dominus.min.css.map" />
+    <Content Include="css\dist\lib\tiny-slider\tiny-slider.css.map" />
+    <Content Include="css\dist\lib\tiny-slider\tiny-slider.min.css.map" />
+    <Content Include="css\dist\models\alternative-products.css.map" />
+    <Content Include="css\dist\models\alternative-products.min.css.map" />
+    <Content Include="css\dist\models\application-groups.css.map" />
+    <Content Include="css\dist\models\application-groups.min.css.map" />
+    <Content Include="css\dist\models\basket-status.css.map" />
+    <Content Include="css\dist\models\basket-status.min.css.map" />
+    <Content Include="css\dist\models\business-potential.css.map" />
+    <Content Include="css\dist\models\business-potential.min.css.map" />
+    <Content Include="css\dist\models\care-search.css.map" />
+    <Content Include="css\dist\models\care-search.min.css.map" />
+    <Content Include="css\dist\models\common.css.map" />
+    <Content Include="css\dist\models\common.min.css.map" />
+    <Content Include="css\dist\models\css-shake.css.map" />
+    <Content Include="css\dist\models\css-shake.min.css.map" />
+    <Content Include="css\dist\models\customer-care.css.map" />
+    <Content Include="css\dist\models\customer-care.min.css.map" />
+    <Content Include="css\dist\models\customer-enquiry.css.map" />
+    <Content Include="css\dist\models\customer-enquiry.min.css.map" />
+    <Content Include="css\dist\models\customer-invite.css.map" />
+    <Content Include="css\dist\models\customer-invite.min.css.map" />
+    <Content Include="css\dist\models\customer-maintenance.css.map" />
+    <Content Include="css\dist\models\customer-maintenance.min.css.map" />
+    <Content Include="css\dist\models\customer-ordering-notes.css.map" />
+    <Content Include="css\dist\models\customer-ordering-notes.min.css.map" />
+    <Content Include="css\dist\models\customer-tagging.css.map" />
+    <Content Include="css\dist\models\customer-tagging.min.css.map" />
+    <Content Include="css\dist\models\customer-visit.css.map" />
+    <Content Include="css\dist\models\customer-visit.min.css.map" />
+    <Content Include="css\dist\models\documents-preview.css.map" />
+    <Content Include="css\dist\models\documents-preview.min.css.map" />
+    <Content Include="css\dist\models\download-products.css.map" />
+    <Content Include="css\dist\models\download-products.min.css.map" />
+    <Content Include="css\dist\models\furniture-maintenance.css.map" />
+    <Content Include="css\dist\models\furniture-maintenance.min.css.map" />
+    <Content Include="css\dist\models\gdpr-survey.css.map" />
+    <Content Include="css\dist\models\gdpr-survey.min.css.map" />
+    <Content Include="css\dist\models\invoice-approval-paint.css.map" />
+    <Content Include="css\dist\models\invoice-approval-paint.min.css.map" />
+    <Content Include="css\dist\models\invoice-approval-shared.css.map" />
+    <Content Include="css\dist\models\invoice-approval-shared.min.css.map" />
+    <Content Include="css\dist\models\lead-enquiry.css.map" />
+    <Content Include="css\dist\models\lead-enquiry.min.css.map" />
+    <Content Include="css\dist\models\lead-search.css.map" />
+    <Content Include="css\dist\models\lead-search.min.css.map" />
+    <Content Include="css\dist\models\marketing-budget.css.map" />
+    <Content Include="css\dist\models\marketing-budget.min.css.map" />
+    <Content Include="css\dist\models\marketing-messages.css.map" />
+    <Content Include="css\dist\models\marketing-messages.min.css.map" />
+    <Content Include="css\dist\models\member-search.css.map" />
+    <Content Include="css\dist\models\member-search.min.css.map" />
+    <Content Include="css\dist\models\order-import.css.map" />
+    <Content Include="css\dist\models\order-import.min.css.map" />
+    <Content Include="css\dist\models\order-products.css.map" />
+    <Content Include="css\dist\models\order-products.min.css.map" />
+    <Content Include="css\dist\models\order-returns.css.map" />
+    <Content Include="css\dist\models\order-returns.min.css.map" />
+    <Content Include="css\dist\models\order-search.css.map" />
+    <Content Include="css\dist\models\order-search.min.css.map" />
+    <Content Include="css\dist\models\order-tracking.css.map" />
+    <Content Include="css\dist\models\order-tracking.min.css.map" />
+    <Content Include="css\dist\models\price-checker.css.map" />
+    <Content Include="css\dist\models\price-checker.min.css.map" />
+    <Content Include="css\dist\models\pricing-enquiry.css.map" />
+    <Content Include="css\dist\models\pricing-enquiry.min.css.map" />
+    <Content Include="css\dist\models\product-categories.css.map" />
+    <Content Include="css\dist\models\product-categories.min.css.map" />
+    <Content Include="css\dist\models\product-delivery.css.map" />
+    <Content Include="css\dist\models\product-delivery.min.css.map" />
+    <Content Include="css\dist\models\product-maintenance-products.css.map" />
+    <Content Include="css\dist\models\product-maintenance-products.min.css.map" />
+    <Content Include="css\dist\models\product-maintenance-treatments.css.map" />
+    <Content Include="css\dist\models\product-maintenance-treatments.min.css.map" />
+    <Content Include="css\dist\models\product-maintenance.css.map" />
+    <Content Include="css\dist\models\product-maintenance.min.css.map" />
+    <Content Include="css\dist\models\product-type-maintenance.css.map" />
+    <Content Include="css\dist\models\product-type-maintenance.min.css.map" />
+    <Content Include="css\dist\models\projects-dashboard.css.map" />
+    <Content Include="css\dist\models\projects-dashboard.min.css.map" />
+    <Content Include="css\dist\models\recently-used-members.css.map" />
+    <Content Include="css\dist\models\recently-used-members.min.css.map" />
+    <Content Include="css\dist\models\ring-fenced-stock.css.map" />
+    <Content Include="css\dist\models\ring-fenced-stock.min.css.map" />
+    <Content Include="css\dist\models\sales-statistics.css.map" />
+    <Content Include="css\dist\models\sales-statistics.min.css.map" />
+    <Content Include="css\dist\models\sample-request-dg.css.map" />
+    <Content Include="css\dist\models\sample-request-dg.min.css.map" />
+    <Content Include="css\dist\models\sample-request.css.map" />
+    <Content Include="css\dist\models\sample-request.min.css.map" />
+    <Content Include="css\dist\models\site-new.css.map" />
+    <Content Include="css\dist\models\site-new.min.css.map" />
+    <Content Include="css\dist\models\site.css.map" />
+    <Content Include="css\dist\models\site.min.css.map" />
+    <Content Include="css\dist\models\slicer-components.css.map" />
+    <Content Include="css\dist\models\slicer-components.min.css.map" />
+    <Content Include="css\dist\models\stock-viewer.css.map" />
+    <Content Include="css\dist\models\stock-viewer.min.css.map" />
+    <Content Include="css\dist\models\task-search.css.map" />
+    <Content Include="css\dist\models\task-search.min.css.map" />
+    <Content Include="css\dist\models\tasks-dashboard.css.map" />
+    <Content Include="css\dist\models\tasks-dashboard.min.css.map" />
+    <Content Include="css\dist\models\translations.css.map" />
+    <Content Include="css\dist\models\translations.min.css.map" />
+    <Content Include="css\dist\models\visit-booker.css.map" />
+    <Content Include="css\dist\models\visit-booker.min.css.map" />
+    <Content Include="css\dist\models\visit-search.css.map" />
+    <Content Include="css\dist\models\visit-search.min.css.map" />
+    <None Include="css\src\lib\mdc\mdc-custom.scss" />
+    <Content Include="css\dist-dead\lib\bootstrap-icons\fonts\bootstrap-icons.woff" />
+    <Content Include="css\dist-dead\lib\bootstrap-icons\fonts\bootstrap-icons.woff2" />
     <Content Include="js\dist\lib\bootstrap-3.3.7\bootstrap-3.3.7.min.js" />
     <Content Include="js\dist\lib\bootstrap-5.3.1\bootstrap.bundle-5.3.1.min.js" />
     <Content Include="js\dist\lib\bootstrap-datetime-picker\bootstrap-datetime-picker.min.js" />
@@ -1627,6 +1904,7 @@
     <Content Include="js\dist\models\kendo-mdc-drop-down-list-factory.min.js" />
     <Content Include="js\dist\models\lead-enquiry.min.js" />
     <Content Include="js\dist\models\lead-search.min.js" />
+    <Content Include="js\dist\models\marketing-budget.min.js" />
     <Content Include="js\dist\models\marketing-messages.min.js" />
     <Content Include="js\dist\models\member-search.min.js" />
     <Content Include="js\dist\models\order-import.min.js" />
@@ -1671,6 +1949,7 @@
     <Content Include="js\src\lib\jquery-3.1.1\jquery-3.1.1.js" />
     <Content Include="js\src\lib\jquery-3.1.1\jquery.signalR.js" />
     <Content Include="js\src\lib\jquery-3.1.1\jquery.twbsPagination.js" />
+    <Content Include="css\src\models\marketing-budget.scss" />
     <None Include="js\src\lib\jquery-3.1.1\jquery.validate-vsdoc.js" />
     <Content Include="js\src\lib\jquery-3.1.1\jquery.validate.js" />
     <Content Include="js\src\lib\jquery-3.1.1\jquery.validate.unobtrusive.js" />
@@ -1729,6 +2008,7 @@
     <Content Include="js\src\models\kendo-mdc-drop-down-list-factory.js" />
     <Content Include="js\src\models\lead-enquiry.js" />
     <Content Include="js\src\models\lead-search.js" />
+    <Content Include="js\src\models\marketing-budget.js" />
     <Content Include="js\src\models\marketing-messages.js" />
     <Content Include="js\src\models\member-search.js" />
     <Content Include="js\src\models\order-import.js" />
