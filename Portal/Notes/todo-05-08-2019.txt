@@ -1,0 +1,561 @@
+1.	Order Submission testing. Sarah has put together a spreadsheet of head and line scenarios to test (I will forward it to you). 
+	Submit each header with all the lines and work with Sarah to check that Mertex has interpreted them correctly.
+	
+2.	B2C stock routine CLR function (build, test and report errors to keith)
+
+3.	Ordering App (complete an order)
+
+	a.	Order / Reserve / Forward Order
+	
+		i.		Add to basket
+		
+		ii.		Allocation
+				- Change of StockLocation to allocate from clears current allocation, however changing the stock location does not change 
+					the BasketItem record in the database, so when changing the stockLocation selected both areas perform their AJAX and retuuurn...
+					the same data because the BasketItem doesn't reflect the current stockLocation.
+					So it would seem... that we need a facility to change the stockLocationId on the BasketItem before re-calling the allocation AJAX routines.
+				
+				
+				Concurrency is a problem, I've emailed Keith and await his reply on that score. 
+				= Done. Great. Unique ID every request made into Mertex, otherwise bad things.
+				
+				Next, you've been doing random nonsensical things to this and have been being frustrated by the results. So be methodical.
+				
+				There was apparently an issue with the RingFenced allocation - I set an allocation of 1m from this, it performed as expected.
+				I was then able to increase this to 20m, and apparently nothing happened.
+				I was then able to adjust 20m down to 10m and something happened.
+				
+				Investigate.
+				
+				Now... why is it that I'm unable to allocate to a specific batch & piece when I'm being presented the ability to.
+				
+				Take for instance Batch 10845, containing Piece Y016534, having 1.1m free stock.
+				
+				I wish to allocate 1m, it performs the allocation but does not record it as having been that particular piece!!!
+				
+				What is the desired outcome? It allocates that exact batch and piece. Why the hell isn't it? There are no other extant allocations against it.
+				
+				
+				
+				
+				Where you're allocating from ring-fenced stock, you're actually reducing the amount of available stock in that ring...
+				... which means that as you, say, have an 
+				
+				11 to start
+				alloc 5
+				(remaining 6)
+				change alloc to 10
+				explosion (BasketPreAllocationID not present?)
+				
+				I think... this may have been erroring because the UPDATE procedure (in the case of ring fencing) happened to select the
+				result set twice (once as a result of the INSERT which follows the DELETE, once at the end of the UPDATE procedure itself).
+				This has been modified to SELECT only following a true UPDATE, not a ring-fenced DELETE/INSERT pair (as the INSERT here necessarily SELECTs).
+				
+				It's also caused by the preceeding DELETE SELECTing the @PreAllocationErrorID! That's throwing the result set count off!
+				Buggerit!
+				
+				So think your way around that one: the DELETE necessarily selects @PreAllocationErrorID
+				
+				
+				Ring fencing is also able to leave orphans, if you:
+				
+				Allocate 5 from 11 (success)
+				
+				Increase that 5 to an 8 (attempt to over-allocate... but wait, that's NOT an attempt to over-allocate)
+				
+				
+				
+				
+				
+				the problem remains: ring fence over allocation is just bad. the non-ring-fenced pieces CANNOT be over-allocated; the call fails.
+				
+				
+				with a quantity to order of 0, I see 3m auto allocate...
+				
+				which is fine for reserves but not for other cases; added OrderTypeId to the addBasketItem process. Seems to work.
+				Now... for reserves, I'm being returned the over-allocation (order 5, get 8 allocated). This presents issues with the validation.
+				Apparently "reserves feels messy!". Moving on.
+				
+				
+				
+				PFA8-4C
+				
+				
+		
+		iii.	Discount (price review)
+		
+		iv.		Basket - portal.BasketItem_Select (gives you everything that you should need to render the basket 
+				(excluding bespoke properties which you are going to add) it also replaces the portal.Basket_Price_Select)
+				
+		v.		Delivery Address - Portal.Basket_DeliveryAddress_Select (retrieve previously specified address) & Portal.Basket_DeliveryAddress_Save
+		
+		vi.		Delivery service selection - portal.Basket_DeliveryService_Select 
+				(splits the basket, returns the basket and lists delivery service options) 
+				portal.Basket_DeliveryService_Save – please flesh this out.
+				
+		vii.	Allocation validation
+		
+		viii.	Basket validation? Checks to be confirmed
+		
+	b.	Quick add
+	
+	c.	Delete from basket
+	
+	d.	Basket Keep Alive portal.basket_KeepAlive – will extend the basket for 2 hours by default or use a provided expiry 
+		(I haven’t added it to any procs yet)
+		
+	e.	Bespoke builders – please extend the portal.BasketItem table as necessary and put together 
+		a portal.BasketItem_BespokeAdd proc to save bespoke prods.
+		
+	f.	New order / Existing basket screen
+	
+	4.	Ecom. trigger email tweaks (Speak to Lauren about content)
+	
+	a.	Add UPS my choice explanation to the Order confirmation and dispatch emails.
+	
+	b.	Apparently there is a missing image in the dispatch email footer
+	
+5.	Security audit
+	Dustin needs some help securing ports on the web server. 
+	Please tie it down tighter that a gnats chuff! I learnt that from a South African!
+	
+6.	Stock Ringfence App – will email you a mockup (Discuss with sarah)
+	Please use: Portal.RingFencePreAllocation_Select
+	
+7.	My Customers (additional fields) – speak to Sarah 
+
+PATH
+C:\Program Files (x86)\nodejs\
+
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Microsoft\VisualStudio\NodeJs
+
+
+
+
+Order Testing Notes
+
+	ONE order line per order. Do each order line for each order head
+
+
+hoooow... to best enable a checking of the test orders placed?
+
+it might be difficult to keep track of going from order header to each line... and this is going to result in many many orders.
+
+
+
+
+
+Right, so...
+
+What I did: 
+
+	Installed the root ca cert at the end of my ca-bundle -- for whatever reason openssl was not retrieving the final root cert! weird. done.
+	It should normally fetch this over the internet but wasn't doing so. I identified the true root by inspecting the certificate on vm-web1, downloaded that,
+	converted it to PEM format using openssl, cat'ed it onto my ca-bundle.pem file. Working.
+	
+	Next step was to counter the fact that Mertex is issuing just "ftp ..." whereas the fix required it to issue "ftp -s ..."
+
+	So... rather than muck about in Mertex gubbins I created an alias for the root user which is persisted by way of being in /.profile (root's home directory is /, and .profile is loaded
+	on every run).
+	
+	So... if Mertex does actually log on and ftp as root, it should pick up that alias and bob's your father's brother.
+	
+	Nah: edit the /reflex/MERTEX/WTIMPORT/PENDING/AC-2753_ftp.scp script and add the flag where it's supposed to be manually. Win.
+
+
+	
+	RIGHT... so... bespoke... things.
+	We need to identify each question.
+	
+	FIRST UP: do I need to answer 'Hanger Showlength or Waterfall'? I doubt it and hope not
+	
+	
+	
+	
+	FABRIC HANGER
+	FDG2938/H
+	
+		Feeler Cloth
+		Feeler Length
+		Header Size
+		Waterfall Required
+		Date Required by Customer
+		Full Dispatch Required
+		Memo
+		
+	TESTED:	 A|B|C|D|E|F|G|H|I|J
+	RESULT:  Header Size 				A
+			 Waterfall Required 		B
+			 Date Required 				C
+			 Full Dispatch Required		D
+			 Memo						E					
+
+			 
+	TESTED:	 A|B||D|E|F|G|H|I|J
+	RESULT:  Header Size 				A
+			 Waterfall Required 		B
+			 Date Required 				D
+			 Full Dispatch Required		
+										E
+			 Memo											
+
+			 
+	TESTED:	 A|B| |D|E|F|G|H|I|J
+	RESULT:  Header Size 				A
+			 Waterfall Required 		B
+			 Date Required 				
+			 Full Dispatch Required		
+										E
+			 Memo											
+
+			 
+	Right... the FEELER LENGTH is what actually gets added to the basket in Mertex.
+	
+	
+	When you create the order behind the scenes it creates a transfer order for the feeler length
+	... reaaaaaaaaarrrrrrrrghhhhhhhleeee
+	... okay, so have the process answers on both the transfer acc. TRAN501 and the actual order you're placing
+	
+	BUT check with Keith to see what happens with that...
+	
+	
+	FABRIC SHOWLENGTH
+	F1555/S
+	
+		Feeler Length										BOTH?
+		Date required										Apply to both Showlengths & Shelf Samples
+		Full Dispatch										 "	  "	  "        " 	Usually Y ?...?
+		Waterfall Attached?									BOTH!
+		Is this a Shelf Sample?								This needs to be a new... category? 
+		Half width required									What is this Half Width? SHOWLENGTHS CANNOT BE HALF WIDTH? - FOR SHELF SAMPLES THIS IS ALWAYS "Y"
+		header required (if full width, N/A)				What is this Header Required...? SHELF SAMPLE ONLY
+		Waterfall Position (if blank will be on top left)	TOP LEFT/TOP RIGHT/TOP CENTER SHOWLENGTH ONLY? If Shelf Sample, does this actually affect where it's 												sewn? This is ALWAYS left blank
+		Memo												ONLY For Shelf Samples with Waterfall attached
+															This is where the "bespoke" part comes in! you can provide a list of part numbers to be included
+															in the shelf sample's waterfall.
+															Maximum of 8 part numbers can be selected.
+				Y	=   "Special Details" box! Need to be able to pass these bespoke part numbers
+				Don't need Keith to add a field; this looks as though you can just pass "Y" into Memo
+				and then continue on pipe delimiting the part numbers!
+				
+		Waterfall cannot be attached when design has only one colourway - is that "has only one colourway with a certain status"? is it "current" only?
+				
+	
+	This needs a rebuild: when you click to order a Fabric Showlength you should probably be asked
+	'Is this a Shelf Sample?' right off the bat. Then we need definitive answers to the question of what questions above apply to what
+	things: shelf sample or actual showlength.
+	
+	
+	Properties
+	Subscriptions
+	Computeds
+	Components
+	Validation Groups
+	Functions
+	
+	
+	Then we need definitive lists of valid answers to each question. And I must note that when I provide blank answers the ordering of the 
+	answers to questions gets thrown out, so I need to know if I'm okay to just put "N/A" where it would otherwise be empty.
+	
+	Before I even get to placing lines, I'm asked "Sample only order?" - do I have to submit Y to this in order to be able to order any of these bespoke products?
+	Directly next to that question is "Bespoke Sample Type": I can provide 
+	
+		Furniture Header
+		Architect Ring
+		A4 Architect Ring
+		Shelf Sample With Bespoke Waterfall
+		Standard Sample
+	
+	That's the complete list, and it doesn't cover all the different bespoke products - where's "Wallpaper Showlength"? where is "Fabric Showlength"?
+	Where is "Fabric Hanger"? Do I even NEED to answer this question at all? APPARENTLY NOT!
+	
+	Always fine to put N/A
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	TEST: 	A|B|C|D|E|F|G|H|I|J
+	RESULT: Date Required			A
+			Full Despatch			B
+			Waterfall Attached		C
+			Shelf Sample			D
+			Half width				E
+			Header Required			F
+			Waterfall Position		G
+			Memo					H
+			
+			
+	TEST: 	|B|C|D|E|F|G|H|I|J
+	RESULT: Date Required			B
+			Full Despatch			
+									C
+			Waterfall Attached		D
+			Shelf Sample			E
+			Half width				F
+			Header Required			G
+			Waterfall Position		
+									H
+			Memo	
+			
+	
+	FABRIC WATERFALL
+	FDG2938/W
+	
+		Header Size
+		Date Required
+		Full Dispatch
+		Memo
+		[We don't offer this through the Portal yet... do we? is this not just a hanger / showlength with a waterfall on it?]
+	
+	TEST: 	A|B|C|D|E|F|G|H|I|J
+	RESULT: Header Size		A
+			Date Required	B
+			Full Dispatch	C
+			Memo			D
+	
+	TEST: 	A||C|D|E|F|G|H|I|J
+	RESULT: Header Size		
+			Date Required	
+			Full Dispatch	
+			Memo			
+	
+	
+	
+	WALLPAPER SHOWLENGTH
+	PRL5023/S
+	
+		Feeler Cloth
+		Feeler Length
+		Date required
+		Full dispatch
+		Memo
+		
+	TEST: 	A|B|C|D|E|F|G|H|I|J
+	RESULT: Date Required		A	
+			Full Dispatch		B	
+			Waterfall Attached	C
+			Shelf Sample		D
+			Half Width 			E
+			Header Required		F
+			Waterfall Position	G
+			Memo				H
+	
+	TEST: 	|B|C|D|E|F|G|H|I|J
+	RESULT: Date Required		
+			Full Dispatch			
+			Waterfall Attached	
+			Shelf Sample		
+			Half Width 			
+			Header Required		
+			Waterfall Position	
+			Memo				
+	
+	
+	
+	
+	
+	BESPOKE RUG
+	BSRUGDG0046
+	
+		Length
+		Width
+		Number of Rugs Required
+		
+	Where the hell does Round Rug come into it? Diameter?
+	Why do I have a bunch of Bespoke Runners in my Bespoke Rugs?
+		
+	TEST: 	||MEMOOO
+	
+	RESULT: 	
+	
+	
+	
+	BESPOKE FURNITURE (?)
+
+?!?!
+
+
+
+
+
+	ARCHITECT RING
+	RING/H
+	
+?!?!?
+	
+	
+	
+	ARCHITECT RING A4
+	RING/H/A4
+
+!!!!!!!!!
+	
+	
+	
+	portal.BasketItem.StockLocationID being non-nullable is a bit... not helpful: you don't know the stock location? fine, the auto allocation can fill that in for you.
+										What stock location should I use for bespoke fabric hangers?! No idea.
+										What about fulfilment options? No idea. 
+										Does the bespokeFabricHangerFactory now require the whole FulfilmentOption / StockLocation gubbins?
+
+	dirty baskets.
+	
+	so... when a basket is opened into the orderProductsModal... we have the validity check, which is a good first step.
+	in there we want to check if it's "in use", if not, fine, mark it as being in use [by this user with some way to contact said user via SignalR...]
+	
+	if the basket is "in use", we want to: notify the user that the basket is in use [and possibly give them the option to take control of the basket?]
+		if they choose to take control, we could... notify the currently controlling user that a takeover request has been identified, and that they're 
+		going to be booted out of the thing if they don't respond within 30 seconds. They can either permit or actively deny.
+		
+	
+	When... when do we unlock a basket from a user?
+	When they've dismissed the Ordering modal
+	When they've closed the page without dismissing the Ordering modal
+	
+	
+	Who is responsible for actually taking over the basket? The initiating user. The taken-over-from has to be contacted as best as possible, but the
+	requester always wins (except if the requestee actively refuses).
+	
+	
+	
+	Attempt to Open Basket
+	
+		Is Basket Locked?
+		
+			Yes
+				Boooo. Send the Basket Takeover.
+				
+						User receives takeover message. 
+	
+	
+	
+	
+			No
+				Great. Open the basket.
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	cancelVerifyCard can not be used with 3D Secure v2.
+	
+
+	after cancelling a line from the drilldown, re-fetch the basket.
+	
+	
+	
+	what you need to dooooo... is permit the creation of multiple lined memos for each document type available
+	
+	but for additional functional gravy you could permit 
+	
+	
+	
+	Preamble phase requires additional modal actuated via button, available only for deliveries into the EU,
+	which prompts (& validates) for Exit Code and End Delivery Address.
+	This because we have some customers who legally purchase from us for delivery to somewhere else
+	outside of the EU and NOBODY PAYS ANY TAX!!!
+	
+	(Also, VAT Number needs to not be mandatory).
+	
+	
+	
+	
+	self.shelfSample() IS NO LONGER A TRIVIAL BOOLEAN.
+	the bespokeFabricShowlengthFactory can now - very nearly at least - completely cater for the requirements
+	of creating a bespokeFabricHanger. It needs to save and load... one additional field. That is all.
+	All of the other functionality is shared. What a farce.
+	
+	bespoke tab on product drilldown has been DISABLED: it's (too) difficult to get the correct 
+	bespoke builder to open. It also utilised a defunct template for rendering products...
+	
+	
+	bespoke fabric hangers might just work
+	
+	wallpaper showlengths needs a look in
+	
+	bespoke architect rings needs the same IDs / objects trick applied as I managed with bespoke shelf sample waterfalls
+		- also wants to be sortable
+		- also needs dispatch delay date + default in the standard lead time for rings...
+		
+	bespoke rugs needs a look in
+	
+	
+		- select location: do you want this to be direct despatched from the supplier or do you want it going via the warehouse
+		- add std lead time 6 to 8 weeks
+		- I WANT IT ROUND checkbox
+		- check out the memo field questions and answers... this amount of detail is necessary because when the order creates a back-to-back 
+		purchase order, the memo is copied over to the PO so that Nina knows what to order!
+		
+	
+	- all bespoke thingumies (and paint) should say "Made to Order" instead of the stock thingumie beneath the search gubbins
+	
+	
+	
+	bespokeSize on the bespoke thingies needs looking at
+	this ties into priceies
+	
+	
+	bespoke rug needs to send an email...?
+	we should probably send that email address into a memo field.
+	
+	bespoke rug width & length should be in metres.
+	
+	lead time on bespoke rugs that aren't plain is INSANE 20 WEEKS
+	
+	
+	Plain Rugs estimated lead time - 6 to 8 weeks
+	Patterned Rugs estimated lead time - 24 weeks including shipping
+	
+	
+	
+	
+	
+	bespoke builders still require memo field... even though I need to populate it with bespoke instructions...
+	
+	the memo should be displayed in both basket and dispatch options
+	
+	
+	hangers header width in basket is null - this needs to display header width!
+	
+	feeler length for all bespoke things that use one get raised on a transfer order from WH to HD... specific tran account.
+	
+	basket waterfall indicator needs to be looking at the right data
+	
+	add standard lead time info to bespoke builders (showlength / shelf sample / hanger / wallpaper showlength)
+	
+	once added to basket, the bespokes are telling lies about allocation - Matt
+	
+	
+	Basket - Quantity wants to be the same sized text as everything around it
+	
+	Despatch Options - bespoke info needs to be the same (and correct) as it is in the basket (following rebuild of bespoke builders)
+	
+	"Deferred Despatch" should be "Dispatch Date Requested by Customer"
+	
+	Despatch Options - quantities should probably be underneath the other text, not floating off to the right
+	
+	Despatch Options - SubTotal & Delivery Charge should indicate Inc. or Ex. VAT
+	
+	Despatch Options - the Delivery Options modal close button should read "Save" not "Close"
+	
+	
+	Bespoke doodads raise TRAN501 
+	
+	All bespoke builders require the ability to discount the price. Great.
+	

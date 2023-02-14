@@ -1,0 +1,23 @@
+﻿.prefilters {
+    margin-bottom: 15px;
+}
+
+.k-widget {
+    textarea {
+        width: 97%;
+        height: 100%;
+    }
+}
+
+.k-dirty-cell {
+    .k-dirty {
+        right: 0;
+        left: unset;
+    }
+}
+
+.k-grid {
+    .k-edit-cell {
+        padding: 4px 6px;
+    }
+}

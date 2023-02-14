@@ -1,0 +1,1165 @@
+﻿@model Portal.Areas.Customers.ViewModels.CustomerEnquiryViewModel
+@{
+    ViewBag.Title = "Customer Enquiry";
+    var Today = DateTime.Now;
+}
+@section postscripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_d3HoXoCV7M85_xduYJUze1GOscDnjUw" async defer></script>
+}
+@section styles {
+    @Styles.Render("~/bundles/css/components")
+    @Styles.Render("~/bundles/css/customer-enquiry")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/components")
+    @Scripts.Render("~/bundles/js/datetime-picker")
+    @Scripts.Render("~/bundles/js/intl-tel")
+    @Scripts.Render("~/bundles/js/customer-enquiry")
+
+    <script type="text/javascript">
+        $('#accordion > .panel > .panel-collapse').collapse({
+            parent: '#accordion',
+            toggle: false
+        });
+
+        var viewModel = new customerEnquiryViewModel();
+
+        $(document).ready(function () {
+
+            ko.validation.init({
+                decorateInputElement: true,
+                errorElementClass: 'alert-danger',
+                errorMessageClass: 'validation-message text-danger'
+            });
+
+            ko.applyBindings(viewModel, document.body);
+
+            $("#account-number").focus();
+        });
+
+        function getTradeAccountGroupId() {
+            return @Html.Raw(Json.Encode(Model.TradeAccountGroupID))
+        }
+        function getTradeAccountId() {
+            return @Html.Raw(Json.Encode(Model.TradeAccountID))
+        }
+        function getPreselectedTradeAccount() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.PreselectedTradeAccount));
+        }
+        function getCustomerDetails() {
+            return @Html.Raw(Json.Encode(Model.CustomerDetails))
+        }
+        function getAvailableCompetitors() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Competitors));
+        }
+        function getAvailableBrands() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Brands));
+        }
+        function getAvailableProductTypeGroups() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.ProductTypeGroups));
+        }
+        function getGBPCurrency() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Currencies.Where(p => p.Code == "GBP" && p.FormattingCulture == "en-GB").SingleOrDefault()))
+        }
+        function getAvailableFinancialYears() {
+            return @Html.Raw(Json.Encode(Model.NextFiveFinancialYears));
+        }
+        //function initSummaryKendoControls() {
+        //    $("#summary-brand").kendoDropDownList({
+        //        dataSource: getAvailableBrands(),
+        //        dataTextField: "Name",
+        //        dataValueField: "BrandID",
+        //    });
+        //}
+
+        $("#price-checker-modal").on('shown.bs.modal', function () {
+            viewModel.priceChecker().resultGridWidget().refresh();
+        });
+    </script>
+}
+@section modals {
+    @Html.Partial("Modals/_AddressModal")
+    @Html.Partial("Modals/_ImageModal")
+    @Html.Partial("Modals/_OrderEnquiryModal")
+    @Html.Partial("Modals/_CareSearchModal")
+    @Html.Partial("Modals/_TasksModal")
+    @*@Html.Partial("Modals/_VisitEditModal")*@
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row margin-bottom-15">
+    <div class="col-xs-12 text-right">
+    </div>
+</div>
+
+@Html.Action("TradeAccountSelector", "Component", new { Area = "", canSearch = Model.Properties?.AccountSelector_CanSearch ?? false })
+
+<div class="page-busy-wrapper" data-bind="fadeVisible: loadBusy()">
+    <div class="form-busy">
+        <div class="busy-bars">
+            <div class="rect1 alert alert-info"></div>
+            <div class="rect2 alert alert-info"></div>
+            <div class="rect3 alert alert-info"></div>
+            <div class="rect4 alert alert-info"></div>
+            <div class="rect5 alert alert-info"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ko if: customerDetails -->
+<div @*id="accordion"*@>
+    <div class="row margin-top-15" style="display: none;" data-bind="visible: !loadBusy()">
+        <div class="col-xs-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading no-padding non-search">
+                    <h4 class="panel-title">
+                        <a class="panel-title panel-toggle" data-toggle="collapse" href="#pricing-summary-collapse" aria-expanded="true" aria-controls="pricing-summary-collapes">
+                            Pricing
+                        </a>
+                    </h4>
+                    <div class="clearfix"></div>
+                </div>
+                <div id="pricing-summary-collapse" class="panel-collapser collapse in">
+                    <div class="panel-body" data-bind="with: customerDetails">
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label">Pricelist: <span class="non-bold" data-bind="text: priceList">Unknown</span></label>
+                            </div>
+                        </div>
+                        <div class="row" style="display: none;" data-bind="visible: tradePriceListId">
+                            <div class="col-xs-12">
+                                <button class="btn btn-primary @(Model.Properties?.Application_ButtonClass)" data-bind="click: function() { $parent.priceChecker().openPriceCheckModal(); }">Check Prices</button>
+                            </div>
+                        </div>
+                        <div class="row" style="display: none" data-bind="visible: !tradePriceListId">
+                            <div class="col-xs-12">
+                                <div class="alert alert-danger" style="margin-bottom: 0;">
+                                    Price List not found for account <span data-bind="text: code"></span>. Price checking cannot be performed.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row margin-top-15" style="display: none;" data-bind="visible: !loadBusy()">
+        <div class="col-xs-12" data-bind="with: customerDetails">
+            <div class="panel panel-primary">
+                <div class="panel-heading no-padding non-search">
+                    <h4 class="panel-title">
+                        <a class="panel-title panel-toggle" data-toggle="collapse" href="#account-information-collapse" aria-expanded="true" aria-controls="account-information-collapse">
+                            Account Information
+                        </a>
+                    </h4>
+                    <div class="clearfix"></div>
+                </div>
+                <div id="account-information-collapse" class="collapse in">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-sm-6 col-xs-12">
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">
+                                            Account
+                                        </label>
+                                        <span class="col-form-span" data-bind="html: displayName"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">
+                                            Pattern Book Scheme
+                                        </label>
+                                        <span class="col-form-span" data-bind="html: patternBookScheme"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">
+                                            Status
+                                        </label>
+                                        <span class="col-form-span" data-bind="html: displayStatus"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">
+                                            Credit Limit
+                                        </label>
+                                        <span class="col-form-span" data-bind="html: formatCurrency(creditLimit, 0, currencyCulture, accountCurrency)"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">
+                                            Credit Status
+                                        </label>
+                                        <span class="col-form-span" data-bind="html: creditStatus"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">
+                                            Country
+                                        </label>
+                                        <span class="col-form-span" data-bind="html: country"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">
+                                            Region
+                                        </label>
+                                        <span class="col-form-span" data-bind="html: region"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">
+                                            Reporting Market / Area
+                                        </label>
+                                        <span class="col-form-span" data-bind="html: area"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">
+                                            Type
+                                        </label>
+                                        <span class="col-form-span" data-bind="html: type"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">
+                                            Segment
+                                        </label>
+                                        <span class="col-form-span" data-bind="html: segment"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xs-12">
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">
+                                            Primary Contact
+                                        </label>
+                                        <span class="col-form-span" data-bind="html: primaryContact"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">
+                                            Telephone
+                                        </label>
+                                        <span class="col-form-span" data-bind="html: phoneNumberDisplay">
+
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">
+                                            Email
+                                        </label>
+                                        <span class="col-form-span" data-bind="html: emailDisplay">
+
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group row" data-bind="with: address">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">Primary Address</label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <div class="address-wrapper">
+                                            <div class="directions-wrapper" data-bind="with: postcode" style="">
+                                                <span data-bind="html: $parent.appleMapsButton"></span>
+                                                <span data-bind="html: $parent.wazeButton"></span>
+                                                <div class="streetview-wrapper">
+                                                    <div style="display: none;" data-bind="visible: $parent.googleStreetViewBusy()" class="cssload-squeeze">
+                                                        <span></span><span></span><span></span><span></span><span></span>
+                                                    </div>
+                                                    <a class="btn btn-secondary-blue directions-link btn-sm" data-bind="attr: { href: $parent.googleStreetViewHref, target: '_blank' }">Google Streetview</a>
+                                                </div>
+                                            </div>
+
+                                            <span class="address-span" data-bind="html: line1 || ''"></span>
+                                            <span class="address-span" data-bind="html: line2 || ''"></span>
+                                            <span class="address-span" data-bind="html: town || ''"></span>
+                                            <span class="address-span" data-bind="html: county || ''"></span>
+                                            <span class="address-span" data-bind="html: postcode || ''"></span>
+                                            <span class="address-span" data-bind="html: country().Name"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">
+                                            Opening Times
+                                        </label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <span class="col-form-span" data-bind="html: openingTimesDisplay">
+
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">
+                                            Website
+                                        </label>
+                                        @*</div>
+                                            <div class="col-xs-12">*@
+                                        <span class="col-form-span" data-bind="html: websiteDisplay">
+
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row margin-top-15" style="display: none;" data-bind="visible: !loadBusy()">
+        <div class="col-xs-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading no-padding non-search">
+                    <h4 class="panel-title">
+                        <a class="panel-title panel-toggle" data-toggle="collapse" href="#account-competitors-collapse" aria-expanded="true" aria-controls="account-competitors-collapse">
+                            Competitors
+                        </a>
+                    </h4>
+                    <div class="clearfix"></div>
+                </div>
+                <div id="account-competitors-collapse" class="panel-collapser collapse in">
+                    <div class="panel-busy-wrapper" data-bind="fadeVisible: competitorsBusy()">
+                        <div class="form-busy">
+                            <div class="busy-bars">
+                                <div class="rect1 alert alert-info"></div>
+                                <div class="rect2 alert alert-info"></div>
+                                <div class="rect3 alert alert-info"></div>
+                                <div class="rect4 alert alert-info"></div>
+                                <div class="rect5 alert alert-info"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="table-responsive">
+                                    <table id="competitor-table" class="table table-condensed table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Competitors</th>
+                                                <th>Product Types</th>
+                                                <th>Estimated Value</th>
+                                                <th>Notes</th>
+                                                <th>Note Added</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- ko foreach: competitorDetails -->
+                                            <tr>
+                                                <td>
+                                                    <h4 class="page-heading-colour competitor-table-label" style="margin-top: 0" data-bind="html: Key().Name"></h4>
+                                                    <span class="competitor-table-label">
+                                                        <button class="btn btn-primary @(Model.Properties?.Application_ButtonClass)" data-bind="click: function() { $parent.openCompetitorAddModal(Key()) }, attr: { href: 'javascript:;' }">
+                                                            Edit
+                                                        </button>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <!-- ko foreach: source -->
+                                                    <span class="competitor-table-label" data-bind="html: $data.ProductTypeGroup.Name"></span>
+                                                    <!-- /ko -->
+                                                </td>
+                                                <td data-bind="foreach: source">
+                                                    <!-- ko if: $data.Value -->
+                                                    <!-- ko if: $parentContext.$parent.customerDetails().currencyCulture -->
+                                                    <span class="competitor-table-label" data-bind="html: formatCurrency($data.Value, 0, $parentContext.$parent.customerDetails().currencyCulture, $parentContext.$parent.customerDetails().accountCurrency)"></span>
+                                                    <!-- /ko -->
+                                                    <!-- ko ifnot: $parentContext.$parent.customerDetails().currencyCulture -->
+                                                    <span class="competitor-table-label" data-bind="html: $data.Value"></span>
+                                                    <!-- /ko -->
+                                                    <!-- /ko -->
+                                                    <!-- ko ifnot: $data.Value -->
+                                                    <span class="competitor-table-label">-</span>
+                                                    <!-- /ko -->
+                                                </td>
+                                                <td data-bind="foreach: source">
+                                                    <!-- ko with: Enumerable.From($data.Notes).OrderByDescending('$.NoteID').ToArray() -->
+                                                    <!-- ko if: $data.length -->
+                                                    <div class="notes">
+                                                        <a class="competitor-table-span" data-bind="click: function() { $parentContext.$parentContext.$parent.openCompetitorAddModal($parentContext.$parent.Key()) }, attr: { href: 'javascript:;' }">
+                                                            <span data-bind="text: $data[0].Note"></span>
+                                                        </a>
+                                                    </div>
+                                                    <!-- /ko -->
+                                                    <!-- ko ifnot: $data.length -->
+                                                    <span class="competitor-table-span">&nbsp;</span>
+                                                    <!-- /ko -->
+                                                    <!-- /ko -->
+                                                </td>
+                                                <td class="notes-created" data-bind="foreach: source">
+                                                    <!-- ko with: Enumerable.From($data.Notes).OrderByDescending('$.NoteID').ToArray() -->
+                                                    <!-- ko if: $data.length -->
+                                                    <span class="competitor-table-span" data-bind="text: $data[0].CreatedLine"></span>
+                                                    <!-- /ko -->
+                                                    <!-- ko ifnot: $data.length -->
+                                                    <span class="competitor-table-span">&nbsp;</span>
+                                                    <!-- /ko -->
+                                                    <!-- /ko -->
+                                                </td>
+                                            </tr>
+                                            <!-- /ko -->
+                                            <tr>
+                                                <td colspan="5">
+                                                    <span class="competitor-table-label">
+                                                        <button class="btn btn-primary @(Model.Properties?.Application_ButtonClass)" data-bind="click: function() { openCompetitorAddModal(); }, attr: { href: 'javascript:;' }">
+                                                            Add Competitor
+                                                        </button>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row margin-top-15" style="display: none;" data-bind="visible: !loadBusy()">
+        <div class="col-xs-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading no-padding non-search">
+                    <h4 class="panel-title">
+                        <a class="panel-title panel-toggle" data-toggle="collapse" href="#account-summary-collapse" aria-expanded="true" aria-controls="account-summary-collapes">
+                            Sales Overview
+                        </a>
+                    </h4>
+                    <div class="clearfix"></div>
+                </div>
+                <div id="account-summary-collapse" class="panel-collapser collapse in">
+                    <div class="panel-busy-wrapper" data-bind="fadeVisible: summaryBusy()">
+                        <div class="form-busy">
+                            <div class="busy-bars">
+                                <div class="rect1 alert alert-info"></div>
+                                <div class="rect2 alert alert-info"></div>
+                                <div class="rect3 alert alert-info"></div>
+                                <div class="rect4 alert alert-info"></div>
+                                <div class="rect5 alert alert-info"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <div class="row">
+                                    <div class="col-xs-12" data-bind="with: tradeAccountSummary">
+                                        <select data-bind="kendoDropDownList: { dataTextField: 'Name', optionLabel: 'All Brands', dataValueField: 'BrandID', data: $parent.availableBrands, value: brandId }"></select>
+                                        <select data-bind="kendoDropDownList: { dataTextField: 'Name', optionLabel: 'All Product Types', dataValueField: 'ProductTypeGroupID', data: $parent.availableProductTypeGroups, value: productTypeGroupId }"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div data-bind="with: tradeAccountSummary" class="table-responsive">
+                                    <table class="account-summary-table table table-striped table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th colspan="2" class="text-center">Net Sales</th>
+                                                <th colspan="2" class="text-center">Credits</th>
+                                                <th colspan="2" class="text-center">Orders</th>
+                                                <th colspan="2" class="text-center">Sample Qty</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="text-right">
+                                                <th></th>
+                                                <th>TY</th>
+                                                <th>LY</th>
+                                                <th>TY</th>
+                                                <th>LY</th>
+                                                <th>TY</th>
+                                                <th>LY</th>
+                                                <th>TY</th>
+                                                <th>LY</th>
+                                                @*<th>TY</th>
+                                                    <th>LY</th>
+                                                    <th>Orders TY</th>
+                                                    <th>Orders LY</th>
+                                                    <th>Visits</th>
+                                                    <th>Customer Care</th>
+                                                    <th>Tasks</th>*@
+                                            </tr>
+                                            <tr class="text-right">
+                                                <th class="text-left">
+                                                    Full Month
+                                                    <span class="text-muted smaller">@(Today.ToString("MMMM"))</span>
+                                                </th>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetSales_FM)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().NetSalesVariance_FM_LYFM)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetSales_LYFM)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().NetSalesVariance_LYFM_PLYFM)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetCredits_FM)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpanReversed(netSales().NetCreditsVariance_FM_LYFM)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetCredits_LYFM)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpanReversed(netSales().NetCreditsVariance_LYFM_PLYFM)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().OrderCount_FM)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().OrderCountVariance_FM_LYFM)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().OrderCount_LYFM)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().OrderCountVariance_LYFM_PLYFM)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().SampleOrderCount_FM)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().SampleOrderCountVariance_FM_LYFM)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().SampleOrderCount_LYFM)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().SampleOrderCountVariance_LYFM_PLYFM)"></span>
+                                                </td>
+                                            </tr>
+                                            <tr class="text-right">
+                                                <th class="text-left">
+                                                    Month to Date
+                                                    <span class="text-muted smaller" data-bind="text: '1st @Today.ToString("MMMM") to ' + moment('@Today.ToString("dd-MM-yyyy")', 'DD-MM-YYYY').format('Do MMMM')"></span>
+                                                </th>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetSales_MTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().NetSalesVariance_MTD_LYMTD)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetSales_LYMTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().NetSalesVariance_LYMTD_PLYMTD)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetCredits_MTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpanReversed(netSales().NetCreditsVariance_MTD_LYMTD)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetCredits_LYMTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpanReversed(netSales().NetCreditsVariance_LYMTD_PLYMTD)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().OrderCount_MTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().OrderCountVariance_MTD_LYMTD)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().OrderCount_LYMTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().OrderCountVariance_LYMTD_PLYMTD)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().SampleOrderCount_MTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().SampleOrderCountVariance_MTD_LYMTD)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().SampleOrderCount_LYMTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().SampleOrderCountVariance_LYMTD_PLYMTD)"></span>
+                                                </td>
+                                            </tr>
+                                            <tr class="text-right">
+                                                <th class="text-left">
+                                                    Full Financial Year
+                                                    <span class="text-muted smaller">1st April to 31st March</span>
+                                                </th>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetSales_FY)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().NetSalesVariance_FY_LFY)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetSales_LFY)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().NetSalesVariance_LFY_PLFY)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetCredits_FY)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpanReversed(netSales().NetCreditsVariance_FY_LFY)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetCredits_LFY)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpanReversed(netSales().NetCreditsVariance_LFY_PLFY)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().OrderCount_FY)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().OrderCountVariance_FY_LFY)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().OrderCount_LFY)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().OrderCountVariance_LFY_PLFY)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().SampleOrderCount_FY)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().SampleOrderCountVariance_FY_LFY)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().SampleOrderCount_LFY)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().SampleOrderCountVariance_LFY_PLFY)"></span>
+                                                </td>
+                                            </tr>
+                                            <tr class="text-right">
+                                                <th class="text-left">
+                                                    Financial Year to Date
+                                                    <span class="text-muted smaller" data-bind="text: '1st April to ' + moment('@Today.ToString("dd-MM-yyyy")', 'DD-MM-YYYY').format('Do MMMM')"></span>
+                                                </th>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetSales_FYTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().NetSalesVariance_FYTD_LFYTD)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetSales_LFYTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().NetSalesVariance_LFYTD_PLFYTD)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetCredits_FYTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpanReversed(netSales().NetCreditsVariance_FYTD_LFYTD)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetCredits_LFYTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpanReversed(netSales().NetCreditsVariance_LFYTD_PLFYTD)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().OrderCount_FYTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().OrderCountVariance_FYTD_LFYTD)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().OrderCount_LFYTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().OrderCountVariance_LFYTD_PLFYTD)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().SampleOrderCount_FYTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().SampleOrderCountVariance_FYTD_LFYTD)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().SampleOrderCount_LFYTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().SampleOrderCountVariance_LFYTD_PLFYTD)"></span>
+                                                </td>
+                                            </tr>
+                                            <tr class="text-right">
+                                                <th class="text-left">
+                                                    Full Calendar Year
+                                                    <span class="text-muted smaller">1st January to 31st December</span>
+                                                </th>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetSales_CY)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().NetSalesVariance_CY_LCY)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetSales_LCY)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().NetSalesVariance_LCY_PLCY)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetCredits_CY)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpanReversed(netSales().NetCreditsVariance_CY_LCY)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetCredits_LCY)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpanReversed(netSales().NetCreditsVariance_LCY_PLCY)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().OrderCount_CY)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().OrderCountVariance_CY_LCY)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().OrderCount_LCY)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().OrderCountVariance_LCY_PLCY)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().SampleOrderCount_CY)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().SampleOrderCountVariance_CY_LCY)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().SampleOrderCount_LCY)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().SampleOrderCountVariance_LCY_PLCY)"></span>
+                                                </td>
+                                            </tr>
+                                            <tr class="text-right">
+                                                <th class="text-left">
+                                                    Calendar Year to Date
+                                                    <span class="text-muted smaller" data-bind="text: '1st January to ' + moment('@Today.ToString("dd-MM-yyyy")', 'DD-MM-YYYY').format('Do MMMM')"></span>
+                                                </th>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetSales_CYTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().NetSalesVariance_CYTD_LCYTD)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetSales_LCYTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().NetSalesVariance_LCYTD_PLCYTD)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetCredits_CYTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpanReversed(netSales().NetCreditsVariance_CYTD_LCYTD)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatCustomerCurrency(netSales().NetCredits_LCYTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpanReversed(netSales().NetCreditsVariance_LCYTD_PLCYTD)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().OrderCount_CYTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().OrderCountVariance_CYTD_LCYTD)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().OrderCount_LCYTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().OrderCountVariance_LCYTD_PLCYTD)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().SampleOrderCount_CYTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().SampleOrderCountVariance_CYTD_LCYTD)"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(netSales().SampleOrderCount_LCYTD)"></span>
+                                                    <span class="text-muted smaller" data-bind="html: formatPercentageHtmlColourSpan(netSales().SampleOrderCountVariance_LCYTD_PLCYTD)"></span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" data-bind="visible: !tradeAccountSummary()">
+                            <div class="col-xs-12">
+                                <div style="height: 100px; width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row margin-top-15" style="display: none;" data-bind="visible: !loadBusy()">
+        <div class="col-xs-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading no-padding non-search">
+                    <h4 class="panel-title">
+                        <a class="panel-title panel-toggle" data-toggle="collapse" href="#account-potential-collapse" aria-expanded="true" aria-controls="account-potential-collapse">
+                            New Business Potential
+                        </a>
+                    </h4>
+                    <div class="clearfix"></div>
+                </div>
+                <div id="account-potential-collapse" class="panel-collapser collapse in">
+                    <div class="panel-busy-wrapper" data-bind="fadeVisible: potentialBusy()">
+                        <div class="form-busy">
+                            <div class="busy-bars">
+                                <div class="rect1 alert alert-info"></div>
+                                <div class="rect2 alert alert-info"></div>
+                                <div class="rect3 alert alert-info"></div>
+                                <div class="rect4 alert alert-info"></div>
+                                <div class="rect5 alert alert-info"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row" data-bind="visible: potentialBusy()">
+                            <div class="col-xs-12">
+                                <div style="height: 100px; width: 100%;"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div data-bind="with: tradeAccountPotential">
+                                    <div class="row">
+                                        <div class="col-sm-6 col-xs-12">
+                                            <div class="form-group row">
+                                                <div class="col-xs-12">
+                                                    <label class="col-form-label">
+                                                        Total New Business Potential
+                                                    </label>
+                                                </div>
+                                                <div class="col-xs-12">
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon input-group-addon-default" data-bind="with: $parent.customerDetails().currency"><span data-bind="text: Symbol"></span></span>
+                                                        <input readonly="readonly" class="form-control form-group-span" data-bind="value: totalBusinessPotential" />
+                                                        <!-- ko if: totalBusinessPotentialGBP() -->
+                                                        <span class="input-group-addon"></span>
+                                                        <span class="gbp-conversion form-control form-group-span" data-bind="text: totalBusinessPotentialGBP.formatted"></span>
+                                                        <!-- /ko -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12">
+                                            <div class="form-group row">
+                                                <div class="col-xs-12">
+                                                    <label class="col-form-label">Potential Sales are for a 12 month period, existing sales are for the previous 12 months</label>
+                                                </div>
+                                                <div class="col-xs-12">
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="table-responsive">
+                                                <table class="business-potential-table table table-condensed table-striped margin-bottom-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th><div class="spacer">&nbsp;</div></th>
+                                                            <th><div class="spacer">&nbsp;</div></th>
+                                                            <!-- ko foreach: brandGroups -->
+                                                            <th data-bind="html: '<div>' + Name + '</div>'"></th>
+                                                            <th></th>
+                                                            <!-- /ko -->
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <!-- ko foreach: productTypeGroups -->
+                                                        <tr>
+                                                            <th>
+                                                                <div class="spacer" data-bind="text: productTypeGroup.Name"></div>
+                                                            </th>
+                                                            <td><div class="spacer">&nbsp;</div></td>
+                                                            <!-- ko foreach: $data.data -->
+                                                            <!-- ko if: actualSaleValue -->
+                                                            <td colspan="2">
+                                                                <span class="lead-potential-span text-muted" data-bind="text: formatCurrency($data.actualSaleValue(), 0, $parentContext.$parent.parent.customerDetails().currency().FormattingCulture, $parentContext.$parent.parent.customerDetails().currency().Code)"></span>
+                                                            </td>
+                                                            <!-- /ko -->
+                                                            <!-- ko ifnot: actualSaleValue-->
+                                                            <!-- ko if: Available -->
+                                                            <td>
+                                                                <div class="input-group">
+                                                                    <span class="input-group-addon input-group-addon-default" data-bind="with: $parentContext.$parent.parent.customerDetails().currency"><span data-bind="text: Symbol"></span></span>
+                                                                    <span class="lead-potential-span form-control form-group-span pointer" data-bind="attr: { 'data-brand-id': $data.BrandID, 'data-product-type-group-id': $data.ProductTypeGroupID }, text: $data.displayLine, click: function() { $parentContext.$parent.loadPotentialForEdit($data); }" />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div>
+                                                                    <!-- ko if: $data.FinancialYear -->
+                                                                    <a class="form-group-span" data-bind="text: 'FY ' + $data.FinancialYear(), click: function() { $parentContext.$parent.loadPotentialForEdit($data); }, attr: { href: 'javascript:;' }"></a>
+                                                                    <!-- /ko -->
+                                                                    <!-- ko if: $data.Potential() == false -->
+                                                                    <span class="form-group-span" data-bind="text: $data.NoPotentialSince"></span>
+                                                                    <!-- /ko -->
+                                                                </div>
+                                                            </td>
+                                                            <!-- /ko -->
+                                                            <!-- ko ifnot: Available -->
+                                                            <td></td>
+                                                            <td></td>
+                                                            <!-- /ko -->
+                                                            <!-- /ko -->
+                                                            <!-- /ko -->
+                                                        </tr>
+                                                        <!-- /ko -->
+                                                        <tr>
+                                                            <th>
+                                                                <div class="spacer">Totals</div>
+                                                            </th>
+                                                            <td><div class="spacer">&nbsp;</div></td>
+                                                            <!-- ko foreach: brandGroups -->
+                                                            <td>
+                                                                <div class="text-right">
+                                                                    <span class="form-control brand-total" data-bind="text: $parent.getBrandTotalPotentialFormatted($data)"></span>
+                                                                </div>
+                                                            </td>
+                                                            <td class="brand-total-gbp-cell">
+                                                                <!-- ko if: $parent.totalBusinessPotentialGBP() -->
+                                                                <div>
+                                                                    <span class="gbp-conversion form-control brand-total-gbp" data-bind="text: $parent.getBrandTotalPotentialGBPFormatted($data)"></span>
+                                                                </div>
+                                                                <!-- /ko -->
+                                                            </td>
+                                                            <!-- /ko -->
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @*<div class="row margin-top-15">
+                                            <div class="col-xs-12">
+                                                <div class="panel panel-secondary-blue margin-bottom-0">
+                                                    <div class="panel-heading no-padding non-search">
+                                                        <h4 class="panel-title panel-toggle" data-toggle="collapse" href="#pattern-book-potential" aria-expanded="false">
+                                                            Pattern Book Schemes
+                                                        </h4>
+                                                    </div>
+                                                    <div id="pattern-book-potential" class="panel-collapse collapse in">
+                                                        <div class="panel-body">
+                                                            <!-- ko foreach: Enumerable.From(tradeAdvertiserSchemes()).Where('$.Participation == 1').OrderBy('$.Position').ToArray() -->
+                                                            <label class="label label-primary" data-bind="text: Advertiser.Description"></label>
+                                                            <!-- /ko -->
+                                                            <p class="margin-bottom-0">
+                                                                We can't easily get at historical data for pattern book membership. Currently, doing so would necessitate interrogating invoicing to determine whether or not particular
+                                                                pattern book scheme related invoices were generated for a given account over a given period. The mockup needs revising.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /ko -->
+
+<div id="add-competitor-modal" class="modal fade">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header grey-blue bg-info">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 id="lead-address-title" class="modal-title">Add Competitor</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group row">
+                    <div class="col-sm-6 col-xs-12">
+                        <div id="competitor-search" class="input-group">
+                            <input id="competitor-autocomplete" class="form-control" data-bind="value: competitorAutocomplete, attr: { placeholder: 'Type to Search' }" />
+                            <span class="input-group-addon" data-bind="visible: newCompetitor()">
+                                <button class="add-competitor btn btn-success" type="button" data-bind="click: function() { addNewCompetitor(competitorAutocomplete()) }">Add</button>
+                            </span>
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-default @(Model.Properties?.Application_ButtonClass) dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    List <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right" data-bind="foreach: Enumerable.From(availableCompetitors()).OrderBy('$.Name').ToArray()">
+                                    <li data-bind="click: function() { $parent.addingCompetitor($data); }">
+                                        <label>
+                                            <span data-bind="text: Name"></span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- ko if: addingCompetitor -->
+                <div class="row" data-bind="with: addingCompetitor">
+                    <div class="col-xs-12">
+                        <h4 class="page-heading" data-bind="text: Name"></h4>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <div class="text-right">
+                            <button class="btn btn-success" aria-label="Close" data-bind="click: function() { saveCompetitorProductTypeGroups(); }">
+                                Save
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="add-competitor-ptg-table" class="table table-condensed table-striped">
+                                <thead>
+                                    <tr>
+                                        <th width="120">Product Type</th>
+                                        <th width="180">Estimated Value</th>
+                                        <th width="500">Notes</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- ko foreach: Enumerable.From(availableCompetitorProductTypeGroups()).OrderBy('$.SortOrder').ToArray() -->
+                                    <tr>
+                                        <td>
+                                            <label class="col-form-label" data-bind="text: Name"></label>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" data-bind="textInput: estimatedValue.formatted, numeric" />
+                                        </td>
+                                        <td class="note-cell">
+                                            <div class="note-history-wrapper">
+                                                <div class="note-history">
+                                                    <div class="note-history-inner">
+                                                        <div class="form-group">
+                                                            <textarea rows="5" class="form-control note" data-bind="textInput: note, attr: { id: 'new-note-' + $index() }" maxlength="500" placeholder="New note"></textarea>
+                                                            <label class="col-form-label textarea-remaining text-muted"></label>
+                                                            <div class="clearfix"></div>
+                                                        </div>
+
+                                                        <!-- ko if: oldNotes().length -->
+                                                        <!-- ko foreach: oldNotes -->
+                                                        <div class="item old-note" data-bind="css: { active: $index() == 0 }">
+                                                            <!-- ko if: Editable -->
+                                                            <div class="form-group">
+                                                                <textarea class="form-control note" rows="6" data-bind="textInput: $data.observable, attr: { id: 'note-' + NoteID }" maxlength="500"></textarea>
+                                                                <label class="col-form-label textarea-remaining text-muted"></label>
+                                                                <span class="old-note-date smaller text-muted" data-bind="text: CreatedLine"></span>
+                                                                <div class="clearfix"></div>
+                                                            </div>
+                                                            <!-- /ko -->
+                                                            <!-- ko ifnot: Editable -->
+                                                            <div class="form-group">
+                                                                <p class="form-control note" rows="6" readonly="readonly" data-bind="text: Note, attr: { id: 'note-' + NoteID }"></p>
+                                                                <span class="old-note-date smaller text-muted" data-bind="text: CreatedLine"></span>
+                                                            </div>
+                                                            <!-- /ko -->
+                                                        </div>
+                                                        <!-- /ko -->
+                                                        <!-- /ko -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    <!-- /ko -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- /ko -->
+            </div>
+            <div class="modal-footer">
+                <div class="text-right">
+                    <button class="btn btn-success @(Model.Properties?.Application_ButtonClass)" aria-label="Close" data-bind="click: function() { saveCompetitorProductTypeGroups(); }">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="potential-form-modal" class="modal fade">
+    <div class="modal-dialog" data-bind="with: tradeAccountPotential">
+        <div class="modal-content">
+            <div class="modal-header bg-info">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 id="potential-form-title" class="modal-title" data-bind="text: editingPotentialName"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">
+                            Potential
+                        </label>
+                    </div>
+                    <div class="col-xs-12">
+                        <select class="form-control" data-bind="value: editingPotential, options: [{ 'text': 'Yes', 'value': true }, { 'text': 'No', value: false }], optionsText: 'text', optionsValue: 'value'"></select>
+                    </div>
+                </div>
+                <div data-bind="visible: editingPotential">
+                    <div class="form-group row">
+                        <div class="col-xs-12">
+                            <label class="col-form-label">
+                                Value
+                            </label>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="input-group" data-bind="with: $parent.customerDetails">
+                                <span class="input-group-addon input-group-addon-default" data-bind="with: currency"><span data-bind="text: Symbol"></span></span>
+                                <input class="form-control" data-bind="numeric, forceNullOnEmpty: $parent.editingValue, textInput: $parent.editingValue.formatted" />
+                                <!-- ko if: $parent.editingValueGBP -->
+                                <span class="input-group-addon"></span>
+                                <span class="gbp-conversion form-control form-group-span" data-bind="text: $parent.editingValueGBP.formatted"></span>
+                                <!-- /ko -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-xs-12">
+                            <label for="custom-country" class="col-form-label">Financial Year</label>
+                        </div>
+                        <div class="col-xs-12">
+                            <select class="form-control" data-bind="options: getAvailableFinancialYears(), value: editingFinancialYear, optionsText: 'Name', optionsValue: 'Value', optionsCaption: 'Please Select...'"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">Comment</label>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <textarea class="form-control" placeholder="Comment..." rows="3" data-bind="textInput: editingNote"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="text-right">
+                    <button class="btn btn-success @(Model.Properties?.Application_ButtonClass)" aria-label="Close" data-bind="click: function() { saveTradeAccountPotential(); }">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="price-checker-modal" class="modal fade" data-bind="with: priceChecker">
+    <div class="modal-dialog modal-lg modal-xl">
+        <div class="modal-content">
+            <div class="modal-header grey-blue bg-info" style="border-bottom: 0;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 id="price-checker-title" class="modal-title">Check Prices</h4>
+            </div>
+            <div style="position: relative;">
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <div class="col-xs-12">
+                            <div data-bind="with: $parent.customerDetails">
+                                <p>
+                                    <label class="col-form-label">Trade Account: <span class="non-bold" data-bind="text: $parentContext.$parent.tradeAccountSelector().name"></span></label>
+                                    <div class="clearfix"></div>
+                                </p>
+                                <p>
+                                    <label class="col-form-label" style="margin-right: 12px;">Market: <span class="non-bold" data-bind="text: marketName"></span></label>
+                                    <label class="col-form-label" style="margin-right: 12px;">PriceList: <span class="non-bold" data-bind="text: priceList"></span></label>
+                                    <label class="col-form-label">Currency: <span class="non-bold" data-bind="text: currencyName"></span></label>
+                                    <div class="clearfix"></div>
+                                </p>
+                            </div>
+                            @*<p>
+                                    Exporting *all* pages to PDF / Excel would demand server side exporting, which is possible but annoying to have to do. Understandable limitations to processing such as this on the client side.
+                                    PDF will require iTextSharp, which we... do have a license for, I believe. <a href="https://github.com/telerik/ui-for-aspnet-mvc-examples/blob/master/grid/pdf-export-server-side/KendoUIMVC5/Controllers/HomeController.cs" target="_blank">Server side PDF Export (dated)</a>
+                                </p>*@
+                        </div>
+                    </div>
+                    @Html.Partial("Components/_PriceChecker", Model)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

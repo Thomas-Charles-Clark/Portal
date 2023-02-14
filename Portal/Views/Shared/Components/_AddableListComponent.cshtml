@@ -1,0 +1,215 @@
+﻿<script id="addable-list-template" type="text/html">
+    <div data-bind="css: controlClass">
+        <div class="input-group margin-bottom-0" data-bind="validationOptions: { insertMessages: false }">
+            <input class="form-control" data-bind="keepElement: autocomplete, textInput: autocomplete, attr: { placeholder: 'Type to Search' }, validationCore: destination, enable: enabled" />
+            <span class="tags-group input-group-addon" data-bind="visible: newItem()">
+                <button class="btn btn-success" type="button" data-bind="visible: newItem, click: function() { addItem(autocomplete()) }">Add</button>
+            </span>
+            <div class="input-group-btn">
+                <button class="btn btn-default" data-bind="visible: destination() != null, click: function() { destination(undefined); autocomplete(undefined); }">
+                    <span>&times;</span>
+                </button>
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-bind="enable: enabled">
+                    List
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu pointer" role="menu" data-bind="css: listPull">
+                    <!-- ko if: itemsList().length == 0 -->
+                    <li>
+                        <label>No Results</label>
+                    </li>
+                    <!-- /ko -->
+                    <!-- ko foreach: itemsList().sort() -->
+                    <li data-bind="click: function() { $parent.destination($data); $parent.autocomplete(Name) }">
+                        <label data-bind="text: Name"></label>
+                    </li>
+                    <!-- /ko -->
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- ko if: init() -->
+    <!-- /ko -->
+</script>
+
+<script type="text/javascript">
+    var addableListViewModel = function (params) {
+        var self = this;
+
+        params.widget(self);
+
+        self.params = params;
+
+        self.elementId = '#' + self.params.autocompleteElementId;
+
+        self.name = self.params.name;
+
+        self.enabled = ko.observable(true);
+
+        if (params.enabled) {
+            self.enabled = params.enabled
+        }
+
+        self.textField = params.textField;
+
+        self.classField = params.classField;
+        
+        self.labelClass = params.labelClass;
+
+        self.controlClass = params.controlClass;
+
+        self.typeField = params.typeField;
+
+        self.newItem = ko.observable(false);
+
+        self.destination = self.params.target;
+
+        self.itemsList = self.params.itemsList;
+
+        self.listPull = self.params.listPull || '';
+
+        self.autocomplete = ko.observable();
+
+        self.autocomplete.subscribe(function (newValue) {
+            if (newValue) {
+                if (newValue.trim() == self.autocomplete()) {
+                    //console.log('not trimming');
+                } else {
+                    //console.log('trimming');
+                    self.autocomplete(newValue.trim());
+                }
+            }
+        });
+
+        self.customAddFunction = params.customAddFunction;
+
+        self.customSelectFunction = params.customSelectFunction;
+
+        self.initValidation = function () {
+            self.autocomplete.extend({
+                charsRemaining: {
+                    maxLength: self.params.autocompleteMaxLength,
+                    element: self.autocomplete.DOMElement
+                }
+            });
+        }
+
+        self.autocomplete.subscribe(function (newValue) {
+            if (newValue) {
+                if (newValue.length == 0) {
+                    self.newItem(false);
+                }
+            } else {
+                self.newItem(false);
+            }
+        });
+
+        self.addItem = function (name) {
+            if (typeof self.customAddFunction === 'function') {
+                self.customAddFunction({ Name: name });
+            } else {
+                var data = {
+                    name: name
+                };
+                if (self.params.additionalData) {
+                    $.extend(data, ko.toJS(self.params.additionalData));
+                }
+                $.ajax({
+                    url: self.params.addItemEndpoint,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: data,
+                    success: function (data) {
+                        var obj = {};
+
+                        obj[self.params.valueField] = data[self.params.valueField];
+                        obj[self.params.textField] = data[self.params.textField];
+
+                        self.destination(obj);
+
+                        self.itemsList.push(obj);
+
+                        self.newItem(false);
+
+                        self.autocomplete(obj[self.params.textField]);
+                    }
+                });
+            }
+        }
+
+        self.initAutocomplete = function () {
+            $(self.autocomplete.DOMElement).autocomplete({
+                appendTo: 'body',
+                source: function (request, response) {
+                    $.ajax({
+                        url: self.params.autocompleteEndpoint,
+                        type: "POST",
+                        dataType: "json",
+                        data: {
+                            term: request.term
+                        },
+                        success: function (data) {
+
+                            self.newItem(true);
+
+                            data.forEach(function (item) {
+                                if (item[self.params.textField].toLowerCase() == request.term.toLowerCase()) {
+                                    self.newItem(false);
+                                }
+                            });
+
+                            response($.map(data, function (item) {
+                                return {
+                                    label: item[self.textField],
+                                    value: item
+                                };
+                            }));
+                        }
+                    });
+                },
+                minLength: 1,
+                select: function (event, ui) {
+                    event.preventDefault();
+                    if (typeof self.customSelectFunction === 'function') {
+                        //console.log(ui.item);
+                        self.customSelectFunction(ui.item.value, event);
+                    } else {
+                        self.destination(ui.item.value);
+                        self.autocomplete(ui.item.label);
+                        self.newItem(false);
+                        return false;
+                    }
+                },
+                focus: function (event, ui) {
+                    return false;
+                },
+                autoFocus: true,
+                create: function () {
+                    if (self.classField != null) {
+                        $(this).data("ui-autocomplete")._renderItem = function (ul, item) {
+
+                            var li = $("<li>");
+                            var div = li.append("<div class='ui-menu-item-wrapper'><a href='#'>" + item.label + "<span class='type'>"+item.value[self.typeField]+"</span></a></div>");
+
+                            li.addClass(item.value[self.classField])
+
+
+                            return li.appendTo(ul);
+                        };
+                    }
+                }
+            });
+            return true;
+        }
+
+        self.init = function () {
+            self.initAutocomplete();
+            self.initValidation();
+        }
+    }
+
+    ko.components.register('addable-list-component', {
+        viewModel: addableListViewModel,
+        template: { element: $('#addable-list-template')[0] }
+    });
+</script>

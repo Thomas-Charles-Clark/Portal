@@ -1,0 +1,11 @@
+﻿#order-import {
+    .controls-container {
+        display: flex;
+
+        > a {
+            &:last-of-type {
+                margin-left: auto;
+            }
+        }
+    }
+}

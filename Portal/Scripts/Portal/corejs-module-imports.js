@@ -1,0 +1,1 @@
+﻿import '../../node_modules/core-js/es/promise/all-settled.js';

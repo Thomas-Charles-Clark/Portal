@@ -1,0 +1,147 @@
+﻿@model Portal.Areas.Orders.ViewModels.OrderImportViewModel
+@{
+    ViewBag.Title = "Internal Order Imports";
+    
+    var firstTab = 3;
+    var firstStatus = "despatchedOrders";
+
+    if (Request.QueryString.AllKeys.Contains("tab"))
+    {
+        switch (Request.QueryString["tab"])
+        {
+            case "backOrders":
+                firstTab = 1;
+                firstStatus = Request.QueryString["tab"];
+                break;
+            case "reserveOrders":
+                firstTab = 2;
+                firstStatus = Request.QueryString["tab"];
+                break;
+            case "dispatched":
+            case "despatched":
+            case "dispatchedOrders":
+            case "despatchedOrders":
+                firstTab = 3;
+                firstStatus = "despatchedOrders";
+                break;
+            case "ordersInProgress":
+                firstTab = 4;
+                firstStatus = Request.QueryString["tab"];
+                break;
+            case "held":
+                firstTab = 5;
+                firstStatus = Request.QueryString["tab"];
+                break;
+            default:
+                break;
+        }
+    }
+}
+@section styles {
+    @Styles.Render("~/bundles/css/order-import")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/order-import")
+
+    <script type="text/javascript">
+        function getUserName() {
+            return '@(User.Identity.GetFullName())';
+        }
+    </script>
+
+    <script id="returning-line-template" type="text/html">
+        <div class="return-line returning-line">
+            <button class="close pull-right" data-bind="click: function(data, event) { $parent.removeLine(data); }">
+                &times;
+            </button>
+            <label class="display-block">
+                Product Code: <span class="font-normal" data-bind="text: Code"></span>
+            </label>
+            <label class="display-block">
+                Description: <span class="font-normal" data-bind="text: Description"></span>
+            </label>
+            <label class="display-block">
+                Quantity: <span class="font-normal" data-bind="text: quantityParcelled"></span>
+            </label>
+            <label class="display-block">
+                Unit: <span class="font-normal" data-bind="text: Unit"></span>
+            </label>
+        </div>
+    </script>
+
+    <script type="text/javascript">
+
+        function getPreselectedTradeAccount() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.PreselectedTradeAccount))
+        }
+        
+
+        var viewModel = orderImportViewModel();
+
+        $(document).ready(function () {
+            ko.applyBindings(viewModel, document.body);
+            viewModel.busy(false);
+            viewModel.ready(true);
+        });
+
+    </script>
+}
+
+@section modals {
+
+}
+
+<div class="blocker" data-bind="visible: busy">
+    <div class="loading-spinner"></div>
+    <h3 data-bind="text: busyMessage"></h3>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default margin-top-15" style="display: none;" data-bind="visible: true">
+    <div class="panel-body">
+        <ul class="nav nav-pills" style="display: none;">
+            <li class="active">
+                <a href="#order-import" data-toggle="tab">
+                    Search
+                </a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div id="order-import" class="tab-pane active">
+                <div class="flex-container controls-container margin-bottom-15">
+                    <a class="btn btn-flat" style="white-space: normal" href="/orders/import/downloadexamplecsv">
+                        Download Example CSV
+                    </a>
+                    <a class="btn btn-flat" style="white-space: normal" href="/orders/import/downloadcsvspecification">
+                        Download Specification PDF
+                    </a>
+                </div>
+                <form method="post" action="/orders/importapi/uploadOrderFiles">
+                    <input id="file-uploader" type="file" name="files[]" data-bind="kendoUpload: uploader" accept=".csv" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

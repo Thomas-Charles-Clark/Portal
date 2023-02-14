@@ -1,0 +1,749 @@
+﻿@model Tasks.ViewModels.TasksViewModel
+@{
+    ViewBag.Title = "Tasks Dashboard - Designers Guild";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles {
+    @Styles.Render("~/bundles/css/tasks-dashboard")
+    @Styles.Render("~/bundles/css/components")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/tasks-dashboard")
+
+    <script type="text/javascript">
+        function getInitialWidget() {
+            return '@Model.StartingWidget';
+        }
+
+        function getUserId() {
+            return @Html.Raw(User.Identity.GetUserId<int>());
+        }
+
+        function getUserName() {
+            return '@Html.Raw(Model.UserName)';
+        }
+
+        function getAvailableExternalCompanies() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.ExternalCompanies));
+        }
+
+        function getAvailableProjects() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Projects));
+        }
+
+        function getAvailableTaskTypes() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.TaskTypes));
+        }
+
+        function getPreloaded() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Preloaded));
+        }
+
+        function getEmployeeHierarchyData() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.EmployeeHierarchyData));
+        }
+
+        $(document).ready(function () {
+
+            viewModel = new tasksDashboardViewModel();
+
+            ko.validation.init({
+                decorateInputElement: true,
+                errorElementClass: 'alert-danger',
+                errorMessageClass: 'validation-message text-danger'
+            });
+
+            ko.options.deferUpdates = true;
+            ko.applyBindings(viewModel, document.body);
+
+            //$("#new-task-modal").modal('show');
+
+            $("#new-task-due-date").attr('readonly', true);
+            $("#new-task-due-date").click(function () {
+                $("#new-task-due-date").data("kendoDatePicker").open();
+            });
+
+            $("#new-task-from-date").attr('readonly', true);
+            $("#new-task-from-date").click(function () {
+                $("#new-task-from-date").data("kendoDatePicker").open();
+            });
+
+            $("#new-task-until-date").attr('readonly', true);
+            $("#new-task-until-date").click(function () {
+                $("#new-task-until-date").data("kendoDatePicker").open();
+            });
+
+            $(".edit-task-delivery-date").attr('readonly', true);
+            $(".edit-task-delivery-date").click(function () {
+                $("input.edit-task-delivery-date").data("kendoDatePicker").open();
+            });
+            $("#g-recaptcha-tip").hide()
+            //viewModel.preFilters.assignedToSlicer()._selectItemByText('Tom');
+        });
+
+        //$("#edit-task-tabs a").click
+
+        //$('#new-task-modal').on('shown.bs.modal', function () {
+        //    $(document).off('focusin.modal');
+        //});
+        //$('#edit-task-modal').on('shown.bs.modal', function () {
+        //    $(document).off('focusin.modal');
+        //});
+    </script>
+}
+@section beforeContainer {
+    @*<div class="form-busy" data-bind="fadeVisible: loadingBusy">
+            <div class="busy-bars">
+                <div class="rect1 alert alert-info"></div>
+                <div class="rect2 alert alert-info"></div>
+                <div class="rect3 alert alert-info"></div>
+                <div class="rect4 alert alert-info"></div>
+                <div class="rect5 alert alert-info"></div>
+            </div>
+        </div>*@
+}
+@section modals {
+    @Html.Partial("Modals/_NewTaskModal")
+    @Html.Partial("Modals/_ExternalAssignmentModal")
+    @Html.Partial("Modals/_EditTaskModal")
+}
+@section components {
+    @Html.Partial("~/Views/Shared/Components/_AddableListComponent.cshtml")
+}
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <div class="btn-toolbar pull-right">
+            @*<div class="btn-group btn-group-sm">
+                    <a class="btn btn-secondary-blue btn-lg" data-bind="click: notifyTest">
+                        <i class="fas fa-exclamation-triangle"></i> Notify Test
+                    </a>
+                </div>*@
+            <div class="btn-group">
+                <a class="btn btn-success" data-target="#new-task-modal" data-toggle="modal">
+                    @*<i class="fas fa-plus"></i>*@ Create
+                </a>
+            </div>
+            <div class="btn-group">
+                <a class="btn btn-primary" data-bind="click: toggleGridFilters">
+                    Grid Filters
+                </a>
+            </div>
+            <div class="btn-group">
+                <a class="btn btn-primary" data-bind="click: myTasks">
+                    View My Tasks
+                </a>
+            </div>
+            <div class="btn-group">
+                <a class="btn btn-primary" data-bind="click: tasksICreated">
+                    View Tasks I Created
+                </a>
+            </div>
+            <div class="btn-group">
+                <a class="btn btn-primary" data-bind="click: allExternalTasks">
+                    View My Externally Assigned Tasks
+                </a>
+            </div>
+            <div class="btn-group">
+                <a class="btn btn-battleship-blue" data-bind="click: preFilters.clearFilters">
+                    @*<i class="fas fa-times-circle"></i>*@ Clear All Filters
+                </a>
+            </div>
+        </div>
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+
+@*<h1 data-bind="with: alertingComponent">
+        <span data-bind="foreach: unreadTasks">
+            <span data-bind="text: message" style="display: block;"></span>
+        </span>
+    </h1>*@
+
+<script id="grid-row-template" type="text/x-kendo-template">
+    <tr class="task-outer" data-uid="#= uid #">
+        <td colspan="1000" class="task-td">
+            <div class="task" data-bind="click: function() { $parent.taskEdit.load($data); }">
+                <div class="task-inner">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            @*<h4>
+                                <span data-bind="attr: { title: 'Task ID: ' + Task.TaskID + ' (Task Due ID: ' + TaskDueID + ')'}">
+                                    Task ID: <span data-bind="text: Task.TaskID"></span>
+                                </span>
+                                <span style="display: none;" data-bind="visible: Urgent" class="urgent-title">Urgent</span>
+                                <span data-bind="visible: TaskStatusID == 2, css: { 'urgent' : TaskStatusID == 2 }">
+                                    <span data-bind="text: TaskStatus.Name"></span>
+                                    by
+                                    <span data-bind="text: Math.abs(moment(TaskDue.Due).diff(moment(), 'days')) + ' day' + (Math.abs(moment(TaskDue.Due).diff(moment(), 'days')) > 1 ? 's' : '')"></span>
+                                </span>
+                            </h4>*@
+                            <h4 data-bind="visible: TaskDue.LastChaseDT">
+                                <span class="urgent-title">
+                                    Chased <span data-bind="text: moment(TaskDue.LastChaseDT).format('dddd Do MMMM YYYY')"></span>
+                                </span>
+                            </h4>
+                            <p class="task-description" data-bind="html: Task.AuthorDescription"></p>
+                            <p class="task-description" data-bind="html: Task.OwnerDescription"></p>
+                        </div>
+                        <div class="col-xs-8">
+                            <div class="row">
+                                <div class="col-xs-5">
+                                    <span class="col-form-span date-span">
+                                        <span data-bind="text: moment(Due).format('dddd Do MMMM YYYY')"></span>
+                                        <!-- ko ifnot: TaskStatusID == 2 -->
+                                        <!-- ko if: Math.abs(moment(TaskDue.Due).diff(moment(), 'days')) == 0 -->
+                                        <span> - Today</span>
+                                        <!-- /ko -->
+                                        <!-- ko if: Math.abs(moment(TaskDue.Due).diff(moment(), 'days')) == 1 -->
+                                        <span> - Tomorrow</span>
+                                        <!-- /ko -->
+                                        <!-- ko if: Math.abs(moment(TaskDue.Due).diff(moment(), 'days')) > 1 -->
+                                        <span data-bind="text: ' - in ' + Math.abs(moment(TaskDue.Due).diff(moment(), 'days') + 1) + ' day(s)'"></span>
+                                        <!-- /ko -->
+                                        <!-- /ko -->
+                                    </span>
+                                </div>
+                                <div class="col-xs-3">
+                                    <span class="col-form-span">
+                                        <span data-bind="text: Task.CurrentAssignment.AssignedByMember.FullName"></span>
+                                        @*-
+                                        <span data-bind="text: Enumerable.From(Task.CurrentAssignment.AssignedByMember.Departments).Select('$.Department.Name').ToArray().join(', ')"></span>*@
+                                    </span>
+                                </div>
+                                <div class="col-xs-3">
+                                    <span class="col-form-span">
+                                        <span data-bind="text: Task.CurrentAssignment.AssignedToMember.FullName"></span>
+                                        @*-
+                                        <span data-bind="text: Enumerable.From(Task.CurrentAssignment.AssignedToMember.Departments).Select('$.Department.Name').ToArray().join(', ')"></span>*@
+                                    </span>
+                                </div>
+                                @*<div class="col-xs-4" data-bind="with: ExpectedDeliveryDT">
+                                    <label class="col-form-label">
+                                        Expected Delivery
+                                    </label>
+                                    <span class="col-form-span date-span">
+                                        <span data-bind="html: moment($data).format('dddd Do MMMM YYYY')"></span>
+                                        <!-- ko ifnot: $parent.TaskStatusID == 2 -->
+                                        <br />
+                                        <span data-bind="html: 'in ' + Math.abs(moment($data).diff(moment(), 'days') + 1) + ' day(s)'"></span>
+                                        <!-- /ko -->
+                                    </span>
+                                </div>*@
+                                @*<div class="col-xs-4" data-bind="with: Task.Project, visible: Task.Project">
+                                    <label class="col-form-label">
+                                        Project
+                                    </label>
+                                    <span class="col-form-span" data-bind="text: Name"></span>
+                                </div>*@
+                            </div>
+                            @*<div class="form-group row">
+                                <div class="col-xs-4">
+                                    <label class="col-form-label">
+                                        Assigned To
+                                    </label>
+                                    <span class="col-form-span">
+                                        <span data-bind="text: Task.CurrentAssignment.AssignedToMember.FullName"></span>
+                                        -
+                                        <span data-bind="text: Enumerable.From(Task.OwnerMember.Departments).Select('$.Department.Name').ToArray().join(', ')"></span>
+                                    </span>
+                                </div>
+                                <div class="col-xs-4">
+                                    <label class="col-form-label">
+                                        Created By
+                                    </label>
+                                    <span class="col-form-span">
+                                        <span data-bind="text: Task.CurrentAssignment.AssignedByMember.FullName"></span>
+                                        -
+                                        <span data-bind="text: Enumerable.From(Task.Author.Departments).Select('$.Department.Name').ToArray().join(', ')"></span>
+                                    </span>
+                                </div>
+                                <div class="col-xs-4" data-bind="with: Task.TaskType, visible: Task.TaskType">
+                                    <label class="col-form-label">
+                                        Task Type
+                                    </label>
+                                    <span class="col-form-span" data-bind="text: Name"></span>
+                                </div>
+                            </div>*@
+                            @*<div class="form-group row">
+                                <div class="col-xs-4" data-bind="with: Core">
+                                    <label class="col-form-label">
+                                        Core Task
+                                    </label>
+                                    <span class="col-form-span">
+                                        This is a Core Task
+                                    </span>
+                                </div>
+                                <div class="col-xs-4" data-bind="with: ChaseCount, visible: ChaseCount">
+                                    <label class="col-form-label">
+                                        Chased
+                                    </label>
+                                    <span class="col-form-span" data-bind="text: $data > 1 ? $data + ' times' : ' Once'"></span>
+                                </div>
+                            </div>*@
+                        </div>
+                    </div>
+                    <div style="display: none" class="row" data-bind="visible: ExternalCompanyID">
+                        <div class="col-xs-12">
+                            <hr />
+                        </div>
+                        <div class="col-xs-2" data-bind="with: Task.OwnerExternalCompany">
+                            <label class="col-form-label">
+                                External Company
+                            </label>
+                            <span class="col-form-span" data-bind="text: Name"></span>
+                        </div>
+                        <div class="col-xs-2" data-bind="with: Task.ExternalStatus">
+                            <label class="col-form-label">
+                                External Status
+                            </label>
+                            <span class="col-form-span" data-bind="text: Name"></span>
+                        </div>
+                        <div class="col-xs-2" data-bind="with: Task.ExternalReference">
+                            <label class="col-form-label">
+                                External Reference
+                            </label>
+                            <span class="col-form-span" data-bind="text: $data"></span>
+                        </div>
+                        <div class="col-xs-2" data-bind="with: Task.ExternalContact">
+                            <label class="col-form-label">
+                                External Contact
+                            </label>
+                            <span class="col-form-span" data-bind="text: $data"></span>
+                        </div>
+                        <div class="col-xs-2" data-bind="with: Task.ExternalEmail">
+                            <label class="col-form-label">
+                                External Email
+                            </label>
+                            <span class="col-form-span">
+                                <a data-bind="attr: { href: 'mailto' + $data }, text: $data"></a>
+                            </span>
+                        </div>
+                        <div class="col-xs-2" data-bind="with: Task.ExternalPhone">
+                            <label class="col-form-label">
+                                External Phone
+                            </label>
+                            <span class="col-form-span">
+                                <a data-bind="attr: { href: 'tel' + $data }, text: $data"></a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</script>
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <div class="panel panel-primary margin-bottom-0">
+            <div class="panel-heading no-padding">
+                <h4 class="panel-title">
+                    <a class="panel-toggle non-search" data-target="#dashboard-collapse" data-toggle="collapse">
+                        Dashboard
+                    </a>
+                </h4>
+            </div>
+            <div id="dashboard-collapse" class="panel-collapse collapse in">
+                <div class="panel-body" style="padding: 5px">
+                    <div style="position: relative">
+                        @*<div class="form-busy" style="display: none;" data-bind="fadeVisible: taskGridBusy">
+                                <div class="busy-bars">
+                                    <div class="rect1 alert alert-info"></div>
+                                    <div class="rect2 alert alert-info"></div>
+                                    <div class="rect3 alert alert-info"></div>
+                                    <div class="rect4 alert alert-info"></div>
+                                    <div class="rect5 alert alert-info"></div>
+                                </div>
+                            </div>*@
+                        <div class="row" data-bind="with: preFilters">
+                            @*<div class="col-xs-12">
+                                    <div id="main-dashboard-btns" class="btn-group btn-group-justified">
+                                        <a class="btn btn-primary">
+                                            My Tasks
+                                        </a>
+                                        <a class="btn btn-primary">
+                                            Tasks I Created
+                                        </a>
+                                        <a class="btn btn-primary">
+                                            My Department Tasks
+                                        </a>
+                                        <a class="btn btn-primary">
+                                            Tasks My Dept. Created
+                                        </a>
+                                        <a class="btn btn-primary">
+                                            Core Tasks
+                                        </a>
+                                    </div>
+                                </div>*@
+                            <div class="col-xs-12">
+                                <div class="btn-group btn-group-justified">
+                                    <div class="btn-group prefilter">
+                                        <label class="col-form-label">
+                                            Created By
+                                        </label>
+                                        <div data-bind="kendoDropDownTree: createdBySettings, keepElement: createdBySlicer"></div>
+                                    </div>
+                                    <div class="btn-group prefilter">
+                                        <label class="col-form-label">
+                                            Assigned To
+                                        </label>
+                                        <div data-bind="kendoDropDownTree: assignedToSettings, keepElement: assignedToSlicer"></div>
+                                    </div>
+                                    <div class="btn-group prefilter">
+                                        <label class="col-form-label">
+                                            Status
+                                        </label>
+                                        <div data-bind="kendoDropDownList: statusSlicerSettings"></div>
+                                    </div>
+                                    <div class="btn-group prefilter">
+                                        <label class="col-form-label">
+                                            Project
+                                        </label>
+                                        <div data-bind="kendoDropDownList: projectSlicerSettings"></div>
+                                    </div>
+                                    <div class="btn-group prefilter">
+                                        <label class="col-form-label">
+                                            Type
+                                        </label>
+                                        <div data-bind="kendoDropDownList: typeSlicerSettings"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row dashboard">
+                            <div class="col-xs-4 text-center">
+                                <h4>Priority</h4>
+                                <div class="btn-group btn-group-justified btn-group-sm">
+                                    <div id="unread" class="dash-btn btn btn-primary" data-bind="click: function (data, event) { preFilters.setWidget('Unread', event.target); }">
+                                        <span>Unread</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-count" data-bind="text: Unread"></span>
+                                        </span>
+                                    </div>
+                                    <div id="urgent" class="dash-btn btn btn-danger" data-bind="click: function (data, event) { preFilters.setWidget('Urgent', event.target); }">
+                                        <span>Urgent</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-count" data-bind="text: Urgent"></span>
+                                        </span>
+                                    </div>
+                                    <div id="chased" class="dash-btn btn btn-danger" data-bind="click: function (data, event) { preFilters.setWidget('Chased', event.target); }">
+                                        <span>Chased</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-count" data-bind="text: Chased"></span>
+                                        </span>
+                                    </div>
+                                    <div id="overdue" class="dash-btn btn btn-danger" data-bind="click: function (data, event) { preFilters.setWidget('Overdue', event.target); }">
+                                        <span>Overdue</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-count" data-bind="text: Overdue"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-4 text-center">
+                                <h4>Current Workload</h4>
+                                <div class="btn-group btn-group-justified btn-group-sm">
+                                    <div id="due-today" class="dash-btn btn btn-blue-two" data-bind="click: function (data, event) { preFilters.setWidget('DueToday', event.target); }">
+                                        <span style="display: none">Today's</span>
+                                        <span>Today</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-count" data-bind="text: DueToday"></span>
+                                        </span>
+                                    </div>
+                                    <div id="due-this-week" class="dash-btn btn btn-blue-two" data-bind="click: function (data, event) { preFilters.setWidget('DueThisWeek', event.target); }">
+                                        <span style="display: none">This week's</span>
+                                        <span>This Week</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-count" data-bind="text: DueThisWeek"></span>
+                                        </span>
+                                    </div>
+                                    <div class="dash-btn btn btn-blue-two" data-bind="click: function (data, event) { preFilters.setWidget('DueThisMonth', event.target); }">
+                                        <span style="display: none">This month's</span>
+                                        <span>This Month</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-count" data-bind="text: DueThisMonth"></span>
+                                        </span>
+                                    </div>
+                                    <div id="current-workload-total" class="dash-btn btn btn-blue-two" data-bind="click: function (data, event) { preFilters.setWidget('AllTimeTotal', event.target); }">
+                                        <span>All Time</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-count" data-bind="text: AllTimeTotal"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-4 text-center">
+                                <h4>Pipeline</h4>
+                                <div class="btn-group btn-group-justified btn-group-sm">
+                                    <div class="dash-btn btn btn-battleship-blue" data-bind="click: function (data, event) { preFilters.setWidget('PipelineDue30', event.target); }">
+                                        <span>30 days</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-count" data-bind="text: PipelineDue30"></span>
+                                        </span>
+                                    </div>
+                                    <div class="dash-btn btn btn-battleship-blue" data-bind="click: function (data, event) { preFilters.setWidget('PipelineDue60', event.target); }">
+                                        <span>60 days</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-count" data-bind="text: PipelineDue60"></span>
+                                        </span>
+                                    </div>
+                                    <div class="dash-btn btn btn-battleship-blue" data-bind="click: function (data, event) { preFilters.setWidget('PipelineDue90', event.target); }">
+                                        <span>90 days</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-count" data-bind="text: PipelineDue90"></span>
+                                        </span>
+                                    </div>
+                                    <div class="dash-btn btn btn-battleship-blue" data-bind="click: function (data, event) { preFilters.setWidget('PipelineDue120Plus', event.target); }">
+                                        <span>120+ days</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-count" data-bind="text: PipelineDue120Plus"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row dashboard" style="display: none;" data-bind="visible: taskDashboard">
+                            <div class="col-xs-4">
+                                <div class="btn-group btn-group-justified btn-group-sm external">
+                                    <div id="unread-external" class="dash-btn btn btn-primary" data-bind="click: function (data, event) { preFilters.setWidget('UnreadExternal', event.target); }">
+                                        <span style="display: none">Unread external</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: UnreadExternal"></span>
+                                            external
+                                        </span>
+                                    </div>
+                                    <div id="urgent-external" class="dash-btn btn btn-danger" data-bind="click: function (data, event) { preFilters.setWidget('UrgentExternal', event.target); }">
+                                        <span style="display: none">Urgent external</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: UrgentExternal"></span>
+                                            external
+                                        </span>
+                                    </div>
+                                    <div id="chased-external" class="dash-btn btn btn-danger" data-bind="click: function (data, event) { preFilters.setWidget('ChasedExternal', event.target); }">
+                                        <span style="display: none">Chased external</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: ChasedExternal"></span>
+                                            external
+                                        </span>
+                                    </div>
+                                    <div id="overdue-external" class="dash-btn btn btn-danger" data-bind="click: function (data, event) { preFilters.setWidget('OverdueExternal', event.target); }">
+                                        <span style="display: none">Overdue external</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: OverdueExternal"></span>
+                                            external
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="btn-group btn-group-justified btn-group-sm external">
+                                    <div id="due-today-external" class="dash-btn btn btn-blue-two" data-bind="click: function (data, event) { preFilters.setWidget('DueTodayExternal', event.target); }">
+                                        <span style="display: none">Due today external</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: DueTodayExternal"></span>
+                                            external
+                                        </span>
+                                    </div>
+                                    <div id="due-this-week-external" class="dash-btn btn btn-blue-two" data-bind="click: function (data, event) { preFilters.setWidget('DueThisWeekExternal', event.target); }">
+                                        <span style="display: none">Due this week external</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: DueThisWeekExternal"></span>
+                                            external
+                                        </span>
+                                    </div>
+                                    <div class="dash-btn btn btn-blue-two" data-bind="click: function (data, event) { preFilters.setWidget('DueThisMonthExternal', event.target); }">
+                                        <span style="display: none">Due this month external</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: DueThisMonthExternal"></span>
+                                            external
+                                        </span>
+                                    </div>
+                                    <div id="current-workload-total-external" class="dash-btn btn btn-blue-two" data-bind="click: function (data, event) { preFilters.setWidget('CurrentWorkloadTotalExternal', event.target); }">
+                                        <span style="display: none">Total external</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: CurrentWorkloadTotalExternal"></span>
+                                            external
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="btn-group btn-group-justified btn-group-sm external">
+                                    <div class="dash-btn btn btn-battleship-blue" data-bind="click: function (data, event) { preFilters.setWidget('PipelineDue30External', event.target); }">
+                                        <span style="display: none">30 days external</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: PipelineDue30External"></span>
+                                            external
+                                        </span>
+                                    </div>
+                                    <div class="dash-btn btn btn-battleship-blue" data-bind="click: function (data, event) { preFilters.setWidget('PipelineDue60External', event.target); }">
+                                        <span style="display: none">60 days external</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: PipelineDue60External"></span>
+                                            external
+                                        </span>
+                                    </div>
+                                    <div class="dash-btn btn btn-battleship-blue" data-bind="click: function (data, event) { preFilters.setWidget('PipelineDue90External', event.target); }">
+                                        <span style="display: none">90 days external</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: PipelineDue90External"></span>
+                                            external
+                                        </span>
+                                    </div>
+                                    <div class="dash-btn btn btn-battleship-blue" data-bind="click: function (data, event) { preFilters.setWidget('PipelineDue120PlusExternal', event.target); }">
+                                        <span style="display: none">120+ days external</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: PipelineDue120PlusExternal"></span>
+                                            external
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row dashboard" style="display: none;" data-bind="visible: taskDashboard">
+                            <div class="col-xs-4">
+                                <div class="btn-group btn-group-justified btn-group-sm complete">
+                                    <div id="unread-complete" class="dash-btn btn btn-primary" data-bind="click: function (data, event) { preFilters.setWidget('UnreadCompleted', event.target); }">
+                                        <span style="display: none">Unread completed</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: UnreadCompleted"></span>
+                                            complete
+                                        </span>
+                                    </div>
+                                    <div id="urgent-complete" class="dash-btn btn btn-danger" data-bind="click: function (data, event) { preFilters.setWidget('UrgentCompleted', event.target); }">
+                                        <span style="display: none">Urgent completed</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: UrgentCompleted"></span>                                                   complete
+                                        </span>
+                                    </div>
+                                    <div id="chased-complete" class="dash-btn btn btn-danger" data-bind="click: function (data, event) { preFilters.setWidget('ChasedCompleted', event.target); }">
+                                        <span style="display: none">Chased completed</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: ChasedCompleted"></span>                                                   complete
+                                        </span>
+                                    </div>
+                                    <div id="overdue-complete" class="dash-btn btn btn-danger" data-bind="click: function (data, event) { preFilters.setWidget('OverdueCompleted', event.target); }">
+                                        <span style="display: none">Overdue completed</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: OverdueCompleted"></span>                                                  complete
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="btn-group btn-group-justified btn-group-sm complete">
+                                    <div id="due-today-complete" class="dash-btn btn btn-blue-two" data-bind="click: function (data, event) { preFilters.setWidget('DueTodayCompleted', event.target); }">
+                                        <span style="display: none">Due today completed</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: DueTodayCompleted"></span>                                                 complete
+                                        </span>
+                                    </div>
+                                    <div class="dash-btn btn btn-blue-two" data-bind="click: function (data, event) { preFilters.setWidget('DueThisWeekCompleted', event.target); }">
+                                        <span style="display: none">Due this week completed</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: DueThisWeekCompleted"></span>                                              complete
+                                        </span>
+                                    </div>
+                                    <div class="dash-btn btn btn-blue-two" data-bind="click: function (data, event) { preFilters.setWidget('DueThisMonthCompleted', event.target); }">
+                                        <span style="display: none">Due this month completed</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: DueThisMonthCompleted"></span>                                            complete
+                                        </span>
+                                    </div>
+                                    <div id="current-workload-total-complete" class="dash-btn btn btn-blue-two" data-bind="click: function (data, event) { preFilters.setWidget('CurrentWorkloadTotalCompleted', event.target); }">
+                                        <span style="display: none">Total completed</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: CurrentWorkloadTotalCompleted"></span>                                     complete
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="btn-group btn-group-justified btn-group-sm complete">
+                                    <div class="dash-btn btn btn-battleship-blue" data-bind="click: function (data, event) { preFilters.setWidget('PipelineDue30Completed', event.target); }">
+                                        <span style="display: none">30 days completed</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: PipelineDue30Completed"></span>
+                                            complete
+                                        </span>
+                                    </div>
+                                    <div class="dash-btn btn btn-battleship-blue" data-bind="click: function (data, event) { preFilters.setWidget('PipelineDue60Completed', event.target); }">
+                                        <span style="display: none">60 days completed</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: PipelineDue60Completed"></span>
+                                            complete
+                                        </span>
+                                    </div>
+                                    <div class="dash-btn btn btn-battleship-blue" data-bind="click: function (data, event) { preFilters.setWidget('PipelineDue90Completed', event.target); }">
+                                        <span style="display: none">90 days completed</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: PipelineDue90Completed"></span>
+                                            complete
+                                        </span>
+                                    </div>
+                                    <div class="dash-btn btn btn-battleship-blue" data-bind="click: function (data, event) { preFilters.setWidget('PipelineDue120PlusCompleted', event.target); }">
+                                        <span style="display: none">120+ days completed</span>
+                                        <span data-bind="with: taskDashboard">
+                                            <span class="dash-external" data-bind="text: PipelineDue120PlusCompleted"></span>
+                                            complete
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<div class="form-group row">
+    <div class="col-xs-12">
+        <div class="panel panel-primary margin-bottom-0">
+            <div class="panel-heading no-padding">
+                <h4 class="panel-title">
+                    <a class="panel-toggle collapsed" data-bind="click: function (data, event) { $('.k-grid-header').slideToggle(); $(event.target).toggleClass('collapsed') }">
+                        Search for Tasks
+                    </a>
+                </h4>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <div style="position: relative">
+            <div class="form-busy" style="display: none;" data-bind="fadeVisible: taskGridBusy">
+                <div class="busy-bars">
+                    <div class="rect1 alert alert-info"></div>
+                    <div class="rect2 alert alert-info"></div>
+                    <div class="rect3 alert alert-info"></div>
+                    <div class="rect4 alert alert-info"></div>
+                    <div class="rect5 alert alert-info"></div>
+                </div>
+            </div>
+            <div data-bind="kendoGrid: taskGridSettings"></div>
+        </div>
+    </div>
+</div>

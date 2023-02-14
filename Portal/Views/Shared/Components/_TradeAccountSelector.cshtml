@@ -1,0 +1,170 @@
+﻿@model Portal.ViewModels.ComponentModels.TradeAccountSelectorViewModel
+
+@if (Model.Properties?.AccountSelector_CanSearch == true)
+{
+    <div class="trade-account-selector panel panel-primary @(Model.Properties?.Application_PanelClass)" data-bind="with: tradeAccountSelector, visible: true" style="display: none;">
+        @if (Model.CanCollapse)
+        {
+            <div class="panel-heading no-padding">
+                <h4 class="panel-title">
+                    <a class="panel-toggle @(Model.Selected == null ? "" : "collapsed")" data-toggle="collapse" data-target="#trade-account-collapse">
+                        <span data-bind="text: title"></span>
+                        @*<span data-bind="with: selected" style="margin-left: 24px;">
+                                <span>Credit Status:</span>
+                                <span data-bind="text: CreditStatus"></span>
+                                <span data-bind="text: formatCurrency(CreditLimit, 0, 'en-GB', 'GBP')"></span>
+                            </span>*@
+                    </a>
+                </h4>
+                <div class="clearfix"></div>
+            </div>
+        }
+        else
+        {
+            <div class="panel-heading no-padding">
+                <h4 class="panel-title">
+                    <a data-bind="text: title" style="cursor: default;"></a>
+                </h4>
+                <div class="clearfix"></div>
+            </div>
+        }
+        @if (Model.CanCollapse)
+        {
+            <div id="trade-account-collapse" class="panel-collapse collapse @(Model.Selected == null ? "in" : "")">
+                <div class="selector panel-body bg-info">
+                    <div class="input-group">
+                        <input id="account-number" type="text" class="form-control" maxlength="20" data-bind="value: name, validationElement: selected" placeholder="Search by Name or Account Number" />
+                        <span class="input-group-addon">
+                            <button class="clear-btn btn btn-primary @(Model.Properties?.Application_ButtonClass)" type="button" data-bind="click: function() { clearSearch() }">×</button>
+                        </span>
+                        <span class="input-group-btn">
+                            <button class="search-btn btn btn-primary @(Model.Properties?.Application_ButtonClass)" data-bind="click: function() { performSearch() }"><span class="glyphicon glyphicon-search"></span></button>
+                        </span>
+                    </div>
+                    <span data-bind="validationMessage: selected, css: 'validation-message text-danger'"></span>
+
+                    @if (Model.OrderProductsExtension)
+                    {
+                        <div class="btn-toolbar margin-top-15">
+                            <div class="btn-group">
+                                <button class="btn btn-green" data-bind="click: function() { parent.orderFactory.showNewBasket(); }, enable: parent.orderFactory.mayStartOrder() && !parent.orderFactory.isResetting()">
+                                    Start Order
+                                </button>
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-blue" data-bind="click: function() { parent.orderFactory.showNewBrowse(); }, enable: parent.orderFactory.mayBrowse() && !parent.orderFactory.isResetting()">
+                                    Browse
+                                </button>
+                            </div>
+                            <div class="btn-group">
+                                <span class="margin-left-15" style="line-height: 34px;" data-bind="visible: selected() == null">
+	                                Please select a Trade Account
+                                </span>
+                            </div>
+                        </div>
+                    }
+
+                    @*<div class="row" data-bind="with: selected">
+                                <div class="col-xs-12">
+                                    <label class="col-form-label">
+                                        Memo
+                                    </label>
+                                    <span class="col-form-span" data-bind="text: Memo">
+
+                                    </span>
+                            </div>
+                        </div>
+                        <div class="row" data-bind="with: selected">
+                            <div class="col-sm-3 col-xs-12">
+                                <label class="col-form-label">Credit Status</label>
+                                <span class="col-form-span" data-bind="text: CreditLimit"></span>
+                                <span class="col-form-span" data-bind="text: CreditStatus"></span>
+                            </div>
+                        </div>*@
+                </div>
+            </div>
+        }
+        else
+        {
+            <div id="trade-account-collapse" class="panel-collapse">
+                <div class="selector panel-body bg-info">
+                    <div class="input-group" style="width: 100%;">
+                        @if (Model.TradeMarkets.Any())
+                        {
+                            <div class="trade-account-selector-market input-group-addon" data-bind="component: { name: 'mdc-select-component', params: tradeMarketParams }"></div>
+                        }
+                        <div class="trade-account-selector-input" data-bind="component: { name: 'mdc-text-field-autocomplete-component', params: tradeAccountAutocomplete }"></div>
+                        @*<input id="account-number" type="text" class="form-control" maxlength="20" data-bind="value: name, validationElement: selected" placeholder="Search by Name or Account Number" />*@
+                        @*<span class="input-group-addon">
+                            <button class="clear-btn btn btn-primary @(Model.Properties?.Application_ButtonClass)" type="button" data-bind="click: function() { clearSearch() }">×</button>
+                        </span>
+                        <span class="input-group-btn">
+                            <button class="search-btn btn btn-primary @(Model.Properties?.Application_ButtonClass)" data-bind="click: function() { performSearch() }"><span class="glyphicon glyphicon-search"></span></button>
+                        </span>*@
+                    </div>
+                    <span data-bind="validationMessage: selected, css: 'validation-message text-danger'"></span>
+
+                    @if (Model.OrderProductsExtension)
+                    {
+                        <div class="btn-toolbar margin-top-15">
+                            <div class="btn-group">
+                                <button class="btn btn-green" data-bind="click: function() { parent.orderFactory.showNewBasket(); }, enable: parent.orderFactory.mayStartOrder() && !parent.orderFactory.isResetting()">
+                                    Start Order
+                                </button>
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-blue" data-bind="click: function() { parent.orderFactory.showNewBrowse(); }, enable: parent.orderFactory.mayBrowse() && !parent.orderFactory.isResetting()">
+                                    Browse
+                                </button>
+                            </div>
+                            <div class="btn-group">
+                                <span class="margin-left-15" style="line-height: 34px;" data-bind="visible: selected() == null">
+	                                Please select a Trade Account
+                                </span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="form-group row" style="display: none;" data-bind="visible: getSelectedTradeAccount() == null">
+        <div class="col-xs-12 col-sm-6 col-sm-push-3">
+            <div class="alert alert-danger">
+                <h4 class="page-heading">
+                    Error
+                </h4>
+                <p class="margin-bottom-0">
+                    A Trade Account association was not found for your login. Please report this to <a href="mailto:itsupport@designersguild.com">itsupport@designersguild.com</a>
+                </p>
+            </div>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    function getSelectedTradeAccount() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.Selected))
+    }
+
+    function getCanSearchTradeAccounts() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.CanSearch))
+    }
+
+    function getPrimaryAddresses() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.PrimaryAddresses))
+    }
+
+    function getSecondaryAddresses() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.SecondaryAddresses))
+    }
+
+    function getTradeMarkets() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.TradeMarkets))
+    }
+</script>
+
+@Scripts.Render("~/bundles/js/trade-account-selector")

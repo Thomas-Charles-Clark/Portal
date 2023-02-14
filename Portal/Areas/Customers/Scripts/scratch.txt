@@ -1,0 +1,475 @@
+﻿
+    // #region Sales
+
+    self.accountCurrency = details.CustomerDetails.AccountCurrency;
+    self.currencyCulture = details.CustomerDetails.CurrencyCulture
+    self.currencyName = details.CustomerDetails.CurrencyName;
+
+    self.currency = ko.observable(details.CustomerDetails.Currency);
+
+    self.salesLastUpdated = details.CustomerDetails.SalesLastUpdated;
+    self.salesLastUpdatedDisplay = ko.pureComputed({
+        read: function () {
+            return 'Last Updated: ' + (renderDateTime(self.salesLastUpdated) || 'Unknown');
+        }
+    }, self);
+
+    self.displaySalesInCurrency = ko.observable("Curr"); // Curr | Stg
+
+    self.displayCurrency = ko.pureComputed({
+        read: function () {
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    return self.accountCurrency;
+                case "Stg":
+                    return "GBP";
+            }
+        }
+    }, self);
+
+    self.fullMonthHeading = ko.pureComputed({
+        read: function () {
+            return moment().format("MMMM");
+        }
+    }, self);
+
+    self.monthToDateHeading = ko.pureComputed({
+        read: function () {
+            return "1st " + moment().format("MMMM") + " to " + moment().format("Do") + " " + moment().format("MMMM");
+        }
+    }, self);
+
+    self.fullFinancialYearHeading = ko.pureComputed({
+        read: function () {
+            return "1st April to 31st March";
+        }
+    }, self);
+
+    self.financialYearToDateHeading = ko.pureComputed({
+        read: function () {
+            return "1st April to " + moment().format("Do") + " " + moment().format("MMMM");
+        }
+    }, self);
+
+    self.fullCalendarYearHeading = ko.pureComputed({
+        read: function () {
+            return "1st January to 31st December";
+        }
+    }, self);
+
+    self.calendarYearToDateHeading = ko.pureComputed({
+        read: function () {
+            return "1st January to " + moment().format("Do") + " " + moment().format("MMMM");
+        }
+    }, self);
+
+    self.changeCurrencyDisplay = function () {
+        switch (self.displaySalesInCurrency()) {
+            case "Curr":
+                self.displaySalesInCurrency("Stg")
+                break;
+            case "Stg":
+                self.displaySalesInCurrency("Curr")
+                break;
+        }
+    }
+
+    self.currentlySelectedCurrency = ko.pureComputed({
+        read: function () {
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    return self.accountCurrency;
+                case "Stg":
+                    return "GBP";
+            }
+        }
+    }, self)
+
+    self.salesLY_FullMonth = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.salesCurrLY_FullMonth;
+                    break;
+                case "Stg":
+                    result = self.salesStgLY_FullMonth;
+                    break;
+            }
+            return formatCurrency(result, 0, self.currencyCulture, self.displayCurrency());
+        }
+    }, self);
+    self.growthLY_FullMonth = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.growthCurrLY_FullMonth;
+                    break;
+                case "Stg":
+                    result = self.growthStgLY_FullMonth;
+                    break;
+            }
+            return formatPercentageHtmlColourSpan(result, 0, self.currencyCulture);
+        }
+    }, self);
+    self.salesTY_FullMonth = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.salesCurrTY_FullMonth;
+                    break;
+                case "Stg":
+                    result = self.salesStgTY_FullMonth;
+                    break;
+            }
+            return formatCurrency(result, 0, self.currencyCulture, self.displayCurrency());
+        }
+    }, self);
+    self.growthTY_FullMonth = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.growthCurrTY_FullMonth;
+                    break;
+                case "Stg":
+                    result = self.growthStgTY_FullMonth;
+                    break;
+            }
+            return formatPercentageHtmlColourSpan(result, 0, self.currencyCulture);
+        }
+    }, self);
+    self.salesLY_MonthToDate = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.salesCurrLY_MonthToDate;
+                    break;
+                case "Stg":
+                    result = self.salesStgLY_MonthToDate;
+                    break;
+            }
+            return formatCurrency(result, 0, self.currencyCulture, self.displayCurrency());
+        }
+    }, self);
+    self.growthLY_MonthToDate = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.growthCurrLY_MonthToDate;
+                    break;
+                case "Stg":
+                    result = self.growthStgLY_MonthToDate;
+                    break;
+            }
+            return formatPercentageHtmlColourSpan(result, 0, self.currencyCulture);
+        }
+    }, self);
+    self.salesTY_MonthToDate = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.salesCurrTY_MonthToDate;
+                    break;
+                case "Stg":
+                    result = self.salesStgTY_MonthToDate;
+                    break;
+            }
+            return formatCurrency(result, 0, self.currencyCulture, self.displayCurrency());
+        }
+    }, self);
+    self.growthTY_MonthToDate = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.growthCurrTY_MonthToDate;
+                    break;
+                case "Stg":
+                    result = self.growthStgTY_MonthToDate;
+                    break;
+            }
+            return formatPercentageHtmlColourSpan(result, 0, self.currencyCulture);
+        }
+    }, self);
+    self.salesLY_FullFinancialYear = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.salesCurrLY_FullFinancialYear;
+                    break;
+                case "Stg":
+                    result = self.salesStgLY_FullFinancialYear;
+                    break;
+            }
+            return formatCurrency(result, 0, self.currencyCulture, self.displayCurrency());
+        }
+    }, self);
+    self.growthLY_FullFinancialYear = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.growthCurrLY_FullFinancialYear;
+                    break;
+                case "Stg":
+                    result = self.growthStgLY_FullFinancialYear;
+                    break;
+            }
+            return formatPercentageHtmlColourSpan(result, 0, self.currencyCulture);
+        }
+    }, self);
+    self.salesTY_FullFinancialYear = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.salesCurrTY_FullFinancialYear;
+                    break;
+                case "Stg":
+                    result = self.salesStgTY_FullFinancialYear;
+                    break;
+            }
+            return formatCurrency(result, 0, self.currencyCulture, self.displayCurrency());
+        }
+    }, self);
+    self.growthTY_FullFinancialYear = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.growthCurrTY_FullFinancialYear;
+                    break;
+                case "Stg":
+                    result = self.growthStgTY_FullFinancialYear;
+                    break;
+            }
+            return formatPercentageHtmlColourSpan(result, 0, self.currencyCulture);
+        }
+    }, self);
+    self.salesLY_FinancialYearToDate = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.salesCurrLY_FinancialYearToDate;
+                    break;
+                case "Stg":
+                    result = self.salesStgLY_FinancialYearToDate;
+                    break;
+            }
+            return formatCurrency(result, 0, self.currencyCulture, self.displayCurrency());
+        }
+    }, self);
+    self.growthLY_FinancialYearToDate = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.growthCurrLY_FinancialYearToDate;
+                    break;
+                case "Stg":
+                    result = self.growthStgLY_FinancialYearToDate;
+                    break;
+            }
+            return formatPercentageHtmlColourSpan(result, 0, self.currencyCulture);
+        }
+    }, self);
+    self.salesTY_FinancialYearToDate = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.salesCurrTY_FinancialYearToDate;
+                    break;
+                case "Stg":
+                    result = self.salesStgTY_FinancialYearToDate;
+                    break;
+            }
+            return formatCurrency(result, 0, self.currencyCulture, self.displayCurrency());
+        }
+    }, self);
+    self.growthTY_FinancialYearToDate = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.growthCurrTY_FinancialYearToDate;
+                    break;
+                case "Stg":
+                    result = self.growthStgTY_FinancialYearToDate;
+                    break;
+            }
+            return formatPercentageHtmlColourSpan(result, 0, self.currencyCulture);
+        }
+    }, self);
+    self.salesLY_FullCalendarYear = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.salesCurrLY_FullCalendarYear;
+                    break;
+                case "Stg":
+                    result = self.salesStgLY_FullCalendarYear;
+                    break;
+            }
+            return formatCurrency(result, 0, self.currencyCulture, self.displayCurrency());
+        }
+    }, self);
+    self.growthLY_FullCalendarYear = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.growthCurrLY_FullCalendarYear;
+                    break;
+                case "Stg":
+                    result = self.growthStgLY_FullCalendarYear;
+                    break;
+            }
+            return formatPercentageHtmlColourSpan(result, 0, self.currencyCulture);
+        }
+    }, self);
+    self.salesTY_FullCalendarYear = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.salesCurrTY_FullCalendarYear;
+                    break;
+                case "Stg":
+                    result = self.salesStgTY_FullCalendarYear;
+                    break;
+            }
+            return formatCurrency(result, 0, self.currencyCulture, self.displayCurrency());
+        }
+    }, self);
+    self.growthTY_FullCalendarYear = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.growthCurrTY_FullCalendarYear;
+                    break;
+                case "Stg":
+                    result = self.growthStgTY_FullCalendarYear;
+                    break;
+            }
+            return formatPercentageHtmlColourSpan(result, 0, self.currencyCulture);
+        }
+    }, self);
+    self.salesTY_CalendarYearToDate = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.salesCurrTY_CalendarYearToDate;
+                    break;
+                case "Stg":
+                    result = self.salesStgTY_CalendarYearToDate;
+                    break;
+            }
+            return formatCurrency(result, 0, self.currencyCulture, self.displayCurrency());
+        }
+    }, self);
+    self.growthTY_CalendarYearToDate = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.growthCurrTY_CalendarYearToDate;
+                    break;
+                case "Stg":
+                    result = self.growthStgTY_CalendarYearToDate;
+                    break;
+            }
+            return formatPercentageHtmlColourSpan(result, 0, self.currencyCulture);
+        }
+    }, self);
+    self.salesLY_CalendarYearToDate = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.salesCurrLY_CalendarYearToDate;
+                    break;
+                case "Stg":
+                    result = self.salesStgLY_CalendarYearToDate;
+                    break;
+            }
+            return formatCurrency(result, 0, self.currencyCulture, self.displayCurrency());
+        }
+    }, self);
+    self.growthLY_CalendarYearToDate = ko.pureComputed({
+        read: function () {
+            var result = 0;
+            switch (self.displaySalesInCurrency()) {
+                case "Curr":
+                    result = self.growthCurrLY_CalendarYearToDate;
+                    break;
+                case "Stg":
+                    result = self.growthStgLY_CalendarYearToDate;
+                    break;
+            }
+            return formatPercentageHtmlColourSpan(result, 0, self.currencyCulture);
+        }
+    }, self);
+
+    self.salesStgLY_FullMonth = details.CustomerDetails.SalesLY_FullMonth;
+    self.growthStgLY_FullMonth = details.CustomerDetails.GrowthLY_FullMonth;
+    self.salesStgTY_FullMonth = details.CustomerDetails.SalesTY_FullMonth;
+    self.growthStgTY_FullMonth = details.CustomerDetails.GrowthTY_FullMonth;
+    self.salesStgLY_MonthToDate = details.CustomerDetails.SalesLY_MonthToDate;
+    self.growthStgLY_MonthToDate = details.CustomerDetails.GrowthLY_MonthToDate;
+    self.salesStgTY_MonthToDate = details.CustomerDetails.SalesTY_MonthToDate;
+    self.growthStgTY_MonthToDate = details.CustomerDetails.GrowthTY_MonthToDate;
+    self.salesStgLY_FullFinancialYear = details.CustomerDetails.SalesLY_FullFinancialYear;
+    self.growthStgLY_FullFinancialYear = details.CustomerDetails.GrowthLY_FullFinancialYear;
+    self.salesStgTY_FullFinancialYear = details.CustomerDetails.SalesTY_FullFinancialYear;
+    self.growthStgTY_FullFinancialYear = details.CustomerDetails.GrowthTY_FullFinancialYear;
+    self.salesStgLY_FinancialYearToDate = details.CustomerDetails.SalesLY_FinancialYearToDate;
+    self.growthStgLY_FinancialYearToDate = details.CustomerDetails.GrowthLY_FinancialYearToDate;
+    self.salesStgTY_FinancialYearToDate = details.CustomerDetails.SalesTY_FinancialYearToDate;
+    self.growthStgTY_FinancialYearToDate = details.CustomerDetails.GrowthTY_FinancialYearToDate;
+    self.salesStgLY_FullCalendarYear = details.CustomerDetails.SalesLY_FullCalendarYear;
+    self.growthStgLY_FullCalendarYear = details.CustomerDetails.GrowthLY_FullCalendarYear;
+    self.salesStgTY_FullCalendarYear = details.CustomerDetails.SalesTY_FullCalendarYear;
+    self.growthStgTY_FullCalendarYear = details.CustomerDetails.GrowthTY_FullCalendarYear;
+    self.salesStgTY_CalendarYearToDate = details.CustomerDetails.SalesTY_CalendarYearToDate;
+    self.growthStgTY_CalendarYearToDate = details.CustomerDetails.GrowthTY_CalendarYearToDate;
+    self.salesStgLY_CalendarYearToDate = details.CustomerDetails.SalesLY_CalendarYearToDate;
+    self.growthStgLY_CalendarYearToDate = details.CustomerDetails.GrowthLY_CalendarYearToDate;
+
+    self.salesCurrLY_FullMonth = details.CustomerDetails.SalesCurrLY_FullMonth;
+    self.growthCurrLY_FullMonth = details.CustomerDetails.GrowthCurrLY_FullMonth;
+    self.salesCurrTY_FullMonth = details.CustomerDetails.SalesCurrTY_FullMonth;
+    self.growthCurrTY_FullMonth = details.CustomerDetails.GrowthCurrTY_FullMonth;
+    self.salesCurrLY_MonthToDate = details.CustomerDetails.SalesCurrLY_MonthToDate;
+    self.growthCurrLY_MonthToDate = details.CustomerDetails.GrowthCurrLY_MonthToDate;
+    self.salesCurrTY_MonthToDate = details.CustomerDetails.SalesCurrTY_MonthToDate;
+    self.growthCurrTY_MonthToDate = details.CustomerDetails.GrowthCurrTY_MonthToDate;
+    self.salesCurrLY_FullFinancialYear = details.CustomerDetails.SalesCurrLY_FullFinancialYear;
+    self.growthCurrLY_FullFinancialYear = details.CustomerDetails.GrowthCurrLY_FullFinancialYear;
+    self.salesCurrTY_FullFinancialYear = details.CustomerDetails.SalesCurrTY_FullFinancialYear;
+    self.growthCurrTY_FullFinancialYear = details.CustomerDetails.GrowthCurrTY_FullFinancialYear;
+    self.salesCurrLY_FinancialYearToDate = details.CustomerDetails.SalesCurrLY_FinancialYearToDate;
+    self.growthCurrLY_FinancialYearToDate = details.CustomerDetails.GrowthCurrLY_FinancialYearToDate;
+    self.salesCurrTY_FinancialYearToDate = details.CustomerDetails.SalesCurrTY_FinancialYearToDate;
+    self.growthCurrTY_FinancialYearToDate = details.CustomerDetails.GrowthCurrTY_FinancialYearToDate;
+    self.salesCurrLY_FullCalendarYear = details.CustomerDetails.SalesCurrLY_FullCalendarYear;
+    self.growthCurrLY_FullCalendarYear = details.CustomerDetails.GrowthCurrLY_FullCalendarYear;
+    self.salesCurrTY_FullCalendarYear = details.CustomerDetails.SalesCurrTY_FullCalendarYear;
+    self.growthCurrTY_FullCalendarYear = details.CustomerDetails.GrowthCurrTY_FullCalendarYear;
+    self.salesCurrTY_CalendarYearToDate = details.CustomerDetails.SalesCurrTY_CalendarYearToDate;
+    self.growthCurrTY_CalendarYearToDate = details.CustomerDetails.GrowthCurrTY_CalendarYearToDate;
+    self.salesCurrLY_CalendarYearToDate = details.CustomerDetails.SalesCurrLY_CalendarYearToDate;
+    self.growthCurrLY_CalendarYearToDate = details.CustomerDetails.GrowthCurrLY_CalendarYearToDate;
+
+    // #endregion

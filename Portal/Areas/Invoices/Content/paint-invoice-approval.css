@@ -1,0 +1,198 @@
+﻿/*@media (min-width: 1420px) {
+    .container {
+        width: 1400px;
+    }
+}
+@media (min-width: 1520px) {
+    .container {
+        width: 1500px;
+    }
+}
+@media (min-width: 1620px) {
+    .container {
+        width: 1600px;
+    }
+}
+@media (min-width: 1720px) {
+    .container {
+        width: 1700px;
+    }
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 200px 0.5fr 130px 0.5fr auto 130px;
+    grid-column-gap: 15px;
+    grid-row-gap: 15px;
+}
+
+.nav.nav-pills {
+    border-bottom: 0;
+}
+
+    .nav.nav-pills li a {
+        position: relative;
+        border-color: #00215f;
+    }
+
+    .nav.nav-pills li:not(.active) a {
+        border: 1px solid #7f97c1;
+        background-color: white;
+    }
+
+
+.k-list .k-item {
+    white-space: nowrap;
+}
+
+.k-grid-header th.k-with-icon .k-link {
+    white-space: normal;
+}
+
+.k-grid-header th.k-header {
+    vertical-align: top;
+}
+
+
+.order-head-wrapper.flex-container {
+    display: flex;
+}
+
+.order-head-wrapper .mdc-validating-field label span {
+    -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.grid-container span.glyphicon {
+    color: white;
+    margin-left: 5px;
+    top: 2px;
+}
+
+.order-head-wrapper .mdc-validating-field .mdc-notched-outline.mdc-notched-outline--upgraded .mdc-notched-outline__trailing {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.order-head-wrapper.flex-container > div {
+    flex: 1 1 auto;
+}
+
+.order-head-wrapper.flex-container > button {
+    flex: 0 1 100px;
+    min-width: 100px;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+}
+
+.k-grid-content {
+    min-height: 200px;
+}
+
+.nav.nav-pills li a span.counter {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    background-color: #5382c4;
+    border: 1px solid #0e4f7b;
+    border-radius: 12px;
+    min-width: 24px;
+    height: 24px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0 4px;
+    z-index: 10;
+    -webkit-box-shadow: 0 5px 5px -3px rgba(0,0,0,.2), 0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12);
+    box-shadow: 0 5px 5px -3px rgba(0,0,0,.2), 0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12);
+}
+
+    .nav.nav-pills li a span.counter span {
+        flex: 1 1 auto;
+        text-align: center;
+        color: white;
+        font-size: 12px;
+    }
+
+
+    .k-grid-content textarea {
+        resize: vertical;
+        display: block;
+        min-height: 30px;
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+    }
+
+    .k-grid {
+        font-size: 14px;
+    }
+
+    .k-grid .form-control {
+        padding: 0 6px;
+    }
+        .k-grid textarea.form-control {
+            padding: 3px 6px;
+        }
+
+#tab-approved .grid-container {
+    display: grid;
+    grid-template-columns: 200px 0.5fr 0.5fr 130px auto 130px;
+    grid-column-gap: 15px;
+    grid-row-gap: 15px;
+}
+
+.k-state-selected,
+.k-grid tr:hover,
+.k-state-selected td,
+.k-grid tr:not(.k-grouping-row):hover td:not(.k-group-cell):not(.input-required):not(.input-received),
+.k-grid td:not(.input-required):not(.input-received).k-state-selected:hover,
+.k-grid tr.k-state-selected:hover td:not(.input-required):not(.input-received) {
+    background-color: #fff;
+    color: black;
+}
+
+.k-grid td.input-required,
+.k-grid td.input-required.k-state-selected:hover,
+.k-grid tr.k-state-selected:hover td.input-required {
+    background-color: #e9f1ff;
+}
+
+.k-grid td.input-received,
+.k-grid td.input-received.k-state-selected:hover,
+.k-grid tr.k-state-selected:hover td.input-received {
+    background-color: #f0ffe9;
+}
+
+.grid-container .mdc-text-field--outlined input.mdc-text-field__input {
+    text-align: right;
+    padding-right: 32px;
+}
+
+.k-grid .k-grouping-header {
+    display: none !important;
+}
+
+.k-numeric-wrap {
+    text-align: right;
+    border-color: #ccc;
+    border-width: 1px 1px 1px 1px;
+    border-radius: 4px;
+}
+
+    .k-numeric-wrap .k-formatted-value {
+        text-align: right;
+    }
+
+    .k-numeric-wrap input.k-input {
+        text-align: right;
+        padding-right: 42px;
+    }
+
+    .k-numeric-wrap:hover {
+        border-color: #ccc;
+    }
+
+input[name=SupplierInvoiceNumber] {
+    text-align: right;
+    padding: 2px 6px;
+}*/

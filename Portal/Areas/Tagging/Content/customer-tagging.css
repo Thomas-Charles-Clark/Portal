@@ -1,0 +1,521 @@
+﻿#tag-search {
+    width: 100%;
+}
+
+.tags-column .tag {
+    margin: 0 4px 4px 0;
+    padding: 4px 6px;
+    background-color: #7cf47c;
+    font-weight: normal;
+    display: inline-block;
+    font-size: 12px;
+}
+
+.tags-column .tag span.remove {
+    cursor: pointer;
+}
+
+#add-tag-list,
+#remove-tag-list {
+    list-style: none;
+    list-style-type: none;
+    max-height: 600px;
+    padding-left: 0;
+    -webkit-padding-start: 0;
+    text-indent: 0;
+    padding: 0;
+    margin-left: 0;
+    overflow: auto;
+}
+
+#add-tag-list li,
+#remove-tag-list li {
+    text-indent: 0;
+    margin-left: 0;
+    padding-left: 0;
+    -webkit-padding-start: 0;
+}
+
+#add-tag-list li label,
+#remove-tag-list li label {
+    /*border: 1px solid black;*/
+    padding: 4px 6px;
+
+}
+
+#tag-customer-collapse > div.panel-body {
+    /*padding-bottom: 0;*/
+}
+
+
+.k-grid {
+    font-size: 12px;
+    border: 0;
+}
+
+.k-grid td {
+    line-height: 1.6em;
+    text-align: right;
+}
+
+.k-grid td.text-left {
+    text-align: left;
+}
+
+.k-grid td.text-center {
+    text-align: center;
+}
+
+.k-grid td.nowrap {
+    white-space: nowrap
+}
+
+.k-grid-header {
+    border-bottom: 0 !important;
+}
+
+.k-grid tr td {
+    border-left: 0;
+}
+
+.k-grid tr td.left-border {
+    border-left: 1px solid #ccc;
+}
+
+.k-grid tr td.ranking {
+    font-weight: bold !important;
+    text-align: center;
+    font-size: 1.15em;
+    background-color: #f0f6ff;
+}
+
+.k-grid td.k-state-selected:hover, 
+.k-grid tr.k-state-selected:hover td.ranking {
+    border-bottom-color: #ccc;
+    background-color: #3379b5;
+}
+
+.k-grid tr.k-state-selected td.ranking {
+    background-color: #428bca;
+    border-color: #428bca;
+    border-bottom-color: #ccc;
+}
+
+.k-grid tr.k-state-selected td a, 
+.k-grid tr.k-state-selected:hover td a {
+    color: #fff;
+}
+
+/*.k-grid tr.k-state-selected td a {
+    background-color: #428bca;
+    border-color: #428bca;
+    border-bottom-color: #ccc;
+}*/
+
+.k-grid tr.k-state-selected td i.contact-icon {
+    color: #fff;
+}
+
+.k-grid tr td.right-border {
+    border-right: 1px solid #ccc;
+}
+
+.k-grid tr td.no-bottom-border {
+    /*border: 0;*/
+    border-bottom: 0;
+}
+
+.k-widget {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.k-filter-row th, 
+.k-grid-header th.k-header {
+    border-width: 0 !important;
+    padding: 0.2em;
+}
+
+.k-grid-header th.k-header.bottom-border {
+    border-bottom: 2px solid #ccc !important;
+}
+
+.k-grid .k-grid-header .k-header {
+    height: auto !important;
+    vertical-align: bottom !important;
+    white-space: normal;
+    text-overflow: clip;
+}
+
+.k-grid-header th.k-header.first-heading {
+    border-bottom: 2px solid #333 !important;
+}
+
+.k-grid-header th.k-header.second-heading {
+    padding-top: 0.75em !important;
+    padding-bottom: 0.75em !important;
+    /*border-bottom: 1.5px solid #333 !important;*/
+    /*border-bottom-width: 1.5px !important;*/
+}
+
+.k-grid-header th.k-header.third-heading {
+    /*border-top: 2px solid #333 !important;*/
+}
+
+.k-filter-row th.first-heading, 
+.k-grid-header th.k-header.first-heading {
+    font-size: 14px;
+    text-align: center;
+    font-weight: bold;
+    line-height: 2em;
+    border-top-width: 1px;
+}
+
+.k-filter-row th.second-heading, 
+.k-grid-header th.k-header.second-heading {
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1.5em;
+}
+
+.k-filter-row th.first-heading.text-left, 
+.k-grid-header th.k-header.first-heading.text-left,
+.k-filter-row th.second-heading.text-left, 
+.k-grid-header th.k-header.second-heading.text-left {
+    text-align: left;
+}
+
+.k-filter-row th.third-heading, 
+.k-grid-header th.k-header.third-heading,
+.k-filter-row th.fourth-heading,
+.k-grid-header th.k-header.fourth-heading {
+    font-size: 13px;
+    font-weight: bold;
+    border-top: 1px solid #333 !important;
+}
+
+.k-filter-row th.third-heading:not(.text-left), 
+.k-grid-header th.k-header.third-heading:not(.text-left),
+.k-filter-row th.fourth-heading:not(.text-left),
+.k-grid-header th.k-header.fourth-heading:not(.text-left) {
+    text-align: center;
+}
+
+.k-filter-row th.third-heading, 
+.k-grid-header th.k-header.third-heading {
+    border-bottom: 1px solid #333 !important;
+    border-bottom-width: 2px !important;
+    border-radius: 0 !important;
+    background-color: #dce6f1;
+}
+
+.k-filter-row th.fourth-heading, 
+.k-grid-header th.k-header.fourth-heading {
+    border-bottom: 1px solid #333 !important;
+    border-bottom-width: 2px !important;
+    border-radius: 0 !important;
+    background-color: #dce6f1;
+    border-left: 1px solid #333 !important;
+}
+
+.k-filter-row th.left-border , 
+.k-grid-header th.k-header.left-border {
+    border-left: 1px solid #333 !important;
+}
+
+.k-filter-row th.third-heading.left-border, 
+.k-grid-header th.k-header.third-heading.left-border {
+    border-left: 1px solid #333 !important;
+}
+
+.k-filter-row th.third-heading.right-border, 
+.k-grid-header th.k-header.third-heading.right-border {
+    border-right: 1px solid #333 !important;
+}
+
+.k-filter-row th.third-heading.text-right, 
+.k-grid-header th.k-header.third-heading.text-right {
+    text-align: right;
+}
+
+.k-grid-header-wrap {
+    border-right: 0;
+}
+
+.panel.filters {
+    margin-bottom: 0;
+    font-size: small;
+}
+
+.filters .panel-body:not(.no-padding) {
+    padding: 4px;
+}
+
+.filters select {
+    font-size: 11px;
+    padding: 4px 4px;
+    height: auto;
+    line-height: 1.5em;
+}
+
+.slicers .slicer {
+    border: none;
+    margin-bottom: 0;
+    margin-right: 0;
+    width: 100%;
+    border: 0;
+}
+
+.panel.slicer div.panel-heading {
+    border-radius: 0;
+    position: relative;
+    background: #f8f8f8;
+    color: #2c5093;
+    font-weight: bold;
+    /*text-align: center;*/
+}
+
+.panel.slicer .k-dropdown {
+    width: 100%;
+    border-radius: 0;
+}
+
+.slicers div.dropdown-wrapper {
+    /*min-width: 145px;*/
+    width: 100%;
+    float: left;
+    /*font-size: 14px;*/
+}
+
+.panel.slicer .k-dropdown .k-dropdown-wrap {
+    border-radius: 0;
+        
+}
+
+.slicers > div:first-of-type .panel.slicer {
+    border-left-width: 1px;
+    border-radius: 4px 0 0 4px 
+}
+
+.slicers > div:last-of-type .panel.slicer {
+    border-right-width: 1px;
+    border-radius: 0 4px 4px 0
+}
+
+.slicers div.rrp-dropdown-wrapper {
+    min-width: unset;
+    /*float: left;*/
+    /*height: auto;*/
+    /*font-size: 11px;*/
+}
+
+.slicers div.rrp-dropdown-wrapper .btn {
+    /*width: auto;*/
+    /*float: left;*/
+    /*font-size: 14px;*/
+    /*height: 27px;*/
+    /*line-height: 14px;*/
+}
+
+.slicers > div.input-group > div.input-group-btn {
+    font-size: inherit;
+    vertical-align: top;
+}
+
+.slicer {
+     display: block; 
+     margin-bottom: 0; 
+     margin-right: 0; 
+     float: none; 
+}
+
+/*.k-alt, .k-resource.k-alt, .k-separator {
+    background-color: transparent;
+}*/
+
+.k-loading-image {
+    background-image: none;
+}
+
+
+.clear-selection {
+    position: absolute;
+    top: 4px;
+    right: 0;
+}
+
+.k-block, 
+.k-draghandle, 
+.k-grid-header, 
+.k-grouping-header, 
+.k-header, 
+.k-pager-wrap, 
+.k-toolbar, 
+.k-treemap-tile, 
+html .km-pane-wrapper .k-header {
+    background: none;
+}
+
+.k-grid tr:hover {
+    background: none;
+}
+
+.sales-rep-info {
+    margin-left: 12px;
+}
+
+/*.k-grid-header {
+    border-bottom: 0;
+}*/
+
+.contact-icon {
+    color: #7272a7;
+    cursor: pointer;
+    font-size: 32px;
+    position: relative;
+    top: 3px;
+}
+
+div.k-grid-footer {
+    border: 0;
+     border-bottom: 0;
+    border-left: 1px solid #ccc;
+     border-top: 1px solid #ccc;
+}
+
+.k-footer-template td {
+    border-bottom: 0 !important;
+}
+
+.k-grid-footer-wrap {
+    border: 0;
+}
+
+.k-grid-header .k-link .k-icon.k-i-sort-asc-sm, .k-grid-header .k-link .k-icon.k-i-sort-desc-sm {
+    position: relative !important;
+}
+
+/*
+    Steps to get LDAP authentication.
+
+    Here's an interesting one...
+
+    AD should be the bible on your password
+
+    If you do not have an account in mbr.Member one should be created for you
+
+    If you already have an account in mbr.Member and no password on that account,
+    we should take the plainText you provided for logging in with and put that to
+    AD, if it authorises then we put it through our normal password hashing routing 
+    and store it against your mbr.Member record.
+
+
+    this... we need to consider people who might need to log in without being in our AD.
+
+    so it needs to work for both.
+
+    if you have an account in mbr.Member and it has a password associated to it, we'll want
+    to ensure that that password is constantly updated to your current AD password - IF YOU HAVE
+    an AD account!
+
+
+    So:
+
+    Login Conditions
+
+    1) Attempted login, no mbr.Member record, no AD record.
+        Authenticate against AD
+            Success
+                = No
+
+            Failure
+                = Proceed to authenticate against mbr.Member
+
+        Authenticate against mbr.Member
+            Success
+                = No
+
+            Failure
+                = Failure
+
+    2) Attempted login, no mbr.Member record, has AD record.
+        Authenticate against AD
+            Success
+                = Create mbr.Member record, using our own password hasher against the plainText provided
+                = Ensure correct mbr.Member_Role records exist based on merging [Matt already did?]
+            
+            Failure
+                = Proceed to authenticate against mbr.Member
+
+        Authenticate against mbr.Member
+            Success
+                = User.Identity established, welcome to the Portal.
+
+            Failure
+                = Invalid AD Credentials provided, no mbr.Member record was created, failure.
+
+
+    3) Attempted login, has mbr.Member record, no AD record.
+        Authenticate against AD
+            Success
+                = This should not be possible; lack of AD record...
+
+            Failure
+                = Proceed to authenticate against mbr.Member
+    
+        Authenticate against mbr.Member
+            Success
+                = User.Identity established, welcome to the Portal.
+
+            Failure
+                = Invalid AD Credentials provided, no mbr.Member record was created, failure.
+
+    4) Attempted login, has mbr.Member record, has AD record.
+        Authenticate against AD
+            Success
+                = The provided password must be overwritten on the mbr.Member record
+                = That done, proceed to authenticate against mbr.Member
+
+            Failure
+                = Invalid AD credentials provided... this might happen if the AD password has 
+                = been changed and the user tries the old one. Therefore we must test to see
+                = if this provided password matches the mbr.Member password, if it DOES
+                = we must clear the password on mbr.Member and fail the authentication.
+                = Then proceed to authenticate against mbr.Member
+    
+        Authenticate against mbr.Member
+            Success
+                = User.Identity established, welcome to the Portal.
+
+            Failure
+                = Invalid AD Credentials provided, failure.
+*/
+
+.sorting-desc {
+    background-color: #abe8ff !important
+}
+
+.sorting-asc {
+    background-color: #ffda55 !important
+}
+
+.k-i-sort-asc-sm:before {
+    content: '\e004';
+}
+
+.k-i-sort-desc-sm:before {
+    content: '\e006';
+}
+
+.k-grid td.tags-column {
+    padding: 4px;
+    vertical-align: top;
+    overflow: hidden;
+    white-space: normal;
+    word-break: break-all;
+}
+
+.panel-body.no-padding .list-group {
+    margin-bottom: 0;
+}

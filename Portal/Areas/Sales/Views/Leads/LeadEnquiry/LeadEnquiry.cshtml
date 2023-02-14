@@ -1,0 +1,1238 @@
+﻿@model Portal.Areas.Sales.ViewModels.LeadEnquiryViewModel
+@{
+    ViewBag.Title = "Leads";
+    var userId = User.Identity.GetUserId<int>();
+}
+@section styles {
+    @Styles.Render("~/bundles/css/lead-enquiry")
+    @Styles.Render("~/bundles/css/kendo-custom")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/intl-tel")
+    @Scripts.Render("~/bundles/js/translations")
+    @Scripts.Render("~/bundles/js/lead-enquiry")
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/lead-enquiry")
+
+    <script type="text/javascript">
+
+        var lockedToRep = true;
+
+        @if (!Model.LockedToRep)
+        {
+            <text>
+        lockedToRep = false;
+        </text>
+        }
+
+        function getRetailAppointmentTypes() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.RetailAppointmentTypes))
+        }
+
+        function formatGBP(val) {
+            return formatCurrency(val, 0, 'en-GB', 'GBP')
+        }
+
+        function formatGBPDec(val) {
+            return formatCurrency(val, 2, 'en-GB', 'GBP')
+        }
+
+        function formatSelectedCurrency(val) {
+            // we don't have a selected currency.
+            //var curr = viewModel.slicerGroup.selectedCurrency();
+            //if (curr) {
+            //    if (curr.hasOwnProperty('FormattingCulture')) {
+            //        return formatCurrency(val, 0, curr.FormattingCulture, curr.CurrencyCode);
+            //    }
+            //}
+            return formatNumber(val, 0, 'en-GB');
+        }
+
+        function getPreselectedLaunchId() {
+            return @Html.Raw(Model.PreselectedLaunchID);
+        }
+
+        function getPreselectedSalesRep() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.PreselectedSalesRep));
+        }
+
+        // Initialise Bootstrap popovers...
+        $(function () {
+            $('[data-toggle="popover"]').popover()
+        })
+
+        var viewModel = new leadEnquiryViewModel();
+
+        ko.options.deferUpdates = true;
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        var cv = null;
+
+        $(document).ready(function () {
+            ko.applyBindings(viewModel, document.body);
+
+            if (getPreselectedLead()) {
+                viewModel.leadEdit.loadLeadForEdit(getPreselectedLead(), 'summary');
+            }
+
+            cv = viewModel.customerView;
+            //$('#order-products-modal').modal('show');
+        });
+    </script>
+
+    <script id="misc-row-template" type="text/x-kendo-template">
+        <tr>
+            <td>
+                <span data-bind="text: Code"></span>
+            </td>
+            <td>
+                <span data-bind="text: Name"></span>
+            </td>
+            <td>
+                <span>
+                    <span class="misc-address" data-bind="html: HTMLDisplay"></span>
+                    <a class="map-button" data-bind="attr: { href: 'javascript:;' }, click: function() { $parent.viewMap($parent); }">[map]</a>
+                </span>
+            </td>
+            <td>
+                <span data-bind="text: formatNumber(SalesLast12Months, 0, 'en-GB')"></span>
+            </td>
+            <td>
+                <span data-bind="text: formatNumber(OrderCountLast12Months, 0, 'en-GB')"></span>
+            </td>
+            <td>
+                <span data-bind="text: formatNumber(SalesLast48Months, 0, 'en-GB')"></span>
+            </td>
+            <td>
+                <span data-bind="text: formatNumber(OrderCountLast48Months, 0, 'en-GB')"></span>
+            </td>
+        </tr>
+    </script>
+
+    <script id="customer-row-template" type="text/x-kendo-template">
+        <tr data-uid="#= uid #" data-bind="attr: { 'data-trade-account-code': Code }">
+            <td class="check-column">
+                <label>
+                    <input class="row-checkbox" type="checkbox" />
+                </label>
+            </td>
+            <td>
+                <span style="display: none" data-bind="text: LeadID"></span>
+                <span data-bind="text: Code"></span>
+            </td>
+            <td>
+                <span data-bind="text: Name"></span>
+            </td>
+            <td>
+                <span data-bind="text: Contact"></span>
+            </td>
+            <td>
+                <a data-bind="attr: { href: 'tel:' + Phone }, text: Phone"></a>
+            </td>
+            <td>
+                <a data-bind="attr: { href: 'mailto:' + Email }, text: Email"></a>
+            </td>
+            <td>
+                <span data-bind="with: InvoiceAddress">
+                    <span class="misc-address" data-bind="html: HTMLDisplay"></span>
+                    <a class="map-button" data-bind="attr: { href: 'javascript:;' }, click: function() { $parentContext.$parent.viewMap($parent); }">[map]</a>
+                </span>
+            </td>
+            <td>
+                <span data-bind="with: VisitAddress">
+                    <span class="misc-address" data-bind="html: HTMLDisplay"></span>
+                    <a class="map-button" data-bind="attr: { href: 'javascript:;' }, click: function() { $parentContext.$parent.viewMap($parent); }">[map]</a>
+                </span>
+            </td>
+            <td>
+                <a data-bind="attr: { href: 'https://' + ((Website || '').replace('https://', '').replace('http://', '')), target: '_blank' }, text: Website"></a>
+            </td>
+            <td>
+                <span data-bind="text: Market"></span>
+            </td>
+            <td>
+                <span data-bind="text: Area"></span>
+            </td>
+            <td>
+                <span data-bind="text: Rep"></span>
+            </td>
+            <td>
+                <span data-bind="text: Agent"></span>
+            </td>
+            <td>
+                <span data-bind="text: Type"></span>
+            </td>
+            <td>
+                <span data-bind="text: PriceList"></span>
+            </td>
+            <td>
+                <span data-bind="text: CreditTerms"></span>
+            </td>
+        </tr>
+    </script>
+
+    <script id="visit-row-template" type="text/x-kendo-template">
+        <tr>
+            <td style="display: none;">
+                <span data-bind="text: TradeAccountVisitID"></span>
+            </td>
+            <td>
+                <span data-bind="text: moment(VisitDT).format('DD/MM/YYYY hh:mm a')"></span>
+            </td>
+            <td>
+                <span data-bind="text: Notes"></span>
+            </td>
+            <td>
+                <!-- ko foreach: Attendees -->
+                <span data-bind="with: TradeAccountContact">
+                    <span class="attendee" data-bind="css: { 'btn-red': Deleted == true }">
+                        <span data-bind="with: Title">
+                            <span data-bind="text: Title"></span>
+                        </span>
+                        <span data-bind="text: FullName"></span>
+                    </span>
+                </span>
+                <!-- /ko -->
+            </td>
+        </tr>
+    </script>
+
+    <script id="care-row-template" type="text/x-kendo-template">
+        <tr>
+            <td>
+                <div class="care-heading-wrapper">
+                    <span class="care-heading">
+                        Invoice No.
+                        <span data-bind="text: invoiceNumber"></span>
+                        CCR No.
+                        <span data-bind="text: careHeadId"></span>
+                        Order No.
+                        <span data-bind="text: orderHeadId"></span>
+                        Created Date
+                        <span data-bind="text: createdDtText"></span>
+                    </span>
+                </div>
+                <div class="care-heading-wrapper">
+                    <span class="care-heading" data-bind="with: creditNumber">
+                        Credit No.
+                        <span data-bind="text: $data"></span>
+                    </span>
+                    <span class="care-heading" data-bind="with: creditDate">
+                        Credit Date
+                        <span data-bind="text: renderDate($data)"></span>
+                    </span>
+                    <span class="care-heading" data-bind="with: creditValue">
+                        Credit Value
+                        <span data-bind="text: formatCurrency($data, 2, 'en-GB', 'GBP')"></span>
+                    </span>
+                </div>
+                <!-- ko foreach: careLines -->
+                <div class="care-line">
+                    <!-- ko if: imageId -->
+                    <img class="thumb" data-bind="click: function() { $parent.loadLargeImage($data) }, attr: { src: 'https://www.designersguild.com/image/156/' + $data.imageId }" />
+                    <!-- /ko -->
+                    <p>
+                        <span data-bind="text: productName"></span>
+                        <span data-bind="text: productCode"></span>
+                        <span data-bind="text: 'Quantity: ' + claimQuantityDisplay()"></span>
+                        <span data-bind="text: 'Credit Reason: ' + notes"></span>
+                    </p>
+                </div>
+                <!-- /ko -->
+            </td>
+        </tr>
+    </script>
+
+    <script id="slicer-group-template" type="text/html">
+        <div class="grid-container">
+            <div data-bind="component: { name: 'kendo-mdc-dropdown-component', params: marketParams }"></div>
+            <div data-bind="component: { name: 'kendo-mdc-dropdown-component', params: areaParams }"></div>
+            <div data-bind="component: { name: 'kendo-mdc-dropdown-component', params: accountTypeParams }"></div>
+            <div data-bind="component: { name: 'kendo-mdc-dropdown-component', params: accountGroupParams }"></div>
+            <div data-bind="component: { name: 'kendo-mdc-dropdown-component', params: repParams }"></div>
+            <div data-bind="component: { name: 'kendo-mdc-dropdown-component', params: repOrAgentParams }"></div>
+            <div class="search" data-bind="component: { name: 'mdc-text-field-component', params: searchParams }"></div>
+            <div class="tagging" data-bind="component: { name: 'mdc-kendo-multiselect-component', params: tagParams }"></div>
+        </div>
+    </script>
+}
+@section modals {
+    @Html.Partial("Modals/_ViewLeadModal")
+    @Html.Partial("Modals/_EditLeadModal")
+    @Html.Partial("Modals/_LeadAddressModal")
+    @Html.Partial("Modals/_CustomerModal")
+    @Html.Partial("~/Views/Shared/Components/_CheckableListComponent.cshtml")
+
+    <div data-bind="with: customerView.visitBooker">
+        @Html.Partial("Modals/_VisitEditModal")
+        @*@Html.Partial("Modals/_OrderProductsModal")*@
+    </div>
+}
+
+@*<div data-bind="with: customerView.visitBooker">
+    @Html.Action("OrderProductsComponent", "Component", new { Area = "" })
+</div>*@
+
+<div class="form-group row" data-bind="with: leadEdit">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                    <button style="float: right;" class="btn btn-secondary-blue" data-toggle="modal" data-target="#send-tarf-modal" href="#send-tarf-modal" , aria-expanded="true" aria-controls="send-tarf-modal">
+                        Send Trade Account Request Form Email
+                        <span class="glyphicon glyphicon-send"></span>
+                    </button>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div id="base-tabs" class="col-xs-12">
+        <ul class="nav nav-pills" role="tablist">
+            <li role="presentation" class="active">
+                <a href="#my-leads" aria-controls="My Leads" role="tab" data-toggle="tab">
+                    My Leads
+                </a>
+            </li>
+            @if (new List<int>() { 2, 8, 18, 
+                                        28871,  
+                                        566864, 
+                                        236869, 
+                                        43438,  
+                                        34850,  
+                                        1395354,
+                                        1400730,
+                                        504020, // Sophie Martin
+                                        1510502, // Becky Snow 
+                                        1299294, // Frida Skoglund
+                                        566786 }.Contains(User.Identity.GetUserId<int>())) 
+            {
+                <li role="presentation">
+                    <a href="#my-customers" aria-controls="My Customers" role="tab" data-toggle="tab">
+                        My Customers
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a href="#my-misc-customers" aria-controls="My Miscellaneous Customers" role="tab" data-toggle="tab">
+                        My Miscellaneous Customers
+                    </a>
+                </li>
+            }
+        </ul>
+        <div class="tab-content">
+            <div id="my-leads" role="tabpanel" class="tab-pane fade in active">
+                <div class="row" data-bind="with: leadSearch">
+                    <div class="col-xs-12">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading no-padding non-search panel-stats">
+                                <h4 class="panel-title">
+                                    <a class="panel-title panel-toggle" data-toggle="collapse" data-target="#lead-dashboard-collapse">Leads Dashboard</a>
+                                </h4>
+                            </div>
+                            <div id="lead-dashboard-collapse" class="panel-collapse collapse in">
+                                <div class="form-busy" data-bind="fadeVisible: dashboardBusy()">
+                                    <div class="busy-bars">
+                                        <div class="rect1 alert alert-info"></div>
+                                        <div class="rect2 alert alert-info"></div>
+                                        <div class="rect3 alert alert-info"></div>
+                                        <div class="rect4 alert alert-info"></div>
+                                        <div class="rect5 alert alert-info"></div>
+                                    </div>
+                                </div>
+                                <div class="panel-body bg-info" style="padding: 4px;">
+                                    <div class="row">
+                                        <div class="col-xs-push-3 col-xs-6">
+                                            <div class="row">
+                                                <div class="col-xs-6">
+                                                    <div class="form-group row">
+                                                        <div class="col-xs-12">
+                                                            <label class="col-form-label">
+                                                                Market
+                                                            </label>
+                                                        </div>
+                                                        <div class="col-xs-12">
+                                                            <select class="form-control" data-bind="value: dashboardCountryId, optionsText: 'Name', optionsValue: 'CountryID', options: availableCountries, optionsCaption: 'All'"></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-6">
+                                                    <div class="form-group row">
+                                                        <div class="col-xs-12">
+                                                            <label class="col-form-label">
+                                                                Who
+                                                            </label>
+                                                        </div>
+                                                        <div class="col-xs-12">
+                                                            <select class="form-control" data-bind="value: dashboardCreatedByOrAssignedTo, optionsText: 'FullName', optionsValue: $data, options: availableDashboardMembers"></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-offset-1 col-sm-offset-1 col-md-2 col-sm-2 col-xs-6">
+                                            <div id="trade-registration-redirects-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideTradeRegistrationRedirects(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        Waiting for Customer to Complete Application
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardTradeRegistrationRedirects(), 0, 'en-GB')"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-sm-2 col-xs-6">
+                                            <div id="new-lead-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideNew(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        New Leads to Review
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardNew(), 0, 'en-GB')"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-sm-2 col-xs-6">
+                                            <div id="awaiting-lead-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideAwaiting(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        Contacted by Rep, Awaiting Response
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardAwaiting(), 0, 'en-GB')"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-sm-2 col-xs-6">
+                                            <div id="complete-application-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideCompleteApplication(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        Application to be Completed by Rep
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardCompleteApplication(), 0, 'en-GB')"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-sm-2 col-xs-6">
+                                            <div id="specify-payment-terms-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideSpecifyPaymentTerms(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        Application to be Completed by Credit Control
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardSpecifyPaymentTerms(), 0, 'en-GB')"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-offset-1 col-sm-offset-1 col-md-2 col-sm-2 col-xs-6">
+                                            <div id="open-lead-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideOpen(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        Trade Account Opened
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardOpen(), 0, 'en-GB')"></span>
+                                                    <span class="smaller">
+                                                        in the last 6 months
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-sm-2 col-xs-6">
+                                            <div id="misc-accounts-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideMisc(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        Miscellaneous Accounts
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardMisc(), 0, 'en-GB')"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-sm-2 col-xs-6">
+                                            <div id="accounts-declined-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideDeclined(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        Accounts Declined
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardDeclined(), 0, 'en-GB')"></span>
+                                                    <span class="smaller">
+                                                        in the last 6 months
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-sm-2 col-xs-6">
+                                            <div id="lost-leads-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideLost(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        Lost Leads
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardLost(), 0, 'en-GB')"></span>
+                                                    <span class="smaller">
+                                                        in the last 6 months
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @*<div class="col-md-2 col-sm-2 col-xs-6">
+                                                <div id="junk-lead-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideJunk(); }">
+                                                    <div class="panel-heading">
+                                                        <h4 class="panel-title">
+                                                            Junk Leads
+                                                        </h4>
+                                                    </div>
+                                                    <div class="panel-body text-center">
+                                                        <span class="count" data-bind="text: dashboardJunk, 0, 'en-GB')"></span>
+                                                        <span class="smaller">
+                                                            in the last 6 months
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>*@
+                                        <div class="col-md-2 col-sm-2 col-xs-6">
+                                            <div id="distributor-assigned-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideDistributors(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        Assigned to Distributor
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardDistributor(), 0, 'en-GB')"></span>
+                                                    <span class="smaller">
+                                                        in the last 6 months
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @Html.Action("LeadSearch", "Component", new { Area = "" })
+
+                <div class="row" style="display: none;" data-bind="visible: true, with: leadSearch">
+                    <div class="col-xs-12">
+                        <div style="position: relative">
+                            <div id="grid-loading" class="panel-busy-wrapper" style="border-radius: 4px;">
+                                <div class="form-busy">
+                                    <div class="busy-bars">
+                                        <div class="rect1 alert alert-info"></div>
+                                        <div class="rect2 alert alert-info"></div>
+                                        <div class="rect3 alert alert-info"></div>
+                                        <div class="rect4 alert alert-info"></div>
+                                        <div class="rect5 alert alert-info"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div id="lead-grid" data-bind="kendoGrid: resultGridSettings"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="my-misc-customers" role="tabpanel" class="tab-pane fade">
+                <div class="row" data-bind="with: miscSearch">
+                    <div class="col-xs-12">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading no-padding non-search panel-stats">
+                                <h4 class="panel-title">
+                                    <a class="panel-title panel-toggle" data-toggle="collapse" data-target="#misc-dashboard-collapse">
+                                        Miscellaneous Customers Dashboard
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="misc-dashboard-collapse" class="panel-collapse collapse in">
+                                <div class="form-busy" data-bind="fadeVisible: dashboardBusy()">
+                                    <div class="busy-bars">
+                                        <div class="rect1 alert alert-info"></div>
+                                        <div class="rect2 alert alert-info"></div>
+                                        <div class="rect3 alert alert-info"></div>
+                                        <div class="rect4 alert alert-info"></div>
+                                        <div class="rect5 alert alert-info"></div>
+                                    </div>
+                                </div>
+                                <div class="panel-body bg-info" style="padding-bottom: 0;">
+                                    <!-- ko template: { name: 'slicer-group-template', data: slicerGroup } --><!-- /ko -->
+
+                                    @*<div class="form-group row" style="display: none;" data-bind="with: slicerGroup, visible: true">
+                                        <div class="col-xs-6">
+                                            <div class="panel panel-default filters">
+                                                <div class="panel-body bg-info">
+                                                    <div class="slicers row no-gutters">
+                                                        <div class="input-group btn-group-justified">
+                                                            <div class="input-group-btn" data-bind="with: marketSlicerParams">
+                                                                <div class="dropdown-wrapper">
+                                                                    <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="input-group-btn" data-bind="with: areaSlicerParams">
+                                                                <div class="dropdown-wrapper">
+                                                                    <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <div class="panel panel-default filters">
+                                                <div class="panel-body bg-info">
+                                                    <div class="slicers row no-gutters">
+                                                        <div class="input-group btn-group-justified">
+                                                            <div class="input-group-btn" data-bind="with: repSlicerParams">
+                                                                <div class="dropdown-wrapper">
+                                                                    <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="input-group-btn" data-bind="with: repOrAgentSlicerParams">
+                                                                <div class="dropdown-wrapper">
+                                                                    <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row" style="display: none;" data-bind="with: slicerGroup, visible: true">
+                                        <div class="col-xs-6">
+                                            <div class="panel panel-default filters">
+                                                <div class="panel-body bg-info">
+                                                    <div class="slicers row no-gutters">
+                                                        <div class="input-group btn-group-justified">
+                                                            <div class="input-group-btn" data-bind="with: accountTypeSlicerParams">
+                                                                <div class="dropdown-wrapper">
+                                                                    <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="input-group-btn" data-bind="with: accountGroupSlicerParams">
+                                                                <div class="dropdown-wrapper">
+                                                                    <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <div class="panel panel-default filters">
+                                                <div class="panel-body bg-info">
+                                                    <div class="slicers row no-gutters">
+                                                        <div class="dropdown-wrapper">
+                                                            <div class="slicer panel panel-primary">
+                                                                <div class="panel-heading">
+                                                                    <span>
+                                                                        Search
+                                                                    </span>
+                                                                    <span class="clear-selection glyphicon glyphicon-filter" style="display: none" data-bind="visible: searchTerm(), click: function() { searchTerm(undefined); }">
+                                                                            <span>×</span>
+                                                                    </span>
+                                                                </div>
+                                                                <div class="panel-body no-padding">
+                                                                    <input type="text" class="form-control" data-bind="value: searchTerm" placeholder="Search by Customer Name, Account Number, Town or Postcode"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>*@
+                                    <div class="row">
+                                        <div class="col-sm-3 col-xs-6">
+                                            <div id="all-misc-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideAll(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        All Customers
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardAll(), 0, 'en-GB')"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3 col-xs-6">
+                                            <div id="zero-order-panel" class="panel dash-panel panel-primary" data-bind="click: function() { dashboardOverrideZero(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        Never Ordered
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardZero(), 0, 'en-GB')"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3 col-xs-6">
+                                            <div id="one-off-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideOneOff(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        One-Off Customers
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardOneOff(), 0, 'en-GB')"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3 col-xs-6">
+                                            <div id="consider-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideConsider(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        Consider Creating a Dedicated Customer Account
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardConsider(), 0, 'en-GB')"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="display: none;" data-bind="visible: true, with: miscSearch">
+                    <div class="col-xs-12">
+                        <div style="position: relative">
+                            <div id="misc-grid-loading" class="panel-busy-wrapper" style="border-radius: 4px;">
+                                <div class="form-busy">
+                                    <div class="busy-bars">
+                                        <div class="rect1 alert alert-info"></div>
+                                        <div class="rect2 alert alert-info"></div>
+                                        <div class="rect3 alert alert-info"></div>
+                                        <div class="rect4 alert alert-info"></div>
+                                        <div class="rect5 alert alert-info"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div id="misc-grid" data-bind="kendoGrid: resultGridSettings"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="my-customers" role="tabpanel" class="tab-pane fade">
+                <div class="row" data-bind="with: customerSearch">
+                    <div class="col-xs-12">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading no-padding non-search panel-stats">
+                                <h4 class="panel-title">
+                                    <a class="panel-title panel-toggle" data-toggle="collapse" data-target="#customer-dashboard-collapse">
+                                        My Customers Dashboard
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="customer-dashboard-collapse" class="panel-collapse collapse in">
+                                <div class="form-busy" data-bind="fadeVisible: dashboardBusy()">
+                                    <div class="busy-bars">
+                                        <div class="rect1 alert alert-info"></div>
+                                        <div class="rect2 alert alert-info"></div>
+                                        <div class="rect3 alert alert-info"></div>
+                                        <div class="rect4 alert alert-info"></div>
+                                        <div class="rect5 alert alert-info"></div>
+                                    </div>
+                                </div>
+                                <div class="panel-body bg-info" style="padding-bottom: 0;">
+                                    <div id="my-customers-advanced">
+                                    <!-- ko template: { name: 'slicer-group-template', data: slicerGroup } --><!-- /ko -->
+
+                                        @*<div class="form-group row" style="display: none;" data-bind="with: slicerGroup, visible: true">
+                                            <div class="col-xs-6">
+                                                <div class="panel panel-default filters">
+                                                    <div class="panel-body bg-info">
+                                                        <div class="slicers row no-gutters">
+                                                            <div class="input-group btn-group-justified">
+                                                                <div class="input-group-btn" data-bind="with: marketSlicerParams">
+                                                                    <div class="dropdown-wrapper">
+                                                                        <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="input-group-btn" data-bind="with: areaSlicerParams">
+                                                                    <div class="dropdown-wrapper">
+                                                                        <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-6">
+                                                <div class="panel panel-default filters">
+                                                    <div class="panel-body bg-info">
+                                                        <div class="slicers row no-gutters">
+                                                            <div class="input-group btn-group-justified">
+                                                                <div class="input-group-btn" data-bind="with: repSlicerParams">
+                                                                    <div class="dropdown-wrapper">
+                                                                        <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="input-group-btn" data-bind="with: repOrAgentSlicerParams">
+                                                                    <div class="dropdown-wrapper">
+                                                                        <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row" style="display: none;" data-bind="with: slicerGroup, visible: true">
+                                            <div class="col-xs-6">
+                                                <div class="panel panel-default filters">
+                                                    <div class="panel-body bg-info">
+                                                        <div class="slicers row no-gutters">
+                                                            <div class="input-group btn-group-justified">
+                                                                <div class="input-group-btn" data-bind="with: accountTypeSlicerParams">
+                                                                    <div class="dropdown-wrapper">
+                                                                        <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="input-group-btn" data-bind="with: accountGroupSlicerParams">
+                                                                    <div class="dropdown-wrapper">
+                                                                        <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-6">
+                                                <div class="panel panel-default filters">
+                                                    <div class="panel-body bg-info">
+                                                        <div class="slicers row no-gutters">
+                                                            <div class="dropdown-wrapper">
+                                                                <div class="slicer panel panel-primary">
+                                                                    <div class="panel-heading">
+                                                                        <span>
+                                                                            Search
+                                                                        </span>
+                                                                        <span class="clear-selection glyphicon glyphicon-filter" style="display: none" data-bind="visible: searchTerm(), click: function() { searchTerm(undefined); }">
+                                                                                <span>×</span>
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="panel-body no-padding">
+                                                                        <input type="text" class="form-control" data-bind="value: searchTerm" placeholder="Search by Customer Name, Account Number, Town or Postcode"/>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>*@
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-3 col-xs-6">
+                                            <div id="all-customers-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideAll(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        All Customers
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardAll(), 0, 'en-GB')"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3 col-xs-6">
+                                            <div id="new-customers-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideNew(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        New Customers
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardNew(), 0, 'en-GB')"></span>
+                                                    <span class="smaller">
+                                                        Any account opened in the last 12 months
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3 col-xs-6">
+                                            <div id="top-customers-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideTop(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        Top Customers
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardTop(), 0, 'en-GB')"></span>
+                                                    <span class="smaller">
+                                                        Spent over £5,000 in the last 12 months
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3 col-xs-6">
+                                            <div id="active-customers-panel" class="panel dash-panel panel-primary" data-bind="click: function() { dashboardOverrideActive(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        Active / Standard Customers
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardActive(), 0, 'en-GB')"></span>
+                                                    <span class="smaller">
+                                                        Spent over £1000 in the last 12 months
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-3 col-xs-6">
+                                            <div id="specifiers-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideSpecifiers(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        Active Specifiers
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardSpecifiers(), 0, 'en-GB')"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3 col-xs-6">
+                                            <div id="lapsing-customers-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideLapsing(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        Lapsing Customers
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardLapsing(), 0, 'en-GB')"></span>
+                                                    <span class="smaller">
+                                                        No orders in the last 12 months
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3 col-xs-6">
+                                            <div id="lapsed-customers-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideLapsed(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        Lapsed Customers
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardLapsed(), 0, 'en-GB')"></span>
+                                                    <span class="smaller">
+                                                        No orders in the last 24 months
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3 col-xs-6">
+                                            <div id="stop-customers-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideStop(); }">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        Customers on Stop
+                                                    </h4>
+                                                </div>
+                                                <div class="panel-body text-center">
+                                                    <span class="count" data-bind="text: formatNumber(dashboardStop(), 0, 'en-GB')"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="display: none;" data-bind="visible: true, with: customerSearch">
+                    <div class="col-xs-12">
+                        <button class="btn btn-battleship-blue pull-right margin-bottom-15" data-bind="click: fetchContactSpreadsheet">
+                            Download Contact Details
+                        </button>
+                        <div class="clearfix"></div>
+                        <div style="position: relative">
+                            <div id="customer-grid-loading" class="busy-wrapper" style="border-radius: 4px;" data-bind="visible: customerGridBusy">
+                                <div class="form-busy">
+                                    <div class="busy-bars">
+                                        <div class="rect1 alert alert-info"></div>
+                                        <div class="rect2 alert alert-info"></div>
+                                        <div class="rect3 alert alert-info"></div>
+                                        <div class="rect4 alert alert-info"></div>
+                                        <div class="rect5 alert alert-info"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div id="customer-grid" data-bind="kendoGrid: resultGridSettings"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="misc-map-modal" class="modal fade" data-bind="with: miscSearch">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a class="close" data-dismiss="modal">
+                    &times;
+                </a>
+                <h4 class="modal-title" data-bind="with: viewingMapFor">
+                    Visit Address: <span data-bind="text: Name"></span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div id="misc-map"></div>
+                <script>
+                    var miscMap;
+                    function initMiscMap() {
+                        miscMap = new google.maps.Map(document.getElementById('misc-map'), {
+                            center: { lat: 51.485523, lng: -0.173169 },
+                            zoom: 8
+                        });
+                    }
+                </script>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-right" data-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section postscripts {
+    <script>
+        var mapLibsReady = 0;
+
+        function mapLibReadyHandler() {
+            if (++mapLibsReady < 2) return;
+            initMiscMap();
+            window.canLoadOMS = true;
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?callback=mapLibReadyHandler&key=AIzaSyA_d3HoXoCV7M85_xduYJUze1GOscDnjUw" async defer></script>
+    <script src="/Scripts/oms.min.js?spiderfier_callback=mapLibReadyHandler" async defer></script>
+    <script type="text/javascript">
+        var _googleMap;
+
+        var infoWindow;
+
+        function iwClose() {
+            console.log('iwClose done');
+            infoWindow.close();
+        }
+
+        function initGoogleMap() {
+            console.log('init google map');
+
+            window.blueIcon = {
+                url: '/content/images/icons/panel-pin-blue-wide.png',
+                plus: 'blueIconPlus',
+                labelClass: 'text-center'
+            };
+
+            window.blueIconPlus = {
+                url: '/content/images/icons/panel-pin-blue-wide-plus.png',
+                regular: 'blueIcon',
+                labelClass: 'text-center no-display'
+            }
+
+            window.greenIcon = {
+                url: '/content/images/icons/panel-pin-green-wide.png',
+                plus: 'greenIconPlus',
+                labelClass: 'text-center'
+            };
+
+            window.greenIconPlus = {
+                url: '/content/images/icons/panel-pin-green-wide-plus.png',
+                regular: 'greenIcon',
+                labelClass: 'text-center no-display'
+            }
+
+            window.yellowIcon = {
+                url: '/content/images/icons/panel-pin-yellow-wide.png',
+                plus: 'yellowIconPlus',
+                labelClass: 'text-center'
+            }
+
+            window.yellowIconPlus = {
+                url: '/content/images/icons/panel-pin-yellow-wide-plus.png',
+                regular: 'yellowIcon',
+                labelClass: 'text-center no-display'
+            }
+
+            _googleMap = new google.maps.Map(document.getElementById('proximity-map'), {
+                center: { lat: 51.518225, lng: -0.223972 },
+                zoom: 10,
+                maxZoom: 18
+            });
+
+            infoWindow = new google.maps.InfoWindow({
+                maxWidth: 240
+            });
+
+            google.maps.event.addListener(_googleMap, 'click', iwClose);
+
+            if (window.canLoadOMS) {
+                window.oms = new OverlappingMarkerSpiderfier(_googleMap, {
+                    markersWontMove: true,
+                    markersWontHide: false,
+                    keepSpiderfied: true,
+                    nearbyDistance: 24
+                });
+
+                window.oms.addListener('format', function (marker, status) {
+                    if (marker.icon) {
+                        switch (status) {
+                            case OverlappingMarkerSpiderfier.markerStatus.SPIDERFIABLE:
+                                marker.setIcon(window[marker.iconType + 'plus']);
+                                break;
+                            case OverlappingMarkerSpiderfier.markerStatus.SPIDERFIED:
+                            case OverlappingMarkerSpiderfier.markerStatus.UNSPIDERFIABLE:
+                                marker.setIcon(window[marker.iconType]);
+                                break;
+                        }
+                    }
+                });
+
+                window.oms.addListener('spider_format', function (marker, status) {
+                    console.log('spider_format hit');
+                });
+            }
+        }
+    </script>
+}
+
+<script type="text/javascript">
+    function getAvailableCountries() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.Countries))
+    }
+    function getAvailableLanguages() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.Languages.OrderBy(p => p.Name)))
+    }
+    function getAvailableChannels() {
+        return @Html.Raw(Json.Encode(Model.LeadChannels.OrderBy(p => p.Name)))
+    }
+    function getAvailableStatuses() {
+        return @Html.Raw(Json.Encode(Model.LeadStatuses.Where(p => p.LeadStatusID != 255).OrderBy(p => p.SortOrder).ToList()))
+    }
+    function getAvailableSources() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.LeadSources.OrderBy(p => p.Name)))
+    }
+    function getAvailableLeadMagnitudes() {
+        return @Html.Raw(Json.Encode(Model.LeadMagnitudes));
+    }
+    function getAvailableTitles() {
+        return @Html.Raw(Json.Encode(Model.Titles))
+    }
+    function getAvailableLeadContactTypes() {
+        return @Html.Raw(Json.Encode(Model.LeadContactTypes))
+    }
+    function getAvailableTradeAccountContactTypes() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.TradeAccountContactTypes))
+    }
+    function getAvailableCurrencies() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.Currencies.OrderBy(p => p.Name)))
+    }
+    function getGBPCurrency() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.Currencies.Where(p => p.Code == "GBP" && p.FormattingCulture == "en-GB").SingleOrDefault()))
+    }
+    function getAvailableFinancialYears() {
+        return @Html.Raw(Json.Encode(Model.NextFiveFinancialYears));
+    }
+    function getAvailableTradingSinceOptions() {
+        return @Html.Raw(Json.Encode(Model.TradingSinceOptions));
+    }
+    function getAvailableCompanyTypeOptions() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.CompanyTypeOptions.OrderBy(p => p.Name)));
+    }
+    function getAvailableCompetitors() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.Competitors));
+    }
+    function getPaymentTerms() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.PaymentTerms));
+    }
+    function getPreselectedLead() {
+        return @(Model.LeadID);
+    }
+    function getAvailableLeadTypes() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.LeadTypes))
+    }
+    function getAvailableSalesMarkets() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.SalesMarkets))
+    }
+    function getAvailableAccountTypes() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.AccountTypes))
+    }
+    function getAvailableCustomerTypes() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.CustomerTypes))
+    }
+    function getYesNoOptions() {
+        return @Html.Raw(Json.Encode(Model.YesNoOptions));
+    }
+    function getAvailableLeadTags() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.Tags))
+    }
+    function getAvailableTags() {
+        return getAvailableLeadTags();
+    }
+    function getAvailablePaymentOptions() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.PaymentOptions))
+    }
+</script>

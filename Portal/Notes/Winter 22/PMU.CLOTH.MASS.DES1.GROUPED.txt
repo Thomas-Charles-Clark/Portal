@@ -1,0 +1,377 @@
+###############################################
+#
+#		UNGROUPED
+#
+
+OK	[EDITABLE]
+✔	W.QUALITY.MASS.DES		--> Quality					"PLEASE ENTER EITHER A VALID QUALITY OR USE A TEMPLATE"
+✔	W.PGROUP.MASS			--> Product Group			"PLEASE ENTER EITHER A VALID PRODUCT GROUP OR USE A TEMPLATE"
+✔	W.SS.ITEMTYPE			--> Item Type				"PLEASE ENTER EITHER A VALID ITEM TYPE OR USE A TEMPLATE"
+✔	W.SALES.DIV.DES			--> Brand					"PLEASE ENTER EITHER A VALID BRAND OR USE A TEMPLATE"
+✔	W.LAUNCH				--> Season
+
+	[READONLY]
+✔	W.QUALDESC.DES			--> Quality Description		[Reads CLQUALDES<1> ("DESIGN") using W.QUALITY.MASS.DES]
+
+
+#
+#
+#
+###############################################
+
+
+
+
+###############################################
+#
+#		 DESCRIPTIONS
+#
+
+	[EDITABLE]
+✔	PMU.PRODDESC			--> Mertex Label Description
+✔	PMU.SORTNAME			--> Mertex Search Descriptions
+✔	PRLISTD.DES				--> Price List Description
+✔	ADDTEXT.DES				--> Basket Name Online
+✔	FULL.DESC				--> Mertex PO Full Description
+✔	SS.PACK.DESC			--> Packaging Description
+✔	SS.FIELD6				--> Customs Commodity Description
+
+	[READONLY]
+
+#
+#
+#
+###############################################
+
+
+
+###############################################
+#
+#		 CODES & STATUS
+#
+
+	[EDITABLE]
+✔	CUR.STAT				--> Status
+✔	WEB.PRODUCT				--> Web Status
+✔	LAUNCH.PRODUCT.DES		--> Launch Status
+✔	INCL.PB.STOCK.DES		--> Incl in PB Analysis
+✔	PROD.COLL.DES			--> Collection Code
+✔	SS.ITEMTYPE				--> Item Type
+✔	EAN.PRODCODE			--> EAN Code
+
+
+	[READONLY]
+✔	PROD.COLL.DESC.DES		--> Paired with Collection Code
+✔	ITEMDESC				--> Paired with Item Type
+
+
+#
+#
+#
+###############################################
+
+
+
+###############################################
+#
+#		 SUPPLIER INFORMATION
+#
+
+	[EDITABLE]
+✔	SUPPREF.1				--> Supplier Code
+✔	SS.ORCOUNTRY			--> Country of Origin
+✔	W.PMU.COMPCODE.DES		--> Composition
+✔	SHIPPING.LEADTIME.1		--> Override - Ship Lead Time (working days)
+✔	LEADTIME1				--> Override - Manufacturing Lead Time (working days)
+✔	ZZMINORD				--> Minimum Order Quantity
+✔	SUPPPARTNO.1			--> Suppliers Part No.
+✔	ADD.PRODS.DES			--> Additional Product
+✔	MTNMINSTKLVL.DES		--> B2B Code
+✔	AUTO.PROC.SUPP			--> B2B Supplier
+✔	MID.1					--> MID Code
+✔	COMMODITY.DG			--> Import Commodity Code
+✔	INTRASTAT				--> Export Commodity Code
+✔	USCOMM					--> USA Commodity Code
+✔	SS.SHIPTERM				--> Ship Terms
+✔	SS.TRANSPORT			--> Transport
+
+
+	[READONLY]
+✔	SUPPREF1.NAME			--> Paired with Supplier Code
+✔	ORDESC					--> Paired with Country of Origin
+✔	CLCOMP.DESC				--> Paired with Composition
+✔	R.SHIPDESC				--> Paired with Ship Terms
+✔	R.TRAN					--> Paired with Transport
+
+
+#
+#
+#
+###############################################
+
+
+
+###############################################
+#
+#		 COST INFORMATION
+#
+
+	[EDITABLE]
+✔	SS.FINALCOST			--> Final Cost Price £
+✔	SS.COST.CURR			--> Cost Price in Currency
+✔	SS.COST.TARGET			--> Target Cost £
+✔	SS.CURRENCY				--> Currency
+✔	SS.EXCRATE				--> Exchange Rate
+✔	SS.PAD.COST				--> Additional Product Cost £
+✔	SS.COST.EX.PAD			--> Cost Excluding Additional Product
+✔	ORIG.COST.DES			--> Cost with Components
+✔	SS.COST.PER.SQM.CURR	--> [For Rugs Only] Cost per square metre in Currency
+✔	SS.COST.PER.SQM.STG		--> [For Rugs Only] Cost per square metre in Sterling
+✔	SS.SWATCH.COST			--> [For Rugs Only] Swatch cost in Sterling
+✔	SS.ADD.CARR				--> [For Rugs Only] Carriage surcharge applied
+✔	BULKCLEARPRICE			--> [For Rugs Only] Bulk clearance price in £ per M / Roll (how does this apply to rugs...?)
+
+
+	[READONLY]
+
+#
+#
+#
+###############################################
+
+
+
+###############################################
+#
+#		 WEIGHT
+#
+
+	[EDITABLE]
+✔	NET.WEIGHT				--> Weight in KG
+✔	CARE.RPW.DES			--> Rug pile weight KG
+✔	PKSIZE.DES				--> P/List pack size
+✔	SS.KNOTS				--> Knots per square metre
+✔	SS.WEIGHSQM				--> Weight per square metre KG
+✔	VOLUMEWEIGHT			--> Volumetric weight
+✔	VLENGTH					--> Stock length CM
+✔	VWIDTH					--> Stock width CM
+✔	VHEIGHT					--> Stock height CM
+
+	[READONLY]
+
+#
+#
+#
+###############################################
+
+
+
+###############################################
+#
+#		 DIMENSIONS
+#
+
+	[EDITABLE]
+✔	SS.WIDTH				--> Width CM
+✔	SS.WIDTH.IN				--> Width "
+✔	SS.WIDTH.FEET			--> Width FT
+✔	SS.LENGTH				--> Length CM
+✔	SS.LENGTH.IN			--> Length "
+✔	SS.LENGTH.FEET			--> Length FT
+✔	SS.HEIGHT				--> Height/Depth CM
+✔	SS.HEIGHT.IN			--> Height/Depth "
+✔	SS.HEIGHT.FEET			--> Height/Depth FT
+✔	CARE.RPH.DES			--> Rug pile height MM
+✔	SS.DIAM					--> Diameter CM
+✔	SS.SIZEDESC				--> Size Description
+
+
+	[READONLY]
+
+#
+#
+#
+###############################################
+
+
+
+###############################################
+#
+#		 SALES QTY FORECAST
+#
+
+	[EDITABLE]
+✔	SS.FC.TRADE				--> Wholesale
+✔	SS.FC.ECOM				--> eCommerce
+✔	SS.FC.RETAIL			--> Retail
+✔	SS.FC.DGINC				--> DG Inc.
+
+	[READONLY]
+
+
+#
+#
+#
+###############################################
+
+
+
+###############################################
+#
+#		 SUGGESTED PRICING
+#
+
+	[EDITABLE]
+✔	SS.UKRRP				--> UK RRP Inc. VAT 
+✔	SS.UKTRADE				--> UK RRP Ex. VAT
+✔	UK.RRP.EX.VAT			--> UK Trade
+✔	SS.EUROTRADE			--> Euro Trade
+✔	SS.EUROGM				--> GM%
+
+
+	[READONLY]
+✔	SS.UKGM					--> GM%
+
+
+#
+#
+#
+###############################################
+
+
+
+###############################################
+#
+#		 OTHER
+#
+
+	[EDITABLE]
+✔	BESPOKE.RUG.DES			--> Is this a bespoke rug?
+✔	FURNCATCODE				--> Furniture Category Code
+✔	PO.EMAIL				--> Who should the PO be emailed to?
+✔	JLSTOCKREF				--> John Lewis stock reference
+✔	FURNSEAT				--> Furniture seat type
+
+
+	[READONLY]
+
+#
+#
+#
+###############################################
+
+
+
+###############################################
+#
+#		 LINKED PRODUCTS
+#
+
+	[EDITABLE]
+✔	LINKEDHANGER			--> Bespoke hanger part number
+✔	LINKEDBESRUG			--> Linked bespoke rug part number
+✔	LINKEDRUGSAMP			--> Linked rug sample part number
+✔	LINKEDA6CARD			--> Linked A6 paint card
+
+
+	[READONLY]
+
+#
+#
+#
+###############################################
+
+
+
+###############################################
+#
+#		 PD NOTES / LINKED DOCUMENTS
+#
+
+	[EDITABLE]
+✔	SS.DEVCOM				--> PD Notes (MV)
+✔	LINK.DOCS				--> Linked Documents (MV)
+✔	LINK.DOCS.DESC			--> Linked Documents Description (MV)
+
+
+	[READONLY]
+
+#
+#
+#
+###############################################
+
+
+
+###############################################
+#
+#		 CREATE NEW PRODUCTS
+#
+
+	[EDITABLE]
+✖	W.TEMPLATE.CODE			--> Select Template
+✖	NO.PRODUCTS				--> Number of new products
+✔	SS.PRODCLASS5			--> Product Developer
+✔	DESIGN.DES				--> Design Name
+✔	SS.COLNAME				--> Colourway Name
+✔	SS.PRODTYPE				--> Product Type
+✔	SS.PRODCLASS6			--> Market Restrictions
+✔	LAUNCH					--> Season
+✔	SS.MERCH				--> Merchandiser Code
+✔	PRODUCT.BUYER.DES		--> Purchasing Buyer
+
+
+	[READONLY]
+✖	W.TEMPLATE.DESC			--> Paired with Template Code
+✔	SS.PRODCLASS5.DESC		--> Paired with Product Developer			(F("STPRODCLASS5",SS.PRODCLASS5)<1>)
+✔	SS.PRODTYPE.DESC		--> Paired with Product Type				(F("SS.PRODUCT.TYPE",SS.PRODTYPE)<POS(SS.PRODUCT.TYPE,TITLE)>)
+✔	R.SSPRODCLASS6			--> Paired with Market Restrictions			(F("STPRODCLASS6",SS.PRODCLASS6)<POS(STPRODCLASS6,CODEDESC)>)
+✔	R.SS.PROD.BUYER			--> Paired with Purchasing Buyer			(F("SS.PROD.BUYER",<873>)<POS(SS.PROD.BUYER,TITLE)>)
+✔	SS.ORDERGROUP 			--> Additional Description Text				{Why is this field read-only?}
+✔	R.ORDEGROUPDESC			--> Paired with Additional Description Text	(F("SS.ORDERFORMGROUP",<1054>)<1>)
+
+
+#
+#
+#
+###############################################
+
+
+
+###############################################
+#
+#		 PAINT INFO
+#
+
+	[EDITABLE]
+✔	CHECK.WEIGHT			--> Calculate total weight in SOP
+✔	MINCOATS				--> Minimum number of coats
+✔	COVERAGE				--> Coverage square metre
+✔	PAINT.BASE				--> Paint base
+✔	PAINTSHEEN				--> Paint sheen %
+✔	UNDERCOATCOLOUR			--> Undercoat colour
+✔	PAINTCOLNO				--> Paint colour number
+✔	PAINTFINISH				--> Paint finish
+✔	PAINTQUAL				--> Paint qualities
+✔	SAMPLEPOTCODE			--> Sample pot product code
+✔	UC.CODE.2.5LTR			--> 2.5 Ltr Undercoat part number
+✔	UC.CODE.1LTR			--> 1 Ltr Undercoat part number
+✔	PAINTTYPE				--> Paint type
+✔	SS.PRODCLASS4			--> Mylands base code
+✔	PRODCLASS1				--> Mylands product code
+✔	PAINT.VOC				--> Paint VOC
+✔	ORDERCUTOFF				--> Order cut off time
+✔	COVERAGETEXT			--> Coverage text
+✔	SS.FIELD7				--> Spare field 7
+✔	SS.FIELD8				--> Spare field 8
+✔	SS.FIELD9				--> Price list product type group
+✔	SS.FIELD10				--> Delivery group
+✔	SS.FIELD11				--> eCommerce delivery group code
+✔	SS.FIELD12				--> Spare field 12
+✔	SS.FIELD13				--> Spare field 13
+✔	SS.FIELD14				--> Spare field 14
+			
+#
+#
+#
+###############################################

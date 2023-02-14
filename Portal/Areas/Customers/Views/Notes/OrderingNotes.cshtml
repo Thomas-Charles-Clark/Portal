@@ -1,0 +1,69 @@
+﻿@{
+    ViewBag.Title = "Ordering Notes";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/customer-ordering-notes")
+    @Styles.Render("~/bundles/css/kendo-custom")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/customer-ordering-notes")
+
+    <script type="text/javascript">
+        var viewModel = new customerOrderingNotesViewModel();
+
+        $(document).ready(function () {
+            ko.applyBindings(viewModel, document.body);
+        });
+    </script>
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row margin-top-30" style="display: none" data-bind="visible: true">
+    <div class="col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountList }"></div>
+                <!-- ko if: tradeAccount() -->
+                <hr/>
+                <textarea maxlength="1000" rows="30" cols="20" data-bind="kendoEditor: editorParams"></textarea>
+                <!-- /ko -->
+            </div>
+            <!-- ko if: tradeAccount() -->
+            <div class="panel-footer">
+                <button class="btn btn-default btn-flat" data-bind="click: cancel">
+                    Cancel / Undo Changes
+                </button>
+                <div>
+                    <span id="save-success" class="text-success" style="display: none;">
+                        Saved Successfully &#x2714;
+                    </span>
+                    <button class="btn btn-green" data-bind="click: save">
+                        Save
+                    </button>
+                </div>
+            </div>
+            <!-- /ko -->
+        </div>
+    </div>
+</div>

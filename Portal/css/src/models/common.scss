@@ -1,0 +1,38 @@
+﻿@import "../lib/bootstrap-5.3.1/scss/mixins/breakpoints";
+@import "../lib/bootstrap-5.3.1/scss/functions";
+@import "../lib/bootstrap-5.3.1/scss/variables";
+
+$xs-gutter: 0.1rem;
+$vsm-gutter: 0.25rem;
+$sm-gutter: 0.5rem;
+$m-gutter: 0.75rem;
+$l-gutter: 1.0rem;
+$mxl-gutter: 1.5rem;
+$xl-gutter: 2.0rem;
+$xxl-gutter: 3.0rem;
+$disco-color: #e51f7c;
+$letter-spacing-slight: 0.05rem;
+$page-heading-colour: #44546b;
+
+:root {
+    --vsm-gutter: #{$vsm-gutter};
+    --sm-gutter: #{$sm-gutter};
+    --m-gutter: #{$m-gutter};
+    --l-gutter: #{$l-gutter};
+    --mxl-gutter: #{$mxl-gutter};
+    --xl-gutter: #{$xl-gutter};
+    --xxl-gutter: #{$xxl-gutter};
+    --disco-color: #{$disco-color};
+    --letter-spacing-slight: #{$letter-spacing-slight};
+    --page-heading-colour: #{$page-heading-colour};
+}
+
+$font-size-xs: 0.85rem;
+$font-size-md: 1.15rem;
+$font-size-regular: 1.0rem;
+$mdc-error-color: #db0028;
+
+html,
+body {
+    font-size: 14px;
+}

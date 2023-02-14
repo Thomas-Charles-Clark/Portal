@@ -1,0 +1,65 @@
+﻿<div id="marketing-message-modal" class="modal fade" tabindex="-1" role="dialog" data-bind="with: marketingMessage">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 id="marketing-message-modal-title" class="modal-title">
+                    Marketing Message <span data-bind="text: MarketingMessageID"></span>
+                </h4>
+            </div>
+            <div id="marketing-message-modal-body" class="modal-body">
+                <div class="form-group row">
+                    <label for="message-name" class="col-form-label col-sm-2 col-xs-12">
+                        Name
+                    </label>
+                    <div class="col-sm-10 col-xs-12">
+                        <input id="message-name" class="form-control" data-bind="forceNullOnEmpty: Name, textInput: Name" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="message-name" class="col-form-label col-sm-2 col-xs-12">
+                        Message
+                    </label>
+                    <div class="col-sm-10 col-xs-12">
+                        <textarea id="message-area" class="form-control" data-bind="forceNullOnEmpty: Message, textInput: Message" rows="8"></textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p class="editor-tips">
+                            In order to achieve styling, please use our "Smart Tags". In order to make a piece of text <strong>bold</strong>, surround it with "{b}...{/b}". To make a piece of text italic, surround it with {i}...{/i}. To make a piece of text a specific colour, surround it with {rgb(255, 120, 40)}...{/rgb}. To combine smart tags, please surround them with square brackets [ ]. <a role="button" data-toggle="collapse" href="#examples-collapse">Click here to view some examples and further info.</a>
+                        </p>
+                        <div class="collapse" id="examples-collapse">
+                            <p>
+                                This is an example of {b} <span style="font-weight: bold">how to make text bold</span> {/b}
+                            </p>
+                            <p>
+                                This is an example of {i} <span style="font-style: italic">how to make text italic</span> {/i}
+                            </p>
+                            <p>
+                                This is an example of {rgb(11, 172, 32)} <span style="color: rgb(11, 172, 32)">how to make text green</span> {/rgb}
+                            </p>
+                            <p>
+                                This is an example of [{b}{i}{rgb(2, 89, 196)}] <span style="font-weight: bold; font-style: italic; color: rgb(2, 89, 196)">how to make text bold, italic and blue</span> [/{rgb}{i}{b}]
+                            </p>
+                            <p>
+                                Your smart tags will not appear in the actual message.
+                            </p>
+                            <p>
+                                New lines will be preserved.
+                            </p>
+                            <p>
+                                Tabs will not be preserved.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="marketing-message-save" type="button" class="btn btn-success" data-bind="click: function() { $root.saveMessage() }">Save</button>
+                <button id="marketing-message-modal-close" type="button" style="float: left;" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,405 @@
+##########################################################
+#
+# ST
+# PG.SHOW.COSTS.DES
+#
+##########################################################
+
+*
+*Data in <334>, <335>, <336>, <337> and <338> is built up in PG.PURCH.PRICE.DES
+*
+*  W.IMP1.COST.DES     W351   (N10) cost breakdown 1
+*  W.IMP2.COST.DES     W352   (N10) cost breakdown 2
+*  W.IMP3.COST.DES     W353   (N10) cost breakdown 3
+*  W.IMP4.COST.DES     W354   (N10) cost breakdown 4
+*  W.IMP5.COST.DES     W355   (N10) cost breakdown 5
+*
+*
+@WORK<351> = @WORK<334,@CNT>
+@WORK<352> = @WORK<335,@CNT>
+@WORK<353> = @WORK<336,@CNT>
+@WORK<354> = @WORK<337,@CNT>
+@WORK<355> = @WORK<338,@CNT>
+*
+@WORK<370> = @WORK<365,@CNT>
+@WORK<371> = @WORK<366,@CNT>
+@WORK<372> = @WORK<367,@CNT>
+@WORK<373> = @WORK<368,@CNT>
+@WORK<374> = @WORK<369,@CNT>
+*
+EXEC "O*STPRODMASTER*IMPCOSTS.DES"
+EXIT 0
+
+
+
+
+##########################################################
+#
+# ST
+# PG.CHECK.PRICE.DES
+#
+##########################################################
+
+LOCAL L.CNT, L.MAX
+LOCAL L.SAVE.REC
+*
+L.SAVE.REC = @RECORD
+*
+*Find position of supplier is in the list of suppliers
+*
+*<0> = @WORK<12>  ;*set product code key
+* IF THE PRODUCT HAS A STCOK CODE THEN USE THE STOCKCODE
+
+@RECORD = F("STPRODMASTER",@WORK<12>)
+*DES1937 +
+IF @RECORD<278> # "" THEN
+   @WORK<12> = @RECORD<278> ;* Swap Stock Code to Product Code
+@RECORD = F("STPRODMASTER",@WORK<12>)
+*   DISP 3,"Using Stock Code ":@RECORD<278>
+END
+*DES1937 -
+<0> = @WORK<12>  ;*set product code key
+@CNT = 0
+L.MAX = DCOUNT(<70>,@VM)
+L.CNT = 1
+WHILE L.CNT <= L.MAX DO
+  IF @WORK<328> = <70,L.CNT> THEN @CNT = L.CNT
+  L.CNT = L.CNT +1
+REPEAT
+*
+EXEC "PG.PURCH.PRICE.DES,PCOST"
+*
+@RECORD = L.SAVE.REC
+EXIT 1
+
+
+
+
+##########################################################
+#
+# ST
+# PG.PURCH.PRICE.DES
+#
+##########################################################
+
+
+*DISP 3, "IN PG.PURCH.PRICE.DES"
+*
+*@PARAM : PCOST - CALLED FROM /PCOST
+*       : PB    - CALLED FROM /PB
+*********
+*Work Variables Contents:
+*  W.XRATE             W329   N12   exchange rate
+*  W.QTY.HEAD.DES      W330.M (A20) Import cost Elements
+*  W.QTY.REQ.DES       W331.M (N10) Quantity Required
+*  W.QTY.PRICE.CUR.DES W332.M (N10) Price (Currency)
+*  W.QTY.PRICE.DES     W333.M (N10) Price (STG)
+*  W.QTY.IMP1.DES      W334.M (N10) Import Cost 1 (Duty%)
+*  W.QTY.IMP2.DES      W335.M (N10) Import Cost 2 (Inland Charge%)
+*  W.QTY.IMP3.DES      W336.M (N10) Import Cost 3 (Packageing%)
+*  W.QTY.IMP4.DES      W337.M (N10) Import Cost 4 (Freight)
+*  W.QTY.IMP5.DES      W338.M (N10) Import Cost 5 Quota Levy)
+*  W.QTY.TOTAL.DES     W339.M (N10) Total Price
+*  W.QTY.HEAD1.DES     W340.M (A20) Import cost 1 description
+*  W.QTY.HEAD2.DES     W341.M (A20) Import cost 2 description
+*  W.QTY.HEAD3.DES     W342.M (A20) Import cost 3 description
+*  W.QTY.HEAD4.DES     W343.M (A20) Import cost 4 description
+*  W.QTY.HEAD5.DES     W344.M (A20) Import cost 5 description
+*  W.STDCST.DES        W345   (N10) Standard Cost Price
+*  W.QTY.IMPTOT.DES    W346.M (N10) Import Costs total
+*  W.QTY.AMEND.DES     W347.M (D8)  Date Last Amended
+*  W.QTY.HEAD.VAL.DES  W348.M (A12) heading values
+*  W.LSTCST.DES        W349   (N10) Latest cost price
+*  W.LSTAMD.DES        W350   (D8)  Latest cost price amended
+*  W.IMP1.COST.DES     W351   (N10) cost breakdown 1
+*  W.IMP2.COST.DES     W352   (N10) cost breakdown 2
+*  W.IMP3.COST.DES     W353   (N10) cost breakdown 3
+*  W.IMP4.COST.DES     W354   (N10) cost breakdown 4
+*  W.IMP5.COST.DES     W355   (N10) cost breakdown 5
+*  W.XRATE.DISP        W356   (A12) exchage rate to 2 dp and left justified
+*  W.QTYINSTOCK.DES    W357   (N10) free quantity in valid locations
+*  W.TOTCOSTVAL.DES    W358   (N10) cost value of stock in all locations
+*  W.TOTPHYSTOCK.DES   W359   (N10) physical stock in all locations
+*  W.CURR.AV.COST.DES  W360   (N10) average cost price
+*  W.QTY.CUR.IMPTOT.DES W361.M(N10) Import Costs total currency
+*  W.QTY.CUR.TOTAL.DES W362.M (N10) Total Price Currency
+*  W.INSTOCK.LOC.DES   W363.M (A4)  Location Codes for quantity in stock
+*  W.INSTOCK.LOC.QTY.DES W364.M (N10) Quantity in stock for each location
+*  W.IMP1.CUR.COST.DES     W365   (N10) cost breakdown 1
+*  W.IMP2.CUR.COST.DES     W366   (N10) cost breakdown 2
+*  W.IMP3.CUR.COST.DES     W367   (N10) cost breakdown 3
+*  W.IMP4.CUR.COST.DES     W368   (N10) cost breakdown 4
+*  W.IMP5.CUR.COST.DES     W369   (N10) cost breakdown 5
+*********
+LOCAL L.PARAM, L.POCOST.REC, L.STBATCHES
+LOCAL L.SAVE.WORK, L.ITEMS
+LOCAL L.PRODCODE, L.CURRENCY, L.QUALITY
+LOCAL L.PRICEKEY, L.PO.PRICE.LIST.REC, L.PLSUP.REC
+LOCAL L.CNT , L.MAX, L.INCLUDE
+LOCAL L.DUTY.PERC, L.ANTI.PERC, L.MISC.PERC
+LOCAL L.IMP.CHARGE, L.MISC.CHARGE, L.COST.BATCHES
+LOCAL L.POINTER, L.POS, L.LOCATION, L.STPRODLOC
+LOCAL L.CNT1, L.MAX1, L.CNT2, L.MAX2, L.STPIECES, L.STPRODBATCH
+LOCAL L.BASE.CURRENCY
+*********
+L.POCOST.REC = "" ; L.INCLUDE = "" ; L.ITEMS = ""
+L.STPIECES = "" ; L.STPRODBATCH = ""
+L.PARAM = @PARAM
+IF L.PARAM # "PB" AND L.PARAM # "PCOST" THEN
+   DISP 3, "INVALID PARAMETER PASSED"
+   EXIT 1
+END
+*********
+L.SAVE.WORK = @WORK
+@WORK<330> = "" ; @WORK<331> = "" ; @WORK<332> = "" ; @WORK<333> = ""
+@WORK<334> = "" ; @WORK<335> = "" ; @WORK<336> = "" ; @WORK<337> = ""
+@WORK<338> = "" ; @WORK<339> = ""
+@WORK<340> = "" ; @WORK<341> = "" ; @WORK<342> = "" ; @WORK<343> = ""
+@WORK<344> = "" ; @WORK<345> = "" ; @WORK<346> = "" ; @WORK<347> = ""
+@WORK<348> = "" ; @WORK<449> = "" ; @WORK<350> = ""
+@WORK<357> = "" ; @WORK<358> = "" ; @WORK<359> = "" ; @WORK<360> = ""
+@WORK<361> = "" ; @WORK<362> = "" ; @WORK<363> = "" ; @WORK<364> = ""
+@WORK<365> = "" ; @WORK<366> = "" ; @WORK<367> = "" ; @WORK<368> = "" ; @WORK<369> = ""
+*
+L.POS = @CNT
+L.PRODCODE = <0>             
+L.QUALITY = <57>             ;*quality
+IF L.PARAM = "PCOST" THEN
+   W.SUPP.CODE = @WORK<328>
+ELSE
+   W.SUPP.CODE = <70,L.POS>
+END
+*
+*Setup headings
+*
+L.CNT = 1
+WHILE L.CNT <= 5 DO
+   @WORK<330,L.CNT> = F("STDEFN","IMPCODES.STD")<4,L.CNT>
+   L.CNT = L.CNT + 1
+REPEAT
+*
+L.PLSUP.REC = F("PLSUP",W.SUPP.CODE)
+L.CURRENCY    = L.PLSUP.REC<100>
+L.BASE.CURRENCY = F("COMPANY","1")<83>
+*
+L.POCOST.REC = F("POCOSTS",L.QUALITY:"*\":W.SUPP.CODE)
+*
+IF L.POCOST.REC # "" THEN
+ * DES2239+
+ * L.DUTY.PERC   = (L.POCOST.REC<4.1> | "100")   ;*Duty Percentage
+ * L.ANTI.PERC   = (L.POCOST.REC<4.2> | "100")   ;*Anti Dumping Percentage
+ * L.MISC.PERC   = (L.POCOST.REC<4.3> | "100")   ;*Miscellaneous Percentage
+ * L.IMP.CHARGE  = (L.POCOST.REC<5.1> * "100")   ;*Import Charge
+ * L.MISC.CHARGE = (L.POCOST.REC<5.2> * "100")   ;*Miscellaneous Charge
+   
+   IF L.POCOST.REC<4,1> # "" THEN
+      L.DUTY.PERC   = (L.POCOST.REC<4.1> | "100") ;*Duty Percentage
+   ELSE
+      L.DUTY.PERC   = L.PLSUP.REC<80>       ;*Duty Percentage
+   END
+   
+   IF L.POCOST.REC<4,2> # "" THEN
+      L.ANTI.PERC   = (L.POCOST.REC<4.2> | "100") ;*Anti Dumping Percentage
+   ELSE
+      L.ANTI.PERC   = L.PLSUP.REC<81>       ;*Anti Dumping Percentage
+   END
+   
+   IF L.POCOST.REC<4,3> # "" THEN
+      L.MISC.PERC   = (L.POCOST.REC<4.3> | "100") ;*Miscellaneous Percentage
+   ELSE
+      L.MISC.PERC   = L.PLSUP.REC<82> ;*Miscellaneous Percentage
+   END
+   
+   IF L.POCOST.REC<5,1> # "" THEN
+      L.IMP.CHARGE  = (L.POCOST.REC<5.1> * "100") ;*Import Charge
+   ELSE
+      L.IMP.CHARGE  = L.PLSUP.REC<83>             ;*Import Charge
+   END
+   
+   IF L.POCOST.REC<5,2> # "" THEN
+      L.MISC.CHARGE = (L.POCOST.REC<5.2> * "100") ;*Miscellaneous Charge
+   ELSE
+      L.MISC.CHARGE = L.PLSUP.REC<84>             ;*Miscellaneous Charge
+   END
+   
+ * DES2239-
+ELSE
+   L.DUTY.PERC   = L.PLSUP.REC<80>       ;*Duty Percentage
+   L.ANTI.PERC   = L.PLSUP.REC<81>       ;*Anti Dumping Percentage
+   L.MISC.PERC   = L.PLSUP.REC<82>       ;*Miscellaneous Percentage
+   L.IMP.CHARGE  = L.PLSUP.REC<83>       ;*Import Charge
+   L.MISC.CHARGE = L.PLSUP.REC<84>       ;*Miscellaneous Charge
+END
+*
+@WORK<348,1> = L.DUTY.PERC"MR11":"%"     
+@WORK<348,2> = L.ANTI.PERC"MR11":"%"
+@WORK<348,3> = L.MISC.PERC"MR11":"%"
+@WORK<348,4> = L.IMP.CHARGE"MR24"
+@WORK<348,5> = L.MISC.CHARGE"MR24"
+*
+W.XRATE = F("XRATE",L.CURRENCY)<2>       ;*exchange rate from supplier
+@WORK<356> = OCONV(W.XRATE,"MR26")"L#12" ;*Show exchange rate as 2dp
+*
+*Get quantities to process
+*
+L.POINTER = 0
+*
+*IF L.POS > 0  THEN
+*  IF <73,L.POS> > 0 THEN          ;*normal cost price for supplier
+*     L.POINTER = L.POINTER + 1
+*     @WORK<331,L.POINTER> = "0"        ;*any qty 
+*     @WORK<332,L.POINTER> = <73,L.POS>  ;*normal cost price for supplier
+*  END
+*END
+*
+*Find prices for supplier*product
+*
+L.PRICEKEY=W.SUPP.CODE:"*":L.PRODCODE
+L.PO.PRICE.LIST.REC = F("PO.PRICE.LIST",L.PRICEKEY)
+IF L.PO.PRICE.LIST.REC = "" THEN
+   *
+   * Find price for supplier*quality
+   *
+   L.PRICEKEY=W.SUPP.CODE:"*":L.QUALITY
+   L.PO.PRICE.LIST.REC = F("PO.PRICE.LIST",L.PRICEKEY)
+END
+*
+*add in prices to the list
+*
+L.MAX = DCOUNT(L.PO.PRICE.LIST.REC<3>,@VM)
+IF L.MAX > 0 THEN
+   L.CNT = 1
+   WHILE L.CNT <= L.MAX DO
+      @WORK<331,L.CNT+L.POINTER> = L.PO.PRICE.LIST.REC<3,L.CNT>    ;*qty
+      @WORK<332,L.CNT+L.POINTER> = L.PO.PRICE.LIST.REC<4,L.CNT>    ;*price
+      @WORK<347,L.CNT+L.POINTER> = L.PO.PRICE.LIST.REC<5,L.CNT>    ;*date
+      *
+      L.CNT = L.CNT + 1
+   REPEAT
+END
+*
+L.MAX = DCOUNT(@WORK<331>,@VM)
+L.CNT = 1
+WHILE L.CNT <= L.MAX DO
+   *
+   *Get Sterling Price
+   *
+   @WORK<333,L.CNT> = P("PG.EXCHANGE,":@WORK<332,L.CNT>:",":L.CURRENCY:",W329,,N,,4")
+   *
+   *Now Calculate Import Charges (1-3:are percentage, 4-5 are fixed charges)   
+   *
+   *DES774+ add in freight cost before applying duty percentage
+   *
+   *@WORK<334,L.CNT> = ((@WORK<333,L.CNT> * 10000) * L.DUTY.PERC) /10000000
+   *
+   @WORK<334,L.CNT> = (((L.IMP.CHARGE + @WORK<333,L.CNT>) * 10000) * L.DUTY.PERC) /10000000
+   *
+   *DES774-
+   *
+   @WORK<335,L.CNT> = ((@WORK<333,L.CNT> * 10000) * L.ANTI.PERC) /10000000
+   *
+   @WORK<336,L.CNT> = ((@WORK<333,L.CNT> * 10000) * L.MISC.PERC) /10000000
+   *
+   @WORK<365,L.CNT> = P("PG.EXCHANGE,":@WORK<334,L.CNT>:",":L.BASE.CURRENCY:",":W329:",":L.CURRENCY:",N,,4")
+   @WORK<366,L.CNT> = P("PG.EXCHANGE,":@WORK<335,L.CNT>:",":L.BASE.CURRENCY:",":W329:",":L.CURRENCY:",N,,4")
+   @WORK<367,L.CNT> = P("PG.EXCHANGE,":@WORK<336,L.CNT>:",":L.BASE.CURRENCY:",":W329:",":L.CURRENCY:",N,,4")
+   *
+   @WORK<337,L.CNT> =  L.IMP.CHARGE
+   @WORK<338,L.CNT> =  L.MISC.CHARGE
+   *
+   @WORK<368,L.CNT> = P("PG.EXCHANGE,":@WORK<337,L.CNT>:",":L.BASE.CURRENCY:",":W329:",":L.CURRENCY:",N,,4")
+   @WORK<369,L.CNT> = P("PG.EXCHANGE,":@WORK<338,L.CNT>:",":L.BASE.CURRENCY:",":W329:",":L.CURRENCY:",N,,4")
+   *
+   @WORK<346,L.CNT> =  @WORK<334,L.CNT> + @WORK<335,L.CNT> + @WORK<336,L.CNT> + @WORK<337,L.CNT> + @WORK<338,L.CNT>
+   *
+   *Calc total purchase price for each item
+   *
+   @WORK<339,L.CNT> = @WORK<333,L.CNT> + @WORK<346,L.CNT>  
+   *
+   @WORK<340,L.CNT> = @WORK<330,1> ;*Import cost heading 1
+   @WORK<341,L.CNT> = @WORK<330,2> ;*Import cost heading 2
+   @WORK<342,L.CNT> = @WORK<330,3> ;*Import cost heading 3
+   @WORK<343,L.CNT> = @WORK<330,4> ;*Import cost heading 4
+   @WORK<344,L.CNT> = @WORK<330,5> ;*Import cost heading 5
+   *
+   @WORK<361,L.CNT> = P("PG.EXCHANGE,":@WORK<346,L.CNT>:",":L.BASE.CURRENCY:",":W329:",":L.CURRENCY:",N,,4")
+   @WORK<362,L.CNT> = P("PG.EXCHANGE,":@WORK<339,L.CNT>:",":L.BASE.CURRENCY:",":W329:",":L.CURRENCY:",N,,4")
+   *
+   L.CNT = L.CNT + 1
+REPEAT
+*
+W.STDCST.DES = <137>            ;*standard cost price to 2dp
+IF <870> > "0" THEN
+W.LSTCST.DES = <870>
+ELSE
+W.LSTCST.DES = <36.1>           ;*Latest cost price
+END
+W.LSTAMD.DES = <59>             ;*Latest Cost Price changed date
+*
+****
+  L.CNT = 1 ; L.MAX = DCOUNT(<19>,@VM)
+  WHILE L.CNT <= L.MAX DO
+    @RTN.FLAG = 0 ; READ L.LOCATION FROM "STLOCATION",<19,L.CNT>"G1*1"
+    IF NOT(@RTN.FLAG) THEN
+      IF L.LOCATION<17> # "Y" THEN L.INCLUDE = "1"
+      @RTN.FLAG = 0 ; READ L.STPRODLOC FROM "STPRODLOC",<19,L.CNT>
+      IF NOT(@RTN.FLAG) THEN
+        IF L.INCLUDE = "1" THEN
+          @WORK<357> = @WORK<357> + L.STPRODLOC<33>
+          @WORK<363> = INS(@WORK<363>,1,-1,<19,L.CNT>"G1*1")
+          @WORK<364> = INS(@WORK<364>,1,-1,L.STPRODLOC<33>)
+        END
+        @WORK<359> = @WORK<359> + L.STPRODLOC<30>
+      END
+    END
+  L.CNT = L.CNT + 1
+  REPEAT
+  IF <13> # "Y" THEN
+    L.COST.BATCHES = ""
+    L.CNT = 1 ; L.MAX = DCOUNT(<175>,@VM)
+    WHILE L.CNT <= L.MAX DO
+      IF NOT(LOC(<175,L.CNT>,L.COST.BATCHES,@VM)) THEN
+        L.COST.BATCHES = INS(L.COST.BATCHES,1,-1,<175,L.CNT>)
+        @RTN.FLAG = 0 ; READ L.STBATCHES FROM "STBATCHES",<175,L.CNT>
+        IF NOT(@RTN.FLAG) THEN
+          @WORK<358> = @WORK<358> + L.STBATCHES<90>
+        END
+      END
+    L.CNT = L.CNT + 1
+    REPEAT
+  ELSE
+    L.COST.BATCHES = ""
+    L.CNT = 1 ; L.MAX = DCOUNT(<175>,@VM)
+    WHILE L.CNT <= L.MAX DO
+      @RTN.FLAG = 0 ; READ L.STBATCHES FROM "STBATCHES",<175,L.CNT>
+      IF NOT(@RTN.FLAG) THEN
+        L.CNT1 = 1 ; L.MAX1 = DCOUNT(L.STBATCHES<9>,@VM)
+        WHILE L.CNT1 <= L.MAX1 DO
+          @RTN.FLAG = 0 ; READ L.STPRODBATCH FROM "STPRODBATCH",L.STBATCHES<9,L.CNT1>
+          IF NOT(@RTN.FLAG) THEN
+            L.ITEMS = L.STPRODBATCH<15>
+            L.CNT2 = 1 ; L.MAX2 = DCOUNT(L.ITEMS,@VM)
+            WHILE L.CNT2 <= L.MAX2 DO
+              @RTN.FLAG = 0 ; READ L.STPIECES FROM "STPIECES",L.ITEMS<1,L.CNT2>
+              IF NOT(@RTN.FLAG) THEN
+                @WORK<358> = @WORK<358> + L.STPIECES<90>
+              END
+            L.CNT2 = L.CNT2 + 1
+            REPEAT
+          END
+        L.CNT1 = L.CNT1 + 1
+        REPEAT
+      END
+    L.CNT = L.CNT + 1
+    REPEAT
+  END
+  *
+  @WORK<358> = @WORK<358>"MR00"
+  @WORK<360> = (@WORK<358> * 100000 / @WORK<359>)
+****
+@RTN.FLAG = 0
+EXEC "I*STPRODMASTER*COST.PRICES.DES"
+@WORK = L.SAVE.WORK
+EXIT 0
+
+

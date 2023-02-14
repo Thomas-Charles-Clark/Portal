@@ -1,0 +1,195 @@
+﻿@model Portal.ViewModels.HomeViewModel
+@{
+    ViewBag.Title = "Home Page";
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/home")
+    @Scripts.Render("~/bundles/js/jqueryui")
+
+    <script type="text/javascript">
+        var homeViewModel = function () {
+            var self = this;
+        }
+
+        var viewModel = new homeViewModel();
+
+        $(document).ready(function () {
+            ko.applyBindings(viewModel, document.body);
+        });
+    </script>
+}
+
+@*@section navbarRight {
+        <ul class="nav navbar-nav">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Quick Actions <span class="caret"></span></a>
+                <ul class="dropdown-menu multi-level">
+                    <li class="dropdown-submenu">
+                        <a href="#">
+                            Communication
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="javascript:;" onclick="$('#send-tarf-modal').modal('show')">
+                                    Send Trade Account Request Form Email
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    }*@
+
+<div id="home-page-buttons">
+    @foreach (var ag in Model.AvailableApplications.GroupBy(p => p.ApplicationGroup).OrderBy(p => p.Key?.SortOrder))
+    {
+        var groupTopColour = ag.Key?.ButtonFadeColourTop;
+        var groupBottomColour = ag.Key?.ButtonFadeColourBottom;
+        var groupBorderColour = ag.Key?.ButtonBorderColour;
+        var groupBackgroundColour = ag.Key?.ButtonBackgroundColour;
+        var groupHoverBackgroundColor = ag.Key?.ButtonHoverBackgroundColour;
+
+        string applicationGroupClassName = null;
+
+        if (!String.IsNullOrEmpty(groupTopColour) &&
+            !String.IsNullOrEmpty(groupBottomColour) &&
+            !String.IsNullOrEmpty(groupTopColour) &&
+            !String.IsNullOrEmpty(groupBackgroundColour) &&
+            !String.IsNullOrEmpty(groupHoverBackgroundColor))
+        {
+            applicationGroupClassName = $"application-group-{(ag.Key?.ApplicationGroupID.ToString() ?? "null")}";
+
+            var style = $@"color: #fff; 
+                            background-image: linear-gradient(to bottom, {groupTopColour} 0%, {groupBottomColour} 100%); 
+                            border-color: {groupBorderColour}; 
+                            background-color: {groupHoverBackgroundColor};
+                            box-shadow: inset 0 1px 0 rgb(255 255 255 / 15%), 0 1px 1px rgb(0 0 0 / 8%);";
+
+    <style type="text/css">
+                .@(applicationGroupClassName)
+                {
+                    @style
+                }
+                .@(applicationGroupClassName):hover
+                {
+                    background-color: @groupHoverBackgroundColor;
+                    color: #fff;
+                }
+                .@(applicationGroupClassName):active {
+                    background-color: @groupBackgroundColour;
+                    border-color: @groupBorderColour;
+                }
+                .@(applicationGroupClassName):active:hover {
+                    background-color: @groupBackgroundColour;
+                    border-color: @groupBorderColour;
+                }
+                .@(applicationGroupClassName):visited {
+                    background-color: @groupBackgroundColour;
+                    border-color: @groupBorderColour;
+                }
+    </style>
+        }
+
+        if (ag.Key != null)
+        {
+            <h2 class="application-group-name">
+                @ag.Key.Name
+            </h2>
+            if (!String.IsNullOrEmpty(ag.Key.Description))
+            {
+                <h4 class="application-group-description">
+                    @ag.Key.Description
+                </h4>
+            }
+        }
+
+        <div class="application-group">
+            @foreach (var a in ag)
+            {
+                var buttonTopColour = a.ButtonFadeColourTop;
+                var buttonBottomColour = a.ButtonFadeColourBottom;
+                var buttonBorderColour = a.ButtonBorderColour;
+                var buttonBackgroundColour = a.ButtonBackgroundColour;
+                var buttonHoverBackgroundColor = a.ButtonHoverBackgroundColour;
+
+                string buttonClassName = null;
+
+                if (!String.IsNullOrEmpty(buttonTopColour) &&
+                    !String.IsNullOrEmpty(buttonBottomColour) &&
+                    !String.IsNullOrEmpty(buttonTopColour) &&
+                    !String.IsNullOrEmpty(buttonBackgroundColour) &&
+                    !String.IsNullOrEmpty(buttonHoverBackgroundColor))
+                {
+                    buttonClassName = $"button-class-{(a.ApplicationID.ToString() ?? "null")}";
+
+                    var style = $@"color: #fff;
+                                    background-image: linear-gradient(to bottom, {buttonTopColour} 0%, {buttonBottomColour} 100%);
+                                    border-color: {buttonBorderColour};
+                                    background-color: {buttonHoverBackgroundColor};
+                                    box-shadow: inset 0 1px 0 rgb(255 255 255 / 15%), 0 1px 1px rgb(0 0 0 / 8%);";
+
+            <style type="text/css">
+                        .@(buttonClassName)
+                        {
+                            @style
+
+                        }
+                        .@(buttonClassName):hover
+                        {
+                            background-color: @buttonHoverBackgroundColor;
+                            color: #fff;
+                        }
+                        .@(buttonClassName):active {
+                            background-color: @buttonBackgroundColour;
+                            border-color: @buttonBorderColour;
+                        }
+                        .@(buttonClassName):active:hover {
+                            background-color: @buttonBackgroundColour;
+                            border-color: @buttonBorderColour;
+                        }
+                        .@(buttonClassName):visited {
+                            background-color: @buttonBackgroundColour;
+                            border-color: @buttonBorderColour;
+                        }
+            </style>
+                }
+
+
+                var url = "javascript:;";
+
+                if (a.ExternalURL != null)
+                {
+                    url = a.ExternalURL;
+
+                    if (url.Contains("javascript:"))
+                    {
+                        url = url.Replace("javascript:", "javascript:function() { return ") + "}";
+                    }
+                }
+
+                if (a.ActionName != null)
+                {
+                    url = Url.Action(a.ActionName, a.ControllerName, new { Area = a.AreaName });
+                }
+
+                <div class="application">
+                    <a class="btn @(buttonClassName ?? applicationGroupClassName ?? "btn-primary")" href="@(url)" target="@(String.IsNullOrEmpty(a.ExternalURL) ? "_self" : "_blank")" onclick="@(a.InlineJavascript)">
+                        <div class="panel-title">
+                            @(a.Name)
+                        </div>
+                        <div class="panel-subtitle">
+                            @if (a.Description != null)
+                            {
+                                foreach (var s in a.Description.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries).ToArray())
+                                {
+                                    <span>@(s)</span>
+                                }
+                            }
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+</div>

@@ -1,0 +1,335 @@
+﻿As far as is practicable, avoid performing those computations which should not be performed in a view.
+The Razor view engine permits this to a huuuge extent, and it is (contrarily) considered very bad practice.
+Computations should be performed controller side (ideally abstracted away into viewModel constructors and methods)
+That which is delivered to a view should be sufficient for rendering the view (or at least for building the knockout view model)
+
+It is best practice to have a partial - for argument's sake call it "X-server-data-partial.chtml" with which you deliver Model data to Javascript functions for
+consumption by knockout. This improves javascript readability and collapse.
+Javascript regions: type 'region' and hit TAB. 
+
+Write as little code as possible and do as much as possible with it.
+
+We have a need to select an account number (or have only one account number selected) across a number of views.
+
+Therefore have a modular account number partial which is provided sufficient information to know whether or not to display the finder,
+or a preselected account name (& possibly logo).
+
+Your various 'check stock', 'check prices' apps use functionality already present in the sample ordering view.
+
+SHARE THIS FUNCTIONALITY. MAINTAIN IT ONCE. USE IT MULTIPLE TIMES.
+
+Do NOT have view-specific names for what could be more globalised properties - you do NOT want to do $("#jl-account-number"), you MUST do
+$("#account-number").
+
+Have a global client-side model object, which can... be automatically? included in your various views' client-side view models?
+this doesn't need to be anything knockout specific - it can just be an object defined in layout, populated by... some properties belonging to a base
+view model class...?
+
+so start with the account number example.
+
+You may have reason for a user to have free reign to select any trade account number to perform some action with.
+
+You may have reason to restrict a user to a certain group of trade accounts.
+
+You may have reason to restrict a user to one and only one trade account.
+
+Either way, you should present ONE TradeAccountSelector partial view, fed by a generic data model, which presents the notion of a selected trade account
+number to whatever view & client side view model may digest it.
+
+So where do we put the server data which feeds the modular component view model pieces? the partial belonging to the component.
+
+Okay, cool. We've very nearly got a trade account selector modularised.
+The last piece of the puzzle there is the differences in data being sallied back and forth.
+
+Let's keep it simple: if it's called an account selector it should really only be bringing back things to do with the account.
+At the moment the autocomplete function returns a lot more than that for Samples' sake: 
+
+So our viewModel.tradeAccountSelector().selected() object starts life as:
+Code: "J0569"
+TradeAccountID: 17365
+TradePriceListID: 86
+
+Once we've used the Autocomplete (which should be a generic autocomplete returning just generic data) it actually carries:
+CARRCODE: "FC"
+CountryCode: "GB"
+DispatchName: "<label style="font-weight: bold; margin-right: 8px;">Haulier:</label>ROYAL MAIL<label style="font-weight: bold; margin-left: 12px; margin-right: 8px;">Service:</label>1ST CLASS"
+Email: "swaller@designersguild.com"
+HAULCODE: "RM"
+Name: "Mertex - Test Account"
+OrderConfirmationLanguageID: 16
+PriceList: "P50"
+TradePriceListID: 35
+label: "K0099 - Mertex - Test Account"
+value: "K0099"
+
+As a reasonable balance what it should look like is this:
+TradeAccountID: 17365
+Code: "J0569"
+TradePriceListID: 86
+Name: "John Lewis - Something"
+... Arguably you might want email too
+Email: "jl@ohnlewis.corn"
+
+Granted that that means you need to pull further data to satisfy the needs of the sampling system but
+that data isn't needed elsewhere and shouldn't belong to TradeAccount
+
+get a grip on what goes into session - this could get into quite a state, as the website application has done
+
+Task Name
+Sampling, Stock, RRP Price & Tech info enquiries, Also Look ats
+Order Quantity Restrictions
+Order Submission
+Order Status ?EDA
+Lead Reports ?EDA
+
+
+!! Stock from Mertex conflicting with stock info in Flock.
+FDG2342/02
+== We run a procedure to update stock on all products at 10am, which takes about 1/2 an hour.
+
+
+
+
+So, going well... but now I'm slightly annoyed by the replicating of functions
+e.g.
+
+function getTradeAccountGroupId()
+
+appears as many times as you have components on your view... hm. Doesn't do any direct harm I don't think, but hm. Don't love it.
+
+Also if multiple bundles reference the same scripts those scripts are rendered to the page however many times. Not ideal.
+- Don't have your component reference their required script bundles
+- if you have need of a component on a page, include its various prerequisites on that page as well.
+
+	
+So with the new visit booking form
+you're going to want to a) pick a date b) give the visit some note(s) and c) get people... invited? instructed? to 
+attend
+
+JL want green pods and something else... we'd like to get these sorts of things into the database against
+trade account as a single column containing multiple JSON properties...
+but then... we can't just be throwing extra values into this JSON blob with abandon - if I'm to hard map it against
+an object in EF, that's fine we can serialize and deserialize when necessary in the property's accessors
+but when you want to add anything new to this JSON... you'd need to update ALL ACCOUNTS so they all reflected the same
+object...
+
+wait... could I get around this by:
+
+simple mapping it to a string, not an object
+
+passing that string to client
+
+utilising hasOwnProperty
+
+- would this lend itself to success... I'm not 100% seeing it yet... it'd cause unsightly colour change if you let the DOM ready
+itself then altered things like pod colours
+
+okay actually the maintaining of JSON properties database side seems relatively trivial
+https://docs.microsoft.com/en-us/sql/t-sql/functions/json-modify-transact-sql
+https://docs.microsoft.com/en-us/sql/relational-databases/json/json-path-expressions-sql-server
+https://docs.microsoft.com/en-us/sql/t-sql/functions/json-query-transact-sql
+
+
+
+so now I'm back to needing a visit-booking form.
+
+so the interesting bit is the selection of attendees... this could become very tedious indeed
+if you're always having to select from a massive list, searching for people by name... etc.
+
+so: Member_RecentlyUsedMembers. Keeps (ten?) a running list of the members you most recently selected for X.
+
+We do need a full member search but want to avoid users having to use it unnecessarily
+
+
+
+... I am losing context, oh dear. Determine the *correct* approach to holding multiple levels of view model functions inside a master view model.
+- should I be holding them inside observables? 
+	- does doing so prevent or inhibit the use of context in the flow of bindings and DOM manipulation?
+=  Hm. Suddenly when I stopped freaking out about it it Just Worked. Best find out why at some point, and do answer
+the question posed earlier: should child view models be observable?
+- the question I've asked myself before on this point is: will they change / will they need subscribers to that change
+- the answer... is maybe.
+
+
+Right, refactor to get to a state of perfect context 
+
+Remove the need for that awful smelly code born of the 'shouter' idea, should NOT be necessary 
+- might not be so smelly, after all it lends itself to decoupling... but... 
+
+Well, that was easier than I thought it would be. Just needed a little bit of beer to help things along.
+
+So when you call new Function()  you create an execution context, scoped to that function.
+
+When you call applyBindings against an object, a new execution context is also created. So don't new the function. Just call the function
+to provide the result for Knockout to bind against.
+
+! not fixed because I've just lost my ability to interact with viewModel from console... 
+
+! fixed hurrah, context comprehended - chrome inspector knockout extension v. helpful
+
+HTML5 QR Code Scanning - Totally possible, use Instascan? https://github.com/schmich/instascan
+- This should be an inputgroupaddon for product search, it should *work* and be beautiful and fast
+
+
+Human-Readable 
+"Full Month" becomes MMM
+"Month to Date" becomes MMM until DD
+
+Financial Year becomes April to March
+Financial Year to Date becomes April until DDD MMM
+
+Calendar Year becomes January to December
+Calendar Year to Date becomes January to DDD MMM
+
+
+Here's an idea on how to get the "Don't put an ID number into the search term box" issue which Sarah came up
+with - too techy, people won't understand what 19638 is doing in the search filters when you reveal all after
+having clicked to reveal the most recent care record...
+... stick with me cause it's a bit hackish and not lovely
+create a second search term property on whichever search component, if the main search term observable is null
+- and only if it is null - should you then look to the second search term property
+- this becomes a nightmare if you then think 'oh great, that's the latest care record' and go to change the
+filters. You'll still have a secondary search term, but you'll have changed... the period, say.
+This would lead to needing to clear the secondary search term whenever the other properties change...
+
+Here's a better idea, dumbarse: parameter to performSearch "termOverride"... duh.
+
+
+
+Need to add per-sku product enquiry add to basket limit (initially, 1 per SKU).
+
+Address lookup results should disappear once selected from
+
+Reduce max-height of basket area for larger screen sizes (can't get to the bottom of it on Matt's laptop)
+
+Put another order samples button at the bottom
+
+
+So... dispatch method (HAULCODE & CARRCODE)
+There are some use cases where we wish to fix the dispatch method and not let the user specify or select any variant.
+There are other cases where we need the user to have the ability to select a dispatch method, and have a default selected...
+
+How do we delineate between these cases? On TradeAccount?
+
+Probably.
+
+
+
+Load the DefaultDispatch information into the ViewModel, deliver it by JS functions.
+
+DispatchName is a pureComputed.
+
+For those locked down to a single dispatch method, set a bool on the view model...
+
+
+Phone compulsorayary if Phone contact pref selected
+Same goes for emaul
+
+MIGRATE VALIDATION TO USING KNOCKOUT-VALIDATION
+https://github.com/Knockout-Contrib/Knockout-Validation
+IT ARE COOL
+
+
+/* 
+    * Damn it, Wales.
+    * 
+    * So I can't rely on Address || Residential to return me one and only one result... Therefore I need to keep the 
+    * autocomplete thing open on both.
+    * 
+    * And from the multiple languages case I can cause Select to just set the address... because those multiple
+    * language results are actually results from PCARetrieve.
+    * 
+    */
+
+// okay, so this is quite a mouthful.
+// what is done here is:
+//
+// Send off id, text, container, origin & countries. Initially only text and countries will be populated.
+//
+// If there are any results (and there probably will be for almost any term), 
+// those results are mapped into the autocomplete's response function (along with extra properties).
+//
+// Then the initial search's results are visible in the opened autocomplete widget.
+// When a user selects one of them, the select handler is called. 
+//
+// if the selected item has a type property, and that type is Address or Residential,
+// we keep the autocomplete widget open via the extend (see jquery-ui-extensions.js)
+// and populated the 'id' field of the subsequent call to Search.
+// (the subsequent call to search is made in the jquery-ui-extensions.js file)
+// 
+// this second call to the PCAPredictFind endpoint therefore carries the id from the clicked ui.item
+// and the method server side knows to put this ID through the Retrieve API, in order to get address details
+// from it.
+//
+// if the type property is anything other than address or residential, instead of populating the 'id'
+// field with the ui.item's ID property, we must populate the 'container' field - the server side method
+// picks up on this and knows that it must call Find again using that ID, and thus drilling down into results
+// is possible. Pretty nifty.
+// 
+// once we've actually made a call to PCAPredictFind which causes the Retrieve API call to be invoked, 
+// the results from that must be processed. These are totally different objects from the results given by Find;
+// they contain all the particulars of the address record(s) returned by the call.
+// 
+// Previously I erroneously thought that Retrieve would give me one and only one result set; it can give multiple
+// the only cause I've seen of it giving multiple results is to cater for multiple languages.
+//
+// SO. Those results from Retrieve are checked (if we've passed a value in PCASeachId and if the results are 1 in number,
+// I'm fine to just use that result as the address and close the autocomplete).
+// There may be many results, if there are they're mapped with these various necessary extra properties
+// as well as an extra property I've named customCatch.
+// In the select handler I can test for customCatch and instead of firing off another call to /PCAPredictFind,
+// I can populate my address from the properties I had mapped to ui.item
+
+
+
+
+// 25/07/2017
+Right.
+What were properties on the TradeAccount are now properties on Roles
+
+This reduces the complexity of maintaining UI and feature affecting properties on thousands of trade accounts.
+
+It introduces an interesting issue: a member can belong to multiple roles, and if those roles hold conflicting values for various properties which values do you respect?
+
+This leads to a hierarchy of roles. Super Admin would be 1, John Lewis would be... 5. I may be a member of both Super Admin and John Lewis, but my Super Admin properties take precedence.
+
+If I were just a member of John Lewis, I would not be able to e.g. change the Dispatch configuration for my sample orders.
+
+
+
+Need to throw the info-filled buttons from SAmpleREquest to AlternativeProductsModal
+
+
+We MUST do something with this ContactPreference field. 
+
+Save it somewhere and ACT ON IT.
+Should it be stored on the Transaction or on... the... Member - we don't HAVE a member to store it on
+Therefore it goes on the Transaction. Done.
+
+
+
+what about coordinates with products - should we prevent the display of anything except Fabric, Wallpaper & Trimmings? Yes. Done.
+
+Main product discontinued show discontinued in bold and hide + - buttons 
+Mirror + - buttons in Alternatives Modal
+Out of Stock > Incoming stock null (F1101/02)
+- apply JSON property 'Hide discontinued' for JL
+Check coordinating products stock breakdown for F1190/01
+Disabled buttons should give a messages on hover
+Along the lines of "you can only order 1 of each sample" or "this product is discontinued" and "you can only order a maximum of X samples per order""
+Consistent + - buttons in basket
+red delete button in basket
+
+If follow up preference is phone then phone field become mandatory
+Check 'Limited' functionality: search for F1123[/03]
+
+
+
+Need validation header message
+Telling you that you have to complete the following compulsory fields
+Display at top and bottom of basket next to order samples buttons
+Needs no product validation warning
+
+
+
+Does search-result-count-label need to be floated left and followed by a clearfix?

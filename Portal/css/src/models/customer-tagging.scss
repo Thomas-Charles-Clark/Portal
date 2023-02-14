@@ -1,0 +1,644 @@
+﻿/*.k-grid tr.k-state-selected td a {
+    background-color: #428bca;
+    border-color: #428bca;
+    border-bottom-color: #ccc;
+}*/
+/*.k-alt, .k-resource.k-alt, .k-separator {
+    background-color: transparent;
+}*/
+/*.k-grid-header {
+    border-bottom: 0;
+}*/
+/*
+    Steps to get LDAP authentication.
+
+    Here's an interesting one...
+
+    AD should be the bible on your password
+
+    If you do not have an account in mbr.Member one should be created for you
+
+    If you already have an account in mbr.Member and no password on that account,
+    we should take the plainText you provided for logging in with and put that to
+    AD, if it authorises then we put it through our normal password hashing routing 
+    and store it against your mbr.Member record.
+
+
+    this... we need to consider people who might need to log in without being in our AD.
+
+    so it needs to work for both.
+
+    if you have an account in mbr.Member and it has a password associated to it, we'll want
+    to ensure that that password is constantly updated to your current AD password - IF YOU HAVE
+    an AD account!
+
+
+    So:
+
+    Login Conditions
+
+    1) Attempted login, no mbr.Member record, no AD record.
+        Authenticate against AD
+            Success
+                = No
+
+            Failure
+                = Proceed to authenticate against mbr.Member
+
+        Authenticate against mbr.Member
+            Success
+                = No
+
+            Failure
+                = Failure
+
+    2) Attempted login, no mbr.Member record, has AD record.
+        Authenticate against AD
+            Success
+                = Create mbr.Member record, using our own password hasher against the plainText provided
+                = Ensure correct mbr.Member_Role records exist based on merging [Matt already did?]
+            
+            Failure
+                = Proceed to authenticate against mbr.Member
+
+        Authenticate against mbr.Member
+            Success
+                = User.Identity established, welcome to the Portal.
+
+            Failure
+                = Invalid AD Credentials provided, no mbr.Member record was created, failure.
+
+
+    3) Attempted login, has mbr.Member record, no AD record.
+        Authenticate against AD
+            Success
+                = This should not be possible; lack of AD record...
+
+            Failure
+                = Proceed to authenticate against mbr.Member
+    
+        Authenticate against mbr.Member
+            Success
+                = User.Identity established, welcome to the Portal.
+
+            Failure
+                = Invalid AD Credentials provided, no mbr.Member record was created, failure.
+
+    4) Attempted login, has mbr.Member record, has AD record.
+        Authenticate against AD
+            Success
+                = The provided password must be overwritten on the mbr.Member record
+                = That done, proceed to authenticate against mbr.Member
+
+            Failure
+                = Invalid AD credentials provided... this might happen if the AD password has 
+                = been changed and the user tries the old one. Therefore we must test to see
+                = if this provided password matches the mbr.Member password, if it DOES
+                = we must clear the password on mbr.Member and fail the authentication.
+                = Then proceed to authenticate against mbr.Member
+    
+        Authenticate against mbr.Member
+            Success
+                = User.Identity established, welcome to the Portal.
+
+            Failure
+                = Invalid AD Credentials provided, failure.
+*/
+#tag-search {
+    width: 100%;
+}
+
+.tags-column {
+    .tag {
+        margin: 0 4px 4px 0;
+        padding: 4px 6px;
+        background-color: #7cf47c;
+        font-weight: normal;
+        display: inline-block;
+        font-size: 12px;
+
+        span.remove {
+            cursor: pointer;
+        }
+    }
+}
+
+#add-tag-list {
+    list-style: none;
+    list-style-type: none;
+    max-height: 600px;
+    padding-left: 0;
+    -webkit-padding-start: 0;
+    text-indent: 0;
+    padding: 0;
+    margin-left: 0;
+    overflow: auto;
+
+    li {
+        text-indent: 0;
+        margin-left: 0;
+        padding-left: 0;
+        -webkit-padding-start: 0;
+
+        label {
+            padding: 4px 6px;
+        }
+    }
+}
+
+#remove-tag-list {
+    list-style: none;
+    list-style-type: none;
+    max-height: 600px;
+    padding-left: 0;
+    -webkit-padding-start: 0;
+    text-indent: 0;
+    padding: 0;
+    margin-left: 0;
+    overflow: auto;
+
+    li {
+        text-indent: 0;
+        margin-left: 0;
+        padding-left: 0;
+        -webkit-padding-start: 0;
+
+        label {
+            padding: 4px 6px;
+        }
+    }
+}
+
+.k-grid {
+    font-size: 12px;
+    border: 0;
+
+    td {
+        line-height: 1.6em;
+        text-align: right;
+    }
+
+    td.text-left {
+        text-align: left;
+    }
+
+    td.text-center {
+        text-align: center;
+    }
+
+    td.nowrap {
+        white-space: nowrap;
+    }
+
+    tr {
+        td {
+            border-left: 0;
+        }
+
+        td.left-border {
+            border-left: 1px solid #ccc;
+        }
+
+        td.ranking {
+            font-weight: bold !important;
+            text-align: center;
+            font-size: 1.15em;
+            background-color: #f0f6ff;
+        }
+
+        td.right-border {
+            border-right: 1px solid #ccc;
+        }
+
+        td.no-bottom-border {
+            border-bottom: 0;
+        }
+
+        &:hover {
+            background: none;
+        }
+    }
+
+    td.k-state-selected {
+        &:hover {
+            border-bottom-color: #ccc;
+            background-color: #3379b5;
+        }
+    }
+
+    tr.k-state-selected {
+        &:hover {
+            td.ranking {
+                border-bottom-color: #ccc;
+                background-color: #3379b5;
+            }
+
+            td {
+                a {
+                    color: #fff;
+                }
+            }
+        }
+
+        td.ranking {
+            background-color: #428bca;
+            border-color: #428bca;
+            border-bottom-color: #ccc;
+        }
+
+        td {
+            a {
+                color: #fff;
+            }
+
+            i.contact-icon {
+                color: #fff;
+            }
+        }
+    }
+
+    .k-grid-header {
+        .k-header {
+            height: auto !important;
+            vertical-align: bottom !important;
+            white-space: normal;
+            text-overflow: clip;
+        }
+    }
+
+    td.tags-column {
+        padding: 4px;
+        vertical-align: top;
+        overflow: hidden;
+        white-space: normal;
+        word-break: break-all;
+    }
+}
+
+.k-grid-header {
+    border-bottom: 0 !important;
+    background: none;
+
+    th.k-header {
+        border-width: 0 !important;
+        padding: 0.2em;
+    }
+
+    th.k-header.bottom-border {
+        border-bottom: 2px solid #ccc !important;
+    }
+
+    th.k-header.first-heading {
+        border-bottom: 2px solid #333 !important;
+        font-size: 14px;
+        text-align: center;
+        font-weight: bold;
+        line-height: 2em;
+        border-top-width: 1px;
+    }
+
+    th.k-header.second-heading {
+        padding-top: 0.75em !important;
+        padding-bottom: 0.75em !important;
+        font-size: 13px;
+        font-weight: bold;
+        text-align: center;
+        line-height: 1.5em;
+    }
+
+    th.k-header.first-heading.text-left {
+        text-align: left;
+    }
+
+    th.k-header.second-heading.text-left {
+        text-align: left;
+    }
+
+    th.k-header.third-heading {
+        font-size: 13px;
+        font-weight: bold;
+        border-top: 1px solid #333 !important;
+        border-bottom: 1px solid #333 !important;
+        border-bottom-width: 2px !important;
+        border-radius: 0 !important;
+        background-color: #dce6f1;
+
+        &:not(.text-left) {
+            text-align: center;
+        }
+    }
+
+    th.k-header.fourth-heading {
+        font-size: 13px;
+        font-weight: bold;
+        border-top: 1px solid #333 !important;
+        border-bottom: 1px solid #333 !important;
+        border-bottom-width: 2px !important;
+        border-radius: 0 !important;
+        background-color: #dce6f1;
+        border-left: 1px solid #333 !important;
+
+        &:not(.text-left) {
+            text-align: center;
+        }
+    }
+
+    th.k-header.left-border {
+        border-left: 1px solid #333 !important;
+    }
+
+    th.k-header.third-heading.left-border {
+        border-left: 1px solid #333 !important;
+    }
+
+    th.k-header.third-heading.right-border {
+        border-right: 1px solid #333 !important;
+    }
+
+    th.k-header.third-heading.text-right {
+        text-align: right;
+    }
+
+    .k-link {
+        .k-icon.k-i-sort-asc-sm {
+            position: relative !important;
+        }
+
+        .k-icon.k-i-sort-desc-sm {
+            position: relative !important;
+        }
+    }
+}
+
+.k-widget {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.k-filter-row {
+    th {
+        border-width: 0 !important;
+        padding: 0.2em;
+    }
+
+    th.first-heading {
+        font-size: 14px;
+        text-align: center;
+        font-weight: bold;
+        line-height: 2em;
+        border-top-width: 1px;
+    }
+
+    th.second-heading {
+        font-size: 13px;
+        font-weight: bold;
+        text-align: center;
+        line-height: 1.5em;
+    }
+
+    th.first-heading.text-left {
+        text-align: left;
+    }
+
+    th.second-heading.text-left {
+        text-align: left;
+    }
+
+    th.third-heading {
+        font-size: 13px;
+        font-weight: bold;
+        border-top: 1px solid #333 !important;
+        border-bottom: 1px solid #333 !important;
+        border-bottom-width: 2px !important;
+        border-radius: 0 !important;
+        background-color: #dce6f1;
+
+        &:not(.text-left) {
+            text-align: center;
+        }
+    }
+
+    th.fourth-heading {
+        font-size: 13px;
+        font-weight: bold;
+        border-top: 1px solid #333 !important;
+        border-bottom: 1px solid #333 !important;
+        border-bottom-width: 2px !important;
+        border-radius: 0 !important;
+        background-color: #dce6f1;
+        border-left: 1px solid #333 !important;
+
+        &:not(.text-left) {
+            text-align: center;
+        }
+    }
+
+    th.left-border {
+        border-left: 1px solid #333 !important;
+    }
+
+    th.third-heading.left-border {
+        border-left: 1px solid #333 !important;
+    }
+
+    th.third-heading.right-border {
+        border-right: 1px solid #333 !important;
+    }
+
+    th.third-heading.text-right {
+        text-align: right;
+    }
+}
+
+.k-grid-header-wrap {
+    border-right: 0;
+}
+
+.panel.filters {
+    margin-bottom: 0;
+    font-size: small;
+}
+
+.filters {
+    .panel-body {
+        &:not(.no-padding) {
+            padding: 4px;
+        }
+    }
+
+    select {
+        font-size: 11px;
+        padding: 4px 4px;
+        height: auto;
+        line-height: 1.5em;
+    }
+}
+
+.slicers {
+    .slicer {
+        border: none;
+        margin-bottom: 0;
+        margin-right: 0;
+        width: 100%;
+        border: 0;
+    }
+
+    div.dropdown-wrapper {
+        width: 100%;
+        float: left;
+    }
+
+    > div {
+        &:first-of-type {
+            .panel.slicer {
+                border-left-width: 1px;
+                border-radius: 4px 0 0 4px;
+            }
+        }
+
+        &:last-of-type {
+            .panel.slicer {
+                border-right-width: 1px;
+                border-radius: 0 4px 4px 0;
+            }
+        }
+    }
+
+    div.rrp-dropdown-wrapper {
+        min-width: unset;
+    }
+
+    > div.input-group {
+        > div.input-group-btn {
+            font-size: inherit;
+            vertical-align: top;
+        }
+    }
+}
+
+.panel.slicer {
+    div.panel-heading {
+        border-radius: 0;
+        position: relative;
+        background: #f8f8f8;
+        color: #2c5093;
+        font-weight: bold;
+    }
+
+    .k-dropdown {
+        width: 100%;
+        border-radius: 0;
+
+        .k-dropdown-wrap {
+            border-radius: 0;
+        }
+    }
+}
+
+.slicer {
+    display: block;
+    margin-bottom: 0;
+    margin-right: 0;
+    float: none;
+}
+
+.k-loading-image {
+    background-image: none;
+}
+
+.clear-selection {
+    position: absolute;
+    top: 4px;
+    right: 0;
+}
+
+.k-block {
+    background: none;
+}
+
+.k-draghandle {
+    background: none;
+}
+
+.k-grouping-header {
+    background: none;
+}
+
+.k-header {
+    background: none;
+}
+
+.k-pager-wrap {
+    background: none;
+}
+
+.k-toolbar {
+    background: none;
+}
+
+.k-treemap-tile {
+    background: none;
+}
+
+html {
+    .km-pane-wrapper {
+        .k-header {
+            background: none;
+        }
+    }
+}
+
+.sales-rep-info {
+    margin-left: 12px;
+}
+
+.contact-icon {
+    color: #7272a7;
+    cursor: pointer;
+    font-size: 32px;
+    position: relative;
+    top: 3px;
+}
+
+div.k-grid-footer {
+    border: 0;
+    border-bottom: 0;
+    border-left: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+}
+
+.k-footer-template {
+    td {
+        border-bottom: 0 !important;
+    }
+}
+
+.k-grid-footer-wrap {
+    border: 0;
+}
+
+.sorting-desc {
+    background-color: #abe8ff !important;
+}
+
+.sorting-asc {
+    background-color: #ffda55 !important;
+}
+
+.k-i-sort-asc-sm {
+    &:before {
+        content: '\e004';
+    }
+}
+
+.k-i-sort-desc-sm {
+    &:before {
+        content: '\e006';
+    }
+}
+
+.panel-body.no-padding {
+    .list-group {
+        margin-bottom: 0;
+    }
+}

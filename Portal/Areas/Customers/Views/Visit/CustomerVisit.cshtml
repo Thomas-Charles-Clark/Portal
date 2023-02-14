@@ -1,0 +1,108 @@
+﻿@model Portal.Areas.Customers.ViewModels.CustomerVisitViewModel
+@{
+    ViewBag.Title = "Customer Visit";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/visit-booker")
+    @Styles.Render("~/bundles/css/member-search")
+    @Styles.Render("~/bundles/css/visit-search")
+    @Styles.Render("~/bundles/css/customer-visit")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/visit-booker")
+    @Scripts.Render("~/bundles/js/member-search")
+    @Scripts.Render("~/bundles/js/visit-search")
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/customer-visit")
+
+    <script type="text/javascript">
+
+        var viewModel = new customerVisitViewModel();
+
+        ko.applyBindings(viewModel, document.body);
+
+        $(document).ready(function () {
+            $("#account-number").focus();
+        });
+
+        function getTradeAccountGroupId() {
+            return @Html.Raw(Json.Encode(Model.TradeAccountGroupID))
+        }
+
+        function getTradeAccountId() {
+            return @Html.Raw(Json.Encode(Model.TradeAccountID))
+        }
+    </script>
+}
+@section modals {
+    <div data-bind="with: visitBooker">
+        @Html.Partial("Modals/_VisitEditModal")
+    </div>
+}
+
+@section beforeContainer {
+    @*<div class="busy-ring" data-bind="fadeVisible: busy"><div class='uil-ring-css'><div></div></div></div>*@
+
+    <div class="page-busy-wrapper" style="display: none;" data-bind="fadeVisible: busy">
+        <div class="form-busy">
+            <div class="busy-bars">
+                <div class="rect1 alert alert-info"></div>
+                <div class="rect2 alert alert-info"></div>
+                <div class="rect3 alert alert-info"></div>
+                <div class="rect4 alert alert-info"></div>
+                <div class="rect5 alert alert-info"></div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            <div class="btn-group" style="float: right">
+                @if (ViewBag.MicrosoftOAuthToken == null)
+                {
+                    <a id="ad-auth" class="btn btn-primary" href="https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=13c231f3-3e1a-4caa-9633-3fd653af3142&redirect_uri=@(HttpUtility.UrlEncode(Request.Url.GetLeftPart(UriPartial.Path)))&response_type=code&scope=Calendars.ReadWrite" target="_blank">
+                        AZAD Outlook Calendar Auth
+                    </a>
+                }
+                else
+                {
+                    <span class="text-muted smaller">OAuth Token: @(ViewBag.MicrosoftOAuthToken)</span>
+                }
+
+                @if (ViewBag.Exception != null)
+                {
+                    <div class="alert alert-danger">
+                        @Html.Raw(ViewBag.Exception);
+                    </div>
+                }
+            </div>
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+
+@Html.Action("TradeAccountSelector", "Component", new { Area = "", canSearch = Model.CanSearch })
+
+<div class="row margin-top-10" style="display: none" data-bind="visible: tradeAccountSelector().selected">
+    <div class="col-xs-12">
+        <button class="btn btn-success" data-bind="click: function() { visitBooker().show(); }">Book Visit</button>
+    </div>
+</div>
+
+@Html.Action("VisitSearch", "Component", new { Area = "" })

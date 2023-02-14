@@ -1,0 +1,51 @@
+﻿#######################################################################
+#
+#	In-Situ Translation of Text
+#
+#		- Also need to permit translation of generated documents (PDF, .docx, etc.) and emails.
+#
+
+
+1)	Reasoning
+
+2)	Thoughts on approach
+
+3)	Immediate problems identified
+
+4)	Preliminary conclusions
+
+5)	Strategy
+
+
+
+1)	This is necessary because managing the translation of our text resources thus far has been... less than perfect.
+	Having the various pieces of text in disparate translator screens removes all notion of context. It also demands
+	functional and regular attendance. One person to manage the translations, however many people across all the 
+	languages to find the time to do the translation, etc.
+
+2)	A much better approach would be to let the user (if they happen to be in a Translator role) perform the translation
+	within context on a page.
+
+	You might want to... switch the page to "Translation Mode". What this might entail I'm not sure, but you can't have 
+	all of the functionality executing when not desired. Nor equally can you expect someone to stop mid-quote and take 
+	five minutes to translate or correct the translation of what they're looking at.
+
+	All pieces of text need to be individually identifiable in order that they might be updatable. This means data attributes. Lots of them.
+	Re-use of text now becomes an issue - you might reasonable say "A" in English across all different uses of A, but in French you might want
+	to say N in some cases where A would be a suboptimal selection of wording, despite needing to say A in other cases.
+	If there were only the single generic instance of A, you'd have to specify that it should either always be A or always be N in French.
+	This leads to bloating of the resource table but that seems unavoidable.
+
+	As for how this is to be done... Going with the notion that the page is entirely malleable it can be done - even in the same font - perfectly in situ.
+	That's going to be difficult. You want the original text to remain there... ideally to fill the input element when you encounter it.
+
+	How do you make this process fast, fluid and efficient? Keyboard shortcuts for traversing the page. Tab should save and move to the next. You do not want
+	to be clicking everywhere. Judicious use of tabindex attribute. Or... well, for general use you want to tabindex through the various fields and actionables.
+	You want probably a secondary tabindex for translation with which you can tab through text parts.
+
+3)	How to get the user access to all the text a page might display, while avoiding the risk of creating a quote or some
+	such similar positive action where none was intended? I don't want to create the quote but I do want to see whatever
+	you're going to show me after I've successfuly created a quote so that I can translate it!
+
+
+4)	It's going 

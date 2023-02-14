@@ -1,0 +1,164 @@
+﻿@{
+    ViewBag.Title = "Designers Guild - Test Bed";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/components")
+    @Styles.Render("~/bundles/css/kendo-custom")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/components")
+    @Scripts.Render("~/bundles/js/datetime-picker")
+
+    <script type="text/javascript">
+        @*function getTradeAccount() {
+            return @Html.Raw(JsonConvert.SerializeObject(ViewBag.TradeAccount));
+        }
+
+        function getProductFilterButtons() {
+            return @Html.Raw(JsonConvert.SerializeObject(ViewBag.ProductFilterButtons));
+        }
+
+        function getBrandFilterButtons() {
+            return @Html.Raw(JsonConvert.SerializeObject(ViewBag.BrandFilterButtons));
+        }
+
+        function getLaunchFilterButtons() {
+            return @Html.Raw(JsonConvert.SerializeObject(ViewBag.LaunchFilterButtons));
+        }
+
+        function getPatternFilterButtons() {
+            return @Html.Raw(JsonConvert.SerializeObject(ViewBag.PatternFilterButtons));
+        }
+
+        function getItemTypeFilterButtons() {
+            return @Html.Raw(JsonConvert.SerializeObject(ViewBag.ItemTypeFilterButtons));
+        }
+
+        function getMartindaleFilterButtons() {
+            return @Html.Raw(JsonConvert.SerializeObject(ViewBag.MartindaleFilterButtons));
+        }
+
+        function getDeliveryFOCReasons() {
+            return @Html.Raw(JsonConvert.SerializeObject(ViewBag.DeliveryFOCReasons));
+        }
+
+        function getWidthFilterButtons() {
+            return [{
+                Name: 'Standard',
+                WidthID: false
+            }, {
+                Name: 'Wide',
+                WidthID: true
+            }]
+        }*@
+
+        function formatSelectedCurrency(value) {
+            return formatCurrency(value, 2, viewModel.tradeAccount().CurrencyCulture, viewModel.tradeAccount().CurrencyCode);
+        }
+
+        var viewModel = new testBedViewModel();
+
+        //var of = viewModel.orderFactory;
+
+        //var bfhf = of.bespokeFabricHangerFactory;
+
+        //var df = of.dispatchFactory;
+
+        ko.options.deferUpdates = true;
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        $(document).ready(function () {
+            ko.applyBindings(viewModel, document.body);
+
+            if (sessionStorage) {
+                if (sessionStorage.getItem('basket')) {
+                    $('#load-from-session').show();
+                    //console.log('sessionStorage.basket', JSON.parse(sessionStorage.getItem('basket')))
+                    //viewModel.orderFactory.loadBasket(JSON.parse(sessionStorage.getItem('basket')), JSON.parse(sessionStorage.getItem('errata')));
+                }
+            }
+
+            //viewModel.orderFactory.show();
+        });
+    </script>
+}
+
+@*@Html.Partial("Modals/_OrderProductsModal")*@
+
+@*@Html.Action("OrderProductsComponent", "Component", new { Area = "" })
+
+@Html.Partial("Modals/_ImageModal")*@
+@*@Html.Partial("Modals/_StockModal")*@
+
+@*<div class="row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            <h1 class="main-heading">
+                Test Bed [Leads]
+            </h1>
+            <h4 class="sub-heading">
+                <span class="margin-bottom-15">
+                    Actually testing Order Products component...
+                </span>
+            </h4>
+        </div>
+    </div>
+</div>
+
+@Html.Action("TradeAccountSelector", "Component", new { Area = "", CanSearch = true, canCollapse = true })
+
+<div id="load-from-session" class="form-group row" style="display: none;">
+    <div class="col-xs-12">
+        <div class="btn-toolbar">
+            <button class="btn btn-success" data-bind="click: function () { orderFactory.loadBasket(JSON.parse(sessionStorage.getItem('basket')), JSON.parse(sessionStorage.getItem('errata'))); }">
+                Load from Session
+            </button>
+            <button class="btn btn-default" data-bind="click: function () { sessionStorage.clear(); $('#load-from-session').hide(); }">
+                Clear Session
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row" data-bind="with: memberBasketFetcher">
+    <div class="col-xs-12" style="position: relative; min-height: 200px;" >
+        <div class="blocker" data-bind="visible: busy">
+            <div class="loading-spinner"></div>
+        </div>
+        <label>
+            My Saved Baskets
+        </label>
+        <div id="member-baskets-list" class="list-group" style="display: none;" data-bind="visible: true">
+            <!-- ko fastForEach: baskets -->
+            <a class="list-group-item pointer" data-bind="css: { 'active': $root.orderFactory.memberBasketId() == $data.MemberBasketID }, click: $parent.openBasket">
+                <span data-bind="text: $data.TradeAccount.Code + ' - ' + $data.TradeAccount.Name + ': ' + $data.OrderReference"></span>
+                <span class="pull-right" data-bind="text: moment($data.ModifiedDT).format('DD/MM/YYYY HH:mm')"></span>
+            </a>
+            <!-- /ko -->
+            <!-- ko if: baskets().length == 0 -->
+            <a href="#" class="list-group-item">
+                You have no saved Baskets.
+            </a>
+            <!-- /ko -->
+        </div>
+    </div>
+</div>
+
+<div class="row" data-bind="with: orderFactory">
+    <div class="col-xs-12">
+        <button class="btn btn-primary" data-bind="click: show">
+            Show Order Factory
+        </button>
+    </div>
+</div>*@
+
+@*<h5 data-bind="text: widthWatch"></h5>*@

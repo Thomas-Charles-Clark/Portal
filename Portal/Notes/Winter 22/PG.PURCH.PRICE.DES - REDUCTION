@@ -1,0 +1,58 @@
+
+
+L.PLSUP.REC = F("PLSUP", STPRODMASTER<70,1>) ;* first supplier on the product
+
+L.POCOST.REC = F("POCOSTS",L.QUALITY:"*\":W.SUPP.CODE)
+
+L.CURRENCY
+
+L.IMP.CHARGE		;* Import Charge
+
+L.DUTY.PERC
+   IF L.POCOST.REC<4,1> # "" THEN
+      L.DUTY.PERC   = (L.POCOST.REC<4.1> | "100") ;*Duty Percentage
+   ELSE
+      L.DUTY.PERC   = L.PLSUP.REC<80>       ;*Duty Percentage
+   END
+   
+L.CURRENCY    = L.PLSUP.REC<100> ;* currency is field 100 on PLSUP
+
+<329> = W.XRATE					Exchange Rate
+		W.XRATE = F("XRATE",L.CURRENCY)<2>			;*exchange rate is field 2 on XRATE from supplier currency
+	
+<332> = W.QTY.PRICE.CUR.DES 	Price (Currency)
+
+<333> = W.QTY.PRICE.DES			Price (STG)
+		W.QTY.PRICE.DES = ("PG.EXCHANGE,":@WORK<332,L.CNT>:",":L.CURRENCY:",W329,,N,,4")
+
+<334> = W.QTY.IMP1.DES      W334.M (N10) Import Cost 1 (Duty%)
+	  = (((L.IMP.CHARGE + @WORK<333,L.CNT>) * 10000) * L.DUTY.PERC) /10000000
+		
+<335> = W.QTY.IMP2.DES      W335.M (N10) Import Cost 2 (Inland Charge%)
+	  = ((@WORK<333,L.CNT> * 10000) * L.ANTI.PERC) /10000000
+	  
+<336> = W.QTY.IMP3.DES      W336.M (N10) Import Cost 3 (Packageing%)
+	  = ((@WORK<333,L.CNT> * 10000) * L.MISC.PERC) /10000000
+
+<337> = W.QTY.IMP4.DES      W337.M (N10) Import Cost 4 (Freight)
+	  = L.IMP.CHARGE
+
+<338> = W.QTY.IMP5.DES      W338.M (N10) Import Cost 5 Quota Levy)
+	  = L.MISC.CHARGE
+
+<339> = W.QTY.TOTAL.DES			Total Price (STG)	;* is the one we're after: W.QTY.TOTAL.DES for a given quantity break.
+	  = <333> + <346>
+
+<346> = W.QTY.IMPTOT.DES		Import Costs Total
+	  = @WORK<334,L.CNT> + @WORK<335,L.CNT> + @WORK<336,L.CNT> + @WORK<337,L.CNT> + @WORK<338,L.CNT>
+	  
+	  
+	  
+	  
+	  
+	  
+	   
+	  
+	  st price maint. purchase price lists. by product. 
+		SUPPLIER
+		PRUCHASE PRICE BY PRODUCT LIST 

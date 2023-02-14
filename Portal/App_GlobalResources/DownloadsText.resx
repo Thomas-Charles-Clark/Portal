@@ -1,0 +1,811 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AccountSettingsMenuItem" xml:space="preserve">
+    <value>Account Settings</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="AdvertisingImagesTitle" xml:space="preserve">
+    <value>Advertising Images</value>
+    <comment>Advertising</comment>
+  </data>
+  <data name="AdvertisingMenuItem" xml:space="preserve">
+    <value>Advertising Images</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="AdvertisingT1" xml:space="preserve">
+    <value>A handpicked selection of advertising images, representing our entire product range, to assist you with your own advertising campaigns. All are ready for immediate use online or in print.</value>
+    <comment>Advertising</comment>
+  </data>
+  <data name="AnnouncementT1" xml:space="preserve">
+    <value>Autumn / Winter 2016 available to download from the 14&lt;sup&gt;th&lt;/sup&gt; July</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="AnnouncementTitle" xml:space="preserve">
+    <value>Announcement</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="Brand" xml:space="preserve">
+    <value>Brand</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="BuildBusyTryAgain" xml:space="preserve">
+    <value>Please try again.</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Clear</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="Collection" xml:space="preserve">
+    <value>Collection</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="Colour" xml:space="preserve">
+    <value>Colour</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Download</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="DownloadForMac" xml:space="preserve">
+    <value>Download for Mac</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="DownloadForWindows" xml:space="preserve">
+    <value>Download for Windows</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="EmptyBasket" xml:space="preserve">
+    <value>Your basket is empty</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="ErrorT1" xml:space="preserve">
+    <value>We are sorry, but an unexpected error occured while processing your request.</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="ErrorT2" xml:space="preserve">
+    <value>Rest assured that this error has been logged and a system administrator will rectify the issue as soon as is feasibly possible.</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>Error.</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="Heading" xml:space="preserve">
+    <value>Heading</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="Hello" xml:space="preserve">
+    <value>Hello</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="HowToMenuItem" xml:space="preserve">
+    <value>How To</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="ID" xml:space="preserve">
+    <value>ID</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="ItemInYourBasket" xml:space="preserve">
+    <value>item in your basket</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="ItemsInYourBasket" xml:space="preserve">
+    <value>items in your basket</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="Launch" xml:space="preserve">
+    <value>Launch</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading...</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="LockedOut" xml:space="preserve">
+    <value>Locked Out</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="LockedOutT1" xml:space="preserve">
+    <value>This account has been locked out, please try again later.</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="LogIn" xml:space="preserve">
+    <value>Log in</value>
+    <comment>Login</comment>
+  </data>
+  <data name="LoginB1" xml:space="preserve">
+    <value>If you don't have an existing trade user name and password, please contact your local customer services representative who will be happy to create an account for you.</value>
+    <comment>Login</comment>
+  </data>
+  <data name="LoginFailure" xml:space="preserve">
+    <value>Invalid login attempt.</value>
+    <comment>Login</comment>
+  </data>
+  <data name="LoginT1" xml:space="preserve">
+    <value>A quick and easy resource for Designers Guild trade customers to access content to use on their own website, digital marketing campaigns and print ads.</value>
+    <comment>Login</comment>
+  </data>
+  <data name="LoginT2" xml:space="preserve">
+    <value>Please login using your existing trade user name and password.</value>
+    <comment>Login</comment>
+  </data>
+  <data name="LoginWelcome" xml:space="preserve">
+    <value>Welcome to downloads.designersguild.com</value>
+    <comment>Login</comment>
+  </data>
+  <data name="LogOffMenuItem" xml:space="preserve">
+    <value>Log off</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="MacBuildBusyT1" xml:space="preserve">
+    <value>We're very sorry, but the Mac Downloader Build System is experiencing unexpectedly high usage.</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="MacBuildBusyTitle" xml:space="preserve">
+    <value>Mac Build System Busy</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="ManageSubTitle" xml:space="preserve">
+    <value>Change your account settings.</value>
+    <comment>Login</comment>
+  </data>
+  <data name="ManageTitle" xml:space="preserve">
+    <value>Account Settings</value>
+    <comment>Login</comment>
+  </data>
+  <data name="NoData" xml:space="preserve">
+    <value>No data to display</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Password</value>
+    <comment>Login</comment>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>The Password field is required.</value>
+    <comment>Login</comment>
+  </data>
+  <data name="PendingApprovalT1" xml:space="preserve">
+    <value>You have logged in successfully. We are reviewing your application to access this website. Once approved you will be able to login and access this website immediately. Applications usually take no more than 1 working day to process.</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="PendingApprovalTitle" xml:space="preserve">
+    <value>Your login is pending approval</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="PrimaryImage" xml:space="preserve">
+    <value>Primary Image</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="ProductImagesAndFeedsT1" xml:space="preserve">
+    <value>A quick and easy search to give you unrestricted access to the entire wholesale product catalogue available in your market. All content, text and images have been optimised for use on your website.</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="ProductImagesAndFeedsTitle" xml:space="preserve">
+    <value>Product Images &amp; Feeds</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="ProductImagesMenuItem" xml:space="preserve">
+    <value>Product Images &amp; Feeds</value>
+    <comment>Shared</comment>
+  </data>
+  <data name="ProductType" xml:space="preserve">
+    <value>Product Type</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="RememberMe" xml:space="preserve">
+    <value>Remember me?</value>
+    <comment>Login</comment>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Reset</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="SearchFor" xml:space="preserve">
+    <value>Search For</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="SecondaryImages" xml:space="preserve">
+    <value>Secondary Image(s)</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Select</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="TradeLoginTitle" xml:space="preserve">
+    <value>Trade Login</value>
+    <comment>Login</comment>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>User Name</value>
+    <comment>Login</comment>
+  </data>
+  <data name="UserNameRequired" xml:space="preserve">
+    <value>The User Name field is required.</value>
+    <comment>Login</comment>
+  </data>
+  <data name="Visit" xml:space="preserve">
+    <value>Visit</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="WindowsBuildBusyT1" xml:space="preserve">
+    <value>We're very sorry, but the Windows Downloader Build System is experiencing unexpectedly high usage.</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="WindowsBuildBusyTitle" xml:space="preserve">
+    <value>Windows Build System Busy</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="AverageFileSize" xml:space="preserve">
+    <value>Average file size</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="ColourProfile" xml:space="preserve">
+    <value>Colour profile</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="ColourSpace" xml:space="preserve">
+    <value>Colour space</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="ComingSoon" xml:space="preserve">
+    <value>Coming Soon</value>
+    <comment>Download</comment>
+  </data>
+  <data name="DownloadForPrint" xml:space="preserve">
+    <value>Download for Print</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="DownloadForWeb" xml:space="preserve">
+    <value>Download for Web</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="EstimatedDownloadTime" xml:space="preserve">
+    <value>Estimated download time</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="ExcelDownloadText" xml:space="preserve">
+    <value>Select this option if you are not using one of the ecommerce platforms above. You'll need to download two files. Firstly, download the Excel file containing the product information and image links, then download either the Windows or Mac image downloader app to retrieve the corresponding images.</value>
+    <comment>Download</comment>
+  </data>
+  <data name="ExcelDownloadTitle" xml:space="preserve">
+    <value>Excel (.xlsx) product file &amp; image downloader app.</value>
+    <comment>Download</comment>
+  </data>
+  <data name="FileFormat" xml:space="preserve">
+    <value>File format</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="FitWithin1024" xml:space="preserve">
+    <value>Fit within 1024px x 1024px square</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="Format" xml:space="preserve">
+    <value>Format</value>
+    <comment>Download</comment>
+  </data>
+  <data name="HowToT1" xml:space="preserve">
+    <value>What is downloads.designersguild.com?</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="HowToT10" xml:space="preserve">
+    <value>Once you have added all the products you require to your basket you are ready to proceed to download. Simply click the download button on the blue bar at the top of the page then read and accept the terms and conditions.</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="HowToT11" xml:space="preserve">
+    <value>Select the download format that best suits your website, we offer 3 formats:</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="HowToT12" xml:space="preserve">
+    <value>Branding Guidelines</value>
+    <comment>Download</comment>
+  </data>
+  <data name="HowToT13" xml:space="preserve">
+    <value>Provided by Amanda</value>
+    <comment>Download</comment>
+  </data>
+  <data name="HowToT2" xml:space="preserve">
+    <value>We created downloads.designersguild.com to be a simple, quick and easy resource for our customers to access content to use on their own websites, digital marketing campaigns and print ads. The site has two areas: &lt;a href="/advertising-images"&gt;Advertising Images&lt;/a&gt; and &lt;a href="/"&gt;Product Images &amp; Feeds&lt;/a&gt;. Both are accessible from the menu on the left.</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="HowToT3" xml:space="preserve">
+    <value>Advertising Images</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="HowToT4" xml:space="preserve">
+    <value>We have handpicked a selection of advertising images, representing our entire product range, to assist you with your own advertising campaigns. All are ready for immediate use online or in print.</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="HowToT5" xml:space="preserve">
+    <value>To help you quickly locate a suitable advertising image we have listed all of the options on a single page, simply scroll down, and when you are ready press the [Download for Web] or [Download for Print] button to retrieve the appropriate image. The image will be downloaded by your web browser as quickly as your internet connection allows.</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="HowToT6" xml:space="preserve">
+    <value>If you can't find a suitable image below, please contact &lt;a href="mailto:sales@designersguild.com"&gt;sales@designersguild.com&lt;/a&gt; for further assistance.</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="HowToT7" xml:space="preserve">
+    <value>We have built a quick and easy search to give you unrestricted access to the entire wholesale product catalogue available in your market. All content, text and images have been optimised for use on your website.</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="HowToT8" xml:space="preserve">
+    <value>Using this service, you can download detailed product information and images in a format that is easy to import into your own website.</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="HowToT9" xml:space="preserve">
+    <value>Use the filters on the left to make your product selection. Using the green add to basket buttons you can add individual products to your basket one at a time. Alternatively you may add all your search results in one go using the master add to basket button at the top left of the grid.</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="HowToTitle" xml:space="preserve">
+    <value>How To Guide</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="ImageSpecifications" xml:space="preserve">
+    <value>Image Specifications</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="InstructionsForUse" xml:space="preserve">
+    <value>Instructions for use</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="MagentoDownloadText" xml:space="preserve">
+    <value>Select this option if your website is built using the Magento platform or if your website accepts XML product imports. The XML is structured to work with the &lt;a href="https://www.magentocommerce.com/magento-connect/auto-product-import-with-xml-and-webservice-pro-4.html"&gt;Auto Product Import Pro&lt;/a&gt; extension available to download from the Magento website.</value>
+    <comment>Download</comment>
+  </data>
+  <data name="MakeAWish" xml:space="preserve">
+    <value>If you would like us to consider adding additional formats, please send details to &lt;a href="mailto:makeawish@designersguild.com"&gt;makeawish@designersguild.com&lt;/a&gt; and we will give your request careful consideration.</value>
+    <comment>Download</comment>
+  </data>
+  <data name="PrintOptimisedImages" xml:space="preserve">
+    <value>High resolution colour balanced images ready to be printed.</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="Resolution" xml:space="preserve">
+    <value>Resolution</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="Sample" xml:space="preserve">
+    <value>Sample</value>
+    <comment>Download</comment>
+  </data>
+  <data name="ShopifyDownloadText" xml:space="preserve">
+    <value>Select this option if your website is built using the Shopify eCommerce platform. Full instructions for importing products from a CSV file into Shopify can be found on the &lt;a href="https://help.shopify.com/manual/products/import-export/import-products"&gt;Shopify Help Centre&lt;/a&gt;. Images will be automatically imported.</value>
+    <comment>Download</comment>
+  </data>
+  <data name="TermsAndConditions" xml:space="preserve">
+    <value>Terms and Conditions</value>
+    <comment>Terms</comment>
+  </data>
+  <data name="TermsT1" xml:space="preserve">
+    <value>Use of the Designers Guild logo or associated brand logos on the customer’s website or in advertising is with prior written approval only.</value>
+    <comment>Terms</comment>
+  </data>
+  <data name="TermsT2" xml:space="preserve">
+    <value>The name or look of the internet site/mail order catalogue must in Designers Guild's opinion, not harm the Designers Guild image nor the prestige of the brand.</value>
+    <comment>Terms</comment>
+  </data>
+  <data name="TermsT3" xml:space="preserve">
+    <value>No advertisement or banner capable in our opinion of damaging the Designers Guild reputation or image of its brand may appear on the internet or other media of any kind or on banners or links of any type with or to other internet sites.</value>
+    <comment>Terms</comment>
+  </data>
+  <data name="TermsT4" xml:space="preserve">
+    <value>No-one involved in the operation of the account to be directly or indirectly engaged, concerned or interested in any way in the business of supplying Designers Guild fabrics and wallcovering by mail order or over the internet from the approved premises or any other location.</value>
+    <comment>Terms</comment>
+  </data>
+  <data name="TermsT5" xml:space="preserve">
+    <value>Not to download any content from the Designers Guild website without our prior written approval.</value>
+    <comment>Terms</comment>
+  </data>
+  <data name="TypicalSize" xml:space="preserve">
+    <value>Typical size</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="Under1Minute" xml:space="preserve">
+    <value>Under 1 minute on an average 8MBit/s ADSL connection per image</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="Under2Seconds" xml:space="preserve">
+    <value>Under 2 seconds on an average 8MBit/s ADSL connection per image</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="WebOptimisedImages" xml:space="preserve">
+    <value>Web optimised images ready for use on your website or in an email campaign.</value>
+    <comment>HowTo</comment>
+  </data>
+  <data name="WooCommerceDownloadText" xml:space="preserve">
+    <value>Select this option if your website is built using WordPress and WooCommerce. The XML is structured to work with the &lt;a href="https://wordpress.org/plugins/wp-all-import/"&gt;WP All Import&lt;/a&gt; plugin available to download from the WordPress website.</value>
+    <comment>Download</comment>
+  </data>
+  <data name="DownloadPopupT1" xml:space="preserve">
+    <value>Please read and accept the Terms and Conditions before selecting a feed format.</value>
+    <comment>Download</comment>
+  </data>
+  <data name="DownloadPopupT2" xml:space="preserve">
+    <value>I have read and accept the terms and conditions above</value>
+    <comment>Download</comment>
+  </data>
+  <data name="EmptyBasketT1" xml:space="preserve">
+    <value>Please add items to your basket before attempting to download.</value>
+    <comment>BasketEmpty</comment>
+  </data>
+  <data name="FeedFormat" xml:space="preserve">
+    <value>Feed Format</value>
+    <comment>Download</comment>
+  </data>
+  <data name="ImageNotFoundT1" xml:space="preserve">
+    <value>We're very sorry, but the image you attempted to download was not found.</value>
+    <comment>NotFound</comment>
+  </data>
+  <data name="ImageNotFoundTitle" xml:space="preserve">
+    <value>Image Not Found</value>
+    <comment>NotFound</comment>
+  </data>
+  <data name="MacImageDownloader" xml:space="preserve">
+    <value>Mac Image Downloader</value>
+    <comment>Download</comment>
+  </data>
+  <data name="WindowsImageDownloader" xml:space="preserve">
+    <value>Windows Image Downloader</value>
+    <comment>Download</comment>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>Country</value>
+    <comment>Manage</comment>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+    <comment>Manage</comment>
+  </data>
+  <data name="Under2Minutes" xml:space="preserve">
+    <value>Under 2 minutes on an average 8MBit/s ADSL connection per image</value>
+    <comment>Download</comment>
+  </data>
+  <data name="ConfirmEmailRequired" xml:space="preserve">
+    <value>Please confirm your email address, or provide an address specific to this approval request</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="ConfirmEmailTooLong" xml:space="preserve">
+    <value>The Confirm Email field must be no more than 256 characters</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="DigitalMarketingTooLong" xml:space="preserve">
+    <value>The Digital Marketing field must be no more than 500 characters</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="DirectMarketingTooLong" xml:space="preserve">
+    <value>The Direct Marketing field must be no more than 500 characters</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="InvalidEmailAddress" xml:space="preserve">
+    <value>Please provide a valid email address</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="PrintAdvertPublicationNameTooLong" xml:space="preserve">
+    <value>The Publication Name field must be no more than 150 characters</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Submit</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="WebsiteURLTooLong" xml:space="preserve">
+    <value>The URL field must be no more than 300 characters</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="ApprovalExpired" xml:space="preserve">
+    <value>Your approval has expired</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="ThankYouForUpdateYourRequest" xml:space="preserve">
+    <value>Thank you for providing details about your requirements. These will be taken into consideration as we review your request.</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="ApprovalRequestFormT1" xml:space="preserve">
+    <value>To help us assess your application, please tell us more about your requirements.</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="Comment" xml:space="preserve">
+    <value>Comment</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="ConfirmEmail" xml:space="preserve">
+    <value>Confirm Email</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="DigitalMarketing" xml:space="preserve">
+    <value>Digital Marketing</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="DirectMarketing" xml:space="preserve">
+    <value>Direct Marketing</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="PleaseProvideComment" xml:space="preserve">
+    <value>Please provide a comment</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="PleaseProvidePublicationDate" xml:space="preserve">
+    <value>Please provide a publication date</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="PleaseProvidePublicationName" xml:space="preserve">
+    <value>Please provide a publication name</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="PleaseProvideURL" xml:space="preserve">
+    <value>Please provide a URL</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="PrintAdverts" xml:space="preserve">
+    <value>Print Adverts</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="PublicationDate" xml:space="preserve">
+    <value>Publication Date</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="PublicationName" xml:space="preserve">
+    <value>Publication Name</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="URL" xml:space="preserve">
+    <value>URL</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>Website</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="TermsT10" xml:space="preserve">
+    <value>Do not display Designers Guild products on Froogle™</value>
+    <comment>Terms</comment>
+  </data>
+  <data name="TermsT11" xml:space="preserve">
+    <value>Do not conduct any form of typosquatting.  Typosquatting is a form of cybersquatting which directs a person to a false website when they enter a misspelling of the intended website.  For example, www.designguild.co.uk, www.dessinguild.com</value>
+    <comment>Terms</comment>
+  </data>
+  <data name="TermsT12" xml:space="preserve">
+    <value>Designers Guild take the above guidelines very seriously and reserve the right to close accounts that have been keyword bidding or typosquatting.  We reserve the right to close any account if we feel that their website does not fit the Designers Guild brand, or promotes the product and brand in a way that is felt to be misleading or that misrepresents our luxury brand values.</value>
+    <comment>Terms</comment>
+  </data>
+  <data name="TermsT13" xml:space="preserve">
+    <value>All content downloaded from this website remains the property of Designers Guild Ltd and is intended for the use of Designers Guild customers.</value>
+    <comment>Terms</comment>
+  </data>
+  <data name="TermsT14" xml:space="preserve">
+    <value>Designers Guild reserve the right to revoke access to this website without notice.</value>
+    <comment>Terms</comment>
+  </data>
+  <data name="TermsT15" xml:space="preserve">
+    <value>All images should be downloaded and hosted locally on your own website, no images should be linked directly from downloads.designersguild.com</value>
+    <comment>Terms</comment>
+  </data>
+  <data name="TermsT16" xml:space="preserve">
+    <value>Every effort is made to ensure accuracy of content provided by this site. Designers Guild Ltd. accepts no liability for misleading or inappropriate content downloaded from this website. The responsibility for any content hosted on your website is yours.</value>
+    <comment>Terms</comment>
+  </data>
+  <data name="TermsT6" xml:space="preserve">
+    <value>Designers Guild customer, we require you to adhere to the guidelines below:</value>
+    <comment>Terms</comment>
+  </data>
+  <data name="TermsT7" xml:space="preserve">
+    <value>Do not bid on the keywords or any keyword phrase containing the keyword ‘Designers Guild’, ‘Tricia Guild’ or any misspelling of ‘Designers Guild’ and ‘Tricia Guild’ e.g. Designer Guild, Design Guild, Desiggners Guild, Trisha Guild etc (including all other brand names e.g. Royal Collection, Ralph Lauren etc.)</value>
+    <comment>Terms</comment>
+  </data>
+  <data name="TermsT8" xml:space="preserve">
+    <value>Do not display the keyword ‘Designers Guild’ or ‘Tricia Guild’ in your ad copy.</value>
+    <comment>Terms</comment>
+  </data>
+  <data name="TermsT9" xml:space="preserve">
+    <value>Do not buy, own or bid on any domain names with the word ‘Designers Guild’ or ‘Tricia Guild’, or misspellings of ‘Designers Guild’ or ‘Tricia Guild’ in the URL.  For example, wwwdesignersguild.com, wwwtriciaguild.co.uk etc.</value>
+    <comment>Terms</comment>
+  </data>
+  <data name="PendingApprovalApplicationBeingReviewed" xml:space="preserve">
+    <value>Your application is being reviewed</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="PendingApprovalT2" xml:space="preserve">
+    <value>Please contact &lt;a href="mailto:sales@designersguild.com"&gt;sales@designersguild.com&lt;/a&gt; if you have any questions or need further assistance.</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="PendingApprovalTellUsMore" xml:space="preserve">
+    <value>Please tell us more about your requirements</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="PleaseSelectAPurpose" xml:space="preserve">
+    <value>Please select a purpose for this request.</value>
+    <comment>ApprovalRequestForm</comment>
+  </data>
+  <data name="EarlyAccess" xml:space="preserve">
+    <value>Early Access: </value>
+    <comment>Layout</comment>
+  </data>
+  <data name="EarlyAccessT1" xml:space="preserve">
+    <value>Select from our range using the search filters on the left, add the items you require to your basket using the green plus. When ready press the download button, top right, to retrieve the product data and images.</value>
+    <comment>EarlyAccess</comment>
+  </data>
+  <data name="Images" xml:space="preserve">
+    <value>Image(s)</value>
+    <comment>EarlyAccessGridViewPartial</comment>
+  </data>
+  <data name="ProductName" xml:space="preserve">
+    <value>Product Name</value>
+    <comment>EarlyAccessGridViewPartial</comment>
+  </data>
+  <data name="EarlyAccessHeading1" xml:space="preserve">
+    <value>Early access to download our</value>
+    <comment>EarlyAccess</comment>
+  </data>
+  <data name="EarlyAccessHeading2" xml:space="preserve">
+    <value>product data and images</value>
+    <comment>EarlyAccess</comment>
+  </data>
+  <data name="EarlyAccessT2" xml:space="preserve">
+    <value>Additional images, web optimised copy and translations will be available from the official release date via the main "Product Images &amp; Feeds" menu option on the left.</value>
+    <comment>EarlyAccess</comment>
+  </data>
+  <data name="EarlyAccessT3" xml:space="preserve">
+    <value>&lt;strong&gt;IMPORTANT&lt;/strong&gt; - Products downloaded using this service are not to be published on your website or made publicly available until the release date quoted in the excel spreadsheet.</value>
+    <comment>EarlyAccess</comment>
+  </data>
+  <data name="EarlyAccessTitle" xml:space="preserve">
+    <value>Early Access - Designers Guild</value>
+    <comment>EarlyAccess</comment>
+  </data>
+  <data name="EarlyAccessExcelDownloadText" xml:space="preserve">
+    <value>You'll need to download two files. Firstly, download the Excel file containing the product information and image links, then download either the Windows or Mac image downloader app to retrieve the corresponding images.</value>
+    <comment>EarlyAccess</comment>
+  </data>
+  <data name="ProductCode" xml:space="preserve">
+    <value>Product Code</value>
+    <comment>EarlyAccessGridView</comment>
+  </data>
+  <data name="AllProducts" xml:space="preserve">
+    <value>All Products</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="Clearance" xml:space="preserve">
+    <value>Clearance</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="ClearanceDiscount" xml:space="preserve">
+    <value>Discount</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+  <data name="ExcludeClearance" xml:space="preserve">
+    <value>Non Clearance Products</value>
+  </data>
+  <data name="OnlyClearance" xml:space="preserve">
+    <value>Clearance Products</value>
+    <comment>Product Images &amp; Advertising</comment>
+  </data>
+</root>

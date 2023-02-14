@@ -1,0 +1,31 @@
+﻿<div id="promo-code-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 id="promo-code-modal-title" class="modal-title">
+                    Promotion Codes
+                </h4>
+            </div>
+            <div id="promo-code-modal-body" class="modal-body">
+                <div class="input-group">
+                    <div class="input-group-addon">
+                        <button id="promo-btn-foc" class="btn btn-primary active" data-bind="css: { 'btn-primary active': promoState() == 'foc', 'btn-default': promoState() != 'foc' }, click: function() { promoState('foc') }">
+                            Free of Charge
+                        </button>
+                        <button id="promo-btn-discount" class="btn btn-default" data-bind="css: { 'btn-primary active': promoState() == 'discount', 'btn-default': promoState() != 'discount' }, click: function() { promoState('discount') }">
+                            Discount
+                        </button>
+                    </div>
+                    <input id="foc-selector" class="form-control" type="text" data-bind="" placeholder="Search for a Free of Charge Code" />
+                    <div class="input-group-btn">
+                        <button class="search-btn btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="promo-code-modal-close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

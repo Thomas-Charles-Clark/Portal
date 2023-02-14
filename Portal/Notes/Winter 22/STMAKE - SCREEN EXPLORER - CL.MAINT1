@@ -1,0 +1,17 @@
+Field Name		Process Before					Process After																							Inituitive Help
+W.PROCESS	  	P:(@WORK = "";@REFRESH = 2)   	Check something, potentially warn "For this Process Code, you must use the Bill of Materials option" 	P:(DATA @PARMS(1)" 
+W.PROCDESC                                                                  
+W.PRODCODE                                                                  
+W.PRODDESC                                                                  
+W.SUPPLIER                          P:(@PARMS(5) = W.P                      
+W.SUPNAME                                                                   
+W.QUALITY      P:(IF W.PRODCODE #                                           
+W.QUALDESC                                                                  
+READ.FLD       PG.STMAKE.VALKEY2                                            
+PRODCODES      PG.DEFAULT.MAKE.DE                                           
+PRODDESCS                                                                   
+UNIT                                                                        
+QUANTITY                                                                    
+AGREED
+EXPECTED
+COMMENTS

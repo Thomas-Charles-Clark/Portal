@@ -1,0 +1,151 @@
+﻿@{
+    ViewBag.Title = "Pricing Enquiry";
+}
+
+@section styles {
+    @Styles.Render("~/bundles/css/components")
+    @Styles.Render("~/bundles/css/pricing-enquiry")
+}
+@section scripts {
+    @Scripts.Render("~/Areas/Pricing/Scripts/pricing-enquiry-test-bed.js")
+
+    @Scripts.Render("~/Scripts/kendo/2017.3.1018/kendo.aspnetmvc.min.js")
+
+    <script src="~/Scripts/kendo/cultures/kendo.culture.en-GB.min.js"></script>
+
+    <script type="text/javascript">
+
+        kendo.culture("en-GB");
+
+        var viewModel = new testBedViewModel();
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        $(document).ready(function () {
+            ko.applyBindings(viewModel, document.body);
+        });
+    </script>
+}
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            <h1 class="main-heading">
+                Pricing Enquiry
+            </h1>
+            <h4 class="sub-heading">
+                <span class="margin-bottom-15">
+                    Test Bed
+                </span>
+            </h4>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <p>
+            Right, we want to make sure the multiSelect works sanely in a test environment. Go!
+        </p>
+    </div>
+</div>
+
+<div id="ko-bindings">
+    
+    <div class="page-busy-wrapper" style="display: block;" data-bind="visible: false">
+        <div class="form-busy">
+            <div class="busy-bars">
+                <div class="rect1 alert alert-info"></div>
+                <div class="rect2 alert alert-info"></div>
+                <div class="rect3 alert alert-info"></div>
+                <div class="rect4 alert alert-info"></div>
+                <div class="rect5 alert alert-info"></div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-xs-12">
+            <div class="panel panel-default filters">
+                <div class="panel-body bg-info">
+                    <div class="slicers row no-gutters">
+                        <div class="input-group btn-group-justified">
+                            <!-- ko foreach: slicerCollection -->
+                            <div class="input-group-btn">
+                                <div class="dropdown-wrapper">
+                                    <div data-bind="component: { name: 'multi-select-component', params: $data }"></div>
+                                </div>
+                            </div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <div class="slicers row no-gutters">
+                        <div class="input-group btn-group-justified">
+                            <!-- ko foreach: secondSlicerCollection -->
+                            <div class="input-group-btn">
+                                <div class="dropdown-wrapper">
+                                    <div data-bind="component: { name: 'multi-select-component', params: $data }"></div>
+                                </div>
+                            </div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <div class="row no-gutters">
+                        <div class="col-xs-8">
+                            <div class="slicers row no-gutters">
+                                <div class="dropdown-wrapper">
+                                    <div class="slicer panel panel-primary">
+                                        <div class="panel-heading">
+                                            <span>
+                                                Search
+                                            </span>
+                                            <span class="clear-selection glyphicon glyphicon-filter" style="display: none" data-bind="visible: searchTerm(), click: function() { searchTerm(undefined); }">
+                                                    <span>×</span>
+                                            </span>
+                                        </div>
+                                        <div class="panel-body no-padding">
+                                            <input type="text" class="form-control form-control-sm" data-bind="value: searchTerm" placeholder="Search by Customer Name, Account Number, Town or Postcode"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="slicers row no-gutters">
+                                <div class="dropdown-wrapper">
+                                    <div class="slicer panel panel-primary">
+                                        <div class="panel-heading">
+                                            &nbsp;
+                                        </div>
+                                        <div class="panel-body no-padding">
+                                            <button class="clear-filters btn btn-primary btn-sm pull-right" data-bind="click: clearFilters">
+                                                Reset all Filters
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- ko foreach: siblings -->
+        <div class="col-xs-12">
+            <label class="col-form-label">
+                <span data-bind="text: name"></span>
+                <span data-bind="text: selectedIds"></span>
+            </label>
+        </div>
+        <!-- /ko -->
+    </div>
+</div>

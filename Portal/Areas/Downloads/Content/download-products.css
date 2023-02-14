@@ -1,0 +1,262 @@
+﻿.container.body-content {
+    /*width: 100% !important;*/
+}
+
+#search-phase {
+    display: flex;
+}
+
+#product-group-wrapper {
+    margin-bottom: 0;
+}
+
+#product-group-wrapper .group,
+#search-wrapper .group {
+    display: flex;
+    flex-direction: column;
+}
+
+#category-accordion {
+    margin-bottom: 0;
+}
+
+#category-accordion .panel {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+#category-accordion a:last-of-type {
+    margin-bottom: 5px;
+}
+
+.search-control {
+    margin-bottom: 4px;
+}
+
+.search-results-container {
+    position: relative;
+}
+
+.form-control.search-sort {
+    height: 34px;
+    margin-right: 0;
+}
+
+.k-grid td.image-cell {
+    padding: 5px;
+    /*text-align: center;*/
+}
+
+.k-grid tr:hover {
+  background: #e4e4e4;
+}
+ 
+.k-grid tr.k-alt:hover {
+  background: #e4e4e4;
+}
+
+.k-grid td.heading-cell span {
+    display: block;
+}
+
+.k-grid td.heading-cell span.heading {
+    text-transform: capitalize;
+}
+
+.k-grid td.description-cell {
+    vertical-align: top;
+    line-height: 18px;
+    font-size: 12px;
+}
+
+#downloads-grid.k-grid td {
+    cursor: pointer;
+    vertical-align: top;
+}
+
+#downloads-grid.k-grid tr td:first-of-type {
+    vertical-align: middle;
+}
+
+.record-secondary-image {
+    display: inline-block;
+    width: 64px;
+    height: 64px;
+    margin: 2px;
+}
+
+.search-display-container .btn {
+    padding: 6px 12px;
+}
+
+.search-display-container .btn-toolbar {
+    margin-right: 4px;
+}
+
+.search-display-container .btn-toolbar .btn {
+    margin-left: 4px;
+}
+
+img.downloader-logo {
+    width: 200px
+}
+
+#download-modal .how-to-table .btn {
+    display: block;
+}
+
+#download-modal .how-to-table .btn + .btn {
+    margin-top: 5px;
+}
+
+.table tbody > tr > .advertising-button-cell {
+    vertical-align: middle;
+}
+
+#download-content .tab-pane {
+    padding: 15px 0;
+}
+
+.k-checkbox-label {
+    cursor: pointer;
+}
+
+.k-checkbox-label:before {
+    font: normal;
+    content: url('/Areas/Downloads/Content/Images/add-to-basket.png');
+    position: static; 
+    top: auto; 
+    left: auto; 
+    border-width: 0; 
+    border-style: none; 
+    width: 48px; 
+    height: 24px; 
+    font-size: 24px; 
+    line-height: inherit; 
+    text-align: center; 
+    border-color: none;
+    background: none;
+    border-radius: 0;
+    cursor: pointer;
+}
+
+.k-grid .k-grid-header .k-header.valign-bottom {
+    vertical-align: bottom;
+}
+
+.k-checkbox:checked + .k-checkbox-label:before {
+    content: url('/Areas/Downloads/Content/Images/remove-from-basket.png');
+    background-color: transparent;
+    border-color: none;
+    color: none;
+    cursor: pointer;
+}
+
+#download-modal .modal-body .blocker h3 {
+    color: white;
+    font-size: 32px;
+}
+
+#downloads-grid tr.k-state-selected {
+    color: #333;
+    background-color: #c4eab8;
+}
+
+#downloads-grid.k-grid td.k-state-selected:hover, 
+#downloads-grid.k-grid tr.k-state-selected:hover td {
+    background-color: #a0e58a;
+}
+
+#basket-wrapper {
+    position: relative;
+}
+
+#basket-drop {
+    position: absolute;
+    top: 39px;
+    right: 0;
+    width: 100%;
+    background-color: #d9e1f2;
+    border: 1px solid #b7c3dc;
+    border-top: 1px solid #a4b7dd;
+    border-radius: 0 0 4px 4px;
+    color: #000;
+    display: none;
+    z-index: 1000;
+}
+
+#basket-drop p {
+    padding: 6px 10px 6px 15px;
+    margin: 0;
+    cursor: default;
+}
+
+.btn-toolbar.group button {
+    padding: 10px 15px;
+}
+
+.group .btn-secondary-blue {
+    background-image: none;
+    background: #d9e1f2;
+    /*background: #ecf2ff;*/
+    border-color: #b9c8e8;
+    /*border-color: #c1cde6;*/
+    color: black;
+    text-shadow: none;
+    box-shadow: none;
+    transition: background ease-out 300ms;
+}
+
+.group .btn-secondary-blue:not(.btn-primary):hover {
+    background: #b7c3dc;
+}
+
+.nav-pills {
+    border-bottom: 1px solid #dedede;
+    padding-bottom: 9px;
+}
+
+.search-sort.form-control.pull-right {
+    border-radius: 4px;
+    margin-left: 4px;
+}
+
+.search-control.input-group {
+    margin-bottom: 15px;
+}
+
+#download-modal .modal-body .form-group label {
+    margin-right: 5px;
+    margin-bottom: 0;
+    vertical-align: middle;
+    font-size: 16px;
+    line-height: 20px;
+}
+
+#download-modal select.form-control {
+    margin-bottom: 5px;
+}
+
+#advertising-grid.k-grid tbody td {
+    vertical-align: top;
+}
+
+#advertising-grid.k-grid tr:hover {
+  background: transparent;
+}
+
+#advertising-grid.k-grid tr.k-alt:hover {
+  background: #f1f1f1;
+}
+
+#advertising-grid.k-grid .k-grid-header {
+    display: none;
+}
+
+#how-to-tab > .how-to-heading {
+    margin-top: 0;
+}
+
+#category-accordion a.category-heading.collapsed {
+    margin-bottom: 5px;
+}

@@ -1,0 +1,65 @@
+OKAY SO
+
+OLAP
+
+IIS 
+
+Add Application
+
+Point to d:\inetpub\olap
+
+cool? cool.
+
+set authentication to:
+ONLY ANONYMOUS
+- edit
+- specify DESIGNERSGUILD\Administrator
+
+handler mappings:
+	add OLAP module mappings
+		'add module Mapping' on the right
+
+		Request path *.dll
+		Executable msmdpump.dll
+
+		Request Restrictions - 
+			Verbs - All Verbs
+			Access - READ
+		
+	Need to add the OPTIONS verb handler for Telerik / DevExpress
+		add module mappings
+		request path *
+		Module: protocolSupportModule
+		Executable: [null]
+		Name: OPTIONS Verb Handler
+
+HTTP Response Headers
+	Access-Control-Allow-Headers: 'Content-Type'
+	Access-Control-Allow-Origin: '*'
+	
+	
+	
+
+AD Setup
+	both servers have to be trusted for delegation
+	account used as the anonymous authentication masquerade must be trusted for delegation 
+	HAD to use the DESIGNERSGUILD\Administrator account as I didn't want to bugger about adding a new one
+	SHOULD add a new one and use that BUT THIS ONE WORKS 
+	
+	
+	
+Response in browser should be:
+0xc10e0002
+or 'Get' is not supported
+
+
+
+
+want 
+	Dimensions (listed) these are FILTERS
+	Measures, things you want yto report on
+	Fact table
+	KPIs
+	
+	
+

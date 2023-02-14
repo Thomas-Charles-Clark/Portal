@@ -1,0 +1,82 @@
+﻿@{
+    ViewBag.Title = "Designers Guild - Test Bed";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/kendo-custom")
+    @Styles.Render("~/Content/test-bed.css")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/components")
+    @Scripts.Render("~/Scripts/test-bed.js")
+
+    <script type="text/javascript">
+
+        function getAvailableTags() {
+            return [];
+        }
+
+        var viewModel = new testBedViewModel();
+
+        ko.options.deferUpdates = true;
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        $(document).ready(function () {
+            ko.applyBindings(viewModel, document.body);
+        });
+
+    </script>
+}
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <p>
+            Required behaviours:
+            <ul>
+                <li>
+                    Validate and have ko validation hooked up to mdc validation display &#10004;
+                </li>
+                <li>
+                    Have hassle-free and (ideally) fouc-free pre-notching and floating of label, when observable has some initial value &#10004;
+                </li>
+                <li>
+                    Parameterise (if possible) various data-bindings on the input element rendered by the component &#10004;
+                </li>
+                <li>
+                    Text fields, standard select fields, select fields which are Kendo controls, input groups combining them &#10004;
+                </li>
+                <li>
+                    A complete address entry component, which uses the new mdc components. &#10004;
+                </li>
+                <li>
+                    Interesting extra cases: select with 'custom' option replacing self with a text input, clearing back to the select 
+                </li>
+            </ul>
+        </p>
+    </div>
+</div>
+
+@*<div class="form-group row">
+    <div class="col-xs-12">
+        <div class="input-group">
+            <div class="input-group-btn">
+                <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: mdcKendoDropDownList }, style: { width: mdcKendoDropDownList.width }"></div>
+            </div>
+            <div data-bind="component: { name: 'mdc-text-field-component', params: mdcTextField }"></div>
+        </div>
+    </div>
+</div>*@
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <div data-bind="template: { name: 'mdc-address-template', data: customAddress }"></div>
+        <button class="btn btn-blue pull-right" data-bind="click: foo">
+            Click
+        </button>
+    </div>
+</div>

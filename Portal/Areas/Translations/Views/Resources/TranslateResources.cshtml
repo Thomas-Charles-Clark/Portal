@@ -1,0 +1,74 @@
+﻿@model Portal.Areas.Translations.ViewModels.TranslateResourcesViewModel
+@{
+    ViewBag.Title = "Translation Maintenance";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/components")
+    @Styles.Render("~/bundles/css/kendo-custom")
+    @Styles.Render("~/bundles/css/translations")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/translations")
+
+    <script type="text/javascript">
+        
+        var viewModel = new translationBaseViewModel();
+
+        var vm = viewModel;
+
+        ko.options.deferUpdates = true;
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        $(document).ready(function () {
+            ko.applyBindings(viewModel, document.body);
+        });
+    </script>
+}
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+
+<div id="translate-resources-container" class="panel">
+        <div class="blocker" style="display: none" data-bind="visible: busy">
+            <div class="busy-bars">
+                <div class="rect1 alert alert-info"></div>
+                <div class="rect2 alert alert-info"></div>
+                <div class="rect3 alert alert-info"></div>
+                <div class="rect4 alert alert-info"></div>
+                <div class="rect5 alert alert-info"></div>
+            </div>
+        </div>
+    <div class="panel-body">
+        <div class="prefilters">
+            <div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: languageDropDownList }"></div>
+        </div>
+        <div class="grid-wrapper">
+            <div data-bind="kendoGrid: resourceGridSettings"></div>
+        </div>
+    </div>
+</div>

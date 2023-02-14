@@ -1,0 +1,74 @@
+﻿@model Portal.ViewModels.ComponentModels.ProductRangeSelectorViewModel
+<div class="panel panel-primary">
+    <div class="panel-heading non-search no-padding">
+        <h4 class="panel-title">
+            <a class="panel-title panel-toggle collapse" data-toggle="collapse" data-target="#product-range-collapse">
+                Product Range
+            </a>
+        </h4>
+    </div>
+    <div id="product-range-collapse" class="collapse in">
+        <div class="panel-body bg-info">
+            <div class="btn-group" style="float: right; margin-left: 12px; margin-bottom: 12px;">
+                <button id="search-btn-new" class="btn btn-primary active" data-bind="css: { 'btn-primary active': productRangeSearchMode() == 'N' }, click: function() { productRangeSearchMode('N') }">
+                    Current Collection
+                </button>
+                <button id="promo-btn-foc" class="btn" data-bind="css: { 'btn-primary active': productRangeSearchMode() == 'C' }, click: function() { productRangeSearchMode('C') }">
+                    Clearance
+                </button>
+            </div>
+            <div id="new-collection-buttons" style="margin-bottom: -5px" data-bind="visible: productRangeSearchMode() == 'N'">
+                @foreach (var b in Model.NewCollectionButtons)
+                {
+                    <button type="button" class="btn query-btn btn-primary @(Model.ButtonClass)" data-bind="click: function(data, event) { @(Model.ClickFunction)(event, @(b.ProductTypeID ?? (object)"undefined"), @(b.ProductTypeGroupID ?? (object)"undefined"), '@(b.CodeLike ?? (object)"undefined")', '@(b.CodeNotLike ?? (object)"undefined")', @(b.Seasonal ? "'true'" : "'false'")) }">
+                        @(b.Name)
+                    </button>
+                }
+            </div>
+            <div id="clearance-buttons" style="display: none; margin-bottom: -5px" data-bind="visible: productRangeSearchMode() == 'C'">
+                @foreach (var b in Model.ClearanceButtons)
+                {
+                    <button type="button" class="btn query-btn btn-primary @(Model.ButtonClass)" data-bind="click: function(data, event) { @(Model.ClickFunction)(event, @(b.ProductTypeID ?? (object)"undefined"), @(b.ProductTypeGroupID ?? (object)"undefined"), '@(b.CodeLike ?? (object)"undefined")', '@(b.CodeNotLike ?? (object)"undefined")', @(b.Seasonal ? "'true'" : "'false'")) }">
+                        @(b.Name)
+                    </button>
+                }
+            </div>
+            @*<div class="clearfix"></div>*@
+
+
+            @*<div class="btn-group btn-group-justified">
+                @{ var lastIndex = 0; }
+
+                @for (var i = 0; i < Model.Buttons.Count; i++)
+                {
+                    if (i % 3 == 0)
+                    {
+                        lastIndex = i;
+                            @:<div class="btn-group btn-group-vertical">
+                    }
+
+                    <button type="button" class="btn query-btn btn-secondary-blue @(Model.ButtonClass)" data-bind="click: function() { @(Model.ClickFunction)(@(Model.Buttons[i].ProductTypeID ?? (object)"undefined"), @(Model.Buttons[i].ProductTypeGroupID ?? (object)"undefined")) }">
+                        @(Model.Buttons[i].Name)
+                    </button>
+
+                    if (i == lastIndex + 2 || i == Model.Buttons.Count - 1)
+                    {
+                        @:</div>
+                    }
+                }
+            </div>*@
+
+            @*<div class="btn-group btn-group-justified">
+                <div class="btn-group">
+                    <button class="btn btn-primary btn-sm">Full Range</button>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary btn-sm">New Products</button>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary btn-sm">Clearance</button>
+                </div>
+            </div>*@
+        </div>
+    </div>
+</div>

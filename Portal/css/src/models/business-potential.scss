@@ -1,0 +1,142 @@
+﻿/*.table-condensed > tbody > tr > td.brand-total-gbp-cell {
+    padding-left: 0;
+}*/
+#potential-form-modal {
+    textarea {
+        padding: 4px 12px;
+        resize: none;
+    }
+}
+
+.business-potential-table {
+    > tbody {
+        > tr {
+            > th {
+                vertical-align: middle;
+
+                > div.spacer {
+                    min-width: 90px;
+                    height: 34px;
+                }
+
+                &:first-child {
+                    position: absolute;
+                    line-height: 34px;
+                    border-bottom: 0;
+                    z-index: 3;
+                    background-color: #f9f9f9;
+                    min-width: 90px;
+                    border-right: 1px solid #ddd;
+                }
+            }
+
+            > td {
+                vertical-align: middle;
+
+                > div.spacer {
+                    min-width: 90px;
+                    height: 34px;
+                }
+            }
+
+            &:first-child {
+                > th {
+                    &:first-child {
+                        position: absolute;
+                        line-height: 34px;
+                        border-top: 1px solid #ddd;
+                        z-index: 3;
+                        background-color: #f9f9f9;
+                        min-width: 90px;
+                        border-right: 1px solid #ddd;
+                    }
+                }
+            }
+
+            &:nth-child(2n+2) {
+                > th {
+                    &:first-child {
+                        position: absolute;
+                        line-height: 34px;
+                        z-index: 3;
+                        background-color: #fff;
+                        min-width: 90px;
+                        border-right: 1px solid #ddd;
+                    }
+                }
+            }
+
+            &:last-child {
+                > th {
+                    &:first-child {
+                        position: absolute;
+                        border-bottom: 0;
+                        z-index: 3;
+                        background-color: #f9f9f9;
+                        min-width: 90px;
+                        border-right: 1px solid #ddd;
+                    }
+                }
+            }
+        }
+    }
+
+    > thead {
+        > tr {
+            > th {
+                vertical-align: middle;
+
+                > div.spacer {
+                    min-width: 90px;
+                    height: 34px;
+                }
+
+                &:first-child {
+                    position: absolute;
+                    z-index: 3;
+                    border-bottom: 1px solid #ddd;
+                    background-color: #fff;
+                    min-width: 90px;
+                    border-right: 1px solid #ddd;
+                }
+            }
+
+            > td {
+                vertical-align: middle;
+            }
+        }
+    }
+
+    th {
+        > div {
+            min-width: 140px;
+        }
+    }
+
+    td {
+        > div {
+            min-width: 140px;
+        }
+
+        input {
+            min-width: 120px;
+            text-align: right;
+        }
+    }
+
+    span.form-group-span {
+        text-align: right;
+        white-space: nowrap;
+    }
+}
+
+.brand-total {
+    border-radius: 4px 0 0 4px;
+    line-height: 34px;
+}
+
+.brand-total-gbp {
+    text-align: left;
+    line-height: 34px;
+    border-radius: 0 4px 4px 0;
+}

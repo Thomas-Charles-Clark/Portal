@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<products>
+  <product>
+    <id>FDG2917/01</id>
+    <title>Foscari Fresco - Tuberose</title>
+    <long_description>A classic reimagining of plasterly and frescoed panelled walls in soft washes of chalky colour. A simple and enduring pattern that is digitally printed onto a linen union cloth. A perfect fabric for curtains, blinds, cushions and bedcovers. In one elegant colourway. </long_description>
+    <price>69.0000</price>
+    <meta_description>A classic reimagining of plasterly and frescoed panelled walls in soft washes of chalky colour. A simple and enduring pattern that is digitally printed ont</meta_description>
+    <images>
+      <image>https://downloads.designersguild.com/images/113931.jpeg</image>
+      <image>https://downloads.designersguild.com/images/115494.jpeg</image>
+      <image>https://downloads.designersguild.com/images/115575.jpeg</image>
+    </images>
+    <short_description>Fabric</short_description>
+    <category>Fabric</category>
+    <new>1</new>
+    <colour>Multicolour</colour>
+    <brand>Designers Guild</brand>
+    <season>SS19</season>
+    <status>Current</status>
+    <horizontal_pattern_repeat>139</horizontal_pattern_repeat>
+    <vertical_pattern_repeat>60.5</vertical_pattern_repeat>
+    <pattern_match>Full width pattern - Straight match</pattern_match>
+    <flamcode>(UK Flamcode B+M) Cigarette Resistant - In UK/Eire</flamcode>
+    <weight>290</weight>
+    <martindale>30000</martindale>
+    <width>139</width>
+    <composition>60%Linen 30%Cotton 10%Polyamide</composition>
+    <country_of_origin>GB</country_of_origin>
+    <intrastat>53092900</intrastat>
+    <comodity_code>5309293090</comodity_code>
+    <product_page_id>33470</product_page_id>
+    <related_product_pages>
+      <related_product_page_id>33711</related_product_page_id>
+      <related_product_page_id>25686</related_product_page_id>
+      <related_product_page_id>33339</related_product_page_id>
+      <related_product_page_id>12435</related_product_page_id>
+      <related_product_page_id>29765</related_product_page_id>
+      <related_product_page_id>33245</related_product_page_id>
+    </related_product_pages>
+    <collections>
+      <collection>
+        <collection_id>701</collection_id>
+        <collection_name>Veronese Fabrics</collection_name>
+        <description>The opulent beauty of 16th century Venetian frescoes entirely reimagined in this printed fabric collection creates a new and contemporary language of florals, texture, light and pattern. The perfect mix of contemporary and classicism in soft neutral colours with tints of pistachio, vanilla, rose and sky blue. Designs are digitally printed onto soft linen and cotton grounds and are perfect for curtains, blinds, cushions, bedcovers and upholstery. 
+</description>
+        <brochure_url>http://brochures.designersguild.com/SS19/Brochures/ss19-fabric-and-wallpaper-dg/index.html</brochure_url>
+      </collection>
+    </collections>
+    <aftercare>
+      <Aftercare>DRY CLEAN - P process (GENTLE)</Aftercare>
+      <Aftercare>IRON MEDIUM (2 spot - 150 deg c)</Aftercare>
+      <Aftercare>NO BLEACH</Aftercare>
+      <Aftercare>NO TUMBLE DRY</Aftercare>
+      <Aftercare>NO WASH</Aftercare>
+    </aftercare>
+    <usage>
+      <Usage>Curtains And Blinds</Usage>
+      <Usage>Cushions</Usage>
+      <Usage>Loose Covers</Usage>
+      <Usage>Upholstery</Usage>
+    </usage>
+    <attributes>
+      <attribute group="Type" value="Print" />
+    </attributes>
+  </product>
+</products>

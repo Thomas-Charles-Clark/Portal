@@ -1,0 +1,146 @@
+﻿<Window x:Class="DG_Asset_Downloader.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:lh="clr-namespace:DG_Asset_Downloader.Classes"
+        xmlns:vm="clr-namespace:DG_Asset_Downloader.ViewModels"
+        mc:Ignorable="d"
+        Title="Designers Guild Image Downloader" Width="550" MinWidth="550" SizeToContent="Height" ResizeMode="CanMinimize">
+    <Window.Resources>
+        <lh:GridViewColumnWidthConverter x:Key="GridViewColumnWidthConverter"/>
+    </Window.Resources>
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="5"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="5" />
+        </Grid.ColumnDefinitions>
+        <Image HorizontalAlignment="Left"
+               Source="/Images/designers-guild.png" 
+               Width="325"
+               Height="28"
+               Grid.Row="0"
+               Grid.Column="0"
+               Grid.ColumnSpan="2"
+               Margin="5 15 5 10">
+        </Image>
+        <Button 
+            Name="FolderSelectBtn" 
+            Margin="5 5 5 5"
+            Height="25"
+            Grid.Column="0" 
+            Grid.ColumnSpan="2"
+            Width="150"
+            HorizontalAlignment="Left"
+            Grid.Row="1" 
+            Content="Choose Destination" 
+            Click="FolderSelectBtn_Click"
+            Cursor="Hand"></Button>
+        <Label
+            Name="FolderLbl" 
+            Grid.Column="0" 
+            Grid.ColumnSpan="2" 
+            VerticalAlignment="Center"
+            Grid.Row="1"
+            Margin="155 0 0 0">
+            <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding LabelText}" ToolTip="{Binding LabelText}">
+                
+            </TextBlock>
+        </Label>
+        <Button 
+            Name="DownloadBtn" 
+            Height="25" 
+            IsEnabled="{Binding DownloadControlsEnabled}"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Left"
+            Width="150"
+            Margin="5 0 5 5"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Grid.Row="2"
+            Content="Start Download"
+            Click="DownloadBtn_Click"
+            Cursor="Hand"></Button>
+
+        <ProgressBar 
+            Name="OverallProgress"
+            IsEnabled="{Binding DownloadControlsEnabled}"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="5 0 0 0"
+            Grid.Row="4"
+            Height="15"
+            Value="{Binding OverallProgress}"
+            Foreground="Chartreuse"
+            />
+        <TextBlock 
+            Name="ProgressBarTextBlock"
+            Text="{Binding ElementName=OverallProgress, Path=Value, StringFormat={}{0:0}%}"
+            IsEnabled="{Binding DownloadControlsEnabled}"
+            Foreground="Gray"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Grid.Row="4"
+            HorizontalAlignment="Center" 
+            VerticalAlignment="Center"
+            />
+
+        <Expander
+            Name="DetailExpander"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Grid.Row="5"
+            Margin="5 5 0 0"
+            Cursor="Hand"
+            Expanded="DetailExpander_Expanded"
+            Collapsed="DetailExpander_Collapsed"
+            MaxHeight="300">
+            <Expander.Header>
+                Click to view details
+            </Expander.Header>
+            <ListView
+                x:Name="ListBox" 
+                ItemsSource="{Binding Queue}" 
+                Margin="0 5 0 0"
+                Width="520"
+                IsEnabled="{Binding DownloadControlsEnabled}">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn 
+                            Width="80" 
+                            Header="Image"
+                			DisplayMemberBinding="{Binding ImageID}"/>
+                        <GridViewColumn 
+                            Header="Progress"
+                            Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListView}}, Converter={StaticResource GridViewColumnWidthConverter}}">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ProgressBar Foreground="{Binding ProcessState.StateColour}" Height="15" Minimum="0" Maximum="100" Value="{Binding CurrentProgress}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+            </ListView>
+        </Expander>
+    </Grid>
+</Window>

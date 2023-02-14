@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="8713a54a-bab2-4129-9bc0-0a5080bfe8b1" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="C:\Users\tclark\Downloads\Rates_Pkg_Gnd\RatingPACKAGE\PACKAGEWebServices\SCHEMA-WSDLs\RateWS.wsdl" Protocol="file" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="RateWebServiceSchema.xsd" MetadataType="Schema" ID="741ae2cd-8f0d-4304-93dc-d9748d330c85" SourceId="1" SourceUrl="file:///C:/Users/tclark/Downloads/Rates_Pkg_Gnd/RatingPACKAGE/PACKAGEWebServices/SCHEMA-WSDLs/RateWebServiceSchema.xsd" />
+    <MetadataFile FileName="RateWS.wsdl" MetadataType="Wsdl" ID="edd8d874-4fba-4d66-83b6-886be617eb93" SourceId="1" SourceUrl="file:///C:/Users/tclark/Downloads/Rates_Pkg_Gnd/RatingPACKAGE/PACKAGEWebServices/SCHEMA-WSDLs/RateWS.wsdl" />
+    <MetadataFile FileName="Error1.xsd" MetadataType="Schema" ID="51b2bce1-5e51-4bfb-ad01-bc1017a214bc" SourceId="1" SourceUrl="file:///C:/Users/tclark/Downloads/Rates_Pkg_Gnd/RatingPACKAGE/PACKAGEWebServices/SCHEMA-WSDLs/Error1.1.xsd" />
+    <MetadataFile FileName="UPSSecurity.xsd" MetadataType="Schema" ID="d05d6059-9dd1-44aa-b2d6-b14b5d9d230c" SourceId="1" SourceUrl="file:///C:/Users/tclark/Downloads/Rates_Pkg_Gnd/RatingPACKAGE/PACKAGEWebServices/SCHEMA-WSDLs/UPSSecurity.xsd" />
+    <MetadataFile FileName="common.xsd" MetadataType="Schema" ID="191704b4-8494-4bf7-a23b-b2e63680c54c" SourceId="1" SourceUrl="file:///C:/Users/tclark/Downloads/Rates_Pkg_Gnd/RatingPACKAGE/PACKAGEWebServices/SCHEMA-WSDLs/common.xsd" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

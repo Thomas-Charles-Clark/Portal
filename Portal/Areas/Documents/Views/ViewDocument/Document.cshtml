@@ -1,0 +1,130 @@
+﻿@model Portal.Areas.Documents.ViewModels.ViewDocumentViewModel
+@{
+    ViewBag.Title = "Document";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/kendo-custom")
+    @Styles.Render("~/bundles/css/documents-preview")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/documents-preview")
+
+    <script type="text/javascript">
+        
+        function getDocumentType() {
+            return @((int)Model.DocumentDetails.documentType)
+        }
+
+        function getDocumentSendHistory() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.DocumentSendHistory.Results));
+        }
+
+        function getLanguageId() {
+            return @Model.DocumentDetails.languageId;
+        }
+
+        function getBasketId() {
+            return @Model.DocumentDetails.basketId;
+        }
+
+        function getTransactionId() {
+            return @Model.DocumentDetails.transactionId;
+        }
+
+        function getOrderHeadId() {
+            return @Model.DocumentDetails.orderHeadId;
+        }
+
+        function getDocumentSendHistory() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.DocumentSendHistory.Results));
+        }
+        
+        var viewModel = new documentsPreviewViewModel();
+
+        viewModel.emailer.to('@Html.Raw(Model.To)');
+        viewModel.emailer.subject('@Html.Raw(Model.Subject)');
+        viewModel.emailer.originalSubject(viewModel.emailer.subject());
+        viewModel.emailer.body('@Html.Raw(Model.Body)');
+        viewModel.emailer.originalBody(viewModel.emailer.body());
+
+        ko.options.deferUpdates = true;
+
+        $(document).ready(function () {
+            ko.applyBindings(viewModel, document.body);
+
+            //window.setTimeout(function () {
+            //    $(viewModel.basketParams.observable.DOMElement).select();
+            //}, 0);
+        });
+    </script>
+}
+
+<div class="blocker" data-bind="visible: busy">
+    <div class="busy-bars">
+        <div class="rect1 alert alert-info"></div>
+        <div class="rect2 alert alert-info"></div>
+        <div class="rect3 alert alert-info"></div>
+        <div class="rect4 alert alert-info"></div>
+        <div class="rect5 alert alert-info"></div>
+    </div>
+    <!-- ko with: busyMessage -->
+    <h3 data-bind="html: $data"></h3>
+    <!-- /ko -->
+</div>
+
+<div id="document-wrapper" class="row">
+    <div class="col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <!-- ko component: { name: 'emailer-component', params: emailer } --><!-- /ko -->
+                <div id="interaction-flex-container">
+                    <div>
+                        <a href="#send-history" class="document-anchor" data-toggle="collapse">
+                            Document Send History
+                        </a>
+                    </div>
+                </div>
+                <div id="send-history" class="collapse">
+                    <div class="well">
+                        <!-- ko if: documentSendHistory().length == 0 -->
+                        No sends have been recorded
+                        <!-- /ko -->
+                        <!-- ko ifnot: documentSendHistory().length == 0 -->
+                        <ul>
+                            <!-- ko foreach: documentSendHistory() -->
+                            <li>
+                                <span class="display-block" >
+                                    <span data-bind="text: moment(SentDT).format('dddd Do MMM YYYY HH:mm:ss')"></span> 
+                                </span>
+                                <span class="display-block">
+                                    To: <a data-bind="attr: { href: To }, text: To"></a>
+                                </span>
+                                <!-- ko if: CC -->
+                                <span class="display-block">
+                                    CC: <a data-bind="attr: { href: To }, text: CC"></a>
+                                </span>
+                                <!-- /ko -->
+                                @if (User.IsInRole("Super Admin"))
+                                {
+                                    <!-- ko if: BCC -->
+                                    <span class="display-block">
+                                        BCC: <a data-bind="attr: { href: To }, text: BCC"></a>
+                                    </span>
+                                    <!-- /ko -->
+                                }
+                            </li>
+                            <!-- /ko -->
+                        </ul>
+                        <!-- /ko -->
+                    </div>
+                </div>
+                <div id="document-iframe-container">
+                    <iframe src="data:application/pdf;base64,@Model.PDFBase64" type="application/pdf"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

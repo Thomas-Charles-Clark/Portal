@@ -1,0 +1,773 @@
+﻿@model Portal.Areas.Orders.ViewModels.TradeOrdersReturnsViewModel
+@{
+    ViewBag.Title = "Returns";
+    
+    var firstTab = 3;
+    var firstStatus = "despatchedOrders";
+
+    if (Request.QueryString.AllKeys.Contains("tab"))
+    {
+        switch (Request.QueryString["tab"])
+        {
+            case "backOrders":
+                firstTab = 1;
+                firstStatus = Request.QueryString["tab"];
+                break;
+            case "reserveOrders":
+                firstTab = 2;
+                firstStatus = Request.QueryString["tab"];
+                break;
+            case "dispatched":
+            case "despatched":
+            case "dispatchedOrders":
+            case "despatchedOrders":
+                firstTab = 3;
+                firstStatus = "despatchedOrders";
+                break;
+            case "ordersInProgress":
+                firstTab = 4;
+                firstStatus = Request.QueryString["tab"];
+                break;
+            case "held":
+                firstTab = 5;
+                firstStatus = Request.QueryString["tab"];
+                break;
+            default:
+                break;
+        }
+    }
+}
+@section styles {
+    @Styles.Render("~/bundles/css/order-returns")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/order-returns")
+
+    <script type="text/javascript">
+        function getUPSAccounts() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.UPSAccounts))
+        }
+        function getUserName() {
+            return '@(User.Identity.GetFullName())';
+        }
+    </script>
+
+    <script id="return-line-template" type="text/html">
+        <div class="return-line">
+            <label class="display-block">
+                Product Code: <span class="font-normal" data-bind="text: ProductCode"></span>
+            </label>
+            <label class="display-block">
+                Description: <span class="font-normal" data-bind="text: Product?.Name"></span>
+            </label>
+            <label class="display-block">
+                Quantity: <span class="font-normal" data-bind="text: quantity"></span>
+            </label>
+            <label class="display-block">
+                Unit: <span class="font-normal" data-bind="text: Product?.StockUnit?.Units"></span>
+            </label>
+        </div>
+    </script>
+    
+    <script id="returning-line-template" type="text/html">
+        <div class="return-line returning-line">
+            <button class="close pull-right" data-bind="click: function(data, event) { $parent.removeLine(data); }">
+                &times;
+            </button>
+            <label class="display-block">
+                Product Code: <span class="font-normal" data-bind="text: ProductCode"></span>
+            </label>
+            <label class="display-block">
+                Description: <span class="font-normal" data-bind="text: Product?.Name"></span>
+            </label>
+            <label class="display-block">
+                Quantity: <span class="font-normal" data-bind="text: quantityParcelled"></span>
+            </label>
+            <label class="display-block">
+                Unit: <span class="font-normal" data-bind="text: Product?.StockUnit?.Units"></span>
+            </label>
+        </div>
+    </script>
+
+    <script type="text/javascript">
+        ko.bindingHandlers.kendoSortable.options = {
+            connectWith: ".return-line",
+            placeholder: function(element) {
+                return element.clone().css({
+                    "opacity": 0.3,
+                    "border": "1px dashed #000000"
+                }).addClass('placeholder');
+            }
+        };
+
+        function getAvailableTags() {
+            return [];
+        }
+
+        function getPreselectedTradeAccount() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.PreselectedTradeAccount))
+        }
+        
+        $(document).ready(function () {
+            $('#accounts-menu a[data-toggle="tab]').on('show.bs.tab', function (e) {
+                let orderStatus = e.target.data('refresh');
+                viewModel.searchTerm(undefined);
+                viewModel.viewingStatus(orderStatus)
+                viewModel.refresh(orderStatus, false);
+            });
+            viewModel.busy(false);
+            viewModel.ready(true);
+            //viewModel.refresh('@(firstStatus)');
+        });
+
+        var viewModel = new tradeOrderReturnsViewModel();
+
+        $(document).ready(function () {
+            ko.applyBindings(viewModel, document.body);
+
+            //viewModel.customerCareRecord('222234');
+            //viewModel.claimRecordAutocomplete.observable(viewModel.customerCareRecord());
+            //viewModel.fetchCCRDetails(function () {
+            //    window.setTimeout(function () {
+            //        viewModel.collectionAddress.phone.observable('07400123456');
+            //        window.setTimeout(function () {
+            //            viewModel.confirmCollectionAddress(function () {
+
+            //            });
+            //        }, 500);
+            //    }, 300);
+            //});
+        });
+    </script>
+}
+@section modals {
+    @Html.Partial("Modals/_ImageModal")
+    @Html.Partial("Modals/_AddressModal")
+}
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+
+<script id="search-controls-template" type="text/html">
+    <div>
+        <div class="select-group">
+            <!-- ko if: showSampleControl -->
+            <select class="form-control" data-bind="value: sampleOrders, options: [{ name: 'Product Orders', value: false }, { name: 'Sample Orders', value: true }], optionsText: 'name', optionsValue: 'value'"></select>
+            <!-- /ko -->
+            <select class="form-control" data-bind="value: dateRangeType, options: availableDateRangeTypes, optionsValue: 'dateRangeTypeId', optionsText: 'name'"></select>
+            <select class="form-control" data-bind="value: dateRange, options: dateRanges, optionsValue: 'dateRangeId', optionsText: 'name'"></select>
+        </div>
+        <!-- ko if: dateRange() == -1 -->
+        <div class="custom-date-wrapper">
+            <label>
+                From
+            </label>
+            <input id="custom-from-date" class="date-picker" data-bind="kendoDatePicker: customFromDatePicker" />
+            <label class="date-clear" data-bind="click: function () { customFromDatePicker.clear(); }">
+                &times;
+            </label>
+        </div>
+        <div class="custom-date-wrapper">
+            <label>
+                To
+            </label>
+            <input id="custom-to-date" class="date-picker" data-bind="kendoDatePicker: customToDatePicker" />
+            <label class="date-clear" data-bind="click: function () { customToDatePicker.clear(); }">
+                &times;
+            </label>
+            <span class="validation-message text-danger" data-bind="validationMessage: customFromDate"></span>
+            <span class="validation-message text-danger" data-bind="validationMessage: customToDate"></span>
+            <span class="validation-message text-danger" data-bind="validationMessage: fromPreceedsTo"></span>
+        </div>
+        <!-- /ko -->
+    </div>
+    <div>
+        <div class="input-group">
+            <input type="text" class="form-control" data-bind="enterKey: search, textInput: searchTerm, attr: { placeholder: 'Search by order number, product, or customer\'s reference' }" />
+            <span class="input-group-btn">
+                <button class="btn btn-flat" data-bind="click: search">
+                    Search
+                </button>
+            </span>
+        </div>
+    </div>
+</script>
+
+<script id="returns-row-template" type="text/html">
+    <tr role="row">
+        <td class="text-right">
+            <span data-bind="text: ReturnID"></span>
+        </td>
+        <td class="text-right">
+            <!-- ko foreach: ReturnParcels -->
+            <span class="display-block" data-bind="text: TrackingNumber"></span>
+            <!-- /ko -->
+        </td>
+        <td class="text-right">
+            <span data-bind="text: CCRNumber"></span>
+        </td>
+        <td>
+            <span data-bind="text: TradeAccount.Label"></span>
+        </td>
+        <td class="text-right">
+            <span data-bind="text: ReturnParcels.length"></span>
+        </td>
+        <td>
+            <span data-bind="text: moment(CreatedDT).format('dddd Do MMMM YYYY')"></span>
+        </td>
+    </tr>
+</script>
+    
+<div class="blocker" data-bind="visible: busy">
+    <div class="busy-bars">
+        <div class="rect1 alert alert-info"></div>
+        <div class="rect2 alert alert-info"></div>
+        <div class="rect3 alert alert-info"></div>
+        <div class="rect4 alert alert-info"></div>
+        <div class="rect5 alert alert-info"></div>
+    </div>
+    <!-- ko with: busyMessage -->
+    <h3 data-bind="html: $data"></h3>
+    <!-- /ko -->
+</div>
+
+<div style="display: none;" data-bind="visible: ready">
+    <ul id="return-tabs" class="nav nav-tabs">
+        <li class="active">
+            <a href="#create-return" data-toggle="tab">
+                Create Return
+            </a>
+        </li>
+        <li>
+            <a href="#extant-returns" data-toggle="tab">
+                Existing Returns
+            </a>
+        </li>
+    </ul>
+    <div id="trade-wrapper" class="row">
+        <div class="col-xs-12">
+            <div id="accounts-menu">
+                <div class="tab-content">
+                    <div id="create-return" class="tab-pane active">
+                        @Html.Action("TradeAccountSelector", "Component", new { Area = "", canSearch = Model.CanSearch, canCollapse = false })
+                        
+                        <p class="margin-top-15">
+                            So I have a problem here. Both UPS and Tuffnells need to be told about packages.
+                            Tuffnells can't have pallets mixed with any other type in one consignment... I can mix up to two different package types
+                            in one consignment for Tuffnells.
+                            How on Earth am I supposed to know which product should go with which haulier?
+                        </p>
+
+                            @*<p class="margin-top-15">
+                                We want to display "number of parcels awaiting return", and we want the Warehouse to be able to 
+                                say "I've got that tracking number". For now, a comments box?
+                                We want as much out of Quantum View as possible!
+                            </p>*@
+
+                        <!-- ko if: tradeAccount -->
+                        <hr/>
+                        <div class="margin-top-15" data-bind="template: { name: 'mdc-text-field-autocomplete-component', data: claimRecordAutocomplete }"></div>
+                        <div style="display: none" data-bind="component: { name: 'mdc-address-search-component', params: addressSearch }"></div>
+                        <!-- /ko -->
+                        <!-- ko if: collectionAddressConfirmed() -->
+                        <hr/>
+                        <div class="flex-container">
+                            <div class="address">
+                                <label>
+                                    Collection Address
+                                </label>
+                                <div data-bind="html: collectionAddress.displayBlock()"></div>
+                                <div class="margin-bottom-15" data-bind="component: { name: 'mdc-checkbox-component', params: collectResidentialParams }"></div>
+                                <button class="btn btn-battleship-blue" data-bind="click: function () { addressSearch.showEditModal(); }">
+                                    Edit Address
+                                </button>
+                                <hr />
+                                <label>
+                                    Return Destination
+                                </label>
+                                <div class="margin-top-15" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: upsAccountParams }"></div>
+                                <!-- ko with: upsAccountDetails -->
+                                <div class="address-block">
+                                    <span class="address-block-span" data-bind="text: LocationName"></span>
+                                    <span class="address-block-span" data-bind="text: CompanyName"></span>
+                                    <span class="address-block-span" data-bind="text: AddressLine1"></span>
+                                    <span class="address-block-span" data-bind="text: AddressLine2"></span>
+                                    <span class="address-block-span" data-bind="text: Town"></span>
+                                    <span class="address-block-span" data-bind="text: Postcode"></span>
+                                    <span class="address-block-span" data-bind="text: CountryCode"></span>
+                                </div>
+                                <!-- /ko -->
+                                <!-- ko if: canProduceLabel -->
+                                <div class="tracking-number-controls">
+                                    <button class="btn btn-battleship-blue display-block generate-btn" data-bind="click: fetchLabelPricing">
+                                        <span>
+                                            Generate Return
+                                            <span class="material-icons">
+                                                keyboard_return
+                                            </span>
+                                        </span>
+                                    </button>
+                                </div>
+                                <!-- /ko -->
+                            </div>
+                            <div class="lines">
+                                <label>
+                                    Return Lines
+                                </label>
+                                <!-- ko with: ccrDetails -->
+                                <div class="return-line-container bg-info" data-bind="foreach: products, kendoSortable: { data: products, connectWith: '.return-parcel-line-container', revert: false }, css: { 'bg-info': products().length != 0, 'bg-success': products().length == 0 }">
+                                    <!-- ko template: { name: 'return-line-template', } --><!-- /ko -->
+                                </div>
+                                <!-- ko if: !$parent.canProduceLabel() -->
+                                <p class="note">
+                                    Please fully assign Lines to Parcels.
+                                </p>
+                                <!-- /ko -->
+                                <!-- /ko -->
+                            </div>
+                            <div class="parcels">
+                                <label>
+                                    Return Parcels
+                                </label>
+                                <div class="returning-quantity-control quantity-control input-group">
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-default" data-bind="click: removeParcel">
+                                            &minus;
+                                        </button>
+                                    </div>
+                                    @*<input type="number" step="1" min="0" class="form-control" data-bind="keepElement: desiredParcelCount, numeric, value: desiredParcelCount, attr: { step: 1 }" />*@
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" data-bind="click: addParcel">
+                                            +
+                                        </button>
+                                    </span>
+                                </div>
+                                <div class="return-parcel-container" data-bind="foreach: returningParcels">
+                                    <div class="return-parcel" data-bind="css: { 'bg-info': products().length == 0, 'bg-success': products().length > 0 }">
+                                        @*<p class="note">
+                                            If we need to gather additional information about a return parcel, we can do so here
+                                        </p>*@
+                                        <div class="return-parcel-line-container" data-bind="foreach: products, kendoSortable: { data: products, handler: '.none' }">
+                                            <!-- ko template: { name: 'returning-line-template', } --><!-- /ko -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /ko -->
+                    </div>
+                    <div id="extant-returns" class="tab-pane">
+                        <div id="extant-return-grid" data-bind="kendoGrid: returnsGrid"></div>
+                            @*<p class="margin-top-15">
+                                Returns Screen: Collection Address first, then Parcel[s] beneath horizontally.
+                                Pull Original 1Z Tracking Number(s) from TOELINE when pulling CCR Details, store.
+                                Prevent same-day-pickup selection, prevent Satudays, Sundays, Bank Holidays.
+                            </p>*@
+                        <!-- ko if: selectedReturn -->
+                        <div class="margin-top-15">
+                            <!-- ko with: selectedReturn -->
+                            <hr />
+                            <div class="return-title">
+                                <h2>
+                                    Return ID: <span data-bind="text: ReturnID"></span>
+                                </h2>
+                            </div>
+                            <hr />
+                            <div class="flex-container">
+                                <div class="shipment-title">
+                                    <label>
+                                        Shipment Reference 1: <span class="font-normal" data-bind="text: ShipmentReference1"></span>
+                                    </label>
+                                    <label>
+                                        Shipment Reference 2: <span class="font-normal" data-bind="text: ShipmentReference2"></span>
+                                    </label>
+                                    <label>
+                                        Parcel Count: <span class="font-normal" data-bind="text: ReturnParcels.length"></span>
+                                    </label>
+                                    <button class="btn btn-default" data-bind="click: refreshTracking">
+                                        Refresh Tracking Status
+                                        <i class="material-icons">
+                                            refresh
+                                        </i>
+                                    </button>
+                                </div>
+                                <div class="shipment-address">
+                                    <label class="title display-block">
+                                        Collection Address
+                                    </label>
+                                    <div class="address-block">
+                                        <span class="address-block-span" data-bind="text: CollectName"></span>
+                                        <span class="address-block-span" data-bind="text: CollectAddressLine1"></span>
+                                        <!-- ko if: CollectAddressLine2 -->
+                                        <span class="address-block-span" data-bind="text: CollectAddressLine2"></span>
+                                        <!-- /ko -->
+                                        <span class="address-block-span" data-bind="text: CollectTown"></span>
+                                        <span class="address-block-span" data-bind="text: CollectCounty"></span>
+                                        <!-- ko if: CollectStateProvinceCode -->
+                                            <span class="address-block-span" data-bind="text: CollectStateProvinceCode"></span>
+                                        <!-- /ko -->
+                                        <span class="address-block-span" data-bind="text: CollectPostcode"></span>
+                                        <span class="address-block-span" data-bind="text: CollectCountryCode"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="return-identifiers">
+                            <!-- ko foreach: returnParcels -->
+                            <div>
+                                <label>
+                                    Tracking Number: <span class="font-normal" data-bind="text: TrackingNumber"></span>
+                                </label>
+                                <!-- ko if: trackingUpdates().length -->
+                                <div class="well" data-bind="foreach: trackingUpdates">
+                                    <div class="tracking-update">
+                                        <label>
+                                            Date:
+                                            <span data-bind="text: moment(dateField, 'YYYYMMDD').format('dddd Do MMMM YYYY')"></span>
+                                        </label>
+                                        <label>
+                                            Activity:
+                                            <span data-bind="text: statusField.descriptionField"></span>
+                                        </label>
+                                        <!-- ko if: activityLocationField.addressField.cityField -->
+                                        <label>
+                                            Location:
+                                            <span data-bind="text: activityLocationField.addressField.cityField"></span>
+                                        </label>
+                                        <!-- /ko -->
+                                    </div>
+                                </div>
+                                <!-- /ko -->
+                                <!-- ko ifnot: trackingUpdates().length -->
+                                <div class="well">
+                                    <div class="tracking-update">
+                                        <label>
+                                            Activity:
+                                            <span>
+                                                Sorry, no Tracking Updates are available for this Shipment
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <!-- /ko -->
+                            </div>
+                            <!-- /ko -->
+                            </div>
+                            <hr />
+                            <!-- ko if: Enumerable.From(collections()).Where('$.Cancelled == false').ToArray().length == 0 && !$parent.isSelectionVoided() -->
+                            <p>
+                                This Return has no active Collections.
+                            </p>
+                            <!-- /ko -->
+                            <!-- ko foreach: Enumerable.From(collections()).Where('$.Cancelled == false').ToArray() -->
+                            <div class="extant-collection" data-bind="css: { 'cancelled-collection': cancelled }">
+                                <label class="title">
+                                    Collection ID: <span data-bind="text: CollectionID"></span>
+                                </label>
+                                <label>PRN: <span class="font-normal" data-bind="text: PickupRequestNumber"></span></label>
+                                <label>Date: <span class="font-normal" data-bind="text: moment(CollectionDate).format('dddd Do MMMM YYYY')"></span></label>
+                                <label>Time: <span class="font-normal" data-bind="text: Enumerable.From($parentContext.$parent.timeOptions).Where('$.value == ' + CollectionReadyFrom).Select('$.value').Single()"></span> - <span class="font-normal" data-bind="text: Enumerable.From($parentContext.$parent.timeOptions).Where('$.value == ' + CollectionClosedAt).Select('$.value').Single()"></span></label>
+                                <label>Charge: <span data-bind="text: formatCurrency(TotalChargeInc || 0, 2, 'en-GB', 'GBP')"></span></label>
+                                <button class="btn btn-danger" data-bind="click: function(data, event) { $parentContext.$parent.cancelCollection(data.PickupRequestNumber, data.CollectionID); }">
+                                    Cancel Collection
+                                    <span class="material-icons">
+                                        delete_forever
+                                    </span>
+                                </button>
+                            </div>
+                            <!-- /ko -->
+                            <!-- ko if: Enumerable.From(collections()).Where('$.Cancelled == false').ToArray().length == 0 -->
+                            <!-- ko if: $parent.isSelectionVoided() -->
+                            <div class="alert alert-danger margin-bottom-0">
+                                This label was voided on <span data-bind="text: moment(VoidedDT || new Date()).format('dddd Do MMMM YYYY')"></span>
+                            </div>
+                            <!-- /ko -->
+                            <div class="btn-toolbar" data-bind="with: $parent, visible: !$parent.isSelectionVoided()" tabindex="-1">
+                                <div class="btn-group" data-bind="css: { 'disabled': doesSelectionHaveActiveCollection() }">
+                                    <div class="date-required" data-bind="component: { name: 'mdc-date-time-picker-component', params: collectionDateParams }"></div>
+                                </div>
+                                <div class="btn-group" data-bind="css: { 'disabled': doesSelectionHaveActiveCollection() }">
+                                    <div class="collect-time" data-bind="component: { name: 'mdc-select-component', params: collectionReadyTimeParams }"></div>
+                                </div>
+                                <div class="btn-group" data-bind="css: { 'disabled': doesSelectionHaveActiveCollection() }">
+                                    <div class="collect-time" data-bind="component: { name: 'mdc-select-component', params: collectionCloseTimeParams }"></div>
+                                </div>
+                                <div class="btn-group" data-bind="css: { 'disabled': doesSelectionHaveActiveCollection() }">
+                                    <button class="btn btn-battleship-blue" data-bind="click: getCollectionRate">
+                                        <span data-bind="text: doesSelectionHaveActiveCollection() ? 'Active Collection Exists' : 'Request Collection'"></span>
+                                        <span class="material-icons">
+                                            keyboard_return
+                                        </span>
+                                    </button>
+                                </div>
+                                <div class="btn-group">
+                                    <button class="btn btn-success" data-bind="visible: !isSelectionVoided(), enable: trackingNumber, click: function() { recoverLabel(false); }">
+                                        Download Label
+                                         <span class="material-icons">
+                                             download
+                                         </span>
+                                    </button>
+                                </div>
+                                <div class="btn-group pull-right">
+                                    <button class="btn btn-danger" data-bind="visible: !isSelectionVoided(), enable: trackingNumber, click: voidLabel">
+                                        Void Label
+                                        <span class="material-icons">
+                                            delete_forever
+                                        </span>
+                                    </button>
+                                </div>
+                                <div class="btn-group pull-right">
+                                    <button class="btn btn-danger already-voided" disabled data-bind="visible: isSelectionVoided()">
+                                        Label Already Voided
+                                        <span class="material-icons">
+                                            delete_forever
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- /ko -->
+                            <!-- /ko -->
+                        </div>
+                        <!-- /ko -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*<div id="parcel-count-modal" class="modal fade" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    How many Parcels?
+                </h4>
+            </div>
+            <div class="modal-body">
+                <span class="margin-right-15">
+                    How many parcels is the user returning?
+                </span>
+                <div class="btn-group">
+                    <div class="quantity-control input-group">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" data-bind="click: function (data) { if (desiredParcelCount() > 1) { desiredParcelCount(+desiredParcelCount() - 1); } }">
+                                &minus;
+                            </button>
+                        </div>
+                        <input type="number" step="1" min="0" class="form-control" data-bind="keepElement: desiredParcelCount, numeric, value: desiredParcelCount, attr: { step: 1 }" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" data-bind="click: function(data) {  desiredParcelCount(+desiredParcelCount() + 1); }">
+                                +
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-bind="click: function() { reset(); }">
+                    Cancel
+                </button>
+                <button class="btn btn-battleship-blue" data-bind="click: function () { confirmParcelCount(); }">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+<div id="extant-return-modal" class="modal fade" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    Extant Return Detected
+                </h4>
+            </div>
+            <div class="modal-body" data-bind="with: extantReturnInfo">
+                <span>
+                    CCR Number
+                    <span data-bind="text: ccrNumber"></span>
+                    has already had
+                    <!-- ko if: extantReturns.length == 1 -->
+                    a return arranged.
+                    <!-- /ko -->
+                    <!-- ko if: extantReturns.length > 1 -->
+                    <span data-bind="text: extantReturns.length"></span>
+                    returns arranged.
+                    <!-- /ko -->
+                </span>
+                <p>
+                    Click a Return beneath to view details.
+                </p>
+                <div class="list-group">
+                    <!-- ko foreach: extantReturns -->
+                    <a class="list-group-item list-group-item-info" href="javascript:;" data-bind="click: function () { $parentContext.$parent.inspectReturn(ReturnID); }">
+                        <span data-bind="text: 'Return ID: ' + ReturnID"></span>
+                        <span data-bind="text: moment(CreatedDT, 'YYYYMMDD').format('dddd Do MMMM YYYY')"></span>
+                    </a>
+                    <!-- /ko -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-bind="click: function() { cancelCCRSelection(); }">
+                    Cancel
+                </button>
+                <button class="btn btn-battleship-blue" data-bind="click: function () { arrangeReturnRegardlessOfExtant(); }">
+                    Create a New Return Anyway
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="quantity-modal" class="modal fade" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    Quantity
+                </h4>
+            </div>
+            <div class="modal-body" data-bind="with: returnLineConsideringQuantity">
+                <span class="margin-right-15">
+                    How many are going in this parcel?
+                </span>
+                <div class="btn-group">
+                    <div class="quantity-control input-group">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" data-bind="click: function (data) { if (quantityParcelled() > 1) { quantityParcelled(+quantityParcelled() - 1); } }">
+                                &minus;
+                            </button>
+                        </div>
+                        <input type="number" step="1" min="0" class="form-control" data-bind="keepElement: quantityParcelled, numeric, value: quantityParcelled, attr: { step: 1, max: quantity, min: 0 }" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" data-bind="click: function(data) { if (quantityParcelled() < quantity()) { quantityParcelled(+quantityParcelled() + 1); } }">
+                                +
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-bind="click: function() { cancelParcellingLine(); }">
+                    Cancel
+                </button>
+                <button class="btn btn-battleship-blue" data-bind="click: function () { confirmParcellingLine(); }">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="tracking-modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" aria-label="Close" data-bind="click: hideTrackingModal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">
+                    Order:
+                    <span data-bind="text: trackingOrderNumber"></span>
+                    -
+                    Tracking Information
+                </h4>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    <!-- ko foreach: trackingResults -->
+                    <li>
+                        <label data-bind="text: Parcel"></label>
+                        <span class="display-block" data-bind="text: ProductCodes"></span>
+                        <span class="display-block" data-bind="text: Descriptions"></span>
+                        <a class="display-block" data-bind="attr: { href: TrackingURL }, text: TrackingURL"></a>
+                    </li>
+                    <!-- /ko -->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="order-detail-modal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" aria-label="Close" data-bind="click: hideOrderDetailModal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">
+                    Order Details:
+                    <span data-bind="text: orderDetailsOrderNumber"></span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <dl class="dl-horizontal">
+                    <dt>
+                        Order Date
+                    </dt>
+                    <dd data-bind="text: moment(orderDetailsOrderDate()).format('dddd Do MMMM YYYY')"></dd>
+                    </dl>
+                <dl class="dl-horizontal" data-bind="with: orderDetailsDeliveryInfo">
+                    <dt>
+                        Delivery Name
+                    </dt>
+                    <dd data-bind="text: DeliveryName"></dd>
+                    <dt>
+                        Address Line 1
+                    </dt>
+                    <dd data-bind="text: AddressLine1"></dd>
+                    <dt>
+                        Address Line 2
+                    </dt>
+                    <dd data-bind="text: AddressLine2"></dd>
+                    <dt>
+                        Address Line 3
+                    </dt>
+                    <dd data-bind="text: AddressLine3"></dd>
+                    <dt>
+                        Address Line 4
+                    </dt>
+                    <dd data-bind="text: AddressLine4"></dd>
+                    <dt>
+                        Postal Code / Zip
+                    </dt>
+                    <dd data-bind="text: PostalCode"></dd>
+                    <dt>
+                        Phone Number
+                    </dt>
+                    <dd data-bind="text: PhoneNumber"></dd>
+                    <dt>
+                        Haulier Description
+                    </dt>
+                    <dd data-bind="text: HaulierDescription"></dd>
+                </dl>
+                <div data-bind="with: orderDetailsDeliveryInfo">
+
+                </div>
+                <div data-bind="kendoGrid: ordersDetailsGrid"></div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,53 @@
+﻿<div id="summary-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Order Summary</h4>
+            </div>
+            <div class="summary-contents modal-body">
+                <!-- ko if: account -->
+                <div class="summary-section">
+                    <h4>Account</h4>
+                    <p data-bind="text: account().Label"></p>
+                    <!-- ko if: account() -->
+                    <p data-bind="text: account().Email"></p>
+                    <!-- /ko -->
+                </div>
+                <!-- /ko -->
+                <!-- ko if: selectedAddress -->
+                <div class="summary-section">
+                    <h4>Address</h4>
+                    <!-- ko foreach: selectedAddress().SummaryDisplayLines -->
+                    <p class="summary-address" data-bind="text: $data"></p>
+                    <!-- /ko -->
+                </div>
+                <!-- /ko -->
+                <!-- ko if: selectedDespatchMethod -->
+                <div class="summary-section">
+                    <h4>Despatch</h4>
+                    <p data-bind="html: selectedDespatchMethod().Name()"></p>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: basket().length -->
+                <div class="summary-section">
+                    <h4>Items</h4>
+                    @*<p data-bind="text: cuttingTotalQuantity() + ' sample' + (cuttingTotalQuantity() > 1 ? 's' : ''), visible: cuttingTotalQuantity() > 0"></p>
+                        <p data-bind="text: returnableTotalQuantity() + ' returnable' + (returnableTotalQuantity() > 1 ? 's' : ''), visible: returnableTotalQuantity() > 0"></p>*@
+                    <p data-bind="text: cuttingTotalQuantity() + ' sample' + (cuttingTotalQuantity() > 1 ? 's' : '') + ': ' + cuttingTotalPrice(), visible: cuttingTotalQuantity() > 0"></p>
+                    <p data-bind="text: returnableTotalQuantity() + ' returnable' + (returnableTotalQuantity() > 1 ? 's' : '') + ': ' + returnableTotalPrice(), visible: returnableTotalQuantity() > 0"></p>
+                </div>
+                <div class="summary-section">
+                    <h4>Cost</h4>
+                    <p data-bind="text: totalQuantity() + ' item' + (totalQuantity() > 1 ? 's' : '') + ': ' + totalPrice()"></p>
+                </div>
+                <!-- /ko -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <a id="take-payment-btn-2" class="btn btn-warning" href="https://retail.designersguild.com" target="_blank" data-bind="visible: totalPrice() > 0">Take Payment</a>
+                <button id="place-order-btn" type="button" class="btn btn-primary" data-bind="enable: !placeOrderBusy(), click: placeOrder" data-dismiss="modal">Place Order</button>
+            </div>
+        </div>
+    </div>
+</div>

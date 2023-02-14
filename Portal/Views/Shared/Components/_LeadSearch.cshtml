@@ -1,0 +1,220 @@
+﻿@model Portal.ViewModels.ComponentModels.LeadSearchViewModel
+
+<div class="row" style="display: none;" data-bind="visible: true, with: leadSearch">
+    <div class="col-xs-12">
+        <div class="panel panel-primary @(Model.Properties?.Application_PanelClass)">
+            <div class="panel-heading no-padding">
+                <h4 class="panel-title" for="product-code">
+                    <a class="panel-title panel-toggle collapsed" data-toggle="collapse" data-target="#lead-search-collapse">Leads Search</a>
+                </h4>
+                <div class="clearfix"></div>
+            </div>
+            <div id="lead-search-collapse" class="panel-collapse collapse">
+                <div class="panel-body bg-info">
+                    <div class="selector">
+                        <div class="input-group">
+                            <input id="lead" type="text" class="form-control" maxlength="100" placeholder="Search by ID, Name, Email, Telephone or Address" data-bind="value: searchTerm,  enterKey: function() { performSearch(); }" /> @**@
+                            <span class="input-group-addon">
+                                <button class="clear-btn btn btn-primary @(Model.Properties?.Application_ButtonClass)" type="button" data-bind="click: function() { searchTerm(undefined) }">&times;</button>
+                            </span>
+                            <span class="input-group-btn">
+                                <button class="search-btn btn btn-primary @(Model.Properties?.Application_ButtonClass)" data-bind="click: function() { performSearch(); }"><span class="glyphicon glyphicon-search"></span></button>
+                                <button class="btn btn-primary @(Model.Properties?.Application_ButtonClass)" data-toggle="collapse" data-target="#lead-search-advanced" aria-expanded="false" aria-controls="lead-search-advanced"><span class="glyphicon glyphicon-cog"></span></button>
+                            </span>
+                        </div>
+                        <div id="lead-search-advanced" class="panel-collapse collapse">
+                            <div class="panel panel-default @(Model.Properties?.Application_PanelClass)">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-sm-6 col-xs-12">
+                                            <div class="form-group row">
+                                                <div class="col-xs-12">
+                                                    <label class="col-form-label">Market</label>
+                                                </div>
+                                                <div class="col-xs-12">
+                                                    <select class="form-control" data-bind="value: countryId, optionsText: 'Name', optionsValue: 'CountryID', options: availableCountries, optionsCaption: 'All'"></select>
+                                                </div>
+                                            </div>
+                                            @*
+                                            <div class="form-group row">
+                                                <div class="col-xs-12">
+                                                    <label class="col-form-label">Language</label>
+                                                </div>
+                                                <div class="col-xs-12">
+                                                    <select class="form-control" data-bind="value: languageId, optionsText: 'Name', optionsValue: 'LanguageID', options: availableLanguages"></select>
+                                                </div>
+                                            </div>
+                                            *@
+                                        </div>
+                                        <div class="col-sm-6 col-xs-12">
+                                            <div class="form-group row">
+                                                <div class="col-xs-12">
+                                                    <label class="col-form-label">Source</label>
+                                                </div>
+                                                <div class="col-xs-12">
+                                                    <select class="form-control" data-bind="value: leadSourceId, optionsText: 'Name', optionsValue: 'LeadSourceID', options: availableLeadSources, optionsCaption: 'Please select...'"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6 col-xs-12">
+                                            <div class="form-group row">
+                                                <div class="col-xs-12">
+                                                    <label class="col-form-label">When Lead was Created</label>
+                                                </div>
+                                                <div class="col-xs-12">
+                                                    <select id="period" class="form-control" data-bind="value: period, options: periodOptions, optionsText: 'Name', optionsValue: 'Value', optionsCaption: 'Please select'"></select>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <div class="row" style="display: none;" data-bind="visible: period() == 'custom'">
+                                                        <div class="col-xs-6">
+                                                            <div class="form-group row">
+                                                                <div class="col-xs-12">
+                                                                    <label class="col-form-label">From:</label>
+                                                                </div>
+                                                                <div class="col-xs-12">
+                                                                    <div class='input-group date' data-bind="dateTimePicker: fromDate, dateTimePickerOptions: { locale: 'en-gb', format: 'DD/MM/YYYY', ignoreReadonly: true, showClear: true, allowInputToggle: true, minDate: '01/01/1970', maxDate: '01/01/9999' }">
+                                                                        <input type='text' class="form-control" placeholder="DD/MM/YYYY"/>
+                                                                        <span class="input-group-btn">
+                                                                            <button class="calendar-btn btn btn-default @(Model.Properties?.Application_ButtonClass)">
+                                                                                <span class="glyphicon glyphicon-calendar"></span>
+                                                                            </button>
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-6">
+                                                            <div class="form-group row">
+                                                                <div class="col-xs-12">
+                                                                    <label class="col-form-label">To:</label>
+                                                                </div>
+                                                                <div class="col-xs-12">
+                                                                    <div class='input-group date' data-bind="dateTimePicker: toDate, dateTimePickerOptions: { locale: 'en-gb', format: 'DD/MM/YYYY', ignoreReadonly: true, showClear: true, allowInputToggle: true, minDate: '01/01/1970', maxDate: '01/01/9999' }">
+                                                                        <input type='text' class="form-control" placeholder="DD/MM/YYYY"/>
+                                                                        <span class="input-group-btn">
+                                                                            <button class="calendar-btn btn btn-default @(Model.Properties?.Application_ButtonClass)">
+                                                                                <span class="glyphicon glyphicon-calendar"></span>
+                                                                            </button>
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 col-xs-12">
+                                            <div class="form-group row">
+                                                <div class="col-xs-12">
+                                                    <label class="col-form-label">Status</label>
+                                                </div>
+                                                <div class="col-xs-12">
+                                                    <select id="lead-search-status" class="form-control" data-bind="value: leadStatus, optionsText: 'Name', optionsValue: 'LeadStatusID', options: leadStatusOptions, optionsCaption: 'Please select...'"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6 col-xs-12">
+                                            <div class="form-group row">
+                                                <div class="col-xs-12">
+                                                    <label class="col-form-label">Assigned to</label>
+                                                </div>
+                                                <div class="col-xs-12">
+                                                    @Html.Action("MemberSearch", "Component", new
+                                                    {
+                                                        Area = "",
+                                                        clientObjectName = "assignedToMemberSearch",
+                                                        showClearButton = true,
+                                                        objProperties = new SharedEFClasses.Models.Components.PassMemberSearchProperties()
+                                                        {
+                                                            AdditionalOptions = new List<KeyValuePair<string, SharedEFClasses.Models.General.ClientSideMember>>()
+                                                            {
+                                                                new KeyValuePair<string, SharedEFClasses.Models.General.ClientSideMember>("Me", new SharedEFClasses.Models.General.ClientSideMember() { MemberID = -1, FullName = null, Email = null }),
+                                                                new KeyValuePair<string, SharedEFClasses.Models.General.ClientSideMember>("All Members", new SharedEFClasses.Models.General.ClientSideMember() { MemberID = null, FullName = "All Members", Email = null }),
+                                                                new KeyValuePair<string, SharedEFClasses.Models.General.ClientSideMember>("Unassigned", new SharedEFClasses.Models.General.ClientSideMember() { MemberID = 0, FullName = "Unassigned", Email = null })
+                                                            }
+                                                        }
+                                                    })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 col-xs-12">
+                                            <div class="form-group row">
+                                                <div class="col-xs-12">
+                                                    <label class="col-form-label">Created by</label>
+                                                </div>
+                                                <div class="col-xs-12">
+                                                    @Html.Action("MemberSearch", "Component", new
+                                               {
+                                                   Area = "",
+                                                   clientObjectName = "createdByMemberSearch",
+                                                   showClearButton = true,
+                                                   objProperties = new SharedEFClasses.Models.Components.PassMemberSearchProperties()
+                                                   {
+                                                       AdditionalOptions = new List<KeyValuePair<string, SharedEFClasses.Models.General.ClientSideMember>>()
+                                                            {
+                                                                new KeyValuePair<string, SharedEFClasses.Models.General.ClientSideMember>("Me", new SharedEFClasses.Models.General.ClientSideMember() { MemberID = -1, FullName = null, Email = null }),
+                                                                new KeyValuePair<string, SharedEFClasses.Models.General.ClientSideMember>("All Members", new SharedEFClasses.Models.General.ClientSideMember() { MemberID = null, FullName = "All Members", Email = null }),
+                                                                new KeyValuePair<string, SharedEFClasses.Models.General.ClientSideMember>("Unassigned", new SharedEFClasses.Models.General.ClientSideMember() { MemberID = 0, FullName = "Unassigned", Email = null })
+                                                            }
+                                                        }
+                                                    })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function getTradeAccountGroupId() {
+        return @Html.Raw(Json.Encode(Model.TradeAccountGroupID))
+    }
+    function getTradeAccountId() {
+        return @Html.Raw(Json.Encode(Model.TradeAccountID))
+    }
+    function getAvailableCountries() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.Countries))
+    }
+    function getAvailableLanguages() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.Languages))
+    }
+    function getLeadStatusOptions() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.LeadStatusOptions))
+    }
+    function getPeriodOptions() {
+        return @Html.Raw(Json.Encode(Model.PeriodOptions))
+    }
+    function getAvailableLeadSources() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.LeadSourceOptions.OrderBy(p => p.Name), new JsonSerializerSettings()
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            PreserveReferencesHandling = PreserveReferencesHandling.None
+        }));
+    }
+    function getAvailableDashboardMembers() {
+        return @Html.Raw(Json.Encode(Model.DashboardMembers));
+    }
+    function getPreselectedDashboardUser() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.PreselectedDashboardUser));
+    }
+    function getPreselectedDashboardCountry() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.PreselectedDashboardCountry));
+    }
+    function getLeadTypeOptions() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.LeadTypes));
+    }
+</script>

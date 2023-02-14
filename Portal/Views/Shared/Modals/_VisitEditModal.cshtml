@@ -1,0 +1,380 @@
+﻿<div id="visit-edit-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header grey-blue" data-bind="with: selectedTradeAccount">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 id="visit-booking-title" class="modal-title">
+                    Book Visit
+                    -
+                    <span id="visit-booking-sub-title" data-bind="text: Code + ' - ' + Name"></span>
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                <ul class="nav nav-pills">
+                    <li class="active">
+                        <a href="#visit-booking-container" data-toggle="tab">
+                            Visit Details
+                        </a>
+                    </li>
+                    <!-- ko if: selectedTradeAccountVisitId() != null -->
+                    <li>
+                        <a href="#visit-orders-container" data-toggle="tab">
+                            Visit Orders
+                        </a>
+                    </li>
+                    @*<li>
+                        <a href="#order-products-modal" data-bind="click: showOrderFactory">
+                            Place Order
+                        </a>
+                    </li>*@
+                    <!-- /ko -->
+                </ul>
+                <div class="tab-content">
+                    <div id="visit-booking-container" class="tab-pane active">
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label" data-toggle="tab">
+                                    Date &amp; Time
+                                </label>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class='input-group date' data-bind="keepElement: visitDate, dateTimePicker: visitDate, dateTimePickerOptions: { locale: 'en-gb', format: 'DD/MM/YYYY', ignoreReadonly: true, showClear: true, allowInputToggle: true, sideBySide: true, useCurrent: true, minDate: 'now', showClose: true, keepInvalid: true }">
+                                    <input type='text' id="VisitDT" class="form-control" readonly="readonly" data-bind="validationElement: visitDate" />
+                                    <div class="input-group-btn">
+                                        <button class="calendar-btn btn btn-default">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </button>
+                                    </div>
+                                    <div class="time-selector" data-bind="kendoComboBox: timeComboBoxParams">
+                                    </div>
+                                </div>
+                                <span class="validation-message text-danger" data-bind="validationMessage: visitDate"></span>
+                                <span class="validation-message text-danger" data-bind="validationMessage: visitTime"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label">
+                                    Comment
+                                </label>
+                            </div>
+                            <div class="col-xs-12">
+                                <textarea id="new-visit-notes" class="form-control" data-bind="textInput: notes" maxlength="2000"></textarea>
+                            </div>
+                        </div>
+                        @*<div class="row">
+                            <div class="col-xs-12" data-bind="with: tradeAccountContactListParams">
+                                <div data-bind="component: { name: 'checkable-list-component', params: $data }"></div>
+                                <span class="validation-message text-danger" data-bind="validationMessage: $parent.attendees"></span>
+                            </div>
+                        </div>*@
+                    </div>
+                    <div id="visit-orders-container" class="tab-pane">
+                        <!-- ko if: visitOrders().length == 0 -->
+                            <h4>
+                                No orders found for this Visit.
+                            </h4>
+                        <!-- /ko -->
+                        <!-- ko if: visitOrders().length > 0 -->
+                        <h4>
+                            <span data-bind="text: visitOrders().length"></span>
+                            Orders from this Visit:
+                        </h4>
+                        <ul>
+                            <!-- ko foreach: visitOrders -->
+                            <li>
+                                Order <span data-bind="text: $index()"></span>
+                            </li>
+                            <!-- /ko -->
+                        </ul>
+                        <!-- /ko -->
+                    </div>
+                    @*<div id="visit-order-container" class="tab-pane">
+                            <div class="form-group row">
+                                <div class="col-xs-12">
+                                    These are Prefilter Shortcuts (might do away with prefilters entirely). We want Delivery to be a new option, providing a PCAPredict searcher... Not getting into delivery methods, they can provide delivery methods in a free-text entry which modifies the email to be sent.
+                                    <ul class="nav nav-pills">
+                                        <li data-bind="css: { 'active': productSearchShortcut() == 'PB' }">
+                                            <a data-bind="attr: { href: 'javascript:;' }, click: function() { productSearchShortcut('PB') }">
+                                                Pattern Books
+                                            </a>
+                                        </li>
+                                        <li data-bind="css: { 'active': productSearchShortcut() == 'AC' }">
+                                            <a data-bind="attr: { href: 'javascript:;' }, click: function() { productSearchShortcut('AC') }">
+                                                Finished Products
+                                            </a>
+                                        </li>
+                                        <li data-bind="css: { 'active': productSearchShortcut() == 'FA,PA' }">
+                                            <a data-bind="attr: { href: 'javascript:;' }, click: function() { productSearchShortcut('FA,PA') }">
+                                                Fabric &amp; Wallpaper
+                                            </a>
+                                        </li>
+                                        <li data-bind="css: { 'active': productSearchShortcut() == 'HS,SH' }">
+                                            <a data-bind="attr: { href: 'javascript:;' }, click: function() { productSearchShortcut('HS,SH') }">
+                                                Bespoke Hangers &amp; Showlengths
+                                            </a>
+                                        </li>
+                                        <li data-bind="css: { 'active': productSearchShortcut() == 'FU' }">
+                                            <a data-bind="attr: { href: 'javascript:;' }, click: function() { productSearchShortcut('FU') }">
+                                                Furniture
+                                            </a>
+                                        </li>
+                                        <li data-bind="css: { 'active': productSearchShortcut() == 'LA' }">
+                                            <a data-bind="attr: { href: 'javascript:;' }, click: function() { productSearchShortcut('LA') }">
+                                                Marketing Materials
+                                            </a>
+                                        </li>
+                                        <li style="float: right;">
+                                            <a data-bind="attr: { href: '/products/sample-request/dg', target: '_blank' }" style="position: relative; padding-right: 38px;">
+                                                Samples
+                                                <i class="material-icons" style="position: absolute; top: 8px; right: 8px;">
+                                                    exit_to_app
+                                                </i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-xs-12">
+                                    <div id="visit-product-search" class="input-group">
+                                        <div class="blocker" style="background-color: rgba(0, 0, 0, 0.4)" data-bind="fadeVisible: orderConfirmed"></div>
+                                        <div class="input-group-btn">
+                                            <div class="btn-group">
+                                                <a class="btn btn-default" data-bind="attr: { href: 'javascript:;' }, click: function() { addingDisplayLine(!addingDisplayLine()) }, text: addingDisplayLine() ? 'Display' : 'Normal'">
+                                                    Display
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <input type="text" class="form-control" placeholder="Search by Product Code, Name or Description" data-bind="keepElement: searchTerm, value: searchTerm, enterKey: function () { $(searchTerm.DOMElement).autocomplete('search'); }" />
+                                        <!-- ko if: initAutocomplete() --><!-- /ko -->
+                                        <div class="input-group-btn">
+                                            <div class="btn-group">
+                                                <div class="input-group-btn">
+                                                    <button class="btn btn-default clear-btn" data-bind="click: function () { searchTerm(undefined); $(searchTerm.DOMElement).focus(); }">
+                                                        <span>&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="input-group-btn">
+                                                    <button class="btn btn-default" type="button" data-bind="click: function () { $(searchTerm.DOMElement).autocomplete('search'); }">
+                                                        <span class="glyphicon glyphicon-search"></span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-7">
+                                    <div class="form-group row">
+                                        <div class="col-xs-12">
+                                            <div id="visit-order-table-wrapper">
+                                                <div class="blocker" style="background-color: rgba(0, 0, 0, 0.4)" data-bind="fadeVisible: orderConfirmed"></div>
+                                                <table class="product-table">
+                                                    <colgroup>
+                                                        <col style="width: 32px" />
+                                                        <col style="width: 110px;" />
+                                                        <col />
+                                                        <col style="width: 75px;" />
+                                                    </colgroup>
+                                                    <thead>
+                                                        <tr>
+                                                            <th colspan="4" class="">Normal Lines</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th></th>
+                                                            <th>
+                                                                Code
+                                                            </th>
+                                                            <th>
+                                                                Name
+                                                            </th>
+                                                            <th>
+                                                                Quantity
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <!-- ko foreach: groupedProducts -->
+                                                    <tbody>
+                                                        <tr>
+                                                            <th class="basket-grouping" colspan="4">
+                                                                <span data-bind="text: basketGrouping"></span>
+                                                            </th>
+                                                        </tr>
+                                                        <!-- ko foreach: products -->
+                                                        <tr>
+                                                            <td class="remover text-center">
+                                                                <a class="close" data-bind="attr: { href: 'javascript:;' }, click: function (data) { $parent.orderingProducts.remove(data) }">
+                                                                    &times;
+                                                                </a>
+                                                            </td>
+                                                            <td>
+                                                                <span data-bind="text: record.Code"></span>
+                                                            </td>
+                                                            <td data-bind="attr: { title: record.Name }">
+                                                                <span data-bind="text: record.Name "></span>
+                                                            </td>
+                                                            <td class="quantity-cell" data-bind="validationOptions: { insertMessages: false }">
+                                                                <input type="text" class="quantity text-center form-control" data-bind="numeric, textInput: quantity" />
+                                                            </td>
+                                                        </tr>
+                                                        <!-- /ko -->
+                                                    </tbody>
+                                                    <!-- /ko -->
+                                                    <!-- ko if: groupedProducts().length == 0 -->
+                                                    <tbody>
+                                                        <tr class="no-items">
+                                                            <td colspan="4" class="text-center">
+                                                                No Products
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                    <!-- /ko -->
+                                                    <tbody>
+                                                        <tr class="spacer">
+                                                            <td colspan="4"></td>
+                                                        </tr>
+                                                    </tbody>
+                                                    <thead>
+                                                        <tr>
+                                                            <th colspan="4">
+                                                                Display Lines
+                                                            </th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th></th>
+                                                            <th>
+                                                                Code
+                                                            </th>
+                                                            <th>
+                                                                Name
+                                                            </th>
+                                                            <th>
+                                                                Quantity
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <!-- ko foreach: groupedDisplayProducts -->
+                                                    <tbody>
+                                                        <tr class="display">
+                                                            <th class="basket-grouping" colspan="4">
+                                                                <span data-bind="text: basketGrouping"></span>
+                                                            </th>
+                                                        </tr>
+                                                        <!-- ko foreach: products -->
+                                                        <tr>
+                                                            <td class="remover text-center">
+                                                                <a class="close" data-bind="attr: { href: 'javascript:;' }, click: function (data) { $parent.orderingProducts.remove(data) }">
+                                                                    &times;
+                                                                </a>
+                                                            </td>
+                                                            <td>
+                                                                <span data-bind="text: record.Code"></span>
+                                                            </td>
+                                                            <td data-bind="attr: { title: record.Name }">
+                                                                <span data-bind="text: record.Name "></span>
+                                                            </td>
+                                                            <td class="quantity-cell display" data-bind="validationOptions: { insertMessages: false }">
+                                                                <input type="text" class="quantity text-center form-control" data-bind="numeric, textInput: quantity" />
+                                                            </td>
+                                                        </tr>
+                                                        <!-- /ko -->
+                                                    </tbody>
+                                                    <!-- /ko -->
+
+                                                    <!-- ko if: groupedDisplayProducts().length == 0 -->
+                                                    <tbody>
+                                                        <tr class="no-items">
+                                                            <td colspan="4" class="text-center">
+                                                                No Display Products
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                    <!-- /ko -->
+
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-xs-12">
+                                            <div data-bind="template: { name: 'address-template', data: deliveryAddress }"></div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row" data-bind="visible: orderingProducts().length">
+                                        <div class="col-xs-12">
+                                            <button class="btn btn-success pull-right" data-bind="text: orderConfirmed() ? 'Change Order' : 'Confirm Order', click: function () { orderConfirmed(!orderConfirmed()); $('#visit-order-collapse').toggle('fade'); }, enable: !orderEmailedDT()">
+                                                Email Order to Customer Services
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="visit-order-collapse" style="display: none;">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <label class="col-form-label">
+                                                    Customer Services Email Recipient
+                                                </label>
+                                            </div>
+                                            <div class="col-xs-12">
+                                                <div class="input-group" data-bind="validationOptions: { insertMessages: false }">
+                                                    <input class="form-control" data-bind="textInput: orderEmailRecipient, enable: !orderEmailedDT()" maxlength="256" title="">
+                                                    <div class="input-group-btn">
+                                                        <button class="btn btn-success" style="font-weight: normal" data-bind="click: sendOrderEmail, enable: !orderEmailedDT()">
+                                                            Send Order
+                                                            <span class="glyphicon glyphicon-send"></span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12">
+                                                <span data-bind="validationMessage: orderEmailRecipient, css: 'validation-message text-danger'" class="validation-message text-danger" style="display: none;"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" data-bind="with: orderEmailedDT">
+                                        <div class="col-xs-12">
+                                            <label class="col-form-label">
+                                                This order was emailed to
+                                                <a data-bind="attr: { href: 'mailto:' + $parent.orderEmailRecipient() }, text: $parent.orderEmailRecipient"></a>
+                                                <br />
+                                                <span data-bind="text: moment($data).format('dddd [the] Do [of] MMMM YYYY HH:mm')"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-5">
+                                    <div id="pattern-books-wrapper">
+                                        <div class="blocker" style="background-color: rgba(0, 0, 0, 0.4)" data-bind="fadeVisible: orderConfirmed"></div>
+                                        <div class="blocker" data-bind="visible: patternBooksBusy">
+                                            <div class="loading-spinner"></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <div data-bind="component: { name: 'new-drop-down-component', params: launchSlicerParams }"></div>
+                                            </div>
+                                        </div>
+                                        <ul id="recent-pattern-books" class="checkable-ul pointer">
+                                            <!-- ko foreach: patternBookList -->
+                                            <li>
+                                                <a href="javascript:;" data-bind="click: function(data, event) { $parent.orderingProducts.push(new orderingProduct(data, $parent.addingDisplayLine(), 1)); }">
+                                                    <span data-bind="text: Name"></span>
+                                                </a>
+                                            </li>
+                                            <!-- /ko -->
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>*@
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button id="visit-booking-save" type="button" class="btn btn-primary" data-bind="click: function() { save(); }">Save</button>
+                <button id="visit-booking-close" type="button" class="btn btn-default" data-bind="click: function() { close(); }">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,40 @@
+﻿@model Portal.ViewModels.ComponentModels.ProductSearchViewModel
+<div class="row" data-bind="with: productSearch">
+    <div class="col-xs-12">
+        <div class="panel panel-primary @(Model.Properties?.Application_PanelClass)">
+            <div class="panel-heading no-padding">
+                <h4 class="panel-title" for="product-code">
+                    <a class="panel-title panel-toggle collapse" data-toggle="collapse" data-target="#product-searh-collapse">
+                        Search for Products
+                    </a>
+                </h4>
+            </div>
+            <div id="product-searh-collapse" class="collapse in">
+                <div class="panel-body bg-info">
+                    <div class="selector">
+                        <div class="input-group">
+                            <input id="product-search" type="text" class="form-control" data-bind="textInput: searchTerm" placeholder="Search for a Product, Design or Collection" />
+                            @*<input id="product-code" type="text" class="form-control" maxlength="100" placeholder="Search by Code or Name"/>*@
+                            <span class="input-group-addon">
+                                <button class="clear-btn btn btn-primary @(Model.Properties?.Application_ButtonClass)" type="button" data-bind="click: function() { clearSearch() }">&times;</button>
+                            </span>
+                            <span class="input-group-btn">
+                                <button class="search-btn btn btn-primary @(Model.Properties?.Application_ButtonClass)" data-bind="click: function() { performSearch() }"><span class="glyphicon glyphicon-search"></span></button>
+                            </span>
+                        </div>
+                        <label for="product-code" class="search-result-count-label col-form-label" data-bind="visible: haveSearched, text: searchResults().length + ' result' + (searchResults().length == 1 ? '' : 's')"></label>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function getShowDiscontinued() {
+        return @(Model.Properties?.ProductSearch_ShowDiscontinued.ToString().ToLower() ?? (object)"false");
+    }
+</script>
+
+@Scripts.Render("~/bundles/js/product-search")

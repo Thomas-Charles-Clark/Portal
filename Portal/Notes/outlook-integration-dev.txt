@@ -1,0 +1,51 @@
+Outlook integration from Portal
+
+- If no current token / credentials, prompt user to sign in against Azure AD V2 Endpoint
+
+https://docs.microsoft.com/en-us/azure/active-directory/develop/guidedsetups/active-directory-aspnetwebapp
+
+
+
+CUSTOMER VISITS
+{
+    "objectId": "7395dbed-4bee-4bf1-bc11-83cb4b31790d",
+    "acceptMappedClaims": null,
+    "addIns": [],
+    "appId": "814dd1e4-255c-4e6b-baa1-21c505b6883d",
+    "appRoles": [],
+    "availableToOtherTenants": false,
+    "displayName": "Portal-Dev CustomerVisits",
+    "errorUrl": null,
+    "groupMembershipClaims": null,
+    "homepage": "https://portal-dev.designersguild.com/customers/vists",
+    "identifierUris": [
+        "https://designersguild.com/35316c82-3e87-4e35-88de-819ee510cab5"
+    ],
+    "keyCredentials": [],
+    "knownClientApplications": [],
+    "logoutUrl": null,
+    "oauth2AllowImplicitFlow": false,
+    "oauth2AllowUrlPathMatching": false,
+    "oauth2Permissions": [
+        {
+            "adminConsentDescription": "Allow the application to access Portal-Dev CustomerVisits on behalf of the signed-in user.",
+            "adminConsentDisplayName": "Access Portal-Dev CustomerVisits",
+            "id": "84ba0270-2e78-4198-a776-85af05cf9dfa",
+            "isEnabled": true,
+            "type": "User",
+            "userConsentDescription": "Allow the application to access Portal-Dev CustomerVisits on your behalf.",
+            "userConsentDisplayName": "Access Portal-Dev CustomerVisits",
+            "value": "user_impersonation"
+        }
+    ],
+    "oauth2RequirePostResponse": false,
+    "optionalClaims": null,
+    "passwordCredentials": [],
+    "publicClient": false,
+    "replyUrls": [
+        "https://portal-dev.designersguild.com/customers/vists"
+    ],
+    "requiredResourceAccess": [],
+    "samlMetadataUrl": null,
+    "tokenEncryptionKeyId": null
+}

@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" version="2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:simpleType name="SingleLineString">
+    <xs:annotation>
+      <xs:documentation>Single line string: Avoid presence of \n (new line) and \r (return) characters in thestring. Note that pattern ".*" is equivalent.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[^\n\r]*" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="MonthDay">
+    <xs:annotation>
+      <xs:documentation>MM-DD format (MM=01-12 and DD=01-31)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\d{2}-\d{2}" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="SimpleDate">
+    <xs:annotation>
+      <xs:documentation>Date format</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="(\d{2}-\d{2}-\d{4})*" />
+      <xs:pattern value="(\d{2}\/\d{2}\/\d{4})*" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Date">
+    <xs:annotation>
+      <xs:documentation>Date format</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:date">
+      <xs:pattern value="\d{4}-\d{2}-\d{2}" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Time">
+    <xs:annotation>
+      <xs:documentation>Time format (hh:mm)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\d{2}:\d{2}" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Timestamp">
+    <xs:annotation>
+      <xs:documentation>Timestamp format</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:dateTime">
+      <xs:pattern value="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="Period">
+    <xs:sequence>
+      <xs:element name="start.date" type="SimpleDate" />
+      <xs:element minOccurs="0" name="end.date" type="SimpleDate" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="DecimalNumber">
+    <xs:annotation>
+      <xs:documentation>Decimal number format</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]+,[0-9]+" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="LongNumber">
+    <xs:annotation>
+      <xs:documentation>Long number format</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]+" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="LongNumber10">
+    <xs:annotation>
+      <xs:documentation>Long number format</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="10" />
+      <xs:pattern value="[0-9]+" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="LongNumber5">
+    <xs:annotation>
+      <xs:documentation>Long number format</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="5" />
+      <xs:pattern value="[0-9]+" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="LongNumber3">
+    <xs:annotation>
+      <xs:documentation>Long number format</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="3" />
+      <xs:pattern value="[0-9]+" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="CountryCode">
+    <xs:annotation>
+      <xs:documentation>Country code format</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="([A-Z][A-Z])*" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="EORINumber">
+    <xs:annotation>
+      <xs:documentation>EORI Number format</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="SingleLineString">
+      <xs:minLength value="3" />
+      <xs:maxLength value="17" />
+      <xs:pattern value="[A-Z]{2}\p{IsBasicLatin}+" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="EoriNumberType">
+    <xs:annotation>
+      <xs:documentation>EORI Number format</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="17" />
+      <xs:pattern value="([A-Z][A-Z])*[^\n\r]*" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="M_SingleLineString300">
+    <xs:restriction base="SingleLineString">
+      <xs:minLength value="0" />
+      <xs:maxLength value="300" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="M_SingleLineString512">
+    <xs:restriction base="SingleLineString">
+      <xs:minLength value="0" />
+      <xs:maxLength value="512" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="SingleLineString300">
+    <xs:restriction base="SingleLineString">
+      <xs:maxLength value="300" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="M_SingleLineString150">
+    <xs:restriction base="SingleLineString">
+      <xs:minLength value="1" />
+      <xs:maxLength value="150" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="SingleLineString150">
+    <xs:restriction base="SingleLineString">
+      <xs:maxLength value="150" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="SingleLineString70">
+    <xs:restriction base="SingleLineString">
+      <xs:maxLength value="70" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="M_SingleLineString35">
+    <xs:restriction base="SingleLineString">
+      <xs:minLength value="0" />
+      <xs:maxLength value="35" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="M_SingleLineString70">
+    <xs:restriction base="SingleLineString">
+      <xs:minLength value="0" />
+      <xs:maxLength value="70" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="SingleLineString35">
+    <xs:restriction base="SingleLineString">
+      <xs:maxLength value="35" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="SingleLineString30">
+    <xs:restriction base="SingleLineString">
+      <xs:maxLength value="45" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="SingleLineString9">
+    <xs:restriction base="SingleLineString">
+      <xs:maxLength value="9" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="SingleLineString8">
+    <xs:restriction base="SingleLineString">
+      <xs:minLength value="1" />
+      <xs:maxLength value="8" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="CertificateTypeCode">
+    <xs:restriction base="SingleLineString">
+      <xs:minLength value="4" />
+      <xs:maxLength value="4" />
+      <xs:pattern value="\p{IsBasicLatin}+" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="Country">
+    <xs:sequence>
+      <xs:element name="country.code" type="CountryCode" />
+      <xs:element name="country.name" type="SingleLineString30" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CertificateType">
+    <xs:sequence>
+      <xs:element name="certificate.type.code" type="CertificateTypeCode" />
+      <xs:element name="certificate.type.name" type="M_SingleLineString150" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="SingleLineString87">
+    <xs:restriction base="SingleLineString">
+      <xs:minLength value="1" />
+      <xs:maxLength value="87" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="SingleLineString29">
+    <xs:restriction base="SingleLineString">
+      <xs:minLength value="1" />
+      <xs:maxLength value="29" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="CertificateRef">
+    <xs:sequence>
+      <xs:element name="country" type="Country" />
+      <xs:element name="aeo.certificate.type" type="CertificateType" />
+      <xs:element name="national.number" type="SingleLineString29" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="AuthorityRef">
+    <xs:sequence>
+      <xs:element name="country.code" type="CountryCode" />
+      <xs:element name="identifier" type="M_SingleLineString35" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="LanguageCode">
+    <xs:annotation>
+      <xs:documentation>Language code format</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1" />
+      <xs:maxLength value="2" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="SingleLineString512">
+    <xs:restriction base="SingleLineString">
+      <xs:maxLength value="512" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="CdValidityType">
+    <xs:sequence>
+      <xs:element name="status" type="SingleLineString3" />
+      <xs:element name="start.date" type="Date" />
+      <xs:element minOccurs="0" name="end.date" type="Date" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="SingleLineString3">
+    <xs:restriction base="SingleLineString">
+      <xs:maxLength value="3" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="SingleLineString10">
+    <xs:restriction base="SingleLineString">
+      <xs:maxLength value="10" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="CdNumberType">
+    <xs:annotation>
+      <xs:documentation>CD Number format</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1" />
+      <xs:maxLength value="35" />
+      <xs:pattern value="[\P{C}]*" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="TinNumberType">
+    <xs:annotation>
+      <xs:documentation>Tin Number format</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="19" />
+      <xs:pattern value="([A-Z][A-Z])*[^\n\r]*" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="RexNumberType">
+    <xs:annotation>
+      <xs:documentation>Rex Number format</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="35" />
+      <xs:pattern value="[A-Z][A-Z]REX[0-9A-Z]+" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="AddressType">
+    <xs:sequence>
+      <xs:element name="street.number" type="M_SingleLineString70" />
+      <xs:element name="city" type="M_SingleLineString35" />
+      <xs:element minOccurs="0" name="country.code" type="CountryCode" />
+      <xs:element minOccurs="0" name="country.name" type="SingleLineString30" />
+      <xs:element minOccurs="0" name="postal.code" type="SingleLineString9" />
+      <xs:element minOccurs="0" name="name" type="SingleLineString70" />
+      <xs:element minOccurs="0" name="email" type="CommunicationValueContentType" />
+      <xs:element minOccurs="0" name="fax" type="CommunicationValueContentType" />
+      <xs:element minOccurs="0" name="phone" type="CommunicationValueContentType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="CommunicationValueContentType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1" />
+      <xs:maxLength value="50" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="ExporterActivity">
+    <xs:sequence>
+      <xs:element name="activity.name" type="MainActivityContentType" />
+      <xs:element name="activity.flag" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="MainActivityContentType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1" />
+      <xs:maxLength value="10" />
+      <xs:pattern value="[\p{IsBasicLatin}]*" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="GoodsData">
+    <xs:sequence>
+      <xs:element name="taric.code" type="NotificationTARICCodeContentType" />
+      <xs:element name="description" type="LongTextContentType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="NotificationTARICCodeContentType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1" />
+      <xs:maxLength value="10" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="LongTextContentType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1" />
+      <xs:maxLength value="512" />
+      <xs:pattern value="[\P{C}]*" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

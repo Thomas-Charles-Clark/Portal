@@ -1,0 +1,304 @@
+﻿.mdc-select .k-dropdown-wrap.k-state-hover,
+.mdc-select .k-dropdown-wrap.k-state-active {
+    background-color: white;
+}
+
+.panel.panel-default {
+    padding: 15px;
+    border: 1px solid #ccc;
+}
+
+h3.heading {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.furniture-component {
+    display: flex;
+    margin-left: -10px;
+}
+
+
+    .furniture-component + .furniture-component {
+        margin-top: 15px;
+    }
+
+    .furniture-component > div {
+        flex: 1;
+        padding: 2px;
+    }
+
+.furniture-component .mdc-form-field label {
+    user-select: none;
+}
+
+.furniture-component.furniture-component-headings .material-group {
+
+}
+
+    .furniture-component.furniture-component-headings .material-group h4 {
+        font-size: 16px;
+    }
+
+    .mdc-text-field--outlined.mdc-text-field--focused .mdc-notched-outline__notch {
+        /*border-width: 1px;*/
+    }
+
+.material-group-quantity {
+    width: 60%;
+}
+
+.mdc-text-field div.close.revert {
+    right: 10px;
+    /*left: -30px;*/
+}
+
+.saved-successfully {
+    line-height: 34px;
+}
+
+.model-details > .flex-container {
+    display: flex;
+}
+
+.model-details .flex-container .image-container {
+    width: 230px;
+    height: 279px;
+    border: 0;
+}
+
+.model-details .thumb {
+    width: 100%;
+    max-width: 230px;
+    height: auto;
+    margin-bottom: 15px;
+}
+
+.model-details .flex-container .controls-container {
+    align-self: flex-start;
+    padding: 15px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 15px;
+    grid-row-gap: 21px;
+    grid-auto-rows: minmax(34px, auto);
+}
+
+.model-details textarea {
+    resize: none;
+}
+
+.k-animation-container .k-popup .k-list .k-item {
+    justify-content: flex-start;
+    line-height: 34px;
+}
+
+.checko-disco {
+    margin-top: 15px;
+    display: inline-block;
+    padding-right: 15px;
+}
+
+.checko-disco.disco {
+    background-color: rgba(242, 40, 40, 0.49);
+    border-radius: 4px;
+}
+
+    .checko-disco .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
+    .checko-disco .mdc-checkbox__native-control:enabled:indeterminate ~ .mdc-checkbox__background {
+        background-color: rgba(242, 40, 40, 0.49);
+    }
+
+    .checko-disco .mdc-checkbox::before,
+    .checko-disco .mdc-checkbox::after {
+        background-color: #db0028;
+    }
+
+    .checko-disco .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
+    .checko-disco .mdc-checkbox__native-control:enabled:indeterminate ~ .mdc-checkbox__background {
+        border-color: rgb(147, 15, 15);
+    }
+
+.model-details .comments {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 15px;
+    grid-row-gap: 21px;
+    grid-auto-rows: minmax(34px, auto);
+}
+
+.model-details .mdc-select .k-multiselect-wrap .k-button {
+    margin: 7px 2px 0px 4px;
+}
+
+.supplier-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-bottom: 15px;
+    grid-column-gap: 15px;
+}
+
+.supplier-header h3 {
+    margin-bottom: 0;
+}
+
+.cover-type {
+
+}
+
+.model-details > .design-flex-container {
+    margin-top: 15px;
+}
+
+.model-details > .design-flex-container .grid-container {
+    display: grid;
+    grid-gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+    .model-details > .design-flex-container .grid-container .controls-container h4 {
+        margin: 0 0 15px 0;
+    }
+
+    div.list-group-wrapper {
+        max-height: 489px;
+        overflow-y: scroll;
+    }
+
+        ul.list-group {
+            margin-bottom: 0;
+        }
+
+         li.list-group-item {
+            padding: 0;
+            user-select: none;
+        }
+
+     li.list-group-item span.thumb {
+        line-height: 32px;
+    }
+
+ul.list-group li.list-group-item div.checkbox-wrapper,
+ul.list-group li.list-group-item label.checkbox-wrapper {
+    padding: 10px 15px;
+    margin: 0;
+    width: 100%;
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+div.checkbox-wrapper > div,
+label.checkbox-wrapper > div {
+    display: flex;
+    align-items: center;
+}
+
+    div.checkbox-wrapper > div:first-child,
+    label.checkbox-wrapper > div:first-child {
+        flex: 0 1 200px;
+    }
+
+div.checkbox-wrapper > span.display-block,
+div.checkbox-wrapper > a.stitch-colour,
+label.checkbox-wrapper > span.display-block,
+label.checkbox-wrapper > a.stitch-colour {
+    flex: 0 0 200px;
+}
+
+div.checkbox-wrapper > button,
+label.checkbox-wrapper > button {
+    margin-left: auto;
+}
+
+div.checkbox-wrapper > i,
+label.checkbox-wrapper > i {
+    margin-left: auto;
+    font-size: 18px;
+}
+
+ul.list-group li.list-group-item div.checkbox-wrapper input[type=checkbox],
+ul.list-group li.list-group-item label.checkbox-wrapper input[type=checkbox] {
+    margin: 0 15px 0 0;
+    top: 0;
+}
+    
+        ul.list-group li .thumb {
+            user-select: none;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            float: left;
+            margin: 0 15px 0 0;
+        }
+
+    ul.list-group li.list-group-item > span.display-block {
+        line-height: 32px;
+    }
+
+.list-group li.autocomplete-item {
+    padding: 9px 15px;
+}
+
+.model-details > .design-flex-container .grid-container .controls-container .autocompleter {
+    max-height: unset;
+    overflow: visible;
+    border: 0;
+    box-shadow: none;
+}
+
+    .model-details > .design-flex-container .grid-container .controls-container .autocompleter .mdc-text-field {
+        border: 0;
+        padding: 0;
+    }
+
+.model-details > .design-flex-container .grid-container .controls-container .btn-group span.smaller {
+    display: block;
+}
+
+
+    .model-details > .design-flex-container .grid-container .controls-container .blue-heading {
+        margin-top: 15px;
+        text-align: left;
+    }
+
+    .model-details > .design-flex-container .grid-container .controls-container p {
+        text-align: left;
+    }
+
+div.design-restrictor > div.flex-container {
+    display: flex;
+    align-items: center;
+}
+
+div.design-restrictor > div.flex-container > h4 {
+    margin-right: 15px;
+    flex: 0 0 auto;
+}
+
+    div.design-restrictor > div.flex-container > div {
+        flex: 1 1 auto;
+    }
+
+.design-restrictor + .design-restrictor {
+    margin-top: 20px;
+    padding-top: 15px;
+}
+
+a.stitch-colour {
+    justify-self: flex-end;
+}
+
+#recommended-stitch-modal ul.list-group li:hover {
+    background-color: #f1f1f1;
+}
+
+.selected-stitch {
+    background-color: #e1ffe1;
+}
+
+.pending-stitch {
+    background-color: #fffae1;
+}

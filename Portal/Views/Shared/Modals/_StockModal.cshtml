@@ -1,0 +1,501 @@
+﻿@*<div id="stock-modal" class="modal fade" tabindex="-1" role="dialog" data-bind="with: stockViewer">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 id="stock-title" class="modal-title"></h4>
+            </div>
+            <div style="position: relative;">
+                <div class="blocker" data-bind="fadeVisible: stockInfoBusy">
+                    <div class="loading-spinner"></div>
+                </div>
+                <div id="stock-container" class="modal-body">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="stock-close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+@*<div id="tech-info-modal" class="modal fade" data-bind="with: stockViewer">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h3 class="margin-top-0">
+                    Technical Information
+                </h3>
+                <h4 class="modal-title" data-bind="with: product">
+                    <span data-bind="text: Code + ' - ' + Name"></span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div id="tech-info-container">
+                    <dl class="dl-horizontal margin-bottom-0">
+                        <dt>
+                            Part Number
+                        </dt>
+                        <dd data-bind="text: product.Code"></dd>
+                        <!-- ko if: techInfo.Collections.length -->
+                        <dt>
+                            Collections
+                        </dt>
+                        <dd>
+                            <ul>
+                                <!-- ko foreach: techInfo.Collections -->
+                                <li data-bind="text: Collection"></li>
+                                <!-- /ko -->
+                            </ul>
+                        </dd>
+                        <!-- /ko -->
+                        <!-- ko if: techInfo.Core.Composition -->
+                        <dt>
+                            Composition
+                        </dt>
+                        <dd data-bind="text: techInfo.Core.Composition"></dd>
+                        <!-- /ko -->
+                        <!-- ko if: techInfo.Core.Width -->
+                        <dt>
+                            Width
+                        </dt>
+                        <dd data-bind="text: techInfo.Core.Width"></dd>
+                        <!-- /ko -->
+                        <!-- ko if: techInfo.Core.Weight -->
+                        <dt>
+                            Weight
+                        </dt>
+                        <dd data-bind="text: techInfo.Core.Weight"></dd>
+                        <!-- /ko -->
+                        <!-- ko if: techInfo.Core.HorizontalPatternRepeat -->
+                        <dt>
+                            Horizontal Pattern Repeat
+                        </dt>
+                        <dd data-bind="text: techInfo.Core.HorizontalPatternRepeat"></dd>
+                        <!-- /ko -->
+                        <!-- ko if: techInfo.Core.VerticalPatternRepeat -->
+                        <dt>
+                            Vertical Pattern Repeat
+                        </dt>
+                        <dd data-bind="text: techInfo.Core.VerticalPatternRepeat"></dd>
+                        <!-- /ko -->
+                        <!-- ko if: techInfo.Core.Martindale -->
+                        <dt>
+                            Martindale
+                        </dt>
+                        <dd data-bind="text: techInfo.Core.Martindale"></dd>
+                        <!-- /ko -->
+                        <!-- ko if: techInfo.Core.PatternMatch -->
+                        <dt>
+                            Pattern Match
+                        </dt>
+                        <dd data-bind="text: techInfo.Core.PatternMatch"></dd>
+                        <!-- /ko -->
+                        <!-- ko if: techInfo.Core.Flamcode -->
+                        <dt>
+                            Flamcode
+                        </dt>
+                        <dd data-bind="text: techInfo.Core.Flamcode"></dd>
+                        <!-- /ko -->
+                        <!-- ko if: techInfo.Core.ContractFR -->
+                        <dt>
+                            Contract FR
+                        </dt>
+                        <dd data-bind="text: techInfo.Core.ContractFR"></dd>
+                        <!-- /ko -->
+                        <!-- ko if: techInfo.Core.DomesticFR -->
+                        <dt>
+                            Domestic FR
+                        </dt>
+                        <dd data-bind="text: techInfo.Core.DomesticFR"></dd>
+                        <!-- /ko -->
+                        <!-- ko if: techInfo.Core.Type -->
+                        <dt>
+                            Type
+                        </dt>
+                        <dd data-bind="text: techInfo.Core.Type"></dd>
+                        <!-- /ko -->
+                        <!-- ko if: techInfo.Core.AdditionalInfo -->
+                        <dt>
+                            Additional Info
+                        </dt>
+                        <dd data-bind="text: techInfo.Core.AdditionalInfo"></dd>
+                        <!-- /ko -->
+                        <!-- ko if: techInfo.Tests.length -->
+                        <dt>
+                            Tests Passed
+                        </dt>
+                        <dd>
+                            <ul>
+                                <!-- ko foreach: techInfo.Tests -->
+                                <li data-bind="text: Test"></li>
+                                <!-- /ko -->
+                            </ul>
+                        </dd>
+                        <!-- /ko -->
+                        <!-- ko if: techInfo.Aftercares.length -->
+                        <dt>
+                            Product After Care
+                        </dt>
+                        <dd>
+                            <ul>
+                                <!-- ko foreach: techInfo.Aftercares -->
+                                <li data-bind="text: Aftercare"></li>
+                                <!-- /ko -->
+                            </ul>
+                        </dd>
+                        <!-- /ko -->
+                        <!-- ko if: techInfo.Usages.length -->
+                        <dt>
+                            Product Usages
+                        </dt>
+                        <dd>
+                            <ul>
+                                <!-- ko foreach: techInfo.Usages -->
+                                <li data-bind="text: Usage"></li>
+                                <!-- /ko -->
+                            </ul>
+                        </dd>
+                        <!-- /ko -->
+                        <!-- ko foreach: Enumerable.From(techInfo.Attributes).GroupBy('$.AttributeGroup').ToArray() -->
+                        <dt data-bind="text: Key()"></dt>
+                        <dd>
+                            <ul>
+                                <!-- ko foreach: source -->
+                                <li data-bind="text: Attribute"></li>
+                                <!-- /ko -->
+                            </ul>
+                        </dd>
+                        <!-- /ko -->
+                    </dl>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="image-close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+@* Continue reworking this with KO: Javascript building is the devil. *@
+
+<div id="stock-modal" class="modal fade" tabindex="-1" role="dialog" data-bind="with: stockViewer">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">
+                        &times;
+                    </span>
+                </button>
+                <h4 class="modal-title" data-bind="with: product">
+                    <span data-bind="text: Code + ' - ' + Name"></span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="blocker" data-bind="visible: busy">
+                    <div class="loading-spinner"></div>
+                </div>
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a href="#tab-stock-info" data-toggle="tab">
+                            Stock Info
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tab-tech-info" data-toggle="tab">
+                            Technical Info
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tab-care-info" data-toggle="tab">
+                            Care Instructions
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tab-stock-info" class="tab-pane active" data-bind="with: stockInfo">
+                        <dl class="dl-horizontal margin-bottom-0">
+                            <dt>
+                                Product
+                            </dt>
+                            <dd data-bind="text: $parent.product().Code + ' - ' + $parent.product().Name"></dd>
+                            <dt>
+                                Status
+                            </dt>
+                            <dd data-bind="text: $parent.product().Status + ' - ' + $parent.statusTitle($parent.product().Status)"></dd>
+                            <dt>
+                                Available Stock
+                            </dt>
+                            <dd data-bind="text: TotalStock + $parent.product().Units"></dd>
+                            <!-- ko if: TotalPurchaseOrderLength != null -->
+                            <dt>
+                                Incoming Stock
+                            </dt>
+                            <dd>
+                                <span data-bind="text: TotalPurchaseOrderLength + $parent.product().Units"></span>
+                                <!-- ko if: TotalPurchaseOrderLength > 0 && TotalStock == 0 -->
+                                <span data-bind="text: $parent.product().StockStatus"></span>
+                                <!-- /ko -->
+                            </dd>
+                            <!-- /ko -->
+                        </dl>
+                        <table class="table table-bordered margin-top-15" data-bind="visible: Batches.length > 0, css: { 'margin-bottom-0': PurchaseOrders.length == 0 }">
+                            <colgroup>
+                                <col style="width: 125px;" />
+                                <col style="width: 125px;" />
+                                <col style="width: 125px;" />
+                                <col style="width: 125px;" />
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th>Batch No.</th>
+                                    <th class="text-right">Quantity</th>
+                                    <th class="text-right">Length</th>
+                                    <th class="total-heading text-right">Total</th>
+                                </tr>
+                                <!-- ko foreach: Batches -->
+                                <tr>
+                                    <th class="batch-no" rowspan="2">
+                                        <span data-bind="text: BatchNumber"></span>
+                                    </th>
+                                    <td colspan="3" style="padding: 0;">
+                                        <table class="piece-table table table-condensed">
+                                            <colgroup>
+                                                <col style="width: 125px;" />
+                                                <col style="width: 125px;" />
+                                                <col style="width: 125px;" />
+                                            </colgroup>
+                                            <tbody>
+                                                <!-- ko foreach: Pieces -->
+                                                <tr>
+                                                    <td class="text-right">
+                                                        <span data-bind="text: Quantity"></span>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <span data-bind="text: Length + $parentContext.$parentContext.$parent.product().Units"></span>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <span data-bind="text: Number(Quantity * Length).toFixed(2) + $parentContext.$parentContext.$parent.product().Units"></span>
+                                                    </td>
+                                                </tr>
+                                                <!-- /ko -->
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-right">
+                                        <span class="bold" data-bind="text: Number(ItemCount).toFixed(0)"></span>
+                                    </td>
+                                    <td class="text-right"></td>
+                                    <td class="text-right">
+                                        <span class="bold" data-bind="text: Number(Enumerable.From(Pieces).Select('$.Quantity * $.Length').Sum()).toFixed(2) + $parentContext.$parent.product().Units"></span>
+                                    </td>
+                                </tr>
+                                <!-- /ko -->
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered margin-bottom-0" data-bind="visible: PurchaseOrders.length > 0">
+                            <colgroup>
+                                <col style="width: 250px;" />
+                                <col style="width: 125px;" />
+                                <col style="width: 125px;" />
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th>Purchase Order</th>
+                                    <th>Due Date</th>
+                                    <th class="text-right">Length</th>
+                                </tr>
+                                <!-- ko foreach: PurchaseOrders -->
+                                <tr>
+                                    <td class="batch-no">
+                                        <span data-bind="text: PurchaseOrderNumber"></span>
+                                    </td>
+                                    <td class="batch-no">
+                                        <span data-bind="text: DueDate"></span>
+                                    </td>
+                                    <td class="text-right">
+                                        <span data-bind="text: Number(Length).toFixed(2) + $parentContext.$parent.product().Units"></span>
+                                    </td>
+                                </tr>
+                                <!-- /ko -->
+                                <tr>
+                                    <th colspan="2">
+                                        Total
+                                    </th>
+                                    <th class="text-right">
+                                        <span data-bind="text: TotalPurchaseOrderLength + $parent.product().Units"></span>
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="tab-tech-info" class="tab-pane" data-bind="with: techInfo">
+                        <div id="tech-info-container">
+                            <dl class="dl-horizontal margin-bottom-0">
+                                <!-- ko if: Collections.length -->
+                                <dt>
+                                    Collections
+                                </dt>
+                                <dd>
+                                    <ul>
+                                        <!-- ko foreach: Collections -->
+                                        <li data-bind="text: Collection"></li>
+                                        <!-- /ko -->
+                                    </ul>
+                                </dd>
+                                <!-- /ko -->
+                                <!-- ko if: Core.Composition -->
+                                <dt>
+                                    Composition
+                                </dt>
+                                <dd data-bind="text: Core.Composition"></dd>
+                                <!-- /ko -->
+                                <!-- ko if: Core.Width -->
+                                <dt>
+                                    Width
+                                </dt>
+                                <dd data-bind="text: Core.Width"></dd>
+                                <!-- /ko -->
+                                <!-- ko if: Core.Weight -->
+                                <dt>
+                                    Weight
+                                </dt>
+                                <dd data-bind="text: Core.Weight"></dd>
+                                <!-- /ko -->
+                                <!-- ko if: Core.HorizontalPatternRepeat -->
+                                <dt>
+                                    Horizontal Pattern Repeat
+                                </dt>
+                                <dd data-bind="text: Core.HorizontalPatternRepeat"></dd>
+                                <!-- /ko -->
+                                <!-- ko if: Core.VerticalPatternRepeat -->
+                                <dt>
+                                    Vertical Pattern Repeat
+                                </dt>
+                                <dd data-bind="text: Core.VerticalPatternRepeat"></dd>
+                                <!-- /ko -->
+                                <!-- ko if: Core.WideWidthFabricDefaultPoleWidth -->
+                                <dt>
+                                    Stocked on Pole Width
+                                </dt>
+                                <dd data-bind="text: Core.WideWidthFabricDefaultPoleWidth == 'W' ? 'Wide-Width (3m)' : 'Standard Width'"></dd>
+                                <!-- /ko -->
+                                <!-- ko if: Core.MaxFoldLength != null -->
+                                <dt>
+                                    Max Fold Length
+                                </dt>
+                                <dd data-bind="text: Core.MaxFoldLength + 'm'"></dd>
+                                <!-- /ko -->
+                                <!-- ko if: Core.Martindale -->
+                                <dt>
+                                    Martindale
+                                </dt>
+                                <dd data-bind="text: Core.Martindale"></dd>
+                                <!-- /ko -->
+                                <!-- ko if: Core.PatternMatch -->
+                                <dt>
+                                    Pattern Match
+                                </dt>
+                                <dd data-bind="text: Core.PatternMatch"></dd>
+                                <!-- /ko -->
+                                <!-- ko if: Core.Flamcode -->
+                                <dt>
+                                    Flamcode
+                                </dt>
+                                <dd data-bind="text: Core.Flamcode"></dd>
+                                <!-- /ko -->
+                                <!-- ko if: Core.ContractFR -->
+                                <dt>
+                                    Contract FR
+                                </dt>
+                                <dd data-bind="text: Core.ContractFR"></dd>
+                                <!-- /ko -->
+                                <!-- ko if: Core.DomesticFR -->
+                                <dt>
+                                    Domestic FR
+                                </dt>
+                                <dd data-bind="text: Core.DomesticFR"></dd>
+                                <!-- /ko -->
+                                <!-- ko if: Core.Type -->
+                                <dt>
+                                    Type
+                                </dt>
+                                <dd data-bind="text: Core.Type"></dd>
+                                <!-- /ko -->
+                                <!-- ko if: Core.AdditionalInfo -->
+                                <dt>
+                                    Additional Info
+                                </dt>
+                                <dd data-bind="text: Core.AdditionalInfo"></dd>
+                                <!-- /ko -->
+
+                                <!-- ko if: Tests.length -->
+                                <dt>
+                                    Tests Passed
+                                </dt>
+                                <dd>
+                                    <ul>
+                                        <!-- ko foreach: Tests -->
+                                        <li data-bind="text: Test"></li>
+                                        <!-- /ko -->
+                                    </ul>
+                                </dd>
+                                <!-- /ko -->
+                                <!-- ko if: Usages.length -->
+                                <dt>
+                                    Product Usages
+                                </dt>
+                                <dd>
+                                    <ul>
+                                        <!-- ko foreach: Usages -->
+                                        <li data-bind="text: Usage"></li>
+                                        <!-- /ko -->
+                                    </ul>
+                                </dd>
+                                <!-- /ko -->
+                                <!-- ko foreach: Enumerable.From(Attributes).GroupBy('$.AttributeGroup').ToArray() -->
+                                <dt data-bind="text: Key()"></dt>
+                                <dd>
+                                    <ul>
+                                        <!-- ko foreach: source -->
+                                        <li data-bind="text: Attribute"></li>
+                                        <!-- /ko -->
+                                    </ul>
+                                </dd>
+                                <!-- /ko -->
+                            </dl>
+                        </div>
+                    </div>
+                    <div id="tab-care-info" class="tab-pane" data-bind="with: techInfo">
+                        <dl class="dl-horizontal margin-bottom-0">
+                            <!-- ko if: Aftercares.length -->
+                            <dt>
+                                Product After Care
+                            </dt>
+                            <dd>
+                                <ul>
+                                    <!-- ko foreach: Aftercares -->
+                                    <li data-bind="text: Aftercare"></li>
+                                    <!-- /ko -->
+                                </ul>
+                            </dd>
+                            <!-- /ko -->
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

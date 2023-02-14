@@ -1,0 +1,436 @@
+﻿@model Portal.Areas.Orders.ViewModels.OrderTrackingViewModel
+@{
+    ViewBag.Title = "Order Tracking";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/order-tracking")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/order-tracking")
+
+    <script type="text/javascript">
+        $(function () {
+
+            $('#from-calendar-btn').click(
+                function () {
+                    $(this).closest('.date').find(".date-input").data("DateTimePicker").toggle();
+                }
+            );
+
+            $('#to-calendar-btn').click(
+                function () {
+                    $(this).closest('.date').find(".date-input").data("DateTimePicker").toggle();
+                }
+            );
+        });
+
+        function getOrderId() {
+            return '@(Model.OrderID)'
+        }
+
+        var viewModel = orderTrackingViewModel(getOrderId());
+
+        @if (User.IsInRole("Super Admin"))
+        {
+            <text>
+            function getBodyDefault() {
+                return null;// 'This is a custom operator comment.\nIt should span multiple lines neatly.\nIt should not detract from the main body of the email.';
+            }
+            </text>
+        }
+        else
+        {
+            <text>
+            function getBodyDefault() {
+                return null;
+            }
+            </text>
+        }
+
+        $(document).ready(function () {
+            ko.applyBindings(viewModel, document.body);
+        });
+    </script>
+}
+
+<script id="parcel-template" type="text/html">
+    <div class="parcel-wrapper">
+        <div class="parcel">
+            <span>
+                <span class="bold" data-bind="text: $index() + 1, attr: { title: ParcelID }"></span>
+                <span class="text-transarent" data-bind="text: ParcelID"></span>
+            </span>
+            <span data-bind="text: DespatchDate"></span>
+            <a href="javascript:;" data-bind="text: '(' + ParcelLines.length + (ParcelLines.length > 1 ? ' items)' : ' item)'), click: function () { expanded(!expanded()) }"></a>
+            <!-- ko if: TrackingURL -->
+            <a data-bind="attr: { href: TrackingURL }, text: TrackingURL" href="javascript:;" target="_blank"></a>
+            <!-- /ko -->
+            <!-- ko ifnot: TrackingURL -->
+            <span>
+                No Tracking URL Available
+            </span>
+            <!-- /ko -->
+        </div>
+        <div class="parcel-collapse" data-bind="fadeSlideVisible: expanded">
+            <!-- ko if: ParcelLines.length > 0 -->
+            <div class="parcel-item-headings">
+                <label>
+                    Picking List Line
+                </label>
+                <label>
+                    Order Line
+                </label>
+                <label>
+                    Product
+                </label>
+                <label>
+                    Order Quantity
+                </label>
+                <label>
+                    Quantity in Parcel
+                </label>
+            </div>
+            <!-- ko foreach: Enumerable.From(ParcelLines).OrderBy('$.OrderLine()?.LineNumber').ToArray() -->
+            <div class="parcel-item">
+                <span data-bind="text: DespatchLineID"></span>
+                <span class="order-line-identifier" data-bind="text: OrderLine()?.LineNumber"></span>
+                <span>
+                    <span class="product-code-identifier" data-bind="text: ProductCode"></span>
+                    -
+                    <span data-bind="text: Product?.BasketName"></span>
+                    <!-- ko if: Piece -->
+                    -
+                    <span data-bind="text: Piece"></span>
+                    <!-- /ko -->
+                </span>
+                <span>
+                    <span data-bind="text: QuantityInvoiced"></span>
+                    <span data-bind="text: Product?.StockUnit?.Units"></span>
+                </span>
+                <span>
+                    <span data-bind="text: QuantityDespatched"></span>
+                    <span data-bind="text: Product?.StockUnit?.Units"></span>
+                </span>
+            </div>
+            <!-- /ko -->
+            <!-- /ko -->
+        </div>
+    </div>
+</script>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+
+@if (DateTime.Now < DateTime.Parse("2022/01/31"))
+{
+    <div class="alert alert-warning">
+        <h3 class="alert-title margin-top-0">
+            Notification
+        </h3>
+        <p>
+            The Tracking app has had a behind-the-scenes rebuild. It should be functionally identical, but more accurate with regards to parcel contents. This is in preparation for being able to track with additional hauliers.
+        </p>
+        <p>
+            Please be sure to test-send tracking update emails to yourself first before sending to your customer.<br/>
+            If there are any issues please report them, <b>with your order number included</b>, to <a href="mailto:itsupport@designersguild.com">itsupport@designersguild.com</a>.
+        </p>
+        <p>
+            Thank you for your patience. This notice will be removed on the 31st of January 2022.
+        </p>
+    </div>
+}
+
+<div class="blocker" data-bind="visible: busy">
+    <div class="loading-spinner"></div>
+    <h3 data-bind="text: busyMessage"></h3>
+</div>
+
+<div class="panel panel-default margin-top-15" style="display: none;" data-bind="visible: true">
+    <div class="panel-body">
+        <ul class="nav nav-pills" style="display: none;">
+            <li class="active">
+                <a href="#order-search" data-toggle="tab">
+                    Search
+                </a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div id="order-search" class="tab-pane active">
+                <div class="autocompleter" data-bind="component: { name: 'mdc-text-field-component', params: orderSearchTermParams }"></div>
+                <!-- ko if: orderSearchResult() || orderNumberSearchResults().length -->
+                <hr/>
+                <!-- ko if: orderSearchResult() == null -->
+                <div>
+                    <h4 class="red-white">
+                        Order "<span data-bind="text: lastSearched"></span>" was not found.
+                    </h4>
+                    <!-- ko if: orderNumberSearchResults().length == 0 -->
+                    <h4 class="red-white margin-top-15 margin-bottom-0">
+                        There were no previous orders with a similar Order Reference.
+                    </h4>
+                    <!-- /ko -->
+                    <!-- ko if: orderNumberSearchResults().length > 0 -->
+                    <h3>
+                        Did you mean:
+                    </h3>
+                    <ul id="order-search-results" class="list-group" data-bind="validationOptions: { insertMessages: false }">
+                        <!-- ko foreach: orderNumberSearchResults() -->
+                        <li class="list-group-item order-search-result" data-bind="click: function () { $parent.orderSearchTerm($data.OrderNumber); $parent.search(); }">
+                            <span>
+                                <span>
+                                    Account: 
+                                    <span data-bind="text: TradeAccountCode"></span>
+                                </span>
+                                <span>
+                                    Order Number: 
+                                    <span data-bind="text: OrderID"></span>
+                                </span>
+                                <span>
+                                    Order Reference: 
+                                    <span data-bind="text: CustomerOrderReference"></span>
+                                </span>
+                                <span>
+                                    Order Date:
+                                    <span data-bind="text: moment(CreatedDT).format('ddd Do MMMM YYYY')"></span>
+                                </span>
+                            </span>
+                        </li>
+                        <!-- /ko -->
+                    </ul>
+                    <!-- /ko -->
+                </div>
+                <!-- /ko -->
+                <!-- ko if: orderSearchResult() != null -->
+                <div data-bind="with: orderSearchResult">
+                    <h4 class="blue-white">
+                        <span>
+                            <label>
+                                Trade Account:
+                            </label>
+                            <span>
+                                <span data-bind="text: TradeAccount.Code"></span>
+                                -
+                                <span data-bind="text: TradeAccount.Name"></span>
+                            </span>
+                        </span>
+                        <span>
+                            <label>
+                                Order:
+                            </label>
+                            <span>
+                                <span data-bind="text: OrderID"></span>
+                            </span>
+                        </span>
+                        <span>
+                            <label>
+                                Reference:
+                            </label>
+                            <span>
+                                <span data-bind="text: CustomerOrderReference"></span>
+                            </span>
+                        </span>
+                    </h4>
+                    <h4 class="blue-white margin-bottom-30">
+                        <span>
+                            <label>
+                                Despatched to:
+                            </label>
+                            <span data-bind="text: DeliveryAddress.replace(/\r\n/g, ', ').replace(/,,/g, ',').replace(/ , /g, ' ')"></span>
+                        </span>
+                        <span>
+                            <label>
+                                via:
+                            </label>
+                            <span data-bind="text: (Haulier ? Haulier.Name + (CarriageCode ? ' - ' : '') : '') + (Carriage ? CarriageCode + ' - ' + Carriage.Description : CarriageCode)"></span>
+                        </span>
+                    </h4>
+                    <!-- ko if: $parent.despatchedParcelDisplay().length > 0  -->
+                    <div class="control-container">
+                        <div data-bind="component: { name: 'mdc-text-field-component', params: $parent.parcelSearchTermParams }"></div>
+                        <button class="btn btn-default" data-toggle="modal" data-target="#emailer-modal" title="Temporarily Unavailable">
+                            Email Despatch Information
+                        </button>
+                    </div>
+                    <!-- /ko -->
+                    <div>
+                        <!-- ko if: $parent.despatchedParcelDisplay().length == 0 && $parent.remainingToDespatchParcelDisplay().length == 0 -->
+                        <h4 class="red-white margin-bottom-30">
+                            No parcels have been despatched for this order yet.
+                        </h4>
+                        <div class="undespatched-wrapper">
+                            <div class="undespatched-parcel-headings">
+                                <label>
+                                    Order Line
+                                </label>
+                                <label>
+                                    Product
+                                </label>
+                                <label>
+                                    Order Quantity
+                                </label>
+                                <label>
+                                    Estimated Despatch Date
+                                </label>
+                            </div>
+                            <div class="parcel-wrapper">
+                                <!-- ko foreach: OrderLines -->
+                                <div class="undespatched-parcel-item" data-bind="">
+                                    <span data-bind="text: LineNumber, css: { 'line-through': Quantity == 0 }"></span>
+                                    <span data-bind="css: { 'line-through': Quantity == 0 }">
+                                        <span data-bind="text: ProductCode"></span>
+                                        -
+                                        <span data-bind="text: ProductDescription"></span>
+                                    </span>
+                                    <span data-bind="css: { 'line-through': Quantity == 0 }">
+                                        <span data-bind="text: Quantity"></span>
+                                        <span data-bind="text: Product?.StockUnit?.Units"></span>
+                                    </span>
+                                    <span>
+                                        <!-- ko if: EstimatedDespatchedDate -->
+                                        <span data-bind="text: EstimatedDespatchedDate, css: { 'line-through': Quantity == 0 }"></span>
+                                        <!-- /ko -->
+                                        <!-- ko ifnot: EstimatedDespatchedDate -->
+                                        <span data-bind="css: { 'line-through': Quantity == 0 }">
+                                            Unknown
+                                        </span>
+                                        <!-- /ko -->
+                                        <!-- ko if: Quantity == 0 -->
+                                        <span class="margin-left-15 cancelled">
+                                            Cancelled
+                                        </span>
+                                        <!-- /ko -->
+                                    </span>
+                                </div>
+                                <!-- /ko -->
+                            </div>
+                        </div>
+                        <!-- /ko -->
+                        <!-- ko if: $parent.despatchedParcelDisplay().length > 0 -->
+                        <div class="parcel-column-headings">
+                            <label>
+                                Parcel
+                            </label>
+                            <label>
+                                Despatched
+                            </label>
+                            <label>
+                                Contents
+                            </label>
+                            <label>
+                                Tracking URL
+                            </label>
+                        </div>
+                        <!-- ko if: $parent.filteredDespatchedParcelDisplay().length == 0  -->
+                        <h5 class="red-white note">
+                            No Parcel Search Results
+                        </h5>
+                        <!-- /ko -->
+                        <!-- ko foreach: $parent.filteredDespatchedParcelDisplay() -->
+                        <!-- ko template: { name: 'parcel-template' } --><!-- /ko -->
+                        <!-- /ko -->
+                        <!-- /ko -->
+                        <!-- ko if: $parent.remainingToDespatchParcelDisplay().length > 0 -->
+                        <div>
+                            <h4 class="blue-white margin-bottom-30">
+                                <span style="display: block;">
+                                    <label style="width: auto">
+                                        Not yet Despatched
+                                    </label>
+                                </span>
+                            </h4>
+                            <div class="parcel-column-headings">
+                                <label>
+                                    Parcel
+                                </label>
+                                <label>
+                                    Despatched
+                                </label>
+                                <label>
+                                    Contents
+                                </label>
+                                <label>
+                                    Tracking URL
+                                </label>
+                            </div>
+                            <div class="parcel-wrapper">
+                                <!-- ko foreach: $parent.remainingToDespatchParcelDisplay() -->
+                                <!-- ko template: { name: 'parcel-template' } --><!-- /ko -->
+                                <!-- /ko -->
+                            </div>
+                        </div>
+                        <!-- /ko -->
+                    </div>
+                </div>
+                <!-- /ko -->
+                <!-- /ko -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="emailer-modal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="blocker" data-bind="visible: busy">
+                <div class="loading-spinner"></div>
+                <h3 data-bind="text: busyMessage"></h3>
+            </div>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    Email Tracking Information
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div data-bind="component: { name: 'emailer-component', params: emailer }"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+                            @*<div class="tracking-wrapper">
+                                <!-- ko if: TrackingURLs.length == 0 -->
+                                <h5>
+                                    No tracking information is available for this line at this time.
+                                </h5>
+                                <!-- /ko -->
+                                <!-- ko if: TrackingURLs.length > 0 -->
+                                <label class="normal">
+                                    <!-- ko if: TrackingURLs.length > 1 -->
+                                    Tracking URLs:
+                                    <!-- /ko -->
+                                    <!-- ko if: TrackingURLs.length == 1 -->
+                                    Tracking URL:
+                                    <!-- /ko -->
+                                </label>
+                                <div class="tracking-urls" data-bind="foreach: Enumerable.From(TrackingURLs).Distinct().ToArray()">
+                                    <a data-bind="attr: { href: $data, target: '_blank' }, text: $data"></a>
+                                </div>
+                                <!-- /ko -->
+                            </div>*@

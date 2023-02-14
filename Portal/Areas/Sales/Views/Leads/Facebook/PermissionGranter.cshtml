@@ -1,0 +1,96 @@
+﻿@{
+    ViewBag.Title = "Designers Guild Portal - Facebook Connect";
+    Layout = "~/Views/Shared/_Layout-Bare.cshtml";
+}
+@section styles {
+<style type="text/css">
+    ul {
+        padding-left: 12px;
+    }
+    ul li {
+        list-style-type: none;
+        padding-bottom: 12px;
+    }
+</style>
+}
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId: '126957360806775',
+      autoLogAppEvents : true,
+      xfbml            : true,
+      version          : 'v2.12'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "https://connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+</script>
+
+<script>
+// Only works after `FB.init` is called
+function myFacebookLogin() {
+    FB.login(function (response) {
+        console.log('logged in', response);
+        FB.api('/me/accounts', function (response) {
+            console.log('retrieved pages', response);
+            var $pageList = $('<ul></ul>');
+            response.data.forEach(function (item) {
+                var $listItem = $('<li></li>');
+                var $button = $('<button class="btn btn-success"></button>').html(item.name);
+                $button.on('click', function () {
+                    console.log('selected: ', item);
+                    $('#console-container').empty();
+                    $('#console-container').append('<p>selected:</p><p>' + JSON.stringify(item) + '</p>');
+                    FB.api(
+                        '/' + item.id + '/subscribed_apps',
+                        'post',
+                        { access_token: item.access_token },
+                        function (response) {
+                            console.log('subscribed page', response);
+                            $('#console-container').append('<p>subscribed page:</p><p>' + JSON.stringify(response) + '</p>');
+                        }
+                    );
+                });
+                $listItem.append($button);
+                $listItem.data('access-token', item.access_token);
+                $pageList.append($listItem);
+            });
+            $("#page-list-wrapper").append($pageList);
+            $("#page-list-wrapper").show();
+        });
+    }, { scope: 'manage_pages' });
+}
+</script>
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading">
+            <h1 class="main-heading">
+                Facebook Lead Connector
+            </h1>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <button onclick="myFacebookLogin()" class="btn btn-secondary-blue">Login with Facebook</button>
+    </div>
+</div>
+
+<div class="row">
+    <div id="page-list-wrapper" class="col-xs-12" style="display: none;">
+        <p>Select one of your pages to grant Designers Guild permission to subscribe to that page's realtime events.</p>
+    </div>
+</div>
+
+<div id="console-container"></div>

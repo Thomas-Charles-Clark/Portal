@@ -1,0 +1,47 @@
+﻿.panel.slicer .k-dropdown {
+    margin-bottom: 0;
+}
+
+p.call {
+    font-size: 0.7em;
+    margin-bottom: 0;
+}
+
+    p.call + p.call {
+        margin-top: 2px;
+    }
+
+p.notes,
+p.issues,
+ul li {
+    /*font-size: 11px;*/
+}
+
+ul {
+    padding-left: 12px;
+}
+
+ul li {
+    list-style-type: none;
+}
+
+p.notes,
+ul.notes li {
+    font-size: 13px;
+}
+
+    ul li + li {
+        /*margin-top: 6px;*/
+    }
+
+ul.issues {
+    margin-bottom: 15px;
+}
+
+.btn.clear {
+    margin-top: 12px;
+}
+
+.panel-heading {
+    padding: 6px;
+}

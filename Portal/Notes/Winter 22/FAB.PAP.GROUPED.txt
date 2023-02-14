@@ -1,0 +1,383 @@
+###############################################
+#
+#		UNGROUPED
+#
+
+OK	[EDITABLE]
+✔	W.QUALITY.MASS.DES		--> Quality						"PLEASE ENTER EITHER A VALID QUALITY OR USE A TEMPLATE"
+✔	W.PGROUP.MASS			--> Product Group				"PLEASE ENTER EITHER A VALID PRODUCT GROUP OR USE A TEMPLATE"
+✔	W.SS.ITEMTYPE			--> Item Type					"PLEASE ENTER EITHER A VALID ITEM TYPE OR USE A TEMPLATE"
+✔	W.SALES.DIV.DES			--> Brand						"PLEASE ENTER EITHER A VALID BRAND OR USE A TEMPLATE"
+✔	W.LAUNCH				--> Season
+
+	[READONLY]
+✔	W.QUALDES.DESC			--> Quality Description			[Reads CLQUALDES<1> ("DESIGN") using W.QUALITY.MASS.DES]
+
+#
+#
+#
+###############################################
+
+
+
+
+
+
+###############################################
+#
+#		AFTERCAREs, USAGES, TESTS
+#
+
+	[EDITABLE]
+✔	AFTCARECODES			--> Aftercare Codes (MV)
+✔	USECODE					--> Usage Codes (MV)
+✔	MISC1FLD				--> Test Codes (MV)
+
+	[READONLY]
+✔	AFTCAREDESC				--> Aftercare Descriptions		(F("CLAFTCARE",<178,-1>)<2>)
+✔	USEDESC					--> Usage Descriptions			(F("STUSAGE",<285,-1>)<2>)
+✔	R.MISC1FLD				--> Test Descriptions			(F("STMISC1",MISC1FLD)<POS(STMISC1,DESCRIPTION)>)
+
+#
+#
+#
+###############################################
+
+
+
+
+
+
+###############################################
+#
+#		TECHNICAL DATA
+#
+
+	[EDITABLE]
+✔	FLAME.DES				--> Flame Retardant
+✔	ADDITIONAL 				--> Flam Code
+✔	UK.FLAME				--> UK Flame Retardancy Image
+✔	CONTRACT.FLAME			--> Contract Flame Retardancy Image	
+✔	MISC2FLD				--> Type
+✔	PATTERN.MATCH			--> Pattern Match	
+✔	SS.PATTERN				--> Web Pattern
+✔	SS.DESIGN				--> Web Type
+
+✔	PRODTYPEDESC
+✔	EAN.PRODCODE			--> EAN Code	
+✔	CUR.STAT				--> Status
+✔	WEB.PRODUCT				--> Web Type
+✔	WEBDESC.DES				--> Other info
+✔	SHOWTEXT				--> Showlength Text
+
+	[READONLY]
+✔	R.FLAME.DES				--> Flame Retardant Description						(F("STFLAME.DES",FLAME.DES)<POS(STFLAME.DES,TITLE)>)
+✔	R.ADDITIONAL			--> Flam Code Description							(F("STADDITIONAL",ADDITIONAL)<POS(STADDITIONAL,DETAILS)>)
+✔	R.UK.FLMAE				--> UK Flame Retardancy Image Description			(F("STUK.FLAME",UK.FLAME)<POS(STUK.FLAME,DESCRIPTION)>)
+✔	R.CONTRACT.FLAME		--> Contract Flame Retardancy Image Description		(F("STCONTRACT.FLAME",CONTRACT.FLAME)<POS(STCONTRACT.FLAME,DESCRIPTION)>)
+✔	R.STMISC2				--> Type Description								(F("STMISC2",<533>)<POS(STMISC2,DESCRIPTION)>)
+✔	R.PATTERNDESC			--> Pattern Match Description						(F("STPATTERN",PATTERN.MATCH)<POS(STPATTERN,DESCRIPTION)>)
+✔	SS.PATTERN.DESC 		--> Web Pattern Description							(F("STPATTERN.DES",<1501>)<1>)
+✔	SS.DESIGN.DESC			--> Web Type Description							(F("STDESIGN.DES",SS.DESIGN)<POS(STDESIGN.DES,CODEDESC)>)
+
+#
+#
+#
+###############################################
+
+
+
+
+###############################################
+#
+#		SUPPLIER INFORMATION
+#
+
+	[EDITABLE]
+✔	SUPPREF					--> Supplier Code
+✔	SUP.DESIGN				--> Supplier Design Code
+✔	SUP.COLOUR				--> Supplier Colour Name
+✔	SHIPPING.LEADTIME.1		--> Override - Ship Time (Work Days)
+✔	LEADTIME1				--> Override - Manuf Lead time (Work Days)
+✔	ZZMINORD				--> Minimum Ord Qty
+✔	SS.COST.CURR			--> Cost price in Currency
+✔	SUPPPARTNO.1			--> Supplier's Part No.
+✔	PRODUCT.BUYER.DES		--> Our buyer (employee in Purchasing)
+✔	MTNMINSTKLVL.DES		--> B2B Code
+✔	AUTO.PROC.SUPP			--> Supplier
+✔	MID.1					--> MID Code
+✔	INTRASTAT				--> Export Commodity Code
+✔	USCOMM					--> US Commodity Code
+✔	COMMODITY.DG			-->	Import Commodity Code
+✔	ORCOUNTRY				--> Country of Origin
+
+	[READONLY]
+✔	SUPPREF.NAME			--> Supplier Code Description					(F("PLSUP",SUPPREF)<1,1>)
+✔	R.SS.PROD.BUYER			--> Our Buyer Description						(F("SS.PROD.BUYER",<873>)<POS(SS.PROD.BUYER,TITLE)>)
+✔	ORDESC					--> Country of Origin Description				(F("ORCOUNTRY",ORCOUNTRY)<1>)
+
+#
+#
+#
+###############################################
+
+
+
+
+
+
+###############################################
+#
+#		QUALITY DATA
+#
+
+	[EDITABLE]
+✔	W.PMU.WIDTH.DES				--> Width					WORK<203>
+✔	W.SS.APPGMS					--> GMS/Sq Metre			WORK<204>
+✔	W.PMU.GMSLIN.DES			-->	GMS/Linear Metre		(WORK<204> * WORK<203>)	
+✔	W.PMU.REMEASURE.LGTH.DES	--> Re-Measure Length		WORK<259>
+✔	W.PMU.COMPCODE.DES			--> Composition				WORK<202>	"" OR F:CLCOMP,DESC,Y{MUST EXIST ON COMPOSITION FILE}
+
+
+	[READONLY]
+✔	QUALITY 					--> Quality Code			C:PG.VAL.QUALITY2
+✔	W.PMU.DESNTXT.DES			--> Design Name				WORK<402>	
+✔	CLCOMP.DESC					--> ""						(F("CLCOMP",W202)<1,1>)
+✔	CLCOMP.DESC2				--> ""						(F("CLCOMP",W202)<1,2>)
+✔	CLCOMP.DESC3				--> ""						(F("CLCOMP",W202)<1,3>)
+
+#
+#
+#
+###############################################
+
+
+
+
+
+
+###############################################
+#
+#		SALES ANAYLSIS
+#
+
+	[EDITABLE]
+✔	SALES.DIV.DES			--> Brand
+✔	PROD.COLL.DES			--> Collection Code
+✔	SS.ITEMTYPE				--> Item Type
+✔	PATBOOK.1				--> Pattern Book
+✔	UPDGRADE				--> Furniture Range
+✔	SS.GROUPCODE			--> Product Group
+
+
+
+	[READONLY]
+✔	PROD.COLL.DESC.DES		--> Collection Code adjacent			(F("PROD.COLL.DES",PROD.COLL.DES)<1>)
+✔	ITEMDESC				--> Item Type adjacent					(F("STITEMTYPE",ITEMTYPE)<1>)
+✔	STOCKHANGER				--> Stock Hanger 						F:STPRODMASTER,,Y OR ""{If entered, must exist on STPRODMASTER}
+✔	GROUPCODE.DESC			--> Product Group						(F("STPRODGROUPS",<2>)<POS(STPRODGROUPS,TITLE)>)
+
+#
+#
+#
+###############################################
+
+
+
+
+
+
+###############################################
+#
+#		NOTES AND DOCUMENTS
+#
+
+	[EDITABLE]
+✔	PRODDATA1				--> Customer Service Notes
+✔	CUTTERS.MESS.DES		--> Cutters Message	
+✔	LINK.DOCS				--> Linked Documents
+✔	LINK.DOCS.DESC			--> Linked Document Descriptions
+
+
+	[READONLY]
+
+#
+#
+#
+###############################################
+
+
+
+
+
+
+###############################################
+#
+#		SAMPLING
+#
+
+	[EDITABLE]
+✔	SS.HANGER				--> Can has Bespoke Hanger?
+✔	SS.WATERFALL			--> Can has Bespoke Waterfall?
+✔	SS.SHOWLENGTH			--> Can has Bespoke Showlength?
+✔	SS.ENG.PAN				--> Can has Engineered Panel?
+✔	ATT.LITHO				--> Can has Litho?
+✔	IMAGETYPE				--> Can has Image Type?
+✔	SS.SAMP.CUT				--> Can has Sample Cutting Size?
+✔	SS.RET.CUT				--> Can has Returnable Sample Size?
+
+
+	[READONLY]
+
+#
+#
+#
+###############################################
+
+
+
+
+
+
+###############################################
+#
+#		CREATE NEW PRODUCTS
+#
+
+	[EDITABLE]
+✖	W.TEMPLATE.CODE			--> Select Template Code
+✖	NO.PRODUCTS				--> Number of Products you're generating
+✔	SS.PRODCLASS5			--> Product Developer
+✔	SS.PRODTYPE 			--> Product Type
+✔	DESIGN.DES				--> Design Name
+✔	SS.COLNAME				--> Colourway Name
+✔	SS.PRODCLASS6			--> Market Restriction
+✔	LAUNCH					--> Launch Date
+
+
+	[READONLY]
+✖	W.TEMPLATE.DESC			--> Presumably describes the selected template
+✔	SS.PRODCLASS5.DESC		--> Paired with Product Developer
+✔	SS.PRODTYPE.DESC		--> Product Type Desc
+✔	R.SSPRODCLASS6			--> Market Restriction Description
+
+#
+#
+#
+###############################################
+
+
+
+
+
+
+###############################################
+#
+#		DESCRIPTIONS
+#
+
+	[EDITABLE]
+✔	PMU.PRODDESC			--> Warehouse Label Descriptions
+✔	PMU.SORTNAME			--> Mertex Search Descriptions
+✔	FULL.DESC				--> PO Full Description
+✔	BASKET.NAME				--> Online Description
+✔	SS.FIELD6  				--> Customs Commodity Description
+
+
+	[READONLY]
+
+#
+#
+#
+###############################################
+
+
+
+
+
+
+###############################################
+#
+#		OTHER
+#
+
+	[EDITABLE]
+✔	RELAUNCHED				--> Date Re-Launched
+✔	CMANF					--> Country of Manufacture
+✔	CSTOCK					--> Country where Stock is Held
+✔	LEADSM					--> Lead Time (Working Days)
+✔	LEADSW					--> What is this field? :D
+✔	SS.FIELD7				--> JL Stock Code MTM
+✔	SS.FIELD8				--> FRL part number
+✔	SS.FIELD9				--> Folia part number
+✔	SS.FIELD10				--> Price List Delivery Band
+✔	SS.FIELD11				--> Spare Field 11
+✔	SS.FIELD12				--> Spare Field 12
+✔	SS.FIELD13				--> Spare Field 13
+✔	SS.FIELD14				--> Spare Field 14
+✔	HANGINST				--> Wallpaper Hanging Instructions
+
+
+	[READONLY]
+
+#
+#
+#
+###############################################
+
+
+
+
+
+
+###############################################
+#
+#		OTHER OTHER
+#
+
+	[EDITABLE]
+
+✔	REVERSIBLE 				--> Is this product reversible
+✔	VPATT.REP 				--> Vertical Pattern Repeat CM
+✔	HPATT.REP 				--> Horizontal Pattern Repeat CM
+✔	SS.V.PAT.IN 			--> Vertical Pattern Repeat IN
+✔	SS.H.PAT.IN 			--> Horizontal Pattern Repeat IN
+✔	DROPPATREP 				--> Drop Pattern Repeat
+✔	MARTINDALE.DES 			--> Martindale
+✔	SS.U.STOCK 				--> Unit of Stock
+✔	SS.U.PURCHASE 			--> Unit of Purchase
+✔	VATCODE 				--> VAT Code
+✔	SUPUNITS 				--> Supp Units
+✔	SU.CONV 				--> Conv Factor
+✔	SS.DIGITAL 				--> Digital Design (Y/N)
+✔	SS.MAXFOLD 				--> Maximum Fold Size
+✔	POLETYPE 				--> Std Pole or 3m Pole (S/W)
+✔	SS.MASTER 				--> Master Approved (Y/N)
+✔	SS.DG.SPEC.COL 			--> DG Special Colour (Y/N)
+✔	SS.ADD.CARR 			--> Oeko-Tex Standard (Y/N)
+✔	PICK.LIST.GRP.DES 		--> Picking List Group Code
+✔	SS.WPPASTE 				--> Paste the Wall (Y/N)
+✔	ROLLLENGTH 				--> Length of Wallpaper Roll
+✔	SS.PHOTO.TYPE 			--> Flat Shot Image provided by:
+✔	STOCKCODE 				--> Stock Code
+✔	SS.MERCH 				--> Merch Code
+✔	LEATHER 				--> Leather
+✔	SS.SHOW 				--> Showlength in Store
+✔	WIDTHEQIV 				--> Linked Design in Diff Width
+✔	ROLLCOVER 				--> Roll Coverage (m2)
+
+
+	[READONLY]
+	SS.WIDE.WIDTH			--> Wide Width Product (Y) Auto set if more than 200cm
+	NET.WEIGHT				--> Net Weight in kg
+
+#
+#
+#
+###############################################
+
+
+
+
+
+

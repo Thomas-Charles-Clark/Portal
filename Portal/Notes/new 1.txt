@@ -1,0 +1,111 @@
+
+Page loadout:
+
+	Either Create New Basket (or some similar phrase) 
+		This reveals the Trade Account Selector. Searching fires the search, selecting fires the select then pops the Order Factory modal.
+		This would be a good opportunity to ask for e.g. Order Reference.
+		Opportunity to perform an extant check based on Reference... 
+		This creates the basket record, and returns me a BasketID, stores the basket reference into CLIENT sessionStorage.
+		
+	OR
+	
+	Load Existing Basket
+		If there is a basket reference in client session storage, load that up and pop the Order Factory Modal.
+		
+		Some indication that this is happening: perhaps "Retrieving Basket ###..."
+		
+		Selecting fires the basket select, then pops the Order Factory modal.
+
+
+Basket Lifetime
+
+		There needs to be some sort of indication to the user that their basket will expire after N minutes of non-interaction.
+		Upon loading if the basket is expired inform the user.
+		We could use SignalR to push expiry warnings to the user. Whichever way this is achieved, it'd be useful.
+		
+		There is a keepAlive procedure which can be called at any point.
+
+Retrieve Existing Basket
+
+
+	- Where does the basket begin life?
+		(If they haven't already selected an existing basket)
+		 Upon the user selecting a Customer_Search result and performing the Customer_Select query.
+		
+		
+	- All baskets live in the database! 
+	
+	
+	- Basket Search (no filtering extravaganza to begin with, that belongs in the realm of management usage)	
+	
+	
+	- Basket selected reference remains in session through page refresh. Only when the user consciously completes or otherwise dismisses the  use of
+		the basket they are currently interacting with does the session basket reference get cleared.
+		
+	
+FOR THE MOMENT!
+
+	Create a basket when clicking Show Order Factory.
+	
+	Log the basketID to console etc etc. The CreateBasket function belongs directly on the orderFactory.
+	
+	Then fire BasketItem_Add[Insert?] from (Quick Add) Order / Reserve Buttons
+	
+	Upon successful return from the add procedure, increment the currentStage on the orderFactoryDrilldown addingProductToBasket 
+	
+	I have a BasketItemRecord, store the reference against addingProductToBasket
+	
+		Fire BasketAllocation_Select using this ID
+		
+			this provides the table for allocation
+			
+			PickList instruction entry box only offered for wide width part numbers
+			
+			On changing StockLocation warn the user that the currently made allocations will be cleared.
+			
+	
+	ProcessingStage NavigationButtons present on all but the Select stage; Finish validates, warns and if succesful drops you back to... the... search!
+	
+	
+	Paint Pallet Delivery - 3 - 5 Days (from:Pricelist)
+	
+	55824C0BAC6CA735D038921704CD7A18
+	22F6D66C60579A920458A03CCBB70017
+	61BA3AB6E4D4B9161A9DFF302DAED40C
+	76339953CC811AE950E4255B1561793A
+	CE29A11550B6B051B55D352AB5AF096C
+	
+	
+	Allocation stations!
+	
+		bgrkeeeerghhhhh...
+			
+			The "SOURCE" column coming out of BasketItem_Allocation_Select will give e.g. "Ring Fenced" or "Available [Open] Now"
+				These group the batches - Ring Fenced, if found, wants to come above Available Now stock.
+				Allocation should be preferred to Ring Fenced stock.
+				
+	
+		When manually allocating... 
+			- There's a procedure to call when a row is blurred and there are no client errors about the row: BasketPreAllocationInsert
+			- When deleting call: BasketPreAllocationDelete
+			- When updating call: BasketPreAllocationUpdate
+			
+			= If any of these procedures error from the server, then inform... the user? and reload both left and right sections.
+				This will load out with the allocation as it was before the explosion.
+			
+			
+		When you change the stock location!
+			- Inform the user that their allocations will be cleared,
+			- Clear their allocations
+			- Adjust the stock location on the basketItem to the selected stockLocation.
+			
+		
+		
+		The potato isn't in the jungle room :(
+		
+		
+		When the various tabs are shown on the drilldown modal, if they contain a use of order-tab-list template... I want some hook with which
+		to call .layout on the N line reference fields in there.
+		
+		I also want to replace the Delay Despatch? field with the new MDC date picker.
+		

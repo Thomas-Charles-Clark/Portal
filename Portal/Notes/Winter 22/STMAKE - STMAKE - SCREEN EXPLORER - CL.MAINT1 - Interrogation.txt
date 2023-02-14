@@ -1,0 +1,135 @@
+FIELD NAME:     PRODDESCS
+POSITION:       0
+TYPE:           A
+LENGTH:         32
+OCONV:          
+DESCRIPTION:    Description
+DERIVATION:     F("STPRODMASTER", PRODCODES)<1> : NS.PRODDESC)
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     W.PROCDESC
+POSITION:       0
+TYPE:           A
+LENGTH:         20
+OCONV:          
+DESCRIPTION:    Process Description
+DERIVATION:     (F("POPROCS",@WORK<2>)<1>)
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     W.PRODDESC
+POSITION:       0
+TYPE:           A
+LENGTH:         32
+OCONV:          
+DESCRIPTION:    Product Description
+DERIVATION:     (F("STPRODMASTER",@WORK<1>)<1>)
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     W.QUALDESC
+POSITION:       0
+TYPE:           A
+LENGTH:         15
+OCONV:          
+DESCRIPTION:    Quality Desc
+DERIVATION:     (F("CLQUALDES",W.QUALITY)<1>)
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     W.SUPNAME
+POSITION:       0
+TYPE:           A
+LENGTH:         30
+OCONV:          
+DESCRIPTION:    Supname
+DERIVATION:     (F("PLSUP",W.SUPPLIER)<1,1>)
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     PRODCODES
+POSITION:       3.M
+TYPE:           A
+LENGTH:         15
+OCONV:          
+DESCRIPTION:    Product Codes
+DERIVATION:     
+VALIDATION:     PG.VAL.MAKEPCODE
+PROCESS AFTER:  
+HELP:			PG.STPRODMASTER.MK
+
+
+FIELD NAME:     QUANTITY
+POSITION:       4.M
+TYPE:           A
+LENGTH:         10
+OCONV:          MR33
+DESCRIPTION:    Quantity
+DERIVATION:     
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     UNIT
+POSITION:       5.M
+TYPE:           A
+LENGTH:         2
+OCONV:          
+DESCRIPTION:    Unit (cm)
+DEFAULT VALUE:	F("STPRODMASTER",<3,-1>)<7>
+DERIVATION:     
+VALIDATION:     F:STUNITS,,Y
+PROCESS AFTER:  
+HELP:			IH.STUNITS	
+
+
+FIELD NAME:     COMMENTS
+POSITION:       10.M
+TYPE:           A
+LENGTH:         50
+OCONV:          
+DESCRIPTION:    Comments
+DERIVATION:     
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     READ.FLD
+POSITION:       12
+TYPE:           A
+LENGTH:         1
+OCONV:          
+DESCRIPTION:    Hidden Read Fld
+DERIVATION:     
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     AGREED
+POSITION:       14.M
+TYPE:           A
+LENGTH:         6
+OCONV:          MR22
+DESCRIPTION:    Agreed Percentage Loss
+DERIVATION:     
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     EXPECTED
+POSITION:       15.M
+TYPE:           A
+LENGTH:         6
+OCONV:          MR22
+DESCRIPTION:    Expected Percentage Loss
+DERIVATION:     
+VALIDATION:     
+PROCESS AFTER:  
+
+

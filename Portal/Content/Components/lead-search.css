@@ -1,0 +1,22 @@
+﻿#lead-search-advanced {
+    margin-top: 10px;
+}
+
+#lead-search-advanced .panel {
+    margin-bottom: 0;
+}
+
+#lead-search-advanced .panel .panel-body {
+    border-top: 0;
+}
+
+.clear-selection {
+    color: #333;
+    float: left;
+    padding: 8px 8px 9px 8px;
+}
+
+#lead-search-results .table {
+    margin-bottom: 0;
+    white-space: nowrap;
+}

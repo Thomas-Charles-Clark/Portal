@@ -1,0 +1,257 @@
+﻿<script id="tagging-component" type="text/html">
+    <div class="tagging-component input-group">
+        <div data-bind="template: { name: 'mdc-text-field-autocomplete-component', data: mdcAutocompleteSettings }"></div>
+        <span class="input-group-addon" data-bind="visible: newItem">
+            <button class="btn btn-green" data-bind="click: function() { addItem(autocomplete()); }">
+                Add
+            </button>
+        </span>
+        <div class="input-group-btn">
+            <button type="button" class="btn btn-blue dropdown-toggle" data-toggle="dropdown" data-bind="enable: enabled">
+                List
+                <span class="caret"></span>
+            </button>
+            <ul class="checkable-ul dropdown-menu pointer" data-bind="css: listPull">
+                <!-- ko if: itemsList().length == 0 -->
+                <li>
+                    <label>
+                        No Results
+                    </label>
+                </li>
+                <!-- /ko -->
+                <!-- ko foreach: itemsList().sort() -->
+                <li data-bind="click: function(data, event) { event.stopImmediatePropagation(); return true; }">
+                    <label data-bind="css: { 'deletable': typeof $parent.itemListDelete === 'function' }">
+                        <input type="checkbox" data-bind="checked: $parent.observableArray, checkedValue: $data" />
+                        <!-- ko if: $data.hasOwnProperty('Title') -->
+                        <span data-bind="with: Title">
+                            <span data-bind="text: Title"></span>
+                        </span>
+                        <span data-bind="text: FullName"></span>
+                        <!-- /ko -->
+                        <!-- ko ifnot: $data.hasOwnProperty('Title') -->
+                        <span data-bind="text: Name"></span>
+                        <!-- /ko -->
+                        <!-- ko if: typeof $parent.itemListDelete === 'function' -->
+                        <a class="close pull-right" data-bind="attr: { href: 'javascript:;' }, click: function (data, event) { event.stopImmediatePropagation(); $parent.itemListDelete(data, event); }">
+                            &times;
+                        </a>
+                        <!-- /ko -->
+                    </label>
+                </li>
+                <!-- /ko -->
+            </ul>
+        </div>
+    </div>
+    <!-- ko if: displayTagContainer -->
+    <!-- ko if: observableArray().length -->
+    <div class="tag-container" data-bind="foreach: observableArray.sort()">
+        <span class="attendee tag pointer" data-bind="click: $parent.itemClick">
+            <!-- ko if: $data.hasOwnProperty('Title') -->
+            <span data-bind="with: Title">
+                <span data-bind="text: Title"></span>
+            </span>
+            <span data-bind="text: FullName"></span>
+            <!-- /ko -->
+            <!-- ko ifnot: $data.hasOwnProperty('Title') -->
+            <span data-bind="text: Name"></span>
+            <!-- /ko -->
+            <a class="close" data-bind="attr: { href: 'javascript:;' }, click: function(data, event) { event.stopImmediatePropagation(); $parent.observableArray.remove($data); }">
+                &times;
+            </a>
+        </span>
+    </div>
+    <!-- /ko -->
+    <!-- /ko -->
+</script>
+
+<script type="text/javascript">
+    var taggingViewModel = function (params) {
+        var self = this;
+
+        params.widget(self);
+
+        self.params = params;
+
+        self.newItem = ko.observable(false);
+
+        self.displayTagContainer = params.displayTagContainer == null ? true : params.displayTagContainer;
+
+        self.customAddFunction = params.customAddFunction;
+
+        self.customSelectFunction = params.customSelectFunction;
+
+        self.dataFieldName = 'TagID';
+
+        self.textFieldName = 'Name';
+
+        self.itemsList = self.params.itemsList;
+
+        self.listPull = self.params.listPull || '';
+
+        self.enabled = true;
+
+        self.observableArray = self.params.target;
+
+        self.observableArray.subscribe(function (newValues) {
+            self.autocomplete(undefined);
+        });
+
+        self.addItem = function (name) {
+            if (typeof self.customAddFunction === 'function') {
+                self.customAddFunction({ Name: name });
+            } else {
+                var data = {
+                    name: name
+                };
+                if (self.params.additionalData) {
+                    $.extend(data, ko.toJS(self.params.additionalData));
+                }
+                $.ajax({
+                    url: self.params.addItemEndpoint,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: data,
+                    success: function (data) {
+                        var obj = {};
+
+                        obj[self.params.valueField] = data[self.params.valueField];
+                        obj[self.params.textField] = data[self.params.textField];
+
+                        self.observableArray.push(obj);
+
+                        self.itemsList.push(obj);
+
+                        self.newItem(false);
+
+                        $(self.autocomplete.DOMElement).val(undefined);
+                    }
+                });
+            }
+        }
+
+        self.autocomplete = ko.observable();
+
+        self.autocomplete.subscribe(function (newValue) {
+            if (newValue) {
+                if (newValue.length == 0) {
+                    self.newItem(false);
+                }
+            } else {
+                self.newItem(false);
+            }
+        });
+
+        self.mdcAutocompleteSettings = {
+            label: self.params.label || 'Type to Search',
+            observable: self.autocomplete,
+            useNativeValidation: false,
+            decorateInputElement: false,
+            insertValidationMessages: false,
+            showClear: true,
+            disabled: false,
+            clearFunction: function () {
+                var self = this;
+                //self.observable(undefined);
+                $(self.observable.DOMElement).val(undefined);
+                $(self.observable.DOMElement).focus();
+            },
+            charsRemainingOptions: {
+                maxLength: 50
+            },
+            autocompleteSettings: {
+                value: self.autocomplete,
+                appendTo: 'body',
+                additionalParams: self.params.additionalParams,
+                autocompleteEndpoint: '/api/ComponentAPI/TagAutocomplete',
+                mapFunction: function (i) {
+                    return {
+                        label: i.Name,
+                        value: i.TagID,
+                        obj: i
+                    }
+                },
+                source: function (request, response) {
+                    var data = {
+                        term: request.term
+                    };
+                    if (self.params.additionalData) {
+                        $.extend(data, ko.toJS(self.params.additionalData));
+                    }
+                    $.ajax({
+                        url: self.params.autocompleteEndpoint,
+                        type: "POST",
+                        dataType: "json",
+                        data: data,
+                        success: function (data) {
+                            self.newItem(true);
+                            data.forEach(function (item) {
+                                if (item[self.params.textField].toLowerCase() == request.term.toLowerCase()) {
+                                    self.newItem(false);
+                                }
+                            });
+                            response($.map(data, function (item) {
+                                return {
+                                    label: item[self.textFieldName],
+                                    value: item[self.dataFieldName],
+                                    obj: item
+                                };
+                            }));
+                        }
+                    });
+                },
+                minLength: 1,
+                select: function (event, ui) {
+
+                    event.preventDefault();
+
+                    if (typeof self.customSelectFunction === 'function') {
+                        //console.log(ui.item);
+                        self.customSelectFunction(ui.item.value, event);
+                    } else {
+                        var listItem = Enumerable.From(self.itemsList()).Where(function (x) {
+                            return x[self.dataFieldName] == ui.item.obj[self.dataFieldName];
+                        }).SingleOrDefault();
+                        if (listItem) {
+                            var extant = Enumerable.From(self.observableArray()).Where(function (x) {
+                                return x[self.dataFieldName] == listItem[self.dataFieldName];
+                            }).SingleOrDefault();
+                            if (extant == null)
+                                self.observableArray.push(listItem);
+                        } else {
+                            // item should be added to both itemsList and... well, it should always exists in... maybe not
+                            self.itemsList.push(ui.item.obj);
+                            self.observableArray.push(ui.item.obj);
+                            //console.error(self.name, 'unexpected behaviour: ', ui.item.value, 'did not exist in self.itemsList()');
+                        }
+                    }
+
+                    $(self.autocomplete.DOMElement).val(undefined);
+
+                    self.newItem(false);
+                },
+                //focus: function (event, ui) {
+                //    return false;
+                //},
+                autoFocus: true,
+                create: function () {
+                    if (self.classField != null) {
+                        $(this).data("ui-autocomplete")._renderItem = function (ul, item) {
+                            var li = $("<li>");
+                            var div = li.append("<div class='ui-menu-item-wrapper'><a href='#'>" + item.label + "<span class='type'>" + item.value[self.typeField] + "</span></a></div>");
+
+                            li.addClass(item.value[self.classField]);
+
+                            return li.appendTo(ul);
+                        };
+                    }
+                }
+            }
+        };
+    }
+
+    ko.components.register('tagging-component', {
+        viewModel: taggingViewModel,
+        template: { element: $('#tagging-component')[0] }
+    });
+</script>

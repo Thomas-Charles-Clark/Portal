@@ -1,0 +1,168 @@
+﻿#trade-user-admin {
+    .flex-container {
+        display: flex;
+        max-width: 100%;
+        flex-wrap: wrap;
+        display: flex;
+        max-width: 100%;
+        flex-wrap: wrap;
+
+        .flex-container {
+            padding: 0 6px;
+        }
+
+        > div {
+            flex: 0 1 50%;
+            min-width: 50%;
+        }
+    }
+
+    display: grid;
+    grid-template-columns: repeat(2, minmax(200px, 1fr));
+    grid-gap: 15px;
+}
+
+#user-edit-modal {
+    .flex-container {
+        display: flex;
+        max-width: 100%;
+        flex-wrap: wrap;
+    }
+}
+
+.quick-ordering {
+    .flex-container {
+        display: flex;
+        max-width: 100%;
+        flex-wrap: wrap;
+    }
+}
+
+.user-wrapper {
+    .dl-horizontal {
+        dt {
+            float: left;
+            width: 60px;
+            clear: left;
+            text-align: right;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        dd {
+            margin-left: 70px;
+            margin-bottom: 0;
+        }
+    }
+
+    dl {
+        margin-bottom: 0;
+    }
+
+    dt {
+        line-height: 2;
+    }
+
+    dd {
+        line-height: 2;
+    }
+}
+
+.user-wrapper-inner {
+    background-color: #f2f2f2;
+    border-radius: 6px;
+    position: relative;
+    margin: 7.5px;
+    padding: 4px;
+    border: 1px solid #ccc;
+    height: calc(100% - 20px);
+}
+
+h3 {
+    margin-top: 0;
+}
+
+ul.permissions {
+    list-style-type: none;
+    text-indent: 0;
+    padding-left: 10px;
+}
+
+.errors-list {
+    margin-top: 5px;
+
+    li {
+        + {
+            li {
+                margin-top: 5px;
+            }
+        }
+    }
+}
+
+.email-subject {
+    margin-bottom: 15px;
+    display: flex;
+
+    > span {
+        margin-left: 5px;
+    }
+
+    > .btn {
+        margin-left: auto;
+    }
+}
+
+.email-body {
+    h3 {
+        font-size: 16px;
+        font-weight: bold;
+    }
+}
+
+.user-heading {
+    display: flex;
+    line-height: 34px;
+    align-items: center;
+
+    .btn {
+        margin-left: auto;
+    }
+}
+
+p.note {
+    margin-top: 15px;
+    margin-bottom: 0;
+
+    i {
+        font-size: 22px;
+        opacity: 0.7;
+        margin: 0 5px;
+    }
+}
+
+p {
+    i {
+        margin: 0 0 0 2px;
+        position: relative;
+        top: 6px;
+    }
+}
+
+.mdc-text-field--disabled {
+    .mdc-text-field__input {
+        color: rgba(0, 0, 0, 0.8);
+    }
+}
+
+input[type="checkbox"][disabled] {
+    background-color: green;
+    border-color: green;
+    color: green;
+}
+
+.resend-invite {
+    display: flex;
+    justify-content: flex-end;
+}

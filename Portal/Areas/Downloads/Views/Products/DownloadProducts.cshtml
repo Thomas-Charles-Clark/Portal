@@ -1,0 +1,1214 @@
+﻿@model Downloads.ViewModels.DownloadProductsViewModel
+@{
+    ViewBag.Title = $"{Model.ApplicationSubHeading} - Designers Guild Portal";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles {
+    @Styles.Render("~/bundles/css/components")
+    @Styles.Render("~/bundles/css/download-products")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/components")
+    @Scripts.Render("~/bundles/js/datetime-picker")
+    @Scripts.Render("~/bundles/js/download-products")
+
+    <script type="text/javascript">
+        function getResource(name) {
+            switch (name) {
+                case 'PrimaryImage':
+                    return '@Html.Raw(DownloadsText.PrimaryImage)';
+                    break;
+                case 'Heading':
+                    return '@Html.Raw(DownloadsText.Heading)';
+                    break;
+                case 'Description':
+                    return '@Html.Raw(DownloadsText.Description)';
+                    break;
+                case 'SecondaryImages':
+                    return '@Html.Raw(DownloadsText.SecondaryImages)';
+                    break;
+                case 'BasketEmpty':
+                    return '@Html.Raw(DownloadsText.EmptyBasket)';
+                    break;
+            }
+        }
+
+        function getSortOptions() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.SortOptions));
+        }
+
+        function getTradeAccount() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.PreselectedTradeAccount));
+        }
+
+        function getProductFilterButtons() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.ProductFilterButtons));
+        }
+
+        function getCompleteProductFilterButtonSet() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.CompleteProductFilterButtonSet));
+        }
+
+        function getBrandFilterButtons() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.BrandFilterButtons));
+        }
+
+        function getLaunchFilterButtons() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.LaunchFilterButtons));
+        }
+
+        function getPatternFilterButtons() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.PatternFilterButtons));
+        }
+
+        function getItemTypeFilterButtons() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.ItemTypeFilterButtons));
+        }
+
+        function getStockFilterButtons() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.StockFilterButtons));
+        }
+
+        function getMartindaleFilterButtons() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.MartindaleFilterButtons));
+        }
+
+        function getSizeFilterButtons() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.SizeFilterButtons));
+        }
+
+        function getProductFilterButtons() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.ProductFilterButtons));
+        }
+
+        function getWidthFilterButtons() {
+            return [{
+                Name: 'Standard',
+                WidthID: false
+            }, {
+                Name: 'Wide',
+                WidthID: true
+            }]
+        }
+
+        var viewModel = new downloadProductsViewModel();
+
+        ko.options.deferUpdates = true;
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        $(document).ready(function () {
+            $('#tc-modal').modal('show');
+
+            ko.applyBindings(viewModel, document.body);
+
+            viewModel.init();
+
+            $("#basket-wrapper").mouseenter(function (event) {
+
+                if (viewModel.basket().length && viewModel.tradeAccount()) {
+
+                    $("#basket-drop").stop(true, true).slideDown({ duration: 300, easing: "easeInCubic" });
+
+                    $("#basket-drop").empty();
+                    $("#basket-drop").append("<p class='basket-loading'>Loading...</p>");
+
+                    $.ajax({
+                        url: "/api/downloadproductsapi/BasketSummary",
+                        type: "POST",
+                        cache: false,
+                        async: true,
+                        data: {
+                            IDs: viewModel.basket(),
+                            TradeAccountID: viewModel.tradeAccount().TradeAccountID
+                        },
+                        success: function (data) {
+                            if (data.basketContents != null) {
+                                if (data.basketContents.length > 0) {
+                                    $(".basket-loading").hide();
+                                    $("#basket-drop").empty();
+                                    for (var i = 0; i < data.basketContents.length; i++) {
+                                        $("#basket-drop").append("<p>" + data.basketContents[i].BasketCount + " x " + data.basketContents[i].ProductFilter + "</p>");
+                                    }
+                                } else {
+                                    $(".basket-loading").hide();
+                                    $("#basket-drop").empty();
+                                    $("#basket-drop").append("<p class='basket-loading'>" + '@Html.Encode(DownloadsText.EmptyBasket)' + "</p>")
+                                }
+                            }
+
+                        },
+                        error: function (xhr, s, e) {
+                            console.log(e);
+                        }
+                    });
+                }
+            });
+
+            $("#basket-wrapper").mouseleave(function (event) {
+                $("#basket-drop").stop(true, true).slideUp({ duration: 300, easing: "easeOutCubic" });
+            });
+        });
+    </script>
+}
+
+<script id="grid-row-template" type="text/html">
+    <tr role="row">
+        <td>
+
+        </td>
+        <td class="image-cell">
+            <!-- ko if: Images.length > 0 -->
+            <img class='record-primary-image' data-bind="attr: { src:'https://www.designersguild.com/image/90/' + Images[0].ImageID }" />
+            <!-- /ko -->
+        </td>
+        <td class="heading-cell">
+            <span class="heading" data-bind="text: Heading"></span>
+            <span data-bind="text: SubHeading"></span>
+        </td>
+        <td class="description-cell">
+            <span data-bind="text: Description"></span>
+        </td>
+        <td class="secondary-images-cell">
+            <!-- ko foreach: Images -->
+            <img class='record-secondary-image' data-bind="attr: { src:'https://www.designersguild.com/image/90/' + $data.ImageID }" />
+            <!-- /ko -->
+        </td>
+    </tr>
+</script>
+
+<script id="advertising-row-template" type="text/html">
+    <tr>
+        <td class="advertising-img-cell">
+            <img data-bind="attr: { src: '/Areas/Downloads/Content/AdvertisingImages/vdir/thumbnails/' + UniqueThumbnailFilename }" />
+        </td>
+        <td>
+            <h4 data-bind="html: Name"></h4>
+            <p data-bind="html: Description"></p>
+            <div class="btn-toolbar">
+                <a href="javascript:void(0);" class="btn btn-primary advertising-image-button" data-bind="click: function () { window.location.href = '/advertising/downloadweb/' + UniqueWebQualityFilename }">
+                    @DownloadsText.DownloadForWeb
+                </a>
+                <a href="javascript:void(0);" class="btn btn-primary advertising-image-button" data-bind="click: function() { window.location.href = '/advertising/downloadprint/' + UniquePrintQualityFilename }">
+                    @DownloadsText.DownloadForPrint
+                </a>
+            </div>
+        </td>
+    </tr>
+</script>
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+
+@Html.Action("TradeAccountSelector", "Component", new { Area = "", CanSearch = Model.Properties?.AccountSelector_CanSearch, canCollapse = Model.Properties?.AccountSelector_CanSearch })
+
+<div id="download-content" class="row" style="display: none;" data-bind="visible: true">
+    <div class="col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <ul class="nav nav-pills">
+                    <li class="active">
+                        <a href="#products-tab" data-toggle="tab" data-bind="click: function() { currentDisplay(DOWNLOAD_DISPLAY_FEEDS); }">
+                            @DownloadsText.ProductImagesMenuItem
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#advertising-tab" data-toggle="tab" data-bind="click: function() { currentDisplay(DOWNLOAD_DISPLAY_IMAGES); }">
+                            @DownloadsText.AdvertisingMenuItem
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#how-to-tab" data-toggle="tab" data-bind="click: function() { currentDisplay(DOWNLOAD_DISPLAY_HOWTO); }">
+                            @DownloadsText.HowToMenuItem
+                        </a>
+                    </li>
+                    <li class="pull-right" data-bind="visible: currentDisplay() == DOWNLOAD_DISPLAY_FEEDS">
+                        <div class="group btn-toolbar">
+                            <button class="btn btn-secondary-blue" data-target="#download-modal" data-toggle="modal" data-bind="enable: basket().length && tradeAccount()">
+                                Download
+                                <span class="glyphicon glyphicon-download-alt"></span>
+                            </button>
+                            <button id="basket-wrapper" class="btn btn-secondary-blue" data-target="#download-modal" data-toggle="modal" data-bind="enable: basket().length && tradeAccount()">
+                                <span data-bind="html: basketContentsDisplay"></span>
+
+                                <span class="glyphicon glyphicon-shopping-cart"></span>
+                                
+                                <div id="basket-drop">
+                                    <p class="basket-loading">
+                                        @DownloadsText.EmptyBasket
+                                    </p>
+                                </div>
+                            </button>
+                            <button class="btn btn-secondary-blue" data-bind="click: function() { $.confirm('Are you sure?', 'This will clear your basket.', function () { resultGridWidget()._selectedIds = {}; resultGridWidget().clearSelection(); basket([]); }, null) }">
+                                Clear &times;
+                            </button>
+                        </div>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div id="products-tab" class="tab-pane active">
+                        <div id="search-phase">
+                            <div id="product-group-wrapper" class="form-group">
+                                <div class="form-group group shallow-group" data-bind="visible: filterViewMode() == DOWNLOAD_FILTER_MODE_ADVANCED">
+                                    <a class="btn btn-secondary-blue" data-bind="
+                                       css: {
+                                       'btn-primary' : filterViewMode() == DOWNLOAD_FILTER_MODE_STANDARD
+                                       }, click: function () {
+                                       filterViewMode(DOWNLOAD_FILTER_MODE_STANDARD)
+                                       }">
+                                        Show Categories
+                                    </a>
+                                </div>
+                                <div class="form-group group shallow-group" data-bind="visible: filterViewMode() == DOWNLOAD_FILTER_MODE_STANDARD">
+                                    <a class="btn btn-secondary-blue" data-bind="
+                                       css: {
+                                       'btn-primary' : filterViewMode() == DOWNLOAD_FILTER_MODE_ADVANCED
+                                       }, click: function () {
+                                       filterViewMode(DOWNLOAD_FILTER_MODE_ADVANCED)
+                                       },
+                                       text: 'Show Filters' + (selectedFilterCount() ? ' (' + selectedFilterCount() + ')' : '' )
+                                       ">
+                                    </a>
+                                </div>
+                                <div class="filter-phases" data-bind="fadeBetweenMany: { observable: filterViewMode, visibleWhen: DOWNLOAD_FILTER_MODE_STANDARD, swapWith: '.filter-phases' }">
+                                    <div class="search-type-btns form-group group shallow-group">
+                                        <a class="btn btn-secondary-blue" data-bind="css: {
+                                                'btn-primary': clearance() == DOWNLOAD_SEARCH_TYPE_ALL
+                                            }, click: function () {
+                                                clearance(DOWNLOAD_SEARCH_TYPE_ALL);
+                                            }">
+                                            All
+                                        </a>
+                                        <a class="btn btn-secondary-blue" data-bind="css: {
+                                                'btn-primary': clearance() == DOWNLOAD_SEARCH_TYPE_CLEARANCE
+                                            }, click: function () {
+                                                clearance(DOWNLOAD_SEARCH_TYPE_CLEARANCE);
+                                            }">
+                                            Clearance
+                                        </a>
+                                        <a class="btn btn-secondary-blue" data-bind="css: {
+                                                'btn-primary': clearance() == DOWNLOAD_SEARCH_TYPE_CURRENT
+                                            }, click: function () {
+                                                clearance(DOWNLOAD_SEARCH_TYPE_CURRENT);
+                                            }">
+                                            Current
+                                        </a>
+                                    </div>
+                                    <div class="panel-group" id="category-accordion">
+                                        <div class="panel">
+                                            <!-- ko template: { afterRender: function () { $('#category-accordion .panel-collapse').on('show.bs.collapse', function (e) { $('a:first-child', e.target).click(); }); } } -->
+                                                <!-- ko foreach: groupedProductFilterButtons -->
+                                                    <!-- ko if: $index() == 0 -->
+                                                    <a id="all-products-collapse" class="btn category-heading collapsed" data-toggle="collapse" data-parent="#category-accordion" href="#all-products-collapser" data-product-filter-group="null" data-product-filter-group-id="null"
+                                                        data-bind="click: function () { $parent.productFilterGroupButtonClick({ Value: null, ProductFilterID: null, ProductFilterGroupID: null, Seasonal: null }); }"
+                                                        >
+                                                        All Products
+                                                    </a>
+                                                    <div id="all-products-collapser" class="panel-collapse collapse">
+                                                        <div class="group product-filter-button-group" style="display: none">
+                                                            <a class="btn-primary"></a>
+                                                        </div>
+                                                    </div>
+                                                    <!-- /ko -->
+                                                    <a class="btn category-heading collapsed" data-toggle="collapse" data-parent="#category-accordion" data-bind="attr: { 'href': '#category-' + key.sortOrder + '-collapse', 'data-product-filter-group': key.productFilterGroup, 'data-product-filter-group-id': key.productFilterGroupId }">
+                                                        @*<span class="glyphicon glyphicon-search"></span>*@
+                                                        <span data-bind="text: key.productFilterGroup"></span>
+                                                    </a>
+                                                    <div class="panel-collapse collapse" data-bind="attr: { id: 'category-' + key.sortOrder + '-collapse' }">
+                                                        <div class="group product-filter-button-group">
+                                                            <a class="btn btn-secondary-blue" data-bind="
+                                                                click: $parent.productFilterGroupButtonClick,
+                                                                css: {
+                                                                    'btn-primary': ($parent.searchWidget().Value == -1) && ($parent.searchWidget().ProductFilterGroupID == $data.ProductFilterGroupID)
+                                                                }, attr: { 'data-product-filter-id': ProductFilterID }">
+                                                                <span data-bind="text: 'All ' + key.productFilterGroup"></span>
+                                                            </a>
+                                                            <!-- ko foreach: Enumerable.From(filterButtons).OrderBy('$.SortOrder').ToArray() -->
+                                                            <a class="btn btn-secondary-blue" data-bind="css: {
+                                                                        'btn-primary': $parentContext.$parent.searchWidget().Value == $data.Value,
+                                                                        'btn-grouped': [15,18].indexOf($data.ProductTypeID) != -1
+                                                                    }, click: $parentContext.$parent.productFilterButtonClick, attr: {
+                                                                        title: $data.IsProduct ? '(' + $data.RowCount + ')' : 'Made to Order',
+                                                                        'data-product-filter-id': $data.ProductFilterID,
+                                                                        'data-product-filter-group-id': $data.ProductFilterGroupID
+                                                                    }">
+                                                                <span data-bind="html: $data.Name"></span>
+                                                            </a>
+                                                            <!-- /ko -->
+                                                        </div>
+                                                    </div>
+                                                    <!-- /ko -->
+                                            <!-- /ko -->
+                                            @*<!-- ko foreach: groupedProductFilterButtons -->
+                                            <a class="btn category-heading collapsed" data-toggle="collapse" data-parent="#category-accordion" data-bind="attr: { 'href': '#category-' + key.sortOrder + '-collapse', 'data-product-filter-group': key.productFilterGroup, 'data-product-filter-group-id': key.productFilterGroupId }">
+                                                <span data-bind="text: key.productFilterGroup"></span>
+                                            </a>
+                                            <div class="collapse" data-bind="attr: { id: 'category-' + key.sortOrder + '-collapse' }">
+                                                <div class="group product-filter-button-group">
+                                                    <!-- ko foreach: Enumerable.From(filterButtons).OrderBy('$.SortOrder').ToArray() -->
+                                                    <a class="btn btn-secondary-blue" data-bind="css: {
+                                                                'btn-primary': $parentContext.$parent.searchWidget().Value == $data.Value,
+                                                                'btn-grouped': [15,18].indexOf($data.ProductTypeID) != -1
+                                                            }, click: $parentContext.$parent.productFilterButtonClick, attr: {
+                                                                title: $data.IsProduct ? '(' + $data.RowCount + ')' : 'Made to Order',
+                                                                'data-product-filter-id': $data.ProductFilterID,
+                                                                'data-product-filter-group-id': $data.ProductFilterGroupID
+                                                            }">
+                                                        <span data-bind="html: $data.Name"></span>
+                                                    </a>
+                                                    <!-- /ko -->
+                                                </div>
+                                            </div>
+                                            <!-- /ko -->*@
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="advanced-filters" class="group filter-phases shallow-group" data-bind="fadeBetweenMany: { observable: filterViewMode, visibleWhen: ORDERFACTORY_FILTER_MODE_ADVANCED, swapWith: '.filter-phases' }">
+                                    <!-- ko if: searchWidget().Value == null -->
+                                    <span class="text-center">
+                                        Please Select a Category
+                                    </span>
+                                    <!-- /ko -->
+                                    <!-- ko if: searchWidget().Value != null -->
+                                    <div class="category">
+                                        <label data-bind="click: resetFilters">
+                                            Clear All
+                                            <span class="close">
+                                                <i class="material-icons">
+                                                    delete_forever
+                                                </i>
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <!-- ko if: searchWidget().ShowStockFilter -->
+                                    <div class="category">
+                                        <label>
+                                            <span class="close" data-bind="click: function() { selectedStock(undefined); }">
+                                                <i class="material-icons">
+                                                    delete_forever
+                                                </i>
+                                            </span>
+                                            Stock
+                                        </label>
+                                        <div class="item-type-filter-container filter-container">
+                                            <!-- ko foreach: stockFilterButtons -->
+                                            <a class="btn btn-secondary-blue" data-bind="css: {
+                                                        'btn-primary': $parent.selectedStock() == $data.StockFilterID
+                                                    }, click: function () {
+                                                        if ($parent.selectedStock() == $data.StockFilterID) {
+                                                            $parent.selectedStock(undefined);
+                                                        } else {
+                                                            $parent.selectedStock($data.StockFilterID);
+                                                        }
+                                                    }, text: $data.Name"></a>
+                                            <!-- /ko -->
+                                            <a></a>
+                                        </div>
+                                    </div>
+                                    <!-- /ko -->
+                                    <!-- ko if: searchWidget().ShowColourFilter -->
+                                    <div class="category">
+                                        <label>
+                                            <span class="close" data-bind="click: function() { selectedColour(undefined); }">
+                                                <i class="material-icons">
+                                                    delete_forever
+                                                </i>
+                                            </span>
+                                            Colour
+                                        </label>
+                                        <div class="colour-container">
+                                            <div class="colour" title="White" data-bind="css: {
+                                                    'selected-colour': selectedColour() == 12
+                                                 }, click: function() {
+                                                    if (selectedColour() == 12) {
+                                                        selectedColour(undefined);
+                                                    } else {
+                                                        selectedColour(12);
+                                                    }
+                                                 }"></div>
+                                            <div class="colour" title="Grey" data-bind="css: {
+                                                    'selected-colour': selectedColour() == 5
+                                                 }, click: function() {
+                                                    if (selectedColour() == 5) {
+                                                        selectedColour(undefined);
+                                                    } else {
+                                                        selectedColour(5);
+                                                    }
+                                                 }"></div>
+                                            <div class="colour" title="Natural" data-bind="css: {
+                                                    'selected-colour': selectedColour() == 6
+                                                 }, click: function() {
+                                                    if (selectedColour() == 6)  {
+                                                        selectedColour(undefined);
+                                                    } else {
+                                                        selectedColour(6);
+                                                    }
+                                                 }"></div>
+                                            <div class="colour" title="Brown" data-bind="css: {
+                                                    'selected-colour': selectedColour() == 3
+                                                 }, click: function() {
+                                                    if (selectedColour() == 3) {
+                                                        selectedColour(undefined);
+                                                    } else {
+                                                        selectedColour(3);
+                                                    }
+                                                 }"></div>
+                                            <div class="colour" title="Black" data-bind="css: {
+                                                    'selected-colour': selectedColour() == 1
+                                                 }, click: function() {
+                                                    if (selectedColour() == 1)  {
+                                                        selectedColour(undefined);
+                                                    } else {
+                                                        selectedColour(1);
+                                                    }
+                                                 }"></div>
+                                            <div class="colour" title="Blue" data-bind="css: {
+                                                    'selected-colour': selectedColour() == 2
+                                                 }, click: function() {
+                                                    if (selectedColour() == 2) {
+                                                        selectedColour(undefined);
+                                                    } else {
+                                                        selectedColour(2);
+                                                     }
+                                                 }"></div>
+                                            <div class="colour" title="Turquoise" data-bind="css: {
+                                                    'selected-colour': selectedColour() == 11
+                                                 }, click: function() {
+                                                    if (selectedColour() == 11) {
+                                                        selectedColour(undefined);
+                                                    } else {
+                                                        selectedColour(11);
+                                                    }
+                                                 }"></div>
+                                            <div class="colour" title="Green" data-bind="css: {
+                                                    'selected-colour': selectedColour() == 4
+                                                 }, click: function() {
+                                                    if (selectedColour() == 4)  {
+                                                        selectedColour(undefined);
+                                                    } else {
+                                                        selectedColour(4);
+                                                    }
+                                                 }"></div>
+                                            <div class="colour" title="Yellow" data-bind="css: {
+                                                    'selected-colour': selectedColour() == 13
+                                                 }, click: function() {
+                                                    selectedColour(13);
+                                                 }"></div>
+                                            <div class="colour" title="Orange" data-bind="css: {
+                                                    'selected-colour': selectedColour() == 7
+                                                 }, click: function() {
+                                                    if (selectedColour() == 7) {
+                                                        selectedColour(undefined);
+                                                    } else {
+                                                        selectedColour(7);
+                                                     }
+                                                 }"></div>
+                                            <div class="colour" title="Red" data-bind="css: {
+                                                    'selected-colour': selectedColour() == 10
+                                                 }, click: function() {
+                                                    if (selectedColour() == 10) {
+                                                        selectedColour(undefined);
+                                                    } else {
+                                                        selectedColour(10);
+                                                     }
+                                                 }"></div>
+                                            <div class="colour" title="Pink" data-bind="css: {
+                                                    'selected-colour': selectedColour() == 8
+                                                 }, click: function() {
+                                                    if (selectedColour() == 8) {
+                                                        selectedColour(undefined);
+                                                    } else {
+                                                        selectedColour(8);
+                                                     }
+                                                 }"></div>
+                                            <div class="colour" title="Purple" data-bind="css: {
+                                                    'selected-colour': selectedColour() == 9
+                                                 }, click: function() {
+                                                    if (selectedColour() == 9) {
+                                                        selectedColour(undefined);
+                                                    } else {
+                                                        selectedColour(9);
+                                                     }
+                                                 }"></div>
+                                            <div class="colour" title="Multicoloured" data-bind="css: {
+                                                    'selected-colour': selectedColour() == 14
+                                                 }, click: function() {
+                                                    if (selectedColour() == 14) {
+                                                        selectedColour(undefined);
+                                                    } else {
+                                                        selectedColour(14);
+                                                     }
+                                                 }"></div>
+                                            <div class="colour"></div>
+                                        </div>
+                                    </div>
+                                    <!-- /ko -->
+                                    <!-- ko if: searchWidget().ShowBrandFilter -->
+                                    <div class="category">
+                                        <label>
+                                            <span class="close" data-bind="click: function () { selectedBrand(undefined); }">
+                                                <i class="material-icons">
+                                                    delete_forever
+                                                </i>
+                                            </span>
+                                            Brand
+                                        </label>
+                                        <div class="filter-container">
+                                            <!-- ko foreach: brandFilterButtons -->
+                                            <a class="btn btn-secondary-blue" data-bind="css: {
+                                                    'btn-primary': $parent.selectedBrand() == $data.BrandID
+                                                }, click: function () { if ($parent.selectedBrand() == $data.BrandID) { $parent.selectedBrand(undefined); } else { $parent.selectedBrand($data.BrandID); } }, text: $data.Code, attr: { title: $data.Name }"></a>
+                                            <!-- /ko -->
+                                        </div>
+                                    </div>
+                                    <!-- /ko -->
+                                    <!-- ko if: searchWidget().ShowNewFilter -->
+                                    <div class="category">
+                                        <label>
+                                            <span class="close" data-bind="click: function() { searchNew(false) }">
+                                                <i class="material-icons">
+                                                    delete_forever
+                                                </i>
+                                            </span>
+                                            New
+                                        </label>
+                                        <div class="filter-container">
+                                            <a class="btn btn-secondary-blue" data-bind="css: {
+                                                'btn-primary': searchNew()
+                                               }, click: function () { searchNew(!searchNew()); }" title="New">
+                                                New
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <!-- /ko -->
+                                    <!-- ko if: searchWidget().ShowLaunchFilter -->
+                                    <div class="category">
+                                        <label>
+                                            <span class="close" data-bind="click: function() { selectedLaunch(undefined); }">
+                                                <i class="material-icons">
+                                                    delete_forever
+                                                </i>
+                                            </span>
+                                            Season
+                                        </label>
+                                        <div class="launch-filter-container filter-container">
+                                            <!-- ko foreach: launchFilterButtons -->
+                                            <a class="btn btn-secondary-blue" data-bind="css: {
+                                                        'btn-primary': $parent.selectedLaunch() == $data.LaunchID
+                                                    }, click: function () {
+                                                        if ($parent.selectedLaunch() == $data.LaunchID) {
+                                                            $parent.selectedLaunch(undefined);
+                                                        } else {
+                                                            $parent.selectedLaunch($data.LaunchID);
+                                                        }
+                                                    }, text: $data.AbbreviatedName"></a>
+                                            <!-- /ko -->
+                                        </div>
+                                    </div>
+                                    <!-- /ko -->
+                                    <!-- ko if: searchWidget().ShowPatternFilter -->
+                                    <div class="category">
+                                        <label>
+                                            <span class="close" data-bind="click: function() { selectedPattern(undefined); }">
+                                                <i class="material-icons">
+                                                    delete_forever
+                                                </i>
+                                            </span>
+                                            Pattern
+                                        </label>
+                                        <div class="pattern-filter-container filter-container">
+                                            <!-- ko foreach: patternFilterButtons -->
+                                            <a class="btn btn-secondary-blue" data-bind="css: {
+                                                        'btn-primary': $parent.selectedPattern() == $data.PatternID
+                                                    }, click: function () {
+                                                        if ($parent.selectedPattern() == $data.PatternID) {
+                                                            $parent.selectedPattern(undefined);
+                                                        } else {
+                                                            $parent.selectedPattern($data.PatternID);
+                                                        }
+                                                    }, text: $data.Name"></a>
+                                            <!-- /ko -->
+                                        </div>
+                                    </div>
+                                    <!-- /ko -->
+                                    <!-- ko if: searchWidget().ShowProductTypeFilter -->
+                                    <div class="category">
+                                        <label>
+                                            <span class="close" data-bind="click: function() { selectedItemType(undefined); }">
+                                                <i class="material-icons">
+                                                    delete_forever
+                                                </i>
+                                            </span>
+                                            Product Type
+                                        </label>
+                                        <div class="item-type-filter-container filter-container">
+                                            <!-- ko foreach: itemTypeFilterButtons -->
+                                            <a class="btn btn-secondary-blue" data-bind="css: {
+                                                        'btn-primary': $parent.selectedItemType() == $data.ItemTypeID
+                                                    }, click: function () {
+                                                        if ($parent.selectedItemType() == $data.ItemTypeID) {
+                                                            $parent.selectedItemType(undefined);
+                                                        } else {
+                                                            $parent.selectedItemType($data.ItemTypeID);
+                                                        }
+                                                    }, text: $data.ShortName"></a>
+                                            <!-- /ko -->
+                                        </div>
+                                    </div>
+                                    <!-- /ko -->
+                                    <!-- ko if: searchWidget().ShowMartindaleFilter -->
+                                    <div class="category">
+                                        <label>
+                                            <span class="close" data-bind="click: function() { selectedMartindale(undefined); }">
+                                                <i class="material-icons">
+                                                    delete_forever
+                                                </i>
+                                            </span>
+                                            Martindale
+                                        </label>
+                                        <div class="martindale-filter-container filter-container">
+                                            <!-- ko foreach: martindaleFilterButtons -->
+                                            <a class="btn btn-secondary-blue" data-bind="css: {
+                                                        'btn-primary': $parent.selectedMartindale() == $data.MartindaleID
+                                                    }, click: function () {
+                                                        if ($parent.selectedMartindale() == $data.MartindaleID) {
+                                                            $parent.selectedMartindale(undefined);
+                                                        } else {
+                                                            $parent.selectedMartindale($data.MartindaleID);
+                                                        }
+                                                    }, text: $data.Name"></a>
+                                            <!-- /ko -->
+                                        </div>
+                                    </div>
+                                    <!-- /ko -->
+                                    <!-- ko if: searchWidget().ShowSizeFilter -->
+                                    <div class="category">
+                                        <label>
+                                            <span class="close" data-bind="click: function() { selectedSize(undefined); }">
+                                                <i class="material-icons">
+                                                    delete_forever
+                                                </i>
+                                            </span>
+                                            Size
+                                        </label>
+                                        <div class="size-filter-container filter-container">
+                                            <!-- ko foreach: sizeFilterButtons -->
+                                            <a class="btn btn-secondary-blue" data-bind="css: {
+                                                        'btn-primary': $parent.selectedSize() == $data.SizeID
+                                                    }, click: function () {
+                                                        if ($parent.selectedSize() == $data.SizeID) {
+                                                            $parent.selectedSize(undefined);
+                                                        } else {
+                                                            $parent.selectedSize($data.SizeID);
+                                                        }
+                                                    }, text: $data.Name"></a>
+                                            <!-- /ko -->
+                                        </div>
+                                    </div>
+                                    <!-- /ko -->
+                                    <!-- ko if: searchWidget().ShowWidthFilter -->
+                                    <div class="category">
+                                        <label>
+                                            <span class="close" data-bind="click: function() { selectedWidth(undefined); }">
+                                                <i class="material-icons">
+                                                    delete_forever
+                                                </i>
+                                            </span>
+                                            Width
+                                        </label>
+                                        <div class="width-filter-container filter-container">
+                                            <!-- ko foreach: widthFilterButtons -->
+                                            <a class="btn btn-secondary-blue" data-bind="css: {
+                                                        'btn-primary': $parent.selectedWidth() == $data.WidthID
+                                                    }, click: function () {
+                                                        if ($parent.selectedWidth() == $data.WidthID) {
+                                                            $parent.selectedWidth(undefined);
+                                                        } else {
+                                                            $parent.selectedWidth($data.WidthID);
+                                                        }
+                                                    }, text: $data.Name"></a>
+                                            <!-- /ko -->
+                                        </div>
+                                    </div>
+                                    <!-- /ko -->
+                                    <!-- /ko -->
+                                </div>
+                            </div>
+                            <div id="search-wrapper">
+                                <div class="search-control input-group">
+                                    <input style="text-align: center;" type="text" class="form-control" placeholder="Search by Collection, Design or Product Code" data-bind="keepElement: searchTerm, value: searchTerm, autocomplete: searchTermKeywordAutocompleteParams, hasFocus: searchTermHasFocus, enterKey: function () { searchNonce.valueHasMutated(); $(searchTerm.DOMElement).data('ui-autocomplete').close(); }" autocapitalize="off" autocomplete="off" autocorrect="off" />
+                                    <div class="input-group-btn">
+                                        <div class="btn-group">
+                                            <div class="input-group-btn">
+                                                <button class="btn btn-default clear-btn" data-bind="click: function () { searchTerm(undefined); $(searchTerm.DOMElement).focus(); collectionId(undefined); searchBusy(false); }">
+                                                    <span>&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="input-group-btn">
+                                                <button class="btn btn-default" type="button" data-bind="click: function() { searchNonce.valueHasMutated(); }">
+                                                    <span class="glyphicon glyphicon-search"></span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-group-btn">
+                                        <select class="search-sort form-control pull-right" data-bind="options: availableSortOrders, optionsText: 'Name', optionsValue: 'Code', optionsCaption: 'Sort Options', value: searchSortOrder"></select>
+                                    </div>
+                                </div>
+
+                                <div class="search-display-container">
+                                    @*<div class="btn-toolbar pull-right" data-bind="visible: basket().length">
+                                        <button class="btn btn-secondary-blue" data-target="#download-modal" data-toggle="modal">
+                                            <span data-bind="html: basketContentsDisplay"></span>
+                                            - Download
+                                            <span class="glyphicon glyphicon-download-alt"></span>
+                                        </button>
+                                        <button class="btn btn-secondary-blue" data-bind="click: function() { resultGridWidget().clearSelection(); }">
+                                            Clear &times;
+                                        </button>
+                                    </div>*@
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="search-results-container form-group">
+                                    <div class="blocker" data-bind="visible: searchBusy">
+                                        <div class="loading-spinner"></div>
+                                    </div>
+                                    <div id="downloads-grid" data-bind="kendoGrid: resultGridSettings"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="advertising-tab" class="tab-pane">
+                        <p>
+                            @DownloadsText.AdvertisingT1
+                        </p>
+                        <div id="advertising-grid" data-bind="kendoGrid: advertisingGridSettings"></div>
+                        @*<table class="advertising-image-table table table-condensed">
+                            <colgroup>
+                                <col style="width: 410px" />
+                                <col />
+                            </colgroup>
+                            <tbody>
+                                <!-- ko foreach: advertisingImages -->
+                                    <tr>
+                                        <td class="advertising-img-cell">
+                                            <img data-bind="attr: { src: '/Areas/Downloads/Content/AdvertisingImages/vdir/thumbnails/' + UniqueThumbnailFilename }" />
+                                        </td>
+                                        <td>
+                                            <h4 data-bind="html: Name"></h4>
+                                            <p data-bind="html: Description"></p>
+                                            <div class="btn-toolbar">
+                                                <a href="javascript:void(0);" class="btn btn-primary advertising-image-button" data-bind="click: function () { window.location.href = '/advertising/downloadweb/' + UniqueWebQualityFilename }">
+                                                    @DownloadsText.DownloadForWeb
+                                                </a>
+                                                <a href="javascript:void(0);" class="btn btn-primary advertising-image-button" data-bind="click: function() { window.location.href = '/advertising/downloadprint/' + UniquePrintQualityFilename }">
+                                                    @DownloadsText.DownloadForPrint
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <!-- /ko -->
+                            </tbody>
+                            <tbody>
+                                <tr>
+                                    <td colspan="2">
+                                        <div data-bind="kendoPager: advertisingPagerParams"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>*@
+                    </div>
+                    <div id="how-to-tab" class="tab-pane">
+
+                        <h4 class="how-to-heading">@DownloadsText.HowToT3</h4>
+                        <p>
+                            @Html.Raw(DownloadsText.HowToT4)
+                        </p>
+                        <p>
+                            @Html.Raw(DownloadsText.HowToT5)
+                        </p>
+                        <p>
+                            @Html.Raw(DownloadsText.HowToT6)
+                        </p>
+
+                        <table class="how-to-table table table-striped table-condensed table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="width: 200px;">
+                                        @Html.Raw(DownloadsText.ImageSpecifications)
+                                    </th>
+                                    <th>
+                                        @Html.Raw(DownloadsText.DownloadForWeb)
+                                    </th>
+                                    <th>
+                                        @Html.Raw(DownloadsText.DownloadForPrint)
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>@Html.Raw(DownloadsText.Description)</th>
+                                    <td>@Html.Raw(DownloadsText.WebOptimisedImages)</td>
+                                    <td>@Html.Raw(DownloadsText.PrintOptimisedImages)</td>
+                                </tr>
+                                <tr>
+                                    <th>@Html.Raw(DownloadsText.FileFormat)</th>
+                                    <td>.jpg</td>
+                                    <td>.tif</td>
+                                </tr>
+                                <tr>
+                                    <th>@Html.Raw(DownloadsText.Resolution)</th>
+                                    <td>72dpi</td>
+                                    <td>300dpi</td>
+                                </tr>
+                                <tr>
+                                    <th>@Html.Raw(DownloadsText.ColourSpace)</th>
+                                    <td>RGB</td>
+                                    <td>CMYK</td>
+                                </tr>
+                                <tr>
+                                    <th>@DownloadsText.TypicalSize</th>
+                                    <td>@DownloadsText.FitWithin1024</td>
+                                    <td>A4</td>
+                                </tr>
+                                <tr>
+                                    <th>@DownloadsText.AverageFileSize</th>
+                                    <td>0.5MB</td>
+                                    <td>100MB</td>
+                                </tr>
+                                <tr>
+                                    <th>@DownloadsText.EstimatedDownloadTime</th>
+                                    <td>@DownloadsText.Under2Seconds</td>
+                                    <td>@DownloadsText.Under2Minutes</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4 class="how-to-heading">
+                            @DownloadsText.ProductImagesAndFeedsTitle
+                        </h4>
+
+                        <p>
+                            @DownloadsText.HowToT7
+                        </p>
+
+                        <p>
+                            @DownloadsText.HowToT8
+                        </p>
+
+                        <p>
+                            @DownloadsText.HowToT9
+                        </p>
+
+                        <p>
+                            @DownloadsText.HowToT10
+                        </p>
+
+                        <p>
+                            @DownloadsText.HowToT11
+                        </p>
+
+                        <table class="how-to-table table table-striped table-condensed table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="width: 200px;">
+                                        @DownloadsText.Format
+                                    </th>
+                                    <th>
+                                        @DownloadsText.Description
+                                    </th>
+                                    @*<th style="width: 200px;">
+                                        @Text.Sample
+                                    </th>*@
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>Shopify (.csv)</th>
+                                    <td>
+                                        @Html.Raw(DownloadsText.ShopifyDownloadText)
+                                    </td>
+                                    @*<td>
+                                        <a href="/download/shopify-sample" target="_self">Shopify @(Text.Sample).csv</a>
+                                    </td>*@
+                                </tr>
+                                <tr>
+                                    <th>Magento (.xml)</th>
+                                    <td>
+                                        @Html.Raw(DownloadsText.MagentoDownloadText)
+                                    </td>
+                                    @*<td>
+                                        <a href="/download/magento-sample" target="_self">Magento @(Text.Sample).xml</a>
+                                    </td>*@
+                                </tr>
+                                @*<tr>
+                                    <th>Demandware (.xml)</th>
+                                    <td>
+                                        <em>@Text.ComingSoon</em>
+                                    </td>
+                                    <td>
+                                        <a href="/download/demandware-sample" target="_self">Demandware @Text.Sample.xml</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Netsuite (.xml)</th>
+                                    <td>
+                                        <em>@Text.ComingSoon</em>
+                                    </td>
+                                    <td>
+                                        <a href="/download/netsuite-sample" target="_self">Netsuite @Text.Sample.xml</a>
+                                    </td>
+                                </tr>*@
+                                <tr>
+                                    <th>Wordpress / WooCommerce (.xml)</th>
+                                    <td>
+                                        @Html.Raw(DownloadsText.WooCommerceDownloadText)
+                                    </td>
+                                    @*<td>
+                                        <a href="/download/woocommerce-sample" target="_self">WordPress @(Text.Sample).xml</a>
+                                    </td>*@
+                                </tr>
+                                <tr>
+                                    <th>@DownloadsText.ExcelDownloadTitle</th>
+                                    <td>
+                                        @Html.Raw(DownloadsText.ExcelDownloadText)
+                                    </td>
+                                    @*<td>
+                                        <a href="/download/excel-sample" target="_self">Excel @(Text.Sample).xlsx</a>
+                                    </td>*@
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="download-modal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">
+                    @DownloadsText.Download
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="blocker" data-bind="visible: downloadBusy">
+                    <div class="loading-spinner"></div>
+                    <h3>Generating Feed, Please Wait...</h3>
+                </div>
+                <table class='how-to-table downloader-table table-bordered table-condensed table-striped'>
+                    <tbody id="download-body">
+                        <tr>
+                            <th>
+                                @DownloadsText.FeedFormat
+                            </th>
+                            <th>
+                                @DownloadsText.Description
+                            </th>
+                            <th>
+                                @DownloadsText.Download
+                            </th>
+                        </tr>
+                        <tr>
+                            <td class="downloader-logo">
+                                <img class='downloader-logo' src='~/Areas/Downloads/Content/Images/shopify-logo.png' />
+                            </td>
+                            <td>
+                                <p>
+                                    @Html.Raw(DownloadsText.ShopifyDownloadText)
+                                </p>
+                            </td>
+                            <td>
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <select class="form-control" data-bind="value: unitOfMeasurement, options: unitsOfMeasurement, optionsText: 'Name', optionsValue: 'Value', optionsCaption: 'Select Unit'"></select>
+
+                                            <button class='btn btn-download btn-primary' data-bind="click: downloadShopifyCSV, enable: unitOfMeasurement() != null">
+                                                @DownloadsText.Download .csv
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="downloader-logo">
+                                <img class='downloader-logo' src='~/Areas/Downloads/Content/images/magento-logo.png' />
+                            </td>
+                            <td>
+                                <p>
+                                    @Html.Raw(DownloadsText.MagentoDownloadText)
+                                </p>
+                            </td>
+                            <td>
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <button class='btn btn-download btn-primary' data-bind="click: downloadMagentoXML">
+                                                @DownloadsText.Download .xml
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    @*<tr>
+                                        <td>
+                                            <button class="btn btn-download btn-info" disabled="disabled">Integrate</button>
+                                        </td>
+                                    </tr>*@
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="downloader-logo">
+                                <img class='downloader-logo' src='~/Areas/Downloads/Content/images/woo-commerce.png' />
+                            </td>
+                            <td>
+                                <p>
+                                    @Html.Raw(DownloadsText.WooCommerceDownloadText)
+                                </p>
+                            </td>
+                            <td>
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <button class='btn btn-download btn-primary' data-bind="click: downloadWooCommerceXML">
+                                                @DownloadsText.Download .xml
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="downloader-logo">
+                                <img class='downloader-logo' src='~/Areas/Downloads/Content/Images/excel-logo.png' />
+                            </td>
+                            <td>
+                                <p>
+                                    @Html.Raw(DownloadsText.ExcelDownloadText)
+                                </p>
+                            </td>
+                            <td>
+                                <button class='btn btn-download btn-primary' data-bind="click: downloadExcelSpreadsheet">
+                                    @DownloadsText.Download .xlsx
+                                </button>
+                                <button class="btn btn-download btn-success" data-bind="click: imageDownloaderForWindows">
+                                    @DownloadsText.WindowsImageDownloader
+                                </button>
+                                <button class="btn btn-download btn-success" data-bind="click: imageDownloaderForMac">
+                                    @DownloadsText.MacImageDownloader
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="tc-modal" class="modal fade" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <h4 class="modal-title">
+                    @DownloadsText.TermsAndConditions
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12" style="height: 500px; overflow-y: scroll; margin-bottom: 2em;">
+                        <p>
+                            @DownloadsText.TermsT1
+                        </p>
+                        <p>
+                            @DownloadsText.TermsT2
+                        </p>
+                        @* DEFUNCT *@
+                        @*<p>
+                            @DownloadsText.TermsT3
+                        </p>*@
+                        <p>
+                            @DownloadsText.TermsT4
+                        </p>
+                        <p>
+                            @DownloadsText.TermsT5
+                        </p>
+                        <p>
+                            @DownloadsText.TermsT6
+                        </p>
+                        <p>
+                            @DownloadsText.TermsT7
+                        </p>
+                        <p>
+                            @DownloadsText.TermsT8
+                        </p>
+                        <p>
+                            @DownloadsText.TermsT9
+                        </p>
+                        <p>
+                            @DownloadsText.TermsT10
+                        </p>
+                        <p>
+                            @DownloadsText.TermsT11
+                        </p>
+                        <p>
+                            @DownloadsText.TermsT12
+                        </p>
+                        <p>
+                            @DownloadsText.TermsT13
+                        </p>
+                        <p>
+                            @DownloadsText.TermsT14
+                        </p>
+                        <p>
+                            @DownloadsText.TermsT15
+                        </p>
+                        <p>
+                            @DownloadsText.TermsT16
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-bind="click: acceptTerms" data-dismiss="modal">
+                    @DownloadsText.DownloadPopupT2
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

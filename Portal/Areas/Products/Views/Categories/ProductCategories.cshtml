@@ -1,0 +1,205 @@
+﻿@model Portal.Areas.Products.ViewModels.ProductCategoriesViewModel
+@{
+    ViewBag.Title = "Product Categories";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/product-categories")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/product-categories")
+
+    <script type="text/javascript">
+        
+        function getProductGroups() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.MertexProductGroups));
+        }
+
+        function getItemTypes() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.MertexItemTypes));
+        }
+        
+        function getProductTypeMappings() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Mertex_ProductTypes.Where(p => p.ProductType != null && p.ProductGroup != null && p.ItemType != null).ToList()));
+        }
+
+        var viewModel = productCategoriesViewModel();
+
+        var vm = viewModel;
+
+        ko.options.deferUpdates = true;
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        $(document).ready(function () {
+            ko.applyBindings(viewModel, document.body);
+        });
+    </script>
+}
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+
+<ul class="nav nav-tabs">
+    <li class="active">
+        <a href="#categories" data-toggle="tab">
+            Product Groups, Item Types &amp; Website Product Types
+        </a>
+    </li>
+</ul>
+<div id="tab-container" class="tab-content">
+    <div class="categories tab-pane active">
+        <div class="blocker" style="display: none" data-bind="visible: busy">
+            <div class="loading-spinner"></div>
+        </div>
+        @*<div class="prefilters">
+            <div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: originCountryDropDownList }"></div>
+            <div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: destinationCountryDropDownList }"></div>
+            <div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: deliveryGroupDropDownList }"></div>
+        </div>*@
+        <div class="flex-container" style="display: none" data-bind="visible: true">
+            <div>
+                <div class="header">
+                    <h4>
+                        Mertex Product Groups
+                    </h4>
+                    <div data-bind="component: { name: 'mdc-text-field-component', params: productGroupParams }"></div>
+                </div>
+                <ul class="list-group header">
+                    <li class="list-group-item">
+                        <span>
+                            Code
+                        </span>
+                        <span>
+                            Name
+                        </span>
+                        <span>
+                            Product Counts
+                        </span>
+                    </li>
+                </ul>
+                <ul class="list-group" data-bind="foreach: productGroupDisplay">
+                    <li class="list-group-item">
+                        <span data-bind="text: Code"></span>
+                        <span data-bind="text: Description"></span>
+                        <span class="smaller">
+                            <span data-bind="text: formatNumber(Counts[0], 0, 'en-GB') + (Counts[0] == 1 ? ' Product' : ' Products')"></span>
+                            <span data-bind="text: formatNumber(Counts[1], 0, 'en-GB') + ' Current'"></span>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <div class="header">
+                    <h4>
+                        Mertex Item Types
+                    </h4>
+                    <div data-bind="component: { name: 'mdc-text-field-component', params: itemTypeParams }"></div>
+                </div>
+                <ul class="list-group header">
+                    <li class="list-group-item">
+                        <span>
+                            Code
+                        </span>
+                        <span>
+                            Name
+                        </span>
+                        <span>
+                            Product Counts
+                        </span>
+                    </li>
+                </ul>
+                <ul class="list-group" data-bind="foreach: itemTypeDisplay">
+                    <li class="list-group-item">
+                        <span data-bind="text: Code"></span>
+                        <span data-bind="text: Description"></span>
+                        <span class="smaller">
+                            <span data-bind="text: formatNumber(Counts[0], 0, 'en-GB') + (Counts[0] == 1 ? ' Product' : ' Products')"></span>
+                            <span data-bind="text: formatNumber(Counts[1], 0, 'en-GB') + ' Current'"></span>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="flex-container margin-bottom-0">
+            <div>
+                <div class="header website">
+                    <h4>
+                        Website Product Types
+                    </h4>
+                    <div data-bind="component: { name: 'mdc-text-field-component', params: productTypeParams }"></div>
+                </div>
+                <ul class="list-group header website">
+                    <li class="list-group-item">
+                        <span>
+                            Product Group
+                        </span>
+                        <span>
+                            Item Type
+                        </span>
+                        <span>
+                            Product Type
+                        </span>
+                    </li>
+                </ul>
+                <ul class="list-group website" data-bind="foreach: productTypeDisplay">
+                    <li class="list-group-item">
+                        <span data-bind="text: ProductGroupCode"></span>
+                        <span data-bind="text: ItemTypeCode"></span>
+                        <!-- ko if: ProductType -->
+                        <span data-bind="text: ProductType.Name"></span>
+                        <!-- /ko -->
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="boilerplate-modal" class="modal fade" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <h4 class="modal-title">
+                    Boilerplate
+                </h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Boilerplate
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-dismiss="modal">
+                    Cancel
+                </button>
+                <button class="btn btn-green" data-dismiss="modal">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

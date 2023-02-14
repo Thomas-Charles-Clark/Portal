@@ -1,0 +1,162 @@
+﻿<div id="external-assignment-modal" class="modal fade" data-backdrop="static" data-keyboard="false" data-bind="with: projectFactory">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-bind="click: function() { closeExternalAssignmentModal(); }" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">
+                    External Assignment
+                </h4>
+            </div>
+            @*<div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label">
+                                    External Company
+                                </label>
+                            </div>
+                            <div class="col-xs-12">
+                                <div id="new-task-external-company-wrapper" data-bind="component: { name: 'addable-list-component', params: externalCompanyListParams }"></div>
+                            </div>
+                            <div class="col-xs-12">
+                                <span class="validation-message text-danger" data-bind="validationMessage: externalCompany"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label" style="display: block; float: none;">
+                                    External Status
+                                </label>
+                            </div>
+                            <div class="col-xs-12">
+                                <div id="new-task-external-status-wrapper" data-bind="component: { name: 'addable-list-component', params: externalStatusListParams }"></div>
+                            </div>
+                            <div class="col-xs-12">
+                                <span class="validation-message text-danger" data-bind="validationMessage: externalStatus"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label class="col-form-label">
+                            External Contact
+                        </label>
+                        <input id="external-contact" class="form-control" data-bind="textInput: externalContact" />
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label class="col-form-label">
+                            External Reference
+                        </label>
+                        <input id="external-reference" class="form-control" data-bind="textInput: externalReference" />
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label class="col-form-label">
+                            External Phone
+                        </label>
+                        <input id="external-phone" class="form-control" data-bind="textInput: externalPhone" />
+                    </div>
+                    <div class="form-group col-xs-12 margin-bottom-0">
+                        <label class="col-form-label">
+                            External Email
+                        </label>
+                        <input id="external-email" class="form-control" data-bind="textInput: externalEmail" />
+                    </div>
+                </div>
+            </div>*@
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-bind="click: function() { closeExternalAssignmentModal(); }">
+                    Cancel
+                </button>
+                <button class="btn btn-success pull-right" data-bind="click: function() { closeExternalAssignmentModal('save') }">
+                    Ok
+                </button>
+                @*<span class="col-form-span text-danger pull-right" data-bind="visible: externalAssignmentErrors.isAnyMessageShown()">
+                    Please correct all errors
+                </span>*@
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<div id="edit-external-assignment-modal" class="modal fade" data-backdrop="static" data-keyboard="false" data-bind="with: projectEdit">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-bind="click: function() { closeExternalAssignmentModal(); }" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">
+                    External Assignment
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label">
+                                    External Company
+                                </label>
+                            </div>
+                            <div class="col-xs-12">
+                                <div id="edit-task-external-company-wrapper" data-bind="component: { name: 'addable-list-component', params: externalCompanyListParams }"></div>
+                            </div>
+                            <div class="col-xs-12">
+                                <span class="validation-message text-danger" data-bind="validationMessage: externalCompany"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label" style="display: block; float: none;">
+                                    External Status
+                                </label>
+                                <div id="edit-task-external-status-wrapper" data-bind="component: { name: 'addable-list-component', params: externalStatusListParams }"></div>
+                            </div>
+                            <div class="col-xs-12">
+                                <span class="validation-message text-danger" data-bind="validationMessage: externalStatus"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label class="col-form-label">
+                            External Contact
+                        </label>
+                        <input id="edit-external-contact" class="form-control" data-bind="textInput: externalContact" />
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label class="col-form-label">
+                            External Reference
+                        </label>
+                        <input id="edit-external-reference" class="form-control" data-bind="textInput: externalReference" />
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label class="col-form-label">
+                            External Phone
+                        </label>
+                        <input id="edit-external-phone" class="form-control" data-bind="textInput: externalPhone" />
+                    </div>
+                    <div class="form-group col-xs-12 margin-bottom-0">
+                        <label class="col-form-label">
+                            External Email
+                        </label>
+                        <input id="edit-external-email" class="form-control" data-bind="textInput: externalEmail" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-bind="click: function() { closeExternalAssignmentModal(); }">
+                    Cancel
+                </button>
+                <button class="btn btn-success pull-right" data-bind="click: function() { closeExternalAssignmentModal('save') }">
+                    Ok
+                </button>
+                <span class="col-form-span text-danger pull-right" data-bind="visible: externalAssignmentErrors.isAnyMessageShown()">
+                    Please correct all errors
+                </span>
+            </div>
+        </div>
+    </div>
+</div>*@
+

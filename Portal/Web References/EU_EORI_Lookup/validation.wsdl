@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://eori.ws.eos.dds.s/" name="validation" targetNamespace="http://eori.ws.eos.dds.s/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema xmlns:ns0="http://eori.ws.eos.dds.s/" targetNamespace="http://eori.ws.eos.dds.s/">
+      <xsd:include schemaLocation="https://ec.europa.eu/taxation_customs/dds2/eos/validation/services/validation?xsd=1" />
+      <xsd:complexType name="validateEORI">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" form="qualified" name="eori" type="ns0:EORINumber" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="eoriResponse">
+        <xsd:sequence>
+          <xsd:element name="eori" type="xsd:string" />
+          <xsd:element name="status" type="xsd:int" />
+          <xsd:element name="statusDescr" type="xsd:string" />
+          <xsd:element minOccurs="0" name="errorReason" type="xsd:string" />
+          <xsd:element minOccurs="0" name="name" type="xsd:string" />
+          <xsd:element minOccurs="0" name="address" type="xsd:string" />
+          <xsd:element minOccurs="0" name="street" type="xsd:string" />
+          <xsd:element minOccurs="0" name="postalCode" type="xsd:string" />
+          <xsd:element minOccurs="0" name="city" type="xsd:string" />
+          <xsd:element minOccurs="0" name="country" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="validateEORIResponse">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="return" type="ns0:eoriValidationResult" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="eoriValidationResult">
+        <xsd:sequence>
+          <xsd:element name="requestDate" type="xsd:string" />
+          <xsd:element minOccurs="0" name="errorDescription" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="result" nillable="true" type="ns0:eoriResponse" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="validateEORI" type="ns0:validateEORI" />
+      <xsd:element name="validateEORIResponse" type="ns0:validateEORIResponse" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="validateEORI">
+    <wsdl:part name="parameters" element="tns:validateEORI" />
+  </wsdl:message>
+  <wsdl:message name="validateEORIResponse">
+    <wsdl:part name="parameters" element="tns:validateEORIResponse" />
+  </wsdl:message>
+  <wsdl:portType name="EORIValidation">
+    <wsdl:documentation>Validates the EORI numbers provided. Validation is performed following those principles: The number of EORI numbers to validate at once is limited, maximal size of a message is limited, number of requests in a timeframe is limited, content of the message has to be validated against several threats.</wsdl:documentation>
+    <wsdl:operation name="validateEORI">
+      <wsdl:input name="validateEORI" message="tns:validateEORI" />
+      <wsdl:output name="validateEORIResponse" message="tns:validateEORIResponse" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="validationSoapBinding" type="tns:EORIValidation">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="validateEORI">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="validateEORI">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="validateEORIResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="validation">
+    <wsdl:port name="EORIValidationImplPort" binding="tns:validationSoapBinding">
+      <soap:address location="https://ec.europa.eu/taxation_customs/dds2/eos/validation/services/validation" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

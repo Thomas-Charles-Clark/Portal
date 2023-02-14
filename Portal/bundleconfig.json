@@ -1,0 +1,333 @@
+[
+  {
+    "outputFileName": "Content/tiny-slider.css",
+    "inputFiles": [
+      "Content/tiny-slider.scss"
+    ]
+  },
+  {
+    "outputFileName": "Content/tiny-slider.min.css",
+    "inputFiles": [
+      "Content/tiny-slider.css"
+    ]
+  },
+  {
+    "outputFileName": "Content/bootstrap.min.css",
+    "inputFiles": [
+      "Content/bootstrap.css"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Content/bootstrap-5.3.1/dist/css/bootstrap.min.css",
+    "inputFiles": [
+      "Content/bootstrap-5.3.1/dist/css/bootstrap.css"
+    ],
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "Content/bootstrap-5.3.1/dist/css/bootstrap.css",
+    "inputFiles": [
+      "Content/bootstrap-5.3.1/scss/bootstrap.scss"
+    ],
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "Content/bootstrap-icons/font/bootstrap-icons.min.css",
+    "inputFiles": [
+      "Content/bootstrap-icons/font/bootstrap-icons.css"
+    ],
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "Content/bootstrap-icons/font/bootstrap-icons.css",
+    "inputFiles": [
+      "Content/bootstrap-icons/font/bootstrap-icons.scss"
+    ],
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "Content/tempus-dominus/tempus-dominus.min.css",
+    "inputFiles": [
+      "Content/tempus-dominus/tempus-dominus.css"
+    ],
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "Content/tempus-dominus/tempus-dominus.css",
+    "inputFiles": [
+      "Content/tempus-dominus/tempus-dominus.scss"
+    ],
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "Content/codemirror/codemirror.min.css",
+    "inputFiles": [
+      "Content/codemirror/codemirror.css"
+    ],
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "Content/site-new.min.css",
+    "inputFiles": [
+      "Content/site-new.css"
+    ],
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "Content/site-new.css",
+    "inputFiles": [
+      "Content/site-new.scss"
+    ],
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "Scripts/bootstrap.min.js",
+    "inputFiles": [
+      "Scripts/bootstrap.js"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Scripts/jquery-3.1.1.min.js",
+    "inputFiles": [
+      "Scripts/jquery-3.1.1.js"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Scripts/jquery-ui-1.12.1.min.js",
+    "inputFiles": [
+      "Scripts/jquery-ui-1.12.1.js"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Scripts/knockout.mapping-latest.min.js",
+    "inputFiles": [
+      "Scripts/knockout.mapping-latest.js"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Scripts/url.min.js",
+    "inputFiles": [
+      "Scripts/url.js"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Scripts/google-maps-markerclusterer.min.js",
+    "inputFiles": [
+      "Scripts/google-maps-markerclusterer.js"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Areas/GDPR/Scripts/gdpr-survey.min.js",
+    "inputFiles": [
+      "Areas/GDPR/Scripts/gdpr-survey.js"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Areas/SalesStatistics/Scripts/sales-statistics.min.js",
+    "inputFiles": [
+      "Areas/SalesStatistics/Scripts/sales-statistics.js"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Scripts/jquery.ui.touch-punch.min.js",
+    "inputFiles": [
+      "Scripts/jquery.ui.touch-punch.js"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Areas/Tagging/Scripts/customer-tagging.min.js",
+    "inputFiles": [
+      "Areas/Tagging/Scripts/customer-tagging.js"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Scripts/knockout-kendo.min.js",
+    "inputFiles": [
+      "Scripts/knockout-kendo.js"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Areas/Tasks/Scripts/tasks-dashboard.min.js",
+    "inputFiles": [
+      "Areas/Tasks/Scripts/tasks-dashboard.js"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Areas/Projects/Scripts/projects-dashboard.min.js",
+    "inputFiles": [
+      "Areas/Projects/Scripts/projects-dashboard.js"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Scripts/knockout-fast-foreach.min.js",
+    "inputFiles": [
+      "Scripts/knockout-fast-foreach.js"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Content/mdc/css/mdc-custom.min.css",
+    "inputFiles": [
+      "Content/mdc/css/mdc-custom.css"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Areas/Downloads/Content/download-products.min.css",
+    "inputFiles": [
+      "Areas/Downloads/Content/download-products.css"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Content/Components/order-products.min.css",
+    "inputFiles": [
+      "Content/Components/order-products.css"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Scripts/Portal/Components/common-modals.min.js",
+    "inputFiles": [
+      "Scripts/Portal/Components/common-modals.js"
+    ],
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "Areas/Products/Content/product-maintenance.min.css",
+    "inputFiles": [
+      "Areas/Products/Content/product-maintenance.css"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Areas/Products/Content/product-maintenance-products.min.css",
+    "inputFiles": [
+      "Areas/Products/Content/product-maintenance-products.css"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Areas/Products/Content/product-maintenance-products.css",
+    "inputFiles": [
+      "Areas/Products/Content/product-maintenance-products.scss"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Areas/Products/Content/product-type-maintenance.min.css",
+    "inputFiles": [
+      "Areas/Products/Content/product-type-maintenance.css"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Areas/Products/Content/product-type-maintenance.css",
+    "inputFiles": [
+      "Areas/Products/Content/product-type-maintenance.scss"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Areas/Products/Content/basket-status.min.css",
+    "inputFiles": [
+      "Areas/Products/Content/basket-status.css"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Areas/Products/Content/basket-status.css",
+    "inputFiles": [
+      "Areas/Products/Content/basket-status.scss"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Scripts/knockout-sortable.min.js",
+    "inputFiles": [
+      "Scripts/knockout-sortable.js"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Scripts/knockout-3.5.0.min.js",
+    "inputFiles": [
+      "Scripts/knockout-3.5.0.js"
+    ],
+    "sourceMap": true,
+    "skipBabel": true
+  },
+  {
+    "outputFileName": "Areas/Products/Content/product-delivery.min.css",
+    "inputFiles": [
+      "Areas/Products/Content/product-delivery.css"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Areas/Translations/Scripts/translations-base.min.js",
+    "inputFiles": [
+      "Areas/Translations/Scripts/translations-base.js"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Areas/Translations/Content/translations.min.css",
+    "inputFiles": [
+      "Areas/Translations/Content/translations.css"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Areas/Stock/Content/ring-fenced-stock.min.css",
+    "inputFiles": [
+      "Areas/Stock/Content/ring-fenced-stock.css"
+    ],
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "Areas/Products/Scripts/furniture-maintenance.min.js",
+    "inputFiles": [
+      "Areas/Products/Scripts/furniture-maintenance.js"
+    ]
+  },
+  {
+    "outputFileName": "Scripts/Portal/Components/kendo-mdc-drop-down-list-factory.min.js",
+    "inputFiles": [
+      "Scripts/Portal/Components/kendo-mdc-drop-down-list-factory.js"
+    ]
+  },
+  {
+    "outputFileName": "Scripts/tempus-dominus/tempus-dominus-knockout.min.js",
+    "inputFiles": [
+      "Scripts/tempus-dominus/tempus-dominus-knockout.js"
+    ]
+  },
+  {
+    "outputFileName": "Scripts/codemirror/codemirror.min.js",
+    "inputFiles": [
+      "Scripts/codemirror/codemirror.js"
+    ]
+  },
+  {
+    "outputFileName": "Areas/Products/Scripts/product-type-maintenance-code-mirror.bundle.js",
+    "inputFiles": [
+      "Areas/Products/Scripts/product-type-maintenance-code-mirror.rollup.js"
+    ],
+    "sourceMap": true
+  }
+]

@@ -1,0 +1,950 @@
+﻿@model SalesStatistics.ViewModels.SalesStatsViewModel
+@{
+    ViewBag.Title = "Sales Statistics - Designers Guild Portal";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/components")
+    @Styles.Render("~/bundles/css/sales-statistics")
+    @Styles.Render("~/bundles/css/member-search")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/sales-statistics")
+    @Scripts.Render("~/bundles/js/member-search")
+
+    <script type="text/javascript">
+
+        var lockedToRep = true;
+
+        @if (!Model.LockedToRep)
+        {
+            <text>
+        lockedToRep = false;
+            </text>
+        }
+
+        function getAvailableMarkets() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Markets.OrderBy(p => p.Name)));
+        }
+
+        function getAvailableTags() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Tags.OrderBy(p => p.Name)));
+        }
+
+        function getPreselectedSalesRep() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.PreselectedSalesRep));
+        }
+
+        $(document).ready(function () {
+
+                        viewModel = new salesStatisticsViewModel();
+
+                        ko.validation.init({
+                            decorateInputElement: true,
+                errorElementClass: 'alert-danger',
+                errorMessageClass: 'validation-message text-danger'
+                        });
+
+                        ko.options.deferUpdates = true;
+                        ko.applyBindings(viewModel, document.body);
+
+                        viewModel.init();
+                    });
+
+                    function formatGBP(val) {
+                        return formatCurrency(val, 0, 'en-GB', 'GBP')
+                    }
+
+                    function formatGBPDec(val) {
+                        return formatCurrency(val, 2, 'en-GB', 'GBP')
+                    }
+
+                    function formatSelectedCurrency(val) {
+                        var curr = viewModel.slicerGroup.selectedCurrency();
+                        if (curr) {
+                            if (curr.hasOwnProperty('FormattingCulture')) {
+                                return formatCurrency(val, 0, curr.FormattingCulture, curr.CurrencyCode);
+                            }
+                        }
+                        return formatNumber(val, 0, 'en-GB');
+                    }
+
+                    function formatAnalysisSelectedCurrency(val) {
+                        var curr = viewModel.slicerGroupOne.selectedCurrency();
+                        if (curr) {
+                            if (curr.hasOwnProperty('FormattingCulture')) {
+                                return formatCurrency(val, 0, curr.FormattingCulture, curr.CurrencyCode);
+                            }
+                        }
+                        return formatNumber(val, 0, 'en-GB');
+                    }
+
+                    function formatNumber(value, digits) {
+
+                        digits = digits || 0;
+
+                        var formatter = new Intl.NumberFormat(
+                            'en-GB',
+                            {
+                    minimumFractionDigits: digits,
+                    maximumFractionDigits: digits
+                });
+
+            return formatter.format(value);
+        }
+
+            // redefinition of functions.js fn
+            function formatPercentage(value) {
+                var formatter = new Intl.NumberFormat('en-GB', {
+                style: 'percent',
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1
+                });
+
+            return formatter.format(value);
+        }
+
+        $("#total-sales-collapse").on('show.bs.collapse', function () {
+            viewModel.slicerGroup.nonce.valueHasMutated();
+        });
+
+        $("#quarterly-sales-collapse").on('show.bs.collapse', function () {
+            viewModel.slicerGroup.nonce.valueHasMutated();
+        });
+
+        $("#sales-area-collapse").on('shown.bs.collapse', function () {
+            viewModel.slicerGroup.nonce.valueHasMutated();
+        });
+
+        $("#sales-customer-collapse").on('shown.bs.collapse', function () {
+            viewModel.slicerGroup.nonce.valueHasMutated();
+        });
+
+        $("#lower-filters-collapse").on('show.bs.collapse', function () {
+            $('#lower-filters-toggle').text('Hide Filters');
+            $('#clear-lower-filters').show();
+        });
+
+        $("#lower-filters-collapse").on('hide.bs.collapse', function () {
+            $('#lower-filters-toggle').text('Show Filters');
+            $('#clear-lower-filters').hide();
+        });
+
+        $('#customer-analysis-collapse').on('show.bs.collapse', function () {
+            console.log('chart redrawn');
+            $("#line-chart-blocker").css('display', 'flex');
+        })
+
+        $('#customer-analysis-collapse').on('shown.bs.collapse', function () {
+            viewModel.customerAnalysisChart().redraw();
+            $("#line-chart-blocker").css('display', 'none');
+            viewModel.customerAnalysisNonce.valueHasMutated();
+        });
+
+        $(window).resize(function () {
+            viewModel.customerAnalysisChart().redraw();
+        });
+    </script>
+}
+@section beforeContainer {
+    <div class="form-busy" data-bind="fadeVisible: loadingBusy">
+        <div class="busy-bars">
+            <div class="rect1 alert alert-info"></div>
+            <div class="rect2 alert alert-info"></div>
+            <div class="rect3 alert alert-info"></div>
+            <div class="rect4 alert alert-info"></div>
+            <div class="rect5 alert alert-info"></div>
+        </div>
+    </div>
+}
+@section components {
+    @Html.Action("MonthRangeSelector", "Component", new { Area = "" })
+}
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+        <h1 class="main-heading">
+            @(Model.ApplicationHeading)
+        </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+        <h4 class="sub-heading">
+            <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+        </h4>
+            }
+        </div>
+    </div>
+</div>
+
+<div id="base-accordion" class="accordion">
+    <div class="panel panel-primary">
+        <div class="panel-heading no-padding">
+            <h4 class="panel-title">
+                <a class="panel-title panel-toggle" data-toggle="collapse" data-parent=".accordion" data-target="#rep-search-collapse">
+                    Search Criteria
+                </a>
+            </h4>
+        </div>
+        <div id="rep-search-collapse" class="panel-collapse collapse in">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-3" style="display: none;" data-bind="visible: true">
+                        <div class="btn-group btn-group-sm btn-group-justified">
+                            <a class="btn btn-default" data-bind="css: { 'btn-primary': slicerGroup.currencyDisplay() == false }, click: function() { slicerGroup.currencyDisplay(false) }">
+                                Sterling
+                            </a>
+                            <a class="btn btn-default" data-bind="css: { 'btn-primary': slicerGroup.currencyDisplay() == true }, click: function() { slicerGroup.currencyDisplay(true) }">
+                                Currency
+                            </a>
+                        </div>
+                        <div id="sg-clear">
+                            <button type="button" class="btn btn-primary btn-sm" data-bind="click: function() { slicerGroup.clearSlicers(); }">
+                                Clear Filters
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-xs-3">
+                        <div class="filters panel panel-default">
+                            <div class="panel-body bg-info">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="slicers row no-gutters" data-bind="with: slicerGroup">
+                                            <div class="input-group" style="width: 100%" data-bind="with: marketSlicerParams">
+                                                <div class="input-group-btn" style="width: 25%;">
+                                                    <div class="dropdown-wrapper">
+                                                        <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="filters panel panel-default">
+                            <div class="panel-body bg-info">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="slicers row no-gutters" data-bind="with: slicerGroup">
+                                            <div class="input-group" style="width: 100%">
+                                                <div class="input-group-btn" style="width: 60%;" data-bind="with: repSlicerParams">
+                                                    <div class="dropdown-wrapper">
+                                                        <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="input-group-btn" style="width: 40%;" data-bind="with: repOrAgentSlicerParams">
+                                                    <div class="dropdown-wrapper">
+                                                        <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="accordion" class="accordion panel-group">
+        <div class="panel panel-primary">
+            <div class="panel-heading no-padding panel-stats">
+                <h4 class="panel-title">
+                    <a class="panel-title panel-toggle collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#total-sales-collapse">
+                        Total Sales
+                    </a>
+                </h4>
+            </div>
+            <div id="total-sales-collapse" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <div id="summary-grid-loading" class="panel-busy-wrapper" style="display: none;" data-bind="visible: totalsGridBusy">
+                        <div class="form-busy-underlay"></div>
+                        <div class="form-busy">
+                            <div class="busy-bars">
+                                <div class="rect1 alert alert-info"></div>
+                                <div class="rect2 alert alert-info"></div>
+                                <div class="rect3 alert alert-info"></div>
+                                <div class="rect4 alert alert-info"></div>
+                                <div class="rect5 alert alert-info"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 text-center">
+                            <div data-bind="kendoGrid: summaryGridSettings, visible: slicerGroup.gridsVisible()"></div>
+                            <p class="alert alert-info margin-bottom-0" style="display: none;" data-bind="visible: !slicerGroup.gridsVisible()">
+                                Please select a Market.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-primary">
+            <div class="panel-heading no-padding panel-stats">
+                <h4 class="panel-title">
+                    <a class="panel-title panel-toggle collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#quarterly-sales-collapse">
+                        Quarterly Sales
+                    </a>
+                </h4>
+            </div>
+            <div id="quarterly-sales-collapse" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <div id="quarterly-grid-loading" class="panel-busy-wrapper" style="display: none;" data-bind="visible: quarterlyGridBusy">
+                        <div class="form-busy-underlay"></div>
+                        <div class="form-busy">
+                            <div class="busy-bars">
+                                <div class="rect1 alert alert-info"></div>
+                                <div class="rect2 alert alert-info"></div>
+                                <div class="rect3 alert alert-info"></div>
+                                <div class="rect4 alert alert-info"></div>
+                                <div class="rect5 alert alert-info"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row" data-bind="visible: slicerGroup.gridsVisible()">
+                        <div class="col-xs-12">
+                            <div data-bind="kendoGrid: quarterFinancialGridSettings"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 text-center">
+                            <div data-bind="kendoGrid: quarterCalendarGridSettings, visible: slicerGroup.gridsVisible()"></div>
+                            <p class="alert alert-info margin-bottom-0" style="display: none;" data-bind="visible: !slicerGroup.gridsVisible()">
+                                Please select a Market.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-primary">
+            <div class="panel-heading no-padding panel-stats">
+                <h4 class="panel-title">
+                    <a class="panel-title panel-toggle collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#sales-area-collapse">
+                        Sales by Area
+                    </a>
+                </h4>
+            </div>
+            <div id="sales-area-collapse" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <div id="sales-area-loading" class="panel-busy-wrapper" style="display: none;" data-bind="visible: salesAreaGridBusy">
+                        <div class="form-busy-underlay"></div>
+                        <div class="form-busy">
+                            <div class="busy-bars">
+                                <div class="rect1 alert alert-info"></div>
+                                <div class="rect2 alert alert-info"></div>
+                                <div class="rect3 alert alert-info"></div>
+                                <div class="rect4 alert alert-info"></div>
+                                <div class="rect5 alert alert-info"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" data-bind="visible: slicerGroup.gridsVisible()">
+                        <div class="col-xs-12 text-center">
+                            <div id="sales-area-grid-container" data-bind="kendoGrid: salesAreaGridSettings"></div>
+                        </div>
+                    </div>
+                    <div class="row" data-bind="visible: !slicerGroup.gridsVisible()">
+                        <div class="col-xs-12">
+                            <p class="alert alert-info text-center margin-bottom-0" style="display: none;" data-bind="visible: !slicerGroup.gridsVisible()">
+                                Please select a Market.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-primary">
+            <div class="panel-heading no-padding panel-stats">
+                <h4 class="panel-title">
+                    <a class="panel-title panel-toggle collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#sales-customer-collapse">
+                        Customer Dashboard (Excludes closed Accounts)
+                    </a>
+                </h4>
+            </div>
+            <div id="sales-customer-collapse" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <div id="sales-customer-loading" class="panel-busy-wrapper" style="display: none;" data-bind="visible: salesCustomerGridBusy">
+                        <div class="form-busy-underlay"></div>
+                        <div class="form-busy">
+                            <div class="busy-bars">
+                                <div class="rect1 alert alert-info"></div>
+                                <div class="rect2 alert alert-info"></div>
+                                <div class="rect3 alert alert-info"></div>
+                                <div class="rect4 alert alert-info"></div>
+                                <div class="rect5 alert alert-info"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row" data-bind="visible: slicerGroup.gridsVisible()">
+                        <div>
+                            <div class="col-sm-2 col-xs-6">
+                                <div id="all-accounts-panel" class="panel dash-panel" data-bind="click: function() { allAccounts(); }">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">All Accounts</h4>
+                                    </div>
+                                    <div class="panel-body text-center">
+                                        <span data-bind="with: customerDashboard">
+                                            <span class="count" data-bind="text: formatNumber(AllAccountCount)"></span>
+                                        </span>
+                                        <!-- ko if: slicerGroup.currencyDisplay -->
+                                        <span class="value dashboard-currency" data-bind="with: customerDashboard">
+                                            <span data-bind="text: formatSelectedCurrency(AllAccountValueCurr)"></span>&nbsp;<span class="smaller">FYTD</span>
+                                        </span>
+                                        <!-- /ko -->
+                                        <!-- ko ifnot: slicerGroup.currencyDisplay -->
+                                        <span class="value dashboard-gbp" data-bind="with: customerDashboard">
+                                            <span data-bind="text: formatGBP(AllAccountValue)"></span>&nbsp;<span class="smaller">FYTD</span>
+                                        </span>
+                                        <!-- /ko -->
+                                        <span class="small">&nbsp;</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-xs-6">
+                                <div id="new-accounts-panel" class="panel dash-panel" data-bind="click: function() { newAccounts(); }">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">New Accounts</h4>
+                                    </div>
+                                    <div class="panel-body text-center">
+                                        <span data-bind="with: customerDashboard">
+                                            <span class="count" data-bind="text: formatNumber(NewAccountCount)"></span>
+                                        </span>
+                                        <!-- ko if: slicerGroup.currencyDisplay -->
+                                        <span class="value dashboard-currency" data-bind="with: customerDashboard">
+                                            <span data-bind="text: formatSelectedCurrency(NewAccountValueCurr)"></span>&nbsp;<span class="smaller">FYTD</span>
+                                        </span>
+                                        <!-- /ko -->
+                                        <!-- ko ifnot: slicerGroup.currencyDisplay -->
+                                        <span class="value dashboard-gbp" data-bind="with: customerDashboard">
+                                            <span data-bind="text: formatGBP(NewAccountValue)"></span>&nbsp;<span class="smaller">FYTD</span>
+                                        </span>
+                                        <!-- /ko -->
+                                        <span class="small">Opened in the last 6 months</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-xs-6">
+                                <div id="top-customers-panel" class="panel dash-panel" data-bind="click: function() { topCustomers(); }">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Top Customers</h4>
+                                    </div>
+                                    <div class="panel-body text-center">
+                                        <span data-bind="with: customerDashboard">
+                                            <span class="count" data-bind="text: formatNumber(TopAccountCount)"></span>
+                                        </span>
+                                        <!-- ko if: slicerGroup.currencyDisplay -->
+                                        <span class="value dashboard-currency" data-bind="with: customerDashboard">
+                                            <span data-bind="text: formatSelectedCurrency(TopAccountValueCurr)"></span>&nbsp;<span class="smaller">FYTD</span>
+                                        </span>
+                                        <!-- /ko -->
+                                        <!-- ko ifnot: slicerGroup.currencyDisplay -->
+                                        <span class="value dashboard-gbp" data-bind="with: customerDashboard">
+                                            <span data-bind="text: formatGBP(TopAccountValue)"></span>&nbsp;<span class="smaller">FYTD</span>
+                                        </span>
+                                        <!-- /ko -->
+                                        <span class="small">£5000+ in the last 12 months</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-xs-6">
+                                <div id="active-accounts-panel" class="panel dash-panel" data-bind="click: function() { activeAccounts(); }">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Active Accounts</h4>
+                                    </div>
+                                    <div class="panel-body text-center">
+                                        <span data-bind="with: customerDashboard">
+                                            <span class="count" data-bind="text: formatNumber(ActiveAccountCount)"></span>
+                                        </span>
+                                        <!-- ko if: slicerGroup.currencyDisplay -->
+                                        <span class="value dashboard-currency" data-bind="with: customerDashboard">
+                                            <span data-bind="text: formatSelectedCurrency(ActiveAccountValueCurr)"></span>&nbsp;<span class="smaller">FYTD</span>
+                                        </span>
+                                        <!-- /ko -->
+                                        <!-- ko ifnot: slicerGroup.currencyDisplay -->
+                                        <span class="value dashboard-gbp" data-bind="with: customerDashboard">
+                                            <span data-bind="text: formatGBP(ActiveAccountValue)"></span>&nbsp;<span class="smaller">FYTD</span>
+                                        </span>
+                                        <!-- /ko -->
+                                        <span class="small">Any sales in the last 12 months</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-xs-6">
+                                <div id="lapsing-accounts-panel" class="panel dash-panel" data-bind="click: function() { lapsingAccounts(); }">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Lapsing Accounts</h4>
+                                    </div>
+                                    <div class="panel-body text-center">
+                                        <span data-bind="with: customerDashboard">
+                                            <span class="count" data-bind="text: formatNumber(LapsingAccountCount)"></span>
+                                        </span>
+                                        <!-- ko if: slicerGroup.currencyDisplay -->
+                                        <span class="value dashboard-currency" data-bind="with: customerDashboard">
+                                            <span data-bind="text: formatSelectedCurrency(LapsingAccountValueCurr)"></span>&nbsp;<span class="smaller">FYTD</span>
+                                        </span>
+                                        <!-- /ko -->
+                                        <!-- ko ifnot: slicerGroup.currencyDisplay -->
+                                        <span class="value dashboard-gbp" data-bind="with: customerDashboard">
+                                            <span data-bind="text: formatGBP(LapsingAccountValue)"></span>&nbsp;<span class="smaller">FYTD</span>
+                                        </span>
+                                        <!-- /ko -->
+                                        <span class="small">No sales in the last 6 months</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-xs-6">
+                                <div id="lapsing-accounts-panel" class="panel dash-panel" data-bind="click: function() { lapsedAccounts(); }">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Lapsed Accounts</h4>
+                                    </div>
+                                    <div class="panel-body text-center">
+                                        <span data-bind="with: customerDashboard">
+                                            <span class="count" data-bind="text: formatNumber(LapsedAccountCount)"></span>
+                                        </span>
+                                        <!-- ko if: slicerGroup.currencyDisplay -->
+                                        <span class="value dashboard-currency" data-bind="with: customerDashboard">
+                                            <span data-bind="text: formatSelectedCurrency(LapsedAccountValueCurr)"></span>&nbsp;<span class="smaller">FYTD</span>
+                                        </span>
+                                        <!-- /ko -->
+                                        <!-- ko ifnot: slicerGroup.currencyDisplay -->
+                                        <span class="value dashboard-gbp" data-bind="with: customerDashboard">
+                                            <span data-bind="text: formatGBP(LapsedAccountValue)"></span>&nbsp;<span class="smaller">FYTD</span>
+                                        </span>
+                                        <!-- /ko -->
+                                        <span class="small">No sales in the last 12 months+</span>
+                                    </div>
+                                </div>
+                            </div>
+                            @*<div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <div class="sub-pod-hint">
+                                            <span>Open Accounts Only</span>
+                                        </div>
+                                    </div>
+                                </div>*@
+                        </div>
+                    </div>
+                    <div class="row" data-bind="visible: slicerGroup.gridsVisible()">
+                        <div class="col-xs-12">
+                            <div id="customers-grid" style="position: relative">
+                                <div data-bind="kendoGrid: salesCustomerGridSettings"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" data-bind="visible: !slicerGroup.gridsVisible()">
+                        <div class="col-xs-12">
+                            <p class="alert alert-info text-center margin-bottom-0" style="display: none;" data-bind="visible: !slicerGroup.gridsVisible()">
+                                Please select a Market.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-primary">
+            <div class="panel-heading no-padding panel-stats">
+                <h4 class="panel-title">
+                    <a class="panel-title panel-toggle collapsed" data-toggle="collapse" data-parent=".accordion" data-target="#customer-analysis-collapse">
+                        Customer Analysis
+                    </a>
+                </h4>
+            </div>
+            <div id="customer-analysis-collapse" class="panel-collapse collapse">
+                <div style="position: relative">
+                    <div id="customer-analysis-loading" class="panel-busy-wrapper" style="border-radius: 0 0 4px;" data-bind="visible: customerAnalysisBusy">
+                        <div class="form-busy-underlay"></div>
+                        <div class="form-busy">
+                            <div class="busy-bars">
+                                <div class="rect1 alert alert-info"></div>
+                                <div class="rect2 alert alert-info"></div>
+                                <div class="rect3 alert alert-info"></div>
+                                <div class="rect4 alert alert-info"></div>
+                                <div class="rect5 alert alert-info"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div style="position: relative;">
+                            <div class="filters panel panel-default" style="z-index: 101">
+                                <div class="panel-body bg-info">
+                                    <div class="form-group row">
+                                        <div class="col-xs-12">
+                                            <div id="lower-filters-extern" class="btn-toolbar">
+                                                <div class="btn-group">
+                                                    <button id="lower-filters-toggle" type="button" class="btn btn-primary" data-toggle="collapse" data-target="#lower-filters-collapse">
+                                                        Show Filters
+                                                    </button>
+                                                </div>
+                                                @*<div class="btn-group">
+                                                        <div class="slicers row no-gutters" data-bind="with: slicerGroupOne">
+                                                            <div data-bind="with: marketSlicerParams">
+                                                                <div class="dropdown-wrapper" style="width: auto;">
+                                                                    <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>*@
+                                                <div class="btn-group">
+                                                    <div class="input-group" style="width: 488px">
+                                                        <input type="text" class="form-control" data-bind="value: searchString, attr: { placeholder: 'Type to search by Account Number or Name ' }, enterKey: function() { customerAnalysisWidget().dataSource.read(); }" />
+                                                        <span class="input-group-addon">
+                                                            <button class="clear-btn btn btn-default" type="button" data-bind="click: function() { searchString(undefined); customerAnalysisWidget().dataSource.read(); }">×</button>
+                                                        </span>
+                                                        <span class="input-group-btn">
+                                                            <button class="search-btn btn btn-default" data-bind="click: function(data, event) { customerAnalysisWidget().dataSource.read(); }"><span class="glyphicon glyphicon-search"></span></button>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="btn-group">
+                                                    <button id="clear-lower-filters" style="display: none;" type="button" class="btn btn-default" data-bind="click: clearLowerSlicers">
+                                                        Clear Filters
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @*<div class="col-xs-7">
+                                                <div class="btn-toolbar pull-right">
+                                                    <div class="btn-group">
+                                                        <button class="btn btn-primary">
+                                                            Email
+                                                        </button>
+                                                    </div>
+                                                    <div class="btn-group">
+                                                        <button class="btn btn-primary">
+                                                            Print
+                                                        </button>
+                                                    </div>
+                                                    <div class="btn-group">
+                                                        <button class="btn btn-primary">
+                                                            Export to Excel
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>*@
+                                    </div>
+                                    <div id="lower-filters-collapse" class="collapse">
+                                        <div class="form-group row">
+                                            <div class="col-xs-12">
+                                                <div class="row" data-bind="with: slicerGroupOne">
+                                                    <div class="col-xs-3" style="display: none;" data-bind="visible: true">
+                                                        <div class="btn-group btn-group-sm btn-group-justified">
+                                                            <a class="btn btn-default" data-bind="css: { 'btn-primary': currencyDisplay() == false }, click: function() { currencyDisplay(false) }">
+                                                                Sterling
+                                                            </a>
+                                                            <a class="btn btn-default" data-bind="css: { 'btn-primary': currencyDisplay() == true }, click: function() { currencyDisplay(true) }">
+                                                                Currency
+                                                            </a>
+                                                        </div>
+                                                        <div id="sg-clear">
+                                                            <button type="button" class="btn btn-primary btn-sm" data-bind="click: function() { $parent.clearLowerSlicers(); }">
+                                                                Clear Filters
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-3" style="padding: 0;">
+                                                        <div class="panel panel-default">
+                                                            <div class="panel-body bg-info">
+                                                                <div class="row">
+                                                                    <div class="col-xs-12">
+                                                                        <div class="slicers row no-gutters">
+                                                                            <div class="input-group" style="width: 100%">
+                                                                                <div class="input-group-btn" style="width: 50%;" data-bind="with: marketSlicerParams">
+                                                                                    <div class="dropdown-wrapper">
+                                                                                        <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="input-group-btn" style="width: 50%;" data-bind="with: areaSlicerParams">
+                                                                                    <div class="dropdown-wrapper">
+                                                                                        <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <div class="panel panel-default">
+                                                            <div class="panel-body bg-info">
+                                                                <div class="row">
+                                                                    <div class="col-xs-12">
+                                                                        <div class="slicers row no-gutters">
+                                                                            <div class="input-group" style="width: 100%">
+                                                                                <div class="input-group-btn" style="width: 60%;" data-bind="with: repSlicerParams">
+                                                                                    <div class="dropdown-wrapper">
+                                                                                        <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="input-group-btn" style="width: 40%;" data-bind="with: repOrAgentSlicerParams">
+                                                                                    <div class="dropdown-wrapper">
+                                                                                        <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-xs-12">
+                                                <div class="panel panel-default">
+                                                    <div class="panel-body bg-info">
+                                                        <div class="row">
+                                                            <div class="col-xs-12">
+                                                                <div class="slicers row no-gutters" data-bind="with: slicerGroupTwo">
+                                                                    <div class="input-group">
+                                                                        <!-- ko foreach: slicerCollection -->
+                                                                        <div class="input-group-btn">
+                                                                            <div class="dropdown-wrapper">
+                                                                                <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+
+                                                                            </div>
+                                                                        </div>
+                                                                        <!-- /ko -->
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-xs-12">
+                                                <div class="panel panel-default">
+                                                    <div class="panel-body bg-info">
+                                                        <div class="row">
+                                                            <div class="col-xs-12">
+                                                                <div class="slicers row no-gutters lower-slicers" data-bind="with: slicerGroupThree">
+                                                                    <div class="input-group btn-group-justified">
+                                                                        <!-- ko foreach: slicerCollection -->
+                                                                        <div class="input-group-btn">
+                                                                            <div class="dropdown-wrapper">
+                                                                                <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+
+                                                                            </div>
+                                                                        </div>
+                                                                        <!-- /ko -->
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div id="analysis-header" style="display: none" data-bind="visible: true">
+                                                <div data-bind="component: { name: 'month-range-selector-component', params: customerAnalysisRangeSelectorSettings }"></div>
+                                                <div class="row no-gutters mpr-inner" data-bind="with: customerAnalysisRangeSelector">
+                                                    <div class="col-xs-12">
+                                                        <div class="mpr-quick-buttons btn-group btn-group-sm btn-group-justified">
+                                                            <a class="btn btn-primary" data-bind="click: function () { setPeriod('L12'); }">
+                                                                Last 12 Months
+                                                            </a>
+                                                            <a class="btn btn-primary" data-bind="click: function () { setPeriod('FYTD'); }">
+                                                                Financial Year to Date
+                                                            </a>
+                                                            <a class="btn btn-primary" data-bind="click: function() { setPeriod('CYTD'); }">
+                                                                Calendar Year to Date
+                                                            </a>
+                                                            <a class="btn btn-primary" data-bind="click: function() { setPeriod('MTD'); }">
+                                                                Month to Date
+                                                            </a>
+                                                            <!-- ko if: today.getMonth() >= 3 || today.getMonth() <= 2 -->
+                                                            <a class="btn btn-primary" data-bind="click: function() { setPeriod('FQ1'); }">
+                                                                Financial Q1
+                                                            </a>
+                                                            <!-- /ko -->
+                                                            <!-- ko if: today.getMonth() >= 6 || today.getMonth() <= 2 -->
+                                                            <a class="btn btn-primary" data-bind="click: function() { setPeriod('FQ2'); }">
+                                                                Financial Q2
+                                                            </a>
+                                                            <!-- /ko -->
+                                                            <!-- ko if: today.getMonth() >= 9 || today.getMonth() <= 2 -->
+                                                            <a class="btn btn-primary" data-bind="click: function() { setPeriod('FQ3'); }">
+                                                                Financial Q3
+                                                            </a>
+                                                            <!-- /ko -->
+                                                            <!-- ko if: today.getMonth() >= 12 || today.getMonth() <= 2 -->
+                                                            <a class="btn btn-primary" data-bind="click: function() { setPeriod('FQ4'); }">
+                                                                Financial Q4
+                                                            </a>
+                                                            <!-- /ko -->
+                                                            <a class="btn btn-primary" data-bind="click: function() { setPeriod('CQ1'); }">
+                                                                Calendar Q1
+                                                            </a>
+                                                            <!-- ko if: today.getMonth() >= 3 -->
+                                                            <a class="btn btn-primary" data-bind="click: function() { setPeriod('CQ2'); }">
+                                                                Calendar Q2
+                                                            </a>
+                                                            <!-- /ko -->
+                                                            <!-- ko if: today.getMonth() >= 6 -->
+                                                            <a class="btn btn-primary" data-bind="click: function() { setPeriod('CQ3'); }">
+                                                                Calendar Q3
+                                                            </a>
+                                                            <!-- /ko -->
+                                                            <!-- ko if: today.getMonth() >= 9 -->
+                                                            <a class="btn btn-primary" data-bind="click: function() { setPeriod('CQ4'); }">
+                                                                Calendar Q4
+                                                            </a>
+                                                            <!-- /ko -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" data-bind="visible: slicerGroupOne.gridVisible()">
+                                <div class="col-xs-12" style="position: relative; padding: 15px;">
+                                    <div class="form-group row">
+                                        <div class="col-xs-12">
+                                            <div style="position: relative">
+                                                <div id="line-chart-blocker">
+                                                    <h1>Loading Chart...</h1>
+                                                </div>
+                                                <div id="line-chart" data-bind="kendoChart: customerAnalysisChartParams"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="analysis-grid-wrapper">
+                                        <div data-bind="kendoGrid: customerAnalysisGridSettings"></div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="alert alert-danger">
+                                        If you're viewing upto and including this month, then <i>last year's value for that month is not displayed on the chart.</i> It is, however, accounted for in the 'Selected Period ...' values. 
+                                    </div>
+                                    <button class="btn btn-primary pull-right" data-bind="click: function() { customerAnalysisWidget().saveAsExcel(); }">
+                                        Export to Excel
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row" style="display: none;" data-bind="visible: !slicerGroupOne.gridVisible()">
+                                <div class="col-xs-12">
+                                    <p class="alert alert-info margin-bottom-0">
+                                        Please select a Market.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="contact-modal" class="modal fade" data-bind="with: contactDataToDisplay">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">
+                    <span data-bind="text: Code"></span>
+                    <span data-bind="text: Name"></span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">
+                            Name
+                        </label>
+                    </div>
+                    <div class="col-xs-12">
+                        <span class="address-span" data-bind="text: Name"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">
+                            Address
+                        </label>
+                    </div>
+                    <div class="col-xs-12">
+                        <span class="address-span" data-bind="text: AddressLine1"></span>
+                        <span class="address-span" data-bind="text: AddressLine2"></span>
+                        <span class="address-span" data-bind="text: AddressLine3"></span>
+                        <span class="address-span" data-bind="text: AddressLine4"></span>
+                        <span class="address-span" data-bind="text: CountryCode"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">
+                            Default Delivery Address
+                        </label>
+                    </div>
+                    <div class="col-xs-12">
+                        <span class="address-span" data-bind="text: DeliveryAddressLine1"></span>
+                        <span class="address-span" data-bind="text: DeliveryAddressLine2"></span>
+                        <span class="address-span" data-bind="text: DeliveryAddressLine3"></span>
+                        <span class="address-span" data-bind="text: DeliveryAddressLine4"></span>
+                        <span class="address-span" data-bind="text: DeliveryCountryCode"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">
+                            Phone
+                        </label>
+                    </div>
+                    <div class="col-xs-12">
+                        <!-- ko if: PhoneNumber -->
+                        <a data-bind="attr: { href: 'tel:'+PhoneNumber }, text: PhoneNumber"></a>
+                        <!-- /ko -->
+                        <!-- ko ifnot: PhoneNumber -->
+                        <span class="address-span">Unknown</span>
+                        <!-- /ko -->
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">
+                            Email
+                        </label>
+                    </div>
+                    <div class="col-xs-12">
+                        <!-- ko if: Email -->
+                        <a data-bind="attr: { href: 'mailto:'+Email }, text: Email"></a>
+                        <!-- /ko -->
+                        <!-- ko ifnot: Email -->
+                        <span class="address-span">Unknown</span>
+                        <!-- /ko -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-right" data-dismiss="modal" data-target="#contact-modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

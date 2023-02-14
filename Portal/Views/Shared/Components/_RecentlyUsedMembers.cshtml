@@ -1,0 +1,60 @@
+﻿@*@model Portal.ViewModels.ComponentModels.RecentlyUsedMembersViewModel
+
+<div class="btn-group" role="group">
+    <button type="button" class="btn btn-default @(Model.ButtonCssOverride) dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span>Recently Used</span>
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" data-bind="foreach: memberList"> 
+        <li><a data-bind="text: $data.FullName || $data.Email, attr: { href: 'javascript:;', title: $data.Email }, click: function() { $parent.select($data); }"></a></li>
+    </ul>
+</div>
+
+<script type="text/javascript">
+    function getRecentlyUsedMembersFromServer() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.RecentlyUsedMembers, new JsonSerializerSettings()
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            PreserveReferencesHandling = PreserveReferencesHandling.None
+        }))
+    }
+
+    function getRecentlyUsedMembers() {
+        var members = getRecentlyUsedMembersFromServer();
+
+        var results = [];
+
+        Enumerable.From(members).ForEach(function (m) {
+            results.push(new recentlyUsedMember(m));
+        });
+
+        return results;
+    }
+
+    function recentlyUsedMember(m) {
+        var self = this;
+
+        self.FullName = m.FullName;
+        self.MemberID = m.MemberID;
+        self.Email = m.Email;
+        self.Phone = m.PhoneNumber;
+
+        self.EmailHref = ko.pureComputed({
+            read: function () {
+                if (self.email) {
+                    return "mailto:" + self.email;
+                }
+            }
+        }, self);
+
+        self.PhoneHref = ko.pureComputed({
+            read: function () {
+                if (self.phone) {
+                    return "tel:" + self.phone.replace(/\s+/, '-');
+                } else {
+                    return "#";
+                }
+            }
+        }, self);
+    }
+</script>*@

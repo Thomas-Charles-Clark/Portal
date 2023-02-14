@@ -1,0 +1,91 @@
+1) Back Order / Auto Allocation Priority (?)
+	Find out what this is, if we can already pass it, and what Maria knows about what values it should have
+	STREASON
+
+				3) Delivery Terms (?)
+				
+				
+				
+4) Held for Sales Reason (Code already exists & Name) - Find if Code has a Name, 
+	present a selector when checkbox Held for Sales is checked.
+	
+	
+	
+	FuelCharge & ParcelRate
+	
+	
+	two files stuck in imageimport\inspirational\ss20...
+	
+	
+	HVSRV1 is a PowerEdge 6800 with a PERC 5/E SCSI adapter.
+	Get OpenManage installed and working.
+	
+	can we possibly get chkdsk to run?
+	
+	VM-SQL1 wants restarting so I can get to my user account...
+	
+	... want to automate the fetching of Folia product imagery...
+	
+	... want to pull BRU.CODE into MertexReportData so that we can fetch Bru stock by their productId
+	
+	Right. 
+	
+	
+	
+	
+	if selected delivery address is changed *at all* then wipe out the deliveryReference.
+	
+	The countryCode input parameter must follow the pattern [A-Z]{2} The vatNumber input parameter must follow the pattern [0-9A-Za-z\+\*\.]{2,12}
+	
+	Portal change:
+	assume when NOT_PROCESSED VAT check response, that it IS VALID.
+	
+	
+	SLCUST OPEN = 'O'
+	
+	CUSREF
+	CUSNAME
+	VAT.REG.DES IS NOT NULL
+	pull all of them
+	validate all of them
+	
+	INVVATDISPLAY
+	
+	VATCOUNTRY
+	
+	4517 / 60 = 76 minutes
+	
+	 4517.984ms
+	 
+	 
+	 2875643ms / 1000 = 2875s
+	 2681533ms / 1000 = 2681s
+	 
+	 2875 / 60s in a minute ~= 2880 / 60
+	 2681 / 60s in a miinute ~=
+	
+	
+	 = 288 / 6
+	 
+	 = 300 / 6 = 50 - 2 = 48 minutes, quite a lot better than 75 minutes. Possibly because of skipping EXIT CODE checks.
+	 
+	 = 50 - 2
+	 
+	 300
+	 
+	 = 48m 
+	 
+	 
+	 Store Events form on website wants to start with store EMPTY, forcing selection, validating.
+	 
+	 
+	 Right.
+	 
+	 Delivery addresses.
+	 
+	 We want to ask "Do you want to overwrite this record" or "Do you want to save this record".
+	 
+	 If the customer has no addresses in their address book, we could ask "Do you want to set this as the default address for the customer?"
+	 DEF.DELREF (field 53 on SLCUST)
+	 
+	 

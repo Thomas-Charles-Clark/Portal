@@ -1,0 +1,377 @@
+﻿@model Portal.ViewModels.ComponentModels.MonthRangeSelectorViewModel
+
+@Styles.Render("~/Content/Components/month-range-selector.css")
+
+<script id="month-range-selector-template" type="text/html">
+    <div class="row">
+        <div class="col-xs-12">
+            <div data-bind="attr: { id: elementId }">
+                <div class="mpr-inner">
+                    <div class="row no-gutters">
+                        @*
+                            Now... we would like to retain proportion for all months, favouring none with being wider or narrower.
+                            This might actually be possible.
+                            // How wide is this year, given the number of months it has out of the whole. If it has 7/36... how wide is it.
+                            // well, divide by three to get into twelfths
+                            // 7/3 != round number, broken.
+                            // 2.333333 / 12
+                            // so maybe we have to drop the grid part of bootstrap for this purpose.
+                            // call the whole thing 100%, divide that by 36... each month must take up no more than 2.777777* %
+                            // so each YEAR must take up 2.7777777777 * months.length %
+                        *@
+
+                        <!-- ko foreach: yearsToRender -->
+                        <div class="year-wrapper" data-bind="style: { width: (2.7778 * months.length) + '%' }">
+                            <div class="row no-gutters">
+                                <div class="mpr-header col-xs-12">
+                                    <h5>
+                                        <span data-bind="text: year"></span>
+                                    </h5>
+                                </div>
+                            </div>
+                            <div class="row no-gutters" data-bind="foreach: months">
+                                <span class="mpr-month" data-bind="html: month, attr: { 'data-month-id': monthId }, style: { width: (100 / $parent.months.length) + '%' }"></span>
+                            </div>
+                        </div>
+                        @*<div class="col-xs-4 month-wrapper">
+                                <div class="row">
+                                    <h5 class="col-xs-12 mpr-header">
+                                        <span data-bind="text: $data[1]"></span>
+                                    </h5>
+                                </div>
+                                <div class="row no-gutters" data-bind="foreach: $parent.months">
+                                    <span class="col-xs-1 mpr-month" data-bind="html: $data.name, attr: { 'data-month-id': $parentContext.$data[1] + $data.monthId }"></span>
+                                </div>
+                            </div>*@
+                        @*<div class="col-xs-4 month-wrapper">
+                                <div class="row">
+                                    <h5 class="col-xs-12 mpr-header">
+                                        <span data-bind="text: $data[2]"></span>
+                                    </h5>
+                                </div>
+                                <div class="row no-gutters" data-bind="foreach: $parent.months">
+                                    <span class="col-xs-1 mpr-month" data-bind="html: $data.name, attr: { 'data-month-id': $parentContext.$data[2] + $data.monthId }"></span>
+                                </div>
+                            </div>*@
+                        <!-- /ko -->
+                    </div>
+                </div>
+            </div>
+            <div data-bind="visible: initSelectables()"></div>
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript">
+    var monthRangeSelectorViewModel = function (params) {
+        var self = this;
+
+        params.boundTo(self);
+
+        self.elementId = params.elementId;
+
+        self.elementSelector = '#' + self.elementId
+
+        self.months = [
+            { name: "Jan", monthId: '01' }, { name: 'Feb', monthId: '02' }, { name: 'Mar', monthId: '03' },
+            { name: 'Apr', monthId: '04' }, { name: 'May', monthId: '05' }, { name: 'Jun', monthId: '06' },
+            { name: 'Jul', monthId: '07' }, { name: 'Aug', monthId: '08' }, { name: 'Sep', monthId: '09' },
+            { name: 'Oct', monthId: '10' }, { name: 'Nov', monthId: '11' }, { name: 'Dec', monthId: '12' }
+        ];
+
+        self.today = new Date();
+
+        // right, what we need to doooo... is where we're determining the year
+        // WHAT WE NEED TO DOOOO
+        // is... present the last 36 months
+        // // so... find out what month we're in nooow
+        // and... get thirty six behind us
+        // that can quite readily span four years.
+        // and are we displaying RTL or LTR? don't know.
+
+        // so. we want our starting year.
+        //
+
+        self.yearsToRender = ko.observableArray([]);
+
+        self.init = function () {
+
+            var today = moment();
+
+            var thisYear = parseInt(today.format("YYYY"));
+
+            var startYear = parseInt(today.add(-36, 'months').format("YYYY"));
+
+            var months = [];
+
+            for (var i = 0; i < 36; i++) {
+                var thisMonth = moment().add(-i, 'months');
+                months.push({
+                    monthId: thisMonth.format("YYYYMM"),
+                    month: thisMonth.format("MMM"),
+                    monthNo: parseInt(thisMonth.format("M")),
+                    year: parseInt(thisMonth.format("YYYY"))
+                });
+            }
+
+            var years = Enumerable.From(months).GroupBy(
+                "$.year", //keySelector
+                "{ monthId: $.monthId, month: $.month, monthNo: $.monthNo }", //elementSelector
+                "key, e => { year: key, months: e.OrderBy('$.monthNo').ToArray() }", //resultSelector
+                ""  //compareSelector
+            ).OrderBy('$.year').ToArray();
+
+            //console.log('monthRangeSelector initialisation:', thisYear, startYear, months, years);
+
+            //years = years.reverse()
+
+            self.yearsToRender(years);
+
+            //console.log('init found we want', years, 'years to start with');
+        }
+
+        var start = undefined;
+        var end = undefined;
+
+        switch (params['default']) {
+            case 'last-12-months':
+                start = moment().add(-11, 'months').format("YYYYMM");
+                end = moment().format("YYYYMM");
+                break;
+            default:
+                break;
+        }
+
+        self.startMonthId = ko.observable(start);
+        self.endMonthId = ko.observable(end);
+
+        //self.previousStartMonthId = null;
+        //self.previousEndMonthId = null;
+
+        self.currentSelection = ko.observableArray([]);
+
+        self.selection = ko.observableArray([]);
+
+        //self.selectionSet = ko.observable();
+
+        self.initSelectables = function () {
+            $(self.elementSelector).selectable({
+                filter: '.mpr-month',
+                classes: {
+                    "ui-selected": "mpr-selected",
+                    "ui-selectable-helper": "ui-selectable-helper mpr-helper"
+                },
+                start: function (event, ui) {
+                    self.currentSelection([]);
+                },
+                stop: function (event, ui) {
+                    //console.log('stop', self.currentSelection());
+                    var mustCorrect = false;
+                    if (self.currentSelection().length) {
+                        var min = Enumerable.From(self.currentSelection()).Min();
+                        var max = Enumerable.From(self.currentSelection()).Max();
+                        if (self.startMonthId() != min) {
+                            self.startMonthId(min);
+                            mustCorrect = true;
+                        }
+                        if (self.endMonthId() != max) {
+                            self.endMonthId(max);
+                            mustCorrect = true;
+                        }
+                    }
+                    if (mustCorrect) {
+                        self.ensureCorrectSelection();
+                    } else {
+                        self.ensureCorrectStyling();
+                    }
+                },
+                selecting: function (event, ui) {
+                    self.currentSelection.push($(ui.selecting).data('month-id'));
+                    //console.log('selecting', $(ui.selecting).data('month-id'));
+                },
+                unselecting: function (event, ui) {
+                    self.currentSelection.remove($(ui.unselecting).data('month-id'));
+                    //console.log('unselecting', $(ui.unselecting).data('month-id'));
+                }
+            });
+
+            if (self.startMonthId() && self.endMonthId()) {
+                self.ensureCorrectSelection();
+            }
+        }
+
+        self.clearSelection = function () {
+            $(".mpr-month", $(self.elementSelector)).removeClass('ui-selected').removeClass('mpr-selected').removeClass('mpr-prev-selected');
+        }
+
+        self.ensureCorrectSelection = function () {
+
+            self.clearSelection();
+
+            //console.log('ensuring correct selection', self.startMonthId(), self.endMonthId());
+
+            if (self.startMonthId() != null && self.endMonthId() != null) {
+
+                self.ensureCorrectStyling();
+
+                var monthIds = [];
+
+                $(".mpr-month.mpr-selected", $(self.elementSelector)).each(function (idx, month) {
+                    monthIds.push($(month).data('month-id'));
+                });
+
+                self.selection(monthIds);
+            }
+        }
+
+        self.ensureCorrectStyling = function () {
+            if (self.startMonthId() != null && self.endMonthId() != null) {
+
+                $(".mpr-month", $(self.elementSelector));
+                $(".mpr-month", $(self.elementSelector)).each(function (idx, month) {
+                    var monthId = $(month).data('month-id');
+
+                    if (self.startMonthId() > self.endMonthId()) {
+                        if ((monthId <= self.startMonthId()) && (monthId >= self.endMonthId())) {
+                            if (!$(month).hasClass('mpr-selected')) {
+                                $(month).addClass('ui-selected mpr-selected');
+                            }
+                        }
+                    } else if (self.startMonthId() < self.endMonthId()) {
+                        if ((monthId >= self.startMonthId()) && (monthId <= self.endMonthId())) {
+                            if (!$(month).hasClass('mpr-selected')) {
+                                $(month).addClass('ui-selected mpr-selected');
+                            }
+                        }
+                    } else if (self.startMonthId() == self.endMonthId()) {
+                        if ((monthId == self.startMonthId()) && (monthId == self.endMonthId())) {
+                            if (!$(month).hasClass('mpr-selected')) {
+                                $(month).addClass('ui-selected mpr-selected');
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        self.mouseOverPrev = false;
+
+        self.carouselPrevEnter = function () {
+            $(self.elementSelector).carousel('prev');
+        }
+
+        self.carouselNextEnter = function () {
+            $(self.elementSelector).carousel('next');
+        }
+
+        self.selectedMonths = ko.observableArray();
+
+        self.selectionStart = ko.computed(function () {
+            if (self.selectedMonths().length) {
+                return Enumerable.From(self.selectedMonths()).Min();
+            } else {
+                return null;
+            }
+        }, self);
+
+        self.selectionEnd = ko.computed(function () {
+            if (self.selectedMonths().length) {
+                return Enumerable.From(self.selectedMonths()).Max();
+            } else {
+                return null;
+            }
+        }, self);
+
+        self.init();
+
+        self.setPeriod = function (period) {
+            //console.log('monthRangeSelector setPeriod', period);
+
+            var today = new Date();
+            var year = today.getFullYear();
+            var month = today.getMonth() + 1;
+            var startMonthId = -1;
+            var endMonthId = -1;
+
+            switch (period) {
+                case 'L12':
+                    startMonthId = moment().add(-11, 'months').format('YYYYMM');
+                    endMonthId = moment().format('YYYYMM');
+                    break;
+                case 'FYTD':
+                    if (month < 4) {
+                        year--;
+                    }
+                    startMonthId = year + '04';
+                    endMonthId = (year + (month > 4 ? 0 : 1)) + ((month + '').length < 2 ? (month + '').padStart(2, '0') : (month + ''));
+                    break;
+                case 'CYTD':
+                    startMonthId = year + '01';
+                    endMonthId = (year + ((month + '').length < 2 ? (month + '').padStart(2, '0') : (month + '')));
+                    break;
+                case 'MTD':
+                    startMonthId = year + ((month + '').length < 2 ? (month + '').padStart(2, '0') : (month + ''));
+                    endMonthId = startMonthId;
+                    break;
+                case 'FQ1':
+                    if (month < 4) {
+                        year--;
+                    }
+                    startMonthId = year + '04';
+                    endMonthId = year + '06';
+                    break;
+                case 'FQ2':
+                    if (month < 4) {
+                        year--;
+                    }
+                    startMonthId = year + '07';
+                    endMonthId = year + '09';
+                    break;
+                case 'FQ3':
+                    if (month < 4) {
+                        year--;
+                    }
+                    startMonthId = year + '10';
+                    endMonthId = year + '12';
+                    break;
+                case 'FQ4':
+                    if (month >= 4) {
+                        year++;
+                    }
+                    startMonthId = year + '01';
+                    endMonthId = year + '03';
+                    break;
+                case 'CQ1':
+                    startMonthId = year + '01';
+                    endMonthId = year + '03';
+                    break;
+                case 'CQ2':
+                    startMonthId = year + '04';
+                    endMonthId = year + '06';
+                    break;
+                case 'CQ3':
+                    startMonthId = year + '07';
+                    endMonthId = year + '09';
+                    break;
+                case 'CQ4':
+                    startMonthId = year + '10';
+                    endMonthId = year + '12';
+                    break;
+                default:
+                    break;
+            }
+
+            //console.log('setting startMonthId', startMonthId, 'endMonthId', endMonthId);
+
+            self.startMonthId(startMonthId);
+            self.endMonthId(endMonthId);
+            self.clearSelection();
+            self.ensureCorrectSelection();
+        }
+    }
+
+    ko.components.register('month-range-selector-component', {
+        viewModel: monthRangeSelectorViewModel,
+        template: { element: $('#month-range-selector-template')[0] }
+    });
+</script>

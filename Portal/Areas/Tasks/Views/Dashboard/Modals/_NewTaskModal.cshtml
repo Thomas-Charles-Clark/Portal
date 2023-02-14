@@ -1,0 +1,347 @@
+﻿<div id="new-task-modal" class="task-modal modal fade" data-backdrop="static" data-keyboard="false" data-bind="with: newTaskFactory">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-bind="click: function() { closeModal(); }" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">
+                    New Task
+                </h4>
+            </div>
+            <div class="modal-body">
+                <ul class="nav nav-tabs" data-bind="css: { 'tabs-error': errors.isAnyMessageShown() }">
+                    <li class="active">
+                        <a href="#new-task-details" data-toggle="tab" data-bind="css: { 'alert-danger': errors.isAnyMessageShown() }">
+                            Details
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#new-task-attachments" data-toggle="tab">
+                            Attachments
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div id="new-task-details" class="tab-pane active">
+                        <div class="form-group row">
+                            <div class="col-xs-12" data-bind="validationOptions: { insertMessages: false }">
+                                <label class="col-form-label new-task-label">
+                                    Description
+                                </label>
+                                <input id="new-task-name" class="form-control" type="text" data-bind="textInput: name" />
+                                <button tabindex="-1" class="btn btn-success pull-right" data-bind="click: function() { save(); }">
+                                    Save
+                                </button>
+                                <span class="col-form-span text-danger pull-right" data-bind="visible: errors.isAnyMessageShown()">
+                                    Please correct all errors
+                                </span>
+                            </div>
+                            <div class="col-xs-12">
+                                <span class="validation-message text-danger" data-bind="validationMessage: name"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label new-task-label">
+                                    Task Project
+                                </label>
+                                <div id="new-task-project-wrapper">
+                                    <div class="input-group">
+                                        <input id="new-task-project" class="form-control" placeholder="Type to Search" />
+                                        <div class="input-group-btn">
+                                            <button class="btn btn-default" type="button" data-bind="click: function() { clearProject() }">×</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label new-task-label">
+                                    Details
+                                </label>
+                                <div class="remaining-width-wrapper">
+                                    <textarea class="form-control new-task-comment" data-bind="textInput: comment"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xs-12" style="height: 34px;">
+                                <label class="col-form-label new-task-label">
+                                    Task Type
+                                </label>
+                                <div class="task-project-wrapper" data-bind="component: { name: 'addable-list-component', params: taskTypeListParams }"></div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label new-task-label">
+                                    Assigned To
+                                </label>
+                                <div class="assign-group input-group" data-bind="validationOptions: { insertMessages: false }">
+                                    <div class="assign-dropdown">
+                                        <div data-bind="kendoDropDownTree: assignedToSettings"></div>
+                                    </div>
+                                    <div class="input-group-btn">
+                                        <button id="assign-ext-btn" class="btn btn-secondary-blue" data-bind="click: function () { showExternalAssignmentModal(); }">
+                                            External Assignment
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <span class="validation-message text-danger" data-bind="validationMessage: assignedTo"></span>
+                            </div>
+                            <div class="col-xs-12">
+                                <span class="validation-message text-danger" data-bind="visible: externalAssignmentErrors.isAnyMessageShown()">
+                                    Please correct all External Assignment errors
+                                </span>
+                            </div>
+                        </div>
+                        <div data-bind="with: externalCompany">
+                            <div class="form-group row">
+                                <div class="col-xs-12">
+                                    <label class="col-form-label new-task-label">
+                                        External Company
+                                    </label>
+                                    <span style="display: inline-block;">
+                                        <span class="form-control readonly" data-bind="text: Name"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label new-task-label pointer" style="width: 136px;">
+                                    Urgent
+                                    <input type="checkbox" class="form-checkbox" data-bind="checked: urgent" />
+                                </label>
+                                <label class="col-form-label pointer" style="margin-left: 24px;">
+                                    Core
+                                    <input type="checkbox" class="form-checkbox" data-bind="checked: core" />
+                                </label>
+                                <label class="col-form-label pointer" style="margin-left: 24px;">
+                                    Recurring
+                                    <input type="checkbox" class="form-checkbox" data-bind="checked: recurring" />
+                                </label>
+                            </div>
+                        </div>
+                        @*<div class="form-group row">
+            <div class="col-xs-12">
+                <label class="col-form-label">
+                    Description
+                </label>
+                <textarea class="new-task-description form-control" type="text" data-bind="textInput: description"></textarea>
+            </div>
+        </div>*@
+                        <div class="form-group row" data-bind="fadeSwapVisible: { boolean: recurring, visibleWhen: false, swapWith: '#new-task-recurring' }">
+                            <div class="col-xs-12 k-calendar-wrapper" data-bind="validationOptions: { insertMessages: false }">
+                                <label class="col-form-label new-task-label">
+                                    Due
+                                </label>
+                                <input id="new-task-due-date" data-bind="kendoDatePicker: dueDateSettings, validationCore: dueDate" />
+                                <span class="col-form-span date-nudge" data-bind="with: dueDate">
+                                    <span data-bind="text: moment($data).format('dddd Do MMMM YYYY')"></span>
+                                    <button type="button" class="clear-field close" data-bind="click: function() { $parent.clearDueDate(); }">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                </span>
+                            </div>
+                            <div class="col-xs-12">
+                                <span class="validation-message text-danger" data-bind="validationMessage: dueDate"></span>
+                            </div>
+                        </div>
+                        <div id="new-task-recurring" class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label new-task-label">
+                                    Schedule
+                                </label>
+                                <div style="display: inline-block">
+                                    <div class="k-calendar-wrapper" data-bind="validationOptions: { insertMessages: false }">
+                                        <label class="col-form-label" style="margin-right: 10px;">
+                                            Start
+                                        </label>
+                                        <input id="new-task-from-date" data-bind="kendoDatePicker: fromDateSettings, validationElement: fromDate" />
+                                        <span class="col-form-span display-span" data-bind="visible: fromDate, with: fromDate">
+                                            <span data-bind="text: moment($data).format('dddd Do MMMM YYYY')"></span>
+                                            <button type="button" class="clear-field close" data-bind="click: function() { $parent.clearFromDate(); }">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                        </span>
+                                        <span class="col-form-span display-span text-danger" data-bind="visible: errors.isAnyMessageShown() && !fromDate.isValid(), validationMessage: fromDate">
+                                        </span>
+                                    </div>
+                                    <div class="k-calendar-wrapper" data-bind="validationOptions: { insertMessages: false }">
+                                        <label class="col-form-label new-task-label" style="width: 60px;">
+                                            End
+                                        </label>
+                                        <input id="new-task-until-date" data-bind="kendoDatePicker: untilDateSettings, validationElement: untilDate" />
+                                        <span class="col-form-span display-span" data-bind="with: untilDate">
+                                            <span data-bind="text: moment($data).format('dddd Do MMMM YYYY')"></span>
+                                            <button type="button" class="clear-field close" data-bind="click: function() { $parent.clearUntilDate(); }">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                        </span>
+                                    </div>
+                                    <div id="schedule-detail" data-bind="with: schedule, fadeVisible: fromDate, fadeSpeed: 'fast'">
+                                        <div class="row">
+                                            <div class="col-xs-2" style="border-right: 1px solid #ccc">
+                                                <ul class="recurrence-pattern">
+                                                    <!-- ko foreach: $parent.scheduleTypes -->
+                                                    <li>
+                                                        <label class="col-form-span pointer">
+                                                            <span data-bind="text: Name"></span>
+                                                            <input type="radio" name="recurrence-type" data-bind="checkedValue: $data, checked: $parent.scheduleType" />
+                                                        </label>
+                                                    </li>
+                                                    <!-- /ko -->
+                                                </ul>
+                                            </div>
+                                            <div class="col-xs-10">
+                                                <div data-bind="visible: scheduleType().Name == 'Daily'">
+                                                    <ul class="recurrence-pattern">
+                                                        <li data-bind="validationOptions: { insertMessages: false }">
+                                                            <label class="col-form-span pointer">
+                                                                Every
+                                                            </label>
+                                                            <input id="n-days" type="text" class="form-control" data-bind="numeric, textInput: interval.formatted, validationCore: interval" onfocus="$(this).select()" />
+                                                            day(s)
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div data-bind="visible: scheduleType().Name == 'Weekly'">
+                                                    <ul class="recurrence-pattern">
+                                                        <li data-bind="validationOptions: { insertMessages: false }">
+                                                            <label class="col-form-span pointer">
+                                                                Every
+                                                            </label>
+                                                            <input id="n-weeks" type="text" class="form-control" data-bind="numeric, textInput: interval.formatted, validationCore: interval" onfocus="$(this).select()" /> week(s) on:
+                                                        </li>
+                                                        <li>
+                                                            <div data-bind="validationOptions: { insertMessages: false }">
+                                                                <!-- ko foreach: Enumerable.From($parent.days).Where("$.DayID < 8").OrderBy("$.SortOrder").ToArray() -->
+                                                                <label class="col-form-span pointer">
+                                                                    <span data-bind="text: Name"></span>
+                                                                    <input type="checkbox" data-bind="checkedValue: $data, checked: $parent.days" />
+                                                                </label>
+                                                                <!-- ko if: $index() == 4 -->
+                                                                <br />
+                                                                <!-- /ko -->
+                                                                <!-- /ko -->
+                                                                <div class="btn-group pull-right">
+                                                                    <button class="btn btn-default" data-bind="click: $parent.toggleWorkingDays">Working Days</button>
+                                                                    <button class="btn btn-default" data-bind="click: $parent.toggleWeekendDays">Weekend Days</button>
+                                                                </div>
+                                                            </div>
+                                                            <span style="margin-left: 12px;" class="validation-message text-danger" data-bind="validationMessage: days"></span>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div data-bind="visible: scheduleType().Name == 'Monthly'">
+                                                    <ul class="recurrence-pattern">
+                                                        <li data-bind="validationOptions: { insertMessages: false }">
+                                                            <label class="col-form-span pointer">
+                                                                On the <span data-bind="with: $parent.fromDate"><span data-bind="text: moment($data).format('Do')"></span></span> every
+                                                                <input type="radio" name="monthly-recurrence" value="day" data-bind="checked: monthlyRepeatType" />
+                                                            </label>
+                                                            <input type="text" id="n-months" class="form-control" data-bind="numeric, textInput: interval.formatted, validationCore: interval, enable: monthlyRepeatType() == 'day'" onfocus="$(this).select()" /> month(s)
+                                                        </li>
+                                                        <li style="height: 34px">
+                                                            &nbsp;
+                                                        </li>
+                                                        <li data-bind="validationOptions: { insertMessages: false }">
+                                                            <label class="col-form-span pointer">
+                                                                On the
+                                                                <input type="radio" name="monthly-recurrence" value="the" data-bind="checked: monthlyRepeatType" />
+                                                            </label>
+                                                            <select id="monthly-day-ordinal" class="form-control" data-bind="options: $parent.frequencies, optionsText: 'Name', optionsValue: $data, value: frequency, enable: monthlyRepeatType() == 'the'"></select>
+                                                            <select id="monthly-day-weekday" class="form-control" data-bind="options: $parent.days, optionsValue: $data, optionsText: 'Name', value: monthlyRepeatType_day, enable: monthlyRepeatType() == 'the'"></select>
+                                                            <span class="nudge">every</span>
+                                                            <input type="text" id="monthly-n-months" class="form-control" data-bind="numeric, textInput: interval.formatted, validationCore: interval, enable: monthlyRepeatType() == 'the'" onfocus="$(this).select()" />
+                                                            month(s)
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*<div class="row">
+                            <div class="col-xs-12">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label new-task-label">
+                                            Attachment(s)
+                                        </label>
+                                        <div class="remaining-width-wrapper">
+                                            <div id="one-off-attachments" class="attachments-target"></div>
+                                            <input class="form-control" data-bind="kendoUpload: { enabled: false }" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>*@
+                                        @*<div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label">
+                                    Instruction(s)
+                                </label>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="sop-container">
+
+                                </div>
+                                <div class="sop-search-wrapper">
+                                    <div class="row">
+                                        <div class="col-xs-8">
+                                            <div class="sop-search input-group">
+                                                <input id="one-off-sop-search" class="form-control" placeholder="SOP Autocomplete..." disabled />
+                                                <div class="input-group-btn">
+                                                    <button class="search-btn btn btn-default" data-bind="click: function() { $('#one-off-sop-search').autocomplete('search'); }"><span class="glyphicon glyphicon-search"></span></button>
+                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        List <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-right" data-bind="foreach: []">
+                                                        <li data-bind="click: function() { }">
+                                                            <label>
+                                                                <span data-bind="text: $data"></span>
+                                                            </label>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>*@
+                    </div>
+                    <div id="new-task-attachments" class="tab-pane">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <form method="post" data-bind="kendoUpload: uploadSettings">
+                                    <input name="files" type="file" multiple="multiple" />
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-bind="click: function() { closeModal(); }">
+                    Cancel
+                </button>
+                <button class="btn btn-success pull-right" data-bind="click: function() { save(); }">
+                    Save
+                </button>
+                <span class="col-form-span text-danger pull-right" data-bind="visible: errors.isAnyMessageShown()">
+                    Please correct all errors
+                </span>
+                <span id="latest-task-id" class="col-form-span pull-right" style="margin-right: 25px;">
+                </span>
+            </div>
+        </div>
+        @*<div data-bind="visible: attachValidation()"></div>*@
+    </div>
+</div>

@@ -1,0 +1,472 @@
+$mdc-theme-primary: #3a64b0;
+$mdc-theme-secondary: #6ebe2c;
+$mdc-theme-background: #fff;
+$mdc-theme-error: #db0028;
+
+@import "@material/list/mdc-list";
+@import "@material/ripple/mdc-ripple";
+@import "@material/textfield/mdc-text-field";
+@import "@material/button/mdc-button";
+@import "@material/select/mdc-select";
+@import "@material/theme/mdc-theme";
+@import "@material/form-field/mdc-form-field";
+@import "@material/checkbox/mdc-checkbox";
+
+.mdc-text-field__input:-webkit-autofill {
+    background-color: white !important;
+}
+
+.mdc-floating-label, .mdc-select, .mdc-text-field {
+    font-family: 'Open Sans', Arial;
+}
+
+    /* MDC stuff - does this not belong in my mdc-custom.css? */
+
+    .mdc-text-field + span.validation-message {
+        margin-bottom: 15px;
+        margin-top: 0px;
+    }
+
+.mdc-validating-field {
+    /*height: 50px;*/
+    padding-bottom: 0 !important;
+}
+
+    .mdc-validating-field > div:first-of-type {
+        /* This targets whatever MDC component exists as the first child inside this validating wrapper. */
+        width: 100%;
+    }
+
+    .mdc-validating-field span.validation-message {
+        margin: 0;
+        /*margin-bottom: 5px;*/
+        float: left;
+        /*position: absolute;*/
+    }
+
+.mdc-notched-outline:not(.mdc-notched-outline--notched) .mdc-floating-label--shake {
+    animation: mdc-floating-label-shake-unfloated-custom 250ms 1;
+}
+
+@keyframes mdc-floating-label-shake-unfloated-custom {
+    0% {
+        transform: translateX(calc(0 - 0%))
+    }
+
+    33% {
+        animation-timing-function: cubic-bezier(0.5, 0, 0.70173, 0.49582);
+        transform: translateX(calc(6% - 0%))
+    }
+
+    66% {
+        animation-timing-function: cubic-bezier(0.30244, 0.38135, 0.55, 0.95635);
+        transform: translateX(calc(-6% - 0%))
+    }
+
+    100% {
+        transform: translateX(calc(0 - 0%))
+    }
+}
+
+.mdc-validating-field label.col-form-label {
+    padding: 0;
+}
+
+.mdc-floating-label sup.remaining {
+    left: 0;
+}
+
+.mdc-validating-field.form-group {
+    margin-bottom: 0;
+}
+
+.mdc-delivery-wrapper {
+    width: 100%;
+    /*
+        display: flex;          /*  establish flex container 
+    flex-direction: column;  /* make main axis vertical 
+    justify-content: center; /* center items vertically, in this case 
+    align-items: center;     /* center items horizontally, in this case 
+
+    */
+    border-radius: 4px;
+}
+
+    .mdc-delivery-wrapper .mdc-validating-field {
+        margin-bottom: 15px;
+    }
+
+.mdc-text-field__input.form-control {
+    box-shadow: none;
+}
+
+.mdc-delivery-full {
+    width: 100%;
+}
+
+.mdc-validating-field .k-dropdown-wrap {
+}
+
+.mdc-select--invalid span.k-input {
+    color: #db0028;
+}
+
+/* Right, how do we do the rounding on the groupingz... */
+
+.input-group .mdc-select,
+.input-group .mdc-text-field {
+    border-radius: inherit;
+}
+
+label.mdc-floating-label {
+    margin-bottom: 0;
+    line-height: 1.2rem;
+}
+
+.mdc-text-field:not(.mdc-text-field--textarea),
+.mdc-select {
+    height: 34px;
+}
+
+    .mdc-select.mdc-multiselect {
+        min-height: 34px;
+        height: auto;
+    }
+
+.mdc-text-field--outlined .mdc-text-field__input {
+    padding: 4px 12px;
+}
+
+.mdc-text-field--outlined .mdc-floating-label {
+    top: 7px;
+}
+
+.mdc-text-field--outlined.mdc-notched-outline--upgraded .mdc-floating-label--float-above,
+.mdc-text-field--outlined .mdc-notched-outline--upgraded .mdc-floating-label--float-above,
+.mdc-select--outlined.mdc-notched-outline--upgraded .mdc-floating-label--float-above,
+.mdc-select--outlined .mdc-notched-outline--upgraded .mdc-floating-label--float-above {
+    transform: translateY(-80%) scale(0.75);
+}
+
+.mdc-text-field div.close,
+.mdc-select div.close {
+    line-height: 34px;
+    padding: 0 12px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 1;
+    width: auto;
+}
+
+.mdc-select.clearable div.close {
+    padding: 0 6px;
+    right: 30px;
+}
+
+.mdc-validating-field .mdc-select.clearable span.k-input,
+.mdc-validating-field .mdc-select.revertable span.k-input {
+    padding-right: 60px;
+}
+
+.mdc-validating-field .mdc-select.clearable.revertable span.k-input {
+    padding-right: 84px;
+}
+
+.mdc-text-field__input,
+.mdc-select__native-control {
+    transform: translateZ(0);
+}
+
+.mdc-text-field.mdc-text-field--outlined,
+.mdc-text-field.mdc-text-field--outlined {
+    will-change: unset;
+}
+
+.mdc-select__native-control {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    text-align: left;
+    text-align-last: left;
+    padding-right: 20px;
+}
+
+.mdc-select__native-control, .mdc-select__selected-text {
+    height: 34px;
+    padding: 4px 12px;
+}
+
+.mdc-select--outlined .mdc-select__native-control {
+    padding: 4px 32px 4px 12px;
+}
+
+.mdc-select--outlined .mdc-select__selected-text {
+    padding: 4px 12px;
+}
+
+.mdc-select.mdc-select--outlined .mdc-floating-label {
+    top: 7px;
+    line-height: 1.2rem;
+    pointer-events: unset;
+}
+
+.mdc-select__dropdown-icon {
+    bottom: 6px;
+}
+
+.mdc-text-field--invalid .close,
+.mdc-select--invalid .close,
+.mdc-select--invalid .mdc-select__dropdown-icon,
+.mdc-select--invalid .k-state-default > .k-select {
+    color: #db0028;
+    opacity: 0.6;
+}
+
+
+
+    .mdc-text-field--invalid .close:hover,
+    .mdc-select--invalid .close:hover,
+    .mdc-select--invalid.mdc-select:hover .mdc-select__dropdown-icon,
+    .mdc-select--invalid .k-state-default > .k-select:hover {
+        opacity: 0.95;
+    }
+
+.mdc-text-field div.close.revert,
+.mdc-select div.close.revert {
+    line-height: 34px;
+    padding: 0;
+    position: absolute;
+    right: 36px;
+    top: 0;
+    z-index: 1;
+    width: auto;
+}
+
+.mdc-text-field div.close + .mdc-text-field div.close.revert {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.mdc-text-field div.close.revert i.material-icons,
+.mdc-select div.close.revert i.material-icons {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.mdc-select div.close.revert {
+    right: 56px;
+}
+
+.mdc-select .k-dropdown-wrap {
+    border-bottom: none;
+}
+
+    .mdc-select .k-dropdown-wrap.k-state-hover {
+        background: none;
+        background-color: transparent;
+        border: none;
+    }
+
+.mdc-select .k-widget.k-dropdown.k-header {
+    width: 100%;
+}
+
+.mdc-select .mdc-floating-label {
+    cursor: pointer;
+}
+
+.mdc-select .mdc-select__dropdown-icon {
+    /*position: relative;*/
+    /*display: flex;*/
+    bottom: 4px;
+}
+
+.mdc-select {
+    display: flex;
+    /*flex-direction: row-reverse;*/
+}
+
+/*
+.mdc-select .k-state-hover, 
+.mdc-select .k-state-hover:hover,
+.mdc-select .k-dropdown-wrap.k-state-hover {
+    background-color: transparent;
+    background: none;
+}*/
+
+.mdc-select--invalid .k-state-hover .mdc-floating-label,
+.mdc-select--invalid .k-state-hover:hover .mdc-floating-label {
+    color: inherit;
+}
+
+.input-group-btn .mdc-validating-field .validation-message {
+    font-size: 14px;
+}
+
+.input-group .mdc-validating-field .mdc-notched-outline__leading {
+    border-radius: 0;
+}
+
+.input-group > div:first-child .mdc-validating-field .mdc-notched-outline__leading {
+    border-radius: 4px 0 0 4px;
+}
+
+.input-group > div:first-child .mdc-validating-field .mdc-notched-outline__trailing {
+    border-radius: 0;
+    /*border-right: 0;*/
+}
+
+.input-group > div:only-of-type .mdc-validating-field .mdc-notched-outline__trailing {
+    border-radius: 0 4px 4px 0;
+}
+
+.mdc-validating-field .mdc-select span.k-input {
+    padding: 8px;
+    padding-right: 32px;
+    padding-left: 0px;
+    display: block;
+}
+
+/*.mdc-validating-field .k-dropdown-wrap span.k-input {
+    padding: 4px 12px;
+    display: block;
+    align-items: flex-start;
+    flex: none;
+}*/
+
+/*.mdc-validating-field .k-state-border-down {
+    border: 2px solid #3a64b0;
+}*/
+
+.mdc-delivery-wrapper > div {
+    width: 100%;
+}
+
+.mdc-text-field {
+    border-radius: 4px;
+}
+
+.mdc-force-outline {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.mdc-text-field.mdc-text-field--disabled {
+    /*background: linear-gradient(transparent 1%, #eee 4%);*/
+    cursor: not-allowed;
+}
+
+    .mdc-text-field.mdc-text-field--disabled textarea {
+        resize: none;
+    }
+
+.mdc-text-field--disabled {
+    pointer-events: auto;
+}
+/*.mdc-text-field.disabled .mdc-text-field__input {
+    cursor: not-allowed;    
+}
+
+.mdc-text-field.disabled .mdc-text-field__input:hover .mdc-notched-outline > div {
+    border-color: rgba(0, 0, 0, 0.24);
+}*/
+
+.mdc-form-field label {
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+    .mdc-form-field label.checkbox-label-disabled {
+        color: #808080;
+    }
+
+.mdc-checkbox.mdc-checkbox-error::before,
+.mdc-checkbox.mdc-checkbox-error::after {
+    background-color: $mdc-theme-error;
+}
+
+.mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate) ~ .mdc-checkbox__background {
+    background-color: white;
+}
+
+.mdc-select.mdc-multiselect.clearable div.close {
+    right: 29px;
+}
+
+.mdc-select__native-control.ui-autocomplete-loading,
+.mdc-text-field__input.ui-autocomplete-loading {
+    background: transparent url(/content/images/ui-anim_basic_16x16.gif) 86% center no-repeat;
+}
+
+.mdc-warning .mdc-text-field,
+.mdc-warning .mdc-text-field:not(.mdc-text-field--disabled) .mdc-floating-label {
+    background-color: #ffecc8;
+}
+
+    .mdc-warning .mdc-text-field:not(.mdc-text-field--disabled) .mdc-floating-label {
+        padding-left: 4px;
+        padding-right: 4px;
+        border-radius: 4px 4px 0 0;
+    }
+
+.mdc-warning .mdc-notched-outline--notched .mdc-notched-outline__notch {
+    padding-right: 0;
+}
+
+.mdc-warning .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__leading,
+.mdc-warning .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__notch,
+.mdc-warning .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__trailing {
+    border-color: orange;
+}
+
+.mdc-text-field__input.mdc-text-field__numeric.clearable {
+    padding-right: 32px;
+}
+
+.mdc-text-field__input.mdc-text-field__numeric.revertable {
+    padding-right: 32px;
+}
+
+.mdc-text-field__input.mdc-text-field__numeric.clearable.revertable {
+    padding-right: 60px;
+}
+
+
+.mdc-select--outlined.clearable .mdc-select__native-control {
+    padding-right: 60px;
+}
+
+
+.mdc-select--outlined.clearable.revertable .mdc-select__native-control {
+    padding-right: 84px;
+}
+
+.mdc-text-field--disabled,
+.mdc-select--disabled {
+}
+
+.mdc-text-field--invalid.mdc-text-field--disabled .mdc-notched-outline .mdc-notched-outline__leading,
+.mdc-text-field--invalid.mdc-text-field--disabled .mdc-notched-outline .mdc-notched-outline__notch,
+.mdc-text-field--invalid.mdc-text-field--disabled .mdc-notched-outline .mdc-notched-outline__trailing,
+.mdc-text-field--invalid .mdc-notched-outline .mdc-notched-outline__leading,
+.mdc-text-field--invalid .mdc-notched-outline .mdc-notched-outline__notch,
+.mdc-text-field--invalid .mdc-notched-outline .mdc-notched-outline__trailing {
+    border-color: #db0028;
+    /* @alternate */
+    border-color: var(--mdc-theme-error, #db0028);
+}
+
+    .mdc-text-field--invalid.mdc-text-field--disabled input,
+    .mdc-text-field--invalid.mdc-text-field--disabled .mdc-notched-outline .mdc-notched-outline__notch .mdc-floating-label {
+        color: #db0028;
+    }
+
+.mdc-notched-outline__leading, .mdc-notched-outline__notch, .mdc-notched-outline__trailing {
+    box-sizing: border-box;
+    height: 100%;
+    transition: unset;
+    border-top: 1px solid;
+    border-bottom: 1px solid;
+    pointer-events: none;
+}

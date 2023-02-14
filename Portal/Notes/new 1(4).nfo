@@ -1,0 +1,46 @@
+
+We have a SelectedDeliveryServices list, as well as a list of Hauliers which have Services.
+
+0) Do we have *Any* SelectedDeliveryServices at all?
+	Y: Goto 1)
+	N: Proceed as usual, nothing to load. The desired DeliveryService must be selected by .MinBy(Preference) - this should be unique across all services, across all hauliers.
+
+1) Do we have a SelectedDeliveryService for this DeliveryGroup? (Match on BasketSplitID)
+	Y: "item" is set to this SelectedDeliveryService record - Goto 2
+	N: Nothing had been saved about this DeliveyGroup before. The desired DeliveryService must be selected by .MinBy(Preference) - this should be unique across all services from all hauliers.
+
+2) Do we have a matching haulier for {item} (based on HaulierCode)?
+	Y: Goto 3
+	N: Alert about service changes
+	
+3) Does this haulier's list of services include {item.ServiceCode}?
+	Y: Gather a list of the services which match on serviceCode, goto 4
+	N: Alert about service changes
+	
+4) Do we have exactly one match on serviceCode?
+	Y: Goto 5a
+	N: Goto 5b
+	
+5a) Y: Great, instruct the singular matched service record from this haulier to attempt to load {item}, Goto 7
+	N: Goto 5b
+
+5b) Do we have > 1 match on serviceCode?
+	Y: Goto 6a
+	N: Goto 6b
+	
+6a) FirstOrDefault the matching DeliveryServices list by ServiceDataOriginID. Got something?
+	Y: Great, instruct the FirstOrDefault service record to attempt to load {item}, Goto 7
+	N: Alert about service changes
+	
+6b) We have no matches on ServiceCode.
+	Alert about service changes.
+
+
+7) So you think you can load this SelectedDeliveryService into this DeliveryService result. Great. Does the price match?
+	Y:	Great, go ahead and load. All user-entered values (Discounts, reasons etc.) should still be in place. 
+	
+	... hang on, what if stuff OTHER than the price has changed - such as volumetric weight or dimensions...
+		= Well, when we're "loading" a SelectedDeliveryService actually only a very few properties are carried across. 
+		  All the rest belongs to the deliveryService being loaded INTO.
+	
+	N: Scrap the load, alert about delivery service changes.

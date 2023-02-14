@@ -1,0 +1,17 @@
+﻿.k-loading-image {
+    background-image: none;
+}
+
+.k-grid {
+    tr {
+        &:hover {
+            background: transparent;
+        }
+    }
+
+    tr.k-alt {
+        &:hover {
+            background: #f1f1f1;
+        }
+    }
+}

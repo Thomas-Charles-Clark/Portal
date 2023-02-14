@@ -1,0 +1,65 @@
+﻿.slicer {
+    display: inline-block;
+    margin-bottom: 8px;
+    margin-right: 8px;
+    width: 100%;
+}
+
+.slicer-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 0;
+}
+
+.slicer-list.special {
+    border: 1px solid #f6e092;
+}
+
+.slicer-list.list-group {
+    border-radius: 0 0 4px 4px;
+}
+
+.slicer-list.list-group .list-group-item {
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    user-select: none;
+    cursor: pointer;
+}
+
+.slicer-list.list-group .list-group-item:hover {
+    background-color: rgba(180, 223, 246, 0.4);
+    border-color:  rgba(180, 223, 246, 0.8);
+    z-index: 5;
+    box-shadow: 0 1px 1px rgba(0,0,0,.075) inset;
+    color: #333;
+}
+
+.panel.slicer .panel-heading {
+    cursor: default;
+    padding: 4px 6px;
+}
+
+.slicer .panel-heading .clear-selection {
+    float: right;
+    font-size: 18px;
+    color: inherit;
+    cursor: pointer;
+    line-height: 20px;
+    padding: 0 4px;
+}
+
+.panel.slicer .panel-footer {
+    width: 100%;
+}
+
+.panel.slicer .panel-footer a {
+    text-overflow: ellipsis;
+    display: inline-block;
+    overflow-x: hidden;
+    max-width: 200px;
+    height: 18px;
+    overflow-y: hidden;
+}

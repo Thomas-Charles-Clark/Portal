@@ -1,0 +1,153 @@
+﻿@model SalesStatistics.ViewModels.SalesStatsViewModel
+@{
+    ViewBag.Title = "Designers Guild Sales Statistics - Test Bed";
+}
+@section styles {
+    @Styles.Render("~/Areas/SalesStatistics/Content/sales-statistics.css")
+    @Styles.Render("~/Areas/SalesStatistics/Content/sales-statistics-test-bed.css")
+}
+@section scripts {
+
+    <script type="text/javascript">
+        function getPreselectedSalesRep() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.PreselectedSalesRep));
+        }
+
+        var sg = null;
+
+        $(document).ready(function () {
+            var viewModel = new testBedViewModel();
+
+            ko.validation.init({
+                decorateInputElement: true,
+                errorElementClass: 'alert-danger',
+                errorMessageClass: 'validation-message text-danger'
+            });
+
+            ko.applyBindings(viewModel, document.body);
+
+            sg = viewModel.slicerGroupOne;
+        });
+
+    </script>
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            <h1 class="main-heading">
+                Test Bed [Sales Statistics]
+            </h1>
+            <h4 class="sub-heading">
+                <span class="margin-bottom-15">
+                    DropDownList Slicers: Clearing, Interaction...
+                </span>
+            </h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <p class="notes">
+            Notes
+        </p>
+        <ul class="notes">
+            <li>
+                Even with no selection defined, when opening a drop down list its dataSource.read fires
+            </li>
+            <li>
+                Acting As needs optionLabel to be undefined: necessarily it binds on load because it's initially presented with a value; it must fetch the data.
+            </li>
+            <li>
+                Under what conditions do we want to execute the FetchStatistics call?
+            </li>
+            <li>
+                DropDownList appears to differentiate between undefined and null - calling .select(undefined) has no effect, calling .select(null) does. Of course, because (undefined) === (), and that's the .select() get method. Pants.
+            </li>
+            <li>
+                valuePrimitive seems to have no effect: the knockoutKendo binding to value seems to always want to provide me with valueField, not entire object... This is because we're still providing the dataValueField. Sorted - but it's actually preferable to have the valuePrimitive set to true for this use case. Sending an empty string up to the modelBinder on the API controller leaves the value as empty anyway, which is handy.
+            </li>
+        </ul>
+        <p class="issues">
+            Issues
+        </p>
+        <ul class="issues">
+            <li>
+                &#10004; Having selected a value, my siblings' dataSourceData functions are being evaluated before my widget has updated my selectedId == therefore it's not in my onSelect function that I want to operate on my neighbours, it's in my subscribe to my own selectedId change that I want to do that... surely.
+            </li>
+            <li>
+                &#10004; Siblings: should my siblings include myself? Doesn't that mean that I'll call .read on myself? == No, if (s.boundTo() == self) return;
+            </li>
+            <li>
+                &#10004; Clearing: your initial value must be either the value you wish to have selected or undefined. Your ClearValue, however, cannot be undefined: calling .value(undefined) does not have the desired effect. params.clearValue must be set to the null value. It is necessary to call .trigger('change') having called widget().value(self.clearValue), as calling .value programmatically necessarily does not fire this change event.
+            </li>
+            <li>
+                &#10004; Data Integrity: why... why is the value from the widget not always stored in the relevant params.selectedId observable? Why on earth am I purposefully writing to that, if it's being
+                provided as the value binding point for the widget...?
+            </li>
+            <li>
+                &#10004; Automation: when a slicer's data set is reduced to one item, and it has selectOnlyItem true, it must select that option automatically.
+            </li>
+            <li>
+                &#10004; Automation: When a slicer's data set is reduced to one item, and it has selectOnlyItem true, and it has selected the single item... Should it be possible to set that value back to NULL? (Dynamic removal / addition of optionLabel)
+            </li>
+            <li>
+                &#10004; There's an initial evaluation of the "foo" computed; this is because computeds are evaluated on page load. We want to skip that to prevent the potential for stuff happening before we want it to, but we do need the evaluation to take place. Therefore it is sensible that a one-use, "skipFirst" variable is held.
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="filters panel panel-default">
+            <div class="panel-body bg-info">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="slicers row no-gutters" data-bind="with: slicerGroupOne">
+                            <div class="input-group" style="width: 100%">
+                                <!-- ko foreach: slicerCollection -->
+                                <div class="input-group-btn" style="width: 25%;">
+                                    <div class="dropdown-wrapper">
+                                        <div data-bind="component: { name: 'new-drop-down-component', params: $data }"></div>
+                                        @*<!-- ko if: $index() == 2 -->
+                                        <div class="btn-group btn-group-justified btn-group-sm" style="display: none;" data-bind="visible: widget().dataSource.data().length > 1 && selectedId() != null">
+                                            <a class="btn btn-default" data-bind="css: { 'btn-primary': $parentContext.$parent.currencyDisplay() == 'currency' }, click: function() { $parentContext.$parent.currencyDisplay('currency') }" style="border-top-left-radius: 0">
+                                                Currency
+                                            </a>
+                                            <a class="btn btn-default" data-bind="css: { 'btn-primary': $parentContext.$parent.currencyDisplay() == 'sterling' }, click: function() { $parentContext.$parent.currencyDisplay('sterling') }">
+                                                Sterling
+                                            </a>
+
+                                            <a class="btn btn-default" data-bind="css: { 'btn-primary': $parentContext.$parent.currencyDisplay() == 'both' }, click: function() { $parentContext.$parent.currencyDisplay('both') }" style="border-top-right-radius: 0">
+                                                Both
+                                            </a>
+                                        </div>
+                                        <!-- /ko -->*@
+                                    </div>
+                                </div>
+                                <!-- /ko -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <!-- ko foreach: callsToFetchStatistics -->
+        <p class="call" data-bind="text: $data"></p>
+        <!-- /ko -->
+        <div class="btn-group">
+    <button type="button" class="btn btn-primary btn-sm clear" data-bind="click: function() { slicerGroupOne.clearSlicers(); }">Clear Filters</button>
+    <button type="button" class="btn btn-default btn-sm clear" data-bind="click: function() { callsToFetchStatistics([]); }">Clear Log</button>
+        </div>
+    </div>
+</div>

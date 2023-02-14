@@ -1,0 +1,174 @@
+
+  _____            _         
+ |_   _|__ _  ___ | | __ ___ 
+   | | / _` |/ __|| |/ // __|
+   | || (_| |\__ \|   < \__ \
+   |_| \__,_||___/|_|\_\|___/
+                             
+
+*******************************
+*							  *
+*	Initial Considerations	  *
+*							  *
+*******************************
+
+Tasks Header
+	KendoGrid: specify a text/html script with an id and provide that via rowTemplate: kendo.template($("#").html())
+	
+	Is it a taken decision that there is no facility (not even for super-admins) to view all tasks across the company
+	What if a manager spans departments and wants to see, if not ALL tasks, those tasks belonging to the departments with which they need to work?
+		- There WILL be a facility for people of a given role to be able to change what department they're looking at or multiply select departments
+		- This does not exist in the mockup yet.
+		
+	Don't have a concept of Department to use, data-wise, at the moment.
+		- Will be created and appropriately populated.
+	
+	The large buttons My Tasks, Tasks I Created, My Department Tasks, etc. - what do they affect? 
+		- They affect from the widgets downwards
+	
+	What is the difference between My Department Tasks and Tasks My Department Created?
+		- My Department Tasks are tasks my department have to do
+		- Tasks My Department Created are tasks... which my department created.
+	
+	Underneath the widgets what is this "Ext. N" ?
+		- Externally Assigned count.
+	
+	What is this bulk task button?
+		- Ability to apply bulk actions to tasks in the grid below or to a selection from the grid below
+		- [Bulk Reassign, Bulk Close, etc.]
+	
+	What is this core task button?
+		- Specific type of task "Core" is distinct boolean value
+	
+Core Tasks Display
+	- Hmmmm'k.
+
+Create a Task
+	AssignedToDepartment... not stored on Task? Had the immediate impression that it would be, looking at Tasks Header
+		- Tasks get assigned to individuals. Fact.
+	
+	Can't add attachments to Recurring Tasks?
+		- SOPs are used instead
+	
+	What is this Search for SOP - are these meant to be archived SOP documents which people might associate to a Task?
+		- SOPs are your libraries of instruction - 0...n can associated to tasks, and associated to multiple tasks
+		- Need to decide 
+	
+	Why can't One-Off Tasks be Core Tasks
+		- Because Core Tasks are assumed / intended to be Recurring, and we need to differentiate between those which are mission critical
+		- and those which are of [slightly] lesser importance
+		- The equivalent for One Off Tasks is "Urgent"
+
+	Not quite sure what External Status would convey, please elucidate
+		- If you externally assign a lead, you can... leave a note e.g. "Sent a fax"
+		- or "Waiting for Barry"
+
+View / Update a Task
+	How is this accessed? When you click a task from the Dashboard results, does it open up a new tab..? or a modal? containing the View/Update Perspective
+		- Modal window.
+	
+	Why are fields about a task read-only to the author...? What if they made a mistake when they created the task? 
+		- They can leave a comment or something to that effect
+		- If they misassigned they'll have to request reassignmenbt
+		- This is NOT GOING TO CHANGE EVER. 
+		- Because it lends itself towards accountability, and avoids people backtracking on their instructions after the fact.
+	
+	Chasing 
+			- provide ability for alerts to be pushed server to client (signalR hub) when necessary 
+			- baseViewModel should necessarily deliver a list of alerts on each page load
+			- layout.cshtml should connect the hub for everyone
+			- NO EMAILS! Hurrah!
+
+	It doesn't explicitly state that Task Authors should be able to chase External Assignments, although they have the feature to send an email...
+		- Authors CANNOT chase externals
+		- Authors can only chase OWNERS
+		- Owners can chase externals
+		- Owners... can't chase themselves.
+
+	What takes precendece if you're both Task Author and Owner? 
+		- Owner takes precedence
+
+	Which leads back to why can't Authors edit their own Tasks?
+		- See above: owner view would be active, if you're both author and owner you CAN edit the details.
+
+FILETABLE
+https://docs.microsoft.com/en-us/sql/relational-databases/blob/filetables-sql-server?view=sql-server-2017
+
+Instruction SOP
+
+	This tab is empty. Undocumented requirement. Please refer to requirements gathering SOP document #1.
+	- As above, document library
+	- Where and how are these documents stored
+	- Are we permitting a broad range of formats
+	- We coooould store in DB, that's what Blobs are for.
+		- Questions about efficiency of doing so, security and preferred approaches.
+		- Integration with Webroot (?) to provide realtime scan of uploaded documents/files
+
+Notes & Question
+	Task assignment - department or individual or both
+	- Tasks are assigned to an INDIVIDUAL. Never otherwise.
+
+	Can you reopen a task - relatively core, decide upon please.
+		- Potentially allow current owner to reopen. Further consideration possibly required, but for now it's a soft no.
+
+	Who can chase a task - decisions such as this should also be confirmed before commencing. It isn't functionally that much of an issue, but it 
+	is an example of a requirement which needn't change later and can and should be decided upon now.
+		- Owners cannot chase except for those which they own and have externally assigned (they chasing the external company)
+		- Authors can only chase the current owner
+		- Managers can chase both owner and external assignee
+
+	- There are further controls to go in around Managerial abilities... while building these will be considered and provided
+
+	Generic Queues. What is this?
+		- The ability to avoid task dump - assign it to "IT Queue"; the Task is not assigned to an individual.
+		- Effectively a holding pen for tasks which people weren't sure who to assign it directly to.
+		- Leads to the question of who can assign to who: do we want Customer Services to be able to directly assign tasks to me?
+			= Probably boils down to being able to assign personally within your department, or to the generic queue belonging to another department
+		- Department Managers have the ability to assign from their generic queue to their employees
+	
+	Tasks numbered by user creation... This is... not necessary. If the only end result is to "get a visual on how many tasks a user is creating".
+	We record the created date and the author; this is all the information necessary to achieve that visual.
+	
+Next up:
+	Notification of assignment - signalR should push to client any new notifications.
+	Do we want to use Web Push Notifications? eventually, probably.
+	
+So.
+
+	I need to sort out: 
+	
+	Selection
+		Single Selection!
+		
+	
+	Assignment:
+		For handling of lists we will use VIRTUAL MEMBERS.
+		Now go and strip out all that redundant extra work you did. 
+		
+		Fields which I am to include in grid record displays:
+			Author Name
+			Author Department -- NOT as Grid column; multiValued
+			Assigned By [most recent fullName]
+			Owner Department -- NOT as Grid column; multiValued
+			Owner Name
+			Task Status
+			Due Date
+			Expected Delivery [does not exist yet]
+			External Company
+			External Contact
+			External Reference
+			External Status
+			External Assigned... [is this a status?]
+			CHASE button. This we must be careful with - it's only to be available to certain people given certain criteria
+			
+			
+		Columns due in the grid which are not present in the record displays:
+			AssignedDate
+			ModifiedDate
+			Project
+			Type
+			Urgent
+			
+			
+			
+	

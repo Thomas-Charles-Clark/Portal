@@ -1,0 +1,34 @@
+Show-Stopping Order Checker Phase
+
+Order has been flagged for attention of a Manager / Senior Manager (RECEIVER)
+
+Order details (essentials? complete breakdown?) are emailed to RECEIVER.
+
+Email clearly states, at the top, that they can either CLICK HERE TO APPROVE THIS ORDER, which just clicks through to an endpoint which automatically flags the order as 'Approved by RECEIVER', and... submits it automatically?
+
+While an order is in this PENDING APPROVAL RESPONSE state... it... cannot be submitted. A response MUST occur.
+
+RECEIVER also has the option to reply to the portal.noreply@ email, with the EXACT SUBJECT LINE AS IT WAS SENT,
+
+detailing a list of any changes they demand the user perform prior to receiving approval for this order.
+
+This can be handled thus:
+
+	Microsoft Flow can be used to watch the Inbox for emails with a given Subject line.
+	
+	Upon receipt, these emails can be pushed through a Custom Connector through to an endpoint sat on the portal.designersguild.com site.
+	
+	This endpoint can digest the... *HOPE* we can POST the body of the email... data sent by the Flow connector
+	
+	Store the response somewhere, flag the basket from PENDING APPROVAL RESPONSE to APPROVAL RESPONSE RECEIVED
+	
+	The response CAN be SignalR pushed to the User, and if they're there with the basket open at the appropriate stage
+	they could automagically get the reply right in front of their very eyes.
+	
+	If not, they can just check their tabs for APPROVAL RESPONSE RECEIVED baskets, check what RECEIVER said about
+	the order, make the necessary changes. The process then repeats, RECEIVER is notified about the same order a 
+	second time (the changes having been made) and is now happy to just click APPROVE (or APPROVE AND PLACE ORDER ?)
+	
+	once RECEIVER has APPROVED the order, do we want to automatically place it? or do we wait for the user to act?
+	
+the 

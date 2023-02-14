@@ -1,0 +1,404 @@
+﻿
+<script id="new-drop-down-template" type="text/html">
+    <div class="slicer panel panel-primary">
+        <div class="panel-heading">
+            <span data-bind="text: name"></span>
+            <span class="clear-selection glyphicon glyphicon-filter" style="display: none" data-bind="visible: clearAvailable(), click: function() { clearSelection(); }"><span>&times;</span></span>
+        </div>
+        <div class="panel-body no-padding">
+            <div class="slicer-list list-group" data-bind="kendoDropDownList: dropDownSettings"></div>
+            @*<select class="slicer-list list-group" data-role="dropdownlist" data-value-field="valueField" data-text-field="textField" data-auto-bind="true" data-bind="value: selected, source: dataSource, events: { dataBound: dataBound }, keepElement: selected"></select>*@
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript">
+    var newDropDownViewModel = function (params) {
+        var self = this;
+
+        params.boundTo(self);
+
+        self.name = params.name;
+        self.valueField = params.valueField;
+        self.textField = params.textField;
+        self.siblings = params.slicerCollection;
+        self.widget = ko.observable();
+        self.compositeKey = params.compositeKey;
+        self.selectionAffects = params.selectionAffects || [];
+        self.additionalParams = params.additionalParams || [];
+        self.noOptionLabel = params.noOptionLabel;
+        self.selectOnlyItem = typeof params.selectOnlyItem === 'undefined' ? false : params.selectOnlyItem;
+        self.clearValue = typeof params.clearValue === 'undefined' ? null : params.clearValue;
+        self.clearSiblings = typeof params.clearSiblings === 'undefined' ? false : params.clearSiblings;
+        self.log = typeof params.log === 'undefined' ? false : params.log;
+        self.readOnly = typeof params.readOnly === 'undefined' ? false : params.readOnly;
+        self.canClear = typeof params.canClear === 'undefined' ? true : params.canClear;
+
+        if (params.noOptionLabel) {
+
+        } else {
+            self.optionLabel = {};
+            self.optionLabel[self.valueField] = self.clearValue || null;
+            self.optionLabel[self.textField] = params.optionLabelText || 'Please Select';
+        }
+
+        // we have the duality of wanting to know that we've got an ID we're interested in which resides upon
+        // the object which is selected.
+
+        self.selectedId = params.selectedId;
+
+        self.selected = ko.observable(params.noOptionLabel ? params.clearValue : self.optionLabel);
+
+        self.selected.subscribe(function (newValue) {
+            if (self.log)
+                console.log(self.name + '.selected subscribe hit: ', newValue);
+
+            if (newValue) {
+                self.selectedId(newValue[self.valueField]);
+                for (var i in self.selectionAffects) {
+                    var affect = self.selectionAffects[i];
+                    if (affect.hasOwnProperty('name')) {
+                        if (newValue.hasOwnProperty(affect.name)) {
+                            affect.value(newValue[affect.name]);
+                        }
+                    } else if (affect.hasOwnProperty('names')) {
+                        var datum = {};
+                        for (var j in affect.names) {
+                            if (newValue.hasOwnProperty(affect.names[j])) {
+                                datum[affect.names[j]] = newValue[affect.names[j]];
+                            }
+                        }
+                        affect.value(datum);
+                    }
+                }
+
+            } else {
+                self.selectedId(self.clearValue);
+            }
+        });
+
+        self.autoBindSkipSiblingRead = false;// params.autoBind;
+
+        self.selectedId.subscribe(function (newValue) {
+            if (self.log)
+                console.log(self.name + '.selectedId subscribe hit: ', newValue);
+
+            //self.siblings.forEach(function (s) {
+            //    if (s.boundTo() == self) {
+            //        return;
+            //    }
+            //    s.boundTo().widget().dataSource.read();
+            //});
+
+            if (self.autoBindSkipSiblingRead) {
+                if (self.log)
+                    console.log(self.name + '.selectedId subscribe skipped sibling read');
+                self.autoBindSkipSiblingRead = false;
+            } else {
+                if (self.log)
+                    console.log(self.name + '.selectedId subscribe caused sibling read');
+                self.siblings.forEach(function (s) {
+                    if (s.boundTo() == self) {
+                        return;
+                    }
+                    s.boundTo().widget().dataSource.read();
+                });
+            }
+        });
+
+        self.programmaticSelect = false;
+
+        self.availabilityNonce = ko.observable();
+
+        self.clearAvailable = ko.computed({
+            read: function () {
+
+                // This is fundamental: if what is selected is not the clearValue, 
+                // permit clearing. Regardless of how many items we have in our list.
+                if (self.selectedId() != self.clearValue) {
+                    return true;
+                } else {
+                    return false;
+                }
+
+                //// RIGHT, let's think about when clear should be available.
+
+                //// If I'm to select my only item, why should I not be able to clear? Other things
+                //// being equal, if I clear all that will happen is that I select my only item again.
+
+                //var result = false;
+
+                //if (self.canClear == false)
+                //    return result;
+
+                //if (self.readOnly === true)
+                //    return result;
+
+                //var nonceValue = self.availabilityNonce();
+
+                //// touch sibling values; if they change I might need to re-show my clear button.
+                //var data = {};
+                //self.siblings.forEach(function (s) {
+                //    if (s.selectedId()) {
+                //        var t = s.selectedId();
+                //        data[s.valueField] = t;
+                //    }
+                //});
+
+                ////if (self.widget()) {
+                ////    if (self.selectOnlyItem && self.widget().dataSource.data().length == 1) {
+                ////        result = false;
+                ////        return result;
+                ////    }
+                ////}
+
+                //if (self.selectedId() != self.clearValue) {
+                //    result = true;
+                //    return result;
+                //} else {
+                //    result = false;
+                //}
+
+                //// this permits for no optionLabel present, where clear should return you to a particular value as defined by clearValue.
+                //if (self.selected() == self.clearValue) {
+                //    result = false;
+                //}
+
+                //if (self.log)
+                //    console.log(self.name + ' clearAvailable evaluated', result);
+
+                //return result;
+            }
+        }, self).extend({
+            rateLimit: {
+                method: 'notifyWhenChangesStop',
+                timeout: 100
+            }
+        });
+
+        self.clearSelection = function () {
+            if (self.log)
+                console.log(self.name + '.clearSelection was called, clearing to: ', self.clearValue);
+
+            self.selectedId(self.clearValue); // this might be bad!
+            self.widget().value(self.clearValue);
+            self.widget().trigger('change');
+            self.widget().dataSource.read();
+
+
+            if (self.clearSiblings) {
+                self.siblings.forEach(function (s) {
+                    if (s.boundTo() == self) {
+                        return;
+                    }
+                    s.boundTo().widget().value(s.clearValue);
+                    s.boundTo().widget().trigger('change');
+                });
+            } else {
+                self.siblings.forEach(function (s) {
+                    if (s.boundTo() == self) {
+                        return;
+                    }
+                    s.boundTo().widget().dataSource.read();
+                });
+            }
+        }
+
+        self.dataSourceData = function() {
+            var data = {};
+
+            self.siblings.forEach(function (s) {
+                if (s.selectedId()) {
+                    data[s.valueField] = s.selectedId();
+                }
+            });
+
+            for (var i in self.additionalParams) {
+                var param = self.additionalParams[i];
+                data[param.name] = ko.unwrap(param.value);
+            }
+
+            if (self.log)
+                console.log(self.name + ' dataSourceData', data);
+
+            return data;
+        }
+
+        self.dataSourceRead = function (options) {
+            var webapi = new kendo.data.transports.webapi({ prefix: "" });
+
+            var mapped = webapi.parameterMap(options.data);
+
+            var data = self.dataSourceData();
+
+            for (var propertyName in mapped) {
+                data[propertyName] = mapped[propertyName];
+            }
+
+            if (params.endPoint) {
+                $.ajax({
+                    url: params.endPoint,
+                    type: "POST",
+                    data: data,
+                    success: function (data) {
+                        if (self.log)
+                            console.log(self.name + ' returned', data);
+                        options.success(data);
+                    },
+                    error: function (data) {
+                        options.error();
+                    }
+                });
+            }
+        }
+
+        self.dataSource = new kendo.data.DataSource({
+            serverFiltering: false,
+            serverSorting: false,
+            serverGrouping: false,
+            transport: {
+                read: self.dataSourceRead
+            }
+        });
+
+        self.onSelect = params.onSelect || function (e) {
+            if (self.log)
+                console.log(self.name + ' dropdown onSelect hit');
+        }
+
+        self.onChange = params.onChange || function (e) {
+            if (self.log)
+                console.log(self.name + ' dropdown onChange hit');
+        }
+
+        self.onClose = params.onClose;
+
+        self.dataBound = function (e) {
+            self.availabilityNonce.valueHasMutated();
+
+            if (self.log)
+                console.log(self.name + ' dropdown dataBound hit', e);
+
+            var ds = e.sender.dataSource.data();
+
+            // stop mucking about removing the option label
+            //e.sender.setOptions({ optionLabel: self.optionLabel });
+
+            if (self.selectOnlyItem) {
+                if (ds.length == 1) {
+                    //e.sender.setOptions({ optionLabel: '' });
+                    self.selected(ds[0]);
+                }
+            }
+
+            if (ds.length > 1) {
+
+                var found = -1;
+
+                var checkCompositeKey = false;
+
+                for (var i = 0; i < e.sender.dataSource.view().length; i++) {
+                    if (self.compositeKey) {
+                        if (self.compositeKey.hasOwnProperty('onlyIf')) {
+                            if (typeof self.compositeKey.onlyIf === 'function') {
+                                if (self.compositeKey.onlyIf()) {
+                                    checkCompositeKey = true;
+                                } 
+                            } else {
+                                if (self.compositeKey.onlyIf) {
+                                    checkCompositeKey = true;
+                                }
+                            }
+                        }
+                        if (checkCompositeKey) {
+                            found = i;
+
+                            for (var j = 0; j < self.compositeKey.names.length; j++) {
+                                if (e.sender.dataSource.view()[i][self.compositeKey.names[j]] != self.selected()[self.compositeKey.names[j]]) {
+                                    found = -1;
+                                }
+                            }
+
+                            if (found == i) {
+                                break;
+                            }
+                        } else {
+                            if (e.sender.dataSource.view()[i][self.valueField] == self.selectedId()) {
+                                found = i;
+                            }
+                        }
+                    } else {
+                        if (e.sender.dataSource.view()[i][self.valueField] == self.selectedId()) {
+                            found = i;
+                        }
+                    }
+                }
+
+                if (self.widget().value()[self.valueField] == self.selectedId()) {
+                    found = -1; // no need to select if we've already got it selected, eh?
+                }
+
+                if (found > -1) {
+                    e.sender.value(e.sender.dataSource.view()[found]);
+                    e.sender.trigger('change');
+                }
+
+                //if (self.selected()) {
+                //    // our selected is of note; it is not present in view. Clear.
+                //    if (self.log) {
+                //        console.log(self.name + ' dropdown dataBound selected not found in view; clear');
+                //        console.log(self.name + ' clear was skipped');
+                //    }
+                //    //self.selected(self.noOptionLabel ? self.clearValue : self.optionLabel);
+                //}
+            } 
+        };
+        
+
+        self.dropDownSettings = {
+
+            // 22/01/2019 
+            // Why would we ever want to restrict what we can bind to to just a single value?
+            // These are objects and they have interesting properties.
+            // We can have a notional primary field we're interested in, sure, but other things might be interested in our other properties.
+            // So the default behaviour for the dropdownlist is preferred: values are objects.
+            valuePrimitive: params.valuePrimitive || false, // not strictly necessary as this is the default...
+
+            //dataValueField: self.valueField, // defunct. BUT I WANT MY CAKE AND EAT IT TOO.
+            dataTextField: self.textField,
+            widget: self.widget,
+            data: self.dataSource,
+            select: self.onSelect,
+            change: self.onChange,
+            value: self.selected,
+            dataItem: ko.observable(),
+            autoWidth: true,
+            autoBind: params.autoBind || false,
+            dataBound: self.dataBound,
+            enabled: !self.readOnly
+        };
+
+        if (typeof self.onClose === 'function') {
+            self.dropDownSettings.close = self.onClose;
+        }
+
+        if (params.noOptionLabel) {
+
+        } else {
+            self.dropDownSettings.optionLabel = self.optionLabel;
+        }
+
+        if (self.valueField == 'SalesAreaID' ||
+            self.valueField == 'SalesAgentID' ||
+            self.valueField == 'SalesRepresentativeID' ||
+            self.valueField == 'ProductGroupID' ||
+            self.valueField == 'ItemTypeID') {
+            self.dropDownSettings.filter = "contains";
+        }
+    }
+
+    ko.components.register('new-drop-down-component', {
+        viewModel: newDropDownViewModel,
+        template: { element: $('#new-drop-down-template')[0] }
+    });
+</script>

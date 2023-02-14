@@ -1,0 +1,153 @@
+﻿.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    grid-column-gap: 15px;
+    grid-row-gap: 15px;
+}
+
+#document-iframe-container {
+    height: 100vh;
+}
+
+#document-iframe-container iframe {
+    height: 100%;
+    width: 100%;
+    border: 0;
+    border-radius: 4px;
+}
+
+#document-wrapper span.glyphicon {
+    color: white;
+    margin-left: 15px;
+}
+
+#document-wrapper div.flex-container {
+    display: flex;
+}
+
+#document-wrapper .mdc-validating-field label span {
+    -webkit-font-smoothing: subpixel-antialiased;
+}
+
+#document-wrapper div.flex-container > div {
+    flex: 1 1 auto;
+}
+
+#document-wrapper div.flex-container > button {
+    flex: 0 1 120px;
+    min-width: 120px;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+}
+
+#interaction-flex-container {
+    display: flex;
+    flex-direction: column;
+}
+
+    #interaction-flex-container > div {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 0 15px 0;
+    }
+
+.document-anchor {
+    font-size: 16px;
+}
+
+#send-history ul {
+    margin-bottom: 0;
+}
+
+    #send-history ul li + li {
+        margin-top: 15px;
+    }
+
+.copied-ok {
+    display: none;
+    color: blue;
+    opacity: 0.85;
+}
+
+.document-anchor:hover > .copied-ok {
+    text-decoration: none;
+}
+
+.copy-link,
+.copy-link:focus,
+.copy-link:active,
+.copy-link:visited,
+.copy-link:hover {
+    text-decoration: none;
+}
+
+
+
+.k-filter-row th, .k-grid-header th.k-header {
+    white-space: normal;
+}
+
+.k-widget td.k-edit-cel {
+    vertical-align: middle;
+}
+
+.k-widget td textarea {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+}
+.k-widget td input[type=color] {
+    width: 100%;
+}
+
+.k-widget * {
+    box-sizing: border-box;
+}
+
+td.k-edit-cell {
+    box-sizing: border-box;
+}
+
+.colour-preview {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.k-multiselect-wrap .k-button {
+    background-color: #428bca;
+    border-color: #357ebd;
+    color: white;
+}
+
+/*
+    position: absolute; */
+/* top: 0; */
+/* bottom: 0; */
+/* right: 0; */
+/* padding: .3em .2em;
+
+*/
+.k-multiselect-wrap .k-select {
+    position: static;
+    padding: 0;
+}
+
+.k-icon.k-clear-value.k-i-close {
+    display: none !important;
+}
+
+.btn-preview {
+    padding: 2em 1em;
+    white-space: normal;
+}
+
+.k-multiselect-wrap .k-button {
+    line-height: 1.35;
+    padding: 4px 8px;
+}
+
+.k-multiselect-wrap .k-input {
+    clear: both;
+}

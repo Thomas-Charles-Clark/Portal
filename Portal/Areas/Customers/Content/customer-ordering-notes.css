@@ -1,0 +1,35 @@
+﻿.panel-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .panel-footer > div {
+        display: flex;
+        align-items: center;
+    }
+
+    .panel-footer > div > span {
+        margin-right: 15px;
+    }
+
+    .panel-footer .btn-flat {
+        margin-right: 0;
+    }
+
+    .k-edit-form-container .editor-label,
+    .k-edit-label {
+        padding: 4px;
+    }
+
+.k-autocomplete .k-clear-value, .k-dropdown-wrap .k-clear-value, .k-multiselect-wrap .k-clear-value {
+    top: 50%;
+}
+
+textarea {
+    height: 500px;
+}
+
+.panel-body > table.k-editor {
+    height: 500px;
+}

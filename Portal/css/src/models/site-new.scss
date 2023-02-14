@@ -1,0 +1,446 @@
+﻿@import 'common.scss';
+
+.body-content {
+    > .blocker {
+        position: fixed;
+        border-radius: 0;
+        width: 100%;
+        height: 100vh;
+    }
+}
+
+input {
+    position: relative;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    opacity: 1;
+    position: absolute;
+    z-index: 0;
+    top: 2px;
+    right: 1px;
+    width: 12px;
+    height: calc(100% - 4px);
+}
+
+.form-control[type=file] {
+    font-size: inherit;
+    padding: $input-padding-y $input-padding-x;
+}
+
+.trade-account-selector {
+    .panel-heading {
+        .panel-title {
+            color: $page-heading-colour;
+        }
+    }
+
+    .trade-account-selector-input {
+        flex: 1;
+    }
+}
+
+.panel {
+    .panel-heading {
+        .panel-title {
+            margin-bottom: 0;
+
+            a {
+                padding: $xs-gutter 0 $xl-gutter 0;
+            }
+        }
+    }
+}
+
+form.form-container {
+    padding: $l-gutter;
+
+    .form-header {
+        padding: $l-gutter;
+
+        .form-subheading {
+            margin-bottom: $m-gutter;
+        }
+
+        .form-description {
+            margin-bottom: $l-gutter;
+        }
+    }
+
+    > .grid {
+        row-gap: $xl-gutter;
+    }
+
+    fieldset.card {
+        border: 1px solid $gray-300;
+        padding-top: $l-gutter;
+        row-gap: $xl-gutter;
+
+        legend {
+            padding: 0 0.5rem;
+            position: absolute;
+            top: -1.25rem;
+            margin-left: 0.75rem;
+            margin-right: auto;
+            background-color: white;
+            width: auto;
+            background: linear-gradient(180deg, transparent 45%, white 50%, white 100%);
+            background-color: white;
+            border-style: solid;
+            border-width: 1px;
+            border-bottom: 0;
+            border-radius: 4px;
+            padding-top: 0.25rem;
+            -o-border-image: linear-gradient(#dee2e6 0%, #dee2e6 50%, rgba(0, 0, 0, 0) 100%);
+            border-image: linear-gradient(#dee2e6 0%, #dee2e6 0%, 50%, rgba(0, 0, 0, 0) 50.01%) 1;
+        }
+
+        .card-body {
+
+            .form-panel-subheading {
+                margin-bottom: $m-gutter;
+            }
+
+            .form-panel-description {
+                margin-bottom: $xl-gutter;
+            }
+
+            .field {
+                .field-note {
+                    padding: $vsm-gutter;
+                    font-size: $font-size-xs;
+                    font-style: italic;
+
+                    i {
+                        font-size: $font-size-xs;
+                    }
+                }
+            }
+
+            .field + .field {
+                margin-top: $xl-gutter;
+            }
+
+            .grid {
+                .field + .field {
+                    margin-top: 0;
+                }
+            }
+        }
+    }
+}
+
+.close {
+    font-size: 21px;
+    line-height: 1;
+    color: #000;
+    text-shadow: 0 1px 0 #fff;
+    opacity: .2;
+    filter: alpha(opacity=20)
+}
+
+/* clears the ‘X’ from Internet Explorer */
+input[type=search]::-ms-clear {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+input[type=search]::-ms-reveal {
+    display: none;
+    width: 0;
+    height: 0;
+}
+/* clears the ‘X’ from Chrome */
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+    display: none;
+}
+
+.mdc-validating-field {
+    .revert,
+    .close {
+        cursor: pointer;
+    }
+
+    > .busy {
+        background-image: repeating-linear-gradient(-45deg, rgba(222, 229, 237, 0.75), rgba(248, 249, 250, 0.95) 1rem, transparent 1rem, transparent 2rem);
+        transition: background-color 300ms ease-in-out;
+        background-size: 200% 200%;
+        animation: barberpole 10s linear reverse infinite;
+    }
+
+    .mdc-text-field {
+        .ui-autocomplete-loading {
+            background: none;
+        }
+
+        input {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    > .mdc-text-field--outlined:not(.mdc-text-field--disabled) {
+        background-color: $white;
+    }
+}
+
+.mdc-validating-field {
+    .revert:hover,
+    .revert:active,
+    .revert:focus,
+    .revert:focus-within,
+    .close:hover,
+    .close:active,
+    .close:focus,
+    .close:focus-within {
+        opacity: 0.6;
+    }
+
+    .controls {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        max-height: 34px;
+        width: auto;
+        display: flex;
+
+        .close.revert,
+        .close.clear {
+            padding: 0 $sm-gutter;
+            display: inline;
+            position: static;
+            min-width: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close.clear {
+            padding-right: $l-gutter;
+        }
+    }
+
+    .mdc-text-field--outlined {
+        .mdc-text-field__input.clearable,
+        .mdc-text-field__input.revertable {
+            padding-right: calc($xl-gutter + $vsm-gutter);
+        }
+
+        .mdc-text-field__input.clearable.revertable {
+            padding-right: calc(calc($xl-gutter * 2) + $vsm-gutter);
+        }
+    }
+
+    .mdc-select {
+        .controls {
+            right: 34px;
+
+            .clear {
+                padding-right: $sm-gutter;
+            }
+        }
+    }
+
+    .mdc-select--outlined.clearable,
+    .mdc-select--outlined.revertable {
+        .mdc-select__native-control {
+            padding-right: 70px;
+        }
+    }
+
+    .mdc-select--outlined.clearable.revertable {
+        .mdc-select__native-control {
+            padding-right: 104px;
+        }
+    }
+
+    .mdc-numeric-field {
+        flex-wrap: nowrap;
+
+        .mdc-text-field {
+            .mdc-notched-outline {
+                .mdc-notched-outline__leading {
+                    border-top-left-radius: 0;
+                    border-bottom-left-radius: 0;
+                    border-left: 0;
+                }
+
+                .mdc-notched-outline__trailing {
+                    border-top-right-radius: 0;
+                    border-bottom-right-radius: 0;
+                    border-right: 0;
+                }
+            }
+        }
+
+        .controls {
+            right: 16px;
+
+            .close.clear {
+                padding-right: $sm-gutter;
+            }
+        }
+
+        .mdc-text-field--outlined {
+            .mdc-text-field__input.clearable,
+            .mdc-text-field__input.revertable {
+                padding-right: calc(calc($xl-gutter + $vsm-gutter) + 20px);
+            }
+
+            .mdc-text-field__input.clearable.revertable {
+                padding-right: calc(calc(calc($xl-gutter * 2) + $vsm-gutter) + 20px);
+            }
+        }
+    }
+}
+
+@keyframes barberpole {
+    100% {
+        background-position: 100% 100%;
+    }
+}
+
+.validation-message {
+    color: $mdc-error-color;
+}
+
+.mdc-validating-field {
+    .mdc-select--disabled,
+    .mdc-select--disabled.mdc-select--outlined,
+    .mdc-text-field--disabled,
+    .mdc-text-field--disabled.mdc-text-field--outlined {
+        background-color: $gray-200;
+        cursor: not-allowed;
+
+        .k-dropdown-wrap.k-state-default {
+            span.k-input {
+                background-color: $gray-200;
+                cursor: not-allowed;
+            }
+        }
+
+        .mdc-floating-label,
+        .mdc-text-field__input {
+            color: rgba(0, 0, 0, 0.6);
+        }
+
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+            border-color: rgba(0, 0, 0, 0.16);
+        }
+
+        .controls {
+            pointer-events: none;
+        }
+    }
+
+    .mdc-text-field--textarea.clearable,
+    .mdc-text-field--textarea.revertable {
+        textarea {
+            padding-right: 36px;
+        }
+    }
+
+    .mdc-text-field--textarea.clearable.revertable {
+        textarea {
+            padding-right: 70px;
+        }
+    }
+
+    .mdc-multiselect.clearable {
+        .k-multiselect-wrap {
+            .k-clear-value {
+                display: none !important; /* I'm rendering my own clear icon and it looks and works a lot nicer thanks */
+            }
+        }
+    }
+}
+
+.k-animation-container {
+    .k-virtual-content {
+        > .k-virtual-list {
+            > .k-virtual-item {
+                align-items: center;
+            }
+        }
+    }
+}
+
+.code-mirror {
+    .cm-editor {
+        border: 1px solid $gray-400;
+    }
+
+    .cm-editor.cm-focused {
+        outline: none;
+    }
+}
+
+.code-mirror {
+    * {
+        font-family: unset;
+    }
+}
+
+.file-picker {
+    .blocker {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+
+    h4 {
+        margin-bottom: $m-gutter;
+    }
+
+    .file-upload-form {
+        .form-control {
+            transform: translateX(0%);
+
+            &.form-control-error {
+                color: $mdc-error-color;
+                border-color: $mdc-error-color;
+                animation: form-control-error-shake 250ms 1;
+            }
+        }
+    }
+
+    .file-wrapper {
+        position: relative;
+        margin-bottom: $l-gutter;
+        transform: translateX(0%);
+        transition: transform, border-color;
+
+        &.form-control-error {
+            color: $mdc-error-color;
+            border-color: $mdc-error-color;
+            animation: form-control-error-shake 250ms 1;
+        }
+    }
+}
+
+@keyframes form-control-error-shake {
+    0% {
+        transform: translateX(0%);
+    }
+
+    33% {
+        animation-timing-function: cubic-bezier(0.5, 0, 0.70173, 0.49582);
+        transform: translateX(calc(1% - 0%));
+    }
+
+    66% {
+        animation-timing-function: cubic-bezier(0.30244, 0.38135, 0.55, 0.95635);
+        transform: translateX(calc(-1% - 0%));
+    }
+
+    100% {
+        transform: translateX(0%);
+    }
+}

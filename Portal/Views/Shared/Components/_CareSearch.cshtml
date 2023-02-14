@@ -1,0 +1,209 @@
+﻿@model Portal.ViewModels.ComponentModels.CareRecordsViewModel
+<!-- ko with: careSearch -->
+    <div class="panel panel-default">
+        <div class="panel-heading no-padding">
+            <h4 class="panel-title">
+                <a class="panel-title panel-toggle" data-toggle="collapse" data-target="#care-search-collapse">Search for Care Records</a>
+            </h4>
+            <div class="clearfix"></div>
+        </div>
+        <div id="care-search-collapse" class="panel-collapse collapse in">
+            <div class="selector panel-body">
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="input-group">
+                            <input id="care-search" type="text" class="form-control" maxlength="100" data-bind="value: searchTerm, event: { keyup: onSearchKeyUp }" placeholder="Search" />
+                            <span class="input-group-addon">
+                                <button class="clear-btn btn btn-default @(Model.ButtonCssOverride)" type="button" data-bind="click: function() { clearSearch() }">&times;</button>
+                            </span>
+                            <span class="input-group-btn">
+                                <button class="search-btn btn btn-default @(Model.ButtonCssOverride)" data-bind="click: function() { performSearch() }"><span class="glyphicon glyphicon-search"></span></button>
+                            </span>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+
+                <div class="row margin-top-15">
+                    <div class="col-xs-6">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label">Record Status</label>
+                            </div>
+                            <div class="col-xs-12">
+                                <select id="order-status" class="form-control" data-bind="value: careRecordStatus, optionsText: 'Name', optionsValue: 'Value', options: careRecordStatusOptions"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label">Product Type</label>
+                            </div>
+                            <div class="col-xs-12">
+                                <select id="product-type" class="form-control" data-bind="value: productType, optionsText: 'Name', optionsValue: 'ProductTypeID', optionsCaption: 'All', options: availableProductTypes"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row margin-top-15">
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label">Period</label>
+                            </div>
+                            <div class="col-xs-12">
+                                <select id="period" class="form-control" data-bind="value: period, options: periodOptions, optionsText: 'Name', optionsValue: 'Value', optionsCaption: 'Please select'"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row margin-top-15" style="display: none;" data-bind="visible: period() == 'custom'">
+                    <div class="col-xs-6">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label">From:</label>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class='input-group date' data-bind="dateTimePicker: fromDate, dateTimePickerOptions: { locale: 'en-gb', format: 'DD/MM/YYYY LT', ignoreReadonly: true, showClear: true, allowInputToggle: true }">
+                                    <input type='text' class="form-control" readonly="readonly" />
+                                    <span class="input-group-btn">
+                                        <button class="calendar-btn btn btn-default @(Model.ButtonCssOverride)">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label">To:</label>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class='input-group date' data-bind="dateTimePicker: toDate, dateTimePickerOptions: { locale: 'en-gb', format: 'DD/MM/YYYY LT', ignoreReadonly: true, showClear: true, allowInputToggle: true }">
+                                    <input type='text' class="form-control" readonly="readonly" />
+                                    <span class="input-group-btn">
+                                        <button class="calendar-btn btn btn-default @(Model.ButtonCssOverride)">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row margin-top-30" data-bind="visible: (displayFilters() == false && searchBusy() == true)">
+        <div class="col-xs-12">
+            <div class="loading-busy"></div>
+        </div>
+    </div>  
+
+    <div class="row margin-top-15 margin-bottom-15">
+        <div class="pager-info col-xs-12">
+            <label class="search-result-count-label" data-bind="visible: haveSearched, text: searchResultsTotalCount() + ' result' + (searchResultsTotalCount() == 1 ? '' : 's')"></label>
+            <label id="care-search-page-count" class="page-count-label" data-bind="visible: searchResults().length, text: pageCount() + ' page' + (pageCount() > 1 ? 's' : '')"></label>
+        </div>
+    </div>
+    <div class="row" data-bind="visible: pageCount() > 1">
+        <div class="col-xs-12">
+            <nav aria-label="Search Result Navigation">
+                <ul class="pagination care-search-pagination pagination-sm"></ul>
+                <div class="loading-busy search-results-busy" data-bind="visible: (searchBusy() && (pageCount() > 1))"></div>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row" style="display: none;" data-bind="visible: true">
+        <!-- ko foreach: searchResults -->
+        <div class="col-xs-12">
+            <div class="ccr card">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 data-bind="html: careHeading"></h4>
+                    </div>
+                    <div class="panel-body">
+                        <dl class="ccr-head dl-horizontal">
+                            <dt>Created Date</dt>
+                            <dd data-bind="html: createdDtText"></dd>
+                            <dt>Opened By</dt>
+                            <dd data-bind="html: openedBy"></dd>
+                            <dt>Processed By</dt>
+                            <dd data-bind="html: processedBy"></dd>
+                            <dt>Result Care Code</dt>
+                            <dd data-bind="html: resultCareCodeDisplay"></dd>
+                            <dt>Completed</dt>
+                            <dd data-bind="html: completedDisplay"></dd>
+                        </dl>
+                        <div class="ccr-head-separator"></div>
+                        <!-- ko foreach: careLines -->
+                        <dl class="ccr-line-details dl-horizontal">
+                            <dt>Care Line No.</dt>
+                            <dd data-bind="html: careLineNo"></dd>
+                            <dt>Product Code</dt>
+                            <dd data-bind="html: productCode"></dd>
+                            <dt>Fault Code</dt>
+                            <dd data-bind="html: faultCodeDisplay"></dd>
+                            <dt>Image</dt>
+                            <dd>
+                                <!-- ko if: imageId -->
+                                <img class="thumb" data-bind="click: function() { $parent.loadLargeImage($data) }, attr: { src: 'https://www.designersguild.com/image/156/' + $data.imageId }"/>
+                                <!-- /ko -->
+                                <!-- ko ifnot: imageId -->
+                                <span class='text-muted'>Not found</span>
+                                <!-- /ko -->
+                            </dd>
+                            <dt>Claim Quantity</dt>
+                            <dd data-bind="html: claimQuantityDisplay"></dd>
+                            <dt>Returned Quantity</dt>
+                            <dd data-bind="html: returnedQuantityDisplay"></dd>
+                            <dt>Accepted Quantity</dt>
+                            <dd data-bind="html: acceptedQuantityDisplay"></dd>
+                            <dt>Returned to Stock</dt>
+                            <dd data-bind="html: returnedToStockDisplay"></dd>
+                            <dt>Notes</dt>
+                            <dd data-bind="html: notes"></dd>
+                        </dl>
+                        <!-- /ko -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /ko -->
+    </div>
+
+    <div class="row" data-bind="visible: pageCount()">
+        <div class="col-xs-12">
+            <nav aria-label="Search Result Navigation">
+                <div class="loading-busy search-results-busy" data-bind="visible: (searchBusy() && (pageCount() > 1))"></div>
+                <ul class="pagination care-search-pagination pagination-sm"></ul>
+            </nav>
+        </div>
+    </div>
+<!-- /ko -->
+
+<script type="text/javascript">
+    function getTradeAccountGroupId() {
+        return @Html.Raw(Json.Encode(Model.TradeAccountGroupID))
+    }
+    function getTradeAccountId() {
+        return @Html.Raw(Json.Encode(Model.TradeAccountID))
+    }
+    function getProductTypes() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.ProductTypes))
+    }
+    function getPeriodOptions() {
+        return @Html.Raw(Json.Encode(Model.PeriodOptions))
+    }
+    function getCareRecordStatusOptions() {
+        return @Html.Raw(Json.Encode(Model.CareRecordStatusOptions))
+    }
+</script>

@@ -1,0 +1,80 @@
+﻿const viewModel = ((resources) => {
+    let self = {
+        resources: resources
+    };
+    
+    //#region Properties
+
+    self.busy = ko.observable(false);
+
+    //#endregion
+
+
+    //#region Components
+
+
+
+    //#endregion
+
+
+    //#region Subscriptions
+
+
+
+    //#endregion
+
+
+    //#region Computeds
+
+
+
+    //#endregion
+
+
+    //#region Methods
+    
+    self.ready = () => {
+        self.busy(false);
+    }
+
+    self.fetch = () => {
+        fetch('/api/...', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            cache: 'no-store',
+            credentials: 'same-origin',
+            body: self.toJSON()
+        })
+        .then(window.handleFetchResponse)
+        .then(data => {
+            console.trace(data);
+        })
+        .catch(err => window.catchFetchError)
+    }
+
+    self.toJS = () => {
+        return {};
+    }
+
+    self.toJSON = () => JSON.stringify(self.toJS());
+
+    //#endregion
+
+    return self;
+});
+
+// demonstrates a factory function with parameter destructuring and defaults
+const demoFactoryFunction = ({
+  purpose = 'Unknown',
+  image = 'anon.png'
+} = {}) => ({
+  userName,
+  avatar
+});
+console.log(
+  // { purpose: "echo", image: 'anon.png' }
+  demoFactory({ userName: 'echo' }),
+
+  // { purpose: "Anonymous", image: 'anon.png' }
+  demoFactory()
+);

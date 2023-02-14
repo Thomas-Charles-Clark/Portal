@@ -1,0 +1,77 @@
+﻿<div id="lead-address-modal" class="modal fade" data-bind="with: leadEdit">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header grey-blue bg-info">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 id="lead-address-title" class="modal-title">Lead Address</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">Label</label>
+                    </div>
+                    <div class="col-xs-12">
+                        <input type="text" class="address-label form-control" data-bind="highlightNullField: editingAddress().label, forceNullOnEmpty: editingAddress().label, textInput: editingAddress().label" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">Address Line 1</label>
+                    </div>
+                    <div class="col-xs-12">
+                        <input type="text" class="pca-predict address-1 form-control" data-bind="highlightNullField: editingAddress().line1, forceNullOnEmpty: editingAddress().line1, textInput: editingAddress().line1, attr: { placeholder: 'Type to Search...' }" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">Address Line 2</label>
+                    </div>
+                    <div class="col-xs-12">
+                        <input type="text" class="address-2 form-control" data-bind="highlightNullField: editingAddress().line2, forceNullOnEmpty: editingAddress().line2, textInput: editingAddress().line2" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">Town</label>
+                    </div>
+                    <div class="col-xs-12">
+                        <input type="text" class="address-town form-control" data-bind="highlightNullField: editingAddress().town, forceNullOnEmpty: editingAddress().town, textInput: editingAddress().town" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">County</label>
+                    </div>
+                    <div class="col-xs-12">
+                        <input type="text" class="address-county form-control" data-bind="highlightNullField: editingAddress().county, forceNullOnEmpty: editingAddress().county, textInput: editingAddress().county" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">Postcode</label>
+                    </div>
+                    <div class="col-xs-12">
+                        <input type="text" class="address-postcode form-control" data-bind="highlightNullField: editingAddress().postcode, forceNullOnEmpty: editingAddress().postcode, textInput: editingAddress().postcode" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label for="address-country" class="col-form-label">Country</label>
+                    </div>
+                    <div class="col-xs-12" data-bind="with: editingAddress">
+                        <select class="form-control" data-bind="highlightNullField: countryId, options: $parentContext.$parent.availableCountries, value: countryId, optionsText: 'Name', optionsValue: 'CountryID', optionsCaption: 'Please Select...'"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success @(Model.Properties?.Application_ButtonClass)" data-bind="click: function() { saveLeadAddress(); }">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $("#lead-address-modal").on('hidden.bs.modal', function () {
+        $(this).find('.remaining').remove();
+    });
+</script>

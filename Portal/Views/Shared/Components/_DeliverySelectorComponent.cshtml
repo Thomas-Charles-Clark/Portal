@@ -1,0 +1,1083 @@
+﻿@model Portal.ViewModels.ComponentModels.DeliverySelectorViewModel
+@{ 
+    var validCarriageCodes = Model.AlternateDeliveryServices.Select(p => p.CARRCODE).ToList();
+    validCarriageCodes.AddRange(new List<string>() {
+        "PO181",
+        "PO170",
+        "PO182",
+
+        //Defunct
+        //"PO178",
+        //"PO180",
+        //"PO177",
+        //"PO175",
+        //"PO173",
+        //"PO176",
+        //"PO179",
+        //"PO174",
+        //"PO172",
+        //"PO171",
+        //"PO131"
+    });
+}
+
+<script id="delivery-selector-template" type="text/html">
+    <div id="despatch-selector" class="form-group row">
+        <div class="col-xs-4">
+            @*<div class="panel panel-primary" style="margin-bottom: 15px;">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        Default Delivery Service
+                    </h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group row">
+                        <div class="col-xs-12">
+                            <span class="non-bold" style="display: block;" data-bind="html: defaultDespatchDisplay"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <button class="btn btn-success address-select" data-bind="click: function() { selectDefaultDespatch(); }">Use Default</button>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        Delivery Type
+                    </h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group row">
+                        <div class="col-xs-12">
+                            <label class="col-form-label">
+                                Delivery Type
+                            </label>
+                        </div>
+                        <div class="col-xs-12">
+                            <select class="form-control" data-bind="value: deliveryType, optionsText: function(item) { return item.Code + ' - ' + item.Description }, optionsValue: $data, options: availableDeliveryTypes"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-8">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        Choose a different delivery service
+                    </h4>
+                </div>
+                <div class="panel-body">
+                    @*<div class="form-group row">
+                        <div class="col-sm-6 col-xs-12">
+                            <div class="btn-group">
+                                <div class="btn btn-default" data-bind="css: { 'btn-primary': standardOrExpress() == 'standard' }, click: function() { standardOrExpress('standard') }">
+                                    Standard
+                                </div>
+                                <div class="btn btn-default" data-bind="css: { 'btn-primary': standardOrExpress() == 'express' }, click: function() { standardOrExpress('express') }">
+                                    Express
+                                </div>
+                            </div>
+                        </div>
+                    </div>*@
+                    <div class="form-group row">
+                        <div class="col-sm-10 col-xs-12">
+                            <select id="despatch-haulier" class="form-control" data-bind="options: availableHauliers, value: selectedHaulier, optionsText: 'Name', optionsCaption: 'Select a delivery company'"></select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-10 col-xs-12">
+                            <select id="despatch-carriage" class="form-control" data-bind="options: availableCarriages, value: selectedCarriageService, optionsText: carriageServiceItemText, optionsCaption: 'Select a delivery service'"></select>
+                        </div>
+                    </div>
+                    @if (Model.Properties?.Sampling_CanOverridePricing == true)
+                    {
+                        <div class="form-group row" data-bind="visible: !selectedCarriageServiceIsFree() && standardOrExpress() == 'standard'">
+                            <div class="col-xs-12">
+                                <span class="col-form-label">
+                                    Override the delivery charge?
+                                </span>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="btn-group">
+                                    <div class="btn btn-default" data-bind="css: { 'btn-primary': payingForStandard() == true }, click: function() { payingForStandard(true); chargeCarriageToCustomerHaulierAccount(false); }">
+                                        No
+                                    </div>
+                                    <div class="btn btn-default" data-bind="css: { 'btn-primary': payingForStandard() == false }, click: function() { payingForStandard(false); chargeCarriageToCustomerHaulierAccount(false); }">
+                                        Free of Charge
+                                    </div>
+                                    <!-- ko if: selectedHaulier() -->
+                                    <!-- ko if: selectedHaulier().HAULCODE == 'UPS' || selectedHaulier().HAULCODE ==  'DHL' -->
+                                    <div class="btn btn-default" data-bind="css: { 'btn-primary': chargeCarriageToCustomerHaulierAccount() == true }, click: function () { payingForStandard(false); chargeCarriageToCustomerHaulierAccount(true); }">
+                                        Charge to Customer's Haulier Account
+                                    </div>
+                                    <!-- /ko -->
+                                    <!-- /ko -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row" data-bind="visible: standardOrExpress() == 'express' && !selectedCarriageServiceIsFree()">
+                            <div class="col-xs-12">
+                                <span class="col-form-label">
+                                    Override the delivery charge?
+                                </span>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="btn-group">
+                                    <div class="btn btn-default" data-bind="css: { 'btn-primary': payingForExpress() == true }, click: function() { payingForExpress(true); chargeCarriageToCustomerHaulierAccount(false); }">
+                                        No
+                                    </div>
+                                    <div class="btn btn-default" data-bind="css: { 'btn-primary': payingForExpress() == false }, click: function() { payingForExpress(false); chargeCarriageToCustomerHaulierAccount(false); }">
+                                        Free of Charge
+                                    </div>
+                                    <!-- ko if: selectedHaulier() -->
+                                    <!-- ko if: selectedHaulier().HAULCODE == 'UPS' || selectedHaulier().HAULCODE ==  'DHL' -->
+                                    <div class="btn btn-default" data-bind="css: { 'btn-primary': chargeCarriageToCustomerHaulierAccount() == true }, click: function () { payingForExpress(false); chargeCarriageToCustomerHaulierAccount(true); }">
+                                        Charge to Customer's Haulier Account
+                                    </div>
+                                    <!-- /ko -->
+                                    <!-- /ko -->
+                                </div>
+                            </div>
+                        </div>
+                        @*<div class="form-group row" data-bind="visible: standardOrExpress() == 'express' && selectedCarriageService() && payingForExpress()">
+                                <div class="col-xs-12">
+                                    <i style="font-size: 12px;">
+                                        The delivery charge will be calculated at the point of despatch once the order has been packed and weighed.
+                                    </i>
+                                </div>
+                            </div>*@
+                        <div class="form-group row" data-bind="visible: !selectedCarriageServiceIsFree() && ((standardOrExpress() == 'standard' && !payingForStandard() && selectedCarriageService()) || (standardOrExpress() == 'express' && payingForExpress() == false))">
+                            <div class="col-xs-12">
+                                <label class="col-form-label">
+                                    Why are you giving free delivery?*
+                                </label>
+                            </div>
+                            <div class="col-xs-10">
+                                <input id="free-delivery-reason" class="form-control" data-bind="textInput: freeDeliveryReason" placeholder="Free delivery reason" />
+                            </div>
+                        </div>
+                        <div data-bind="visible: chargeCarriageToCustomerHaulierAccount()">
+                            <hr />
+                            <div class="form-group row" data-bind="visible: displayUPSAccountNumber()">
+                                <div class="col-xs-12">
+                                    <label class="col-form-label">
+                                        Customer's UPS Account Number*
+                                    </label>
+                                </div>
+                                <div class="col-xs-10">
+                                    <input id="ups-account-number" class="form-control" data-bind="textInput: upsAccountNumber" placeholder="Customer's UPS Account Number" />
+                                </div>
+                            </div>
+                            <div class="form-group row" data-bind="visible: displayDHLAccountNumber()">
+                                <div class="col-xs-12">
+                                    <label class="col-form-label">
+                                        Customer's DHL Account Number*
+                                    </label>
+                                </div>
+                                <div class="col-xs-10">
+                                    <input id="dhl-account-number" class="form-control" data-bind="textInput: dhlAccountNumber" placeholder="Customer's DHL Account Number" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                Charge taxes / duties to the customer's haulier account?
+                                <div class="btn-group" style="margin-left: 12px;">
+                                    <div class="btn btn-default" data-bind="css: { 'btn-primary': chargeTaxesToCustomerHaulierAccount() == true }, click: function() { chargeTaxesToCustomerHaulierAccount(true) }">
+                                        Yes
+                                    </div>
+                                    <div class="btn btn-default" data-bind="css: { 'btn-primary': chargeTaxesToCustomerHaulierAccount() == false }, click: function() { chargeTaxesToCustomerHaulierAccount(false) }">
+                                        No
+                                    </div>
+                                </div>
+                            </div>
+                            <hr />
+                        </div>
+                    }
+                    <div class="form-group row" data-bind="visible: selectedCarriageService()">
+                        <div class="col-xs-12">
+                            <label class="col-form-label">Delivery Charge: <span data-bind="text: despatchPriceDisplay"></span></label>
+                        </div>
+                    </div>
+                    <div class="row" data-bind="visible: selectedCarriageService()">
+                        <div class="col-xs-12">
+                            <button class="btn btn-success btn-continue" data-bind="click: function() { if (freeDeliveryErrors().length > 0) { freeDeliveryErrors.showAllMessages(true); } else { $('#product-display-label').trigger('click') } }">
+                                Continue
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<div id="groupage-export-address-modal" class="modal fade" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document" data-bind="with: deliverySelector">
+        <div class="modal-content">
+            <div class="modal-header grey-blue bg-info">
+                <button type="button" class="close" data-bind="click: cancelSecondaryAddressesModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Traditional Export / Groupage Mode</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <p>
+                            In order to specify this Delivery Type, you must select a delivery address from this account's address book. Please do so below.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <select id="modal-secondary-addresses" class="form-control margin-bottom-15" size="8" data-bind="options: addressBook, value: selectedAddressBookAddress, optionsText: function(item) { return item.SelectListDisplayLine() }, optionsAfterRender: viewModel.setSecondaryAddressOptionsAfterRender"></select>
+                        <button id="modal-secondary-select-button" class="btn btn-success address-select" data-bind="click: function() { $('#groupage-export-address-modal').modal('hide'); viewModel.setSelectedSecondaryAddress(selectedAddressBookAddress()) }, enable: selectedAddressBookAddress()">SELECT ADDRESS</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-bind="click: cancelSecondaryAddressesModal">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function getAllHauliers() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.Hauliers.Where(p => p.HAULCODE == "RM" || p.HAULCODE == "CC" || p.HAULCODE == "VAN").OrderBy(p => p.Name).ToList()));
+    }
+
+    function getAllCarriages() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.CarriageServices.Where(p => (p.HAULCODE == "RM" || p.HAULCODE == "CC" || p.HAULCODE == "VAN") && validCarriageCodes.Contains(p.CARRCODE)).OrderBy(p => p.Description).ToList()));
+    }
+
+    function getAvailableDeliveryTypes() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.DeliveryTypes.OrderBy(p => p.Code).ToList()));
+    }
+
+    function getCustomerCollectionServices() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.AlternateDeliveryServices));
+    }
+
+    var deliverySelectorViewModel = function (params) {
+        var self = this;
+
+        params.boundTo(self);
+
+        self.account = params.account;
+
+        self.address = params.address;
+
+        self.addressBook = params.addressBook;
+
+        self.selectedAddressBookAddress = ko.observable();
+
+        self.orderValue = params.orderValue;
+
+        self.carriageMatchesAccountCurrency = ko.pureComputed(function () {
+            //if (self.account()) {
+            //    if (self.selectedCarriageService()) {
+            //        return self.account().CurrencyID == self.selectedCarriageService().CurrencyID;
+            //    }
+            //}
+            //return false;
+            return true;
+        }, self).extend({
+            equal: {
+                params: true,
+                message: 'Carriage Currency does not match Account Currency'
+            }
+        });
+
+        self.defaultDespatch = ko.observable(params.defaultDespatch);
+
+        self.standardOrExpress = ko.observable('standard');
+
+        self.chargeCarriageToCustomerHaulierAccount = ko.observable(false);
+
+        self.chargeCarriageToCustomerHaulierAccount.subscribe(function (newValue) {
+            if (newValue) {
+                self.freeDeliveryReason('Charged to Customer\'s Haulier');
+            } else {
+                self.freeDeliveryReason(undefined);
+            }
+
+            if (newValue) {
+                self.despatchPrice(0);
+            }
+            //else {
+            //    if (self.selectedCarriageService()) {
+            //        var priceRecord = Enumerable.From(self.selectedCarriageService().Prices).Where(function (x) {
+            //            var currentDespatchPrice = self.despatchPrice() || 0;
+            //            var priceAdjusted = self.orderValue() - currentDespatchPrice;
+            //            if (priceAdjusted >= x.MinValue && priceAdjusted <= x.MaxValue) {
+            //                return x;
+            //            }
+            //        }).SingleOrDefault();
+
+            //        if (priceRecord) {
+            //            if (priceRecord.Price == 0) {
+            //                self.despatchPrice(undefined);
+            //            } else {
+            //                self.despatchPrice(priceRecord.Price);
+            //            }
+            //        }
+            //    }
+            //}
+        });
+
+        self.chargeTaxesToCustomerHaulierAccount = ko.observable(false);
+
+        self.displayUPSAccountNumber = ko.pureComputed(function () {
+            if (self.selectedHaulier()) {
+                if (self.selectedHaulier().HAULCODE == 'UPS') {
+                    if (self.selectedCarriageService()) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }, self);
+
+        self.requireUPSAccountNumber = ko.pureComputed(function () {
+            if (self.selectedHaulier()) {
+                if (self.selectedHaulier().HAULCODE == 'UPS') {
+                    if (self.chargeCarriageToCustomerHaulierAccount()) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }, self);
+
+        self.displayDHLAccountNumber = ko.pureComputed(function () {
+            if (self.selectedHaulier()) {
+                if (self.selectedHaulier().HAULCODE == 'DHL') {
+                    if (self.selectedCarriageService()) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }, self);
+
+        self.requireDHLAccountNumber = ko.pureComputed(function () {
+            if (self.selectedHaulier()) {
+                if (self.selectedHaulier().HAULCODE == 'DHL') {
+                    if (self.chargeCarriageToCustomerHaulierAccount()) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }, self);
+
+        self.upsAccountNumber = ko.observable().extend({
+            @if (Model.Properties?.Sampling_CanOverridePricing == true)
+            {
+                <text>
+                charsRemaining: {
+                    maxLength: 20,
+                    elementId: '#ups-account-number'
+                },
+                </text>
+            }
+            required: {
+                params: true,
+                onlyIf: self.requireUPSAccountNumber,
+                message: 'You must provide the customer\'s UPS account number'
+            }
+        });
+
+        self.dhlAccountNumber = ko.observable().extend({
+            @if (Model.Properties?.Sampling_CanOverridePricing == true)
+            {
+                <text>
+                charsRemaining: {
+                    maxLength: 20,
+                    elementId: '#dhl-account-number'
+                },
+                </text>
+            }
+            required: {
+                params: true,
+                onlyIf: self.requireDHLAccountNumber,
+                message: 'You must provide the customer\'s DHL account number'
+            }
+        });
+
+        self.upsAccountNumber.subscribe(function (newValue) {
+            self.dhlAccountNumber(undefined);
+        });
+
+        self.dhlAccountNumber.subscribe(function (newValue) {
+            self.upsAccountNumber(undefined);
+        });
+
+        self.availableDeliveryTypes = getAvailableDeliveryTypes();
+
+        var defaultDeliveryType = undefined;
+
+        if (self.account()) {
+            defaultDeliveryType = Enumerable.From(self.availableDeliveryTypes).Where(function (x) {
+                return x.Code === self.account().DefaultDeliveryType
+            }).SingleOrDefault();
+        }
+
+        self.deliveryType = ko.observable(defaultDeliveryType).extend({
+            required: {
+                params: true,
+                message: 'Please specify a Delivery Type'
+            }
+        });
+
+        self.deliveryType.subscribe(function (newValue) {
+            if (self.account()) {
+                switch (newValue.Code) {
+                    case 'G':
+                    case 'T':
+                        if (self.addressBook().length == 0) {
+                            $.info('Delivery Type Unavailable', 'Sorry, this account has no stored addresses. The delivery type you selected requires a stored address to be selected.');
+                            var dt = Enumerable.From(self.availableDeliveryTypes).Where(function (x) {
+                                return x.Code == 'N';
+                            }).SingleOrDefault();
+                            self.deliveryType(dt);
+                            return;
+                        } else {
+                            if (self.address()) {
+                                if (self.address().DeliveryReference() == null) {
+                                    $("#groupage-export-address-modal").modal('show');
+                                }
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
+        //self.account.subscribe(function (newValue) {
+        //    if (newValue) {
+        //        var dt = Enumerable.From(self.availableDeliveryTypes).Where("$.Code === '" + newValue.DefaultDeliveryType + "'").SingleOrDefault();
+
+        //        if (dt) {
+        //            self.deliveryType(dt);
+        //        }
+        //    }
+        //});
+
+        //self.address.subscribe(function(newValue) {
+        //    switch (self.deliveryType().Code) {
+        //        case 'G':
+        //        case 'T':
+        //            if (self.addressBook().length == 0) {
+        //                $.info('Delivery Type Unavailable', 'Sorry, this account has no stored addresses. The delivery type you selected requires a stored address to be selected.');
+        //                var dt = Enumerable.From(self.availableDeliveryTypes).Where(function (x) {
+        //                    return x.Code == 'N';
+        //                }).SingleOrDefault();
+        //                self.deliveryType(dt);
+        //                return;
+        //            } else {
+        //                if (self.address()) {
+        //                    if (self.address().DeliveryReference() == null) {
+        //                        $("#groupage-export-address-modal").modal('show');
+        //                    }
+        //                }
+        //            }
+        //            break;
+        //        default:
+        //            break;
+        //    }
+        //});
+
+        self.cancelSecondaryAddressesModal = function () {
+            var dt = Enumerable.From(self.availableDeliveryTypes).Where(function (x) {
+                return x.Code == 'N';
+            }).SingleOrDefault();
+            self.deliveryType(dt);
+            $("#groupage-export-address-modal").modal('hide');
+            return;
+        }
+
+        self.confirmSecondaryAddressesModal = function () {
+
+        }
+
+        self.account.subscribe(function (newValue) {
+            if (newValue) {
+                self.upsAccountNumber(newValue.UPSAccountNumber || undefined);
+                self.dhlAccountNumber(newValue.DHLAccountNumber || undefined);
+
+                var dt = Enumerable.From(self.availableDeliveryTypes).Where(function (x) {
+                    return x.Code == newValue.DefaultDeliveryType;
+                }).SingleOrDefault();
+
+                if (dt) {
+                    self.deliveryType(dt);
+                } else {
+                    dt = Enumerable.From(self.availableDeliveryTypes).Where(function (x) {
+                        return x.Code == 'N';
+                    }).SingleOrDefault();
+
+                    self.deliveryType(dt);
+                }
+            } else {
+                self.upsAccountNumber(undefined);
+                self.dhlAccountNumber(undefined);
+                self.deliveryType('N');
+            }
+        });
+
+        self.standardOrExpress.subscribe(function (newValue) {
+            self.freeDeliveryReason(undefined);
+            self.payingForStandard(true);
+            self.payingForExpress(true);
+            self.errors.showAllMessages(false);
+        });
+
+        self.allHauliers = getAllHauliers();
+        self.allCarriages = getAllCarriages();
+        self.allCustomerCollectionCarriages = getCustomerCollectionServices();
+
+
+        self.availableHauliers = ko.pureComputed({
+            read: function () {
+                if (self.address()) {
+                    if (self.standardOrExpress() == 'express') {
+                        return Enumerable.From(self.allHauliers).Where(function (x) {
+                            
+                            if (Enumerable.From(x.CarriageServices).Where(function (y) {
+                                if (y.Express == 'Y') {
+                                    if (Enumerable.From(y.CountryRestrictions).SelectMany("$.CountryID").ToArray().indexOf(self.address().Country().CountryID) > -1) {
+                                        return true;
+                                    }
+                                }
+                            }).Any() && x.HAULCODE != 'DP') {
+                                if (self.address().Name() == 'Sample Order Collection' && self.address().Postcode() == 'NW10 7PH') {
+                                    if (x.HAULCODE == 'CC') {
+                                        return x;
+                                    }
+                                } else {
+                                    if (x.HAULCODE != 'CC') {
+                                        return x;
+                                    }
+                                }
+                            }
+                        }).ToArray();
+                    } else {
+                        return Enumerable.From(self.allHauliers).Where(function (x) {
+                            if (Enumerable.From(x.CarriageServices).Where(function (y) {
+                                if (y.Express == 'N') {
+                                    if (Enumerable.From(y.CountryRestrictions).SelectMany("$.CountryID").ToArray().indexOf(self.address().Country().CountryID) > -1) {
+                                        return true;
+                                    }
+                                }
+                            }).Any() && x.HAULCODE != 'DP') {
+                                if ((self.address().Postcode().replace(/\s/g, '') == 'W1U5JU') || // Marylebone
+                                    (self.address().Postcode().replace(/\s/g, '') == 'SW35EN') || // King's Road
+                                    (self.address().Postcode().replace(/\s/g, '') == 'W106QT') || // Latimer
+                                    (self.address().Postcode().replace(/\s/g, '') == 'NW107PH') || // Warehose
+                                    (self.address().Postcode().replace(/\s/g, '') == 'W106NG') || // TG
+                                    (self.address().Postcode().replace(/\s/g, '') == 'OX135JR')) { // AM
+                                    if (x.HAULCODE == 'VAN') {
+                                        return x;
+                                    }
+                                } else {
+                                    if (x.HAULCODE == 'RM' || x.HAULCODE == 'CC') {
+                                        return x;
+                                    }
+                                }
+                            }
+                        }).OrderBy("$.Name").ToArray();
+                    }
+                } else {
+                    return [];
+                }
+            }
+        }, self);
+
+        self.freeDeliveryReason = ko.observable().extend({
+            @if (Model.Properties?.Sampling_CanOverridePricing == true)
+            {
+                <text>
+                charsRemaining: {
+                    maxLength: 100,
+                    elementId: '#free-delivery-reason'
+                },
+                </text>
+            }
+            required: {
+                params: true,
+                onlyIf: function () {
+                    return ((!self.selectedCarriageServiceIsFree() && (self.standardOrExpress() == 'standard' && self.payingForStandard() == false))) ||
+                           ((!self.selectedCarriageServiceIsFree() && (self.standardOrExpress() == 'express' && self.payingForExpress() == false)))
+                },
+                message: 'You must provide a reason for free delivery'
+            }
+        });
+
+        self.freeDeliveryErrors = ko.validation.group([
+            self.freeDeliveryReason
+        ]);
+
+        self.availableCarriages = ko.pureComputed(function () {
+            if (self.selectedHaulier() && self.account()) {
+
+                if (self.selectedHaulier().HAULCODE == 'CC') {
+                    return [Enumerable.From(self.allCustomerCollectionCarriages).Where(function (x) {
+                        return x.MertexCurrencyCode == self.account().MertexCurrencyCode &&
+                                (
+                                    (self.account().SalesMarketID == 17 && x.SalesMarketID == 17) || 
+                                    (self.account().SalesMarketID != 17 && x.SalesMarketID == null)
+                                )
+                    }).Single()];
+                }
+
+                // our selectedHaulier() has CarriageServices which each have CountryRestrictions
+                // we want all CarriageServices which have NO CountryRestrictions
+                // and those whose CountryRestrictions cover our address().Country().CountryID
+
+                //console.log('selectedHaulier', self.selectedHaulier());
+
+                var carriageServices = self.selectedHaulier().CarriageServices;
+
+                var expressOrStandardCarriage = '';
+
+                switch (self.standardOrExpress()) {
+                    case 'standard':
+                        expressOrStandardCarriage = 'N';
+                        break;
+                    case 'express':
+                        expressOrStandardCarriage = 'Y'
+                        break;
+                    default: break;
+                }
+
+                var unrestrictedServices = [];
+                // All Carriage Services should have Country restrictions - Sarah, 04/05/2018
+                //unrestrictedServices = Enumerable.From(carriageServices).Where(function (x) {
+                //    if (x.Express == expressOrStandardCarriage) {
+                //        if (x.CountryRestrictions.length == 0) {
+                //            return x;
+                //        }
+                //    }
+                //}).ToArray();
+
+                //console.log('unrestricted CarriageServices', unrestrictedServices);
+
+                var restrictedServices = [];
+
+                var availableRestrictedServices = [];
+
+                if (self.address()) {
+                    restrictedServices = Enumerable.From(carriageServices).Where(function (x) {
+                        if (x.Express == expressOrStandardCarriage) {
+                            if (x.CountryRestrictions.length > 0) {
+                                return x;
+                            }
+                        }
+                    }).ToArray();
+
+                    //if (((self.address().Postcode().replace(/\s/g, '') == 'W1U5JU') ||
+                    //    (self.address().Postcode().replace(/\s/g, '') == 'SW35EN')) && self.selectedHaulier().HAULCODE == 'VAN') {
+                    //    availableRestrictedServices = Enumerable.From(carriageServices).Where(function (x) {
+                    //        if (x.HAULCODE == 'VAN' && x.CARRCODE == 'PO131') {
+                    //            return x;
+                    //        }
+                    //    }).ToArray();
+                    //} else {
+                    availableRestrictedServices = Enumerable.From(restrictedServices).Where(function (x) {
+                        if (Enumerable.From(x.CountryRestrictions).SelectMany("$.CountryID").ToArray().indexOf(self.address().Country().CountryID) > -1) {
+                            if (x.CurrencyID == self.account().CurrencyID)
+                                return x;
+                        }
+                    }).ToArray();
+                    //}
+
+                    //console.log('restricted CarriageServices', restrictedServices);
+
+
+                    //console.log('available restricted CarriageServices', availableRestrictedServices);
+                }
+
+                var result = Enumerable.From(unrestrictedServices).Concat(availableRestrictedServices).Distinct("$.CARRCODE").OrderBy("$.Description").ToArray();
+
+                //console.log('available CarriageServices', result);
+
+                return result;
+            } else {
+                return [];
+            }
+        }, self);
+
+        self.selectedHaulier = ko.observable().extend({
+            required: {
+                params: true,
+                message: 'You must specify a delivery company'
+            }
+        });
+
+        self.selectedHaulier.subscribe(function (newValue) {
+            self.chargeCarriageToCustomerHaulierAccount(false);
+            self.payingForStandard(true);
+            self.payingForExpress(true);
+        });
+
+        self.selectedCarriageService = ko.observable().extend({
+            required: {
+                params: true,
+                message: 'You must specify a delivery service'
+            }
+        });
+
+        self.availableCarriages.subscribe(function (newValues) {
+            if (newValues.length == 1) {
+                window.setTimeout(function () {
+                    self.selectedCarriageService(newValues[0]);
+                }, 0);
+            }
+        });
+
+        self.selectedCarriageService.subscribe(function (newValue) {
+            self.chargeCarriageToCustomerHaulierAccount(false);
+            self.payingForStandard(true);
+            self.payingForExpress(true);
+        });
+
+        self.payingForStandard = ko.observable(true);
+        self.payingForStandard.subscribe(function (newValue) {
+            self.upsAccountNumber(undefined);
+            self.dhlAccountNumber(undefined);
+            if (!newValue) {
+                self.despatchPrice(0);
+            } else {
+                if (self.selectedCarriageService()) {
+                    var priceRecord = Enumerable.From(self.selectedCarriageService().Prices).Where(function (x) {
+                        var currentDespatchPrice = self.despatchPrice() || 0;
+                        var priceAdjusted = self.orderValue() - currentDespatchPrice;
+                        if (priceAdjusted >= x.MinValue && priceAdjusted <= x.MaxValue) {
+                            return x;
+                        }
+                    }).SingleOrDefault();
+
+                    if (priceRecord) {
+                        if (priceRecord.Price == 0) {
+                            self.despatchPrice(undefined);
+                        } else {
+                            self.despatchPrice(priceRecord.Price);
+                        }
+                    }
+                }
+            }
+        });
+
+        self.payingForExpress = ko.observable(true);
+        self.payingForExpress.subscribe(function (newValue) {
+            self.upsAccountNumber(undefined);
+            self.dhlAccountNumber(undefined);
+            if (!newValue) {
+                self.despatchPrice(0);
+            } else {
+                if (self.selectedCarriageService()) {
+                    var priceRecord = Enumerable.From(self.selectedCarriageService().Prices).Where(function (x) {
+                        var currentDespatchPrice = self.despatchPrice() || 0;
+                        var priceAdjusted = self.orderValue() - currentDespatchPrice;
+                        if (priceAdjusted >= x.MinValue && priceAdjusted <= x.MaxValue) {
+                            return x;
+                        }
+                    }).SingleOrDefault();
+
+                    if (priceRecord) {
+                        if (priceRecord.Price == 0) {
+                            self.despatchPrice(undefined);
+                        } else {
+                            self.despatchPrice(priceRecord.Price);
+                        }
+                    }
+                }
+            }
+        });
+
+        self.despatchPrice = ko.observable();
+
+        self.selectedCarriageService.subscribe(function (newValue) {
+            if (newValue) {
+                if (newValue.Prices != null) {
+                    if (newValue.Prices.length) {
+                        var priceRecord = Enumerable.From(newValue.Prices).Where(function (x) {
+                            var currentDespatchPrice = self.despatchPrice() || 0;
+                            var priceAdjusted = self.orderValue() - currentDespatchPrice;
+                            if (priceAdjusted >= x.MinValue && priceAdjusted <= x.MaxValue) {
+                                return x;
+                            }
+                        }).SingleOrDefault();
+
+                        if (priceRecord) {
+                            self.despatchPrice(priceRecord.Price);
+                            return;
+                        }
+                    }
+                } else {
+                    newValue.Prices = []
+                }
+            }
+
+            self.despatchPrice(undefined);
+        });
+
+        self.selectedCarriageServiceIsFree = ko.pureComputed({
+            read: function () {
+                if (self.selectedCarriageService()) {
+                    if (self.selectedCarriageService().Express == 'Y') {
+                        if (self.selectedCarriageService().Prices.length == 0) {
+                            return false;
+                        }
+                    }
+                    if (self.selectedCarriageService().Express == 'N') {
+                        if (self.selectedCarriageService().Prices.length == 0) {
+                            return true;
+                        }
+                    }
+
+                    var priceRecord = Enumerable.From(self.selectedCarriageService().Prices).Where(function (x) {
+                        var currentDespatchPrice = self.despatchPrice() || 0;
+                        var priceAdjusted = self.orderValue() - currentDespatchPrice;
+                        if (priceAdjusted >= x.MinValue && priceAdjusted <= x.MaxValue) {
+                            return x;
+                        }
+                    }).SingleOrDefault();
+
+                    if (priceRecord) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } else {
+                    return true;
+                }
+            }
+        }, self);
+
+        self.carriageServiceItemText = function (item) {
+
+            var result = item.Description + ' - ' + item.CARRCODE;
+
+            if (self.account()) {
+                if (item.Prices != null) {
+                    if (item.Prices.length) {
+                        var priceRecord = Enumerable.From(item.Prices).Where(function (x) {
+                            var currentDespatchPrice = self.despatchPrice() || 0;
+                            var priceAdjusted = self.orderValue() - currentDespatchPrice;
+                            if (priceAdjusted >= x.MinValue && priceAdjusted <= x.MaxValue) {
+                                return x;
+                            }
+                        }).SingleOrDefault();
+
+                        if (priceRecord) {
+                            if (priceRecord.Price == 0) {
+                                return result;
+                            } else {
+                                result += ' - ' + formatCurrency(priceRecord.Price, 2, self.account().FormattingCulture, self.account().CurrencyCode);
+                            }
+                        }
+                    }
+                } else {
+                    result += ' - ' + formatCurrency(0, 2, self.account().FormattingCulture, self.account().CurrencyCode);
+                }
+            }
+
+            return result;
+        }
+
+        self.name = ko.computed(function () {
+
+            var displayName = '';
+
+            if (self.selectedHaulier()) {
+                var haulier = Enumerable.From(self.allHauliers).Where(function (x) {
+                    if (x.HAULCODE === self.selectedHaulier().HAULCODE)
+                        return x;
+                }).FirstOrDefault(null);
+
+                if (haulier != null) {
+                    displayName = '<label style="margin-right: 24px;">Company - ' + haulier.Name + '</label>';
+
+                    if (self.selectedCarriageService()) {
+                        var carriageService = Enumerable.From(haulier.CarriageServices).Where(function (x) {
+                            if (x.CARRCODE === self.selectedCarriageService().CARRCODE)
+                                return x;
+                        }).FirstOrDefault(null);
+
+                        if (carriageService != null) {
+                            displayName += '<label style="margin-right: 24px;">Service - ' + (carriageService.Description || carriageService.CARRCODE) + '</label>';
+                        }
+
+                        if (self.account()) {
+                            displayName += '<label>Charge - ' + self.despatchPriceDisplaySmall() + '</label>';
+                        }
+                    }
+                }
+            }
+
+            return displayName;
+
+        }, self);
+
+        self.despatchPriceDisplay = ko.computed(function () {
+            if (self.account()) {
+                if (self.chargeCarriageToCustomerHaulierAccount()) {
+                    return 'CHARGE CUSTOMER\'S HAULIER'
+                }
+                if (self.standardOrExpress() == 'express' && self.selectedCarriageService() && self.payingForExpress()) {
+                    return 'Calculated once the order has been packed and weighed.';
+                }
+                if (self.despatchPrice()) {
+                    return formatCurrency(self.despatchPrice(), 2, self.account().FormattingCulture, self.account().CurrencyCode);
+                } else {
+                    return 'FREE';
+                }
+            }
+        });
+
+        self.despatchPriceDisplaySmall = ko.computed(function () {
+            if (self.account() && self.selectedCarriageService()) {
+                if (self.chargeCarriageToCustomerHaulierAccount()) {
+                    return 'CHARGE CUSTOMER\'S HAULIER'
+                }
+                if (self.standardOrExpress() == 'express' && self.selectedCarriageService() && self.payingForExpress()) {
+                    return 'Calculated';
+                }
+                if (self.despatchPrice() && self.standardOrExpress() == 'standard' && self.payingForStandard()) {
+                    return formatCurrency(self.despatchPrice(), 2, self.account().FormattingCulture, self.account().CurrencyCode);
+                }
+                if (self.despatchPrice() && self.standardOrExpress() == 'express' && self.payingForExpress()) {
+                    return formatCurrency(self.despatchPrice(), 2, self.account().FormattingCulture, self.account().CurrencyCode);
+                }
+
+                //else {
+                return 'FREE';
+                //}
+            }
+        });
+
+        self.defaultDespatchDisplay = ko.computed(function () {
+            var displayName = $('<div>');
+            if (self.defaultDespatch()) {
+
+                var haulier = Enumerable.From(self.allHauliers).Where(function (x) {
+                    if (x.HAULCODE === self.defaultDespatch().HAULCODE)
+                        return x;
+                }).FirstOrDefault(null);
+
+                if (haulier != null) {
+                    displayName.append('<label class="col-form-label" style="float: none;">Delivery Company: <span class="non-bold">' + haulier.Name + '</span></label>');
+
+                    var carriageService = Enumerable.From(haulier.CarriageServices).Where(function (x) {
+                        if (x.CARRCODE === self.defaultDespatch().CARRCODE)
+                            return x;
+                    }).FirstOrDefault(null);
+
+                    if (carriageService != null) {
+                        displayName.append("<br/>");
+
+                        displayName.append('<label class="col-form-label" style="float: none;">Delivery Service: <span class="non-bold">' + (carriageService.Description || carriageService.CARRCODE) + '</span></label>');
+
+                        var priceRecord = Enumerable.From(carriageService.Prices).Where(function (x) {
+                            var currentDespatchPrice = self.despatchPrice() || 0;
+                            var priceAdjusted = self.orderValue() - currentDespatchPrice;
+                            if (priceAdjusted >= x.MinValue && priceAdjusted <= x.MaxValue) {
+                                return x;
+                            }
+                        }).SingleOrDefault();
+
+                        if (self.account()) {
+                            displayName.append("<br/>");
+
+                            if (priceRecord) {
+                                displayName.append('<label class="col-form-label" style="float: none;">Delivery Charge: <span>' + formatCurrency(priceRecord.Price, 2, self.account().FormattingCulture, self.account().CurrencyCode) + '</span></label>');
+                            } else {
+                                displayName.append('<label class="col-form-label" style="float: none;">Delivery Charge: <span>' + formatCurrency(0, 2, self.account().FormattingCulture, self.account().CurrencyCode) + '</span></label>');
+                            }
+                        }
+                    }
+                }
+            }
+
+            return $(displayName).html();
+
+        }, self);
+
+        self.selectDefaultDespatch = function () {
+            if (self.defaultDespatch().HAULCODE != null && self.defaultDespatch().CARRCODE != null) {
+
+                var haulier = Enumerable.From(self.allHauliers).Where(function (x) {
+                    if (x.HAULCODE === "RM")// self.defaultDespatch().HAULCODE)
+                        return x;
+                }).FirstOrDefault(null);
+
+                var carriageService = Enumerable.From(haulier.CarriageServices).Where(function (x) {
+                    if (x.CARRCODE === self.defaultDespatch().CARRCODE)
+                        return x;
+                }).FirstOrDefault(null);
+
+                if (haulier != null && carriageService != null) {
+                    if (carriageService.Express == 'Y') {
+                        self.standardOrExpress('express');
+                    } else {
+                        self.standardOrExpress('standard');
+                    }
+                    self.payingForStandard(true);
+                    self.payingForExpress(true);
+                    window.setTimeout(function () {
+                        self.selectedHaulier(haulier);
+                        window.setTimeout(function () {
+                            self.selectedCarriageService(carriageService);
+                            if (!$("#product-collapse").hasClass("in")) {
+                                $("#product-display-label").trigger('click');
+                            }
+                        }, 0);
+                    }, 0);
+                }
+            }
+        };
+
+        self.selectedHaulier.subscribe(function (newValue) {
+            console.log('selectedHaulier subscribe hit', newValue);
+        });
+
+        self.errors = ko.validation.group([
+            self.freeDeliveryReason,
+            self.selectedHaulier,
+            self.deliveryType,
+            self.selectedCarriageService,
+            self.upsAccountNumber,
+            self.dhlAccountNumber,
+            self.carriageMatchesAccountCurrency
+        ]);
+
+        self.reset = function () {
+            self.selectedHaulier(undefined);
+            self.selectedCarriageService(undefined);
+            self.freeDeliveryReason(undefined);
+            self.payingForStandard(true);
+            self.payingForExpress(true);
+
+            self.upsAccountNumber(undefined);
+            self.dhlAccountNumber(undefined);
+            self.chargeCarriageToCustomerHaulierAccount(false);
+            self.chargeTaxesToCustomerHaulierAccount(false);
+
+            self.selectedAddressBookAddress(undefined);
+        }
+    }
+
+    ko.components.register('delivery-selector-component', {
+        viewModel: deliverySelectorViewModel,
+        template: { element: $('#delivery-selector-template')[0] }
+    });
+</script>

@@ -1,0 +1,467 @@
+﻿<div id="sample-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 id="sample-modal-title" class="modal-title">
+                    Sample
+                </h4>
+            </div>
+            <div id="sample-modal-body" class="modal-body">
+                <div class="order-modal-header">
+                    <img src="https://placehold.it/90/edf1fd" />
+                    <label class="col-form-label">
+                        F563/01
+                    </label>
+                    <label class="col-form-label">
+                        Brera - Beige
+                    </label>
+                    <div class="clearfix"></div>
+                </div>
+                <table class="order-modal-table table table-condensed table-bordered table-striped">
+                    <colgroup>
+                        <col style="width: auto"/>
+                        <col style="width: 115px"/>
+                        <col style="width: 50px;"/>
+                        <col style="width: 80px;"/>
+                        <col style="width: 130px;"/>
+                        <col style="width: 115px;"/>
+                        <col style="width: 80px;" />
+                        <col />
+                        <col />
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Stock</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Discount</th>
+                            <th>Promotion Code</th>
+                            <th>Price Paid</th>
+                            <th>Despatch Date Estimate</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>
+                                Cutting
+                            </th>
+                            <td>
+                                In Stock (125)
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="5"/>
+                            </td>
+                            <td>
+                                FREE
+                            </td>
+                            <td>
+                                <div class='input-group'>
+                                    <div class='input-group-btn'>
+                                        <button type='button' class='discount-type-btn btn btn-default dropdown-toggle' data-toggle='dropdown'>
+                                            <span class='caret'></span>
+                                            <span class="discount-type" data-bind="text: quickAddDiscountType() == 'money' ? '£' : '%'"></span>
+                                        </button>
+                                        <ul class='dropdown-menu'>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('money') }">£</a></li>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('percent') }">%</a></li>
+                                        </ul>
+                                    </div>
+                                    <input class='form-control' data-code='" + rec.Code + "' data-property='discount' onfocus='$(this).removeClass("alert-danger")' data-bind="numeric, forceNullOnEmpty: quickAddDiscount, textInput: quickAddDiscount" />
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="Code 1"/>
+                            </td>
+                            <td>
+                                FREE
+                            </td>
+                            <td>
+                                Tomorrow
+                            </td>
+                            <td>
+                                <button class='btn btn-primary' data-bind='click: function() { showNotImplemented("addSampleToBasket") }'>
+                                    Add to Basket
+                                    <span data-bind='text: "(0)"'></span>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                Returnable
+                            </th>
+                            <td>
+                                In Stock (125)
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="5" />
+                            </td>
+                            <td>
+                                FREE
+                            </td>
+                            <td>
+                                <div class='input-group'>
+                                    <div class='input-group-btn'>
+                                        <button type='button' class='discount-type-btn btn btn-default dropdown-toggle' data-toggle='dropdown'>
+                                            <span class='caret'></span>
+                                        </button>
+                                        <button class='btn discount-type-money' href='javascript:;' data-bind="style: { display: quickAddDiscountType() == 'money' ? 'table-cell' : 'none'}"><span>£</span></button>" +
+                                        <ul class='dropdown-menu'>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('money') }">£</a></li>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('percent') }">%</a></li>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('none'); quickAddDiscount(undefined) }">None</a></li>
+                                        </ul>
+                                    </div>
+                                    <input class='form-control' data-code='" + rec.Code + "' data-property='discount' onfocus='$(this).removeClass("alert-danger")' data-bind="numeric, textInput: quickAddDiscount" />
+                                    <span class='input-group-addon discount-type-percentage' data-bind="style: { display: quickAddDiscountType() == 'percent' ? 'table-cell' : 'none' }">%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="Code 1" />
+                            </td>
+                            <td>
+                                FREE
+                            </td>
+                            <td>
+                                Tomorrow
+                            </td>
+                            <td>
+                                <button class='btn btn-primary' data-bind='click: function() { showNotImplemented("addReturnableToBasket") }'>
+                                    Add to Basket
+                                    <span data-bind='text: "(0)"'></span>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                Showlength
+                            </th>
+                            <td>
+                                In Stock (125)
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="5" />
+                            </td>
+                            <td>
+                                FREE
+                            </td>
+                            <td>
+                                <div class='input-group'>
+                                    <div class='input-group-btn'>
+                                        <button type='button' class='discount-type-btn btn btn-default dropdown-toggle' data-toggle='dropdown'>
+                                            <span class='caret'></span>
+                                        </button>
+                                        <button class='btn discount-type-money' href='javascript:;' data-bind="style: { display: quickAddDiscountType() == 'money' ? 'table-cell' : 'none'}"><span>£</span></button>" +
+                                        <ul class='dropdown-menu'>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('money') }">£</a></li>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('percent') }">%</a></li>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('none'); quickAddDiscount(undefined) }">None</a></li>
+                                        </ul>
+                                    </div>
+                                    <input class='form-control' data-code='" + rec.Code + "' data-property='discount' onfocus='$(this).removeClass("alert-danger")' data-bind="numeric, textInput: quickAddDiscount" />
+                                    <span class='input-group-addon discount-type-percentage' data-bind="style: { display: quickAddDiscountType() == 'percent' ? 'table-cell' : 'none' }">%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="Code 1" />
+                            </td>
+                            <td>
+                                FREE
+                            </td>
+                            <td>
+                                Tomorrow
+                            </td>
+                            <td>
+                                <button class='btn btn-primary' data-bind='click: function() { showNotImplemented("addShowlengthToBasket") }'>
+                                    Add to Basket
+                                    <span data-bind='text: "(0)"'></span>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                Hanger
+                            </th>
+                            <td>
+                                In Stock (125)
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="5" />
+                            </td>
+                            <td>
+                                FREE
+                            </td>
+                            <td>
+                                <div class='input-group'>
+                                    <div class='input-group-btn'>
+                                        <button type='button' class='discount-type-btn btn btn-default dropdown-toggle' data-toggle='dropdown'>
+                                            <span class='caret'></span>
+                                        </button>
+                                        <button class='btn discount-type-money' href='javascript:;' data-bind="style: { display: quickAddDiscountType() == 'money' ? 'table-cell' : 'none'}"><span>£</span></button>" +
+                                        <ul class='dropdown-menu'>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('money') }">£</a></li>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('percent') }">%</a></li>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('none'); quickAddDiscount(undefined) }">None</a></li>
+                                        </ul>
+                                    </div>
+                                    <input class='form-control' data-code='" + rec.Code + "' data-property='discount' onfocus='$(this).removeClass("alert-danger")' data-bind="numeric, textInput: quickAddDiscount" />
+                                    <span class='input-group-addon discount-type-percentage' data-bind="style: { display: quickAddDiscountType() == 'percent' ? 'table-cell' : 'none' }">%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="Code 1" />
+                            </td>
+                            <td>
+                                FREE
+                            </td>
+                            <td>
+                                Tomorrow
+                            </td>
+                            <td>
+                                <button class='btn btn-primary' data-bind='click: function() { showNotImplemented("addHangerToBasket") }'>
+                                    Add to Basket
+                                    <span data-bind='text: "(0)"'></span>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                Waterfall
+                            </th>
+                            <td>
+                                In Stock (125)
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="5" />
+                            </td>
+                            <td>
+                                FREE
+                            </td>
+                            <td>
+                                <div class='input-group'>
+                                    <div class='input-group-btn'>
+                                        <button type='button' class='discount-type-btn btn btn-default dropdown-toggle' data-toggle='dropdown'>
+                                            <span class='caret'></span>
+                                        </button>
+                                        <button class='btn discount-type-money' href='javascript:;' data-bind="style: { display: quickAddDiscountType() == 'money' ? 'table-cell' : 'none'}"><span>£</span></button>" +
+                                        <ul class='dropdown-menu'>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('money') }">£</a></li>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('percent') }">%</a></li>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('none'); quickAddDiscount(undefined) }">None</a></li>
+                                        </ul>
+                                    </div>
+                                    <input class='form-control' data-code='" + rec.Code + "' data-property='discount' onfocus='$(this).removeClass("alert-danger")' data-bind="numeric, textInput: quickAddDiscount" />
+                                    <span class='input-group-addon discount-type-percentage' data-bind="style: { display: quickAddDiscountType() == 'percent' ? 'table-cell' : 'none' }">%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="Code 1" />
+                            </td>
+                            <td>
+                                FREE
+                            </td>
+                            <td>
+                                Tomorrow
+                            </td>
+                            <td>
+                                <button class='btn btn-primary' data-bind='click: function() { showNotImplemented("addWaterfallToBasket") }'>
+                                    Add to Basket
+                                    <span data-bind='text: "(0)"'></span>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                Shelf Sample
+                            </th>
+                            <td>
+                                In Stock (125)
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="5" />
+                            </td>
+                            <td>
+                                FREE
+                            </td>
+                            <td>
+                                <div class='input-group'>
+                                    <div class='input-group-btn'>
+                                        <button type='button' class='discount-type-btn btn btn-default dropdown-toggle' data-toggle='dropdown'>
+                                            <span class='caret'></span>
+                                        </button>
+                                        <button class='btn discount-type-money' href='javascript:;' data-bind="style: { display: quickAddDiscountType() == 'money' ? 'table-cell' : 'none'}"><span>£</span></button>" +
+                                        <ul class='dropdown-menu'>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('money') }">£</a></li>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('percent') }">%</a></li>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('none'); quickAddDiscount(undefined) }">None</a></li>
+                                        </ul>
+                                    </div>
+                                    <input class='form-control' data-code='" + rec.Code + "' data-property='discount' onfocus='$(this).removeClass("alert-danger")' data-bind="numeric, textInput: quickAddDiscount" />
+                                    <span class='input-group-addon discount-type-percentage' data-bind="style: { display: quickAddDiscountType() == 'percent' ? 'table-cell' : 'none' }">%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="Code 1" />
+                            </td>
+                            <td>
+                                FREE
+                            </td>
+                            <td>
+                                Made to Order (6 - 8 Weeks)
+                            </td>
+                            <td>
+                                <button class='btn btn-primary' data-bind='click: function() { showNotImplemented("addShelfSampleToBasket") }'>
+                                    Add to Basket
+                                    <span data-bind='text: "(0)"'></span>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                Architect Ring
+                            </th>
+                            <td>
+                                In Stock (125)
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="5" />
+                            </td>
+                            <td>
+                                FREE
+                            </td>
+                            <td>
+                                <div class='input-group'>
+                                    <div class='input-group-btn'>
+                                        <button type='button' class='discount-type-btn btn btn-default dropdown-toggle' data-toggle='dropdown'>
+                                            <span class='caret'></span>
+                                        </button>
+                                        <button class='btn discount-type-money' href='javascript:;' data-bind="style: { display: quickAddDiscountType() == 'money' ? 'table-cell' : 'none'}"><span>£</span></button>" +
+                                        <ul class='dropdown-menu'>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('money') }">£</a></li>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('percent') }">%</a></li>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('none'); quickAddDiscount(undefined) }">None</a></li>
+                                        </ul>
+                                    </div>
+                                    <input class='form-control' data-code='" + rec.Code + "' data-property='discount' onfocus='$(this).removeClass("alert-danger")' data-bind="numeric, textInput: quickAddDiscount" />
+                                    <span class='input-group-addon discount-type-percentage' data-bind="style: { display: quickAddDiscountType() == 'percent' ? 'table-cell' : 'none' }">%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="Code 1" />
+                            </td>
+                            <td>
+                                FREE
+                            </td>
+                            <td>
+                                Made to Order (6 - 8 Weeks)
+                            </td>
+                            <td>
+                                <button class='btn btn-primary' data-bind='click: function() { showNotImplemented("addArchitectRingToBasket") }'>
+                                    Add to Basket
+                                    <span data-bind='text: "(0)"'></span>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                A4 Architect Ring
+                            </th>
+                            <td>
+                                In Stock (125)
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="5" />
+                            </td>
+                            <td>
+                                FREE
+                            </td>
+                            <td>
+                                <div class='input-group'>
+                                    <div class='input-group-btn'>
+                                        <button type='button' class='discount-type-btn btn btn-default dropdown-toggle' data-toggle='dropdown'>
+                                            <span class='caret'></span>
+                                        </button>
+                                        <button class='btn discount-type-money' href='javascript:;' data-bind="style: { display: quickAddDiscountType() == 'money' ? 'table-cell' : 'none'}"><span>£</span></button>" +
+                                        <ul class='dropdown-menu'>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('money') }">£</a></li>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('percent') }">%</a></li>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('none'); quickAddDiscount(undefined) }">None</a></li>
+                                        </ul>
+                                    </div>
+                                    <input class='form-control' data-code='" + rec.Code + "' data-property='discount' onfocus='$(this).removeClass("alert-danger")' data-bind="numeric, textInput: quickAddDiscount" />
+                                    <span class='input-group-addon discount-type-percentage' data-bind="style: { display: quickAddDiscountType() == 'percent' ? 'table-cell' : 'none' }">%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="Code 1" />
+                            </td>
+                            <td>
+                                FREE
+                            </td>
+                            <td>
+                                Made to Order (6 - 8 Weeks)
+                            </td>
+                            <td>
+                                <button class='btn btn-primary' data-bind='click: function() { showNotImplemented("addA4ArchitectRingToBasket") }'>
+                                    Add to Basket
+                                    <span data-bind='text: "(0)"'></span>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                Furniture Header
+                            </th>
+                            <td>
+                                In Stock (125)
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="5" />
+                            </td>
+                            <td>
+                                FREE
+                            </td>
+                            <td>
+                                <div class='input-group'>
+                                    <div class='input-group-btn'>
+                                        <button type='button' class='discount-type-btn btn btn-default dropdown-toggle' data-toggle='dropdown'>
+                                            <span class='caret'></span>
+                                        </button>
+                                        <button class='btn discount-type-money' href='javascript:;' data-bind="style: { display: quickAddDiscountType() == 'money' ? 'table-cell' : 'none'}"><span>£</span></button>" +
+                                        <ul class='dropdown-menu'>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('money') }">£</a></li>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('percent') }">%</a></li>
+                                            <li><a href='javascript:;' data-bind="click: function() { quickAddDiscountType('none'); quickAddDiscount(undefined) }">None</a></li>
+                                        </ul>
+                                    </div>
+                                    <input class='form-control' data-code='" + rec.Code + "' data-property='discount' onfocus='$(this).removeClass("alert-danger")' data-bind="numeric, textInput: quickAddDiscount" />
+                                    <span class='input-group-addon discount-type-percentage' data-bind="style: { display: quickAddDiscountType() == 'percent' ? 'table-cell' : 'none' }">%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="Code 1" />
+                            </td>
+                            <td>
+                                FREE
+                            </td>
+                            <td>
+                                Made to Order (6 - 8 Weeks)
+                            </td>
+                            <td>
+                                <button class='btn btn-primary' data-bind='click: function() { showNotImplemented("addFurnitureHeaderToBasket") }'>
+                                    Add to Basket
+                                    <span data-bind='text: "(0)"'></span>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button id="sample-modal-close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

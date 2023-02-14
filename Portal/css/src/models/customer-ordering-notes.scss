@@ -1,0 +1,56 @@
+﻿.panel-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    > div {
+        display: flex;
+        align-items: center;
+
+        > span {
+            margin-right: 15px;
+        }
+    }
+
+    .btn-flat {
+        margin-right: 0;
+    }
+}
+
+.k-edit-form-container {
+    .editor-label {
+        padding: 4px;
+    }
+}
+
+.k-edit-label {
+    padding: 4px;
+}
+
+.k-autocomplete {
+    .k-clear-value {
+        top: 50%;
+    }
+}
+
+.k-dropdown-wrap {
+    .k-clear-value {
+        top: 50%;
+    }
+}
+
+.k-multiselect-wrap {
+    .k-clear-value {
+        top: 50%;
+    }
+}
+
+textarea {
+    height: 500px;
+}
+
+.panel-body {
+    > table.k-editor {
+        height: 500px;
+    }
+}

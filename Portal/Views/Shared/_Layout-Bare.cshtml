@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html lang="en-gb">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Designers Guild</title>
+    @Styles.Render("~/bundles/css/bare")
+    @Scripts.Render("~/bundles/js/jquery")
+    
+	<link href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.common-bootstrap.min.css" rel="stylesheet" type="text/css" />
+	<link href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.mobile.all.min.css" rel="stylesheet" type="text/css" />
+	<link href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.bootstrap.min.css" rel="stylesheet" type="text/css" />
+	<script src="https://kendo.cdn.telerik.com/2018.3.1017/js/jszip.min.js"></script>
+    
+    @Scripts.Render("~/bundles/js/kendo")
+
+	<script src="https://kendo.cdn.telerik.com/2018.3.1017/js/kendo.aspnetmvc.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2018.3.1017/js/cultures/kendo.culture.en-GB.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/material-components-web/3.2.0/material-components-web.min.js"></script>
+    
+    @RenderSection("scripts", required: false)
+
+    @RenderSection("styles", required: false)
+
+    <style type="text/css">
+        html * {
+            font-family: 'Open Sans', Arial;
+            box-sizing: border-box;
+        }
+
+        h1, h2, h3, h4, h5 {
+            font-family: 'Ubuntu', Arial;
+        }
+
+        body {
+            background-color: transparent; 
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Ubuntu" rel="stylesheet">
+    <meta name="description" content="" />
+</head>
+<body>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Designers Guild</p>
+        </footer>
+    </div>
+    @RenderSection("modals", required: false)
+</body>
+</html>

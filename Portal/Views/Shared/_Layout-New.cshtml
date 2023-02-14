@@ -1,0 +1,3316 @@
+﻿<!DOCTYPE html>
+<html lang="en-gb">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Designers Guild</title>
+
+    @Styles.Render("~/bundles/css/master-5.3.1")
+
+    @Styles.Render("~/bundles/css/mdc-custom")
+
+    @{
+        if (HttpContext.Current.IsDebuggingEnabled)
+        {
+            <link rel="stylesheet" href="~/Content/mdc/css/mdc-custom.css?t=@(DateTime.Now.Ticks)" />
+        }
+        else
+        {
+            <link rel="stylesheet" href="~/Content/mdc/css/mdc-custom.min.css?t=@(DateTime.Now.Ticks)" />
+        }
+    }
+
+    @Scripts.Render("~/bundles/js/kendo-modernizr")
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Material+Icons|Material+Icons+Sharp|Material+Icons+Outlined|Maven+Pro:500" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/f14d33a7ec.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/popper")
+
+    @*@Scripts.Render("~/bundles/js/kendo")
+        @Scripts.Render("~/bundles/js/kendo-cultures")*@
+    <link href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.common-bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.mobile.all.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.bootstrap.min.css" rel="stylesheet" type="text/css" />
+    @*<link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet" type="text/css" />*@
+    @*<script src="https://kendo.cdn.telerik.com/2018.3.1017/js/jquery.min.js"></script>*@
+    <script src="https://kendo.cdn.telerik.com/2018.3.1017/js/jszip.min.js"></script>
+    @Scripts.Render("~/bundles/js/kendo")
+    <script src="https://kendo.cdn.telerik.com/2018.3.1017/js/kendo.aspnetmvc.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2018.3.1017/js/cultures/kendo.culture.en-GB.min.js"></script>
+    @*<script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>*@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/material-components-web/3.2.0/material-components-web.min.js"></script>
+    <script type="text/javascript">
+        kendo.culture("en-GB");
+    </script>
+    @Scripts.Render("~/bundles/js/kendo-modernizr")
+    @RenderSection("styles", required: false)
+    @RenderSection("earlyScripts", required: false)
+
+    <script type="text/javascript">
+        function getUserId() {
+            return @(User.Identity.GetUserId<int>());
+        }
+        function getUserEmail() {
+            return '@User.Identity.GetEmail()';
+        }
+
+        window.fetchHeaders = {
+            'accept': 'application/json',
+            'content-type': 'application/json; charset=utf-8',
+            'authorization': 'Bearer ' + localStorage.BearerToken
+        }
+
+@*@if (!Convert.ToBoolean(System.Web.Configuration.WebConfigurationManager.AppSettings["productionVersion"]))
+{
+@:window.fetchHeaders.authorization = 'Basic Q0FkbWluOlRhcGVzdHJ5Rmxvd2VyMjI=';
+@:window.fetchHeaders.dateOverride = '@($"{d:ddMMyyyy}")';
+@:window.fetchHeaders.countryOverride = '@(Request.QueryString["countryOverride"])';
+}*@
+
+        window.fetchPostParams = {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            cache: 'no-store',
+            credentials: 'same-origin',
+        }
+
+        window.handleFetchResponse = async (response, requestData) => {
+            if (response.ok) {
+                return await response.json();
+            } else {
+                let resp = {};
+                try {
+                    resp = await response.json();
+                }
+                catch (e) {
+
+                }
+                throw {
+                    message: `${response.status} - ${response.url}`,
+                    exception: resp.Message,
+                    source: requestData
+                }
+            }
+        }
+
+        window.logClientSideError = (message) => {
+            fetch('/api/generalapi/LogClientError', {
+            method: 'POST',
+                    headers: window.fetchHeaders,
+                    cache: 'no-store',
+                    credentials: 'same-origin',
+                    body: message
+                }).catch((e) => {
+                console.error(e);
+            })
+        }
+
+        window.catchFetchError = (error) => {
+            console.error(error);
+            if (error instanceof TypeError)
+                error = { message: error.message };
+            showError();
+            window.logClientSideError(JSON.stringify(error));
+        }
+
+        window.onerror = function (message, source, lineno, colno, error) {
+            $.ajax({
+                url: '/api/error/LogClientError',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    message: message + '\n' + (error.stack || ''),
+                    source: source,
+                    lineno: lineno,
+                    colno: colno,
+                    error: error
+                }
+            });
+        }
+    </script>
+</head>
+<body style="padding-top: 0; @(ViewBag.Partial == true ? "padding-bottom: 0" : "")">
+    @RenderSection("beforeContainer", required: false)
+
+    <div data-bind="component: 'send-tarf-component'">
+    </div>
+
+    <div data-bind="component: 'webapi-auth-component'"></div>
+
+    <div data-bind="component: 'basket-lock-component'"></div>
+
+    @if (ViewBag.Partial != true)
+    {
+        <nav class="navbar navbar-default navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="@Url.Action("Index", "Home", new { Area = "" })">
+                    <img id="page-navbar-logo" src="~/content/images/logos/designers-guild-header.png" />
+                </a>
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                @RenderSection("navbarCollapsedRight", required: false)
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="nav navbar-nav me-auto mb-2 mb-lg-0">
+                        <li>
+                            <!-- ko component: { name: 'alerting-component' }  -->
+                            <!-- /ko -->
+                        </li>
+                    </ul>
+                    @Html.Partial("_LoginPartial")
+                    @RenderSection("navbarRight", required: false)
+                </div>
+            </div>
+        </nav>
+    }
+
+    @*<div class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <div id="page-navbar-logo-container">
+                        <div id="page-navbar-logo-inner">
+                            <a href="@Url.Action("Index", "Home", new { Area = "" })">
+                                <img id="page-navbar-logo" src="~/content/images/logos/designers-guild-header.png" />
+                            </a>
+                        </div>
+                    </div>
+                    @RenderSection("navbarCollapsedRight", required: false)
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <!-- ko component: { name: 'alerting-component' }  -->
+                            <!-- /ko -->
+                        </li>
+                    </ul>
+                    @Html.Partial("_LoginPartial")
+                    @RenderSection("navbarRight", required: false)
+                </div>
+            </div>
+        </div>*@
+
+    @if (ViewBag.Partial != true)
+    {
+        <div class="container body-content">
+            @RenderBody()
+            <footer style="position: fixed; bottom: 0; z-index: -5">
+                <p>&copy; @DateTime.Now.Year - Designers Guild</p>
+            </footer>
+        </div>
+    }
+    else
+    {
+        <style type="text/css">
+            html,
+            body {
+                background-color: white;
+            }
+        </style>
+        @RenderBody()
+    }
+
+    @RenderSection("afterContainer", required: false)
+
+    <script type="text/html" id="send-tarf-template">
+        <div id="send-tarf-modal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header grey-blue">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 id="send-tarf-modal-title" class="modal-title">
+                            Send Trade Account Request Form
+                        </h4>
+                    </div>
+                    <div id="send-tarf-modal-body">
+                        <div class="form-busy" data-bind="fadeVisible: sendEmailBusy()">
+                            <div class="busy-bars">
+                                <div class="rect1 alert alert-info"></div>
+                                <div class="rect2 alert alert-info"></div>
+                                <div class="rect3 alert alert-info"></div>
+                                <div class="rect4 alert alert-info"></div>
+                                <div class="rect5 alert alert-info"></div>
+                            </div>
+                        </div>
+                        <div class="modal-body panel-body">
+                            <div class="form-group row">
+                                <div class="col-xs-6">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <label class="col-form-label">
+                                                Country *
+                                            </label>
+                                        </div>
+                                        <div class="col-xs-12">
+                                            <div id="tarf-country" class="form-control" data-bind="kendoDropDownList: countryDropDownSettings"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <label class="col-form-label">
+                                                Language *
+                                            </label>
+                                        </div>
+                                        <div class="col-xs-12">
+                                            <div id="tarf-language" class="form-control" data-bind="kendoDropDownList: languageDropDownSettings"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="form-group row">
+                                        <div class="col-xs-12">
+                                            <label class="col-form-label">
+                                                Name *
+                                            </label>
+                                        </div>
+                                        <div class="col-xs-12">
+                                            <input class="form-control tarf-name" data-bind="textInput: name" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="form-group row">
+                                        <div class="col-xs-12">
+                                            <label class="col-form-label">
+                                                Phone
+                                            </label>
+                                        </div>
+                                        <div class="col-xs-12">
+                                            <input class="form-control tarf-phone" data-bind="textInput: phone" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row margin-bottom-0">
+                                <div class="col-xs-12">
+                                    <label class="col-form-label">
+                                        Recipient Email Address *
+                                    </label>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="input-group" data-bind="validationOptions: { insertMessages: false }">
+                                        <input class="form-control tarf-email" data-bind="textInput: email" />
+                                        <div class="input-group-btn">
+                                            @*<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="border-radius: 0;">
+                                                    <span data-bind="text: selectedLanguage().name"></span>
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu" data-bind="foreach: availableLanguages">
+                                                    <li><a href="javascript:;" data-bind="click: function() { $parent.selectedLanguage($data) }, text: $data.name"></a></li>
+                                                </ul>*@
+                                            <button class="btn btn-success" data-bind="click: function() { sendEmail(); }">
+                                                Send
+                                                <span class="glyphicon glyphicon-send"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <span data-bind="validationMessage: email, css: 'validation-message text-danger'"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <label id="ior-checkbox" class="col-form-label">
+                                        <input type="checkbox" data-bind="checked: immediateOrderRequested" /> Immediate Order Requested?
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer panel-footer">
+                            <span class="tarf-last-send" style="display: none;" data-bind="fadeVisible: showLastSentTo, fadeSpeed: 'slow', text: 'Sent successfully to: ' + lastSentTo()"></span>
+                            <button id="send-tarf-modal-close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                    <!-- ko if: attachValidation() --><!-- /ko -->
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/html" id="webapi-auth-template">
+        <div id="credentials-modal" class="modal fade" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header grey-blue">
+                        <h4 id="credentials-modal-title" class="modal-title">Login Expired</h4>
+                    </div>
+                    <div id="credentials-modal-body">
+                        <div class="form-busy" data-bind="fadeVisible: authBusy()">
+                            <div class="busy-bars">
+                                <div class="rect1 alert alert-info"></div>
+                                <div class="rect2 alert alert-info"></div>
+                                <div class="rect3 alert alert-info"></div>
+                                <div class="rect4 alert alert-info"></div>
+                                <div class="rect5 alert alert-info"></div>
+                            </div>
+                        </div>
+                        <div class="modal-body">
+                            <p>
+                                Please log in again.
+                            </p>
+                            <div id="credentials-modal-form" class="row">
+                                <div class="col-xs-12">
+                                    <div class="form-group row">
+                                        <div class="col-md-3">
+                                            <label class="col-form-label" style="float: none; padding-top: 6px">Email</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input id="webapi-email" name="email" class="form-control" data-bind="textInput: email" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="col-form-label" style="float: none; padding-top: 6px">Password</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input id="webapi-password" name="password" type="password" class="form-control" data-bind="enterKey: function() { performAuth(); }, textInput: password">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" data-bind="click: function() { performAuth(); }">Login</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/html" id="alerting-component-template">
+        <a id="alerting-display" href="javascript:;" data-bind="click: function(data, event) { toggleAlerts(event); }">
+            <div id="alerting-display-inner">
+                <i class="fas fa-bell"></i>
+                <span id="alerting-count" style="display: none;" data-bind="visible: alerts().length, text: alerts().length"></span>
+            </div>
+        </a>
+        <div id="alerting-target" class="panel panel-secondary-blue" style="display: none;" data-bind="click: function(data, event) { event.stopImmediatePropagation() }">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    Notifications
+                    <span id="alerting-close" class="close pull-right" data-bind="click: hideAlerting">
+                        &times;
+                    </span>
+                </h4>
+            </div>
+            <div class="panel-body">
+                <label class="col-form-label" style="display: none; padding-bottom: 0;" data-bind="visible: alerts().length == 0">
+                    You have no notifications.
+                </label>
+                <!-- ko if: completedTasks().length -->
+                <div class="row" data-bind="visible: completedTasks().length">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">
+                            <span data-bind="text: completedTasks().length"></span> Completed Task<span data-bind="text: completedTasks().length == 1 ? '' : 's'"></span>
+                        </label>
+                    </div>
+                    <div class="col-xs-12">
+                        <ul class="notification-list" data-bind="foreach: completedTasks">
+                            <li>
+                                <a data-bind="attr: { href: $parent.generateTaskHref($data), target: '_blank' }, click: $parent.unreadTaskClick">
+                                    <span class="notification-record" data-bind="text: source + ' - '  + message"></span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: unreadTasks().length -->
+                <div class="row" data-bind="visible: unreadTasks().length">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">
+                            <span data-bind="text: unreadTasks().length"></span> Unread Task<span data-bind="text: unreadTasks().length == 1 ? '' : 's'"></span>
+                        </label>
+                    </div>
+                    <div class="col-xs-12">
+                        <ul class="notification-list" data-bind="foreach: unreadTasks">
+                            <li>
+                                <a data-bind="attr: { href: $parent.generateTaskHref($data), target: '_blank' }, click: $parent.unreadTaskClick">
+                                    <span class="notification-record" data-bind="text: source + ' - '  + message"></span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: commentedTasks().length -->
+                <div class="row" data-bind="visible: commentedTasks().length">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">
+                            <!-- ko if: commentedTasks().length == 1 -->
+                            <span data-bind="text: commentedTasks().length"></span> Task with a new Comment
+                            <!-- /ko -->
+                            <!-- ko ifnot: commentedTasks().length == 1 -->
+                            <span data-bind="text: commentedTasks().length"></span> Tasks with new Comments
+                            <!-- /ko -->
+                        </label>
+                    </div>
+                    <div class="col-xs-12">
+                        <ul class="notification-list" data-bind="foreach: commentedTasks">
+                            <li>
+                                <a data-bind="attr: { href: $parent.generateTaskHref($data), target: '_blank' }, click: $parent.unreadTaskClick">
+                                    <span class="notification-record" data-bind="text: source + ' - '  + message"></span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: chasedTasks().length -->
+                <div class="row" data-bind="visible: chasedTasks().length">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">
+                            <span data-bind="text: chasedTasks().length"></span> Chased Task<span data-bind="text: chasedTasks().length == 1 ? '' : 's'"></span>
+                        </label>
+                    </div>
+                    <div class="col-xs-12">
+                        <ul class="notification-list" data-bind="foreach: chasedTasks">
+                            <li>
+                                <a data-bind="attr: { href: $parent.generateTaskHref($data), target: '_blank' }, click: $parent.unreadTaskClick">
+                                    <span class="notification-record" data-bind="text: source + ' - '  + message"></span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: expectedDeliveryChangedTasks().length -->
+                <div class="row" data-bind="visible: expectedDeliveryChangedTasks().length">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">
+                            <span data-bind="text: expectedDeliveryChangedTasks().length"></span> Task Expected Delivery Changed<span data-bind="text: expectedDeliveryChangedTasks().length == 1 ? '' : 's'"></span>
+                        </label>
+                    </div>
+                    <div class="col-xs-12">
+                        <ul class="notification-list" data-bind="foreach: expectedDeliveryChangedTasks">
+                            <li>
+                                <a data-bind="attr: { href: $parent.generateTaskHref($data), target: '_blank' }, click: $parent.unreadTaskClick">
+                                    <span class="notification-record" data-bind="text: source + ' - '  + message"></span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- /ko -->
+            </div>
+        </div>
+    </script>
+
+    <script id="basket-lock-template" type="text/html">
+        <div id="basket-lock-modal" class="modal fade" data-backdrop="static">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="blocker" data-bind="fadeVisible: busy">
+                        <div class="loading-spinner"></div>
+                        <h4 data-bind="text: busyMessage"></h4>
+                    </div>
+                    <div class="modal-header grey-blue">
+                        <button type="button" class="close" aria-label="Close" data-dismiss="modal">
+                            <span aria-hidden="true">
+                                &times;
+                            </span>
+                        </button>
+                        <h4 class="modal-title">
+                            Basket Locking
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <p data-bind="text: message"></p>
+                        <!-- ko if: mode() == 'receivingTakeover' -->
+                        <p>
+                            If you do nothing, or close this panel, the takeover will be successful in
+                            <span data-bind="text: secondsRemaining"></span>
+                            seconds.
+                        </p>
+                        <button class="btn btn-blue" data-bind="click: relinquishBasket">
+                            Permit this takeover
+                        </button>
+                        <button class="btn btn-blue" data-bind="click: refuseTakeover">
+                            Refuse this takeover
+                        </button>
+                        <!-- /ko -->
+                        <!-- ko if: mode() == 'sendingTakeover' -->
+                        <button class="btn btn-blue" data-bind="click: sendTakeover">
+                            Take over this basket
+                        </button>
+                        <button class="btn btn-blue" data-bind="click: showNewBasket">
+                            Start a new basket
+                        </button>
+                        <!-- /ko -->
+                        <!-- ko if: mode() == 'mutiny' -->
+                        <button class="btn btn-blue" data-bind="click: changeDevice">
+                            Continue on this Screen
+                        </button>
+                        <button class="btn btn-blue" data-bind="click: showNewBasket">
+                            Start a new basket
+                        </button>
+                        <!-- /ko -->
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-default" data-bind="click: hide">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ko if: init() --><!-- /ko -->
+    </script>
+
+    <script id="sterling-conversion-template" type="text/html">
+        <div class="input-group currency-conversion" data-bind="css: controlClass">
+            <div class="input-group-btn">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    <span data-bind="with: currency"><span data-bind="text: Code"></span></span> <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <!-- ko foreach: currencies -->
+                    <li><a href="#" data-bind="click: function() { $parent.currency($data) }, text: Code + ' - ' + Name"></a></li>
+                    <!-- /ko -->
+                </ul>
+            </div>
+            <input class="form-control" data-bind="numeric, forceNullOnEmpty: value, value: value.formatted, enable: currency, attr: { placeholder: placeholder }, keepElement: value" />
+            <!-- ko if: !isNaN(conversion()) && conversion() != null -->
+            <span class="input-group-addon input-group-addon-default">
+                <span class="gbp-conversion" data-bind="text: conversion.formatted, visible: !isNaN(conversion())"></span>
+            </span>
+            <!-- /ko -->
+        </div>
+    </script>
+
+    <script id="mdc-text-field-component" type="text/html">
+        <div class="mdc-validating-field" data-bind="visible: $data.hasOwnProperty('visible') ? $data.visible : true">
+            <div class="mdc-text-field mdc-text-field--outlined" data-bind="mdcTextFieldComponent: {
+                    boundTo: observable,
+                    useNativeValidation: useNativeValidation,
+                    enable: enable,
+                    disable: disable
+                 },
+                 validationOptions: {
+                    insertMessages: typeof insertValidationMessages == 'undefined' ? false : insertValidationMessages,
+                    decorateInputElement: typeof decorateInputElement == 'undefined' ? false : decorateInputElement
+                 },
+                 css: {
+                    'busy': busy,
+                    'mdc-text-field--disabled': disable() || !enable()
+                 }">
+                <input type="search" autocomplete="off" class="mdc-text-field__input" data-bind="
+                       keepElement: observable,
+                       forceNullOnEmpty: observable,
+                       textInput: observable,
+                       charsRemaining: charsRemainingOptions,
+                       enterKey: typeof enterKey === 'undefined' ? null : enterKey,
+                       disable: disable() || !enable()
+                       hasFocus: (typeof focusObservable === 'undefined' ? ko.observable() : focusObservable),
+                       css: {
+                            'clearable': clearable,
+                            'revertable': revertable
+                       },
+                       class: typeof cssClasses === 'undefined' ? null : cssClasses" />
+                <div class="mdc-notched-outline">
+                    <div class="mdc-notched-outline__leading"></div>
+                    <div class="mdc-notched-outline__notch">
+                        <label for="input" class="mdc-floating-label">
+                            <span data-bind="text: label"></span>
+                        </label>
+                    </div>
+                    <div class="mdc-notched-outline__trailing"></div>
+                </div>
+                <div class="controls">
+                    <!-- ko if: revertable -->
+                    <div class="close revert" data-bind="click: revertFunction">
+                        <i class="material-icons">
+                            replay
+                        </i>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: clearable -->
+                    <div class="close clear" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
+                        &times;
+                    </div>
+                    <!-- /ko -->
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script id="mdc-text-field-component-no-outline" type="text/html">
+        <div class="mdc-validating-field" data-bind="visible: $data.hasOwnProperty('visible') ? $data.visible : true">
+            <div class="mdc-text-field mdc-text-field--outlined" data-bind="
+                    mdcTextFieldComponentNoOutline: {
+                        boundTo: observable,
+                        useNativeValidation: useNativeValidation,
+                        enable: enable,
+                        disable: disable
+                    },
+                    validationOptions: {
+                        insertMessages: insertValidationMessages,
+                        decorateInputElement: decorateInputElement
+                    },
+                    css: {
+                        'busy': busy,
+                        'mdc-text-field--disabled': disable() || !enable()
+                    }">
+                <input type="text" class="mdc-text-field__input" data-bind="
+                       keepElement: observable,
+                       forceNullOnEmpty: observable,
+                       textInput: observable,
+                       charsRemaining: charsRemainingOptions,
+                       enable: typeof readOnly == 'undefined' ? true : !ko.unwrap(readOnly),
+                       hasFocus: (typeof focusObservable === 'undefined' ? ko.observable() : focusObservable),
+                       css: {
+                            'clearable': clearable,
+                            'revertable': revertable
+                       }" />
+                <!-- ko if: typeof permitRevert != 'undefined' && permitRevert && typeof revertFunction === 'function' && typeof originalValue != 'undefined' -->
+                <div class="close revert" data-bind="click: revertFunction">
+                    <i class="material-icons">
+                        replay
+                    </i>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: typeof showClear != 'undefined' && showClear && typeof clearFunction === 'function' -->
+                <div class="close pull-right" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
+                    &times;
+                </div>
+                <!-- /ko -->
+            </div>
+        </div>
+    </script>
+
+    <script id="mdc-text-field-numeric-component" type="text/html">
+        <div class="mdc-validating-field" data-bind="visible: $data.hasOwnProperty('visible') ? $data.visible : true">
+            <div class="mdc-numeric-field input-group">
+                <button type="button" class="btn btn-secondary" data-bind="click: decrement">
+                    <i class="bi bi-dash-lg"></i>
+                </button>
+                <div class="mdc-text-field mdc-text-field--outlined" data-bind="
+                     mdcTextFieldComponent: {
+                        boundTo: observable,
+                        useNativeValidation: useNativeValidation,
+                        enable: enable,
+                        disable: disable
+                     },
+                     validationOptions: {
+                        insertMessages: insertValidationMessages,
+                        decorateInputElement: decorateInputElement
+                     },
+                     css: {
+                        'busy': busy(),
+                        'mdc-text-field--disabled': disable() || !enable()
+                     }">
+                    <input class="mdc-text-field__input text-right mdc-text-field__numeric" data-bind="
+                        numeric: observable,
+                        enterKey: typeof enterKey === 'undefined' ? null : enterKey,
+                        keepElement: observable,
+                        value: observable.formatted,
+                        charsRemaining: charsRemainingOptions,
+                        enable: typeof readOnly == 'undefined' ? true : !readOnly(),
+                        hasFocus: (typeof focusObservable === 'undefined' ? ko.observable() : focusObservable),
+                        css: {
+                            clearable: clearable,
+                            revertable: revertable
+                        },
+                        class: typeof cssClasses === 'undefined' ? null : cssClasses,
+                        attr: {
+                           type: inputType,
+                           min: minValue,
+                           max: maxValue,
+                           step: step
+                        }
+                        " />
+                    <div class="mdc-notched-outline">
+                        <div class="mdc-notched-outline__leading"></div>
+                        <div class="mdc-notched-outline__notch">
+                            <label for="input" class="mdc-floating-label">
+                                <span data-bind="text: label"></span>
+                            </label>
+                        </div>
+                        <div class="mdc-notched-outline__trailing"></div>
+                    </div>
+                    <div class="controls">
+                        <!-- ko if: revertable -->
+                        <div class="close revert" data-bind="click: revertFunction">
+                            <i class="material-icons">
+                                replay
+                            </i>
+                        </div>
+                        <!-- /ko -->
+                        <!-- ko if: clearable -->
+                        <div class="close clear" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
+                            &times;
+                        </div>
+                        <!-- /ko -->
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary" data-bind="click: increment">
+                    <i class="bi bi-plus-lg"></i>
+                </button>
+            </div>
+        </div>
+    </script>
+
+    <script id="mdc-text-field-numeric-unformatted-component" type="text/html">
+        <div class="mdc-validating-field" data-bind="visible: $data.hasOwnProperty('visible') ? $data.visible : true">
+            <div class="mdc-numeric-field input-group">
+                <button type="button" class="btn btn-secondary" data-bind="click: decrement">
+                    <i class="bi bi-dash-lg"></i>
+                </button>
+                <div class="mdc-text-field mdc-text-field--outlined" data-bind="
+                     mdcTextFieldComponent: {
+                        boundTo: observable,
+                        useNativeValidation: useNativeValidation,
+                        enable: enable,
+                        disable: disable
+                     },
+                     validationOptions: {
+                        insertMessages: insertValidationMessages,
+                        decorateInputElement: decorateInputElement
+                     },
+                     css: {
+                        'busy': busy,
+                        'mdc-text-field--disabled': disable() || !enable()
+                        'clearable': clearable,
+                        'revertable': revertable
+                     }">
+                    <input class="mdc-text-field__input text-right mdc-text-field__numeric" data-bind="
+                        numeric: observable,
+                        enterKey: typeof enterKey === 'undefined' ? null : enterKey,
+                        keepElement: observable,
+                        value: observable,
+                        charsRemaining: charsRemainingOptions,
+                        disable: disable() || !enable(),
+                        hasFocus: (typeof focusObservable === 'undefined' ? ko.observable() : focusObservable),
+                        css: {
+                            clearable: clearable,
+                            revertable: revertable
+                        },
+                        class: typeof cssClasses === 'undefined' ? null : cssClasses,
+                        attr: {
+                            type: inputType,
+                            min: minValue,
+                            max: maxValue,
+                            step: step
+                        }" />
+                    <div class="mdc-notched-outline">
+                        <div class="mdc-notched-outline__leading"></div>
+                        <div class="mdc-notched-outline__notch">
+                            <label for="input" class="mdc-floating-label">
+                                <span data-bind="text: label"></span>
+                            </label>
+                        </div>
+                        <div class="mdc-notched-outline__trailing"></div>
+                    </div>
+                    <div class="controls">
+                        <!-- ko if: revertable -->
+                        <div class="close revert" data-bind="click: revertFunction">
+                            <i class="material-icons">
+                                replay
+                            </i>
+                        </div>
+                        <!-- /ko -->
+                        <!-- ko if: clearable -->
+                        <div class="close clear" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
+                            &times;
+                        </div>
+                        <!-- /ko -->
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary" data-bind="click: increment">
+                    <i class="bi bi-plus-lg"></i>
+                </button>
+            </div>
+        </div>
+    </script>
+
+    <script id="mdc-text-field-numeric-component-no-outline" type="text/html">
+        <div class="mdc-validating-field" data-bind="visible: $data.hasOwnProperty('visible') ? $data.visible : true">
+            <div class="mdc-numeric-field input-group">
+                <button type="button" class="btn btn-secondary" data-bind="click: decrement">
+                    <i class="bi bi-dash-lg"></i>
+                </button>
+                <div class="mdc-text-field mdc-text-field--outlined" data-bind="
+                         mdcTextFieldComponent: {
+                            boundTo: observable,
+                            useNativeValidation: useNativeValidation,
+                            enable: enable,
+                            disable: disable
+                         },
+                         validationOptions: {
+                            insertMessages: insertValidationMessages,
+                            decorateInputElement: decorateInputElement
+                         },
+                         css: {
+                            'busy': busy(),
+                            'mdc-text-field--disabled': disable() || !enable()
+                         }">
+                    <input class="mdc-text-field__input text-right mdc-text-field__numeric" data-bind="
+                        numeric: observable,
+                        enterKey: typeof enterKey === 'undefined' ? null : enterKey,
+                        keepElement: observable,
+                        value: observable.formatted,
+                        charsRemaining: charsRemainingOptions,
+                        enable: typeof readOnly == 'undefined' ? true : !readOnly(),
+                        hasFocus: (typeof focusObservable === 'undefined' ? ko.observable() : focusObservable),
+                        css: {
+                            clearable: clearable,
+                            revertable: revertable
+                        },
+                        class: typeof cssClasses === 'undefined' ? null : cssClasses,
+                        attr: {
+                            type: inputType,
+                            min: minValue,
+                            max: maxValue,
+                            step: step
+                        }" />
+                    <div class="controls">
+                        <!-- ko if: revertable -->
+                        <div class="close revert" data-bind="click: revertFunction">
+                            <i class="material-icons">
+                                replay
+                            </i>
+                        </div>
+                        <!-- /ko -->
+                        <!-- ko if: clearable -->
+                        <div class="close clear" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
+                            &times;
+                        </div>
+                        <!-- /ko -->
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary" data-bind="click: increment">
+                    <i class="bi bi-plus-lg"></i>
+                </button>
+            </div>
+        </div>
+    </script>
+
+
+
+    <script id="mdc-phone-field-component" type="text/html">
+        <div class="mdc-validating-field" data-bind="visible: $data.hasOwnProperty('visible') ? $data.visible : true">
+            <div class="mdc-text-field mdc-text-field--outlined" data-bind="
+                    mdcTextFieldComponent: {
+                        boundTo: observable,
+                        useNativeValidation: useNativeValidation
+                    },
+                    validationOptions: {
+                        insertMessages: insertValidationMessages,
+                        decorateInputElement: decorateInputElement
+                    },
+                    css: {
+                        'busy': busy,
+                        'mdc-text-field--disabled': disable() || !enable()
+                    }">
+                <input type="text" class="mdc-text-field__input" data-bind="intlMobile: {
+                       phone: observable,
+                       country: countryObservable,
+                       preferredCountries: preferredCountries,
+                       autoPlaceholder: typeof autoPlaceholder === 'undefined' ? null : autoPlaceholder,
+                       numberType: typeof numberType === 'undefined' ? null : numberType,
+                       placeholderNumberType: typeof placeholderNumberType === 'undefined' ? null : placeholderNumberType,
+                       validateNow: typeof validateNow === 'undefined' ? null : validateNow
+                    },
+                    keepElement: observable,
+                    enable: typeof readOnly == 'undefined' ? true : !ko.unwrap(readOnly),
+                    textInput: observable,
+                    charsRemaining: charsRemainingOptions" />
+                <div class="mdc-notched-outline">
+                    <div class="mdc-notched-outline__leading" style="width: 48px;"></div>
+                    <div class="mdc-notched-outline__notch">
+                        <label for="input" class="mdc-floating-label">
+                            <span data-bind="text: label"></span>
+                        </label>
+                    </div>
+                    <div class="mdc-notched-outline__trailing"></div>
+                </div>
+                <!-- ko if: typeof showClear != 'undefined' && showClear && typeof clearFunction === 'function' -->
+                <div class="close pull-right" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
+                    &times;
+                </div>
+                <!-- /ko -->
+            </div>
+            <span class="validation-message text-info phone-number-type" data-bind="text: observable.numberFormat"></span>
+            <span class="validation-message text-danger phone-number-type" data-bind="validationMessage: observable.numberTypeValid"></span>
+        </div>
+    </script>
+
+    <script id="mdc-text-area-component" type="text/html">
+        <div class="mdc-validating-field">
+            <div class="mdc-text-field mdc-text-field--textarea" data-bind="
+                mdcTextFieldComponent: {
+                    boundTo: observable,
+                    useNativeValidation: useNativeValidation,
+                    enable: enable,
+                    disable: disable
+                 },
+                 validationOptions: {
+                    insertMessages: insertValidationMessages,
+                    decorateInputElement: decorateInputElement
+                 },
+                 css: {
+                    'busy': busy,
+                    'mdc-text-field--disabled': disable() || !enable()
+                 }">
+                <textarea class="mdc-text-field__input" data-bind="
+                    keepElement: observable,
+                    textInput: observable,
+                    charsRemaining: charsRemainingOptions,
+                    attr: {
+                        rows: rows,
+                        readonly: disable() || !enable(),
+                        disabled: disable() || !enable()
+                    }"
+                          rows="6" maxlength="500"></textarea>
+                <div class="mdc-notched-outline">
+                    <div class="mdc-notched-outline__leading"></div>
+                    <div class="mdc-notched-outline__notch">
+                        <label for="input" class="mdc-floating-label">
+                            <span data-bind="text: label"></span>
+                        </label>
+                    </div>
+                    <div class="mdc-notched-outline__trailing"></div>
+                </div>
+                <div class="controls">
+                    <!-- ko if: revertable -->
+                    <div class="close revert" data-bind="click: revertFunction">
+                        <i class="material-icons">
+                            replay
+                        </i>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: clearable -->
+                    <div class="close clear" data-bind="click: clearFunction">
+                        &times;
+                    </div>
+                    <!-- /ko -->
+                </div>
+            </div>
+            @*<span class="validation-message text-danger" data-bind="validationMessage: observable"></span>*@
+        </div>
+    </script>
+
+    <script id="mdc-text-field-autocomplete-component" type="text/html">
+        <div class="mdc-validating-field">
+            <div class="mdc-text-field mdc-text-field--outlined" data-bind="
+                mdcTextFieldComponent: {
+                    boundTo: autocompleteSettings.observable,
+                    useNativeValidation: useNativeValidation,
+                    enable: enable,
+                    disable: disable
+                },
+                validationOptions: {
+                    insertMessages: insertValidationMessages,
+                    decorateInputElement: decorateInputElement
+                },
+                css: {
+                    'busy': busy,
+                    'mdc-text-field--disabled': disable() || !enable(),
+                    'clearable': clearable,
+                    'revertable': revertable
+                }">
+                <input type="text" name="mdc-text-ac-field" autocomplete="off" class="mdc-text-field__input" data-bind="
+                    enterKey: typeof enterKeyFunction === 'function' ? enterKeyFunction : function () { },
+                    keepElement: observable,
+                    value: autocompleteSettings.observable,
+                    autocomplete: autocompleteSettings,
+                    hasFocus: (typeof focusObservable === 'undefined' ? ko.observable() : focusObservable),
+                    attr: {
+                        readonly: disable() || !enable(),
+                        disabled: disable() || !enable()
+                    },
+                    css: {
+                        clearable: clearable,
+                        revertable: revertable
+                    }" />
+                <div class="mdc-notched-outline">
+                    <div class="mdc-notched-outline__leading"></div>
+                    <div class="mdc-notched-outline__notch">
+                        <label for="input" class="mdc-floating-label" data-bind="text: label"></label>
+                    </div>
+                    <div class="mdc-notched-outline__trailing"></div>
+                </div>
+                <div class="controls">
+                    <!-- ko if: revertable -->
+                    <div class="close revert" data-bind="click: revertFunction">
+                        <i class="material-icons">
+                            replay
+                        </i>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: clearable -->
+                    <div class="close clear" data-bind="click: clearFunction">
+                        &times;
+                    </div>
+                    <!-- /ko -->
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script id="mdc-text-field-pca-component" type="text/html">
+        <div class="mdc-validating-field">
+            <div class="mdc-text-field mdc-text-field--outlined" data-bind="mdcTextFieldComponent: {
+                    boundTo: observable,
+                    useNativeValidation: useNativeValidation
+                 },
+                 validationOptions: {
+                    insertMessages: insertValidationMessages,
+                    decorateInputElement: decorateInputElement
+                 }">
+                <input type="text" class="mdc-text-field__input" data-bind="
+                       keepElement: observable,
+                       textInput: observable,
+                       pcaPredict: $data,
+                       css: {
+                            'busy': typeof busy === 'undefined' ? false : busy
+                       }" />
+                <div class="mdc-notched-outline">
+                    <div class="mdc-notched-outline__leading"></div>
+                    <div class="mdc-notched-outline__notch">
+                        <label for="input" class="mdc-floating-label" data-bind="text: label"></label>
+                    </div>
+                    <div class="mdc-notched-outline__trailing"></div>
+                </div>
+                <!-- ko if: typeof showClear != 'undefined' && showClear && typeof clearFunction === 'function' -->
+                <div class="close pull-right" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
+                    &times;
+                </div>
+                <!-- /ko -->
+            </div>
+        </div>
+    </script>
+
+    <script id="mdc-text-field-pca-list-component" type="text/html">
+        <div class="mdc-validating-field">
+            <div class="mdc-text-field mdc-text-field--outlined" data-bind="mdcTextFieldComponent: { boundTo: observable, useNativeValidation: useNativeValidation }, validationOptions: { insertMessages: insertValidationMessages, decorateInputElement: decorateInputElement }">
+                <input type="text" class="mdc-text-field__input" data-bind="
+                       keepElement: observable,
+                       textInput: observable,
+                       pcaPredictList: $data,
+                       hasFocus: focusObservable,
+                       enterKey: function() {
+                            $(observable.DOMElement).autocomplete('search');
+                       }" />
+                <div class="mdc-notched-outline">
+                    <div class="mdc-notched-outline__leading"></div>
+                    <div class="mdc-notched-outline__notch">
+                        <label for="input" class="mdc-floating-label" data-bind="text: label"></label>
+                    </div>
+                    <div class="mdc-notched-outline__trailing"></div>
+                </div>
+                <!-- ko if: typeof showClear != 'undefined' && showClear && typeof clearFunction === 'function' -->
+                <div class="close pull-right" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
+                    &times;
+                </div>
+                <!-- /ko -->
+            </div>
+        </div>
+    </script>
+
+    <script id="mdc-discounter-component" type="text/html">
+        <!-- ko if: debug -->
+        <label class="checkbox-wrapper" style="margin-bottom: 10px;">
+            <input type="checkbox" style="position: relative; top: 3px;" data-bind="checked: tradePromotionCodeIdRequired" /> Trade Promo Code Required?
+        </label>
+        <label style="display: block">
+            State: <span style="font-weight: normal" data-bind="text: currentState().name"></span>
+        </label>
+        <label style="display: block;">
+            Original Price: <span style="font-weight: normal" data-bind="text: formatCurrency(originalPriceEx, 2, currency.FormattingCulture, currency.ISO_4217)"></span>
+        </label>
+        <label style="display: block;">
+            Discount Percentage: <span style="font-weight: normal" data-bind="text: percentage.observable() ? `${percentage.observable()}%` : ''"></span>
+        </label>
+        <label style="display: block;" class="margin-bottom-15">
+            Final Price: <span style="font-weight: normal" data-bind="text: formatCurrency(originalPriceEx - discountAmount(), 2, currency.FormattingCulture, currency.ISO_4217)"></span>
+        </label>
+        <!-- /ko -->
+        <!-- ko if: permitPercentage && permitMonetary -->
+        <div class="btn-toolbar mdc-discounter-group" data-bind="visible: discountEntryVisible">
+            <div class="btn-group" data-bind="css: { 'mdc-warning': increasedValueWarning }, component: { name: 'mdc-text-field-numeric-component', params: currentState }"></div>
+            <div class="btn-group" data-bind="component: { name: 'mdc-select-component-no-label', params: selector }"></div>
+        </div>
+        <div class="margin-top-15 btn-toolbar mdc-discounter-group" data-bind="visible: discountReasonRequired">
+            <div class="disco-reason" data-bind="visible: !focAvailable(), component: { name: 'mdc-select-component', params: discountReason }"></div>
+            <div class="margin-top-15" data-bind="visible: customDiscountReasonRequired, component: { name: 'mdc-text-area-component', params: customDiscountReason }"></div>
+            <div class="input-group" data-bind="visible: focAvailable()">
+                <div class="disco-reason" style="width: 400px;" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: focPromoCodeParams }"></div>
+                @*<div class="input-group-btn">
+                        <div style="padding-left: 0;" class="disco-reason" data-bind="component: { name: 'mdc-select-component', params: budgetManager }"></div>
+                    </div>
+                    <div class="disco-reason" data-bind="component: { name: 'mdc-select-component', params: focPromoCode }"></div>*@
+            </div>
+        </div>
+        <!-- /ko -->
+        <!-- ko if: permitPercentage && !permitMonetary -->
+        <div class="btn-toolbar mdc-discounter-group">
+            <div class="btn-group" data-bind="css: { 'mdc-warning': increasedValueWarning }, component: { name: 'mdc-text-field-numeric-component', params: currentState }"></div>
+            <div class="btn-group">
+                <span>
+                    %
+                </span>
+            </div>
+        </div>
+        <div class="margin-top-15 btn-toolbar mdc-discounter-group" data-bind="visible: discountReasonRequired">
+            <div class="disco-reason" data-bind="visible: !focAvailable(), component: { name: 'mdc-select-component', params: discountReason }"></div>
+            <div class="margin-top-15" data-bind="visible: customDiscountReasonRequired, component: { name: 'mdc-text-area-component', params: customDiscountReason }"></div>
+            <div class="input-group" data-bind="visible: focAvailable()">
+                <div class="disco-reason" style="width: 400px;" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: focPromoCodeParams }"></div>
+                @*<div class="input-group-btn">
+                        <div style="padding-left: 0;" class="disco-reason" data-bind="component: { name: 'mdc-select-component', params: budgetManager }"></div>
+                    </div>
+                    <div class="disco-reason" data-bind="component: { name: 'mdc-select-component', params: focPromoCode }"></div>*@
+            </div>
+        </div>
+        <!-- /ko -->
+        @*<!-- ko if: permitMonetary && !permitPercentage -->
+
+            <!-- /ko -->*@
+    </script>
+
+    <script id="mdc-checkbox-component" type="text/html">
+        <div class="mdc-form-field">
+            <div class="mdc-checkbox" data-bind="mdcCheckboxComponent: $data, validationOptions: { insertMessages: false }">
+                <input type="checkbox" class="mdc-checkbox__native-control" data-bind="
+                    checked: $data.observable,
+                    checkedValue: typeof checkedValue === 'undefined' ? true : checkedValue,
+                    attr: {
+                        id: checkboxId,
+                       'disabled': disable() || !enable()
+                    },
+                    css: {
+                        'busy': busy
+                    }" />
+                <div class="mdc-checkbox__background">
+                    <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+                        <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
+                    </svg>
+                    <div class="mdc-checkbox__mixedmark"></div>
+                </div>
+                <div class="mdc-checkbox__ripple"></div>
+            </div>
+            <label data-bind="html: label, attr: { for: checkboxId }, css: { 'checkbox-label-disabled': (typeof disabled === 'undefined' ? false : disabled) }"></label>
+        </div>
+    </script>
+
+    <script id="mdc-checkbox-collection-component" type="text/html">
+        <div class="mdc-form-field">
+            <div class="mdc-checkbox" data-bind="mdcCheckboxComponent: $data, validationOptions: { insertMessages: false }">
+                <input type="checkbox" class="mdc-checkbox__native-control" data-bind="
+                    checked: $data.observable,
+                    checkedValue: typeof checkedValue === 'undefined' ? true : checkedValue,
+                    attr: {
+                       name: checkboxName,
+                       'disabled': typeof disabled === 'undefined' ? false : disabled
+                    },
+                    css: {
+                        'busy': typeof busy === 'undefined' ? false : busy
+                    }" />
+                <div class="mdc-checkbox__background">
+                    <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+                        <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
+                    </svg>
+                    <div class="mdc-checkbox__mixedmark"></div>
+                </div>
+                <div class="mdc-checkbox__ripple"></div>
+            </div>
+            <!-- ko if: typeof label !== 'undefined' -->
+            <label data-bind="text: label, css: { 'checkbox-label-disabled': (typeof disabled === 'undefined' ? false : disabled) }"></label>
+            <!-- /ko -->
+        </div>
+    </script>
+
+    <script id="mdc-select-component" type="text/html">
+        <div class="mdc-validating-field" data-bind="style: { 'width': (typeof width === 'undefined') ? 'auto' : width }">
+            <div class="mdc-select mdc-select--outlined" data-bind="mdcSelectComponent: {
+                     boundTo: observable,
+                     useNativeValidation: useNativeValidation,
+                     disabled: typeof enable === 'undefined' ? false : !enable(),
+                     disabled: typeof disable === 'undefined' ? false : disable },
+                     validationOptions: {
+                        insertMessages: insertValidationMessages,
+                        decorateInputElement: decorateInputElement
+                     },
+                     css: {
+                        'clearable': clearable,
+                        'revertable': revertable,
+                        'mdc-select--disabled': disable() || !enable()
+                     }">
+                <i class="mdc-select__dropdown-icon"></i>
+                <select class="mdc-select__native-control" data-bind="
+                    keepElement: observable,
+                    value: observable,
+                    options: options,
+                    optionsText: optionsText,
+                    optionsValue: (typeof optionsValue === 'undefined' ? $data : optionsValue),
+                    optionsCaption: (typeof optionsCaption === 'undefined' ? null : optionsCaption),
+                    disable: disable() || !enable()
+                    validationOptions: {
+                        decorateInputElement: decorateInputElement
+                    },
+                    attr: {
+                        'disabled': disable() || !enable()
+                    },
+                    css: {
+                        'busy': typeof busy === 'undefined' ? false : busy
+                    }"></select>
+                <div class="mdc-notched-outline">
+                    <div class="mdc-notched-outline__leading"></div>
+                    <div class="mdc-notched-outline__notch">
+                        <label class="mdc-floating-label" data-bind="text: label"></label>
+                    </div>
+                    <div class="mdc-notched-outline__trailing"></div>
+                </div>
+                <div class="controls">
+                    <!-- ko if: revertable -->
+                    <div class="close revert" data-bind="click: function() { revertFunction() }">
+                        <i class="material-icons">
+                            replay
+                        </i>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: clearable -->
+                    <div class="close clear" data-bind="click: function () { clearFunction() }, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
+                        ×
+                    </div>
+                    <!-- /ko -->
+                </div>
+            </div>
+            @*<span class="validation-message text-danger" data-bind="validationMessage: observable"></span>*@
+        </div>
+    </script>
+
+    <script id="mdc-select-component-no-label"
+            type="text/html">
+        <div class="mdc-validating-field" data-bind="style: { 'width': (typeof width === 'undefined') ? 'auto' : width }">
+            <div class="mdc-select mdc-select--outlined" data-bind="mdcSelectComponent: {
+                     boundTo: observable,
+                     useNativeValidation: useNativeValidation,
+                     disabled: typeof enable === 'undefined' ? false : !enable(),
+                     disabled: typeof disable === 'undefined' ? false : disable },
+                     validationOptions: {
+                        insertMessages: insertValidationMessages,
+                        decorateInputElement: decorateInputElement
+                     },
+                     css: {
+                        'clearable': clearable,
+                        'revertable': revertable,
+                        'mdc-select--disabled': disable() || !enable()
+                     }">
+                <i class="mdc-select__dropdown-icon"></i>
+                <select class="mdc-select__native-control" data-bind="
+                    keepElement: observable,
+                    value: observable,
+                    options: options,
+                    optionsText: optionsText,
+                    optionsValue: (typeof optionsValue === 'undefined' ? $data : optionsValue),
+                    optionsCaption: (typeof optionsCaption === 'undefined' ? null : optionsCaption),
+                    disable: disable() || !enable()
+                    validationOptions: {
+                        decorateInputElement: decorateInputElement
+                    },
+                    attr: {
+                        'disabled': disable() || !enable()
+                    },
+                    css: {
+                        'busy': typeof busy === 'undefined' ? false : busy
+                    }"></select>
+                <div class="controls">
+                    <!-- ko if: revertable -->
+                    <div class="close revert" data-bind="click: function() { revertFunction() }">
+                        <i class="material-icons">
+                            replay
+                        </i>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: clearable -->
+                    <div class="close clear" data-bind="click: function () { clearFunction() }, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
+                        ×
+                    </div>
+                    <!-- /ko -->
+                </div>
+            </div>
+            @*<span class="validation-message text-danger" data-bind="validationMessage: observable"></span>*@
+        </div>
+    </script>
+
+    <script id="mdc-kendo-dropdown-component" type="text/html">
+        <div class="mdc-validating-field">
+            <div class="mdc-select mdc-select--outlined" data-bind="
+                 mdcSelectComponent: {
+                    boundTo: observable,
+                    useNativeValidation: useNativeValidation,
+                    optionsValue: dropDownListSettings.dataValueField,
+                    disabled: disable() || !enable()
+                 },
+                 validationOptions: {
+                    insertMessages: insertValidationMessages,
+                    decorateInputElement: decorateInputElement
+                 },
+                 css: {
+                    'clearable': clearable,
+                    'revertable': revertable,
+                    'busy': typeof busy === 'undefined' ? false : busy,
+                    'mdc-select--disabled': disable() || !enable()
+                }">
+                <select class="mdc-select__native-control" style="display: none;"></select>
+                <div data-bind="kendoDropDownList: dropDownListSettings, css: controlClass"></div>
+                <div class="mdc-notched-outline">
+                    <div class="mdc-notched-outline__leading"></div>
+                    <div class="mdc-notched-outline__notch">
+                        <label class="mdc-floating-label" data-bind="text: label"></label>
+                    </div>
+                    <div class="mdc-notched-outline__trailing"></div>
+                </div>
+                <diov class="controls">
+                    <!-- ko if: revertable -->
+                    <div class="close revert" data-bind="click: revertFunction">
+                        <i class="material-icons">
+                            replay
+                        </i>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: clearable -->
+                    <div class="close clear" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
+                        ×
+                    </div>
+                    <!-- /ko -->
+                </diov>
+            </div>
+            @*<span class="validation-message text-danger" data-bind="validationMessage: observable"></span>*@
+        </div>
+    </script>
+
+    <script id="mdc-kendo-dropdown-component-no-outline" type="text/html">
+        <div class="mdc-validating-field">
+            <div class="mdc-select mdc-select--outlined" data-bind="
+                    mdcSelectComponentNoOutline: {
+                        boundTo: observable,
+                        disabled: disabled,
+                        useNativeValidation: useNativeValidation,
+                        optionsValue: dropDownListSettings.dataValueField,
+                        disabled:  disable() || !enable()
+                    },
+                    validationOptions: {
+                        insertMessages: insertValidationMessages,
+                        decorateInputElement: decorateInputElement
+                    }, css: {
+                        'busy': typeof busy === 'undefined' ? false : busy,
+                        'clearable': (typeof showClear === 'undefined' ? false : showClear )
+                    }">
+                <select class="mdc-select__native-control" style="display: none;"></select>
+                <div data-bind="kendoDropDownList: dropDownListSettings, css: controlClass"></div>
+                <!-- ko if: typeof showClear != 'undefined' && showClear && typeof clearFunction === 'function' -->
+                <div class="close pull-right" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
+                    ×
+                </div>
+                <!-- /ko -->
+            </div>
+            @*<span class="validation-message text-danger" data-bind="validationMessage: observable"></span>*@
+        </div>
+    </script>
+
+    <script id="mdc-kendo-multiselect-component" type="text/html">
+        <div class="mdc-validating-field">
+            <div class="mdc-select mdc-multiselect mdc-select--outlined" data-bind="
+                mdcMultiSelectComponent: {
+                    boundTo: observable,
+                    useNativeValidation: useNativeValidation,
+                    optionsValue: dropDownListSettings.dataValueField,
+                    disabled: disable() || !enable()
+                 },
+                 validationOptions: {
+                    insertMessages: insertValidationMessages,
+                    decorateInputElement: decorateInputElement
+                 },
+                 css: {
+                    'clearable': clearable,
+                    'revertable': revertable,
+                    'busy': typeof busy === 'undefined' ? false : busy,
+                    'mdc-select--disabled': disable() || !enable()
+                 }">
+                <select class="mdc-select__native-control" style="display: none;"></select>
+                <select data-bind="kendoMultiSelect: dropDownListSettings, css: controlClass"></select>
+                <div class="mdc-notched-outline">
+                    <div class="mdc-notched-outline__leading"></div>
+                    <div class="mdc-notched-outline__notch">
+                        <label class="mdc-floating-label" data-bind="text: label"></label>
+                    </div>
+                    <div class="mdc-notched-outline__trailing"></div>
+                </div>
+                <div class="controls">
+                    <!-- ko if: revertable -->
+                    <div class="close revert" data-bind="click: revertFunction">
+                        <i class="material-icons">
+                            replay
+                        </i>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: clearable -->
+                    <div class="close pull-right" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
+                        &times;
+                    </div>
+                    <!-- /ko -->
+                </div>
+            </div>
+            @*<span class="validation-message text-danger" data-bind="validationMessage: observable"></span>*@
+        </div>
+    </script>
+
+    <script id="bootstrap-button-group-template" type="text/html">
+        <div class="btn-group-component btn-group" data-bind="css: { 'btn-group-justified': justified }">
+            <!-- ko if: justified -->
+            <!-- ko foreach: buttons -->
+            <!-- ko if: visible -->
+            <div class="btn-group" data-bind="css: { disabled: (typeof enable === 'undefined' ? false : !enable) }">
+                <button class="btn" data-bind="class: $parent.observable() == value ? btnActiveClass : btnClass, css: { 'disabled': (typeof enable === 'undefined' ? false : !enable) }, text: text, click: function () { $parent.observable(value); }, enable: (typeof enable === 'undefined' ? true : enable)"></button>
+            </div>
+            <!-- /ko -->
+            <!-- /ko -->
+            <!-- /ko -->
+            <!-- ko ifnot: justified -->
+            <!-- ko foreach: buttons -->
+            <!-- ko if: visible -->
+            <button class="btn" data-bind="class: $parent.observable() == value ? btnActiveClass : btnClass, css: { 'disabled': (typeof enable === 'undefined' ? false : !enable) }, text: text, click: function () { $parent.observable(value); }, enable: (typeof enable === 'undefined' ? true : enable)"></button>
+            <!-- /ko -->
+            <!-- /ko -->
+            <!-- /ko -->
+        </div>
+    </script>
+
+    <script id="mdc-kendo-bootstrap-datetimepicker-template" type="text/html">
+        <div class="mdc-validating-field" data-bind="visible: $data.hasOwnProperty('visible') ? $data.visible : true">
+            <div class="mdc-text-field mdc-text-field--outlined" data-bind="
+                 dateTimePicker: observable,
+                 dateTimePickerOptions: dateTimePickerOptions,
+                 mdcTextFieldComponent: {
+                    boundTo: observable, useNativeValidation: useNativeValidation
+                 },
+                 validationOptions: {
+                    insertMessages: insertValidationMessages,
+                    decorateInputElement: decorateInputElement
+                 },
+                 css: {
+                    'busy': typeof busy === 'undefined' ? false : busy,
+                    'mdc-text-field--disabled': typeof disabled == 'undefined' ? false : disabled
+                 }">
+                <input type="text" class="mdc-text-field__input" data-bind="
+                    keepElement: observable,
+                    value: observable() ? observable().format('DD/MM/YYYY') : null,
+                    charsRemaining: charsRemainingOptions,
+                    attr: {
+                       'readonly': typeof readOnly === 'undefined' ? false : readOnly,
+                       'disabled': typeof disabled === 'undefined' ? false : disabled
+                    },
+                    css: {
+                        'busy': typeof busy === 'undefined' ? false : busy
+                    }" />
+                <div class="mdc-notched-outline">
+                    <div class="mdc-notched-outline__leading"></div>
+                    <div class="mdc-notched-outline__notch">
+                        <label for="input" class="mdc-floating-label">
+                            <span data-bind="text: label"></span>
+                        </label>
+                    </div>
+                    <div class="mdc-notched-outline__trailing"></div>
+                </div>
+                <!-- ko if: typeof showClear != 'undefined' && showClear && typeof clearFunction === 'function' -->
+                <div class="close pull-right" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
+                    &times;
+                </div>
+                <!-- /ko -->
+            </div>
+        </div>
+    </script>
+
+    <script id="tempus-dominus-datetimepicker-template" type="text/html">
+        <div class="mdc-validating-field" data-bind="visible: $data.hasOwnProperty('visible') ? $data.visible : true">
+            <div class="mdc-text-field mdc-text-field--outlined" data-bind="
+                 mdcTextFieldComponent: {
+                    boundTo: observable,
+                    useNativeValidation: useNativeValidation
+                 },
+                 validationOptions: {
+                    insertMessages: insertValidationMessages,
+                    decorateInputElement: decorateInputElement
+                 },
+                 css: {
+                    'busy': typeof busy === 'undefined' ? false : busy,
+                    'mdc-text-field--disabled': typeof disabled == 'undefined' ? false : disabled
+                 }">
+                <input type="text" class="mdc-text-field__input" data-bind="
+                    tempusDominus: observable,
+                    dateTimePickerOptions: dateTimePickerOptions,
+                    keepElement: observable,
+                    value: displayObservable,
+                    attr: {
+                       'readonly': typeof readOnly === 'undefined' ? false : readOnly,
+                       'disabled': typeof disabled === 'undefined' ? false : disabled
+                    },
+                    css: {
+                        'busy': typeof busy === 'undefined' ? false : busy
+                    }" />
+                <div class="mdc-notched-outline">
+                    <div class="mdc-notched-outline__leading"></div>
+                    <div class="mdc-notched-outline__notch">
+                        <label for="input" class="mdc-floating-label">
+                            <span data-bind="text: label"></span>
+                        </label>
+                    </div>
+                    <div class="mdc-notched-outline__trailing"></div>
+                </div>
+                <div class="controls">
+                    <!-- ko if: revertable -->
+                    <div class="close revert" data-bind="click: revertFunction">
+                        <i class="material-icons">
+                            replay
+                        </i>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: clearable -->
+                    <div class="close clear" data-bind="click: clearFunction">
+                        &times;
+                    </div>
+                    <!-- /ko -->
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script id="code-mirror-component-template" type="text/html">
+        <div class="code-mirror" data-bind="codeMirror: observable, codeMirrorSettings: codeMirrorSettings"></div>
+    </script>
+
+    <script id="mdc-address-search-component" type="text/html">
+        <div class="mdc-address-searcher">
+            <div class="input-group" data-bind="keepElement: pcaLookup.inputGroup">
+                <div class="input-group-btn">
+                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: countryDropDownList }, style: { width: countryDropDownList.width }"></div>
+                </div>
+                <div data-bind="component: { name: 'mdc-text-field-pca-list-component', params: pcaLookup }"></div>
+            </div>
+            <div class="pca-search-results-list list-group" data-bind="keepElement: pcaLookup.searchResultsList, foreach: pcaLookup.searchResultsList" style="min-height: 41px;">
+                <!-- ko if: $index() == 0 -->
+                <div class="blocker" data-bind="visible: $parent.pcaLookup.observable.busy()">
+                    <div class="loading-spinner"></div>
+                </div>
+                <!-- /ko -->
+                <a class="list-group-item" data-bind="click: $component.pcaLookup.itemSelect, attr: { href: 'javascript:;' }, class: type">
+                    <span data-bind="text: label"></span>
+                    <!-- ko if: type == 'Mertex' && obj.DeliveryReference != 'C' -->
+                    <span class="material-icons" data-bind="click: function (data, event) { event.stopPropagation(); $parent.deleteTradeAccountAddressCleanseRecord(data); }">
+                        delete_forever
+                    </span>
+                    <!-- /ko -->
+                </a>
+            </div>
+            @*<!-- ko if: pcaLookup.searchEndpoint() == mertexEndpoint -->
+                <button class="btn btn-default margin-top-15" data-bind="text: 'The address I want is not listed, search global address database', attr: { href: 'javascript:;' }, click: function () { if (!pcaLookup.busy()) { pcaLookup.searchEndpoint(pcaEndpoint); } }, css: { 'not-allowed disabled-anchor': pcaLookup.busy }"></button>
+                <!-- /ko -->
+                <!-- ko ifnot: isMiscTradeAccount() -->
+                <!-- ko if: pcaLookup.searchEndpoint() == pcaEndpoint -->
+                <button class="btn btn-default margin-top-15" data-bind="text: 'Return to Mertex address book', attr: { href: 'javascript:;' }, click: function () { if (!pcaLookup.busy()) { pcaLookup.searchEndpoint(mertexEndpoint); } }, css: { 'not-allowed disabled-anchor': pcaLookup.busy }"></button>
+                <!-- /ko -->
+                <!-- /ko -->*@
+            <a class="display-block margin-top-15 text-underline" data-bind="text: 'Enter Address Manually', attr: { href: 'javascript:;' }, click: function () { reset(true); addressObject.manual(true); showEditModal(); }"></a>
+        </div>
+        <div class="modal address-edit-modal" data-keyboard="false" data-backdrop="static" data-bind="keepElement: editModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="blocker" data-bind="visible: busy">
+                        <div class="loading-spinner"></div>
+                        <h3 data-bind="text: busyMessage"></h3>
+                    </div>
+                    <div class="modal-header grey-blue">
+                        <h4 class="modal-title">
+                            <span data-bind="text: title"></span>
+                            Address
+                            <span class="text-transparent" data-bind="text: 'Delivery Reference: ' + addressObject.deliveryReference()"></span>
+                        </h4>
+                    </div>
+                    <div class="modal-body" data-bind="with: addressObject">
+                        @* Contact Details section: removed 02/06/2021 - re-added just for Misc Invoice Addresses 23/06/2021 *@
+                        <!-- ko if: $parent.title() == 'Invoice' || $parent.title() == 'Collection' -->
+                        <div class="flex-container">
+                            <div class="address-edit-modal-main">
+                                <h4>
+                                    Contact Details
+                                </h4>
+                                <div data-bind="component: { name: 'mdc-text-field-component', params: email }"></div>
+                                <div data-bind="component: { name: 'mdc-phone-field-component', params: phone }"></div>
+                            </div>
+                            <div>
+                                <div class="alert alert-warning margin-bottom-0">
+                                    Providing a mobile phone number and / or email address will allow the courier to contact the customer
+                                    with important <span data-bind="text: $parent.title().toLowerCase()"></span> information, which in turn will lead to a better <span data-bind="text: $parent.title().toLowerCase()"></span> experience. Please
+                                    encourage all customers to provide these details.
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <!-- /ko -->
+                        <div class="flex-container margin-top-5">
+                            <div class="address-edit-modal-main">
+                                <h4>
+                                    <span data-bind="text: `${$parent.title()} Address`"></span>
+                                    <!-- ko if: deliveryReference() && deliveryReference() != 'C'-->
+                                    <span data-bind="text: `- ${deliveryReference()}`"></span>
+                                    <!-- /ko -->
+                                </h4>
+                                <div data-bind="component: { name: 'mdc-text-field-component', params: name }"></div>
+                                <div data-bind="component: { name: 'mdc-text-field-component', params: companyName }"></div>
+                                <div data-bind="component: { name: 'mdc-text-field-component', params: addressLine1 }"></div>
+                                <div data-bind="component: { name: 'mdc-text-field-component', params: addressLine2 }"></div>
+                                <div data-bind="component: { name: 'mdc-text-field-component', params: town }"></div>
+                                <div data-bind="component: { name: 'mdc-text-field-component', params: county }"></div>
+                                <div data-bind="component: { name: 'mdc-text-field-component', params: postcode }"></div>
+                                <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: countryDropDownList }"></div>
+                            </div>
+                            <div data-bind="css: { 'invoice-suggestion': deliveryReference() == 'C' } ">
+                                <div class="blocker" data-bind="visible: $parent.cleanseBusy()">
+                                    <div class="loading-spinner"></div>
+                                </div>
+                                <!-- ko if: !$parent.cleanseBusy() -->
+                                <!-- ko if: $parent.cleanseResult() -->
+                                <div id="cleanse-address-fields">
+                                    <div data-bind="component: { name: 'mdc-text-field-component', params: {
+                                        label: 'Address Line 1',
+                                        observable: ko.observable($parent.cleanseResult().Address1 || ' '),
+                                        useNativeValidation: false,
+                                        decorateInputElement: false,
+                                        insertValidationMessages: false,
+                                        showClear: false,
+                                        readOnly: true
+                                    }}, css: { 'address-cleanse-highlight': $parent.cleanseResult().Address1 != addressLine1.observable() }"></div>
+                                    <div data-bind="component: { name: 'mdc-text-field-component', params: {
+                                        label: 'Address Line 2',
+                                        observable: ko.observable($parent.cleanseResult().Address2 || ' '),
+                                        useNativeValidation: false,
+                                        decorateInputElement: false,
+                                        insertValidationMessages: false,
+                                        showClear: false,
+                                        readOnly: true
+                                    }}, css: { 'address-cleanse-highlight': $parent.cleanseResult().Address2 != addressLine2.observable() }"></div>
+                                    <div data-bind="component: { name: 'mdc-text-field-component', params: {
+                                        label: 'Town',
+                                        observable: ko.observable($parent.cleanseResult().Locality || ' '),
+                                        useNativeValidation: false,
+                                        decorateInputElement: false,
+                                        insertValidationMessages: false,
+                                        showClear: false,
+                                        readOnly: true
+                                    }}, css: { 'address-cleanse-highlight': $parent.cleanseResult().Locality != town.observable() }"></div>
+                                    <div data-bind="component: { name: 'mdc-text-field-component', params: {
+                                        label: 'County',
+                                        observable: ko.observable($parent.cleanseResult().AdministrativeArea || ' '),
+                                        useNativeValidation: false,
+                                        decorateInputElement: false,
+                                        insertValidationMessages: false,
+                                        showClear: false,
+                                        readOnly: true
+                                    }}, css: { 'address-cleanse-highlight': $parent.cleanseResult().AdministrativeArea != county.observable() }"></div>
+                                    <div data-bind="component: { name: 'mdc-text-field-component', params: {
+                                        label: 'Postcode',
+                                        observable: ko.observable($parent.cleanseResult().PostalCode || ' '),
+                                        useNativeValidation: false,
+                                        decorateInputElement: false,
+                                        insertValidationMessages: false,
+                                        showClear: false,
+                                        readOnly: true
+                                    }}, css: { 'address-cleanse-highlight': $parent.cleanseResult().PostalCode != postcode.observable() }"></div>
+                                </div>
+                                <!-- /ko -->
+                                <!-- /ko -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="alert-wrapper" data-bind="with: addressObject">
+                            <!-- ko if: cleansedAddress() -->
+                            <div class="alert alert-success">
+                                <p>
+                                    This address has been validated by Loqate.
+                                </p>
+                            </div>
+                            <!-- /ko -->
+                            <!-- ko if: deliveryReference() ==  'C' -->
+                            <div class="alert alert-warning">
+                                <p>
+                                    This is the read-only invoice address provided by the customer.
+                                </p>
+                            </div>
+                            <!-- /ko -->
+                            <!-- ko if: deliveryReference() ==  'C' && !$parent.showManualCleanse() && !isValid() -->
+                            <div class="alert alert-danger">
+                                <p class="bold">
+                                    This invoice address is invalid and must be corrected before it can be used.
+                                </p>
+                                <p>
+                                    Please contact Credit Control immediately and request that they correct the invoice address for
+                                    <span data-bind="text: $parentContext.$parent.parent.tradeAccount().Code"></span>.
+                                </p>
+                                <p>
+                                    Once they have corrected the address, please click this button to reload the Address section.
+                                </p>
+                                <button class="btn btn-default margin-top-15" data-bind="click: $parentContext.$parent.refreshAddresses">
+                                    Reload Addresses
+                                </button>
+                            </div>
+                            <!-- /ko -->
+                            <!-- ko if: deliveryReference() != 'C' && havePerformedLoqateSearch() && $parent.cleanseResult() == null && cleansedAddress() == false -->
+                            <div class="alert alert-danger">
+                                <p>
+                                    Loqate did not find any matches for this address.
+                                    <br />
+                                    <br />
+                                    If you are sure it is correct you may proceed, alternatively change part of the address and run the Loqate address check again.
+                                </p>
+                            </div>
+                            <!-- /ko -->
+                            <!-- ko if: deliveryReference() == 'C' && havePerformedLoqateSearch() && $parent.cleanseResult() == null && cleansedAddress() == false -->
+                            <div class="alert alert-danger">
+                                <p>
+                                    Loqate did not find any matches for this address.
+                                    <br />
+                                    <br />
+                                    Please make absolutely sure that this address is correct by contacting the customer directly.
+                                </p>
+                            </div>
+                            <!-- /ko -->
+                            <!-- ko if: $parent.showManualCleanse() -->
+                            <div class="alert alert-warning margin-bottom-25">
+                                <p>
+                                    You have edited this address.
+                                    <br />
+                                    Would you like Loqate to check it for you?
+                                </p>
+                            </div>
+                            <!-- /ko -->
+                        </div>
+                        <!-- ko if: cleanseResult() && addressObject.deliveryReference() != 'C' -->
+                        <div class="alert alert-warning">
+                            <p class="alert-title text-center">
+                                Loqate have checked the address you entered and they recommend making the above changes
+                            </p>
+                        </div>
+                        <!-- /ko -->
+                        <!-- ko if: cleanseResult() && addressObject.deliveryReference() == 'C' -->
+                        <div class="alert alert-warning">
+                            <p class="alert-title text-center">
+                                Loqate have a suggested correction for this customer's invoice address. Credit Control will be notified.
+                            </p>
+                        </div>
+                        <!-- /ko -->
+                        <button class="btn btn-blue pull-left" data-bind="click: closeEditModal">
+                            Cancel
+                        </button>
+                        <!-- ko if: addressObject.deliveryReference() !=  'C' -->
+                        <button class="btn btn-flat pull-left" data-bind="enable: !cleanseBusy(), click: validateAddress">
+                            <span>
+                                Use the above Address
+                            </span>
+                        </button>
+                        <!-- /ko -->
+                        <!-- ko if: showManualCleanse() -->
+                        <button id="perform-manual-cleanse" class="btn btn-green" data-bind="click: function () { attemptAddressCleanse(true); }">
+                            Check Address
+                        </button>
+                        <!-- /ko -->
+                        <!-- ko if: cleanseResult() && !addressObject.cleansedAddress() && addressObject.deliveryReference() != 'C' -->
+                        <button id="accept-cleanse-address" class="btn btn-green" data-bind="disable: cleanseResultAccepted, click: function () { loadFromLoqateCleanse(cleanseResult()); validateAddress(); }">
+                            Apply Recommended Changes
+                        </button>
+                        <!-- /ko -->
+                        <!-- ko if: addressObject.cleansedAddress() || addressObject.deliveryReference() ==  'C' -->
+                        <button class="btn btn-green" data-bind="enable: !cleanseBusy(), click: validateAddress">
+                            <span data-bind="text: `${verb()} this Address`"></span>
+                        </button>
+                        <!-- /ko -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script id="matrix-loading-template" type="text/html">
+        <div class="matrix-loading-wrapper" data-bind="fadeVisible: matrixLoaderParams.visible">
+            <div class="matrix-loading-wrapper-inner">
+                <canvas data-bind="matrixLoader: matrixLoaderParams"></canvas>
+                <canvas>Canvas is not supported in your browser.</canvas>
+                <!-- ko if: busyMessage() -->
+                <h3 data-bind="html: busyMessage().replace(/\n/g, '<br/>')"></h3>
+                <!-- /ko -->
+            </div>
+        </div>
+    </script>
+
+    <script id="emailer-component-template" type="text/html">
+        <div class="emailer-wrapper flex-container margin-bottom-15">
+            <div data-bind="component: { name: 'mdc-text-field-component', params: toParams }"></div>
+            <button class="btn btn-success" data-bind="html: sendLabel, click: send"></button>
+        </div>
+        <div class="margin-bottom-15" data-bind="component: { name: 'mdc-text-field-component', params: subjectParams }"></div>
+        <div class="margin-bottom-15" data-bind="component: { name: 'mdc-text-field-component', params: replyToParams }"></div>
+        <div class="margin-bottom-15" data-bind="component: { name: 'mdc-text-area-component', params: bodyParams }"></div>
+        <div class="send-success text-success margin-bottom-15" style="display: none; font-size: 14px;" data-bind="fadeVisible: showLastSentTo, fadeSpeed: 'slow', html: 'Sent successfully to: ' + sentTo() + ' &#x2714;'"></div>
+    </script>
+
+    <script id="hidden-field-component-template" type="text/html">
+        <input type="hidden" data-bind="value: observable">
+    </script>
+
+    <div id="tick-to-confirm-modal" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header grey-blue">
+                    <h4 id="tick-to-confirm-modal-title" class="modal-title"></h4>
+                </div>
+                <div id="tick-to-confirm-modal-body" class="modal-body">
+                    @*<div data-bind="component: { name: 'mdc-checkbox-component', params: acknowledgeParams }"></div>*@
+                </div>
+                <div id="tick-to-confirm-modal-footer" class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/html" id="file-upload-template">
+        <div class="file-picker" data-bind="keepElement: observable">
+            <div class="blocker" data-bind="flexVisible: busy, toggleOpacity: busy">
+                <div class="loading-spinner"></div>
+                <h3>
+                    Please Wait...
+                </h3>
+            </div>
+            <h4>
+                File Upload
+            </h4>
+            <form class="file-upload-form" data-bind="keepElement: observable">
+                <input type="hidden" name="destination" data-bind="value: destination" />
+                <div class="file-wrapper" data-bind="keepElement: fileFullPath">
+                    <!-- ko if: fileFullPath() -->
+                    <div class="d-flex align-items-center gap-2">
+                        <a class="file-placeholder" data-bind="attr: { href: fileFullPath, target: '_blank' },text: fileFullPath" />
+                        <button type="button" class="btn-close" aria-label="Close" data-bind="click: clearFile"></button>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko ifnot: fileFullPath() -->
+                    <h5 class="mb-0 py-3">
+                        No File
+                    </h5>
+                    <!-- /ko -->
+                </div>
+                <label class="form-label" data-bind="attr: { 'for': `${fieldId}-file-upload` }">
+                    Select a File
+                    <!-- ko if: accept -->
+                    (<span data-bind="html: accept"></span>)
+                    <!-- /ko -->
+                </label>
+                <input class="form-control mb-3" name="image" type="file" data-bind="
+                    value: fileName,
+                    keepElement: fileName,
+                    attr: {
+                        'id': `${fieldId}-file-upload`,
+                        'accept': accept
+                    }">
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary" data-bind="click: upload">
+                        Upload
+                    </button>
+                </div>
+            </form>
+        </div>
+    </script>
+
+    @Scripts.Render("~/bundles/js/bootstrap-5.3.1")
+
+    @Scripts.Render("~/bundles/js/knockout")
+
+    @Html.Partial("Components/_GenericFormsTemplates")
+
+    @Html.Partial("Components/_DropDownComponent")
+
+    @Html.Partial("Components/_DropDownComponentNew")
+
+    @Html.Partial("Components/_MultiSelectComponent")
+
+    @Html.Partial("Components/_SlicerComponent")
+
+    @Html.Partial("Components/_TaggingComponent")
+
+    @RenderSection("components", required: false)
+
+    <script type="text/javascript">
+        var sendTARFComponentViewModel = function (params) {
+            var self = this;
+
+            self.sendEmailBusy = ko.observable(false);
+
+            self.lastSentTo = ko.observable();
+            self.showLastSentTo = ko.observable(false);
+
+            self.validateNow = ko.observable(false);
+
+            self.country = ko.observable(81).extend({
+                required: {
+                    params: true,
+                    onlyIf: function () {
+                        return self.validateNow()
+                    },
+                    message: ' '
+                }
+            });
+
+            self.language = ko.observable(1).extend({
+                required: {
+                    params: true,
+                    onlyIf: function () {
+                        return self.validateNow()
+                    },
+                    message: ' '
+                }
+            });
+
+            self.language.subscribe(function (newValue) {
+                //console.log('language subscribe hit', newValue);
+            });
+
+            self.countryWidget = ko.observable();
+            self.languageWidget = ko.observable();
+
+            self.countryDropDownSettings = {
+                dataValueField: 'CountryID',
+                dataTextField: 'Name',
+                widget: self.countryWidget,
+                data: new kendo.data.DataSource({
+                    serverFiltering: true,
+                    serverSorting: true,
+                    serverGrouping: true,
+                    schema: $.extend({}, kendo.data.schemas.webapi, {
+                        data: "Data",
+                        total: "Total",
+                        filters: "Filters",
+                        aggregates: "Aggregates",
+                        errors: "Errors",
+                        model: {
+                            id: 'CountryID',
+                            fields: {
+                                CountryID: { type: 'number' },
+                                Name: { type: 'string' }
+                            }
+                        }
+                    }),
+                    transport: {
+                        read: function (options) {
+
+                            var webapi = new kendo.data.transports.webapi({ prefix: "" });
+                            var mapped = webapi.parameterMap(options.data);
+
+                            var data = {};
+
+                            for (var propertyName in mapped) {
+                                data[propertyName] = mapped[propertyName];
+                            }
+
+                            $.ajax({
+                                url: '/api/ComponentAPI/GetCountries',
+                                type: "GET",
+                                data: data,
+                                success: function (data) {
+                                    options.success(data);
+                                },
+                                error: function (data) {
+                                    options.error();
+                                }
+                            });
+                        }
+                    }
+                }),
+                valuePrimitive: true,
+                value: self.country,
+                //dataItem: self.country,
+                autoWidth: false,
+                autoBind: false,
+                optionLabel: 'Please select',
+                filter: 'startswith'
+            };
+
+            self.languageDropDownSettings = {
+                dataValueField: 'Language.LanguageID',
+                dataTextField: 'Language.Name',
+                widget: self.languageWidget,
+                cascadeFrom: 'tarf-country',// self.countryWidget,
+                cascadeFromField: 'Country.ProxyCountryID',
+                data: new kendo.data.DataSource({
+                    serverFiltering: true,
+                    serverSorting: true,
+                    serverGrouping: true,
+                    schema: $.extend({}, kendo.data.schemas.webapi, {
+                        data: "Data",
+                        total: "Total",
+                        filters: "Filters",
+                        aggregates: "Aggregates",
+                        errors: "Errors",
+                        model: {
+                            id: 'LanguageID',
+                            fields: {
+                                LanguageID: { type: 'number' },
+                                Name: { type: 'string' }
+                            }
+                        },
+                    }),
+                    transport: {
+                        read: function (options) {
+                            var webapi = new kendo.data.transports.webapi({ prefix: "" });
+                            var mapped = webapi.parameterMap(options.data);
+
+                            var data = {};
+
+                            for (var propertyName in mapped) {
+                                data[propertyName] = mapped[propertyName];
+                            }
+
+                            $.ajax({
+                                url: '/api/ComponentAPI/GetLanguages',
+                                type: "GET",
+                                data: data,
+                                success: function (data) {
+                                    //console.log('GetLanguages returned', data);
+                                    options.success(data);
+                                },
+                                error: function (data) {
+                                    options.error();
+                                }
+                            });
+                        }
+                    }
+                }),
+                valuePrimitive: true,
+                //dataItem: self.language,
+                autoWidth: false,
+                autoBind: false,
+                optionLabel: 'Please select',
+                value: self.language,
+                dataBound: function (e) {
+                    var ds = this.dataSource.data();
+                    if (ds.length == 1) {
+                        this.select(1);
+                    } else {
+                        this.select('');
+                    }
+                    this.trigger('change');
+                }
+            };
+
+            self.name = ko.observable().extend({
+                maxLength: 50,
+                charsRemaining: {
+                    maxLength: 50,
+                    onlyIf: function () {
+                        return self.validateNow()
+                    },
+                    elementId: '.tarf-name'
+                },
+                required: {
+                    params: true,
+                    message: 'Please provide a name'
+                }
+            });
+
+            self.phone = ko.observable().extend({
+                maxLength: 20,
+                charsRemaining: {
+                    maxLength: 20,
+                    onlyIf: function () {
+                        return self.validateNow()
+                    },
+                    elementId: '.tarf-phone'
+                }
+            });
+
+            self.email = ko.observable().extend({
+                required: {
+                    params: true,
+                    onlyIf: function () {
+                        return self.validateNow()
+                    },
+                    message: 'Please provide a valid email address'
+                },
+                maxLength: 256,
+                email: {
+                    params: true,
+                    onlyIf: function () {
+                        return self.validateNow()
+                    },
+                    message: 'Invalid email format'
+                },
+                charsRemaining: {
+                    maxLength: 256,
+                    elementId: '.tarf-email'
+                }
+            });
+
+            self.immediateOrderRequested = ko.observable(false);
+
+            self.errors = ko.validation.group([
+                self.email,
+                self.name,
+                self.country,
+                self.language
+            ]);
+
+            self.sendEmail = function () {
+                self.validateNow(true);
+                if (self.errors().length) {
+                    self.errors.showAllMessages(true);
+                    return;
+                } else {
+                    self.sendEmailBusy(true);
+
+                    $.ajax({
+                        url: '/component/sendTradeAccountRequestFormEmail',
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            email: self.email(),
+                            name: self.name(),
+                            phone: self.phone(),
+                            immediateOrderRequested: self.immediateOrderRequested(),
+                            countryId: self.country(),
+                            languageId: self.language()
+                        },
+                        success: function (data) {
+                            self.validateNow(false);
+                            window.setTimeout(function () {
+                                self.sendEmailBusy(false);
+                                self.lastSentTo(self.email());
+                                self.email(undefined);
+                                self.name(undefined);
+                                self.phone(undefined);
+                                self.immediateOrderRequested(false);
+                                self.showLastSentTo(true);
+                                self.countryWidget().value(81);
+                                self.languageWidget().value(1);
+                                window.setTimeout(function () {
+                                    self.errors.showAllMessages(false);
+                                }, 0);
+                                window.setTimeout(function () {
+                                    self.showLastSentTo(false);
+                                }, 5000);
+                            }, 400);
+                            if (typeof viewModel === 'object') {
+                                if (viewModel.hasOwnProperty('leadSearch')) {
+                                    viewModel.leadSearch.dashboardSelect();
+                                    viewModel.leadSearch.resultGridWidget().dataSource.read();
+                                }
+                            }
+                        },
+                        error: function (xhr, textStatus, errorThrown) {
+                            self.validateNow(false);
+                            self.sendEmailBusy(false);
+                            $.showError(xhr, textStatus, errorThrown);
+                        }
+                    });
+                }
+            }
+
+            self.attachValidation = function () {
+                //console.log('tarfComponent: attaching validation...');
+
+                self.countryWidget().value(81);
+
+                self.countryWidget().wrapper.children().first().attr('data-bind', 'validationCore: country');
+                self.languageWidget().wrapper.children().first().attr('data-bind', 'validationCore: language');
+                // calling cleanNode on this element has the unfortunate side effect of preventing some of kendo's
+                // functionality: name .k-state-hover does not get applied to the .k-dropdown-wrap.k-state-default
+                // span. Fortunately I don't actually need to call cleanNode on it; it's injected by kendo's library
+                // and hasn't yet been tickled by knockout! woop!
+                ko.applyBindings(self, self.countryWidget().wrapper.children().first()[0]);
+                ko.applyBindings(self, self.languageWidget().wrapper.children().first()[0]);
+            }
+        };
+
+        function webapiCredViewModel() {
+            var self = this;
+
+            self.email = ko.observable().extend({
+                maxLength: 256,
+                email: {
+                    params: true,
+                    message: 'Invalid email format'
+                }
+                //,
+                //charsRemaining: {
+                //    maxLength: 256,
+                //    elementId: '#webapi-email'
+                //}
+            });
+
+            self.password = ko.observable().extend({
+                required: {
+                    params: true,
+                    message: 'Incorrect email / password combination.'
+                }
+            });
+
+            self.errorGroup = ko.validation.group([
+                self.email,
+                self.pass
+            ]);
+
+            self.authBusy = ko.observable(false);
+
+            self.performAuth = function () {
+
+                self.authBusy(true);
+
+                if (self.errorGroup.length > 0) {
+                    self.errorGroup.showAllMessages(true);
+                    return;
+                } else {
+                    self.errorGroup.showAllMessages(false);
+
+                    $.ajax({
+                        url: '/token',
+                        type: 'POST',
+                        contentType: 'application/x-www-form-urlencoded',
+                        data: {
+                            grant_type: 'password',
+                            username: self.email(),
+                            password: self.password()
+                        },
+                        async: false,
+                        success: function (data) {
+                            self.authBusy(false);
+                            console.log(data);
+                            localStorage.BearerToken = data.access_token;
+                            console.log('bearer token granted');
+                            //if (window.lastAjaxCall) {
+                            //    $.ajax(window.lastAjaxCall);
+                            //    delete window.lastAjaxCall;
+                            //}
+
+                            // 26/10/2018 - abandon repeat ajax calling; just reload the page.
+                            //window.slicerCalls.forEach(function (settings) {
+                            //    $.ajax(settings);
+                            //});
+                            //window.slicerCalls = [];
+                            window.location.reload(true);
+                            $("#credentials-modal").modal('hide');
+
+                        },
+                        error: function (xhr, textStatus, errorThrown) {
+                            self.authBusy(false);
+                            self.password(null);
+                            if (xhr.hasOwnProperty('responseJSON')) {
+                                window.setTimeout(function () {
+                                    self.password.setError(xhr.responseJSON.error_description);
+                                });
+                            }
+                            console.log('bearer token was refused: bad authentication')
+                        }
+                    });
+                }
+            }
+        }
+
+        var alertingComponentViewModel = function () {
+            var self = this;
+
+            self.alerts = ko.observableArray([]);
+
+            self.taskHref = function () {
+                if (typeof viewModel !== 'undefined') {
+                    if (viewModel.hasOwnProperty('taskGridWidget')) {
+                        return '#';
+                    } else {
+                        return '/tasks'
+                    }
+                }
+            }
+
+            self.unreadTasks = ko.pureComputed(function () {
+                return ko.utils.arrayFilter(self.alerts(), function (item) {
+                    return item.alertType == 1 && item.unread()
+                });
+            }, self);
+
+            self.generateTaskHref = function (task) {
+                if (typeof viewModel !== 'undefined') {
+                    if (viewModel.hasOwnProperty('taskGridWidget')) {
+                        return 'javascript:;'
+                    }
+                }
+
+                return '/tasks?i=' + task.id;
+            }
+
+            self.unreadTaskClick = function (task, event) {
+                if (typeof viewModel !== 'undefined') {
+                    if (viewModel.hasOwnProperty('taskGridWidget')) {
+                        viewModel.taskEdit.load(task.data);
+                        self.alerts.remove(task);
+                        //event.stopImmediatePropagation();
+                        //event.preventDefault();
+                        //event.stopPropagation();
+                        //return true;
+                    }
+                }
+
+                event.stopPropagation();
+                return true;
+            }
+
+            self.chasedTasks = ko.pureComputed(function () {
+                return ko.utils.arrayFilter(self.alerts(), function (item) {
+                    return item.alertType == 2 && item.unread();
+                });
+            });
+
+            self.commentedTasks = ko.pureComputed(function () {
+                return ko.utils.arrayFilter(self.alerts(), function (item) {
+                    return item.alertType == 3 && item.unread();
+                });
+            })
+
+            self.completedTasks = ko.pureComputed(function () {
+                return ko.utils.arrayFilter(self.alerts(), function (item) {
+                    return item.alertType == 4 && item.unread();
+                });
+            })
+
+            self.expectedDeliveryChangedTasks = ko.pureComputed(function () {
+                return ko.utils.arrayFilter(self.alerts(), function (item) {
+                    return item.alertType == 5 && item.unread();
+                });
+            })
+
+            self.hideAlerting = function () {
+                $("#alerting-target").stop(true, false).slideUp();//stop(true, false).slideUp();
+                //$("#alerting-target").stop(true, false).animate({
+                //    left: -300,
+                //    top: -350
+                //}, 500);
+            }
+
+            $('body').on('click', function (ev, ui) {
+                self.hideAlerting();
+            });
+
+            self.toggleAlerts = function (ev) {
+                $("#alerting-display .fa-bell").removeClass('bell-ringing');
+                $("#alerting-target").slideToggle();
+                ev.stopPropagation();
+                return true;
+            }
+
+            self.displayAlerts = function () {
+                $("#alerting-target").show();//.stop(true, false).slideDown();
+                //$('#alerting-target').stop(true, false).animate({
+                //    left: 0,
+                //    top: 0
+                //}, 400);
+            }
+
+            self.clearAllAlerts = function () {
+                self.alerts().forEach(function (item) {
+                    item.unread(false);
+                });
+            }
+
+            self.clearNotifications = function () {
+                self.alerts([]);
+            }
+
+            self.receiveAlert = function (alert) {
+                console.log(alert.message);
+                switch (alert.alertType) {
+                    case 1:
+                        //if (typeof viewModel !== 'undefined') {
+                        //    if (viewModel.hasOwnProperty('taskGridWidget'))
+                        //        if (viewModel.taskGridWidget())
+                        //            viewModel.taskGridWidget().dataSource.read();
+                        //}
+                        break;
+                    default:
+                        break;
+                }
+                self.alerts.push({ id: alert.Id, alertType: alert.alertType, message: alert.message, source: alert.source, unread: ko.observable(true), data: alert.data });
+
+                $("#alerting-display .fa-bell").addClass('bell-ringing');
+            }
+
+            self.anyUnreadAlerts = ko.pureComputed(function () {
+                return ko.utils.arrayFilter(self.alerts(), function (item) {
+                    return item.unread() == true;
+                }).length;
+            }, self);
+
+            self.setAlerts = function (incomingAlerts) {
+                //console.log('alertingComponent: received alerts', incomingAlerts);
+                var refreshTasks = false;
+                var alerts = [];
+                incomingAlerts.forEach(function (alert) {
+                    switch (alert.alertType) {
+                        case 1:
+                        case 2:
+                            refreshTasks = true;
+                            break;
+                    }
+                    alerts.push({ id: alert.id, alertType: alert.alertType, message: alert.message, source: alert.source, unread: ko.observable(true), data: alert.data });
+                });
+                var countBefore = self.alerts().length;
+                self.alerts(alerts);
+                var countAfter = self.alerts().length;
+                if (countBefore < countAfter) {
+                    $("#alerting-display .fa-bell").addClass('bell-ringing');
+                    refreshTasks = true;
+                } else {
+                    refreshTasks = false;
+                }
+                // this logic doesn't hold... we want to refresh Tasks grid when we KNOW that we have differing IDs
+                // on either unread or chased
+                // so... sum the IDs?
+
+                if (refreshTasks) {
+                    if (typeof viewModel !== 'undefined') {
+                        if (viewModel.hasOwnProperty('taskGridWidget'))
+                            if (viewModel.taskGridWidget())
+                                viewModel.taskGridWidget().dataSource.read();
+                    }
+                }
+            }
+
+            self.taskAlertHub = $.connection.taskAlertHub;
+
+            self.taskAlertHub.client.receiveAlert = self.receiveAlert;
+            self.taskAlertHub.client.setAlerts = self.setAlerts;
+
+            self.readAlert = function (alertId) {
+                self.taskAlertHub.server.readAlert(alertId);
+            }
+
+            self.fetchInterval = null;
+
+            self.taskAlertHub.connection.start().done(function () {
+                self.taskAlertHub.server.fetchAlerts();
+                self.fetchInterval = setInterval(function () {
+                    if (self.taskAlertHub.connection.state === $.signalR.connectionState.connected) {
+                        self.taskAlertHub.server.fetchAlerts();
+                    } else {
+                        console.log('alertingComponent: did not fetchAlerts because hub was disconnected');
+                    }
+                }, 30000);
+            });
+        };
+
+        // Load exchange rates data via AJAX:
+        $.getJSON(
+            // 'https://openexchangerates.org/api/latest.json?app_id=3a6d0da0d3d446d3b6e2f73bfc7dfc94',
+            // Here's just another example of turning to an absolute insane system in order to retrieve bad data,
+            // rather than using sensible data. Hooray, Mertex.
+            '/Component/GetExchangeRates',
+            function (data) {
+                // Mertex is so insane that the codes for SEK, DKK and NOK are SKR, DKR and NKR respectively
+                $.extend(data.rates, {
+                    SEK: data.rates.SKR,
+                    DKK: data.rates.DKR,
+                    NOK: data.rates.NKR
+                })
+                // Check money.js has finished loading:
+                if (typeof fx !== "undefined" && fx.rates) {
+                    fx.rates = data.rates;
+                    fx.base = data.base;
+                } else {
+                    // If not, apply to fxSetup global:
+                    var fxSetup = {
+                        rates: data.rates,
+                        base: data.base
+                    }
+                }
+            }
+        );
+
+        var sterlingConversionViewModel = function (params) {
+            var self = this;
+            params.widget(self);
+
+            self.currency = params.currency || ko.observable();
+            self.gbpCurrency = { Name: 'Sterling', Code: 'GBP', FormattingCulture: 'en-GB' };
+            self.controlClass = params.controlClass;
+            self.placeholder = ko.observable(params.placeholder);
+            self.originalPlaceholder = params.placeholder;
+            self.currencies = ko.observableArray([]);
+
+            self.currency.subscribe(function (newValue) {
+                if (newValue) {
+                    self.placeholder(undefined);
+                    setTimeout(function () {
+                        $(self.value.DOMElement).focus();
+                    }, 0);
+                } else {
+                    self.placeholder(self.originalPlaceholder);
+                }
+            });
+
+            if (self.currency()) {
+                self.placeholder(undefined);
+                setTimeout(function () {
+                    $(self.value.DOMElement).focus();
+                }, 0);
+            }
+
+            $.getJSON('/api/ComponentAPI/GetCurrencies', function (data) {
+                self.currencies(data);
+            });
+
+            self.value = params.value.extend({
+                numberFormatted: {
+                    digits: 2,
+                    currency: self.gbpCurrency
+                }
+            });
+
+            self.conversion = ko.pureComputed({
+                read: function () {
+                    if (ko.unwrap(self.currency)) {
+                        if (ko.unwrap(self.currency).Code != 'GBP') {
+                            var result = fx.convert(self.value() ? self.value() : 0, { from: ko.unwrap(self.currency).ISO_4217, to: 'GBP' });
+                            if (result)
+                                return result.toFixed(0);
+                            else
+                                return null;
+                        }
+                    }
+                    return null;
+                }
+            }, self).extend({
+                currencyFormatted: {
+                    digits: 0,
+                    currency: self.gbpCurrency
+                }
+            });
+        }
+
+        var basketLockViewModel = function (params) {
+            var self = this;
+
+            self.mode = ko.observable('dormant'); // dormant, sendingTakeover, receivingTakeover
+
+            self.busy = ko.observable(true);
+
+            self.message = ko.observable();
+
+            self.secondsRemaining = ko.observable(30);
+
+            self.takeoverSecondsRemaining = ko.observable(30);
+
+            self.busyMessage = ko.pureComputed(function () {
+                if (self.takeoverSecondsRemaining() > 0)
+                    return 'Please wait ' + self.takeoverSecondsRemaining() + ' seconds';
+                else
+                    return 'Working...';
+            }, self);
+
+            // this is set by the init function
+            self.parentBusyMessage = ko.observable();
+
+            self.basket = ko.observable();
+
+            self.notifyUserId = ko.observable();
+
+            self.show = function () {
+                $('#basket-lock-modal').modal('show');
+                if (self.memberBasketFetcher.hasOwnProperty('busy'))
+                    self.memberBasketFetcher.busy(false);
+            }
+
+            self.hide = function () {
+                $('#basket-lock-modal').modal('hide');
+                if (self.memberBasketFetcher.hasOwnProperty('busy'))
+                    self.memberBasketFetcher.busy(false);
+            }
+
+            self.takingOver = null;
+
+            self.relinquishBasket = function () {
+                console.log('basketLockViewModel relinquishBasket calling with', { basketId: self.basket().BasketID, notifyUserId: self.notifyUserId() });
+                self.basketLockHub.server.relinquishBasket(self.basket().BasketID, self.notifyUserId()).always(function () {
+                    self.reset();
+                    self.resetOrderFactory();
+                    $('#order-products-modal').modal('hide');
+                });
+            }
+
+            self.refuseTakeover = function () {
+                console.log('basketLockViewModel refuseTakeover hit', { notifyUserId: self.notifyUserId, basketId: self.basket().BasketID });
+                self.basketLockHub.server.refuseTakeover(self.notifyUserId(), self.basket().BasketID);
+                self.hide();
+                self.mode('dormant');
+                self.busy(false);
+                self.secondsRemaining(30);
+                self.message(undefined);
+                self.notifyUserId(undefined);
+
+                window.clearInterval(self.responseInterval);
+            }
+
+            self.receiveOrderProductsGridViewRefresh = function () {
+                console.log('basketLockViewModel receiveOrderProductsGridViewRefresh hit');
+                if (self.memberBasketFetcher) {
+                    if (self.memberBasketFetcher.resultGridWidget()) {
+                        self.memberBasketFetcher.resultGridWidget().dataSource.read();
+                    }
+                    if (self.memberBasketFetcher.importResultGridWidget()) {
+                        self.memberBasketFetcher.importResultGridWidget().dataSource.read();
+                    }
+                }
+            }
+
+            self.receiveRefresh = function () {
+                window.location.reload();
+            }
+
+            self.sendTakeover = function () {
+                self.busy(true);
+
+                self.mode('sendingTakeover');
+
+                console.log('basketLockViewModel sendTakeover hit', self.basket().BasketID);
+
+                // because there's potentially no client to receive the takeover request, we in some cases have to force a quick steal.
+                // how can I find out whether or not there was actually a recipient...?
+                // that's messy, SignalR demands that we track users ourselves...
+                self.basketLockHub.server.sendTakeover(getUserId(), self.basket().BasketID).always(function () {
+                    self.takeoverSecondsRemaining(30);
+
+                    window.clearInterval(self.takeoverInterval);
+
+                    self.takeoverInterval = setInterval(function () {
+                        self.takeoverSecondsRemaining(self.takeoverSecondsRemaining() - 1);
+                    }, 1000);
+
+                    window.clearTimeout(self.takingOver);
+
+                    self.takingOver = window.setTimeout(function () {
+                        // fahq...
+                        self.unlockBasket(function () {
+                            self.busy(false);
+                            self.hide();
+                            self.showOrderFactory();
+                        });
+                    }, 30000);
+                });
+            }
+
+            self.changeDevice = function () {
+                self.takeoverSecondsRemaining(-1);
+                self.busy(true);
+
+                self.id = new Date().getTime();
+
+                self.basketLockHub.server.sendDeviceChange(getUserId(), self.basket().BasketID, self.id);
+            }
+
+            self.receiveDeviceChange = function (params) {
+                if (self.hasOwnProperty('id')) {
+                    if (self.id == params.id) {
+                        //self.busy(false);
+                        self.showOrderFactory();
+                        return;
+                    }
+                }
+
+                //self.busy(false);
+                self.reset();
+                self.resetOrderFactory();
+                $('#order-products-modal').modal('hide');
+                $('#order-processing-modal').modal('hide');
+                $('#allocation-warning-modal').modal('hide');
+            }
+
+            // placeholder; will be overridden in init function
+            self.memberBasketFetcher = null;
+
+            // placeholder; will be overridden in init function
+            self.showNewBasket = function () { }
+
+            // placeholder; will be overridden in init function
+            self.showOrderFactory = function () { }
+
+            // placeholder; will be overridden in init function
+            self.hideOrderFactory = function () { }
+
+            // placeholder; will be overridden in init function
+            self.resetOrderFactory = function () { }
+
+            self.unlockAndRelinquishBasket = function (complete) {
+                if (self.basket()) {
+                    console.log('basketLockViewModel unlockAndRelinquishBasket calling with', self.basket().BasketID);
+                    if (self.basketLockHub.connection.state === 1) {
+                        self.basketLockHub.server.unlockAndRelinquishBasket(self.basket().BasketID).done(function () {
+                            if (typeof complete === 'function')
+                                complete();
+                        });
+                    } else if (self.basketLockHub.connection.state === 4) {
+                        self.basketLockHub.connection.start().done(function () {
+                            self.basketLockHub.server.unlockAndRelinquishBasket(self.basket().BasketID).done(function () {
+                                if (typeof complete === 'function')
+                                    complete();
+                            });
+                        });
+                    } else {
+                        $.showError({ responseText: 'Sorry, your basketLockHub is in an unexpected state: ' + self.basketLockHub.connection.state + '. Please report this to <a href="mailto:itsupport@designersguild.com">itsupport@designersguild.com</a>. Refreshing the page should correct this error.' }, 'Error')
+                    }
+                }
+            }
+
+            self.unlockBasket = function (complete) {
+                if (self.basket()) {
+                    console.log('basketLockViewModel unlockBasket calling with', self.basket().BasketID);
+                    if (self.basketLockHub.connection.state === 1) {
+                        self.basketLockHub.server.unlockBasket(self.basket().BasketID).done(function () {
+                            if (typeof complete === 'function')
+                                complete();
+                        });
+                    } else if (self.basketLockHub.connection.state === 4) {
+                        self.basketLockHub.connection.start().done(function () {
+                            self.basketLockHub.server.unlockBasket(self.basket().BasketID).done(function () {
+                                if (typeof complete === 'function')
+                                    complete();
+                            });
+                        });
+                    } else {
+                        $.showError({ responseText: 'Sorry, your basketLockHub is in an unexpected state: ' + self.basketLockHub.connection.state + '. Please report this to <a href="mailto:itsupport@designersguild.com">itsupport@designersguild.com</a>. Refreshing the page should correct this error.' }, 'Error')
+                    }
+                }
+            }
+
+            self.receiveTakeoverRequest = function (params) {
+                console.log('basketLockViewModel receiveTakeover hit', params)
+
+                self.message(params.message);
+                self.notifyUserId(params.fromUserId);
+                self.mode('receivingTakeover');
+
+                $("#basket-lock-modal").modal('show');
+
+                self.secondsRemaining(30);
+                self.responseInterval = setInterval(function () {
+                    if (self.secondsRemaining() > 0) {
+                        self.secondsRemaining(self.secondsRemaining() - 1);
+                    } else {
+                        self.relinquishBasket();
+                    }
+                }, 1000);
+            }
+
+            self.receiveTakeoverSuccess = function (params) {
+                console.log('basketLockViewModel receiveTakeoverSuccess hit', params);
+                self.showOrderFactory();
+                self.reset();
+            }
+
+            self.receiveTakeoverRefusal = function (params) {
+                console.log('basketLockViewModel receiveTakeoverRefusal hit', params);
+                window.clearInterval(self.responseInterval);
+                window.clearTimeout(self.takingOver);
+                self.message('Your request to take over Basket ' + params.basketId + ' was refused.');
+                self.mode('takeoverRefused');
+                self.busy(false);
+            }
+
+            self.receiveNewParentBusyMessage = function (message) {
+                console.log('basketLockViewModel receiveNewParentBusyMessage hit', message);
+                if (self.parentBusyMessage() == 'Loading Despatch Options...')
+                    self.parentBusyMessage(`${self.parentBusyMessage()}${message}`);
+            }
+
+            self.basketLockHub = $.connection.basketLockHub;
+
+            self.basketLockHub.client.receiveTakeoverRequest = self.receiveTakeoverRequest;
+            self.basketLockHub.client.receiveTakeoverRefusal = self.receiveTakeoverRefusal;
+            self.basketLockHub.client.receiveTakeoverSuccess = self.receiveTakeoverSuccess;
+            self.basketLockHub.client.receiveDeviceChange = self.receiveDeviceChange;
+            self.basketLockHub.client.receiveNewParentBusyMessage = self.receiveNewParentBusyMessage;
+            self.basketLockHub.client.receiveOrderProductsGridViewRefresh = self.receiveOrderProductsGridViewRefresh;
+
+            self.responseInterval = null;
+            self.takeoverInterval = null;
+
+            self.basketLockHub.connection.start().done(function () {
+                self.busy(false);
+            });
+
+            self.reset = function () {
+                console.log('basketLockViewModel reset called');
+                window.clearInterval(self.responseInterval);
+                window.clearInterval(self.takeoverInterval);
+                window.clearTimeout(self.takingOver);
+                self.busy(false);
+                self.mode('dormant');
+                self.message(undefined);
+                self.basket(undefined);
+                self.notifyUserId(undefined);
+                self.secondsRemaining(30);
+                self.takeoverSecondsRemaining(30);
+                if (self.hasOwnProperty('id'))
+                    self.id = undefined;
+                $("#basket-lock-modal").modal('hide');
+            }
+
+            self.init = function () {
+                if (window.hasOwnProperty('viewModel')) {
+                    if (window.viewModel.hasOwnProperty('orderFactory')) {
+                        viewModel.orderFactory.basketLocker = self;
+                        self.showNewBasket = viewModel.orderFactory.showNewBasket;
+                        self.parentBusyMessage = viewModel.orderFactory.busyMessage;
+                        self.showOrderFactory = function () {
+                            if (self.showOrderFactoryArguments == null) {
+                                self.showOrderFactoryArguments = [self.basket()];
+                            } else {
+                                self.showOrderFactoryArguments.splice(0, 0, self.basket());
+                            }
+                            viewModel.orderFactory.show.apply(this, self.showOrderFactoryArguments)
+                        };
+                        self.resetOrderFactory = viewModel.orderFactory.reset;
+                    }
+                    if (window.viewModel.hasOwnProperty('memberBasketFetcher'))
+                        self.memberBasketFetcher = viewModel.memberBasketFetcher;
+                }
+            }
+
+            $('#basket-lock-modal').on('hide.bs.modal', function () {
+                self.busy(false);
+            });
+        }
+
+        ko.components.register('send-tarf-component', {
+            viewModel: sendTARFComponentViewModel,
+            template: { element: $('#send-tarf-template')[0] }
+        });
+
+        ko.components.register('webapi-auth-component', {
+            viewModel: webapiCredViewModel,
+            template: { element: $('#webapi-auth-template')[0] }
+        });
+
+        ko.components.register('alerting-component', {
+            viewModel: alertingComponentViewModel,
+            template: { element: $('#alerting-component-template')[0] }
+        });
+
+        ko.components.register('sterling-conversion-component', {
+            viewModel: sterlingConversionViewModel,
+            template: { element: $("#sterling-conversion-template")[0] }
+        });
+
+        ko.components.register('basket-lock-component', {
+            viewModel: basketLockViewModel,
+            template: { element: $("#basket-lock-template")[0] }
+        })
+
+        ko.components.register('mdc-text-field-component', {
+            template: { element: document.getElementById('mdc-text-field-component') }
+        });
+
+        ko.components.register('mdc-text-field-component-no-outline', {
+            template: { element: document.getElementById('mdc-text-field-component-no-outline') }
+        });
+
+        ko.components.register('mdc-text-field-numeric-component', {
+            template: { element: document.getElementById('mdc-text-field-numeric-component') }
+        });
+
+        ko.components.register('mdc-text-field-numeric-unformatted-component', {
+            template: { element: document.getElementById('mdc-text-field-numeric-unformatted-component') }
+        });
+
+        ko.components.register('mdc-text-field-numeric-component-no-outline', {
+            template: { element: document.getElementById('mdc-text-field-numeric-component-no-outline') }
+        });
+
+        ko.components.register('mdc-number-field-numeric-component', {
+            template: { element: document.getElementById('mdc-number-field-numeric-component') }
+        });
+
+        ko.components.register('mdc-number-field-numeric-unformatted-component', {
+            template: { element: document.getElementById('mdc-number-field-numeric-unformatted-component') }
+        });
+
+        ko.components.register('mdc-number-field-numeric-component-no-outline', {
+            template: { element: document.getElementById('mdc-number-field-numeric-component-no-outline') }
+        });
+
+        //ko.components.register('mdc-text-field-component-value', {
+        //    template: { element: document.getElementById('mdc-text-field-component-value') }
+        //});
+
+        ko.components.register('mdc-phone-field-component', {
+            template: { element: document.getElementById('mdc-phone-field-component') }
+        });
+
+        ko.components.register('mdc-text-field-autocomplete-component', {
+            template: { element: document.getElementById('mdc-text-field-autocomplete-component') }
+        });
+
+        ko.components.register('mdc-text-field-pca-component', {
+            template: { element: document.getElementById('mdc-text-field-pca-component') }
+        });
+
+        ko.components.register('mdc-text-field-pca-list-component', {
+            template: { element: document.getElementById('mdc-text-field-pca-list-component') }
+        });
+
+        ko.components.register('mdc-kendo-dropdown-component', {
+            template: { element: document.getElementById('mdc-kendo-dropdown-component') }
+        });
+
+        ko.components.register('kendo-mdc-dropdown-component', { // good memory go brrrrr
+            template: { element: document.getElementById('mdc-kendo-dropdown-component') }
+        });
+
+        ko.components.register('mdc-kendo-dropdown-component-no-outline', {
+            template: { element: document.getElementById('mdc-kendo-dropdown-component-no-outline') }
+        });
+
+        ko.components.register('mdc-kendo-multiselect-component', {
+            template: { element: document.getElementById('mdc-kendo-multiselect-component') }
+        });
+
+        ko.components.register('mdc-discounter-component', {
+            template: { element: document.getElementById('mdc-discounter-component') }
+        });
+
+        ko.components.register('mdc-checkbox-component', {
+            template: { element: document.getElementById('mdc-checkbox-component') }
+        });
+
+        ko.components.register('mdc-checkbox-collection-component', {
+            template: { element: document.getElementById('mdc-checkbox-collection-component') }
+        });
+
+        ko.components.register('mdc-select-component', {
+            template: { element: document.getElementById('mdc-select-component') }
+        });
+
+        ko.components.register('mdc-select-component-no-label', {
+            template: { element: document.getElementById('mdc-select-component-no-label') }
+        });
+
+        ko.components.register('mdc-text-area-component', {
+            template: { element: document.getElementById('mdc-text-area-component') }
+        });
+
+        ko.components.register('mdc-date-picker-component', {
+            template: { element: document.getElementById('mdc-kendo-bootstrap-datetimepicker-template') }
+        });
+
+        ko.components.register('mdc-date-time-picker-component', {
+            template: { element: document.getElementById('mdc-kendo-bootstrap-datetimepicker-template') }
+        });
+
+        ko.components.register('tempus-dominus-date-picker-component', {
+            template: { element: document.getElementById('tempus-dominus-datetimepicker-template') }
+        });
+
+        ko.components.register('bootstrap-button-group', {
+            template: { element: document.getElementById('bootstrap-button-group-template') }
+        });
+
+        ko.components.register('matrix-loading-component', {
+            template: { element: document.getElementById('matrix-loading-template') }
+        });
+
+        ko.components.register('mdc-address-search-component', {
+            template: { element: document.getElementById('mdc-address-search-component') }
+        })
+
+        ko.components.register('emailer-component', {
+            template: { element: document.getElementById('emailer-component-template') }
+        })
+
+        ko.components.register('hidden-field-component', {
+            template: { element: document.getElementById('hidden-field-component-template') }
+        })
+
+        ko.components.register('code-mirror-component', {
+            template: { element: document.getElementById('code-mirror-component-template') }
+        })
+
+        ko.components.register('file-upload-component', {
+            template: { element: document.getElementById('file-upload-template') }
+        })
+
+    </script>
+
+    <script type="text/javascript">
+        var recentlyUsedMembersListener = new ko.subscribable();
+    </script>
+    @Scripts.Render("~/bundles/js/global")
+    @Html.Partial("Modals/_ConfirmModal")
+    @RenderSection("modals", required: false)
+    @RenderSection("scripts", required: false)
+    @RenderSection("postscripts", required: false)
+
+    @Scripts.Render("~/bundles/js/bootstrap-switch")
+
+    <script type="text/javascript">
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+
+    <script id="address-template" type="text/html">
+        <div class="form-group row">
+            <div class="col-xs-12">
+                <label class="col-form-label" data-bind="css: labelClass">
+                    Country
+                </label>
+                <div class="remaining-width-wrapper" data-bind="validationOptions: { insertMessages: false }">
+                    <div data-bind="kendoDropDownList: countrySlicerSettings, css: controlClass"></div>
+                    <span class="validation-message text-danger" data-bind="validationMessage: country"></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-xs-12">
+                <label class="col-form-label" data-bind="css: labelClass">
+                    Address Line 1
+                </label>
+                <div class="remaining-width-wrapper">
+                    <input class="form-control" data-bind="keepElement: addressLine1, textInput: addressLine1, attr: { placeholder: 'Type to Search' }, css: controlClass" />
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-xs-12">
+                <label class="col-form-label" data-bind="css: labelClass">
+                    Address Line 2
+                </label>
+                <div class="remaining-width-wrapper">
+                    <input class="form-control" data-bind="keepElement: addressLine2, textInput: addressLine2, css: controlClass" />
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-xs-12">
+                <label class="col-form-label" data-bind="css: labelClass">
+                    Town
+                </label>
+                <div class="remaining-width-wrapper">
+                    <input class="form-control" data-bind="keepElement: town, textInput: town, css: controlClass" />
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-xs-12">
+                <label class="col-form-label" data-bind="css: labelClass">
+                    County
+                </label>
+                <div class="remaining-width-wrapper">
+                    <input class="form-control" data-bind="keepElement: county, textInput: county, css: controlClass" />
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-xs-12">
+                <label class="col-form-label" data-bind="css: labelClass">
+                    Postcode
+                </label>
+                <div class="remaining-width-wrapper">
+                    <input class="form-control" data-bind="keepElement: postcode, textInput: postcode, css: controlClass" />
+                </div>
+            </div>
+        </div>
+        <!-- see note in /scripts/portal/address.js -->
+        <!-- ko if: initLateExtenders() -->
+        <!-- /ko -->
+    </script>
+
+    <script id="mdc-address-template" type="text/html">
+        <div class="mdc-delivery-wrapper">
+            <div class="input-group margin-bottom-15">
+                <div class="input-group-btn">
+                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: addressSearchCountryDropDownList }, style: { width: addressSearchCountryDropDownList.width }"></div>
+                </div>
+                <div data-bind="component: { name: 'mdc-text-field-pca-component', params: pcaLookup }"></div>
+            </div>
+            <div data-bind="component: { name: 'mdc-text-field-component', params: companyName }"></div>
+            <div data-bind="component: { name: 'mdc-text-field-component', params: name }"></div>
+            <div data-bind="component: { name: 'mdc-text-field-component', params: addressLine1 }"></div>
+            <div data-bind="component: { name: 'mdc-text-field-component', params: addressLine2 }"></div>
+            <div data-bind="component: { name: 'mdc-text-field-component', params: town }"></div>
+            <div data-bind="component: { name: 'mdc-text-field-component', params: county }"></div>
+            <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: countryDropDownList }"></div>
+            <div data-bind="component: { name: 'mdc-text-field-component', params: postcode }"></div>
+            <div data-bind="component: { name: 'mdc-phone-field-component', params: phone }"></div>
+            <div data-bind="component: { name: 'mdc-text-field-component', params: email }"></div>
+        </div>
+    </script>
+
+
+    @*<script language="javascript" type="text/javascript">
+            // This should be repurposed to allow for the bearer token to expire but warning the user first.
+            // for WebAPI controller authenticated requests.
+
+            var sessionTimeoutWarning = 2;
+            var sessionTimeout = "@(Session.Timeout)";
+
+            var sessionTimeoutDuration = parseInt(sessionTimeoutWarning) * 60 * 1000;
+            console.log(sessionTimeoutDuration);
+            setTimeout(SessionWarning, sessionTimeoutDuration);
+
+            function SessionWarning() {
+                var message = "Your session will expire in another " +
+                    (parseInt(sessionTimeout) - parseInt(sessionTimeoutWarning)) +
+                    " minutes. Please close this message to remain logged in.";
+                $.info('Timeout warning', message, null, function () {
+                    $.ajax({
+                        type: 'GET',
+                        url: 'home/sessionPersist',
+                        success: function () {
+                            sessionTimeoutTimer = parseInt(sessionTimeoutWarning) * 60 * 1000;
+                            setTimeout(SessionWarning, sessionTimeoutDuration);
+                        }
+                    });
+                });
+            }
+        </script>*@
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.modal').on('shown.bs.modal', function () {
+                $(document).off('focusin.modal');
+            });
+        });
+
+        function _spoons() {
+            $.get('/account/SpooneriseIt', null, function (data) {
+                console.log(data.join('\n'));
+            })
+        }
+
+        // with thanks: https://stackoverflow.com/questions/32581987/need-click-twice-after-hide-a-shown-bootstrap-popover#answer-34320956
+        $('html').on('hidden.bs.popover', function (e) {
+            $(e.target).data("bs.popover").inState.click = false;
+        });
+
+        // with thanks: https://stackoverflow.com/questions/11703093/how-to-dismiss-a-twitter-bootstrap-popover-by-clicking-outside#answer-15670200
+        $('html').on('mouseup', function (e) {
+            if (!$(e.target).closest('.popover').length) {
+                $('.popover').each(function () {
+                    $(this.previousSibling).popover('hide');
+                });
+            }
+        });
+    </script>
+
+
+
+    @Scripts.Render("~/signalr/hubs")
+
+    <script type="text/javascript">
+        function foo() {
+            let url = '/api/componentapi/FetchDocument';
+            if (window.fetch) {
+                fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        documentType: 2,
+                        basketId: 134037,
+                        transactionId: null,
+                        orderHeadId: null,
+                        languageId: 1
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.BearerToken
+                    }
+                }).then(function (response) {
+                    return response.blob();
+                }).then(function (blob) {
+                    const newWindow = window.open('', '')
+                    //newWindow.document.title = 'Document.pdf'
+                    newWindow.document.write('<html><head><title>Document.pdf</title><link rel="shortcut icon" type="image/x-icon" href="https://www.designersguild.com/favicon.ico" /></head><body style="margin: 0">')
+                    newWindow.document.write(`<iframe src="${window.URL.createObjectURL(blob)}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+                    newWindow.document.write('</body></html');
+                }).catch(function (xhr, s, a) {
+                    $.showError(xhr, s, a);
+                });
+            }
+        }
+    </script>
+    <div class="modal fade" tabindex="-1" id="confirm-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-dark" onclick="window.confirmModalInstance.confirmFn()">
+                        Yes
+                    </button>
+                    <button class="btn btn-light" onclick="window.confirmModalInstance.rejectFn()">
+                        No
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" tabindex="-1" id="info-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="window.infoModalInstance.closeFn()">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" tabindex="-1" id="error-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        Error
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">
+                        Sorry, that was a major error. Please try again and if the issue persists contact <a href="mailto: itsupport@designersguild.com">itsupport@designersguild.com</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    @Scripts.Render("~/bundles/js/common-modals")
+</body>
+</html>

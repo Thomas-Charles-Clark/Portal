@@ -1,0 +1,210 @@
+﻿@model Portal.Areas.Documents.ViewModels.ViewDocumentViewModel
+@{
+    ViewBag.Title = "Documents Preview";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/kendo-custom")
+    @Styles.Render("~/bundles/css/documents-preview")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/documents-preview")
+
+    <script type="text/javascript">
+        
+        function autoLoad() {
+            var self = this;
+            self.canFire.subscribe(function (newValue) {
+                if (newValue) {
+                    self.fetchDocument();
+                }
+            });
+        }
+
+        function getDocumentType() {
+            return @((int?)(Model.DocumentDetails?.documentType))
+        }
+
+        function getLanguageId() {
+            return @(Model.DocumentDetails?.languageId);
+        }
+
+        function getBasketId() {
+            return @(Model.DocumentDetails?.basketId);
+        }
+
+        function getTransactionId() {
+            return @(Model.DocumentDetails?.transactionId);
+        }
+
+        function getOrderHeadId() {
+            return @(Model.DocumentDetails?.orderHeadId);
+        }
+
+        function getDocumentSendHistory() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.DocumentSendHistory.Results));
+        }
+        
+        var viewModel = new documentsPreviewViewModel();
+
+        viewModel.emailer.to('@(Model.To)');
+        viewModel.emailer.subject('@(Model.Subject)');
+        viewModel.emailer.originalSubject(viewModel.emailer.subject());
+        viewModel.emailer.body('@(Model.Body)');
+        viewModel.emailer.originalBody(viewModel.emailer.body());
+
+        ko.options.deferUpdates = true;
+
+        $(document).ready(function () {
+            ko.applyBindings(viewModel, document.body);
+            viewModel.init();
+            //window.setTimeout(function () {
+            //    $(viewModel.basketParams.observable.DOMElement).select();
+            //}, 0);
+        });
+        
+    </script>
+}
+
+<div class="blocker" data-bind="visible: busy">
+    <div class="busy-bars">
+        <div class="rect1 alert alert-info"></div>
+        <div class="rect2 alert alert-info"></div>
+        <div class="rect3 alert alert-info"></div>
+        <div class="rect4 alert alert-info"></div>
+        <div class="rect5 alert alert-info"></div>
+    </div>
+    <!-- ko with: busyMessage -->
+    <h3 data-bind="html: $data"></h3>
+    <!-- /ko -->
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="grid-container">
+                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentParams }"></div>
+                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: languageParams }"></div>
+                    <div></div>
+                    <div></div>
+                    <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: transactionParams }"></div>
+                    <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: orderHeadParams }"></div>
+                    <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: basketParams }"></div>
+                    <button class="btn btn-flat btn-default pull-right" data-bind="click: fetchDocument">
+                        Fetch Document
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="document-wrapper" style="display: none;" class="row" data-bind="visible: showDocument">
+    <div class="col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div id="interaction-flex-container">
+                    <div>
+                        <a href="#send-email" class="document-anchor" data-toggle="collapse">
+                            Email Document
+                        </a>
+                        <a href="javascript:;" class="document-anchor copy-link" data-bind="attr: { href: adminLink }, click: function (data, event) { copyAdminLink(event); }">
+                            <span id="admin-copied-ok" class="copied-ok text-success margin-right-15">
+                                Copied to Clipboard
+                            </span>
+                            Copy Admin Link
+                        </a>
+                    </div>
+                    <div>
+                        <a href="#send-history" class="document-anchor" data-toggle="collapse">
+                            Document Send History
+                        </a>
+                        <a href="javascript:;" class="document-anchor copy-link" data-bind="attr: { href: userLink }, click: function (data, event) { copyUserLink(event); }">
+                            <span id="user-copied-ok" class="copied-ok text-success margin-right-15">
+                                Copied to Clipboard
+                            </span>
+                            Copy User Link
+                        </a>
+                    </div>
+                </div>
+                <div id="send-email" class="collapse">
+                    <!-- ko component: { name: 'emailer-component', params: emailer } --><!-- /ko -->
+                    @*<div id="email-wrapper" class="flex-container margin-bottom-15">
+                        <div data-bind="component: { name: 'mdc-text-field-component', params: toParams }"></div>
+                         <button class="btn btn-success" data-bind="click: sendDocument">
+                            Send
+                             <span class="glyphicon glyphicon-send"></span>
+                        </button>
+                    </div>
+                    <div class="margin-bottom-15" data-bind="component: { name: 'mdc-text-field-component', params: subjectParams }"></div>
+                    <div class="margin-bottom-15" data-bind="component: { name: 'mdc-text-field-component', params: replyToParams }"></div>
+                    <div class="margin-bottom-15" data-bind="component: { name: 'mdc-text-area-component', params: bodyParams }"></div>
+                    <div id="receipt-sent-successfully" class="text-success margin-bottom-15" style="display: none; font-size: 14px;" data-bind="fadeVisible: showLastSentTo, fadeSpeed: 'slow', html: 'Sent successfully to: ' + sentTo() + ' &#x2714;'"></div>*@
+                </div>
+                <div id="send-history" class="collapse">
+                    <div class="well">
+                        <!-- ko if: documentSendHistory().length == 0 -->
+                        No sends have been recorded
+                        <!-- /ko -->
+                        <!-- ko ifnot: documentSendHistory().length == 0 -->
+                        <ul>
+                            <!-- ko foreach: documentSendHistory() -->
+                            <li>
+                                <span class="display-block" >
+                                    <span data-bind="text: moment(SentDT).format('dddd Do MMM YYYY HH:mm:ss')"></span> 
+                                </span>
+                                <span class="display-block">
+                                    To: <a data-bind="attr: { href: To }, text: To"></a>
+                                </span>
+                                <!-- ko if: CC -->
+                                <span class="display-block">
+                                    CC: <a data-bind="attr: { href: To }, text: CC"></a>
+                                </span>
+                                <!-- /ko -->
+                                @if (User.IsInRole("Super Admin"))
+                                {
+                                    <!-- ko if: BCC -->
+                                    <span class="display-block">
+                                        BCC: <a data-bind="attr: { href: To }, text: BCC"></a>
+                                    </span>
+                                    <!-- /ko -->
+                                }
+                            </li>
+                            <!-- /ko -->
+                        </ul>
+                        <!-- /ko -->
+                    </div>
+                </div>
+                <div id="document-iframe-container">
+                    @if (Model.PDFBase64 != null)
+                    {
+                        <iframe src="data:application/pdf;base64,@Model.PDFBase64" type="application/pdf"></iframe>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

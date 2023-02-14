@@ -1,0 +1,1345 @@
+﻿@model Portal.Areas.Products.ViewModels.SamplesViewModel
+@{
+    ViewBag.Title = "Designers Guild Sample Ordering";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/sample-request-dg")
+    @Styles.Render("~/Content/Components/slicer-component.css")
+}
+@section beforeContainer {
+
+    <div class="form-busy" data-bind="fadeVisible: placeOrderBusy">
+        <div class="busy-bars">
+            <div class="rect1 alert alert-info"></div>
+            <div class="rect2 alert alert-info"></div>
+            <div class="rect3 alert alert-info"></div>
+            <div class="rect4 alert alert-info"></div>
+            <div class="rect5 alert alert-info"></div>
+        </div>
+    </div>
+}
+
+@section components {
+    @Html.Partial("~/Views/Shared/Components/_DeliverySelectorComponent.cshtml", Model.DeliverySelectorViewModel)
+}
+
+@section navbarCollapsedRight {
+    <button type="button" class="basket-toggle-btn navbar-toggle navbar-toggle-right" data-toggle="modal" data-target="#basket-modal" href="#basket-modal" aria-expanded="true" aria-controls="basket-modal" style="display: none;" data-bind="visible: true">
+       <span class="glyphicon glyphicon-shopping-cart" style="margin-right: 6px;"></span>
+        View Basket
+        <!-- ko if: basket().length -->
+        <span id="basket-count" data-bind="text: Enumerable.From(basket()).Select('Number($.Quantity())').Sum()"></span>
+        <!-- /ko -->
+    </button>
+}
+@section navbarRight {
+    <ul class="nav navbar-nav navbar-right" style="display: none" data-bind="visible: true">
+        <li class="basket-toggle-btn navbar-toggle navbar-toggle-right" data-toggle="modal" data-target="#basket-modal" href="#basket-modal" aria-expanded="true" aria-controls="basket-modal">
+            <span class="glyphicon glyphicon-shopping-cart" style="margin-right: 6px;"></span>
+            View Basket
+            <!-- ko if: basket().length -->
+            <span id="basket-count" data-bind="text: Enumerable.From(basket()).Select('Number($.Quantity())').Sum()"></span>
+            <!-- /ko -->
+        </li>
+        <!-- ko if: basket().length -->
+        <li class="basket-toggle-btn navbar-toggle navbar-toggle-right" data-bind="click: storeBasket">
+            <span class="glyphicon glyphicon-floppy-save" style="margin-right: 6px;"></span>
+            Store Basket
+        </li>
+        <!-- /ko -->
+    </ul>
+}
+
+<script id="search-result-template" type="text/html">
+    <tr>
+        <td>
+            <!-- ko if: ImageID -->
+            <img class="thumb" data-bind="click: $parent.loadLargeImage, attr: { src: 'https://www.designersguild.com/image/32/' + ImageID, title: Code + ' - Product ID: ' + ProductID + ' Sample Product ID: ' + CuttingProductID + ' Returnable Product ID: ' + ReturnableProductID }" />
+            <!-- /ko -->
+        </td>
+        <td>
+            <i class="material-icons" title="Find Similar" style="cursor: pointer;" data-bind="click: function(data) { $parent.slicers.findSimilar(data) }">&#xE14D;</i>
+        </td>
+        <td>
+            <!-- ko if: ProductPageID -->
+                <a class="code-display" data-bind="text: Code, attr: { href: 'https://www.designersguild.com/uk/p' + ProductPageID, target: '_blank'}"></a>
+            <!-- /ko -->
+            <!-- ko ifnot: ProductPageID -->
+                <span class="code-display" data-bind="text: Code"></span>
+            <!-- /ko -->
+        </td>
+        <td>
+            <span data-bind="text: Status, attr: { title: $parent.statusTitle(Status) }"></span>
+        </td>
+        <td>
+            <span data-bind="text: FreeStock"></span>
+            <a href="javascript:;" class="stock-link" data-bind="text: StockStatus, click: function(data) { $parent.showStockInfo(data); }"></a>
+        </td>
+        <td>
+            <span data-bind="text: Name"></span>
+        </td>
+        <td>
+            <span data-bind="text: RRP"></span>
+        </td>
+        <td>
+            <a href="javascript:;" data-bind="text: ListPrice, click: function() { $parent.loadSpecialPriceAgreements($data); }"></a>
+        </td>
+        <td>
+            <span data-bind="text: CuttingStatus"></span>
+        </td>
+        <td>
+            <span data-bind="text: CStock"></span>
+        </td>
+        <td>
+            <span data-bind="text: CuttingPrice"></span>
+        </td>
+        <td>
+            <!-- ko if: CuttingCode != null && CuttingPrice != null -->
+            <span class="quantity" data-bind="text: cuttingQuantityInBasket"></span>
+            <!-- /ko -->
+        </td>
+        <td class="text-center">
+            <!-- ko if: CuttingCode != null && CuttingPrice != null -->
+            <button class="btn btn-default btn-sm" data-bind="click: function(data) { $parent.increaseCuttingCodeInBasket(data) }" title="Add">
+                <span class="glyphicon glyphicon-plus"></span>
+            </button>
+            <!-- /ko -->
+        </td>
+        <td class="text-center">
+            <!-- ko if: CuttingCode != null && CuttingPrice != null -->
+            <button class="btn btn-default btn-sm" data-bind="click: function(data) { $parent.decreaseCuttingCodeInBasket(data) }" title="Remove">
+                <span class="glyphicon glyphicon-minus"></span>
+            </button>
+            <!-- /ko -->
+        </td>
+        <td>
+            <span data-bind="text: ReturnableStatus"></span>
+        </td>
+        <td>
+            <span data-bind="text: RStock"></span>
+        </td>
+        <td>
+            <span data-bind="text: ReturnablePrice"></span>
+        </td>
+        <td>
+            <!-- ko if: ReturnableCode != null && ReturnablePrice != null -->
+            <span class="quantity" data-bind="text: returnableQuantityInBasket"></span>
+            <!-- /ko -->
+        </td>
+        <td class="text-center">
+            <!-- ko if: ReturnableCode != null && ReturnablePrice != null -->
+            <button class="btn btn-default btn-sm" data-bind="click: function(data) { $parent.increaseReturnableCodeInBasket(data) }" title="Add">
+                <span class="glyphicon glyphicon-plus"></span>
+            </button>
+            <!-- /ko -->
+        </td>
+        <td class="text-center">
+            <!-- ko if: ReturnableCode != null && ReturnablePrice != null -->
+            <button class="btn btn-default btn-sm" data-bind="click: function(data) { $parent.decreaseReturnableCodeInBasket(data) }" title="Remove">
+                <span class="glyphicon glyphicon-minus"></span>
+            </button>
+            <!-- /ko -->
+        </td>
+    </tr>
+</script>
+
+<div id="basket-modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">
+                    Basket
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div data-bind="visible: deliverySelector && basket().length">
+                    <h4 style="margin-top: 0;">
+                        <!-- ko if: deliverySelector -->
+                        <span data-bind="with: deliverySelector" style="margin-right: 24px;">Delivery: <span data-bind="text: despatchPriceDisplaySmall"></span></span>
+                        <span data-bind="with: account">Grand Total: <span data-bind="text: formatCurrency($parent.totalPrice(), 2, CurrencyCulture, CurrencyCode)"></span></span>
+                        <!-- /ko -->
+                        <span class="clearfix"></span>
+                    </h4>
+
+                    <label id="send-confirmation-basket-label" for="send-confirmation" class="send-confirmation-label">
+                        Send Confirmation Email
+                        <input id="send-confirmation-basket" class="send-confirmation" type="checkbox" data-bind="checked: customerWantsOrderConfirmation" />
+                    </label>
+                    <label id="extra-text-basket-label" for="extra-text-basket" class="send-confirmation-label" data-bind="visible: customerWantsOrderConfirmation()">
+                        With Customised Message
+                        <input id="extra-text-basket" class="send-confirmation" type="checkbox" data-bind="checked: sendExtraText" />
+                    </label>
+                    <div class="basket-button-container">
+                        @*<a id="take-payment-btn" class="btn btn-warning" href="https://retail.designersguild.com" target="_blank" data-bind="visible: totalPrice() > 0">TAKE PAYMENT</a>*@
+                        <button id="place-order-btn-1" class="btn btn-primary" data-bind="enable: !placeOrderBusy(), click: placeOrder">PLACE ORDER</button>
+                    </div>
+                    <div id="basket-panel" class="panel-body">
+                        <table id="basket-table" class="table-striped">
+                            <colgroup>
+                                <col style="width: 32px; max-width: 32px;" />
+                                <col style="width: 172px; max-width: 172px;" />
+                                <col style="width: 44px; max-width: 44px;" />
+                                <col style="width: 106px; max-width: 106px;" />
+                                <col style="width: 98px; max-width: 98px;" />
+                            </colgroup>
+                            <!-- ko foreach: { data: basket } -->
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <!-- ko if: ImageID -->
+                                        <img class="thumb" data-bind="click: $parent.loadLargeImage, attr: { src: 'https://www.designersguild.com/image/32/' + ImageID, title: Code }" />
+                                        <!-- /ko -->
+                                    </td>
+                                    <td>
+                                        <label class="col-form-label" data-bind="text: Name"></label><br />
+                                        <span class="code" data-bind="text: Code"></span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-default" data-tooltip="tooltip" data-toggle="collapse" data-bind="attr: { 'data-target': '#' + $data.Code.replace(/\//g, '-') + '-line-ref' }" data-placement="bottom" title="Add Line Reference">
+                                            <i class="far fa-comment"></i>
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <div class="input-group input-group-sm">
+                                            <div class="input-group-addon input-group-addon-default currency-display">
+                                                <span data-bind="with: $parent.account"><span class="currency-display" data-bind="text: CurrencySymbol"></span></span>
+                                            </div>
+                                            @if (Model.Properties?.Sampling_CanOverridePricing == true)
+                                            {
+                                                <input class="price-control form-control" data-bind="numeric, keepElement: Price, forceNullOnEmpty: Price, value: Price" onfocus="this.select()" />
+                                            }
+                                            else
+                                            {
+                                                <div class="price-control form-control" data-bind="text: Price"></div>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="input-group input-group-sm">
+                                            <div class="input-group-btn">
+                                                <button class="btn btn-secondary-blue basket-add-btn" data-bind="click: function() { Quantity(Quantity() + 1); }">
+                                                    +
+                                                </button>
+                                            </div>
+                                            <input class="quantity form-control" onfocus="$(this).select()" data-bind="numericWhole, value: Quantity" />
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default basket-remove-btn" data-bind="click: function() { $parent.basket.remove($data) }">
+                                                    <span class="basket-remove material-icons">&#xE92B;</span>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tbody data-bind="attr: { id: $data.Code.replace(/\//g, '-') + '-line-ref' }" class="collapse">
+                                <tr class="form-group">
+                                    <td colspan="5" class="line-ref">
+                                        <input class="form-control" data-bind="textInput: LineRef, attr: { id: $data.Code.replace(/\//g, '-') + '-line-ref-input' }, charsRemaining: LineRef, charsRemainingOptions: { maxLength: 25, elementId: '#' + $data.Code.replace(/\//g, '-') + '-line-ref-input' }" placeholder="Line Reference" />
+                                        <label class="col-form-label">
+                                        </label>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <!-- /ko -->
+                        </table>
+                    </div>
+                    <div class="basket-button-container" style="border-bottom: 0; border-top: 1px solid #ddd;" data-bind="visible: basket().length > 3">
+                        @*<a id="take-payment-btn" class="btn btn-warning" href="https://retail.designersguild.com" target="_blank" data-bind="visible: totalPrice() > 0">TAKE PAYMENT</a>*@
+                        <button id="place-order-btn-1" class="btn btn-primary" data-bind="enable: !placeOrderBusy(), click: placeOrder">PLACE ORDER</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<div id="image-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 id="large-image-title" class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <div id="large-image-container">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="success-close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+<div id="stock-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 id="stock-title" class="modal-title"></h4>
+            </div>
+            <div style="position: relative;" class="modal-body">
+                <div class="panel-busy-wrapper" style="display: none;" data-bind="fadeVisible: stockInfoBusy">
+                    <div class="form-busy">
+                        <div class="busy-bars">
+                            <div class="rect1 alert alert-info"></div>
+                            <div class="rect2 alert alert-info"></div>
+                            <div class="rect3 alert alert-info"></div>
+                            <div class="rect4 alert alert-info"></div>
+                            <div class="rect5 alert alert-info"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="stock-container">
+                    <div data-bind="foreach: stockInfoProducts, fadeVisible: !stockInfoBusy()">
+                        <div class="stock-info">
+                            <div>
+                                <table class="drilldown-stock-table">
+                                    <colgroup>
+                                        <col style="width: 300px" />
+                                        <col />
+                                    </colgroup>
+                                    <tbody>
+                                        <tr>
+                                            <td style="vertical-align: top; padding-right: 15px;">
+                                                <div id="product-name">
+                                                    <!-- ko if: ImageID != null -->
+                                                    <img class="thumb" data-bind="attr: { src: 'https://www.designersguild.com/image/156/' + ImageID, title: Code }" />
+                                                    <!-- /ko -->
+                                                    <div class="product-details">
+                                                        <span>
+                                                            <span data-bind="text: Name"></span>
+                                                            <span data-bind="text: Code"></span>
+                                                        </span>
+                                                        <span data-bind="html: '(Unit of Stock: ' + Units + ')'"></span>
+                                                    </div>
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <!-- ko with: supplierAvailabilityMessage -->
+                                                <div class="alert alert-warning" data-bind="text: $data"></div>
+                                                <!-- /ko -->
+                                                <!-- ko if: stockInfo() -->
+                                                <table class="stock-allocation-table allocation-table table table-condensed" data-bind="with: stockInfo">
+                                                    <colgroup>
+                                                        <col style="width: 25%" />
+                                                        <col style="width: 105px" />
+                                                        <col style="width: 75px" />
+                                                        <col style="width: 75px" />
+                                                        <col style="width: 75px" />
+                                                        <col style="width: 75px" />
+                                                        <col style="width: 90px" />
+                                                        <col style="width: auto" />
+                                                    </colgroup>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>
+                                                                Batch
+                                                            </th>
+                                                            <th>
+                                                                <sup class="font-normal">1</sup> Available Now
+                                                            </th>
+                                                            <th>
+                                                                Bulk Stock
+                                                            </th>
+                                                            <th>
+                                                                <sup class="font-normal">2</sup> Just Arrived
+                                                            </th>
+                                                            <th>
+                                                                <sup class="font-normal">3</sup> Ring Fenced
+                                                            </th>
+                                                            <th>
+                                                                On Reserve
+                                                            </th>
+                                                            <th>
+                                                                Total
+                                                            </th>
+                                                            <th>
+                                                                Due In
+                                                            </th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>
+                                                                Total all Locations
+                                                            </th>
+                                                            <th>
+                                                                <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.availableNowTotal').Sum().toFixed(1)"></span>
+                                                            </th>
+                                                            <th>
+                                                                <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.bulkTotal').Sum().toFixed(1)"></span>
+                                                            </th>
+                                                            <th>
+                                                                <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.waitingTotal').Sum().toFixed(1)"></span>
+                                                            </th>
+                                                            <th>
+                                                                <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.ringFencedTotal').Sum().toFixed(1)"></span>
+                                                            </th>
+                                                            <th>
+                                                                <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.onReserveTotal').Sum().toFixed(1)"></span>
+                                                            </th>
+                                                            <th>
+                                                                <span data-bind="text: Enumerable.From($data).Select('+$.stockLocation.totalQuantity()').Sum().toFixed(1)"></span>
+                                                            </th>
+                                                            <th>
+                                                                <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.dueInTotal').Sum().toFixed(1)"></span>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td colspan="8">
+                                                                &nbsp;
+                                                            </td>
+                                                        </tr>
+                                                        <!-- ko foreach: $data -->
+                                                        <!-- ko if: stockLocation.totalIncludingDue() == 0 -->
+                                                        <tr class="stock-location">
+                                                            <th>
+                                                                <span data-bind="text: `${stockLocation.stockLocationCode} - ${stockLocation.stockLocationName}`"></span>
+                                                            </th>
+                                                            <th colspan="7">
+                                                                <span class="font-normal text-italic">
+                                                                    No stock available in this location
+                                                                </span>
+                                                            </th>
+                                                        </tr>
+                                                        <!-- /ko -->
+                                                        <!-- ko if: stockLocation.totalIncludingDue() > 0 -->
+                                                        <tr class="stock-location">
+                                                            <th>
+                                                                <span data-bind="text: `${stockLocation.stockLocationCode} - ${stockLocation.stockLocationName}`"></span>
+                                                            </th>
+                                                            <th>
+                                                                <span data-bind="text: stockLocation.availableNowTotal.toFixed(1)"></span>
+                                                            </th>
+                                                            <th>
+                                                                <span data-bind="text: stockLocation.bulkTotal.toFixed(1)"></span>
+                                                            </th>
+                                                            <th>
+                                                                <span data-bind="text: stockLocation.waitingTotal.toFixed(1)"></span>
+                                                            </th>
+                                                            <th>
+                                                                <span data-bind="text: stockLocation.ringFencedTotal.toFixed(1)"></span>
+                                                            </th>
+                                                            <th>
+                                                                <span data-bind="text: stockLocation.onReserveTotal.toFixed(1)"></span>
+                                                            </th>
+                                                            <th>
+                                                                <span data-bind="text: (+stockLocation.totalQuantity()).toFixed(1)"></span>
+                                                            </th>
+                                                            <th>
+                                                                <span data-bind="text: stockLocation.dueInTotal.toFixed(1)"></span>
+                                                            </th>
+                                                        </tr>
+                                                        <!-- ko foreach: batches -->
+                                                        <tr data-bind="css: { 'location-end': $index() == ($parent.batches.length - 1) }">
+                                                            <td>
+                                                                <span data-bind="text: batch.batchNo"></span>
+                                                            </td>
+                                                            <td colspan="7" class="no-padding">
+                                                                <table class="piece-table table table-condensed">
+                                                                    <colgroup>
+                                                                        <col style="width: 105px;" />
+                                                                        <col style="width: 75px;" />
+                                                                        <col style="width: 75px;" />
+                                                                        <col style="width: 75px;" />
+                                                                        <col style="width: 75px;" />
+                                                                        <col style="width: 90px;" />
+                                                                        <col style="width: auto" />
+                                                                    </colgroup>
+                                                                    <tbody>
+                                                                        <!-- ko foreach: pieces -->
+                                                                        <tr>
+                                                                            <td>
+                                                                                <span data-bind="text: AvailableNowDisplay"></span>
+                                                                            </td>
+                                                                            <td>
+                                                                                <span data-bind="text: BulkDisplay"></span>
+                                                                            </td>
+                                                                            <td>
+                                                                                <span data-bind="text: WaitingDisplay"></span>
+                                                                            </td>
+                                                                            <td>
+                                                                                <span data-bind="text: RingFencedDisplay"></span>
+                                                                            </td>
+                                                                            <td>
+                                                                                <span data-bind="text: OnReserveDisplay"></span>
+                                                                            </td>
+                                                                            <td>
+                                                                                <span data-bind="text: TotalDisplay"></span>
+                                                                            </td>
+                                                                            <td>
+                                                                                <span data-bind="text: DueInDisplay"></span>
+                                                                                <!-- ko if: POConfirmed != null -->
+                                                                                <span data-bind="text: POConfirmed ? '(confirmed)' : '(unconfirmed)'"></span>
+                                                                                <!-- /ko -->
+                                                                            </td>
+                                                                        </tr>
+                                                                        <!-- /ko -->
+                                                                    </tbody>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <!-- /ko -->
+                                                        <!-- /ko -->
+                                                        <!-- ko if: $index() != ($parent.length - 1) -->
+                                                        <tr>
+                                                            <td colspan="6">
+                                                                &nbsp;
+                                                            </td>
+                                                        </tr>
+                                                        <!-- /ko -->
+                                                        <!-- /ko -->
+                                                    </tbody>
+                                                </table>
+                                                <p>
+                                                    <sup class="font-normal">1</sup> "Available Now" = Free Stock + Stock Ring Fenced for this Customer
+                                                </p>
+                                                <p>
+                                                    <sup class="font-normal">2</sup> "Just Arrived" = Stock waiting to be put away
+                                                </p>
+                                                <p>
+                                                    <sup class="font-normal">3</sup> "Ring Fenced" = Stock Ring Fenced for other Customers
+                                                </p>
+                                                <!-- /ko -->
+                                                <!-- ko if: stockInfo() ? stockInfo().length == 0 : true -->
+                                                <label data-bind="text: StockStatus">
+                                                </label>
+                                                <!-- /ko -->
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="stock-close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="spa-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 id="spa-title" class="modal-title"></h4>
+            </div>
+            <div style="position: relative;">
+                <div class="panel-busy-wrapper" style="display: none;" data-bind="fadeVisible: spaInfoBusy">
+                    <div class="form-busy">
+                        <div class="busy-bars">
+                            <div class="rect1 alert alert-info"></div>
+                            <div class="rect2 alert alert-info"></div>
+                            <div class="rect3 alert alert-info"></div>
+                            <div class="rect4 alert alert-info"></div>
+                            <div class="rect5 alert alert-info"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="spa-container" class="modal-body">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="spa-close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="extra-text-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Order Confirmation Customised Message</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Please customise the leading text for the customer's order confirmation in the box beneath. Highlighted in yellow below is the text you will be replacing.
+                </p>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">Customised Message</label>
+                    </div>
+                    <div class="col-xs-12">
+                        <textarea id="extra-confirmation-text" rows="6" class="form-control" data-bind="textInput: extraConfirmationText"></textarea>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">Original Email Header Text</label>
+                    </div>
+                    <div class="col-xs-12" data-bind="with: tradeAccountSelector.selected()">
+                        <div id="confirmation-text-readonly" class="form-control" style="height: auto" data-bind="html: SampleOrderConfirmationTopTextReadOnly"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal" data-bind="click: function() { sendExtraText(false); }">Cancel</button>
+                <button type="button" class="btn btn-success" data-dismiss="modal">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="success-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Success</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    OrderID: <span id="new-order-number"></span> was placed successfully.
+                </p>
+                <p>
+                    This order will be visible on Mertex in one minute or less.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button id="success-close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="failure-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 id="failure-title" class="modal-title ui-state-error">Error</h4>
+            </div>
+            <div class="modal-body ui-state-error">
+                <p id="failure-status" class="ui-state-error-text" style="font-weight: bold;">
+                    Order not placed
+                </p>
+                <p id="failure-modal-error-text" class="ui-state-error-text"></p>
+                <div id="failure-modal-iframe-wrapper"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="display: none" data-bind="visible: true">
+    <div class="col-xs-12 panel-group" id="accordion" role="tablist" aria-multiselectable="false">
+
+        @Html.Action("TradeAccountSelector", "Component", new { Area = "", canSearch = Model.Properties?.AccountSelector_CanSearch, canCollapse = true })
+
+        <div class="panel panel-primary" data-bind="visible: tradeAccountSelector.selected()">
+            <div id="account-tab" class="panel-heading no-padding" role="tab">
+                <h4 class="panel-title">
+                    <a role="button" class="panel-toggle" data-toggle="collapse" data-parent="#accordion" href="#account-collapse" aria-expanded="true" aria-controls="account-collapse">
+                        <label class="margin-bottom-0" for="account-name">
+                            Order:
+                            <span data-bind="text: customerOrderReference"></span>
+                        </label>
+                    </a>
+                </h4>
+            </div>
+            <div id="account-collapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="account-tab">
+                <div id="account-panel" class="panel-body bg-info">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            @*<div id="account-selector" class="row">
+                                <label for="account-number" class="col-xs-2 col-form-label">Account Number</label>
+                                <div class="col-xs-8">
+                                    <div class="input-group">
+                                        <input id="account-number" type="text" class="form-control" maxlength="20" />
+                                        <span class="input-group-addon">
+                                            <button class="clear-btn btn btn-primary @(Model.Properties?.Application_ButtonClass)" type="button" data-bind="click: function() { reset(); $('#account-number').val(null); }">×</button>
+                                        </span>
+                                        <span class="input-group-btn">
+                                            <button class="search-btn btn btn-primary @(Model.Properties?.Application_ButtonClass)" data-bind="click: function() { $('#account-number').autocomplete('search'); }"><span class="glyphicon glyphicon-search"></span></button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>*@
+                            <div id="order-taker-container" class="row" data-bind="visible: !orderTakerHidden()">
+                                <label for="order-taker" class="col-xs-2 col-form-label">Order Taker*</label>
+                                <div class="col-xs-8">
+                                    <div class="input-group" data-bind="validationOptions: { insertMessages: false }">
+                                        <input id="order-taker" type="text" class="form-control" maxlength="20" placeholder="Search" data-bind="attr: { placeholder: orderTakerLabel }, value: orderTakerLabel, validationElement: orderTaker, enterKey: function() { $('#order-ref').focus(); }" onfocus="$(this).select()" />
+                                        <span class="input-group-addon">
+                                            <button class="clear-btn btn btn-primary @(Model.Properties?.Application_ButtonClass)" type="button" data-bind="click: function() { orderTaker(undefined); $('#order-taker').val(null); }">×</button>
+                                        </span>
+                                        <span class="input-group-btn">
+                                            <button class="search-btn btn btn-primary @(Model.Properties?.Application_ButtonClass)" data-bind="click: function() { $('#order-taker').autocomplete('search'); }"><span class="glyphicon glyphicon-search"></span></button>
+                                        </span>
+                                    </div>
+                                    <span class="validation-message text-danger" data-bind="validationMessage: orderTaker"></span>
+                                </div>
+                                @*<label id="order-taker-txt" class="col-xs-1 col-form-label" data-bind="html: orderTakerLabel"></label>*@
+                            </div>
+                            <div id="order-ref-container" class="margin-top-15 form-group row">
+                                <label for="order-ref" class="col-xs-2 col-form-label">Reference*</label>
+                                <div class="col-xs-8">
+                                    <input id="order-ref" type="text" class="form-control" maxlength="24" data-bind="textInput: customerOrderReference, enterKey: function() { $('#vat-number').focus(); }" />
+                                </div>
+                            </div>
+                            <div id="vat-container" class="form-group row" data-bind="with: account">
+                                <label for="email" class="col-xs-2 col-form-label">VAT Number</label>
+                                <div class="col-xs-8">
+                                    <input id="vat-number" type="text" class="form-control" maxlength="20" data-bind="textInput: tradeAccountVATNumber, enterKey: function() { $('#potato').focus(); }" />
+                                </div>
+                            </div>
+                            <div id="email-selector" class="form-group row margin-bottom-0" data-bind="with: account">
+                                <label for="email" class="col-xs-2 col-form-label">Email<span data-bind="visible: $parent.customerWantsOrderConfirmation()">*</span></label>
+                                <div class="col-xs-8">
+                                    <input id="potato" type="text" class="form-control" maxlength="256" data-bind="textInput: Email, enterKey: function() { $('#account-continue').focus(); }" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-8 col-xs-offset-2">
+                                    <label for="send-confirmation" class="col-form-label send-confirmation-label" style="margin-right: 12px;">
+                                        Send Confirmation Email
+                                        <input id="send-confirmation" class="send-confirmation" type="checkbox" data-bind="checked: customerWantsOrderConfirmation" />
+                                    </label>
+                                    <label id="extra-text-label" for="extra-text-basket" class="col-form-label send-confirmation-label" data-bind="visible: customerWantsOrderConfirmation()">
+                                        With Customised Message
+                                        <input id="extra-text" class="send-confirmation" type="checkbox" data-bind="checked: sendExtraText" />
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="language-selector" class="margin-top-15 row" style="display: none !important">
+                                <div class="col-sm-12">
+                                    <label for="language" class="col-form-label">Language</label>
+                                    <select id="language" class="form-control" data-bind="options: availableLanguages, value: selectedOrderConfirmationLanguage, optionsText: 'Name', optionsValue: 'LanguageID'"></select>
+                                </div>
+                            </div>
+                            <div id="email-note" class="margin-top-15 row">
+                                <div class="col-sm-8 col-sm-push-2">
+                                    <p style="font-size: 11px; font-style: italic; margin: 0">
+                                        Please try to provide an email address for our records even if your customer does not want a confirmation email to be sent. A confirmation email will only be sent if the box is checked; if the box is checked an email address is mandatory.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="margin-top-15 row">
+                                <div class="col-sm-8 col-sm-push-2">
+                                    <button id="account-continue" class="btn btn-success btn-continue" data-bind="click: function() { if (errorGroup().length > 0) { errorGroup.showAllMessages(true); } else { $('#address-display-label').trigger('click'); window.setTimeout(function() { $('#select-primary-address-btn').focus(); }, 0) } }">
+                                        Continue
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ko if: tradeAccountSelector.selected() -->
+        <div class="panel panel-primary" data-bind="visible: errorGroup().length == 0">
+            <div id="address-tab" class="panel-heading no-padding" role="tab">
+                <h4 class="panel-title">
+                    <a id="address-opener" role="button" class="panel-toggle" data-toggle="collapse" data-parent="#accordion" href="#address-collapse" aria-expanded="true" aria-controls="address-collapse">
+                        <label id="address-display-label" for="address-display" class="margin-bottom-0">Address: </label>
+                        <!-- ko if: address -->
+                        <span id="address-display" data-bind="text: address().DisplayLine()"></span>
+                        <!-- /ko -->
+                    </a>
+                </h4>
+            </div>
+            <div id="address-collapse" class="panel-collapse collapse bg-info" role="tabpanel" aria-labelledby="address-tab">
+                <div id="address-panel" class="panel-body">
+                    <div id="address-selector" class="row">
+                        <div class="col-sm-3" style="padding-right: 0;">
+                            <div class="flex-container">
+                                <div id="primary-address" data-bind="with: primaryAddress" class="address panel panel-primary">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            Invoice Address
+                                        </h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="row no-gutters" data-bind="with: Name">
+                                            <span for="primary-name" class="col-xs-12" data-bind="text: $data"></span>
+                                        </div>
+                                        <div class="row no-gutters" data-bind="with: AddressLine1">
+                                            <span for="primary-line-1" class="col-xs-12" data-bind="text: $data"></span>
+                                        </div>
+                                        <div class="row no-gutters" data-bind="with: AddressLine2">
+                                            <span for="primary-line-2" class="col-xs-12" data-bind="text: $data"></span>
+                                        </div>
+                                        <div class="row no-gutters" data-bind="with: AddressLine3">
+                                            <span for="primary-line-3" class="col-xs-12" data-bind="text: $data"></span>
+                                        </div>
+                                        <div class="row no-gutters" data-bind="with: AddressLine4">
+                                            <span for="primary-line-4" class="col-xs-12" data-bind="text: $data"></span>
+                                        </div>
+                                        <div class="row no-gutters" data-bind="with: Postcode">
+                                            <span for="primary-postcode" class="col-xs-12" data-bind="text: $data"></span>
+                                        </div>
+                                        <div class="form-group row no-gutters" data-bind="with: Country">
+                                            <span for="primary-country" class="col-xs-12" data-bind="text: Name"></span>
+                                        </div>
+                                        <button id="select-primary-address-btn" class="btn btn-success address-select" data-bind="click: $parent.verifyPrimaryAddress()">
+                                            Select Address
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="warehouse-address" data-bind="with: warehouseAddress" class="address panel panel-warning">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            Collect from Warehouse
+                                        </h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="row no-gutters" data-bind="with: Name">
+                                            <span for="primary-name" class="col-xs-12" data-bind="text: $data"></span>
+                                        </div>
+                                        <div class="row no-gutters" data-bind="with: AddressLine1">
+                                            <span for="primary-line-1" class="col-xs-12" data-bind="text: $data"></span>
+                                        </div>
+                                        <div class="row no-gutters" data-bind="with: AddressLine2">
+                                            <span for="primary-line-2" class="col-xs-12" data-bind="text: $data"></span>
+                                        </div>
+                                        <div class="row no-gutters" data-bind="with: AddressLine3">
+                                            <span for="primary-line-3" class="col-xs-12" data-bind="text: $data"></span>
+                                        </div>
+                                        <div class="row no-gutters" data-bind="with: AddressLine4">
+                                            <span for="primary-line-4" class="col-xs-12" data-bind="text: $data"></span>
+                                        </div>
+                                        <div class="row no-gutters" data-bind="with: Postcode">
+                                            <span for="primary-postcode" class="col-xs-12" data-bind="text: $data"></span>
+                                        </div>
+                                        <div class="form-group row no-gutters" data-bind="with: Country">
+                                            <span for="primary-country" class="col-xs-12" data-bind="text: Name"></span>
+                                        </div>
+                                        <button id="select-warehouse-address-btn" class="btn btn-warning address-select" data-bind="click: function() { $parent.selectWarehouseAddress() }">
+                                            Collect from Warehouse
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="address panel panel-primary">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">Stored Delivery Addresses</h4>
+                                </div>
+                                <div class="panel-body">
+                                    <select id="secondary-addresses" class="form-control" size="8" data-bind="options: secondaryAddresses, value: selectedSecondaryAddress, optionsText: function(item) { return item.SelectListDisplayLine() }, optionsAfterRender: setSecondaryAddressOptionsAfterRender"></select>
+                                    <div data-bind="with: selectedSecondaryAddress">
+                                        <div class="row no-gutters" data-bind="with: Name">
+                                            <span for="primary-name" class="col-xs-12" data-bind="text: $data"></span>
+                                        </div>
+                                        <div class="row no-gutters" data-bind="with: AddressLine1">
+                                            <span for="primary-line-1" class="col-xs-12" data-bind="text: $data"></span>
+                                        </div>
+                                        <div class="row no-gutters" data-bind="with: AddressLine2">
+                                            <span for="primary-line-2" class="col-xs-12" data-bind="text: $data"></span>
+                                        </div>
+                                        <div class="row no-gutters" data-bind="with: AddressLine3">
+                                            <span for="primary-line-3" class="col-xs-12" data-bind="text: $data"></span>
+                                        </div>
+                                        <div class="row no-gutters" data-bind="with: AddressLine4">
+                                            <span for="primary-line-4" class="col-xs-12" data-bind="text: $data"></span>
+                                        </div>
+                                        <div class="row no-gutters" data-bind="with: Postcode">
+                                            <span for="primary-postcode" class="col-xs-12" data-bind="text: $data"></span>
+                                        </div>
+                                        <div class="form-group row no-gutters" data-bind="with: Country">
+                                            <span for="secondary-country" class="col-xs-12" data-bind="text: typeof $data === 'object' ? $data.Name : $data"></span>
+                                        </div>
+                                        <button id="select-primary-address-btn" class="btn btn-success address-select" data-bind="click: function() { $parent.setSelectedSecondaryAddress($data) }">
+                                            Select Address
+                                            <span data-bind="text: DeliveryReference"></span>
+                                        </button>
+                                    </div>
+                                    @*<button id="secondary-select-button" class="btn btn-success address-select" data-bind="click: function() { setSelectedSecondaryAddress(selectedSecondaryAddress()) }, enable: selectedSecondaryAddress()">SELECT ADDRESS</button>*@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-5" style="padding-left: 0;">
+                            <div id="custom-address" data-bind="with: customAddress">
+                                <div class="address panel panel-primary">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Custom Address</h4>
+                                    </div>
+                                    <div id="custom-address-body" class="panel-body">
+                                        <div class="form-group row no-gutters">
+                                            <label for="custom-country" class="col-sm-4 col-form-label">Country</label>
+                                            <div class="col-sm-8">
+                                                <select id="custom-country" class="form-control" data-bind="options: $parent.availableCountries, value: Country, optionsText: 'Name', optionsValue: $data, optionsCaption: 'Please Select'"></select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row no-gutters">
+                                            <label for="pca-find" class="col-sm-4 col-form-label">Search</label>
+                                            <div id="pca-find-wrapper" class="col-sm-8">
+                                                <input id="pca-find" type="text" class="form-control" data-placement="bottom" data-bind="textInput: PCASearchTerm" maxlength="255" placeholder="Type to Search..." />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row no-gutters">
+                                            <label for="custom-name" class="col-sm-4 col-form-label">Name</label>
+                                            <div class="col-sm-8">
+                                                <input id="custom-name" type="text" class="form-control" data-bind="textInput: Name" maxlength="50" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row no-gutters">
+                                            <label for="custom-line-1" class="col-sm-4 col-form-label">Line 1</label>
+                                            <div class="col-sm-8">
+                                                <input id="custom-line-1" type="text" class="form-control" data-bind="textInput: AddressLine1" maxlength="60" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row no-gutters">
+                                            <label for="custom-line-2" class="col-sm-4 col-form-label">Line 2</label>
+                                            <div class="col-sm-8">
+                                                <input id="custom-line-2" type="text" class="form-control" data-bind="textInput: AddressLine2" maxlength="60" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row no-gutters">
+                                            <label for="custom-line-3" class="col-sm-4 col-form-label">Town</label>
+                                            <div class="col-sm-8">
+                                                <input id="custom-line-3" type="text" class="form-control" data-bind="textInput: AddressLine3" maxlength="50" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row no-gutters">
+                                            <label for="custom-line-4" class="col-sm-4 col-form-label">County</label>
+                                            <div class="col-sm-8">
+                                                <input id="custom-line-4" type="text" class="form-control" data-bind="textInput: AddressLine4" maxlength="40" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row no-gutters">
+                                            <label for="custom-postcode" class="col-sm-4 col-form-label">Postcode</label>
+                                            <div class="col-sm-6">
+                                                <input id="custom-postcode" type="text" class="form-control" data-bind="textInput: Postcode" maxlength="20" />
+                                            </div>
+                                        </div>
+                                        <button id="qas-select-btn-2" class="btn btn-success address-select" data-bind="click: $parent.verifyCustomAddress()">Select Address</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /ko -->
+        <div class="panel panel-primary" data-bind="visible: address()">
+            <div id="despatch-tab" class="panel-heading no-padding" role="tab">
+                <h4 class="panel-title">
+                    <a role="button" class="panel-toggle" data-toggle="collapse" data-parent="#accordion" href="#despatch-collapse" aria-expanded="false" arial-controls="despatch-collapse">
+                        <label id="despatch-display-label" class="margin-bottom-0">Delivery: </label>
+                        <!-- ko if: deliverySelector -->
+                        <span id="despatch-display" data-bind="html: deliverySelector().name()"></span>
+                        <!-- /ko -->
+                    </a>
+                </h4>
+            </div>
+            <div id="despatch-collapse" class="panel-collapse collapse bg-info" role="tabpanel" aria-labelledby="despatch-panel">
+                <div id="despatch-panel" class="panel-body">
+                    <div data-bind="component: { name: 'delivery-selector-component', params: deliverySelectorParams }"></div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-primary" data-bind="visible: errorGroup().length == 0 && address()">
+            <div id="product-tab" class="panel-heading no-padding" role="tab">
+                <h4 class="panel-title">
+                    <a role="button" class="panel-toggle" data-toggle="collapse" data-parent="#accordion" href="#product-collapse" aria-expanded="false" aria-controls="product-collapse">
+                        <label id="product-display-label" class="margin-bottom-0">Products</label>
+                    </a>
+                </h4>
+            </div>
+            <div id="product-collapse" class="panel-collapse collapse bg-info" role="tabpanel" aria-labelledby="product-tab">
+                <div id="product-panel" class="panel-body">
+                    <!-- Nav tabs -->
+                    <ul id="product-search-tabs" class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active">
+                            <a href="#product-search-quick" role="tab" data-toggle="tab">Quick Search</a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#product-search-advanced" role="tab" data-toggle="tab">Advanced Search</a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#previous-baskets" role="tab" data-toggle="tab">
+                                Previous Baskets
+                                <!-- ko if: previousBaskets().length -->
+                                <span class="counter">
+                                    <span data-bind="text: previousBaskets().length"></span>
+                                </span>
+                                <!-- /ko -->
+                            </a>
+                        </li>
+                    </ul>
+                    <div data-bind="visible: address() == null">
+                        <p class="error">
+                            Please select a delivery address.
+                        </p>
+                    </div>
+                    <!-- Tab panes -->
+                    <div class="form-group tab-content">
+                        <div id="product-search-quick" role="tabpanel" class="tab-pane active">
+                            <div class="row">
+                                @if (Model.Properties?.Sampling_CanOverridePricing == false)
+                                {
+                                    <div class="col-xs-12">
+                                        <div class="slicer panel panel-primary">
+                                            <div class="panel-heading">
+                                                Search by Product Code / Design Code / Name
+                                            </div>
+                                            <div class="panel-body no-padding">
+                                                <div id="product-selector" data-bind="visible: address() != null">
+                                                    <input id="product-code" type="text" class="form-control" maxlength="20" placeholder="" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-xs-6">
+                                        <div class="slicer panel panel-primary">
+                                            <div class="panel-heading">
+                                                Search by Product Code / Design Code / Name
+                                            </div>
+                                            <div class="panel-body no-padding">
+                                                <div id="product-selector" data-bind="visible: address() != null">
+                                                    <input id="product-code" type="text" class="form-control" maxlength="20" placeholder="" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6" style="padding-top: 26px;">
+                                        <div class="row">
+                                            <div class="col-xs-6">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon input-group-addon-default">
+                                                        <span data-bind="with: tradeAccountSelector.selected()"><span data-bind="text: CurrencySymbol"></span></span>
+                                                    </span>
+                                                    <input type="text" class="form-control numeric" data-bind="numeric, value: cuttingPriceOverride, attr: { placeholder: 'Cutting Price' }" tabindex="-1" />
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-6">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon input-group-addon-default">
+                                                        <span data-bind="with: tradeAccountSelector.selected()"><span data-bind="text: CurrencySymbol"></span></span>
+                                                    </span>
+                                                    <input type="text" class="form-control numeric" data-bind="numeric, value: returnablePriceOverride, attr: { placeholder: 'Returnable Price' }" tabindex="-1" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div id="product-search-advanced" role="tabpanel" class="tab-pane">
+                            <div class="slicers row no-gutters" data-bind="with: slicers">
+                                <!-- ko foreach: slicerCollection -->
+                                <!-- ko if: $index() != 6 -->
+                                <div class="dropdown-wrapper">
+                                    <div data-bind="component: { name: 'drop-down-component', params: $data }"></div>
+                                </div>
+                                <!-- /ko -->
+                                <!-- /ko -->
+                            </div>
+                            <div class="slicers form-group row no-gutters" data-bind="with: slicers">
+                                <div class="dropdown-wrapper rrp-dropdown-wrapper">
+                                    <div class="slicer panel panel-primary">
+                                        <div class="panel-heading">
+                                            <span>
+                                                RRP
+                                            </span>
+                                        </div>
+                                        <div class="panel-body no-padding">
+                                            <div class="btn-group">
+                                                <button type="button" class="operator-btn btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <span data-bind="html: selectedRRPOperator().display, attr: { title: selectedRRPOperator().title }"></span>
+                                                </button>
+                                                <ul class="dropdown-menu" data-bind="foreach: availableRRPOperators">
+                                                    <li><a href="javascript:;" data-bind="html: display + ' ' + title, attr: { title: title }, click: function() { $parent.selectedRRPOperator($data) }"></a></li>
+                                                </ul>
+                                                <span class="input-group-addon-default">
+                                                    <span data-bind="with: $parent.account"><span data-bind="text: CurrencySymbol"></span></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="dropdown-wrapper rrp-dropdown-wrapper">
+                                    <div class="slicer panel panel-primary">
+                                        <div class="panel-heading">
+                                            <!-- ko if: selectedRRPOperator().value == 3 -->
+                                            &nbsp;
+                                            <!-- /ko -->
+                                            <!-- ko ifnot: selectedRRPOperator().value == 3 -->
+                                            <span>&nbsp;</span>
+                                            <!-- /ko -->
+                                        </div>
+                                        <div class="panel-body no-padding">
+                                            <input class="form-control" data-bind="numeric, value: rrpA, enterKey: function() { nonce.valueHasMutated(); }" placeholder="0" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- ko if: selectedRRPOperator().value == 3 -->
+                                <div class="dropdown-wrapper rrp-dropdown-wrapper">
+                                    <div class="slicer panel panel-primary">
+                                        <div class="panel-heading">
+                                            &nbsp;
+                                        </div>
+                                        <div class="panel-body no-padding">
+                                            <input class="form-control" data-bind="numeric, value: rrpB, enterKey: function() { nonce.valueHasMutated(); }" placeholder="0" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /ko-->
+
+                                <div class="dropdown-wrapper">
+                                    <div data-bind="component: { name: 'drop-down-component', params: slicerCollection[6] }"></div>
+                                </div>
+
+                                <div class="dropdown-wrapper rrp-dropdown-wrapper">
+                                    <div class="slicer panel panel-primary">
+                                        <div class="panel-heading">
+                                            &nbsp;
+                                        </div>
+                                        <div class="panel-body no-padding">
+                                            <button class="btn btn-success btn-reset" data-bind="click: function() { nonce.valueHasMutated(); }" style="border-radius: 0;">
+                                                Search
+                                            </button>
+                                            <button class="btn btn-primary btn-reset" data-bind="click: function() { clearSlicers(); }">
+                                                Reset
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @if (Model.Properties?.Sampling_CanOverridePricing == true)
+                            {
+                                <div class="row">
+                                    <div class="col-xs-4">
+                                        <div class="input-group">
+                                            <span class="input-group-addon input-group-addon-default">
+                                                <span data-bind="with: tradeAccountSelector.selected()"><span data-bind="text: CurrencySymbol"></span></span>
+                                            </span>
+                                            <input type="text" class="form-control numeric" data-bind="numeric, value: cuttingPriceOverride, attr: { placeholder: 'Override Cutting Price' }" />
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-4">
+                                        <div class="input-group">
+                                            <span class="input-group-addon input-group-addon-default">
+                                                <span data-bind="with: tradeAccountSelector.selected()"><span data-bind="text: CurrencySymbol"></span></span>
+                                            </span>
+                                            <input type="text" class="form-control numeric" data-bind="numeric, value: returnablePriceOverride, attr: { placeholder: 'Override Returnable Price' }" />
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div id="previous-baskets" class="tab-pane">
+                            <!-- ko if: previousBaskets().length == 0 -->
+                            <p class="margin-bottom-0">
+                                You have not submitted any orders since loading this page.
+                            </p>
+                            <!-- /ko -->
+                            <!-- ko if: previousBaskets().length > 0 -->
+                            <p class="margin-bottom-15">
+                                Stored Baskets will be lost upon closing or reloading this page.
+                            </p>
+                            <!-- /ko -->
+                            <!-- ko foreach: previousBaskets -->
+                            <div class="previous-basket panel">
+                                <div class="panel-body">
+                                    <div class="flex-container">
+                                        <div>
+                                            <h4 data-bind="text: tradeAccountLabel"></h4>
+                                            <a class="collapser" href="javascript:;" data-bind="text: basketItems().length + ' Item(s)', click: function () { visible(!visible()); }"></a>
+                                            <div data-bind="fadeSlideVisible: visible" class="collapse">
+                                                <table class="table table-bordered table-condensed margin-bottom-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>
+
+                                                            </th>
+                                                            <th>
+                                                                Code
+                                                            </th>
+                                                            <th>
+                                                                Status
+                                                            </th>
+                                                            <th>
+                                                                Stock
+                                                            </th>
+                                                            <th>
+                                                                Name
+                                                            </th>
+                                                            <th>
+                                                                Line Reference
+                                                            </th>
+                                                            <th>
+                                                                Price
+                                                            </th>
+                                                            <th>
+                                                                Quantity
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <!-- ko foreach: basketItems -->
+                                                        <tr>
+                                                            <td>
+                                                                <!-- ko if: ImageID -->
+                                                                <img class="thumb" data-bind="click: $parent.loadLargeImage, attr: { src: 'https://www.designersguild.com/image/32/' + ImageID, title: Code + ' - Product ID: ' + ProductID }" />
+                                                                <!-- /ko -->
+                                                            </td>
+                                                            <td>
+                                                                <span class="code-display" data-bind="text: Code"></span>
+                                                            </td>
+                                                            <td>
+                                                                <span data-bind="text: Status"></span>
+                                                            </td>
+                                                            <td>
+                                                                <span data-bind="text: Stock"></span>
+                                                            </td>
+                                                            <td>
+                                                                <span data-bind="text: Name"></span>
+                                                            </td>
+                                                            <td>
+                                                                <span data-bind="text: LineRef"></span>
+                                                            </td>
+                                                            <td>
+                                                                <span data-bind="text: Price"></span>
+                                                            </td>
+                                                            <td>
+                                                                <span data-bind="text: Quantity"></span>
+                                                            </td>
+                                                        </tr>
+                                                    <!-- /ko -->
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <button class="btn btn-green" data-bind="click: function (data) { $parent.takeBasket($index()) }">
+                                                Take Basket
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div style="position: relative; min-height: 200px;">
+                                <div class="panel-busy-wrapper" style="display: none;" data-bind="fadeVisible: slicers.busy() || productSearchBusy()">
+                                    <div class="form-busy">
+                                        <div class="busy-bars">
+                                            <div class="rect1 alert alert-info"></div>
+                                            <div class="rect2 alert alert-info"></div>
+                                            <div class="rect3 alert alert-info"></div>
+                                            <div class="rect4 alert alert-info"></div>
+                                            <div class="rect5 alert alert-info"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label id="search-result-count-label" for="product-code" class="col-form-label" data-bind="visible: productResultsList().length, text: productResultsList().length + ' result' + (productResultsList().length > 1 ? 's' : '')"></label>
+                                    <span class="notes">
+                                        Please add all samples to your order, we will notify the customer of any discontinued products.
+                                    </span>
+                                </div>
+                                <div id="result-grid" class="products-table" data-bind="kendoGrid: resultGridSettings"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*<div class="col-xs-4 panel-group" id="basket" role="tablist" aria-multiselectable="false">
+        <div class="panel panel-primary">
+            <div id="basket-tab" class="panel-heading no-padding non-search" role="tab">
+                <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#basket" href="#basket-collapse" aria-expanded="true" aria-controls="basket-collapse">
+                        <label id="basket-label" class="margin-bottom-0" for="basket-summary">Basket</label>
+                        <!-- ko if: basket().length -->
+                        <span id="basket-count" data-bind="text: Enumerable.From(basket()).Select('Number($.Quantity())').Sum()"></span>
+                        <!-- ko if: account() -->
+                        <span id="basket-value">Grand Total: <span data-bind="text: formatCurrency(totalPrice(), 2, account().CurrencyCulture, account().CurrencyCode)"></span></span>
+                        <span id="despatch-value">Delivery: <span data-bind="text: deliverySelector().despatchPriceDisplaySmall()"></span></span>
+                        <!-- /ko -->
+                        <!-- /ko -->
+                        <span class="clearfix"></span>
+                    </a>
+                </h4>
+            </div>
+            <div id="basket-collapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="basket-tab">
+                
+            </div>
+        </div>
+    </div>*@
+</div>
+
+@section modals {
+
+}
+
+@section earlyScripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+}
+
+@section scripts {
+    @Scripts.Render("~/bundles/js/sample-request-dg")
+
+    <script type="text/javascript">
+
+        function orderTakerHidden() {
+            return @Model.HideOrderTaker.ToString().ToLowerInvariant();
+        }
+
+        function getAllCountries() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Countries))
+        }
+
+        function getAllCountriesWithout3D() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Countries.Select(p => new { Name = p.Name, Code = p.Code, CountryID = p.CountryID })))
+        }
+
+        function getAllLanguages() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Languages.OrderBy(p => p.LanguageID)))
+        }
+
+        function getDefaultOrderTaker() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.DefaultOrderTaker));
+        }
+
+        $(document).ready(function () {
+
+            viewModel = new SamplesViewModel();
+
+            ko.validation.init({
+                decorateInputElement: true,
+                errorElementClass: 'alert-danger',
+                errorMessageClass: 'validation-message text-danger'
+            });
+
+            ko.options.deferUpdates = true;
+            ko.applyBindings(viewModel, document.body);
+
+            $("#account-number").focus();
+            //fireTestConfiguration();
+        });
+
+        //$("#success-modal").on('hidden.bs.modal', function (e) {
+        //    $("#account-name-label").trigger("click");
+        //})
+    </script>
+}

@@ -1,0 +1,139 @@
+﻿<div id="project-stakeholder-modal" class="project-modal modal fade" data-backdrop="static" data-keyboard="false" data-bind="with: projectFactory">
+    <div class="modal-dialog" data-bind="with: stakeholderFactory">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-bind="click: function() { closeModal(); }" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">
+                    Project Stakeholder
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row" data-bind="visible: autocompleteSelection() == null">
+                    <div class="col-xs-12">
+                        @*<div data-bind="component: { name: 'checkable-list-component', params: $parent.stakeholderListParams }"></div>*@
+                        <label class="col-form-label">
+                            Search
+                        </label>
+                        <div class="remaining-width-wrapper">
+                            <input id="project-stakeholder-search" class="form-control" placeholder="Search for Existing Customer, Lead or Person" />
+                            <span id="stakeholder-hint" class="hint">
+                                Search using the field above or
+                                <button class="btn btn-default btn-sm pull-right" style="margin-left: 15px; font-style: normal;" data-bind="click: function() { revealForm(true); setTimeout(function() { $(projectStakeholderTypeListWidget().autocomplete.DOMElement).focus(); }, 100) }">Enter Manually</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div data-bind="with: autocompleteSelection">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <label class="col-form-label">
+                                Search
+                            </label>
+                            <div id="stakeholder-association" class="remaining-width-wrapper" data-bind="css: Class">
+                                <span class="col-form-span bold" data-bind="text: Type"></span>
+                                <!-- ko if: Code -->
+                                <span class="col-form-span" data-bind="text: Code"></span>
+                                <!-- /ko -->
+                                <button type="button" class="clear-field close pull-right" data-bind="click: function() { $parent.removeStakeholderAssociation(); }">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                                <br />
+                                <div class="clearfix"></div>
+                                <span class="col-form-span" data-bind="text: Name"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div data-bind="slideVisible: revealForm()">
+                    <hr />
+                    <div class="form-group row">
+                        <div class="col-xs-12">
+                            <label class="col-form-label">
+                                Stakeholder Type
+                            </label>
+                            <div class="remaining-width-wrapper">
+                                <div data-bind="component: { name: 'addable-list-component', params: projectStakeholderTypeListParams }"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-xs-12">
+                            <label class="col-form-label">
+                                Decision Maker?
+                            </label>
+                            <div class="remaining-width-wrapper">
+                                <label class="col-form-span pointer" style="padding: 6px 6px 5px 6px; margin-left: 0;">
+                                    <input type="checkbox" class="form-checkbox pointer" data-bind="checked: decisionMaker" />
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-xs-12">
+                            <label class="col-form-label">
+                                Name
+                            </label>
+                            <div class="remaining-width-wrapper">
+                                <input class="form-control" data-bind="keepElement: name, textInput: name" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-xs-12">
+                            <label class="col-form-label">
+                                Phone
+                            </label>
+                            <div class="remaining-width-wrapper">
+                                <input class="form-control" data-bind="keepElement: phone, textInput: phone" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-xs-12">
+                            <label class="col-form-label">
+                                Email
+                            </label>
+                            <div class="remaining-width-wrapper">
+                                <input class="form-control" data-bind="keepElement: email, textInput: email" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-xs-12">
+                            <label class="col-form-label">
+                                Website
+                            </label>
+                            <div class="remaining-width-wrapper">
+                                <input class="form-control" data-bind="keepElement: website, textInput: website" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-xs-12">
+                            <label class="col-form-label">
+                                Company Name
+                            </label>
+                            <div class="remaining-width-wrapper">
+                                <input class="form-control" data-bind="keepElement: companyName, textInput: companyName" />
+                            </div>
+                        </div>
+                    </div>
+                    <div data-bind="template: { name: 'address-template', data: address }"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-bind="click: function() { closeModal(); }">
+                    Cancel
+                </button>
+                <button class="btn btn-success pull-right" data-bind="click: function() { saveStakeholder(); }">
+                    Save
+                </button>
+                <span class="col-form-span text-danger pull-right" data-bind="visible: errors.isAnyMessageShown()">
+                    Please correct all errors
+                </span>
+            </div>
+        </div>
+        <!-- ko if: initLateExtenders() -->
+        <!-- /ko -->
+    </div>
+</div>

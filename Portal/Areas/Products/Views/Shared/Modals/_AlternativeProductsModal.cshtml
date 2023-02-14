@@ -1,0 +1,158 @@
+﻿<div id="alternative-products-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Co-ordinates With</h4>
+            </div>
+            <div class="modal-body">
+                <div class="modal-busy" data-bind="visible: alternativeProductsBusy"></div>
+                <div id="alternative-products-container" data-bind="visible: !alternativeProductsBusy()">
+                    <!-- ko if: alternativeProducts().length == 0 -->
+                    <h4>No coordinating products were found.</h4>
+                    <!-- /ko -->
+                    <!-- ko foreach: alternativeProducts -->
+                    <div class="product-result col-xs-12">
+                        <div class="product-result-inner">
+                            <div class="product-result-contents">
+                                <label class="product-name" data-bind="html: $data.Name + ' - ' + $data.ProductType"></label>
+                                <!-- ko if: $data.ImageID -->
+                                <img class="thumb" data-bind="click: $parent.loadLargeImage, attr: { src: 'https://www.designersguild.com/image/156/' + $data.ImageID, title: $data.Code + ' - Product ID: ' + $data.ProductID + ' Sample Product ID: ' + $data.CuttingProductID + ' Returnable Product ID: ' + $data.ReturnableProductID }" />
+                                <!-- /ko -->
+                                <!-- ko ifnot: $data.ImageID -->
+                                <img class="thumb" data-bind="click: $parent.loadLargeImage, attr: { src: '/Areas/Products/content/images/not-found.png', title: $data.Code + ' - Product ID: ' + $data.ProductID + ' Sample Product ID: ' + $data.CuttingProductID + ' Returnable Product ID: ' + $data.ReturnableProductID }" />
+                                <!-- /ko -->
+                                <!-- ko if: $data.ProductPageID -->
+                                <a data-bind="html: $data.Code, click: $parent.loadProductInfo"></a>
+                                <!-- /ko -->
+                                <!-- ko ifnot: $data.ProductPageID -->
+                                <span data-bind="html: $data.Code"></span>
+                                <!-- /ko -->
+
+                                @if (Model.Properties?.ProductSearch_ShowStock == true)
+                                {
+                                    <label data-bind="text: $data.StatusDisplay($data.Status), css: { 'bold': $data.Status === 'D' }"></label>
+                                }
+
+                                <label data-bind="text: $data.RRP"></label>
+
+                                <label><a data-bind="click: $parent.loadStockInfo, text: $data.StockStatus"></a></label>
+
+                                <label><a data-bind="click: $parent.loadAlternativeProducts">Co-ordinates With</a></label>
+
+                                <div class="clearfix"></div>
+
+                                <div class="cutting row">
+                                    <!-- ko if: $data.CuttingCode != null -->
+                                    <div class="col-xs-12">
+
+                                        <!-- ko if: $parent.showDiscontinued ||  $data.CuttingStatus != 'D' -->
+
+                                        <div class="btn-group" data-bind="attr: { title: $parent.buttonTitle($data, 'C', 'Add') }">
+                                            @*buttonClass($data.CuttingStatus), *@
+                                            <a class="btn btn-primary @(Model.Properties?.Application_ButtonClass)" data-bind="css: [($parent.sampleButtonEnabled($data) ? '': 'disabled')].join(' '), click: function() { $parent.increaseCodeInBasket($data.Name, $data.ProductType, $data.CuttingCode, $data.CuttingStatus, $data.CuttingPrice, $data.ImageID) }">
+                                                <span class="glyphicon glyphicon-plus"></span>
+                                            </a>
+                                            <a class="btn btn-default @(Model.Properties?.Application_ButtonClass)" data-bind="click: function() { $parent.decreaseCodeInBasket($data.CuttingCode) }" title="Remove">
+                                                <span class="glyphicon glyphicon-minus"></span>
+                                            </a>
+                                        </div>
+                                        <span class="quantity" data-bind="text: $data.cuttingButtonQuantityDisplay"></span>
+
+                                        <span class="cutting-info-display">
+                                            @if (Model.Properties?.Order_Returnables == true)
+                                            {
+                                                <text>Sample</text>
+                                            }
+                                            @if (Model.Properties?.ProductSearch_ShowStock == true)
+                                            {
+                                                <span class="cutting-info-status" data-bind="text: $data.CuttingStatusDisplay, css: { 'bold': $data.CuttingStatus === 'D' }"></span>
+                                            }
+                                        </span>
+
+                                        @if (Model.Properties?.ProductSearch_ShowStock == true)
+                                        {
+                                            <span data-bind="text: $data.CuttingStockDisplay"></span>
+                                        }
+                                        @if (Model.Properties?.ProductSearch_ShowPrices == true)
+                                        {
+                                            <span class="price" data-bind="text: $data.CuttingPriceDisplay"></span>
+                                        }
+
+                                        <!-- /ko -->
+                                        @if (Model.Properties?.ProductSearch_ShowStock == false)
+                                        {
+                                <!-- ko if: $data.CuttingStatus === 'D' -->
+                                            <span class="cutting-info-display bold">Samples Discontinued</span>
+                                <!-- /ko -->
+                                        }
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <span class="button-hint text-warning" data-bind="text: $parent.buttonTitle($data, 'C', null)"></span>
+                                    </div>
+                                    <!-- /ko -->
+                                </div>
+
+                                @if (Model.Properties?.Order_Returnables == true)
+                                {
+                                    <div class="cutting row">
+                                        <!-- ko if: $data.ReturnableCode != null -->
+                                        <div class="col-xs-12" style="margin-top: 12px;">
+                                            <!-- ko if: $parent.showDiscontinued || $data.ReturnableStatus != 'D' -->
+                                            <div class="btn-group" data-bind="attr: { title: $parent.buttonTitle($data, 'R', 'Add') }">
+                                                <a class="btn btn-primary @(Model.Properties?.Application_ButtonClass)" data-bind="css: [($parent.returnableButtonEnabled($data) ? '': 'disabled')].join(' '), click: function() { $parent.increaseCodeInBasket($data.Name, $data.ProductType, $data.ReturnableCode, $data.ReturnableStatus, $data.ReturnablePrice, $data.ImageID) }">
+                                                    <span class="glyphicon glyphicon-plus"></span>
+                                                </a>
+                                                <a class="btn btn-default @(Model.Properties?.Application_ButtonClass)" data-bind="click: function() { $parent.decreaseCodeInBasket($data.ReturnableCode) }" title="Remove">
+                                                    <span class="glyphicon glyphicon-minus"></span>
+                                                </a>
+                                            </div>
+                                            <span class="quantity" data-bind="text: $data.returnableButtonQuantityDisplay"></span>
+                                            <span class="cutting-info-display">
+
+                                                Returnable
+
+                                                @if (Model.Properties?.ProductSearch_ShowStock == true)
+                                                {
+                                                    <span class="cutting-info-status" data-bind="text: $data.ReturnableStatusDisplay, css: { 'bold': $data.ReturnableStatus === 'D' }"></span>
+                                                }
+                                            </span>
+
+                                            @if (Model.Properties?.ProductSearch_ShowStock == true)
+                                            {
+                                                <span data-bind="text: $data.ReturnableStockDisplay"></span>
+                                            }
+                                            @if (Model.Properties?.ProductSearch_ShowPrices == true)
+                                            {
+                                                <span class="price" data-bind="text: $data.ReturnablePriceDisplay"></span>
+                                            }
+
+
+                                            <!-- /ko -->
+                                            @if (Model.Properties?.ProductSearch_ShowStock == false)
+                                            {
+                                    <!-- ko if: $data.ReturnableStatus === 'D' -->
+                                                <span class="cutting-info-display bold">Returnable Samples Discontinued</span>
+                                    <!-- /ko -->
+                                            }
+                                        </div>
+                                        <div class="col-xs-12">
+                                            <span class="button-hint text-warning" data-bind="text: $parent.buttonTitle($data, 'R', null)"></span>
+                                        </div>
+                                        <!-- /ko -->
+                                    </div>
+                                }
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /ko -->
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="alternative-products-close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,58 @@
+﻿@{
+    ViewBag.Title = "Customer Care";
+}
+
+@section styles {
+    @Styles.Render("~/bundles/css/components")
+    @Styles.Render("~/bundles/css/customer-care")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/components")
+    @Scripts.Render("~/bundles/js/datetime-picker")
+    @Scripts.Render("~/bundles/js/customer-care")
+
+    <script type="text/javascript">
+        var viewModel = new customerCareViewModel();
+
+        ko.applyBindings(viewModel, document.body);
+
+        $(document).ready(function () {
+            $("#account-number").focus();
+        });
+
+        function getTradeAccountGroupId() {
+            return @Html.Raw(Json.Encode(Model.TradeAccountGroupID))
+        }
+
+        function getTradeAccountId() {
+            return @Html.Raw(Json.Encode(Model.TradeAccountID))
+        }
+    </script>
+}
+@section modals {
+    @Html.Partial("Modals/_ImageModal")
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <h3 class="page-heading">
+            Customer Care
+        </h3>
+    </div>
+</div>
+
+@Html.Action("TradeAccountSelector", "Component", new { Area = "", canSearch = Model.CanSearch })
+
+<div class="row margin-top-15" style="display: none;" data-bind="visible: loadBusy">
+    <div class="col-sm-8 col-xs-12">
+        <div class="loading-busy"></div>
+    </div>
+</div>
+
+
+<div class="row margin-top-15" style="display: none" data-bind="visible: tradeAccountSelector().selected">
+    <div class="col-sm-8 col-xs-12">
+        @Html.Action("CareSearch", "Component", new { Area = "" })
+    </div>
+</div>

@@ -1,0 +1,508 @@
+﻿@model Portal.Areas.Customers.ViewModels.CustomerInviteViewModel
+@{
+    ViewBag.Title = "Invite Trade Customers";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/kendo-custom")
+    @Styles.Render("~/bundles/css/customer-invite")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/customer-invite")
+
+    <script type="text/javascript">
+
+        function getPreselectedTradeAccount() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.PreselectedTradeAccount))
+        }
+
+        var viewModel = new customerInviteViewModel();
+        
+        $(document).ready(function () {
+
+            ko.validation.init({
+                decorateInputElement: true,
+                errorElementClass: 'alert-danger',
+                errorMessageClass: 'validation-message text-danger'
+            });
+
+            ko.applyBindings(viewModel, document.body);
+
+            $("#account-number").focus();
+        });
+
+    </script>
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row margin-bottom-15">
+    <div class="col-xs-12 text-right">
+    </div>
+</div>
+
+@Html.Action("TradeAccountSelector", "Component", new { Area = "", canSearch = Model.Properties?.AccountSelector_CanSearch ?? false, canCollapse = false })
+
+<div class="page-busy-wrapper" data-bind="fadeVisible: busy()">
+    <div class="blocker">
+        <div class="busy-bars">
+            <div class="rect1 alert alert-info"></div>
+            <div class="rect2 alert alert-info"></div>
+            <div class="rect3 alert alert-info"></div>
+            <div class="rect4 alert alert-info"></div>
+            <div class="rect5 alert alert-info"></div>
+        </div>
+        <h3 class="margin-top-15" data-bind="html: busyMessage"></h3>
+    </div>
+</div>
+
+<!-- ko if: checkResult() && tradeAccountSelector.selected() -->
+
+<div class="row margin-bottom-15 margin-top-30" style="display: none;" data-bind="visible: true">
+    <div class="col-xs-12">
+        <div class="panel panel-info margin-bottom-0">
+            <div class="panel-body">
+                <h3>
+                    Enter the Customer's name
+                </h3>
+                <hr/>
+                <div class="margin-bottom-30" data-bind="component: { name: 'mdc-text-field-component', params: nameParams }"></div>
+                <h3>
+                    This is the Registered Email Address that we hold for this Trade Account
+                </h3>
+                <hr/>
+                <div class="margin-bottom-15" data-bind="component: { name: 'mdc-text-field-component', params: toParams }"></div>
+                @*<p class="margin-bottom-30 display-block">
+                    If this is not the correct email address, please contact Credit Control and request that this is changed on Mertex.
+                    Once changed, you may 
+                    <a href="javscript:;" data-bind="click: function () { toParams.revertFunction(); }">
+                         click here
+                        <i class="material-icons">
+                            replay
+                        </i>
+                        to reload the email address.
+                    </a>
+                </p>*@
+                <button class="btn btn-battleship-blue" data-bind="click: function () { inviteCustomer(); }">
+                    Send B2B Trade Registration Link
+                </button>
+                <!--<button class="btn btn-default pull-left margin-right-15" data-bind="enable: false, click: sendInvite">-->
+                    <!-- ko if: checkResult().RegistrationStatus == 'Registration Pending' -->
+                    <!--Resend-->
+                    <!-- /ko -->
+                    <!-- ko if: checkResult().RegistrationStatus == "Ready to Send Invite" -->
+                    <!--Send-->
+                    <!-- /ko -->
+                    <!--Invite
+                </button>-->
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="display: none" data-bind="visible: true, with: inviteResult">
+    <div class="row">
+        <div class="col-xs-12">
+            <!-- ko if: InviteErrors != null -->
+            <div class="alert alert-danger margin-bottom-15" data-bind="with: InviteErrors">
+                <h3>
+                    Sorry
+                </h3>
+                <p>
+                    It was not possible to send this invitation at the moment. Please review the errors below.
+                </p>
+                <ul class="errors-list">
+                    <!-- ko if: ExtantPermissionsOnAccount -->
+                    <li>
+                        Unavailable Email. This email address already has one or more permissions associated with <span data-bind="text: ExtantPermissionsOnAccount"></span>. Users can only have
+                        permissions for one trade account at a time.
+                    </li>
+                    <!-- /ko -->
+                    <!-- ko if: InvalidAccount -->
+                    <li>
+                        Invalid Account. This should be impossible at this stage, please contact <a href="mailto:itsupport@designersguild.com">itsupport@designersguild.com</a> immediately.
+                    </li>
+                    <!-- /ko -->
+                    <!-- ko if: CurrencyMismatch -->
+                    <li>
+                        Currency Mismatch. The currency on the Trade Account record (<span data-bind="text: TradeAccountCurrency"></span>)
+                        does not match the Price List currency (<span data-bind="text: PriceListCurrency"></span>) for the site culture appropriate to their Trade Price List.  
+                    </li>
+                    <!-- /ko -->
+                    <!-- ko if: InvalidMarket -->
+                    <li>
+                        Invalid Market. We do not currently support inviting Market code (<span data-bind="text: TradeAccountMarket"></span>). At the time of writing, Markets which cannot be invited are:
+                        'I', Internal; 'R', Retail; 'E', Export.
+                    </li>
+                    <!-- /ko -->
+                    <!-- ko if: PriceListMismatch -->
+                    <li>
+                        Price List Mismatch. There was no site culture found to serve this Trade Account's Trade Price List (<span data-bind="text: PriceListMismatch"></span>).
+                    </li>
+                    <!-- /ko -->
+                    <!-- ko if: ErrorMessage -->
+                    <li data-bind="html: ErrorMessage"></li>
+                    <!-- /ko -->
+                </ul>
+            </div>
+            <!-- /ko -->
+        </div>
+    </div>
+    <!-- ko if: InviteErrors == null -->
+    <div class="row margin-bottom-15" data-bind="with: EmailParts">
+        <div class="col-xs-12">
+            <div class="panel panel-info margin-bottom-0">
+                <div class="panel-body">
+                    <h3 class="margin-bottom-0">
+                        Invitation Email sent successfully to: 
+                        <span class="text-success" style="display: none;" data-bind="fadeVisible: $parentContext.$parent.showLastSentTo, fadeSpeed: 'slow', html: $parentContext.$parent.lastSentTo() + ' &#x2714;'"></span>
+                        <br/>
+                        <span class="small">
+                            This email was sent from trade@emails.designersguild.com
+                        </span>
+                    </h3>
+                    @*<hr/>*@ 
+                    @*<a class="btn btn-battleship-blue pull-right" data-bind="attr: { 'href': 'mailto:' + $parentContext.$parent.to() + '?subject=' + EmailSubject.replace(/(<([^>]+)>)/ig, '').replace(/\s/ig, '%20')  + '&body=' + EmailContentsPlainText }">
+                        Send Invitation Email
+                        <span class="glyphicon glyphicon-send margin-left-15"></span>
+                    </a>*@
+                    @*<a class="btn btn-battleship-blue pull-right" data-bind="click: $parentContext.$parent.sendInvite">
+                        Send Invitation Email
+                        <span class="glyphicon glyphicon-send margin-left-5"></span>
+                    </a>*@
+                    @*<h4 class="email-subject">
+                        Subject: <span data-bind="html: EmailSubject"></span>
+                    </h4>
+                    <div class="email-body">
+                        <span data-bind="html: EmailContents"></span>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /ko -->
+</div>
+
+<div id="trade-wrapper" style="display: none" data-bind="visible: true">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="panel panel-info">
+                <div class="panel-body">
+                    <div id="trade-user-admin">
+                        <div>
+                            <div class="member-account-row padding-bottom-0">
+                                <div class="header check margin-bottom-0" style="border-top: 0;">
+                                    <h3 class="user-heading">
+                                        Existing Administrators
+                                    </h3>
+                                    <hr/>
+                                </div>
+                            </div>
+                            <!-- ko if: tradeAdmins().length == 0 -->
+                            <h4>
+                                No Administrators Registered
+                            </h4>
+                            <!-- /ko -->
+                            <div data-bind="foreach: Enumerable.From(tradeAdmins()).OrderBy('$.fullName').ToArray()">
+                                <div class="user-wrapper">
+                                    <div class="user-wrapper-inner">
+                                        <dl class="dl-horizontal">
+                                            <dt>
+                                                Name
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: fullName"></span>
+                                            </dd>
+                                            <dt>
+                                                Email
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: email"></span>
+                                            </dd>
+                                        </dl>
+                                        <div class="flex-container" style="padding: 0">
+                                            <div>
+                                                <dl class="dl-horizontal">
+                                                    <dt>
+                                                        Status
+                                                    </dt>
+                                                    <dd>
+                                                        <!-- ko if: tradeAuthenticationComplete -->
+                                                        <span class="text-success">
+                                                            Complete
+                                                        </span>
+                                                        <!-- /ko -->
+                                                        <!-- ko ifnot: tradeAuthenticationComplete -->
+                                                        <!-- ko if: daysRemaining() < 0 -->
+                                                        <span class="text-danger">
+                                                            Registration Expired
+                                                        </span>
+                                                        <!-- /ko -->
+                                                        <!-- ko if: daysRemaining() >= 0 -->
+                                                        <span class="text-warning">
+                                                            <span data-bind="text: daysRemaining"></span>
+                                                            Days Remaining to Register
+                                                        </span>
+                                                        <!-- /ko -->
+                                                        <!-- /ko -->
+                                                    </dd>
+                                                </dl>
+                                            </div>
+                                            <div>
+                                                <dl class="dl-horizontal">
+                                                    <dt style="width: 110px;">
+                                                        Price Display
+                                                    </dt>
+                                                    <dd style="margin-left: 120px;">
+                                                        <!-- ko if: tradePricingDisplay -->
+                                                        Trade Prices
+                                                        <!-- /ko -->
+                                                        <!-- ko ifnot: tradePricingDisplay -->
+                                                        Retail Prices
+                                                        <!-- /ko -->
+                                                    </dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                        <label class="permissions-label"></label>
+                                        <div class="flex-container">
+                                            <div>
+                                                <ul class="permissions">
+                                                    <li>
+                                                        <label>
+                                                            <input type="checkbox" data-bind="checked: manageAccount" disabled="disabled" />
+                                                            Manage Account
+                                                        </label>
+                                                    </li>
+                                                    <li>
+                                                        <label>
+                                                            <input type="checkbox" data-bind="checked: manageAccount" disabled="disabled" />
+                                                            Manage Contact Details
+                                                        </label>
+                                                    </li>
+                                                    <li>
+                                                        <label>
+                                                            <input type="checkbox" data-bind="checked: placeOrders" disabled="disabled" />
+                                                            Place Orders
+                                                        </label>
+                                                    </li>
+                                                    <li>
+                                                        <label>
+                                                            <input type="checkbox" data-bind="checked: requestSamples" disabled="disabled" />
+                                                            Request Samples
+                                                        </label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div>
+                                                <ul class="permissions">
+                                                    <li>
+                                                        <label>
+                                                            <input type="checkbox" data-bind="checked: viewAccounts" disabled="disabled" />
+                                                            View Accounts
+                                                        </label>
+                                                    </li>
+                                                    <li>
+                                                        <label>
+                                                            <input type="checkbox" data-bind="checked: downloadPricelistsBrochures" disabled="disabled" />
+                                                            Download Pricelists &amp; Brochures
+                                                        </label>
+                                                    </li>
+                                                    <li>
+                                                        <label>
+                                                            <input type="checkbox" data-bind="checked: downloadProductFeeds" disabled="disabled" />
+                                                            Download Product Feeds
+                                                        </label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <!-- ko if: !tradeAuthenticationComplete -->
+                                        <div class="resend-invite">
+                                            <button class="btn btn-success pull-right" data-bind="click: function (data) { $parent.resendAdminInvite(data) }">
+                                                Resend Invitation <span class="glyphicon glyphicon-send"></span>
+                                            </button>
+                                        </div>
+                                        <!-- /ko -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="member-account-row padding-bottom-0">
+                                <div class="header check margin-bottom-0" style="border-top: 0">
+                                    <h3 class="user-heading">
+                                        Existing Users
+                                        <a class="btn btn-battleship-blue" data-bind="click: checkViability">
+                                            Refresh
+                                        </a>
+                                    </h3>
+                                    <hr/>
+                                </div>
+                            </div>
+                            <!-- ko if: tradeUsers().length == 0 -->
+                            <h4>
+                                No Users Registered
+                            </h4>
+                            <!-- /ko -->
+                            <div data-bind="foreach: Enumerable.From(tradeUsers()).OrderBy('$.fullName').ToArray()">
+                                <div class="user-wrapper">
+                                    <div class="user-wrapper-inner">
+                                        <dl class="dl-horizontal">
+                                            <dt>
+                                                Name
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: fullName"></span>
+                                            </dd>
+                                            <dt>
+                                                Email
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: email"></span>
+                                            </dd>
+                                        </dl>
+                                        <div class="flex-container" style="padding: 0">
+                                            <div>
+                                                <dl class="dl-horizontal">
+                                                    <dt>
+                                                        Status
+                                                    </dt>
+                                                    <dd>
+                                                        <!-- ko if: tradeAuthenticationComplete -->
+                                                        <span class="text-success">
+                                                            Complete
+                                                        </span>
+                                                        <!-- /ko -->
+                                                        <!-- ko ifnot: tradeAuthenticationComplete -->
+                                                        <!-- ko if: daysRemaining() < 0 -->
+                                                        <span class="text-danger">
+                                                            Registration Expired
+                                                        </span>
+                                                        <!-- /ko -->
+                                                        <!-- ko if: daysRemaining() >= 0 -->
+                                                        <span class="text-warning">
+                                                            <span data-bind="text: daysRemaining"></span>
+                                                            Days Remaining to Register
+                                                        </span>
+                                                        <!-- /ko -->
+                                                        <!-- /ko -->
+                                                    </dd>
+                                                </dl>
+                                            </div>
+                                            <div>
+                                                <dl class="dl-horizontal">
+                                                    <dt>
+                                                        Pricing Display
+                                                    </dt>
+                                                    <dd>
+                                                        <!-- ko if: tradePricingDisplay -->
+                                                        Trade Prices
+                                                        <!-- /ko -->
+                                                        <!-- ko ifnot: tradePricingDisplay -->
+                                                        Retail Prices
+                                                        <!-- /ko -->
+                                                    </dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                        <label class="permissions-label"></label>
+                                        <div class="flex-container">
+                                            <div>
+                                                <ul class="permissions">
+                                                    <li>
+                                                        <label>
+                                                            <input type="checkbox" data-bind="checked: placeOrders" disabled="disabled" />
+                                                            Place Orders
+                                                        </label>
+                                                    </li>
+                                                    <li>
+                                                        <label>
+                                                            <input type="checkbox" data-bind="checked: requestSamples" disabled="disabled" />
+                                                            Request Samples
+                                                        </label>
+                                                    </li>
+                                                    <li>
+                                                        <label>
+                                                            <input type="checkbox" data-bind="checked: viewAccounts" disabled="disabled" />
+                                                            View Accounts
+                                                        </label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div>
+                                                <ul class="permissions">
+                                                    <li>
+                                                        <label>
+                                                            <input type="checkbox" data-bind="checked: downloadPricelistsBrochures" disabled="disabled" />
+                                                            Download Pricelists &amp; Brochures
+                                                        </label>
+                                                    </li>
+                                                    <li>
+                                                        <label>
+                                                            <input type="checkbox" data-bind="checked: downloadProductFeeds" disabled="disabled" />
+                                                            Download Feeds
+                                                        </label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- /ko -->
+
+<div id="resent-confirm-modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">
+                    Thank You
+                </h4>
+            </div>
+            <div class="modal-body">
+                <p class="margin-bottom-0">
+                    Trade Authentication Email resent to:
+                    <span data-bind="text: resendRecipient()"></span>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success pull-right" data-dismiss="modal" aria-label="Close">
+                    Ok
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

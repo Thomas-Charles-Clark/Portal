@@ -1,0 +1,113 @@
+﻿<script type="text/html" id="generic-form-template">
+    <form class="form-container" data-bind="class: displayClass, event: { 'onsubmit': (ev) => { ev.preventDefault() } }">
+        <div class="form-header">
+            <!-- ko if: heading -->
+            <h3 data-bind="html: heading"></h3>
+            <!-- /ko -->
+            <!-- ko if: subHeading -->
+            <h5 class="form-subheading" data-bind="html: subHeading"></h5>
+            <!-- /ko -->
+            <!-- ko if: intro -->
+            <div class="form-description" data-bind="html: intro"></div>
+            <!-- /ko -->
+        </div>
+        <div data-bind="
+             class: layoutClass,
+             template: {
+                 foreach: panels,
+                 name: 'generic-form-panel-template'
+                }"></div>
+        <!-- ko if: submittable -->
+        <div class="d-flex gap-3 pt-3">
+            <button type="button" class="btn btn-success" data-bind="click: submit">
+                Submit
+            </button>
+            <span class="validation-message" data-bind="visible: isInvalid">
+                Please correct all errors before submitting this form
+            </span>
+        </div>
+        <!-- /ko -->
+    </form>
+</script>
+
+<script type="text/html" id="generic-form-panel-template">
+    <fieldset class="form-fieldset card" data-bind="class: layoutClass">
+        <!-- ko if: heading -->
+        <legend class="h3" data-bind="html: heading"></legend>
+        <!-- /ko -->
+        <div class="card-body">
+            <!-- ko if: subHeading -->
+            <h5 class="form-panel-subheading" data-bind="html: subHeading"></h5>
+            <!-- /ko -->
+            <!-- ko if: intro -->
+            <div class="form-panel-intro" data-bind="html: intro"></div>
+            <!-- /ko -->
+            <div data-bind="
+                 class: layoutClass,
+                 template: {
+                    foreach: visibleFields,
+                    name: 'generic-form-field-template'
+                 }"></div>
+            <!-- ko if: submittable -->
+            <div class="d-flex gap-3 pt-3">
+                <button type="button" class="btn btn-success" data-bind="click: submit">
+                    Submit
+                </button>
+                <span class="validation-message" data-bind="visible: isInvalid">
+                    Please correct all errors before submitting this form
+                </span>
+            </div>
+            <!-- /ko -->
+        </div>
+    </fieldset>
+</script>
+
+<script type="text/html" id="generic-form-field-template">
+    <div class="field" data-bind="class: layoutClass">
+        <div data-bind="
+             attr: {
+                'data-bs-toggle': 'tooltip',
+                'data-bs-title': tooltip
+             },
+             component: {
+                name: templateName,
+                params: params
+             }"></div>
+        <!-- ko if: note -->
+        <div class="field-note" data-bind="html: note"></div>
+        <!-- /ko -->
+    </div>
+</script>
+
+<script type="text/html" id="change-summary-template">
+    <table class="table table-striped table-condensed">
+        <thead>
+            <tr>
+                <th>
+                    Table
+                </th>
+                <th>
+                    Change
+                </th>
+                <th class="text-end">
+                    Count
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- ko foreach: $data -->
+            <tr>
+                <td>
+                    <span data-bind="text: Table"></span>
+                </td>
+                <td>
+                    <span data-bind="text: Change"></span>
+                </td>
+                <td class="text-end">
+                    <span data-bind="text: Count"></span>
+                </td>
+            </tr>
+            <!-- /ko -->
+        </tbody>
+    </table>
+</script>

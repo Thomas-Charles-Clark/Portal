@@ -1,0 +1,361 @@
+﻿@* Templates for Kendo controls *@
+
+<script type="text/kendo-x-tmpl" id="list-item-template">
+    <div class="list-group-item">#= Name #</div>
+</script>
+
+<script type="text/kendo-x-tmpl" id="currency-list-item-template">
+    <div class="list-group-item">#= Currency.Name #</div>
+</script>
+
+<script type="x/kendo-template" id="grid-page-template">
+    <div class="page-template">
+        <div class="header">
+            <div style="float: right">Page #: pageNum # of #: totalPages #</div>
+            Multi-page grid with automatic page breaking
+        </div>
+        <div class="watermark">DESIGNERS GUILD</div>
+        <div class="footer">
+            Page #: pageNum # of #: totalPages #
+        </div>
+    </div>
+</script>
+
+@*<script type="x/kendo-template" id="toolbar-template">
+        <!-- ko if: currentQuery() === 'CustomerPrices' -->
+        <button role="button" class="k-button k-button-icontext" href="\#" data-bind="click: function() { resultsToPdf(); }">
+            <span class="k-icon k-i-file-pdf"></span>Export to PDF
+        </button>
+        <!-- /ko -->
+        <button role="button" class="k-button k-button-icontext" href="\#" data-bind="click: function() { resultsToXlsx(); }">
+            <span class="k-icon k-i-file-xls"></span>Export to Xlsx
+        </button>
+    </script>*@
+
+@* End of Templates for Kendo controls *@
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <div id="query-btns" class="btn-group btn-group-justified">
+            <label class="btn" data-bind="css: { 'btn-success active': currentQuery() == 'CustomerPrices', 'btn-default': selectedTradeAccountId() == null, 'btn-primary': selectedTradeAccountId() != null }, click: function() { selectedTradeAccountId() ? currentQuery('CustomerPrices') : $.info('Info', 'You must select a trade account to use this enquiry.') }">
+                @*Trade Price Enquiry*@
+                Customer Prices
+            </label>
+            <label class="btn btn-primary" data-bind="css: { 'btn-success active': currentQuery() == 'ListPrices' }, click: function() { currentQuery('ListPrices') }">
+                @*Price List Enquiry*@
+                List Prices
+            </label>
+            <label class="btn btn-primary" data-bind="css: { 'btn-success active': currentQuery() == 'ContractPrices' }, click: function() { currentQuery('ContractPrices') }">
+                @*Special Price Enquiry*@
+                Special Prices
+            </label>
+            <label class="btn btn-primary" data-bind="css: { 'btn-success active': currentQuery() == 'ProductsNoPrices' }, click: function() { currentQuery('ProductsNoPrices') }">
+                @*Products Without Prices*@
+                Products without Prices
+            </label>
+            <label class="btn btn-primary" data-bind="css: { 'btn-success active': currentQuery() == 'LowMargin' }, click: function() { currentQuery('LowMargin') }">
+                @*Low Margin*@
+                Low Margin
+            </label>
+            <label class="btn btn-primary" data-bind="css: { 'btn-success active': currentQuery() == 'ContractAgreements' }, click: function() { currentQuery('ContractAgreements') }">
+                @*Special Price Agreements*@
+                Price Agreements
+            </label>
+        </div>
+    </div>
+</div>
+
+@*data-parent="#accordion"*@
+<div id="price-search-accordion">
+    <div class="panel panel-secondary-blue">
+        <div class="panel-heading no-padding non-search">
+            <h4 class="panel-title">
+                <a href="javascript:;" class="panel-title panel-toggle" data-toggle="collapse" data-parent="price-search-accordion" data-target="#market-collapse">
+                    Market Filters
+                </a>
+            </h4>
+        </div>
+        <div id="market-collapse" class="panel-collapse collapse in">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-4 col-xs-12">
+                        <div class="slicer panel panel-primary" style="width: 100%; margin-bottom: 0">
+                            <div class="panel-heading">
+                                Currency
+                                <!-- ko if: permitMarketChange() -->
+                                <span class="clear-selection glyphicon glyphicon-filter" style="display: none;" data-bind="visible: (selectedCurrencyId() != null), click: function() { selectedCurrencyId(undefined); }"><span>×</span></span>
+                                <!-- /ko -->
+                            </div>
+                            <div class="panel-body no-padding">
+                                <div class="slicer-disabler" data-bind="visible: selectedTradeAccountId() != null"></div>
+                                <div class="slicer-list list-group" data-bind="kendoListView: {  dataValueField: 'Value', dataTextField: 'Currency.Name',  data: currencyDataSource, change: function(e) { currencyChange(e); }, dataBound: function(e) { currencyDataBound(e); }, template: $('#currency-list-item-template').html(), selectable: permitMarketChange }"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 col-xs-12">
+                        <div class="slicer panel panel-primary" style="width: 100%; margin-bottom: 0">
+                            <div class="panel-heading">
+                                Market
+                                <!-- ko if: permitMarketChange() -->
+                                <span class="clear-selection glyphicon glyphicon-filter" style="display: none;" data-bind="visible: (selectedMarketId() != null), click: function() { selectedMarketId(undefined); }"><span>×</span></span>
+                                <!-- /ko -->
+                            </div>
+                            <div class="panel-body no-padding">
+                                <div class="slicer-disabler" data-bind="visible: selectedTradeAccountId() != null"></div>
+                                <div class="slicer-list list-group" data-bind="kendoListView: { dataValueField: 'Value', dataTextField: 'Name',  data: marketDataSource, change: function(e) { marketChange(e); }, dataBound: function(e) { marketDataBound(e); }, template: $('#list-item-template').html(), selectable: permitMarketChange }"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 col-xs-12">
+                        <div class="slicer panel panel-primary" style="width: 100%; margin-bottom: 0">
+                            <div class="panel-heading">
+                                Price List
+                                <!-- ko if: permitMarketChange() -->
+                                <span class="clear-selection glyphicon glyphicon-filter" style="display: none;" data-bind="visible: (selectedTradePriceListId() != null), click: function() { selectedTradePriceListId(undefined); }"><span>×</span></span>
+                                <!-- /ko -->
+                            </div>
+                            <div class="panel-body no-padding">
+                                <div class="slicer-disabler" data-bind="visible: selectedTradeAccountId() != null"></div>
+                                <div class="slicer-list list-group" data-bind="kendoListView: { widget: tradePriceListWidget(), dataValueField: 'Value', dataTextField: 'Name',  data: tradePriceListDataSource, change: function(e) { tradePriceListChange(e); }, dataBound: function(e) { tradePriceListDataBound(e); }, template: $('#list-item-template').html(), selectable: permitMarketChange, filterable: true}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-secondary-blue">
+        <div class="panel-heading no-padding non-search">
+            <h4 class="panel-title">
+                <a href="javascript:;" class="panel-title panel-toggle" data-toggle="collapse" data-parent="price-search-accordion" data-target="#product-collapse">
+                    Product Filters
+                </a>
+            </h4>
+        </div>
+        <div id="product-collapse" class="panel-collapse collapse in">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <div class="col-sm-12 col-xs-12">
+                                <div class="form-group row">
+                                    <div class="col-xs-12 price-checker-controls">
+                                        <div class="input-group">
+                                            <input id="price-checker-search" type="text" class="form-control" data-bind="textInput: searchTerm" placeholder="Search for a Product, Design or Collection" />
+                                            <span class="input-group-addon">
+                                                <button class="clear-btn btn btn-primary @(Model.Properties?.Application_ButtonClass)" type="button" data-bind="click: function() { clearPriceCheckerSearch() }">×</button>
+                                            </span>
+                                            <span class="input-group-btn">
+                                                <button style="border-top-right-radius: 4px; border-bottom-right-radius: 4px;" class="search-btn btn btn-primary @(Model.Properties?.Application_ButtonClass)" data-bind="click: function() { performPriceCheckerAutocompleteSearch() }"><span class="glyphicon glyphicon-search"></span></button>
+
+                                                <span style="margin-left: 12px;">
+                                                    <input id="include-samples" type="checkbox" style="margin-left: 12px;" />
+                                                </span>
+                                                <span style="margin-left: 12px;">
+                                                    <input id="include-clearance" type="checkbox" style="margin-left: 12px;" />
+                                                </span>
+                                                <button style="border-radius: 4px; margin-left: 12px;" class="btn btn-danger" data-bind="click: function() { reset(); }">
+                                                    Reset
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="slicer-wrapper" class="row">
+                    <div class="col-xs-12">
+                        @*<div class="slicer panel panel-primary">
+                            <div class="panel-heading">
+                                Brand
+                                <span class="clear-selection glyphicon glyphicon-filter" style="display: none;" data-bind="visible: selectedBrandIDs().length > 0, click: function() { brandWidget().clearSelection(); }"><span>&times;</span></span>
+                            </div>
+                            <div class="panel-body no-padding">
+                                <div class="slicer-list list-group" data-bind="kendoListView: { navigatable: true, dataValueField: 'BrandID', dataTextField: 'Name', widget: brandWidget, data: brandDataSource, change: function(e) { brandChange(e); }, dataBound: function(e) { brandDataBound(e); }, template: $('#list-item-template').html(), selectable: 'multiple' }"></div>
+                            </div>
+                            <div class="panel-footer">
+                                <a data-bind="attr: { href: brandDataSourceURL(), target: '_blank' }, text: brandDataSourceURL()"></a>
+                            </div>
+                        </div>
+                        <div class="slicer panel panel-primary">
+                            <div class="panel-heading">
+                                Product Type Group
+                                <span class="clear-selection glyphicon glyphicon-filter" style="display: none;" data-bind="visible: selectedProductTypeGroupIDs().length > 0, click: function() { productTypeGroupWidget().clearSelection(); }"><span>&times;</span></span>
+                            </div>
+                            <div class="panel-body no-padding">
+                                <div class="slicer-list list-group" data-bind="kendoListView: { dataValueField: 'ProductTypeGroupID', dataTextField: 'Name', widget: productTypeGroupWidget, data: productTypeGroupDataSource, change: function(e) { productTypeGroupChange(e) }, dataBound: function(e) { productTypeGroupDataBound(e); }, template: $('#list-item-template').html(), selectable: 'multiple' }"></div>
+                            </div>
+                            <div class="panel-footer">
+                                <a data-bind="attr: { href: productTypeGroupDataSourceURL(), target: '_blank' }, text: productTypeGroupDataSourceURL()"></a>
+                            </div>
+                        </div>
+                        <div class="slicer panel panel-primary">
+                            <div class="panel-heading">
+                                Product Type
+                                <span class="clear-selection glyphicon glyphicon-filter" style="display: none;" data-bind="visible: selectedProductTypeIDs().length > 0, click: function() { productTypeWidget().clearSelection(); }"><span>&times;</span></span>
+                            </div>
+                            <div class="panel-body no-padding">
+                                <div class="slicer-list list-group" data-bind="kendoListView: { dataValueField: 'ProductTypeID', dataTextField: 'Name', widget: productTypeWidget, data: productTypeDataSource, change: function(e) { productTypeChange(e) }, dataBound: function(e) { productTypeDataBound(e); }, template: $('#list-item-template').html(), selectable: 'multiple'}"></div>
+                            </div>
+                            <div class="panel-footer">
+                                <a data-bind="attr: { href: productTypeDataSourceURL(), target: '_blank' }, text: productTypeDataSourceURL()"></a>
+                            </div>
+                        </div>
+                        <div class="slicer panel panel-primary">
+                            <div class="panel-heading">
+                                Item Type
+                                <span class="clear-selection glyphicon glyphicon-filter" style="display: none;" data-bind="visible: selectedItemTypeIDs().length > 0, click: function() { itemTypeWidget().clearSelection(); }"><span>&times;</span></span>
+                            </div>
+                            <div class="panel-body no-padding">
+                                <div class="slicer-list list-group" data-bind="kendoListView: { dataValueField: 'ItemTypeID', dataTextField: 'Name', widget: itemTypeWidget, data: itemTypeDataSource, change: function(e) { itemTypeChange(e) }, dataBound: function(e) { itemTypeDataBound(e); }, template: $('#list-item-template').html(), selectable: 'multiple'}"></div>
+                            </div>
+                            <div class="panel-footer">
+                                <a data-bind="attr: { href: itemTypeDataSourceURL(), target: '_blank' }, text: itemTypeDataSourceURL()"></a>
+                            </div>
+                        </div>
+                        <div class="slicer panel panel-primary">
+                            <div class="panel-heading">
+                                Launch
+                                <span class="clear-selection glyphicon glyphicon-filter" style="display: none;" data-bind="visible: selectedLaunchIDs().length > 0,click: function() { launchWidget().clearSelection(); }"><span>&times;</span></span>
+                            </div>
+                            <div class="panel-body no-padding">
+                                <div class="slicer-list list-group" data-bind="kendoListView: { dataValueField: 'LaunchID', dataTextField: 'Name', widget: launchWidget, data: launchDataSource, change: function(e) { launchChange(e) }, dataBound: function(e) { launchDataBound(e); }, template: $('#list-item-template').html(), selectable: 'multiple'}"></div>
+                            </div>
+                            <div class="panel-footer">
+                                <a data-bind="attr: { href: launchDataSourceURL(), target: '_blank' }, text: launchDataSourceURL()"></a>
+                            </div>
+                        </div>
+                        <div class="slicer panel panel-primary">
+                            <div class="panel-heading">
+                                Season
+                                <span class="clear-selection glyphicon glyphicon-filter" style="display: none;" data-bind="visible: selectedSeasonIDs().length > 0, click: function() { seasonWidget().clearSelection(); }"><span>&times;</span></span>
+                            </div>
+                            <div class="panel-body no-padding">
+                                <div class="slicer-list list-group" data-bind="kendoListView: { dataValueField: 'SeasonID', dataTextField: 'Name', widget: seasonWidget, data: seasonDataSource, change: function(e) { seasonChange(e) }, dataBound: function(e) { seasonDataBound(e); }, template: $('#list-item-template').html(), selectable: 'multiple'}"></div>
+                            </div>
+                            <div class="panel-footer">
+                                <a data-bind="attr: { href: seasonDataSourceURL(), target: '_blank' }, text: seasonDataSourceURL()"></a>
+                            </div>
+                        </div>*@
+                        <div class="panel panel-default filters">
+                            <div class="panel-body bg-info">
+                                <div class="slicers row no-gutters">
+                                    <div class="input-group btn-group-justified">
+                                        <!-- ko foreach: slicerCollection -->
+                                        <div class="input-group-btn">
+                                            <div class="dropdown-wrapper">
+                                                <div data-bind="component: { name: 'multi-select-component', params: $data }"></div>
+                                            </div>
+                                        </div>
+                                        <!-- /ko -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="position: relative;">
+    <div class="panel-busy-wrapper" data-bind="fadeVisible: busy()" style="border-radius: 0 0 4px 4px;">
+        <div class="form-busy">
+            <div class="busy-bars">
+                <div class="rect1 alert alert-info"></div>
+                <div class="rect2 alert alert-info"></div>
+                <div class="rect3 alert alert-info"></div>
+                <div class="rect4 alert alert-info"></div>
+                <div class="rect5 alert alert-info"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div style="height: 0px; position: relative; overflow: hidden">
+                <div id="header">
+                    <h1>PDF Cover Page</h1>
+                    <p>
+                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+                    </p>
+                    <p>
+                        <a target="_blank" href="https://www.designersguild.com">https://www.designersguild.com</a>
+                    </p>
+                    <p>
+                        <a href="/#page=2">Go to page 2!</a>
+                    </p>
+                </div>
+                <div id="footer">
+                    <h4>PDF Back Page</h4>
+                    <p>
+                        It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="position: relative">
+    <div id="price-checker-grid-loading" class="panel-busy-wrapper" style="border-radius: 4px;">
+        <div class="form-busy">
+            <div class="busy-bars">
+                <div class="rect1 alert alert-info"></div>
+                <div class="rect2 alert alert-info"></div>
+                <div class="rect3 alert alert-info"></div>
+                <div class="rect4 alert alert-info"></div>
+                <div class="rect5 alert alert-info"></div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-xs-12">
+            <div id="price-checker-grid" data-bind="kendoGrid: resultGridSettings"></div>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12 text-center">
+        <div style="float: left">
+            <!-- ko if: currentQuery() === 'CustomerPrices' -->
+            <button role="button" class="btn btn-default btn-sm" href="\#" data-bind="click: function() { resultsToPdf(); }">
+                <span class="k-icon k-i-file-pdf"></span>Export to PDF
+            </button>
+            <!-- /ko -->
+            <button role="button" class="btn btn-default btn-sm" href="\#" data-bind="click: function() { resultsToXlsx(); }">
+                <span class="k-icon k-i-file-xls"></span>Export to Xlsx
+            </button>
+        </div>
+        <div style="float: right">
+            <button class="btn btn-success btn-sm" data-bind="click: function(e) { cacheBuster(true) }">
+                Hard Refresh
+                <span class="glyphicon glyphicon-refresh"></span>
+            </button>
+        </div>
+        <div>
+            <label class="text-muted">
+                Key:&nbsp;
+            </label>
+            <div class="panel panel-warning" style="display: inline-block;">
+                <div class="panel-heading" style="padding: 4px 8px; cursor: default;">
+                    Clearance
+                </div>
+            </div>
+            <div class="panel panel-danger" style="display: inline-block;">
+                <div class="panel-heading" style="padding: 4px 8px; cursor: default;">
+                    Gross Margin beneath Target Margin
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12 ">
+    </div>
+</div>

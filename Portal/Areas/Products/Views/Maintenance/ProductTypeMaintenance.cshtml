@@ -1,0 +1,240 @@
+﻿@model Portal.Areas.Products.ViewModels.ProductTypeMaintenanceViewModel
+@{
+    ViewBag.Title = "Product Type Maintenance";
+
+    Layout = "~/Views/Shared/_Layout-New.cshtml";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/components")
+    @Styles.Render("~/bundles/css/kendo-custom")
+    @Styles.Render("~/bundles/css/product-type-maintenance")
+    @Styles.Render("~/bundles/css/tempus-dominus")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/components")
+    @Scripts.Render("~/bundles/js/generic-forms")
+    @Scripts.Render("~/bundles/js/product-type-maintenance")
+
+    <script type="text/javascript">
+
+        window.getProductTypes = () => {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.ProductTypes));
+        }
+
+        window.getTables = () => {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Fields.GroupBy(f => new { f.SchemaName, f.TableName }).Select(t => new { tableName = t.Key.TableName, fields = t })));
+        }
+
+        let viewModel = productTypeMaintenanceViewModel();
+
+        ko.options.deferUpdates = true;
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        $(document).ready(function () {
+            ko.applyBindings(viewModel, document.body);
+            window.setTimeout(() => {
+                viewModel.ready();
+            }, 0);
+        });
+    </script>
+}
+
+<div class="blocker" style="display: none;" data-bind="flexVisible: busy, toggleOpacity: busy">
+    <div class="loading-spinner"></div>
+    <h3 class="mt-3">
+        Please Wait
+    </h3>
+</div>
+
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="mb-3">
+            Product Type
+        </h4>
+        <div class="hstack gap-3">
+            <div class="flex-grow-1" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productTypeParams }"></div>
+            <button class="btn btn-primary">
+                Add New
+            </button>
+        </div>
+        <div class="d-none mt-3" data-bind="css: { 'd-none': productType() == null }">
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <button class="nav-link bg-light active" data-bs-toggle="tab" data-bs-target="#maintenance-tab-core">
+                        Core
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-link bg-light" data-bs-toggle="tab" data-bs-target="#maintenance-tab-json">
+                        Edit JSON
+                    </button>
+                </li>
+            </ul>
+            <div id="product-type-tabs-container" class="tab-content">
+                <div id="maintenance-tab-core" class="tab-pane fade maintenance-tab show active">
+                    <div class="d-flex">
+                        <div class="w-50" data-bind="component: { name: 'mdc-text-field-component', params: productTypeNameParams }"></div>
+                        <button class="btn btn-success ms-auto" data-bind="click: saveCore">
+                            Save
+                        </button>
+                    </div>
+                </div>
+                <div id="maintenance-tab-json" class="tab-pane fade maintenance-tab">
+                    <div class="relative">
+                        <div id="reformat-wrapper">
+                            <div class="hstack gap-2">
+                                <button class="btn btn-light reformat" data-bind="click: reformat">
+                                    <i class="fa-solid fa-paragraph"></i>
+                                    Reformat
+                                </button>
+                                <button class="btn btn-success" data-bind="click: saveJson">
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                        <div data-bind="component: { name: 'code-mirror-component', params: productTypeFormJsonParams }"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="cheatsheet" data-bind="class: cheatsheetPinClass">
+    <div id="cheatsheet-inner">
+        <div id="cheatsheet-handle" class="pointer btn-light" data-bind="click: toggleCheatsheetPinning">
+            <i class="fa-solid fa-chevron-left" data-bind="class: cheatsheetChevronIconClass"></i>
+        </div>
+        <div class="d-flex flex-column p-3">
+            <ul class="nav nav-pills">
+                <!-- ko foreach: tables -->
+                <li>
+                    <button class="nav-link" data-bs-toggle="tab"
+                            data-bind="css: { 'active': $index() == 0 }, attr: { 'data-bs-target': '#cheatsheet-tab-' + tableName }">
+                        <span data-bind="text: tableName"></span>
+                    </button>
+                </li>
+                <!-- /ko -->
+                <li>
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#cheatsheet-tab-json">
+                        JSON
+                    </button>
+                </li>
+                <li class="ms-auto">
+                    <button class="nav-link" data-bind="click: toggleCheatsheetPinning">
+                        <i class="fa-solid fa-lock-open" data-bind="class: cheatsheetPinIconClass"></i>
+                    </button>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <!-- ko foreach: tables -->
+                <div class="tab-pane fade" data-bind="attr: { id: 'cheatsheet-tab-' + tableName }, css: { 'show active': $index() == 0 }">
+                    <table class="table table-condensed table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>
+
+                                </th>
+                                <th>
+                                    Name
+                                </th>
+                                <th>
+                                    Label
+                                </th>
+                                <th>
+                                    Data Definition
+                                </th>
+                                <th>
+                                    Mandatory
+                                </th>
+                                <th>
+                                    Mertex Source
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- ko foreach: fields -->
+                            <tr>
+                                <td>
+                                </td>
+                                <td>
+                                    <span class="field-handle" data-bind="event: { dragstart: $parentContext.$parent.dragStart }" draggable="true">
+                                        <span data-bind="text: ColumnName"></span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span data-bind="text: FieldLabel"></span>
+                                </td>
+                                <td>
+                                    <span data-bind="text: DataDefinition"></span>
+                                </td>
+                                <td>
+                                    <span data-bind="text: IsNullable ? 'Yes' : 'No'"></span>
+                                </td>
+                                <td>
+                                    <!-- ko if: MertexFileName -->
+                                    <span data-bind="text: MertexFileName"></span>
+                                    <<span data-bind="text: MertexFieldIndex"></span>>
+                                    "<span data-bind="text: MertexFieldName"></span>
+                                    <!-- /ko -->
+                                </td>
+                            </tr>
+                            <!-- /ko -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /ko -->
+                <div id="cheatsheet-tab-json" class="tab-pane fade pt-3">
+                    <h4>
+                        Form
+                    </h4>
+                    <p>
+                        Forms are logical groupings of panels.
+                    </p>
+                    <pre class="prettyprint lang-js mb-5" data-bind="html: PR.prettyPrintOne(JSON.stringify(exampleForm, null, 4), 'js', false)"></pre>
+                    <h4>
+                        Panel
+                    </h4>
+                    <p>
+                        Panels are logical groupings of fields. Generally, a panel represents some part or whole of a record.
+                    </p>
+                    <pre class="prettyprint lang-js mb-5" data-bind="html: PR.prettyPrintOne(JSON.stringify(examplePanel, null, 4), 'js', false)"></pre>
+                    <h4>
+                        Field
+                    </h4>
+                    <p>
+                        Fields contain values belonging to a record.
+                    </p>
+                    <pre class="prettyprint lang-js" data-bind="html: PR.prettyPrintOne(JSON.stringify(exampleField, null, 4), 'js', false)"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,540 @@
+﻿.k-grid-norecords {
+    padding: 15px 0;
+}
+
+#accounts-menu .form-busy {
+    left: 0;
+    top: 0;
+    border-radius: 4px;
+}
+
+#accounts-menu .k-grid-content-expander {
+    height: 0;
+}
+
+#accounts-menu {
+    padding: 15px;
+    background: white;
+    position: relative;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    border-top: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+    .outstanding-pane .flex-container {
+        display: flex;
+    }
+
+
+    .outstanding-pane .flex-container:not(.margin-bottom-15) {
+        margin-bottom: 30px;
+    }
+
+    .outstanding-pane .flex-container > div > label:not(.date-clear),
+    .outstanding-pane .flex-container > div > div > label:not(.date-clear) {
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+
+.outstanding-pane span.k-widget.k-datepicker.k-header.date-picker {
+    width: 30%;
+}
+
+.outstanding-pane .flex-container > div:first-child {
+    flex: 0 1 45%;
+}
+
+.outstanding-pane .flex-container > div:last-child {
+    flex: 1 1 auto;
+}
+
+.outstanding-pane .k-grid .k-alt:not(.k-state-selected):hover {
+    background-color: #ebebeb;
+}
+
+.outstanding-pane .k-grid tr {
+    cursor: pointer;
+}
+
+.outstanding-pane .flex-container > div:last-child > div {
+    margin-left: 15px;
+}
+
+#reserve-orders.outstanding-pane .flex-container > div:first-child > div {
+    margin-left: 0;
+}
+
+#reserve-orders.outstanding-pane .flex-container > div:first-child {
+    flex: 0 1 60%;
+}
+
+#reserve-orders.outstanding-pane .flex-container > div:last-child a {
+    line-height: 34px;
+}
+
+.outstanding-pane .select-group {
+    box-sizing: border-box;
+    display: flex;
+}
+
+    .outstanding-pane .select-group select {
+        border-radius: 0;
+    }
+
+        .outstanding-pane .select-group select:first-of-type {
+            border-radius: 4px 0 0 4px;
+        }
+
+        .outstanding-pane .select-group select:last-of-type {
+            border-radius: 0 4px 4px 0;
+            border-left: 0;
+        }
+
+.outstanding-pane h4.accounts-title {
+    margin-bottom: 20px;
+}
+
+.outstanding-pane input[type=text].form-control {
+    box-sizing: border-box;
+}
+
+.outstanding-pane .custom-date-wrapper span.k-datepicker {
+    width: 44%;
+    margin-left: 5px;
+}
+
+.outstanding-pane .custom-date-wrapper {
+    margin-top: 15px;
+    text-align: right;
+    position: relative;
+}
+
+.outstanding-pane #custom-from-date,
+.outstanding-pane #custom-to-date {
+    padding-right: 6px;
+}
+
+.outstanding-pane .input-group .form-control {
+    width: 100%;
+}
+
+#invoice-search .date-clear,
+.outstanding-pane .date-clear {
+    font-size: 22px;
+    padding: 0 4px;
+    line-height: 28px;
+    box-sizing: border-box;
+    vertical-align: middle;
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+.input-group .input-group-btn {
+    font-size: inherit;
+    font-weight: normal;
+}
+
+.input-group span.glyphicon, .input-group button {
+    font-weight: normal;
+}
+
+#trade-wrapper .flex-container {
+    display: flex;
+}
+    #trade-wrapper .flex-container > div {
+        flex: 1
+    }
+
+    #extant-returns .flex-container > div {
+        flex: 0 1 auto;
+        padding-right: 30px;
+    }
+
+#extant-returns .shipment-title {
+    display: flex;
+    flex-direction: column;
+}
+
+    #extant-returns .shipment-title .btn {
+        justify-self: flex-end;
+        margin-top: auto;
+    }
+
+        #trade-wrapper .flex-container .address {
+            display: flex;
+            flex-direction: column;
+        }
+
+    #trade-wrapper .flex-container > .lines,
+    #trade-wrapper .flex-container > .parcels {
+        padding-left: 15px;
+        position: relative;
+    }
+
+        /*#trade-wrapper .flex-container > .lines {
+            flex: 1 1 auto;
+        }
+
+        #trade-wrapper .flex-container > .parcels {
+            flex: 0 1 50%;
+        }*/
+
+
+        .quantity-control input[type=number] {
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+        }
+
+
+div.quantity-control {
+    margin: 0 auto;
+    width: auto;
+}
+
+.quantity-control .form-control {
+    text-align: right;
+    padding: 5px;
+    cursor: default;
+    width: 60px;
+}
+
+.quantity-control .form-control {
+    width: 60px;
+}
+
+.quantity-control .input-group-btn {
+    width: auto;
+}
+
+.quantity-control.input-group .input-group-btn .btn {
+    font-size: 19px;
+    line-height: 20px;
+    padding: 6px 8px;
+}
+
+.return-line-container,
+.return-parcel-container {
+    display: flex;
+    padding: 15px 0 0 0;
+    flex-direction: column;
+}
+
+    .return-line-container {
+        min-height: 131px;
+        border: 1px solid #ccc;
+        padding: 8px;
+        border-radius: 4px;
+        margin-top: 15px;
+    }
+
+    .return-parcel-container {
+        flex: 1 1 auto;
+        flex-direction: column;
+    }
+
+    .return-parcel-container .return-parcel + .return-parcel {
+        margin-top: 15px;
+    }
+
+.address-block {
+    padding: 15px 0;
+}
+
+.return-line {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: white;
+    display: inline-block;
+    user-select: none;
+}
+
+    .return-line,
+    .return-line * {
+        cursor: pointer;
+    }
+
+.return-parcel {
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+    .return-parcel p {
+        padding: 8px 8px 0 8px;
+        margin-bottom: 0;
+    }
+
+.return-parcel-line-container {
+    width: 100%;
+    min-height: 129px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+    .return-line + .return-line:not(.placeholder) {
+        margin-top: 8px;
+    }
+
+.return-parcel-container .return-line + .return-line {
+    margin-top: 8px;
+}
+
+    .return-line label:last-of-type {
+        margin-bottom: 0;
+    }
+
+p.note {
+    font-size: 11px;
+    font-style: italic;
+}
+
+.returning-line button.close {
+    padding: 4px 6px;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.returning-line {
+    position: relative;
+    padding-right: 24px;
+}
+
+/*.return-line-container {
+    justify-content: center;
+    align-items: center;
+}*/
+.return-line-container.bg-success {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.return-line-container.bg-success::before {
+    content: '\2714';
+    font-size: 24px;
+    color: green;
+}
+
+.tracking-number-controls .mdc-validating-field .mdc-notched-outline.mdc-notched-outline--upgraded .mdc-notched-outline__trailing {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.tracking-number-controls .flex-container {
+    display: flex;
+}
+
+.tracking-number-controls > .flex-container > button {
+    margin-right: 15px;
+}
+
+.tracking-number-controls div.flex-container > div {
+    flex: 1 1 auto;
+}
+
+.tracking-number-controls > button {
+
+}
+
+.well img {
+    width: 100%;
+}
+
+.well {
+    margin-bottom: 0;
+}
+
+.well + .well {
+    margin-top: 15px;
+}
+
+.tracking-number-controls > button {
+    display: block;
+    width: 100%;
+}
+
+    .tracking-number-controls > button > span {
+        position: relative;
+    }
+
+
+#extant-returns button .material-icons,
+.tracking-number-controls .material-icons {
+    font-size: 22px;
+    position: absolute;
+    right: 8px;
+    top: 6px;
+}
+
+    .tracking-number-controls .material-icons {
+        right: -26px;
+        top: 0;
+    }
+
+    .tracking-number-controls > button:last-of-type:not(.generate-btn), button.already-voided {
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+    }
+
+#extant-returns button,
+.tracking-number-controls button {
+    padding-right: 36px;
+    position: relative;
+}
+
+div.returning-quantity-control {
+    position: absolute;
+    top: -8px;
+    right: 0;
+}
+
+p.text-info {
+    line-height: 34px;
+    margin-bottom: 0;
+}
+
+#create-return .panel {
+    margin-bottom: 0;
+}
+
+.collect-time {
+    width: 140px;
+}
+
+.extant-collection {
+    display: flex;
+}
+
+.extant-collection > label {
+    flex: 1;
+}
+
+label.title {
+    font-size: 18px;
+}
+
+.k-grid-content tbody tr {
+    cursor: pointer;
+}
+
+.address hr {
+    width: 100%;
+}
+
+#extant-returns .btn-toolbar.disabled,
+#extant-returns .btn-group.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.return-identifiers,
+.extant-collection {
+    display: inline-flex;
+    flex-direction: column;
+}
+
+.return-identifiers label,
+.extant-collection label {
+    display: flex;
+    justify-content: space-between;
+}
+.return-identifiers label.title,
+.extant-collection label.title {
+    justify-content: flex-start;
+}
+
+    .return-identifiers label span,
+    .extant-collection label span {
+        margin-left: 15px;
+    }
+
+.return-identifiers {
+    margin-bottom: 15px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 15px;
+}
+
+    .return-identifiers  > div {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 15px;
+    }
+
+        .return-identifiers > div > label {
+            margin-bottom: 15px;
+        }
+
+        #extant-returns .address-block {
+            padding-top: 0;
+        }
+
+.shipment-title {
+    font-size: 16px;
+}
+
+.shipment-title label {
+    display: block;
+}
+
+#extant-returns div.well {
+    margin-bottom: 0;
+    background-image: unset;
+    padding: 15px;
+}
+
+    #extant-returns div.well label span {
+        font-weight: normal;
+    }
+
+    #extant-returns div.well label:last-of-type {
+        margin-bottom: 0;
+    }
+
+    #extant-returns div.k-pager.k-widget {
+        border-width: 0;
+    }
+
+    #extant-returns div.well div.tracking-update + div.tracking-update {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #bbb;
+    }
+
+.return-title h3 {
+    font-weight: bold;
+}
+
+.shipment-address .address-block {
+    text-align: right;
+}
+
+.shipment-title label {
+
+}
+
+.shipment-title label span {
+    margin-left: 15px;
+}
+
+.phone-number-type {
+    padding-top: 5px;
+}
+
+.return-title {
+    margin: 0;
+}
+
+p.note {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.k-header > .k-grid-filter, .k-header > .k-header-column-menu {
+    padding: 0em 0.2em 0.4em;
+}

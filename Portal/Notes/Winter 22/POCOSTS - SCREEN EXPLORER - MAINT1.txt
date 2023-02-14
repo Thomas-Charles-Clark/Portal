@@ -1,0 +1,19 @@
+Field Name     Process Before       Process After        Intuitive Help     
+QUALITY        P:(W1=1; @ACTION=1                                           
+QUALDESC                                                                    
+COUNTRY                                                                     
+COUNDESC                                                                    
+MOD            P:(IF W1 = 1 AND <                                           
+MODDESC                                                                     
+SUPREF         P:(IF @RECORD="" T                                           
+SUPNAME                                                                     
+DUTY%          PG.POCOSTS.AFTREAD                                           
+INLAND%                                                                     
+PACKAGING%                                                                  
+FREIGHTR                                                                    
+QUOTAR                                                                      
+COSTLAB1                                                                    
+COSTLAB2
+COSTLAB3
+COSTLAB4
+COSTLAB5

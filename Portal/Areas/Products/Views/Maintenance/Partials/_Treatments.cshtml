@@ -1,0 +1,313 @@
+﻿<ul class="nav nav-pills">
+    <li class="active">
+        <a href="#treatment-tab-treatments" data-bs-toggle="tab" data-bs-target="#treatment-tab-treatments">
+            Maintain Treatments
+        </a>
+    </li>
+    <li>
+        <a href="#treatment-tab-qualities" data-bs-toggle="tab" data-bs-target="#treatment-tab-qualities">
+            Fabric Qualities
+        </a>
+    </li>
+</ul>
+<div class="tab-content padding-top-30">
+    <div id="treatment-tab-qualities" class="tab-pane fade">
+        <div data-bind="component: { name: 'mdc-text-field-autocomplete-component', params: qualityAutocomplete }"></div>
+        <button class="btn btn-green pull-right" data-bind="click: $parent.showTreatmentEditModal, visible: mode() == TREATMENT_VIEW_MODE">
+            Create Treatment Record
+        </button>
+        <div style="display: none;" data-bind="visible: quality() != null">
+            <h3 class="quality-header blue-heading" data-bind="with: quality, css: { 'quality-header-adjust': mode() == TREATMENT_EDIT_MODE }">
+                <span data-bind="text: `${Code} - ${Name == null ? '[Unnamed]' : Name}${Composition == null ? '' : ' - ' + Composition }`"></span>
+                <button class="btn btn-blue pull-left" style="display: none" data-bind="click: $parent.cancel, visible: $parent.mode() == TREATMENT_EDIT_MODE">
+                    Cancel
+                </button>
+                <button class="btn pull-right" style="display: none;" data-bind="css: { 'btn-green': $parent.mode(), 'btn-blue': !$parent.mode() }, click: $parent.saveOrEdit, visible: !$parent.busy()">
+                    <span data-bind="text: $parent.mode() ? 'Save' : 'Edit'"></span>
+                </button>
+            </h3>
+            <div id="treatments-maintenance-container">
+                <div class="page-blocker" data-bind="flexVisible: busy, toggleOpacity: busy">
+                    <div class="loading-spinner"></div>
+                    <h3 data-bind="html: busyMessage"></h3>
+                </div>
+                <!-- ko if: existingQualityTreatments() -->
+                <table class="table table-condensed margin-top-15 quality-info-table">
+                    <colgroup>
+                        <col style="width: 33.33%"/>
+                        <col style="width: 33.33%"/>
+                        <col style="width: 33.33%"/>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>
+                                Composition
+                            </th>
+                            <th>
+                                Flamcode
+                            </th>
+                            <th>
+                                Tests Passed
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="blue-heading">
+                            <td>
+                                <!-- ko foreach: existingQualityTreatments().QualityCompositions -->
+                                <span class="test-passed display-block">
+                                    <span data-bind="text: CompositionCode"></span>
+                                    -
+                                    <span data-bind="text: CompositionName"></span></span>
+                                <!-- /ko -->
+                            </td>
+                            <td>
+                                <!-- ko foreach: existingQualityTreatments().QualityCompositions -->
+                                <span class="test-passed display-block">
+                                    <span data-bind="text: FlamcodeCode"></span>
+                                    -
+                                    <span data-bind="text: FlamcodeName"></span>
+                                </span>
+                                <!-- /ko -->
+                            </td>
+                            <td>
+                                <!-- ko foreach: existingQualityTreatments().TestsPassed -->
+                                <span class="test-passed display-block">
+                                    <span data-bind="text: Code"></span>
+                                    -
+                                    <span data-bind="text: Name"></span>
+                                </span>
+                                <!-- /ko -->
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- /ko -->
+                <ul class="nav nav-pills">
+                    <!-- ko foreach: Enumerable.From(treatmentProviders()).OrderBy('$.sortOrder').ToArray() -->
+                    <li data-bind="css: { 'active': $index() == 0 }">
+                        <a data-toggle="tab" data-bind="attr: { 'href': '#tab-treatment-provider-' + provider.treatmentProviderId }, text: provider.name"></a>
+                    </li>
+                    <!-- /ko -->
+                </ul>
+                <div class="tab-content">
+                    <!-- ko foreach: Enumerable.From(treatmentProviders()).OrderBy('$.sortOrder').ToArray() -->
+                    <div class="tab-pane" data-bind="attr: { 'id': 'tab-treatment-provider-' + provider.treatmentProviderId }, css: { 'active': $index() == 0 }">
+                        <!-- ko foreach: treatmentTypes -->
+                        <div class="treatment-section">
+                            <table class="treatment-table table table-condensed">
+                                <colgroup>
+                                    <col style="width: 180px" />
+                                    <col style="width: 380px" />
+                                    <col style="width: 140px" />
+                                    <col />
+                                </colgroup>
+                                <tbody>
+                                    <tr>
+                                        <th class="treatment-type-grouping" colspan="4">
+                                            <div class="blue-heading alert alert-info" data-bind="text: type.name"></div>
+                                        </th>
+                                    </tr>
+                                    <tr class="treatment-table-headings">
+                                        <th>
+                                            Treatment
+                                        </th>
+                                        <th>
+                                            Availability
+                                        </th>
+                                        <th>
+                                            Product Code
+                                        </th>
+                                        <th>
+                                            Note
+                                        </th>
+                                    </tr>
+                                    <!-- ko foreach: treatments -->
+                                    <tr class="treatment" data-bind="css: { 'treatment-edit-mode': $parentContext.$parentContext.$parent.mode() == TREATMENT_EDIT_MODE }">
+                                        <th>
+                                            <span data-bind="text: TreatmentName"></span>
+                                        </th>
+                                        <td>
+                                            <!-- ko if: $parentContext.$parentContext.$parent.mode() == TREATMENT_VIEW_MODE -->
+                                            <span>
+                                                <span class="display-block" data-bind="text: TreatmentStatus, attr: { title: TreatmentStatusHover }"></span>
+                                                @*<span class="smaller display-block" data-bind="text: TreatmentStatusHover"></span>*@
+                                            </span>
+                                            <!-- /ko -->
+                                            <!-- ko if: $parentContext.$parentContext.$parent.mode() == TREATMENT_EDIT_MODE -->
+                                            <div data-bind="component: { name: 'mdc-select-component', params: treatmentProvisionStatus }"></div>
+                                            <!-- /ko -->
+                                        </td>
+                                        <td>
+                                            <span data-bind="text: SupplierProductCode"></span>
+                                        </td>
+                                        <td>
+                                            <!-- ko if: $parentContext.$parentContext.$parent.mode() == TREATMENT_VIEW_MODE -->
+                                            <span data-bind="text: Note"></span>
+                                            <!-- /ko -->
+                                            <!-- ko if: $parentContext.$parentContext.$parent.mode() == TREATMENT_EDIT_MODE -->
+                                            <div data-bind="component: { name: 'mdc-text-area-component', params: noteParams }"></div>
+                                            <!-- /ko -->
+                                        </td>
+                                    </tr>
+                                    <!-- /ko -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /ko -->
+                    </div>
+                    <!-- /ko -->
+                </div>
+            </div>
+            <button class="btn btn-blue pull-left" style="display: none" data-bind="click: cancel, visible: mode() == TREATMENT_EDIT_MODE">
+                Cancel
+            </button>
+            <button class="btn pull-right" style="display: none;" data-bind="css: { 'btn-green': mode(), 'btn-blue': !mode() }, click: saveOrEdit, visible: !busy()">
+                <span data-bind="text: mode() ? 'Save' : 'Edit'"></span>
+            </button>
+        </div>
+    </div>
+    <div id="treatment-tab-treatments" class="tab-pane fade show active">
+        <div id="treatment-management-form">
+            <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: treatmentProviderParams }"></div>
+            <!-- ko if: treatmentProvider() -->
+            <div id="treatment-types-list">
+                <div class="blocker" data-bind="visible: busy">
+                    <div class="busy-bars">
+                        <div class="rect1 alert alert-info"></div>
+                        <div class="rect2 alert alert-info"></div>
+                        <div class="rect3 alert alert-info"></div>
+                        <div class="rect4 alert alert-info"></div>
+                        <div class="rect5 alert alert-info"></div>
+                    </div>
+                    <h3 data-bind="html: busyMessage"></h3>
+                </div>
+                <h3 class="blue-heading">
+                    <span data-bind="text: treatmentProvider().Name"></span>
+                </h3>
+                <hr/>
+                <!-- ko foreach: treatmentTypes -->
+                <div class="treatment-type">
+                    <h4 class="blue-heading alert alert-info">
+                        <span data-bind="text: Name"></span>
+                    </h4>
+                    <div class="provider-treatments">
+                        <div class="blocker" data-bind="visible: busy">
+                            <div class="busy-bars">
+                                <div class="rect1 alert alert-info"></div>
+                                <div class="rect2 alert alert-info"></div>
+                                <div class="rect3 alert alert-info"></div>
+                                <div class="rect4 alert alert-info"></div>
+                                <div class="rect5 alert alert-info"></div>
+                            </div>
+                            <h3 data-bind="html: busyMessage"></h3>
+                        </div>
+                        <div data-bind="class: 'treatment-type-sortable-' + TreatmentTypeID, sortable: { data: treatments, afterMove: function (obj) { $parent.updateTreatmentSortOrders(obj, $data); }, connectClass: 'treatment-type-sortable-' + TreatmentTypeID, isEnabled: sortEnabled }">
+                            <div class="panel panel-default provider-treatment">
+                                <div class="blocker" data-bind="visible: busy">
+                                    <div class="busy-bars">
+                                        <div class="rect1 alert alert-info"></div>
+                                        <div class="rect2 alert alert-info"></div>
+                                        <div class="rect3 alert alert-info"></div>
+                                        <div class="rect4 alert alert-info"></div>
+                                        <div class="rect5 alert alert-info"></div>
+                                    </div>
+                                    <h3 data-bind="html: busyMessage"></h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="panel-title">
+                                        <div>
+                                            <h5 class="blue-heading">
+                                                <span data-bind="text: nameParams.observable"></span>
+                                                <!-- ko if: $data.originalData.hasOwnProperty('Product') -->
+                                                <small data-bind="with: originalData.Product">
+                                                    <span data-bind="text: Code"></span>
+                                                </small>
+                                                <!-- /ko -->
+                                                <!-- ko ifnot: $data.originalData.hasOwnProperty('Product') -->
+                                                <small data-bind="with: product">
+                                                    <span data-bind="text: Code"></span>
+                                                </small>
+                                                <!-- /ko -->
+                                            </h5>
+                                            <!-- ko if: $data.originalData.hasOwnProperty('Countries') -->
+                                            <span data-bind="foreach: originalData.Countries">
+                                                <span class="smaller" data-bind="text: Country.Name"></span>
+                                            </span>
+                                            <!-- /ko -->
+                                        </div>
+                                        <button class="btn btn-blue" data-bind="text: editing() ? 'Cancel' : 'Edit', click: function () { cancelOrEdit(); }">
+                                            Edit
+                                        </button>
+                                    </div>
+                                    <div class="treatment-edit-form" data-bind="fadeVisible: editing()">
+                                        <div data-bind="component: { name: 'mdc-text-field-component', params: nameParams }"></div>
+                                        <div class="flex-container">
+                                            <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productFilterGroupParams }"></div>
+                                            <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productParams }"></div>
+                                        </div>
+                                        <div data-bind="component: { name: 'mdc-text-area-component', params: descriptionParams }"></div>
+                                        <div data-bind="component: { name: 'mdc-kendo-multiselect-component', params: countryParams }"></div>
+                                        <button class="btn btn-red pull-left" data-bind="click: deleteTreatment">
+                                            Delete
+                                        </button>
+                                        <button class="btn btn-green pull-right" data-bind="click: saveTreatment">
+                                            Save
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-green" data-bind="click: $parent.addTreatment">
+                            Add Treatment
+                        </button>
+                        <div class="save-success pull-right" data-bind="fadeVisible: showSaveSuccess">
+                            <i class="material-icons">
+                                check
+                            </i>
+                            <span>
+                                Saved
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <!-- /ko -->
+            </div>
+            <!-- /ko -->
+
+            <div id="treatment-edit-form" data-bind="with: editTreatmentRecord">
+                <hr />
+                <p>
+                    Still need Sort Order and the ability to mark as deleted.
+                </p>
+                <h3 class="blue-heading margin-bottom-30">
+                    <span data-bind="text: autocompleteLabel"></span>
+                </h3>
+                <div class="flex-container margin-bottom-15">
+                    <div>
+                        <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: countryParams }"></div>
+                    </div>
+                    <div>
+                        <div data-bind="component: { name: 'mdc-select-component', params: treatmentTypeParams }"></div>
+                        <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productFilterGroupParams }"></div>
+                    </div>
+                    <div>
+                        <div data-bind="component: { name: 'mdc-text-field-component', params: nameParams }"></div>
+                        <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productParams }"></div>
+                    </div>
+                </div>
+                <div class="btn-toolbar">
+                    <button class="btn btn-red pull-left">
+                        Delete
+                    </button>
+                    <button class="btn btn-blue pull-left margin-left-15">
+                        Cancel
+                    </button>
+                    <button class="btn btn-green pull-right">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

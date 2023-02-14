@@ -1,0 +1,1110 @@
+﻿@model Portal.Areas.Products.ViewModels.OrderProductsViewModel
+@{
+    ViewBag.Title = "Order Entry";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/components")
+    @Styles.Render("~/bundles/css/kendo-custom")
+    @Styles.Render("~/bundles/css/tempus-dominus")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/components")
+    @Scripts.Render("~/bundles/js/datetime-picker")
+    @Scripts.Render("~/bundles/js/intl-tel")
+    @Scripts.Render("~/bundles/js/order-products-base")
+    @Scripts.Render("~/bundles/js/popper")
+    @Scripts.Render("~/bundles/js/tempus-dominus")
+
+    <script type="text/javascript">
+
+        function getAvailableTags() {
+            return [];
+        }
+
+        function getMyHeldOrderImportStatuses() {
+            return [{
+                Status: 'Active',
+                Name: 'Active Baskets'
+            }, {
+                Status: 'Held',
+                Name: 'Held Baskets'
+            }, {
+                Status: 'Parked',
+                Name: 'Parked Baskets'
+            }];
+        }
+
+        function getOrderImportStatuses() {
+            return [{
+                Status: 'Sample',
+                Name: 'Sample Orders'
+            }, {
+                Status: 'Mixed',
+                Name: 'Mixed Orders'
+            }];
+        }
+
+        function getOrderImportSources() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.OrderImportSources));
+        }
+
+        function getHoldReasons() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.HoldReasons));
+        }
+
+        function formatSelectedCurrency(value) {
+            return formatCurrency(value, 2, viewModel.tradeAccount().CurrencyCulture, viewModel.tradeAccount().CurrencyCode);
+        }
+
+        var viewModel = new orderProductsBaseViewModel();
+
+        var orf = viewModel.orderFactory;
+
+        var bfhf = orf.bespokeFabricHangerFactory;
+
+        var bfsf = orf.bespokeFabricShowlengthFactory;
+
+        var df = orf.dispatchFactory;
+
+        var pd = viewModel.orderProductsDrilldown;
+
+        var barf = orf.bespokeArchitectRingFactory;
+
+        var daf = orf.deliveryAddressFactory;
+
+        var bff = orf.bespokeFurnitureFactory;
+
+        var pdfc = viewModel.orderProductsDrilldownFurnitureComponents;
+
+        ko.options.deferUpdates = true;
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        $(document).ready(function () {
+            ko.applyBindings(viewModel, document.body);
+
+            //if (sessionStorage) {
+            //    if (sessionStorage.getItem('basket')) {
+            //        $('#load-from-session').show();
+            //        //console.log('sessionStorage.basket', JSON.parse(sessionStorage.getItem('basket')))
+            //        //viewModel.orderFactory.loadBasket(JSON.parse(sessionStorage.getItem('basket')), JSON.parse(sessionStorage.getItem('errata')));
+            //    }
+            //}
+
+            if (window.location.search) {
+                viewModel.orderFactory.deserializeViewSettings();
+            }
+        });
+
+        function getMemberId() {
+            return @(User.Identity.GetUserId<int>())
+        }
+    </script>
+
+    @if (User.IsInRole("Super Admin") || User.IsInRole("Senior Manager") || User.IsInRole("User Masquerade") || User.IsInRole("Customer Services"))
+    {
+        <script type="text/javascript">
+            window.memberMasqueradeParams = kendoMDCDropDownList({
+                label: 'User',
+                odata: true,
+                endPoint:  '/odata/Members',
+                textField: 'FullName',
+                valueField: 'Id',
+                virtual: true,
+                virtualOptions: {
+                    itemHeight: 34,
+                    mapValueTo: 'dataItem',
+                    valueMapper: function (options) {
+                        $.ajax({
+                            url: `/odata/Members/Default.MemberValueMapper(id=${options.value || "null"})`,
+                            type: 'GET',
+                            success: function (data) {
+                                options.success(data.value);
+                                if (data.value.length == 1)
+                                    viewModel.memberBasketFetcher.memberId(data.value[0].Id);
+                            }
+                        });
+                    }
+                },
+                idObservable: ko.observable(@(User.Identity.GetUserId<int>())),
+                objObservable: ko.observable(),
+                height: 340,
+                template: '#: FullName # - #: Email #',
+                valueTemplate: '#: FullName # - #: Email #',
+                optionLabel: null,
+                optionLabelTemplate: null,
+                autoBind: true,
+                height: 340,
+                filtering: function (ev) {
+                    var filterValue = ev.filter != undefined ? ev.filter.value : "";
+                    ev.preventDefault();
+
+                    this.dataSource.filter({
+                        logic: "or",
+                        filters: [
+                            {
+                                field: "Email",
+                                operator: "startswith",
+                                value: filterValue
+                            },
+                            {
+                                field: "FullName",
+                                operator: "contains",
+                                value: filterValue
+                            }
+                        ]
+                    });
+                },
+                showClear: false,
+                clearFunction: null,
+                permitRevert: true,
+                revertFunction: function () {
+                    window.memberMasqueradeParams.idObservable(@(User.Identity.GetUserId<int>()))
+                },
+                popupSettings: {
+                    appendTo: $('#user-masquerade .panel-body')
+                }
+            });
+            window.memberMasqueradeParams.dropDownListSettings.value.subscribe(function (newValue) {
+                viewModel.memberBasketFetcher.memberId(newValue);
+            });
+        </script>
+    }
+}
+
+<script id="basket-row-template" type="text/html">
+    <tr class="pointer">
+        <td class="basket-row-status-column">
+            <a class="basket-status-button" data-bind="bootstrapPopover: bootstrapPopoverDetails">
+                <span data-bind="html: Status"></span>
+            </a>
+            <span class="basket-memo-flag" style="display: none;" data-bind="click: function (data, event) { event.stopPropagation(); }, visible: Enumerable.From(BasketItemLineMemos).Where('$.LineMemoType.AlertOperator == true').Any()"></span>
+        </td>
+        <td>
+            <span data-bind="html: HeldReason"></span>
+        </td>
+        <td>
+            <span data-bind="html: Market, attr: { 'data-toggle': 'popover', 'data-html': true, title: MarketHover ? 'Market' : '', 'data-content': MarketHover }"></span>
+        </td>
+        <td>
+            <span data-bind="html: CustomerCode"></span>
+        </td>
+        <td>
+            <span data-bind="html: Customer, attr: { 'data-toggle': 'popover', 'data-html': true, title: CustomerHover ? 'Customer Info' : '', 'data-content': CustomerHover }"></span>
+        </td>
+        <td>
+            <span data-bind="html: OrderReference"></span>
+        </td>
+        <td class="text-right">
+            <span data-bind="html: BasketValue"></span>
+        </td>
+        <td>
+            <span data-bind="html: HasAllocations, attr: { 'data-toggle': 'popover', 'data-html': true, title: HasAllocationsHover ? 'Allocations' : '', 'data-content': HasAllocationsHover }"></span>
+        </td>
+        <td>
+            <span data-bind="html: Modified"></span>
+        </td>
+        <td>
+            <span data-bind="html: Expires"></span>
+        </td>
+        <td data-bind="click: function (data, event) { event.stopPropagation(); event.preventDefault(); }">
+            <!-- ko if: DeletePermitted === 'true' -->
+            <a class="close" data-bind="attr: { href: 'javascript:;' }, click: function (data) { $parentContext.$parent.orderFactory.deleteBasket(BasketID, true) }">
+                <i class="material-icons">
+                    delete_forever
+                </i>
+            </a>
+            <!-- /ko -->
+        </td>
+    </tr>
+</script>
+
+
+<script id="imported-basket-row-template" type="text/html">
+    <tr class="pointer">
+        <td class="basket-row-status-column">
+            <a class="basket-status-button" data-bind="bootstrapPopover: bootstrapPopoverDetails">
+                <span data-bind="html: Status"></span>
+            </a>
+            <span class="basket-memo-flag" style="display: none;" data-bind="click: function (data, event) { event.stopPropagation(); }, visible: Enumerable.From(BasketItemLineMemos).Where('$.LineMemoType.AlertOperator == true').Any()"></span>
+        </td>
+        <td>
+            <span data-bind="html: OrderImportSource"></span>
+        </td>
+        <td>
+            <span data-bind="text: moment(CreatedDT).format('dddd Do MMM YY')"></span>
+        </td>
+        <td>
+            <span data-bind="html: Market, attr: { 'data-toggle': 'popover', 'data-html': true, title: MarketHover ? 'Market' : '', 'data-content': MarketHover }"></span>
+        </td>
+        <td>
+            <span data-bind="html: CustomerCode"></span>
+        </td>
+        <td>
+            <span data-bind="html: Customer, attr: { 'data-toggle': 'popover', 'data-html': true, title: CustomerHover ? 'Customer Info' : '', 'data-content': CustomerHover }"></span>
+        </td>
+        <td>
+            <span data-bind="html: OrderReference"></span>
+        </td>
+        <td class="text-right">
+            <span data-bind="html: BasketValue"></span>
+        </td>
+        <td>
+            <span data-bind="html: HasAllocations, attr: { 'data-toggle': 'popover', 'data-html': true, title: HasAllocationsHover ? 'Allocations' : '', 'data-content': HasAllocationsHover }"></span>
+        </td>
+        <td>
+            <span data-bind="html: Modified"></span>
+        </td>
+        <td>
+            <span data-bind="html: Expires"></span>
+        </td>
+        <td data-bind="click: function (data, event) { event.stopPropagation(); event.preventDefault(); }">
+            <!-- ko if: DeletePermitted === 'true' -->
+            <a class="close" data-bind="attr: { href: 'javascript:;' }, click: function (data) { $parentContext.$parent.orderFactory.deleteBasket(BasketID, true) }">
+                <i class="material-icons">
+                    delete_forever
+                </i>
+            </a>
+            <!-- /ko -->
+            <!-- ko if: typeof botErrorPopoverDetails !== 'undefined' -->
+            <i class="material-icons display-block" data-bind="bootstrapPopover: botErrorPopoverDetails">
+                warning
+            </i>
+            <!-- /ko -->
+        </td>
+    </tr>
+</script>
+
+<script id="held-order-row-template" type="text/html">
+    <tr>
+        <td style="white-space: normal">
+            <span data-bind="html: Reference"></span>
+        </td>
+        <td>
+            <!-- ko if: MertexMarket -->
+            <span data-bind="text: MertexMarket.Name"></span>
+            <!-- /ko -->
+            <!-- ko ifnot: MertexMarket -->
+            <span data-bind="text: Market"></span>
+            <!-- /ko -->
+        </td>
+        <td>
+            <span class="display-block" data-bind="text: CustomerCode"></span>
+            <span class="display-block" data-bind="text: CustomerName"></span>
+        </td>
+        <td>
+            <span data-bind="text: CustomerReference"></span>
+        </td>
+        <td class="text-right">
+            <span data-bind="html: Value"></span>
+        </td>
+        <td>
+            <!-- ko if: HasAllocations -->
+            <span class="material-icons" title="Has Allocations">
+                done
+            </span>
+            <!-- /ko -->
+            <!-- ko ifnot: HasAllocations -->
+            <span class="material-icons" title="Does not have Allocations">
+                close
+            </span>
+            <!-- /ko -->
+        </td>
+        <td style="white-space: normal">
+            <div data-bind="html: Enumerable.From(JSON.parse(HeldReasons)).Select('$.HeldReason').ToArray().join('<br/><br/>')"></div>
+            <span class="display-block margin-top-5" data-bind="text: 'Held Since: ' + moment(HeldSince).format('dddd Do MMM YY')"></span>
+        </td>
+        <td>
+            <!-- ko if: AllowBasketView -->
+            <button class="btn btn-flat" data-bind="click: $parent.fetchBasketView">
+                View Details
+            </button>
+            <!-- /ko -->
+            <!-- ko if: AllowBasketEdit -->
+            <button class="btn btn-flat" data-bind="click: $parent.editBasket">
+                Edit Basket
+            </button>
+            <!-- /ko -->
+            <!-- ko if: AllowBasketRelease -->
+            <button class="btn btn-flat" data-bind="click: $parent.releaseBasket">
+                Release Basket
+            </button>
+            <!-- /ko -->
+            <!-- ko if: AllowBasketDelete -->
+            <button class="btn btn-red" data-bind="click: function () { $parentContext.$parent.orderFactory.deleteBasket(BasketID, true); }">
+                Delete Basket
+            </button>
+            <!-- /ko -->
+            <!-- ko if: AllowTransactionView -->
+            <button class="btn btn-flat" data-bind="click: $parent.fetchTransactionView">
+                View Details
+            </button>
+            <!-- /ko -->
+            <!-- ko if: AllowTransactionEdit -->
+            <button class="btn btn-battleship-blue" data-bind="click: $parent.editTransaction">
+                Edit / Delete
+            </button>
+            <!-- /ko -->
+            <!-- ko if: AllowRetailPaymentDetails -->
+            <button class="btn btn-blue" data-bind="click: $parent.provideRetailPaymentDetails">
+                Provide Retail Payment Details
+            </button>
+            <!-- /ko -->
+            <!-- ko if: AllowTransactionRelease -->
+            <button class="btn btn-battleship-blue" data-bind="click: $parent.releaseTransaction">
+                Release Transaction
+            </button>
+            <!-- /ko -->
+            <!-- ko if: AllowTransactionDelete -->
+            <button class="btn btn-red" data-bind="click: $parent.deleteTransaction">
+                Delete Transaction
+            </button>
+            <!-- /ko -->
+            <!-- ko foreach: documents -->
+            <button class="btn btn-green" data-bind="click: function () { $parentContext.$parent.fetchDocument($data, $parent); }">
+                <span data-bind="text: label"></span>
+            </button>
+            <!-- /ko -->
+        </td>
+    </tr>
+</script>
+
+<script id="transaction-row-template" type="text/html">
+    <tr class="pointer">
+        <td>
+            <span data-bind="text: BasketID"></span>
+        </td>
+        <td>
+            <!-- ko foreach: orderDetails -->
+            <a class="display-block" data-bind="bootstrapPopover: bootstrapPopoverDetails, text: label"></a>
+            <!-- /ko -->
+        </td>
+        <td>
+            <span class="display-block" data-bind="text: TradeAccountCode"></span>
+            <span class="display-block" data-bind="text: TradeAccountName"></span>
+        </td>
+        <td>
+            <span data-bind="text: OrderReference"></span>
+        </td>
+        <td>
+            <span class="display-block" data-bind="text: MemberName"></span>
+            <span class="display-block" data-bind="text: MemberEmail"></span>
+        </td>
+        <td>
+            <span data-bind="text: moment(CreatedDT).format('dddd Do MMM YY')"></span>
+        </td>
+    </tr>
+</script>
+
+<script id="order-line-row-template" type="text/html">
+    <tr>
+        <td>
+            <span data-bind="text: code"></span>
+        </td>
+        <td>
+            <span data-bind="text: quantity"></span>
+        </td>
+        <td>
+            <span data-bind="text: formatCurrency(priceEx, 2,  formattingCulture, currencyCode)"></span>
+        </td>
+        <td>
+            <span data-bind="text: formatCurrency(priceInc, 2,  formattingCulture, currencyCode)"></span>
+        </td>
+        <td>
+            <span data-bind="text: LineStatus"></span>
+        </td>
+    </tr>
+</script>
+
+<script id="order-enquiry-order-line-row-template" type="text/html">
+    <tr>
+        <td>
+            <span data-bind="text: LineNumber"></span>
+        </td>
+        <td>
+            <img width="128" height="128" class="thumb" data-bind="attr: { src: 'https://www.designersguild.com/image/156/' + ImageID }" />
+        </td>
+        <td>
+            <span class="d-block" data-bind="text: ProductCode"></span>
+            <span class="d-block" data-bind="text: ProductDescription"></span>
+        </td>
+        <td>
+            <span data-bind="text: QuantityOrdered"></span>
+        </td>
+        <td>
+            <!-- ko if: FormattingCulture -->
+            <span data-bind="text: formatCurrency(LineValueCurrency, 2,  FormattingCulture, CurrencyCode)"></span>
+            <!-- /ko -->
+            <!-- ko ifnot: FormattingCulture -->
+            <span data-bind="text: LineValueCurrency"></span>
+            <!-- /ko -->
+        </td>
+        <td>
+            <!-- ko if: FormattingCulture -->
+            <span data-bind="text: formatCurrency(LineDiscountValueCurrency, 2,  FormattingCulture, CurrencyCode)"></span>
+            <!-- /ko -->
+            <!-- ko ifnot: FormattingCulture -->
+            <span data-bind="text: LineDiscountValueCurrency"></span>
+            <!-- /ko -->
+        </td>
+        <td>
+            <span data-bind="text: LineStatus"></span>
+        </td>
+    </tr>
+</script>
+
+<script id="popover-address-template" type="text/html">
+    <!-- ko if: fullName -->
+    <span class="display-block" data-bind="text: fullName"></span>
+    <!-- /ko -->
+    <!-- ko if: addressLine1 -->
+    <span class="display-block" data-bind="text: addressLine1"></span>
+    <!-- /ko -->
+    <!-- ko if: addressLine2 -->
+    <span class="display-block" data-bind="text: addressLine2"></span>
+    <!-- /ko -->
+    <!-- ko if: town -->
+    <span class="display-block" data-bind="text: town"></span>
+    <!-- /ko -->
+    <!-- ko if: county -->
+    <span class="display-block" data-bind="text: county"></span>
+    <!-- /ko -->
+    <!-- ko if: postcode -->
+    <span class="display-block" data-bind="text: postcode"></span>
+    <!-- /ko -->
+    <!-- ko if: country -->
+    <span class="display-block" data-bind="text: country"></span>
+    <!-- /ko -->
+</script>
+
+<script id="stitch-colour-template" type="text/html">
+    <span class="stitch-option">
+        <img class="thumb stitch-thumb" data-bind="attr: { src: '/Areas/Products/Content/images/stitching/placeholder.png' }" />
+        <span data-bind="text: name"></span>
+        <!-- ko if: $parentContext.$parent.defaultStitchColourId() == stitchColourId -->
+        <span class="pull-right text-italic">
+            Recommended Choice
+        </span>
+        <!-- /ko -->
+    </span>
+</script>
+
+
+<script type="text/html" id="basket-status-row-template">
+    <tr>
+        @*<td>
+                <span data-bind="text: BasketID"></span>
+            </td>*@
+        <td class="popover-container">
+            <a class="nav-link pointer" data-bind="click: $parent.fetchOrderDetail">
+                <span data-bind="text: OrderHeadID, bootstrapPopover: orderDetailPopover"></span>
+            </a>
+        </td>
+        <td>
+            <span data-bind="text: CustomerOrderReference"></span>
+        </td>
+        <td>
+            <span data-bind="html: Status"></span>
+        </td>
+        <td>
+            <span data-bind="text: Owner"></span>
+        </td>
+        <td>
+            <span data-bind="html: History"></span>
+        </td>
+        <td>
+            <div class="basket-status-controls">
+                <div>
+                    <a class="btn btn-link pointer"
+                       href="javascript:;"
+                       data-bind="attr: { disabled: CanEditBasket == false, title: 'Click to load Basket ' + BasketID }, click: $parent.editBasket, css: { 'disabled': CanEditBasket == false }"
+                       disabled>
+                        <i class="material-icons">
+                            shopping_bag
+                        </i>
+                    </a>
+                </div>
+                <!-- ko if: TradeOrderImportFileID -->
+                <div data-bind="bootstrapPopover: orderImportDetailPopover">
+                    <a class="btn btn-link pointer"
+                       href="javascript:;"
+                       title="Click to View Import File Details"
+                       data-bind="attr: { disabled: TradeOrderImportFileID == null }, click: $parent.fetchImportDetail, css: { 'disabled': TradeOrderImportFileID == null }"
+                       disabled>
+                        <i class="material-icons" data-bind="text: 'upload_file'"></i>
+                    </a>
+                </div>
+                <!-- /ko -->
+            </div>
+        </td>
+        @*<td>
+                <span data-bind="text: OrderImportHeadID"></span>
+            </td>
+            <td>
+                <span data-bind="text: BasketSplitName"></span>
+            </td>
+            <td>
+                <span data-bind="text: LineCount"></span>
+            </td>
+            <td>
+                <span data-bind="text: CancelledLineCount"></span>
+            </td>
+            <td>
+                <span data-bind="text: LastModified"></span>
+            </td>*@
+    </tr>
+</script>
+
+@Html.Action("OrderProductsComponent", "Component", new { Area = "" })
+
+@Html.Partial("Modals/_ImageModal")
+
+@Html.Partial("Modals/_PatternBookContentsModal")
+
+
+
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+
+<ul id="new-or-saved-tabs" class="nav nav-pills">
+    <li class="active">
+        <a href="#tab-new" data-toggle="tab" data-bind="click: function () { $('#user-masquerade').hide() }">
+            Start a New Order
+        </a>
+    </li>
+    <li>
+        <a href="#tab-saved" data-toggle="tab" data-bind="click: function() { $('#user-masquerade').show(); memberBasketFetcher.resultGridWidget().dataSource.read() }">
+            My Saved Orders
+            <!-- ko if: memberBasketFetcher.basketCount() -->
+            <span class="counter" data-bind="with: memberBasketFetcher, visible: true" style="display: none;">
+                <span data-bind="text: basketCount"></span>
+            </span>
+            <!-- /ko -->
+        </a>
+    </li>
+    <li>
+        <a href="#tab-my-held-orders" data-toggle="tab" data-bind="click: function() { $('#user-masquerade').show(); memberBasketFetcher.myHeldOrdersGridWidget().dataSource.read() }">
+            My Held Orders
+            <!-- ko if: memberBasketFetcher.myHeldOrdersCount() -->
+            <span class="counter" data-bind="with: memberBasketFetcher, visible: true" style="display: none;">
+                <span data-bind="text: myHeldOrdersCount"></span>
+            </span>
+            <!-- /ko -->
+        </a>
+    </li>
+    @if (User.IsInRole("Super Admin") || (User.IsInRole("Order Release - Customer Services")
+                                      || User.IsInRole("Order Release - Credit Control")
+                                      || User.IsInRole("Order Release - IT")))
+    {
+        <li>
+            <a href="#tab-held-orders" data-toggle="tab" data-bind="click: function() { $('#user-masquerade').show(); memberBasketFetcher.heldOrdersGridWidget().dataSource.read() }">
+                Orders to Approve
+                <!-- ko if: memberBasketFetcher.heldOrdersCount() -->
+                <span class="counter" data-bind="with: memberBasketFetcher, visible: true" style="display: none;">
+                    <span data-bind="text: heldOrdersCount"></span>
+                </span>
+                <!-- /ko -->
+            </a>
+        </li>
+    }
+    @if (User.IsInRole("Super Admin") || User.IsInRole("Customer Services - Imported Order Processor"))
+    {
+        <li>
+            <a href="#tab-imports" data-toggle="tab" data-bind="click: function() { $('#user-masquerade').show(); memberBasketFetcher.importResultGridWidget().dataSource.read() }">
+                Web Orders to Release
+                <!-- ko if: memberBasketFetcher.importBasketCount() -->
+                <span class="counter" data-bind="with: memberBasketFetcher, visible: true" style="display: none;">
+                    <span data-bind="text: importBasketCount"></span>
+                </span>
+                <!-- /ko -->
+            </a>
+        </li>
+    }
+    <li>
+        <a href="#tab-basket-status" data-toggle="tab" data-bind="click: function() { $('#user-masquerade').hide(); memberBasketFetcher.importResultGridWidget().dataSource.read() }">
+            Order Enquiry
+        </a>
+    </li>
+    <li class="pull-right">
+        <a href="#tab-submitted" data-toggle="tab" data-bind="click: function() { $('#user-masquerade').show(); memberBasketFetcher.submittedGridWidget().dataSource.read() }">
+            Previous Orders
+            <!-- ko if: memberBasketFetcher.submittedBasketCount() -->
+            <span class="counter" data-bind="with: memberBasketFetcher, visible: true" style="display: none;">
+                <span data-bind="text: submittedBasketCount"></span>
+            </span>
+            <!-- /ko -->
+        </a>
+    </li>
+</ul>
+@if (User.IsInRole("Super Admin") || User.IsInRole("Senior Manager") || User.IsInRole("User Masquerade"))
+{
+    <div id="user-masquerade" class="panel panel-primary margin-bottom-5" style="display: none">
+        <div class="panel-heading no-padding">
+            <h4 class="panel-title">
+                <a class="panel-toggle collapsed" data-toggle="collapse" data-target="#user-masquerade-collapse">
+                    User:
+                    <span data-bind="with: memberMasqueradeParams.dropDownListSettings.dataItem">
+                        <!-- ko if: typeof FullName != 'undefined' -->
+                        <span data-bind="text: FullName"></span>
+                        <!-- /ko -->
+                    </span>
+                </a>
+            </h4>
+            <div class="clearfix"></div>
+        </div>
+        <div id="user-masquerade-collapse" class="panel-collapse collapse">
+            <div class="panel-body bg-info">
+                <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: memberMasqueradeParams }"></div>
+            </div>
+        </div>
+    </div>
+}
+<div class="tab-content">
+    <div id="tab-new" class="tab-pane active">
+        @Html.Action("TradeAccountSelector", "Component", new { Area = "", CanSearch = true, canCollapse = false, orderProductsExtension = true })
+    </div>
+    <div id="tab-saved" class="tab-pane">
+        <div class="panel panel-primary" data-bind="with: memberBasketFetcher">
+            <div class="panel-heading no-padding">
+                <h4 class="panel-title">
+                    <a style="cursor: default;" data-bind="text: busy() ? 'Loading...' :   basketCount() ? 'Select a Basket' : 'You have no active Baskets'"></a>
+                </h4>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-collapse">
+                <div class="selector panel-body bg-info">
+                    <div class="blocker" data-bind="visible: busy">
+                        <div class="busy-bars">
+                            <div class="rect1 alert alert-info"></div>
+                            <div class="rect2 alert alert-info"></div>
+                            <div class="rect3 alert alert-info"></div>
+                            <div class="rect4 alert alert-info"></div>
+                            <div class="rect5 alert alert-info"></div>
+                        </div>
+                    </div>
+                    <div data-bind="kendoGrid: resultGridSettings"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (User.IsInRole("Super Admin") || (User.IsInRole("Order Release - Customer Services")
+                                      || User.IsInRole("Order Release - Credit Control")
+                                      || User.IsInRole("Order Release - IT")))
+    {
+        <div id="tab-held-orders" class="tab-pane">
+            <div class="panel panel-primary" data-bind="with: memberBasketFetcher">
+                <div class="panel-heading no-padding">
+                    <h4 class="panel-title">
+                        <a style="cursor: default;">
+                            <span data-bind="text: busy() ? 'Loading...' :   heldOrdersCount() ? 'Select an Order' : 'There are no Held Orders'"></span>
+                            <span class="pull-right" data-bind="click: clearHeldOrdersGridFilters">
+                                Clear Filters
+                            </span>
+                        </a>
+                    </h4>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="panel-collapse">
+                    <div class="selector panel-body bg-info">
+                        <div class="blocker" data-bind="visible: busy">
+                            <div class="busy-bars">
+                                <div class="rect1 alert alert-info"></div>
+                                <div class="rect2 alert alert-info"></div>
+                                <div class="rect3 alert alert-info"></div>
+                                <div class="rect4 alert alert-info"></div>
+                                <div class="rect5 alert alert-info"></div>
+                            </div>
+                        </div>
+                        <div data-bind="kendoGrid: heldOrdersResultGridSettings"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div id="tab-my-held-orders" class="tab-pane">
+        <div class="panel panel-primary" data-bind="with: memberBasketFetcher">
+            <div class="panel-heading no-padding">
+                <h4 class="panel-title">
+                    <a style="cursor: default;">
+                        <span data-bind="text: busy() ? 'Loading...' :   myHeldOrdersCount() ? 'Select an Order' : 'You have no Held Orders'"></span>
+                        <span class="pull-right" data-bind="click: clearMyHeldOrdersGridFilters">
+                            Clear Filters
+                        </span>
+                    </a>
+                </h4>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-collapse">
+                <div class="selector panel-body bg-info">
+                    <div class="blocker" data-bind="visible: busy">
+                        <div class="busy-bars">
+                            <div class="rect1 alert alert-info"></div>
+                            <div class="rect2 alert alert-info"></div>
+                            <div class="rect3 alert alert-info"></div>
+                            <div class="rect4 alert alert-info"></div>
+                            <div class="rect5 alert alert-info"></div>
+                        </div>
+                    </div>
+                    <div data-bind="kendoGrid: myHeldOrdersResultGridSettings"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (User.IsInRole("Super Admin"))
+    {
+        <div id="tab-basket-status" class="tab-pane" data-bind="with: memberBasketFetcher.basketStatus">
+            <div class="blocker" style="display: none;" data-bind="flexVisible: busy, toggleOpacity: busy">
+                <div class="loading-spinner"></div>
+                <h3 class="mt-3">
+                    Please Wait
+                </h3>
+            </div>
+            @Html.Action("TradeAccountSelector", "Component", new { Area = "", CanSearch = true, canCollapse = false, orderProductsExtension = false })
+            <div class="panel panel-primary" style="display: none" data-bind="visible: tradeAccountId">
+                <div class="panel-heading no-padding">
+                    <h4 class="panel-title">
+                        <a style="cursor: default;" data-bind="text: 'Search for Orders'"></a>
+                    </h4>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="panel-collapse">
+                    <div class="selector panel-body bg-info">
+                        <div id="basket-status-search-controls" class="d-none pt-3" data-bind="css: { 'd-none': !tradeAccount() }">
+                            <div class="hstack gap-3 mb-3">
+                                <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: dgOrderNumberParams }"></div>
+                                <div data-bind="component: { name: 'mdc-text-field-component', params: customerOrderReferenceParams }"></div>
+                                <div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: fromParams }"></div>
+                                <div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: toParams }"></div>
+                                <button class="btn btn-primary" data-bind="click: fetch">
+                                    Search
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-3" data-bind="kendoGrid: resultGridParams"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div id="tab-imports" class="tab-pane">
+        <div class="panel panel-primary" data-bind="with: memberBasketFetcher">
+            <div class="panel-heading no-padding">
+                <h4 class="panel-title">
+                    <a style="cursor: default;" data-bind="text: busy() ? 'Loading...' : 'Select a Basket'"></a>
+                </h4>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-collapse">
+                <div class="selector panel-body bg-info">
+                    <div class="blocker" data-bind="visible: busy">
+                        <div class="busy-bars">
+                            <div class="rect1 alert alert-info"></div>
+                            <div class="rect2 alert alert-info"></div>
+                            <div class="rect3 alert alert-info"></div>
+                            <div class="rect4 alert alert-info"></div>
+                            <div class="rect5 alert alert-info"></div>
+                        </div>
+                    </div>
+                    <div data-bind="kendoGrid: importResultGridSettings"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="tab-submitted" class="tab-pane">
+        <div class="panel panel-primary" data-bind="with: memberBasketFetcher">
+            <div class="panel-heading no-padding">
+                <h4 class="panel-title">
+                    <a style="cursor: default" data-bind="text: busy() ? 'Loading...' :  submittedBasketCount() ? 'Order History' : 'No Orders to Display'"></a>
+                </h4>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-collapse">
+                <div class="selector panel-body bg-info">
+                    <div class="blocker" data-bind="visible: busy">
+                        <div class="busy-bars">
+                            <div class="rect1 alert alert-info"></div>
+                            <div class="rect2 alert alert-info"></div>
+                            <div class="rect3 alert alert-info"></div>
+                            <div class="rect4 alert alert-info"></div>
+                            <div class="rect5 alert alert-info"></div>
+                        </div>
+                    </div>
+                    <div class="flex-container">
+                        <div class="btn-toolbar">
+                            <div class="btn-group">
+                                <div data-bind="component: { name: 'mdc-text-field-component', params: submittedOrderHeadParams }"></div>
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-flat btn-green" data-bind="click: submittedOrderSearch">
+                                    Search
+                                </button>
+                            </div>
+                        </div>
+                        <div class="just-my-order" data-bind="component: { name: 'mdc-checkbox-component', params: justMyOrderParams }"></div>
+                    </div>
+                    <div data-bind="kendoGrid: submittedGridSettings"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<div class="row">
+        <div class="col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div data-bind="component: { name: 'mdc-address-search-component', params: addressSearch }"></div>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+@*<script type="text/javascript">
+        $(document).ready(function () {
+            $.ajax({
+                url: '/api/FilesAPI/GetFetchPDF',
+                type: 'GET',
+                data: {
+                    path: '\\\\files\\00 - everyone\\TECHNICAL info for LP FR Certificate COPIES\\FRC 29362 VARESE F1190.pdf',
+                    name: encodeURI('FRC 29362 VARESE F1190.pdf')
+                },
+                success: function (data) {
+                    $('#pdf-iframe').attr('src', 'data:application/pdf;base64,' + data);
+                }
+            });
+        });
+    </script>*@
+
+<div id="order-enquiry-modal" class="modal fade" data-backdrop="static" data-keyboard="false" data-bind="with: memberBasketFetcher.basketStatus.orderDetail">
+    <div class="modal-dialog modal-lg modal-xl">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <h4 class="modal-title">
+                    <a class="close pull-right" data-dismiss="modal">
+                        &times;
+                    </a>
+                    <span data-bind="html: OrderHead.OrderDescription"></span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="popover-details-wrapper">
+                    <div class="grid-container">
+                        <div>
+                            <h4>
+                                Order
+                            </h4>
+                            <div class="sub-grid-container" data-bind="with: OrderHead">
+                                <span>Order ID:</span>
+                                <span data-bind="text: OrderID"></span>
+                                <span>Date:</span>
+                                <span data-bind="text: moment(OrderDT).format('dddd Do MMM YYYY HH:mm')"></span>
+                                <span>Account:</span>
+                                <span data-bind="html: TradeAccountCode + ' - ' + TradeAccountName"></span>
+                                <span>Currency:</span>
+                                <span data-bind="text: MertexCurrencyCode"></span>
+                                <span>Order Reference:</span>
+                                <span data-bind="text: CustomerOrderReference"></span>
+                                <span>Order Taker:</span>
+                                <span data-bind="text: OrderTaker"></span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4>
+                                Delivery
+                            </h4>
+                            <div class="delivery-address-wrapper" data-bind="template: { name: 'popover-address-template', data: deliveryAddress }"></div>
+                            <div class="sub-grid-container" data-bind="with: OrderHead">
+                                <span>Haulier Code:</span>
+                                <span data-bind="text: HaulierCode"></span>
+                                <span>Carriage Code:</span>
+                                <span data-bind="text: CarriageCode"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-bind="kendoGrid: orderLinesGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="submitted-basket-modal" class="modal fade" data-backdrop="static" data-keyboard="false" data-bind="with: memberBasketFetcher">
+    <div class="modal-dialog" data-bind="css: { 'modal-lg modal-xl': basketSubmissionResults().length }">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <h4 class="modal-title">
+                    <a class="close pull-right" data-bind="click: closeSubmissionModal">
+                        &times;
+                    </a>
+                    Thank You
+                </h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Your order was submitted successfully. Please review the submission results below.
+                </p>
+                <div data-bind="html: submissionResultText"></div>
+                <!-- ko if: basketSubmissionResults().length -->
+                <div class="margin-top-30" data-bind="kendoGrid: basketSubmissionResultGrid"></div>
+                <!-- /ko -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-bind="click: closeSubmissionModal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="retail-payment-modal" class="modal fade" data-backdrop="static" data-keyboard="false" data-bind="with: orderFactory">
+    <div class="modal-dialog modal-lg modal-xl">
+        <div class="modal-content">
+            <div class="blocker" data-bind="visible: phase() != ORDERFACTORY_PHASE_RETAIL || busy()">
+                <div class="loading-spinner"></div>
+                <h3>
+                    Please wait...
+                </h3>
+            </div>
+            <div class="modal-header grey-blue">
+                <h4 class="modal-title">
+                    <a class="close pull-right" data-bind="click: parent.memberBasketFetcher.cancelRetailPaymentModal">
+                        &times;
+                    </a>
+                    <span class="display-block margin-bottom-15">
+                        Retail Payment Details
+                    </span>
+                    <span data-bind="with: basketServerObject">
+                        <!-- ko if: typeof Reference !== 'undefined' -->
+                        <span data-bind="html: Reference"></span>
+                        <!-- /ko -->
+                    </span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <!-- ko if: phase() == ORDERFACTORY_PHASE_RETAIL && isViewingRetailPaymentModal() -->
+                <!-- ko template: { name: 'retail-till-phase-template', data: $data } --><!-- /ko -->
+                <!-- /ko -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-green" data-bind="click: saveRetailFromPaymentModal">
+                    Save
+                </button>
+                <button class="btn btn-default pull-left" data-bind="click: parent.memberBasketFetcher.cancelRetailPaymentModal">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="last-chance-modal" class="modal fade" data-backdrop="static" data-keyboard="false" data-bind="with: orderFactory.dispatchFactory">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="blocker" data-bind="visible: busy()">
+                <div class="loading-spinner"></div>
+                <h3>
+                    Please wait...
+                </h3>
+            </div>
+            <div class="modal-header grey-blue">
+                <h4 class="modal-title">
+                    Please Provide Additional Details
+                </h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Basket ID: <span data-bind="text: parent.basketId"></span>
+                </p>
+                <p data-bind="with: parent.tradeAccount">
+                    Trade Account: <span data-bind="text: Label"></span>
+                </p>
+                <p class="margin-bottom-15">
+                    Providing all of the beneath will greatly assist this order in transit.
+                </p>
+                <!-- ko if: parent.basketRequiresEORI() -->
+                <div class="alert alert-warning">
+                    <p class="margin-bottom-15 bold">
+                        EORI Number and Delivery Contact Name are mandatory.
+                    </p>
+                    <p>
+                        If an EORI Number is not present below, you may need to either use the Refresh button to fetch the value from Mertex, or contact Credit Control to
+                        update <span data-bind="text: parent.tradeAccount().Code"></span>'s EORI Number value and then use the Refresh button below.
+                    </p>
+                </div>
+                <!-- /ko -->
+                <!--<p data-bind="with: parent.parent.tradeAccount">-->
+                <!-- ko if: typeof PhoneNumber !== 'undefined' -->
+                <!-- ko if: PhoneNumber -->
+                <!--The primary phone number we have on file for
+                <span data-bind="text: Label"></span>
+                is
+                <a href="javascript" data-bind="attr: { title: 'Click to Copy Below' }, text: PhoneNumber, click: function (data) { $parent.lastChancePhone.observable(data.PhoneNumber); }"></a>-->
+                <!-- /ko -->
+                <!-- ko ifnot: PhoneNumber -->
+                <!--We don't appear to have a telephone number on file for <span data-bind="text: Label"></span>. Please inform Credit Control.-->
+                <!-- /ko -->
+                <!-- /ko -->
+                <!--</p>-->
+                <div class="input-group margin-bottom-15">
+                    <div data-bind="component: { name: 'mdc-text-field-component', params: parent.eoriNumberParams }"></div>
+                    <span class="input-group-addon">
+                        <span class="material-icons refresh-btn" data-bind="click: parent.refreshEORINumber">
+                            refresh
+                        </span>
+                    </span>
+                </div>
+                <!-- ko if: parent.eoriNumberMessage() -->
+                <span class="validation-message margin-bottom-15 display-block" style="margin-top: -10px;" data-bind="css: { 'red-text': parent.eoriNumberError, 'text-success': parent.eoriNumberValid }, html: parent.eoriNumberMessage()"></span>
+                <!-- /ko -->
+                <!-- ko if: !parent.eoriRefreshBusy() && !parent.eoriNumberCheckPerformed.isValid() -->
+                <span class="validation-message red-text margin-bottom-15" style="margin-top: -10px;">
+                    Please <a data-bind="attr: { href: 'javascript:;' }, click: parent.forceEORINumberValidation">click here</a> to attempt to check the EORI number above.
+                </span>
+                <!-- /ko -->
+                <div class="margin-bottom-15 margin-top-20" data-bind="component: { name: 'mdc-text-field-component', params: lastChanceContactName }"></div>
+                <p class="margin-bottom-15 bold">
+                    You must provide at least one phone number below.
+                </p>
+                <div class="margin-bottom-15" data-bind="component: { name: 'mdc-phone-field-component', params: lastChancePhone }"></div>
+                <div class="margin-bottom-15" data-bind="component: { name: 'mdc-phone-field-component', params: lastChanceMobilePhone }"></div>
+                <div data-bind="component: { name: 'mdc-text-field-component', params: lastChanceDeliveryEmailParams }"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-bind="click: cancelLastChanceModal">
+                    Cancel
+                </button>
+                <button class="btn btn-green pull-right" data-bind="click: saveLastChanceModal">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<pre id="json-viewer" class="prettyprint lang-js" style="display: none;" data-bind="visible: memberBasketFetcher.jsonViewer() != null, html: memberBasketFetcher.jsonViewer"></pre>

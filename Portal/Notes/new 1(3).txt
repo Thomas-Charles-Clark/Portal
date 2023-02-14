@@ -1,0 +1,42 @@
+On initial load, having never saved a delivery service previously, I get SelectedDeliveryServices[].
+This is probably correct.
+
+I get logged a) deliveryService is [service object]. This is min by preference.
+For my current situation, TransportBilledToName is Customer and TransportBilledToCode is UPS-POTATO.
+
+That means that the currently selected delivery service for this group is set, and is set to the preferred option.
+Confirmed via:
+
+df.deliveryGroups()[0].deliveryService().TransportBilledToName
+"Customer"
+df.deliveryGroups()[0].deliveryService().TransportBilledToCode
+"UPS-POTATO"
+
+When I hit "change"... I should see the above two facts reflected by the haulier's transportShipperButtons' state.
+
+the haulier for the service is set... after the service has been created? when is the haulier for the service set,
+and when is that haulier's state updated to reflect the service...?
+
+well, currently, df.deliveryGroups()[0].deliveryService().haulier does not have the above data set.
+
+when rebuilding the delivery services list after a save.
+we are looping through the currently selected service's hauliers
+and for each of the loaded delivery services
+we're checking if the haulier code equals that on the currently selected service
+if that's true, then
+we're pulling the services from the haulier on the selected service object
+where the service code matches
+
+I think that's probably doing the looping in the wrong order: why are we going through all of the potential hauliers 
+on the selected delivery service and THEN looping through the delivery services which were loaded?
+
+
+
+
+
+Upon changing to Customer billed for Transport, and providing a UPS account number, the currently selected service's haulier becomes
+Customer's Shipper. This can't be the case because that's not the haulier we've got selected!
+
+
+Right... we have a node module but that only provides the functionality server-side. What we want is to... export?
+that functionality we've loaded into CLIENT land.

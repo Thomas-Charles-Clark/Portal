@@ -1,0 +1,498 @@
+﻿@model Portal.Areas.Products.ViewModels.FurnitureMaintenanceViewModel
+@{
+    ViewBag.Title = "Furniture Maintenance";
+}
+@section styles {
+    @*@Styles.Render("~/bundles/css/components")*@
+    @Styles.Render("~/bundles/css/kendo-custom")
+    @Styles.Render("~/bundles/css/furniture-maintenance")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+
+    @Scripts.Render("~/bundles/js/furniture-maintenance")
+
+    <script type="text/javascript">
+
+        function getPreselectedModelId() {
+            return @Model.PreselectedModelID;
+        }
+
+        function getSuppliers() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Suppliers));
+        }
+
+        function getComponents() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Components));
+        }
+
+        function getMaterialGroups() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.MaterialGroups));
+        }
+
+        function getCushionFillings() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.CushionFillings));
+        }
+        
+        function getCoverTypes() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.CoverTypes));
+        }
+        
+        function getLegTypes() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.LegTypes));
+        }
+
+        var viewModel = new furnitureMaintenanceViewModel();
+
+        ko.options.deferUpdates = true;
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        $(document).ready(function () {
+            ko.applyBindings(viewModel, document.body);
+            viewModel.ready(true);
+        });
+
+        function getMemberId() {
+            return @(User.Identity.GetUserId<int>())
+        }
+    </script>
+}
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+            <h4 class="sub-heading">
+                Please remember to save your changes using the green 'Save Configuration' button at the bottom of the page
+            </h4>
+        </div>
+    </div>
+</div>
+
+<script id="component-material-group-template" type="text/html">
+    <div class="furniture-component furniture-component-headings">
+        <div></div>
+        <!-- ko foreach: getMaterialGroups() -->
+        <div class="material-group">
+            <h4 data-bind="text: Name"></h4>
+        </div>
+        <!-- /ko -->
+    </div>
+    <!-- ko foreach: components -->
+    <div class="furniture-component">
+        <div data-bind="component: { name: 'mdc-checkbox-component', params: componentInvolvedInSelectedModelParams }"></div>
+        <!-- ko foreach: materialGroups -->
+        <div class="material-group">
+            <div class="material-group-quantity" data-bind="component: { name: 'mdc-text-field-numeric-component', params: quantity }"></div>
+        </div>
+        <!-- /ko -->
+    </div>
+    <!-- /ko -->
+</script>
+
+<div class="blocker" data-bind="visible: busy">
+    <div class="busy-bars">
+        <div class="rect1 alert alert-info"></div>
+        <div class="rect2 alert alert-info"></div>
+        <div class="rect3 alert alert-info"></div>
+        <div class="rect4 alert alert-info"></div>
+        <div class="rect5 alert alert-info"></div>
+    </div>
+    <!-- ko with: busyMessage -->
+    <h3 data-bind="html: $data"></h3>
+    <!-- /ko -->
+</div>
+
+<div style="display: none;" data-bind="visible: ready">
+    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: modelParams }"></div>
+    <!-- ko if: modelDetails -->
+    <div class="model-details panel panel-default margin-top-15">
+        <h3 class="heading" data-bind="with: modelDetails">
+            Design: <span data-bind="text: Design.Name"></span>
+        </h3>
+        <div class="margin-top-20 margin-bottom-15" data-bind="component: { name: 'mdc-kendo-multiselect-component', params: designSeatCushionFillingsParams }"></div>
+        <div class="margin-top-15 margin-bottom-15" data-bind="component: { name: 'mdc-kendo-multiselect-component', params: designBackCushionFillingsParams }"></div>
+        <div class="margin-top-15" data-bind="component: { name: 'mdc-kendo-multiselect-component', params: designLegTypesParams }"></div> 
+        <div class="margin-top-15" data-bind="component: { name: 'mdc-checkbox-component', params: designPermitMixedFabric }"></div>
+        <div class="design-flex-container">
+            <div>
+                <div class="design-restrictor">
+                    <div class="flex-container">
+                        <h4 class="blue-heading bold">
+                            Fabric Restrictions
+                        </h4>
+                        <div class="autocompleter" data-bind="component: { name: 'mdc-text-field-autocomplete-component', params: designFabricRestrictionAutocomplete }"></div>
+                    </div>
+                    <div class="grid-container">
+                        <!-- ko if: designFabricRestrictionAutocompleteResults().length -->
+                        <div class="controls-container">
+                            <h4 class="blue-heading bold">
+                                Search Results
+                                <a class="pull-right smaller pointer" data-bind="click: addAllFabricRestrictions">
+                                    Add All
+                                </a>
+                            </h4>
+                            <div class="list-group-wrapper">
+                                <ul class="list-group" data-bind="validationOptions: { insertMessages: false }">
+                                    <!-- ko foreach: designFabricRestrictionAutocompleteResults() -->
+                                    <li class="list-group-item" data-bind="css: { 'selected': $parent.isRestrictionInSelection($data) }">
+                                        <label class="checkbox-wrapper">
+                                            <!-- ko if: ImageID -->
+                                            <img class="thumb"  data-bind="attr: { src: 'https://www.designersguild.com/image/239/' + ImageID, title: Code }" />
+                                            <!-- /ko -->
+                                            <!-- ko ifnot: ImageID -->
+                                            <span class="thumb"></span>
+                                            <!-- /ko -->
+                                            <input type="checkbox" data-bind="checked: $parent.designFabricRestrictions, checkedValue: $data" />
+                                            <span class="display-block">
+                                                <span class="display-block" data-bind="text: Code"></span>
+                                                <span class="display-block" data-bind="text: Name"></span>
+                                            </span>
+                                        </label>
+                                    </li>
+                                    <!-- /ko -->
+                                </ul>
+                            </div>
+                            <a class="display-inline-block pointer margin-top-15" data-bind="click: clearFabricRestrictionSearchResults">
+                                Clear Search Results
+                            </a>
+                        </div>
+                        <!-- /ko -->
+                        <div class="controls-container">
+                            <h4 class="blue-heading bold">
+                                Permitted Fabrics
+                                <!-- ko if: designFabricRestrictions().length > 0 -->
+                                <sup data-bind="text: '(' + designFabricRestrictions().length + ')'"></sup>
+                                <a class="pull-right smaller pointer" data-bind="click: removeAllFabricRestrictions">
+                                    Remove All
+                                </a>
+                                <!-- /ko -->
+                            </h4>
+                            <!-- ko if: designFabricRestrictions().length == 0 -->
+                            <p class="margin-bottom-0">
+                                This Design is available in any Fabric.
+                            </p>
+                            <!-- /ko -->
+                            <!-- ko if: designFabricRestrictions().length > 0 -->
+                            <div class="list-group-wrapper">
+                                <ul class="list-group" data-bind="foreach: Enumerable.From(designFabricRestrictions()).OrderBy('$.Code').ToArray()">
+                                    <li class="list-group-item">
+                                        <div class="checkbox-wrapper">
+                                            <div>
+                                                <!-- ko if: ImageID -->
+                                                <img class="thumb"  data-bind="attr: { src: 'https://www.designersguild.com/image/239/' + ImageID, title: Code }" />
+                                                <!-- /ko -->
+                                                <span class="display-block product-title">
+                                                    <span class="display-block" data-bind="text: Code"></span>
+                                                    <span class="display-block" data-bind="text: Name"></span>
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <!-- ko if: stitchColour() -->
+                                                <img class="thumb" data-bind="attr: { src: '/Areas/Products/Content/Images/Stitching/placeholder.png', title: Name }" />
+                                                <a class="stitch-colour" data-bind="click: function(data) { $parent.loadRecommendedStitch(data); }">
+                                                    <span class="display-block">
+                                                        <span class="display-block">
+                                                            Recommended Stitch:
+                                                        </span>
+                                                        <span class="display-block" data-bind="with: stitchColour">
+                                                            <span data-bind="text: Name"></span>
+                                                        </span>
+                                                    </span>
+                                                </a>
+                                                <!-- /ko -->
+                                                <!-- ko ifnot: stitchColour() -->
+                                                <a class="stitch-colour" data-bind="click: function(data) { $parent.loadRecommendedStitch(data); }">
+                                                    <span class="display-block">
+                                                        <span class="display-block">
+                                                            Recommended Stitch:
+                                                        </span>
+                                                        <span class="display-block">
+                                                            <span data-bind="text: 'Not Set'"></span>
+                                                        </span>
+                                                    </span>
+                                                </a>
+                                                <!-- /ko -->
+                                            </div>
+                                            <button type="button" class="close" data-bind="click: $parent.removeFabricRestriction">
+                                                <span aria-hidden="true">
+                                                    &times;
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                </div>
+                <div class="design-restrictor">
+                    <div class="flex-container">
+                        <h4 class="blue-heading bold">
+                            Stitch Colour Restrictions
+                        </h4>
+                        <div class="autocompleter" data-bind="component: { name: 'mdc-text-field-autocomplete-component', params: designStitchColourRestrictionAutocomplete.autocompleter }"></div>
+                    </div>
+                    <div class="grid-container">
+                        <!-- ko if: designStitchColourRestrictionAutocompleteResults().length -->
+                        <div class="controls-container">
+                            <h4 class="blue-heading bold">
+                                Search Results
+                                <a class="pull-right smaller pointer" data-bind="click: addAllStitchColourRestrictions">
+                                    Add All
+                                </a>
+                            </h4>
+                            <div class="list-group-wrapper">
+                                <ul class="list-group" data-bind="validationOptions: { insertMessages: false }">
+                                    <!-- ko foreach: designStitchColourRestrictionAutocompleteResults() -->
+                                    <li class="list-group-item" data-bind="css: { 'selected': $parent.isStitchColourInSelection($data) }">
+                                        <label class="checkbox-wrapper">
+                                            <!-- ko if: StitchColourID -->
+                                            <img class="thumb"  data-bind="attr: { src: '/Areas/Products/Content/Images/Stitching/placeholder.png', title: Name }" />
+                                            <!-- /ko -->
+                                            <input type="checkbox" data-bind="checked: $parent.designStitchColourRestrictions, checkedValue: $data" />
+                                            <span class="display-block">
+                                                <span class="display-block" data-bind="text: Name"></span>
+                                            </span>
+                                        </label>
+                                    </li>
+                                    <!-- /ko -->
+                                </ul>
+                            </div>
+                            <a class="display-inline-block  pointer margin-top-15" data-bind="click: clearStitchColourSearchResults">
+                                Clear Search Results
+                            </a>
+                        </div>
+                        <!-- /ko -->
+                        <div class="controls-container">
+                            <h4 class="blue-heading bold">
+                                Permitted Stitch Colours
+                                <!-- ko if: designStitchColourRestrictions().length > 0 -->
+                                <sup data-bind="text: '(' + designStitchColourRestrictions().length + ')'"></sup>
+                                <a class="pull-right smaller pointer" data-bind="click: removeAllStitchColourRestrictions">
+                                    Remove All
+                                </a>
+                                <!-- /ko -->
+                            </h4>
+                            <!-- ko if: designStitchColourRestrictions().length == 0 -->
+                            <p class="margin-bottom-0">
+                                This Design is available in any Stitch Colour.
+                            </p>
+                            <!-- /ko -->
+                            <!-- ko if: designStitchColourRestrictions().length > 0 -->
+                            <div class="list-group-wrapper">
+                                <ul class="list-group bespoke-waterfall-target" data-bind="foreach: Enumerable.From(designStitchColourRestrictions()).OrderBy('$.StitchColourID').ToArray()">
+                                    <li class="list-group-item">
+                                        <div class="checkbox-wrapper">
+                                            <!-- ko if: StitchColourID -->
+                                            <img class="thumb"  data-bind="attr: { src: '/Areas/Products/Content/Images/Stitching/placeholder.png', title: Name }" />
+                                            <!-- /ko -->
+                                            <span class="display-block">
+                                                <span class="display-block" data-bind="text: Name"></span>
+                                            </span>
+                                            <button type="button" class="close" data-bind="click: $parent.removeStitchColourRestriction">
+                                                <span aria-hidden="true">
+                                                    &times;
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="model-details panel panel-default margin-top-15">
+        <h3 class="heading" data-bind="with: modelDetails">
+            Model: <span data-bind="text: Label"></span>
+        </h3>
+        <div class="flex-container">
+            <div class="image-container">
+                <img class="thumb" data-bind="attr: { src: 'https://www.designersguild.com/image/239/' + modelImageId() }" />
+                <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: modelImageParams }"></div>
+            </div>
+            <div class="controls-container">
+                <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: modelWidth }"></div>
+                <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: modelHeight }"></div>
+                <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: modelDepth }"></div>
+                <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: modelSeatHeight }"></div>
+                <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: modelSeatDepth }"></div>
+                <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: modelSeatCount }"></div>
+                <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: modelSeatCushionCount }"></div>
+                <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: modelBackCushionCount }"></div>
+                <div></div>
+                <div data-bind="component: { name: 'mdc-checkbox-component', params: modelInterline }"></div>
+                <div data-bind="component: { name: 'mdc-checkbox-component', params: modelButton }"></div>
+                <div data-bind="component: { name: 'mdc-checkbox-component', params: modelStitching }"></div>
+                <div data-bind="component: { name: 'mdc-checkbox-component', params: modelLeatherAvailable }"></div>
+                <div data-bind="component: { name: 'mdc-checkbox-component', params: modelWoodenArms }"></div>
+                <div data-bind="component: { name: 'mdc-checkbox-component', params: modelLegsRemovable }"></div>
+                <div data-bind="component: { name: 'mdc-checkbox-component', params: modelTrim }"></div>
+                <div data-bind="component: { name: 'mdc-checkbox-component', params: modelPermitAdditionalCover }"></div>
+            </div>
+        </div>
+        <div class="comments">
+            <div data-bind="component: { name: 'mdc-text-area-component', params: modelLegNotes }"></div>
+            <div data-bind="component: { name: 'mdc-text-area-component', params: modelComments }"></div>
+        </div>
+        <div class="checko-disco" data-bind="css: { 'disco': modelDiscontinued.observable }, component: { name: 'mdc-checkbox-component', params: modelDiscontinued }"></div>
+    </div>
+    <!-- ko foreach: suppliers -->
+    <div class="panel panel-default margin-top-15">
+        <div class="supplier-header">
+            <h3 class="heading">
+                Supplier: <span data-bind="text: Name"></span>
+            </h3>
+            <div class="cover-type" data-bind="component: { name: 'mdc-kendo-multiselect-component', params: designCoverTypesParams }"></div>
+        </div>
+        <!-- ko template: { name: 'component-material-group-template', afterRender: nudge } --><!-- /ko -->
+    </div>
+    <!-- /ko -->
+    <div class="margin-top-15">
+        <button class="btn btn-success pull-right" data-bind="click: saveBreakdown">
+            Save Configuration
+        </button>
+        <div class="saved-successfully text-success pull-right margin-right-15" style="display: none; font-size: 14px;" data-bind="fadeVisible: showMergeSaved, fadeSpeed: 'slow', html: 'Saved Successfully &#x2714;'"></div>
+    </div>
+    <!-- /ko -->
+</div>
+
+<div id="recommended-stitch-modal" class="modal fade" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="blocker" data-bind="visible: recommendedStitchBusy">
+            <div class="busy-bars">
+                <div class="rect1 alert alert-info"></div>
+                <div class="rect2 alert alert-info"></div>
+                <div class="rect3 alert alert-info"></div>
+                <div class="rect4 alert alert-info"></div>
+                <div class="rect5 alert alert-info"></div>
+            </div>
+            <h3>
+                Working...
+            </h3>
+        </div>
+            <div class="modal-header grey-blue">
+                <button class="close" data-bind="click: hideRecommendedStitchModal">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    Recommended Stitch Colour for
+                    <span class="display-block product-title" data-bind="with: recommendedStitchRecord">
+                        <span class="display-block" data-bind="text: Code"></span>
+                    </span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="margin-bottom-15" data-bind="with: recommendedStitchRecord">
+                    <ul class="list-group">
+                        <li class="bespoke-waterfall-available list-group-item">
+                            <div class="checkbox-wrapper">
+                                <div>
+                                    <!-- ko if: ImageID -->
+                                    <img class="thumb"  data-bind="attr: { src: 'https://www.designersguild.com/image/239/' + ImageID, title: Code }" />
+                                    <!-- /ko -->
+                                    <span class="display-block product-title">
+                                        <span class="display-block" data-bind="text: Code"></span>
+                                        <span class="display-block" data-bind="text: Name"></span>
+                                    </span>
+                                </div>
+                                <div>
+                                    <!-- ko if: stitchColour() -->
+                                    <img class="thumb" data-bind="attr: { src: '/Areas/Products/Content/Images/Stitching/placeholder.png', title: Name }" />
+                                    <span class="stitch-colour">
+                                        <span class="display-block">
+                                            <span class="display-block">
+                                                Current Recommended Stitch:
+                                            </span>
+                                            <span class="display-block" data-bind="with: stitchColour">
+                                                <span data-bind="text: Name"></span>
+                                            </span>
+                                        </span>
+                                    </span>
+                                    <!-- /ko -->
+                                    <!-- ko ifnot: stitchColour() -->
+                                    <span class="stitch-colour">
+                                        <span class="display-block">
+                                            <span class="display-block">
+                                                Current Recommended Stitch:
+                                            </span>
+                                            <span class="display-block">
+                                                <span data-bind="text: 'Not Set'"></span>
+                                            </span>
+                                        </span>
+                                    </span>
+                                    <!-- /ko -->
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div data-bind="component: { name: 'mdc-text-field-autocomplete-component', params: recommendedStitchColourRestrictionAutocomplete.autocompleter }"></div>
+                <!-- ko if: recommendedStitchColourRestrictionAutocompleteResults().length > 0 -->
+                <div class="list-group-wrapper margin-top-15">
+                    <ul class="list-group" data-bind="foreach: Enumerable.From(recommendedStitchColourRestrictionAutocompleteResults()).OrderBy('$.StitchColourID').ToArray()">
+                        <li class="list-group-item pointer" data-bind="click: $parent.setRecommendedStitchColour">
+                            <!-- ko if: $parent.recommendedStitchRecord() -->
+                            <div class="checkbox-wrapper" data-bind="css: { 'selected-stitch': StitchColourID == $parent.recommendedStitchRecord().stitchColourId(), 'pending-stitch': StitchColourID == $parent.savingRecommendedStitchColourId() }">
+                                <!-- ko if: StitchColourID -->
+                                <img class="thumb"  data-bind="attr: { src: '/Areas/Products/Content/Images/Stitching/placeholder.png', title: Name }" />
+                                <!-- /ko -->
+                                <span class="display-block">
+                                    <span class="display-block" data-bind="text: Name"></span>
+                                </span>
+                                <!-- ko if: StitchColourID == $parent.recommendedStitchRecord().stitchColourId() -->
+                                <i class="text-success">
+                                    &#x2714;
+                                </i>
+                                <!-- /ko -->
+                            </div>
+                            <!-- /ko -->
+                        </li>
+                    </ul>
+                </div>
+                <!-- /ko -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-bind="click: hideRecommendedStitchModal">
+                    Cancel
+                </button>
+                <span class="margin-right-15" data-bind="with: savingRecommendedStitchColour">
+                    Click to save Stitch Colour 
+                    "<span data-bind="text: Name"></span>"
+                    to 
+                    <span data-bind="with: $parent.recommendedStitchRecord">
+                        <span data-bind="text: Code"></span>
+                    </span>
+                </span>
+                <button class="btn btn-green" data-bind="enable: savingRecommendedStitchColour, click: saveRecommendedStitch">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

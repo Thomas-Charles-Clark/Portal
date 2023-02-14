@@ -1,0 +1,160 @@
+﻿@import 'common.scss';
+
+@import "../lib/bootstrap-5.3.1/scss/mixins/breakpoints";
+@import "../lib/bootstrap-5.3.1/scss/functions";
+@import "../lib/bootstrap-5.3.1/scss/variables";
+
+.container {
+    max-width: 1200px;
+}
+
+.nav-tabs {
+    .nav-link.bg-light {
+        font-size: $font-size-regular;
+        border-bottom: 1px solid $gray-300;
+    }
+
+    .nav-link.bg-light.active {
+        border-bottom: 1px solid $gray-100;
+    }
+}
+
+.tab-content {
+    .tab-pane {
+        padding: $l-gutter;
+        background: $gray-100;
+    }
+}
+
+#product-type-tabs-container {
+    background: $white;
+    border: 1px solid $gray-300;
+    border-top: 0;
+
+    .tab-pane {
+        h2 {
+            margin-top: $m-gutter;
+            margin-bottom: $xl-gutter;
+        }
+    }
+
+    .mdc-floating-label {
+        .remaining {
+            font-size: 1rem;
+            top: 0;
+        }
+    }
+}
+
+#cheatsheet {
+    position: fixed;
+    top: 0;
+    z-index: 2;
+    left: calc(100% - 30px);
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: $font-size-sm;
+
+    #cheatsheet-inner {
+        height: 100vh;
+        position: relative;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: row;
+        transition: left 300ms ease-in-out;
+        background: $gray-100;
+        padding-left: 0;
+        border-left: 1px solid $gray-300;
+        border-bottom: 1px solid $gray-300;
+        border-bottom-left-radius: 0.5rem;
+
+        #cheatsheet-handle {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid $gray-300;
+            transition: background-color 150ms ease-in-out;
+
+            i {
+                padding: $l-gutter $m-gutter;
+                position: relative;
+                left: -1px;
+            }
+        }
+
+        #cheatsheet-handle:hover {
+            background-color: $gray-200;
+        }
+
+        .nav-pills {
+            li {
+                margin-bottom: $l-gutter;
+            }
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .tab-content {
+            overflow-y: scroll;
+
+            .tab-pane {
+                padding: 0;
+                min-width: 420px;
+
+                pre {
+                    font-family: monospace;
+                    font-size: $font-size-regular;
+
+                    * {
+                        font-family: monospace;
+                    }
+                }
+            }
+        }
+    }
+}
+
+#cheatsheet.pinned,
+#cheatsheet:hover,
+#cheatsheet:active,
+#cheatsheet:focus,
+#cheatsheet:focus-within {
+    #cheatsheet-inner {
+        left: calc(-100% + 30px);
+    }
+}
+
+#reformat-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    z-index: 1;
+    padding: $m-gutter;
+
+    .hstack {
+        position: sticky;
+        top: $m-gutter;
+        right: $m-gutter;
+        border-radius: 0 0 0 $border-radius;
+    }
+}
+
+
+#info-modal {
+    pre {
+        border: none;
+        font-size: $font-size-md;
+
+        ul {
+            margin-bottom: 0;
+        }
+    }
+}

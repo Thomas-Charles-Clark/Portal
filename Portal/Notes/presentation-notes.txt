@@ -1,0 +1,27 @@
+Presentation Notes	12/12/2017
+
+Additional company types - specifically for Sweden?
+
+- This particular field is not mandatory.
+
+Miscellaneous account orders - do they become a type of lead at some point?
+
+book schemes aren't JUST book schemes, they encompass wallpaper schemes etc
+- we want to know who is in what scheme and when
+- apparently is useful on B2B
+
+Customer Details!
+
+Alternatives in Sample Request underneath 
+
+searching for products - by composition, e.g. linen, martindale, tests, etc.
+
+Calendar - MUST INTEGRATE with Outlook. No point doing it otherwise.
+
+for Fixed Price discounts, have the ability to toggle between the display of the fixed price and that discount as a % of the original.
+
+
+Messaging - integrate with Bronto and give users the ability to mass mail information to customer groups
+(beautiful emails, generated attachments, etc).
+
+<iframe id="youtubeplayer" class="youtube-frame" width="960" height="540" src="//www.youtube.com/embed/sBJ2wmAbe-Y?enablejsapi=1&rel=0&autoplay=0" frameborder="0" allowfullscreen></iframe>

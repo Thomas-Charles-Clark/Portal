@@ -1,0 +1,376 @@
+﻿<script id="multi-select-template" type="text/html">
+    <div class="slicer panel panel-primary">
+        <div class="panel-heading">
+            <span data-bind="text: name"></span>
+            <span class="clear-selection glyphicon glyphicon-filter" style="display: none" data-bind="visible: clearAvailable(), click: function() { clearSelection(); }"><span>&times;</span></span>
+        </div>
+        <div class="panel-body no-padding">
+            <select class="slicer-list list-group" data-bind="kendoMultiSelect: multiSelectSettings" multiple="multiple"></select>
+            @*<select class="slicer-list list-group" data-role="dropdownlist" data-value-field="valueField" data-text-field="textField" data-auto-bind="true" data-bind="value: selected, source: dataSource, events: { dataBound: dataBound }, keepElement: selected"></select>*@
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript">
+    var multiSelectViewModel = function (params) {
+        var self = this;
+
+        params.boundTo(self);
+
+        if (typeof params.clearValue !== 'object')
+            console.error(params.name + ' multiSelect: params.clearValue should be []');
+
+        if (typeof params.parameterName !== 'string')
+            console.error(params.name + ' multiSelect: did you forget the parameterName param?');
+
+        self.name = params.name;
+        self.textField = params.textField;
+        self.valueField = params.valueField;
+        self.parameterName = params.parameterName;
+        self.selectedIds = params.selectedIds;
+
+        self.clearValue = params.clearValue;
+        self.selectOnlyItem = params.selectOnlyItem;
+        self.readOnly = params.readOnly;
+        self.widget = ko.observable();
+
+        self.siblings = params.siblings;
+        self.clearSiblings = params.clearSiblings || false;
+        self.initialBindSkipSiblingRead = params.initialBindSkipSiblingRead || false;
+
+        // optional
+        self.compositeKey = params.compositeKey;
+        self.selectionAffects = params.selectionAffects || [];
+        self.additionalParams = params.additionalParams || [];
+        self.log = params.log || false;
+        self.deepLog = params.deepLog || false;
+
+        // This is here to let us force an update to clearAvailable when we have dataBound hit
+        self.availabilityNonce = ko.observable();
+
+        self.selectedIds.subscribe(function (newValue) {
+            if (self.log)
+                console.log(self.name + '.selectedIds subscribe hit: ', newValue);
+
+            //self.siblings.forEach(function (s) {
+            //    if (s.boundTo() == self) {
+            //        return;
+            //    }
+            //    s.boundTo().widget().dataSource.read();
+            //});
+
+            if (self.initialBindSkipSiblingRead) {
+                if (self.deepLog)
+                    console.log(self.name + '.selectedIds subscribe skipped sibling read');
+                self.initialBindSkipSiblingRead = false;
+            } else {
+                self.siblings.forEach(function (s) {
+                    if (s.boundTo() == self) {
+                        if (self.deepLog)
+                            console.log(self.name + '.selectedIds subscribe skipped self read');
+                    } else {
+                        s.boundTo().widget().dataSource.read();
+                        if (self.deepLog)
+                            console.log(self.name + '.selectedIds subscribe caused sibling read');
+                    }
+                });
+            }
+        });
+
+        self.clearAvailable = ko.computed({
+            read: function () {
+
+                var result = false;
+
+                if (self.readOnly === true)
+                    return result;
+
+                var nonceValue = self.availabilityNonce();
+
+                // touch sibling values; if they change I might need to re-show my clear button.
+                var data = {};
+
+                self.siblings.forEach(function (s) {
+                    if (s.selectedIds()) {
+                        var t = s.selectedIds();
+                        data[s.valueField] = t;
+                    }
+                });
+
+                if (self.selectedIds().length) {
+                    result = true;
+                } else {
+                    result = false;
+                }
+
+                if (self.widget()) {
+                    if (self.selectOnlyItem && self.widget().dataSource.data().length == 1) {
+                        result = false;
+                    }
+                }
+
+                //if (self.deepLog)
+                //    console.log(self.name + ' clearAvailable evaluated', result);
+
+                return result;
+            }
+        }, self).extend({
+            rateLimit: {
+                method: 'notifyWhenChangesStop',
+                timeout: 1000
+            }
+        });
+
+        self.clearSelection = function () {
+            if (self.deepLog)
+                console.log(self.name + '.clearSelection was called, clearing to: ', self.clearValue);
+
+            self.widget().value(self.clearValue);
+            self.widget().trigger('change');
+
+            if (self.clearSiblings) {
+                self.siblings.forEach(function (s) {
+                    if (s.boundTo() == self) {
+                        return;
+                    }
+                    s.boundTo().widget().value(s.clearValue);
+                    s.boundTo().widget().trigger('change');
+                });
+            }
+        }
+
+        self.dataSourceData = function() {
+            var data = {};
+
+            self.siblings.forEach(function (s) {
+                if (s.selectedIds()) {
+                    data[s.parameterName] = s.selectedIds();
+                }
+            });
+
+            for (var i in self.additionalParams) {
+                var param = self.additionalParams[i];
+                data[param.name] = ko.unwrap(param.value);
+            }
+
+            if (self.deepLog)
+                console.log(self.name + ' dataSourceData', data);
+
+            return data;
+        }
+
+        self.dataSourceRead = function (options) {
+            var webapi = new kendo.data.transports.webapi({ prefix: "" });
+
+            var mapped = webapi.parameterMap(options.data);
+
+            var data = self.dataSourceData();
+
+            for (var propertyName in mapped) {
+                data[propertyName] = mapped[propertyName];
+            }
+
+            if (self.log)
+                console.log(self.name + ' called', data);
+
+            $.ajax({
+                url: params.endPoint,
+                type: "POST",
+                dataType: 'json',
+                data: data,
+                success: function (result) {
+                    if (self.log)
+                        console.log(self.name + ' returned', result);
+                    options.success(result);
+                },
+                error: function (result) {
+                    options.error();
+                }
+            });
+        }
+
+        self.dataSource = new kendo.data.DataSource({
+            serverFiltering: true,
+            serverSorting: false,
+            serverGrouping: false,
+            transport: {
+                read: self.dataSourceRead
+            }
+        });
+
+        self.onSelect = params.onSelect || function (e) {
+            if (self.deepLog)
+                console.log(self.name + ' multiSelect onSelect hit');
+        }
+
+        self.onDeselect = params.onDeselect || function (e) {
+            if (self.deepLog)
+                console.log(self.name + ' multiSelect onDeselect hit');
+
+            if (self.selectOnlyItem) {
+                if (e.sender.dataSource.view().length == 1) {
+                    e.preventDefault();
+                }
+            }
+        }
+
+        self.onChange = params.onChange || function (e) {
+            if (self.deepLog)
+                console.log(self.name + ' multiSelect onChange hit');
+        }
+
+        self.onOpen = params.onOpen || function (e) {
+            if (self.deepLog)
+                console.log(self.name + ' multiSelect onOpen hit');
+        };
+
+        self.onClose = params.onClose || function (e) {
+            if (self.deepLog)
+                console.log(self.name + ' multiSelect onclose hit');
+        };
+
+        self.dataBound = function (e) {
+
+            // What's all this gubbins in aid of, then...?
+
+            self.availabilityNonce.valueHasMutated();
+
+            if (self.log)
+                console.log(self.name + ' multiSelect dataBound hit', e);
+
+            var ds = e.sender.dataSource.data();
+
+            if (self.selectOnlyItem) {
+                if (ds.length == 1) {
+
+                    if (self.selectedIds().indexOf(ds[0][self.valueField]) == -1) {
+
+                        //self.selectedIds([ds[0][self.valueField]]);
+                        self.widget().value([ds[0][self.valueField]]);
+                        self.widget().trigger('change');
+
+                        if (self.deepLog) {
+                            console.log(self.name + ' multiSelect selectingOnlyDataItem', ds[0][self.valueField]);
+                        }
+                    }
+
+                    //if (self.widget().value().indexOf(ds[0][self.valueField]) == -1) {
+
+
+                    //    var prev = self.widget().value();
+                    //    prev.push(ds[0][self.valueField]);
+                    //    self.selectedIds(prev);
+                    //    //self.widget().value(prev);
+                    //    //self.widget().trigger('change');
+                    //    if (self.deepLog) {
+                    //        console.log(self.name + ' multiSelect selectingOnlyDataItem', prev);
+                    //    }
+                    //    //self.selectedIds.push(ds[0][self.valueField]);
+                    //}
+                }
+            }
+
+            // So what about the case when our selectedIds are no longer available in the results
+            // The selectedIds currently is getting out of sync with the widget().value()... value.
+            // This is bad!
+
+            ko.utils.arrayForEach(self.selectedIds(), function (id) {
+                if (!Enumerable.From(ds).Where(function (x) { 
+                    return x[self.valueField] == id;
+                }).Any()) {
+                    self.selectedIds.remove(id);
+                }
+            });
+
+
+
+
+            //if (ds.length > 1) {
+            //    var found = [];
+            //    var checkCompositeKey = false;
+            //    for (var i = 0; i < e.sender.dataSource.view().length; i++) {
+
+            //        // This rather complicated arrangement came about because I needed to have a market dropdown
+            //        // which utilised a composite key (MarketID, CurrencyID). 
+            //        // As it... might be helpful? Possibly? In multiSelect as well, I have left it here commented
+            //        // out for posterity.
+            //        //if (self.compositeKey) {
+            //        //    if (self.compositeKey.hasOwnProperty('onlyIf')) {
+            //        //        if (typeof self.compositeKey.onlyIf === 'function') {
+            //        //            if (self.compositeKey.onlyIf()) {
+            //        //                checkCompositeKey = true;
+            //        //            } 
+            //        //        } else {
+            //        //            if (self.compositeKey.onlyIf) {
+            //        //                checkCompositeKey = true;
+            //        //            }
+            //        //        }
+            //        //    }
+            //        //    if (checkCompositeKey) {
+            //        //        found = i;
+            //        //        for (var j = 0; j < self.compositeKey.names.length; j++) {
+            //        //            if (e.sender.dataSource.view()[i][self.compositeKey.names[j]] != self.selectedIds()[self.compositeKey.names[j]]) {
+            //        //                found = -1;
+            //        //            }
+            //        //        }
+            //        //        if (found == i) {
+            //        //            break;
+            //        //        }
+            //        //    } else {
+            //        //        if (e.sender.dataSource.view()[i][self.valueField] == self.selectedIds()
+            //        //            found = i;
+            //        //        }
+            //        //    }
+            //        //} else {
+            //        if (self.selectedIds().indexOf(e.sender.dataSource.view()[i][self.valueField]) > -1) {
+            //            found.push(i);
+            //        }
+            //        //}
+            //    }
+            //    if (self.selectedIds().indexOf( self.widget().value()[self.valueField] == ) {
+            //        found = -1; // no need to select if we've already got it selected, eh?
+            //    }
+            //    if (found > -1) {
+            //        e.sender.value(e.sender.dataSource.view()[found][self.valueField]);
+            //        e.sender.trigger('change');
+            //    }
+            //    //if (self.selected()) {
+            //    //    // our selected is of note; it is not present in view. Clear.
+            //    //    if (self.log) {
+            //    //        console.log(self.name + ' dropdown dataBound selected not found in view; clear');
+            //    //        console.log(self.name + ' clear was skipped');
+            //    //    }
+            //    //    //self.selected(self.noOptionLabel ? self.clearValue : self.optionLabel);
+            //    //}
+            //} 
+        };
+
+        self.multiSelectSettings = {
+            // it would appear that we cannot cause multiSelect components to not bind until used;
+            // the initial binding performed by knockout-kendo.js fires a watch on the value, which
+            // filters the dataSource regardless or whether or not you're allowing autoBind.
+            // this is fine, for now...
+            autoBind: params.autoBind || false,
+            valuePrimitive: false, // this is the default anyway, but hey...
+            autoClose: false,
+            dataTextField: self.textField,
+            dataValueField: self.valueField, // this has no effect if we're valuePrimitive: false... but hey.
+                                             // it might help us remember the salient data point's name.
+            widget: self.widget,
+            data: self.dataSource,
+            select: self.onSelect,
+            deselect: self.onDeselect,
+            change: self.onChange,
+            autoWidth: true,
+            dataBound: self.dataBound,
+            enabled: !self.readOnly,
+            placeholder: params.placeholder,
+            value: self.selectedIds
+        };
+    }
+
+    ko.components.register('multi-select-component', {
+        viewModel: multiSelectViewModel,
+        template: { element: $('#multi-select-template')[0] }
+    });
+</script>

@@ -1,0 +1,740 @@
+﻿@model Portal.Areas.Products.ViewModels.SampleRequestViewModel
+@{
+    ViewBag.Title = "Sample Request";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/sample-request")
+}
+@section beforeContainer {
+    <div id="samples-busy-wrap" data-bind="fadeVisible: placeOrderBusy"><div class='uil-ring-css'><div></div></div></div>
+}
+<div id="basket-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="border-bottom-left-radius: 0; border-bottom-right-radius: 0;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Basket</h4>
+            </div>
+            <div class="modal-body" style="padding-top: 0">
+                <div class="row">
+                    <div class="basket-panel col-xs-12" id="mobile-basket" role="tablist" aria-multiselectable="false">
+                        <div role="tabpanel" aria-labelledby="basket-tab">
+                            @* class="panel-collapse" *@
+                            <div class="basket-scrollable">
+                                <div id="summary-button-container" class="panel-body">
+                                    @if (Model.Properties?.Order_ShowOrderTaker == true)
+                                    {
+                                        <div class="summary-section">
+                                            <div class="well">
+                                                Order Taker
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <label for="order-taker" class="col-form-label" data-bind="html: orderTakerLabel"></label>
+                                                </div>
+                                                <div class="col-xs-12">
+                                                    <input id="order-taker" type="text" class="form-control" maxlength="20" placeholder="Search by Code or Name" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="summary-section">
+                                        <div class="well">
+                                            Customer Details
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-xs-12">
+                                                <label for="name" class="col-form-label">Name<sup>*</sup></label>
+                                            </div>
+                                            <div class="col-xs-12">
+                                                <input id="name" type="text" class="form-control" data-bind="textInput: address().Name" maxlength="50" />
+                                            </div>
+                                        </div>
+                                        <div id="order-ref-container" class="form-group margin-top-10 row">
+                                            <div class="col-xs-12">
+                                                <label for="order-ref" class="col-form-label">Reference</label>
+                                            </div>
+                                            <div class="col-xs-12">
+                                                <input id="order-ref" type="text" class="form-control" maxlength="100" data-bind="textInput: customerOrderReference" />
+                                            </div>
+                                        </div>
+                                        <div id="email-selector" class="form-group margin-top-10 row">
+                                            <div class="col-xs-12">
+                                                <label for="email" class="col-form-label">Email<sup data-bind="visible: (customerWantsOrderConfirmation() || (ContactPreference() == 0))">*</sup></label>
+                                            </div>
+                                            <div class="col-xs-12">
+                                                <input id="email" type="email" autocapitalize="none" class="form-control" maxlength="256" data-bind="textInput: Email" />
+                                                <div class="field-error" data-field-name="email"></div>
+                                            </div>
+                                        </div>
+                                        <div id="send-email" class="margin-top-10 row">
+                                            <div class="col-xs-12">
+                                                <label id="send-confirmation-label" for="send-confirmation" class="col-form-label">
+                                                    <span>Send Order Confirmation Email</span>
+                                                    <input id="send-confirmation" class="send-confirmation" type="checkbox" data-bind="checked: customerWantsOrderConfirmation" />
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group margin-top-10 row">
+                                            <div class="col-xs-12">
+                                                <label for="phone" class="col-form-label">Phone<sup data-bind="visible: (ContactPreference() == 1)">*</sup></label>
+                                            </div>
+                                            <div class="col-xs-12">
+                                                <input id="phone" type="text" autocapitalize="none" class="form-control" maxlength="30" data-bind="textInput: Phone" />
+                                            </div>
+                                        </div>
+                                        @if (Model.Properties?.Sampling_ShowFollowUpPreference == true)
+                                        {
+                                            <div id="contact-pref" class="margin-top-10 row">
+                                                <div class="col-xs-12">
+                                                    <label for="phone" class="col-form-label">Would the customer like to request a follow-up?</label>
+                                                </div>
+                                                <div class="col-xs-12">
+                                                    <div class="btn-group">
+                                                        <button id="contact-preference-email" class="btn btn-default" data-bind="css: { 'btn-success @(Model.Properties?.Application_ButtonClass)': (ContactPreference() == 0) }, click: function() { if (ContactPreference() == 0) { ContactPreference(null) } else { ContactPreference(0) }}">Email</button>
+                                                        <button id="contact-preference-phone" class="btn btn-default" data-bind="css: { 'btn-success @(Model.Properties?.Application_ButtonClass)': (ContactPreference() == 1) }, click: function() { if (ContactPreference() == 1) { ContactPreference(null) } else { ContactPreference(1) }}">Phone Call</button>
+                                                        <button id="contact-preference-no" class="btn btn-default" data-bind="css: { 'btn-success @(Model.Properties?.Application_ButtonClass)': (ContactPreference() == 2) }, click: function() { if (ContactPreference() == 2) { ContactPreference(null) } else { ContactPreference(2) }}">No Follow-up</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="summary-section">
+                                        <div id="delivery-address-section" class="well">
+                                            Delivery Address
+                                        </div>
+                                        @if (Model.Properties?.Account_ShowAddressBook == true)
+                                        {
+                                            <div data-bind="visible: tradeAccountSelector().selected">
+                                                <div class="form-group row address-book-row" data-bind="visible: primaryAddress().DisplayLine() != ''">
+                                                    <div class="col-xs-12">
+                                                        <label class="col-form-label" for="default-address">Default Account Address</label>
+                                                    </div>
+                                                    <div class="col-xs-12">
+                                                        <p data-bind="text: primaryAddress().DisplayLine"></p>
+                                                        <button class="btn btn-default" data-bind="visible: primaryAddress().DisplayLine() != '', click: function() { setAddress(primaryAddress()); showAllAddressFields(true); }">Use Default Address</button>
+                                                    </div>
+                                                    <span class="address-book-or">
+                                                        or
+                                                    </span>
+                                                </div>
+                                                <div class="form-group row address-book-row">
+                                                    <div class="col-xs-12">
+                                                        <label class="col-form-label" for="address-book">Select from Account Address Book</label>
+                                                    </div>
+                                                    <div class="col-xs-12">
+                                                        <select id="address-book" class="form-control" data-bind="options: secondaryAddresses, value: selectedStoredAddress, optionsText: function(item) { return item.DisplayLine() }, optionsAfterRender: 'DisplayLine', optionsCaption: 'Select'"></select>
+                                                    </div>
+                                                    <span class="address-book-or">
+                                                        or
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        }
+                                        <div class="form-group row margin-top-10" style="margin-bottom: 0;">
+                                            <label for="custom-postcode" class="col-xs-12 col-form-label">Search for Address</label>
+                                            <div id="pca-find-wrapper" class="col-xs-12" style="margin-bottom: 15px;">
+                                                <input id="pca-find" type="text" class="form-control" data-bind="textInput: address().PCASearchTerm" maxlength="100" placeholder="Type to Search" />
+                                            </div>
+                                            @*<div class="col-xs-12" style="margin-bottom: 15px;">
+                                                      <button id="address-manual-btn" class="btn btn-default @(Model.Properties?.Application_ButtonClass)" data-bind="click: function() { showAllAddressFields(!showAllAddressFields()); }">Enter Address Manually</button>
+                                                </div>*@
+                                        </div>
+                                        <div data-bind="visible: showAllAddressFields">
+                                            <div class="form-group row">
+                                                <label for="custom-line-1" class="col-xs-12 col-form-label">Address Line 1</label>
+                                                <div class="col-sm-9 col-xs-12">
+                                                    <input id="custom-line-1" type="text" class="form-control" data-bind="textInput: address().AddressLine1" maxlength="60" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="custom-line-2" class="col-xs-12 col-form-label">Address Line 2</label>
+                                                <div class="col-sm-9 col-xs-12">
+                                                    <input id="custom-line-2" type="text" class="form-control" data-bind="textInput: address().AddressLine2" maxlength="60" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="custom-line-3" class="col-xs-12 col-form-label">Address Line 3</label>
+                                                <div class="col-sm-9 col-xs-12">
+                                                    <input id="custom-line-3" type="text" class="form-control" data-bind="textInput: address().AddressLine3" maxlength="50" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="custom-line-4" class="col-xs-12 col-form-label">Address Line 4</label>
+                                                <div class="col-sm-9 col-xs-12">
+                                                    <input id="custom-line-4" type="text" class="form-control" data-bind="textInput: address().AddressLine4" maxlength="40" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="custom-postcode" class="col-xs-12 col-form-label">Postcode</label>
+                                                <div class="col-sm-6 col-xs-12">
+                                                    <input id="custom-postcode" type="text" class="form-control" data-bind="textInput: address().Postcode" maxlength="20" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group row" style="display: none;">
+                                                <label for="custom-country" class="col-xs-12 col-form-label">Country</label>
+                                                <div class="col-sm-9 col-xs-12">
+                                                    <select id="custom-country" class="form-control" data-bind="options: availableCountries, value: address().Country, optionsText: 'Name', optionsValue: $data"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row" style="margin-bottom: 0;">
+                                            <label for="custom-country" class="col-xs-12 col-form-label">Country</label>
+                                            <div class="col-xs-12">
+                                                <select id="custom-country" class="form-control" data-bind="options: availableCountries, value: address().Country, optionsText: 'Name', optionsValue: $data"></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @if (Model.Properties?.Order_ShowDespatchOptions == true)
+                                    {
+                                        <div class="summary-section">
+                                            <div class="well">
+                                                Despatch Options
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <label for="despatch-method" class="col-form-label">Haulier</label>
+                                                    <select id="despatch-haulier" class="form-control" data-bind="options: availableHauliers, optionsValue: 'HAULCODE', value: selectedHaulier, optionsText: 'Name', optionsCaption: 'Select'"></select>
+                                                </div>
+                                                <div class="col-xs-12 margin-top-10">
+                                                    <label for="despatch-carriage" class="col-form-label">Service</label>
+                                                    <select id="despatch-carriage" class="form-control" data-bind="options: availableCarriages, optionsValue: 'CARRCODE', value: selectedCarriage, optionsText:  function(item) { return  (item.Description || '') + ' - ' + item.HAULCODE + ' - ' + item.CARRCODE }, optionsCaption: 'Select' + (selectedHaulier() == null ? ' a Haulier' : '')"></select>
+                                                </div>
+                                                <div class="col-xs-12 margin-top-10">
+                                                    <button class="btn btn-default" data-bind="click: function() { useDefaultDespatch(); }">Use Default Despatch</button>
+                                                </div>
+                                                <div class="col-xs-12 margin-top-10">
+                                                    <label id="customer-paying-label" for="customer-paying" class="col-form-label">
+                                                        <span>Customer to pay for despatch?</span>
+                                                        <input id="customer-paying" type="checkbox" data-bind="checked: customerPayingForDespatch" />
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="summary-section" data-bind="visible: basket().length">
+                                        <div class="well" style="margin-bottom: 0">
+                                            Basket
+                                        </div>
+                                        @if (Model.Properties?.Order_PriceOverride == true)
+                                        {
+                                            <div class="row margin-top-20 margin-bottom-15">
+                                                <div id="price-overrides-container" class="col-xs-12">
+                                                    <div id="price-overrides-panel" class="panel panel-default">
+                                                        <div class="panel-heading no-padding non-search">
+                                                            <h4 class="panel-title">
+                                                                <a class="panel-title panel-toggle collapsed" data-toggle="collapse" data-target="#pricing-overrides-collapse">
+                                                                    Override Standard Prices
+                                                                </a>
+                                                            </h4>
+                                                            <div class="clearfix"></div>
+                                                        </div>
+                                                        <div id="pricing-overrides-collapse" class="panel-collapse collapse">
+                                                            <div class="panel-body">
+                                                                <div id="cuttings-override" class="row">
+                                                                    <div class="col-sm-4 col-md-4">
+                                                                        <label class="col-form-label">
+                                                                            Cuttings
+                                                                        </label>
+                                                                    </div>
+                                                                    <div class="col-sm-5 col-xs-12">
+                                                                        @*value: cuttingPriceOverride, *@
+                                                                        <input id="cutting-price-override" type="text" class="form-control numeric" data-bind="numeric, textInput: cuttingPriceOverride, attr: { placeholder: 'Default' }" />
+                                                                    </div>
+                                                                </div>
+                                                                <div id="returnables-override" class="row margin-top-10">
+                                                                    <div class="col-sm-4 col-md-4">
+                                                                        <label class="col-form-label">
+                                                                            Returnables
+                                                                        </label>
+                                                                    </div>
+                                                                    <div class="col-sm-5 col-xs-12">
+                                                                        @*value: returnablePriceOverride, *@
+                                                                        <input id="returnable-price-override" type="text" class="form-control numeric" data-bind="numeric, textInput: returnablePriceOverride, attr: { placeholder: 'Default' }" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        <!-- ko foreach: basketSummary -->
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <div class="basket-item">
+                                                    <!-- ko if: $data.ImageID -->
+                                                    <img class="thumb" data-bind="click: $parent.loadLargeImage, attr: { src: 'https://www.designersguild.com/image/90/' + $data.ImageID, title: $data.Code + ' - Product ID: ' + $data.ProductID + ' Sample Product ID: ' + $data.CuttingProductID + ' Returnable Product ID: ' + $data.ReturnableProductID }" />
+                                                    <!-- /ko -->
+                                                    <!-- ko ifnot: $data.ImageID -->
+                                                    <img class="thumb" data-bind="click: $parent.loadLargeImage, attr: { src: '/Areas/Products/content/images/not-found.png', title: $data.Code + ' - Product ID: ' + $data.ProductID + ' Sample Product ID: ' + $data.CuttingProductID + ' Returnable Product ID: ' + $data.ReturnableProductID }" />
+                                                    <!-- /ko -->
+                                                    <div class="basket-detail">
+                                                        <label class="basket-item-name" data-bind="text: $data.Name + ' - ' + $data.ProductType"></label>
+                                                        <div style="display: inline-block;">
+                                                            <label class="basket-item-code" data-bind="text: $data.Code"></label>
+                                                            <label class="basket-item-count" data-bind="text: 'x ' + $data.QuantityTotal"></label>
+                                                        </div>
+                                                        <div>
+                                                            <!-- ko if: (($parent.maxSKUQuantity() == null) || ($parent.maxSKUQuantity() > 1 )) -->
+                                                            <div class="btn-group" data-bind="attr: { title: $parent.buttonTitle($data, $data.Code.slice(-1)) }"> @*$parent.buttonClass($data.Status), *@
+                                                                <a class="btn btn-default @(Model.Properties?.Application_ButtonClass)" data-bind="css: [(($data.Code.slice(-1) == 'R') ? ($parent.returnableButtonEnabled($data) ? '': 'disabled') : ($parent.sampleButtonEnabled($data) ? '' : 'disabled'))].join(' '), click: function() { $parent.increaseCodeInBasket($data.Name, $data.ProductType, $data.Code, $data.Status, $data.UnitPrice, $data.ImageID) }">
+                                                                    <span class="glyphicon glyphicon-plus"></span>
+                                                                </a>
+                                                                <a class="btn btn-default @(Model.Properties?.Application_ButtonClass)" data-bind="click: function() { $parent.decreaseCodeInBasket($data.Code) }" title="Remove">
+                                                                    <span class="glyphicon glyphicon-minus"></span>
+                                                                </a>
+                                                            </div>
+                                                            <!-- /ko -->
+                                                            @if (Model.Properties?.ProductSearch_ShowPrices == true)
+                                                            {
+                                                                <label class="col-form-label basket-item-price" data-bind="text: $data.PriceDisplay"></label>
+                                                            }
+                                                            <a class="btn btn-danger" data-bind="click: function() { $parent.removeCodeFromBasket($data.Code) }">
+                                                                <span class="summary-rem-icon glyphicon glyphicon-remove" title="Delete"></span>
+                                                            </a>
+                                                            <div class="clearfix"></div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /ko -->
+                                        @if (Model.Properties?.ProductSearch_ShowPrices == true)
+                                        {
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <div class="basket-item margin-top-10" style="border-bottom: 0;">
+                                                        <label id="basket-total" class="col-form-label" data-bind="text: 'Total: ' + formatCurrency(totalPrice(), 2, 'en-GB', 'GBP')"></label>
+                                                        @if (Model.Properties?.Order_ShowPayOnline == true)
+                                                        {
+                                                            <a id="take-payment-btn" class="btn btn-warning" href="https://retail.designersguild.com" target="_blank" data-bind="visible: totalPrice() > 0">Take Payment</a>
+                                                            <div class="clearfix"></div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    <div class="summary-section" style="display: none; margin-bottom: 0;" data-bind="visible: viewModel.errors.isAnyMessageShown()">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <div class="alert alert-danger" style="margin-bottom: 0;">
+                                                    <ul data-bind="foreach: errors">
+                                                        <li data-bind="html: $data"></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button style="float: left;" class="btn btn-primary @(Model.Properties?.Application_ButtonClass)" data-toggle="modal" data-target="#basket-modal" href="#basket-modal" aria-expanded="true" aria-controls="basket-collapse">Close</button>
+                <button style="float: left;" class="btn btn-primary @(Model.Properties?.Application_ButtonClass)" onclick="$.confirm('New Sample Request', 'Are you sure you want to start a new sample request? This will empty your basket and clear your customer details.', function () { viewModel.reset(); }, function() {  })">New</button>
+                <button class="place-order-btn btn btn-primary @(Model.Properties?.Application_ButtonClass)" data-bind="enable: !placeOrderBusy(), click: placeOrder">Order Samples</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section navbarCollapsedRight {
+    <button type="button" class="basket-toggle-btn navbar-toggle navbar-toggle-right" data-toggle="modal" data-target="#basket-modal" href="#basket-modal" aria-expanded="true" aria-controls="basket-modal">
+        <!-- ko if: basket().length -->
+        <span class="basket-toggle-count" data-bind="text: basketLength, visible: true" style="display: none"></span>
+        <!-- /ko -->
+        <span class="glyphicon glyphicon-shopping-cart"></span>
+    </button>
+}
+@section navbarRight {
+    <ul class="nav navbar-nav navbar-right">
+        <li class="basket-toggle-btn navbar-toggle navbar-toggle-right" data-toggle="modal" data-target="#basket-modal" href="#basket-modal" aria-expanded="true" aria-controls="basket-modal">
+            <!-- ko if: basket().length -->
+            <span class="basket-toggle-count" data-bind="text: basketLength, visible: true" style="display: none"></span>
+            <!-- /ko -->
+            <span class="glyphicon glyphicon-shopping-cart"></span>
+        </li>
+    </ul>
+}
+@if (Model.Properties?.Order_Returnables == true)
+{
+    <style type="text/css">
+        .product-result-inner {
+            min-height: 320px;
+        }
+        @@media(min-width: 992px) {
+            .product-result-inner {
+                min-height: 346px;
+            }
+        }
+        @@media (min-width: 1200px) {
+            .product-result-inner {
+                min-height: 320px;
+            }
+        }
+    </style>
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <h3 class="page-heading">
+            Sample Request
+        </h3>
+    </div>
+</div>
+
+@Html.Partial("Modals/_ImageModal")
+
+@Html.Partial("Modals/_FailureModal")
+
+@Html.Partial("Modals/_ProductInfoModal")
+
+@Html.Partial("Modals/_ProductStockModal")
+
+@Html.Partial("Modals/_AlternativeProductsModal", Model)
+
+@Html.Partial("Modals/_SuccessModal")
+
+@Html.Action("TradeAccountSelector", "Component", new { Area = "", canSearch = Model.CanSearch })
+
+<div style="display: none;" data-bind="visible: tradeAccountSelector().selected">
+    @Html.Action("ProductSearch", "Component", new { Area = "" })
+</div>
+
+<div class="row margin-top-15">
+    <div id="product-results-list" style="display: none" data-bind="visible: true">
+        <!-- ko foreach: productSearch().searchResults -->
+        <div class="product-result col-md-4 col-sm-6 col-xs-12">
+            <div class="product-result-inner">
+                <div class="product-result-contents">
+                    <label class="product-name" data-bind="html: $data.Name + ' - ' + $data.ProductType"></label>
+                    <!-- ko if: $data.ImageID -->
+                    <img class="thumb" data-bind="click: $parent.loadLargeImage, attr: { src: 'https://www.designersguild.com/image/156/' + $data.ImageID, title: $data.Code + ' - Product ID: ' + $data.ProductID + ' Sample Product ID: ' + $data.CuttingProductID + ' Returnable Product ID: ' + $data.ReturnableProductID }" />
+                    <!-- /ko -->
+                    <!-- ko ifnot: $data.ImageID -->
+                    <img class="thumb" data-bind="click: $parent.loadLargeImage, attr: { src: '/Areas/Products/content/images/not-found.png', title: $data.Code + ' - Product ID: ' + $data.ProductID + ' Sample Product ID: ' + $data.CuttingProductID + ' Returnable Product ID: ' + $data.ReturnableProductID }" />
+                    <!-- /ko -->
+                    <!-- ko if: $data.ProductPageID -->
+                    <a data-bind="html: $data.Code, click: $parent.loadProductInfo"></a>
+                    <!-- /ko -->
+                    <!-- ko ifnot: $data.ProductPageID -->
+                    <span data-bind="html: $data.Code"></span>
+                    <!-- /ko -->
+
+                    @if (Model.Properties?.ProductSearch_ShowStock == true)
+                    {
+                        <label data-bind="text: $data.StatusDisplay($data.Status), css: { 'bold': $data.Status === 'D' }"></label>
+                    }
+                    <label data-bind="text: $data.RRP"></label>
+
+                    <label><a data-bind="click: $parent.loadStockInfo, text: $data.StockStatus"></a></label>
+
+                    <label><a data-bind="click: $parent.loadAlternativeProducts">Co-ordinates With</a></label>
+
+                    <div class="clearfix"></div>
+
+                    <div class="cutting row">
+                        <!-- ko if: $data.CuttingCode != null -->
+                        <div class="col-xs-12">
+
+                            <!-- ko if: $parent.showDiscontinued ||  $data.CuttingStatus != 'D' -->
+
+                            <div class="btn-group" data-bind="attr: { title: $parent.buttonTitle($data, 'C', 'Add') }">
+                                @*buttonClass($data.CuttingStatus), *@
+                                <a class="btn btn-primary @(Model.Properties?.Application_ButtonClass)" data-bind="css: [($parent.sampleButtonEnabled($data) ? '': 'disabled')].join(' '), click: function() { $parent.increaseCodeInBasket($data.Name, $data.ProductType, $data.CuttingCode, $data.CuttingStatus, $data.CuttingPrice, $data.ImageID) }">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </a>
+                                <a class="btn btn-default @(Model.Properties?.Application_ButtonClass)" data-bind="click: function() { $parent.decreaseCodeInBasket($data.CuttingCode) }" title="Remove">
+                                    <span class="glyphicon glyphicon-minus"></span>
+                                </a>
+                            </div>
+                            <span class="quantity" data-bind="text: cuttingButtonQuantityDisplay"></span>
+
+                            <span class="cutting-info-display">
+                                @if (Model.Properties?.Order_Returnables == true)
+                                {
+                                    <text>Sample</text>
+                                }
+                                @if (Model.Properties?.ProductSearch_ShowStock == true)
+                                {
+                                    <span class="cutting-info-status" data-bind="text: $data.CuttingStatusDisplay, css: { 'bold': $data.CuttingStatus === 'D' }"></span>
+                                }
+                            </span>
+
+                            @if (Model.Properties?.ProductSearch_ShowStock == true)
+                            {
+                                <span data-bind="text: $data.CuttingStockDisplay"></span>
+                            }
+                            @if (Model.Properties?.ProductSearch_ShowPrices == true)
+                            {
+                                <span class="price" data-bind="text: $data.CuttingPriceDisplay"></span>
+                            }
+
+                            <!-- /ko -->
+                            @if (Model.Properties?.ProductSearch_ShowStock == false)
+                            {
+                                <!-- ko if: $data.CuttingStatus === 'D' -->
+                                <span class="cutting-info-display bold">Samples Discontinued</span>
+                                <!-- /ko -->
+                            }
+                        </div>
+                        <div class="col-xs-12">
+                            <span class="button-hint text-warning" data-bind="text: $parent.buttonTitle($data, 'C', null)"></span>
+                        </div>
+                        <!-- /ko -->
+                    </div>
+
+                    @if (Model.Properties?.Order_Returnables == true)
+                    {
+                        <div class="cutting row">
+                            <!-- ko if: $data.ReturnableCode != null -->
+                            <div class="col-xs-12" style="margin-top: 12px;">
+                                <!-- ko if: $parent.showDiscontinued || $data.ReturnableStatus != 'D' -->
+                                <div class="btn-group" data-bind="attr: { title: $parent.buttonTitle($data, 'R', 'Add') }">
+                                    <a class="btn btn-primary @(Model.Properties?.Application_ButtonClass)" data-bind="css: [($parent.returnableButtonEnabled($data) ? '': 'disabled')].join(' '), click: function() { $parent.increaseCodeInBasket($data.Name, $data.ProductType, $data.ReturnableCode, $data.ReturnableStatus, $data.ReturnablePrice, $data.ImageID) }">
+                                        <span class="glyphicon glyphicon-plus"></span>
+                                    </a>
+                                    <a class="btn btn-default @(Model.Properties?.Application_ButtonClass)" data-bind="click: function() { $parent.decreaseCodeInBasket($data.ReturnableCode) }" title="Remove">
+                                        <span class="glyphicon glyphicon-minus"></span>
+                                    </a>
+                                </div>
+                                <span class="quantity" data-bind="text: returnableButtonQuantityDisplay"></span>
+
+                                <span class="cutting-info-display">
+
+                                    Returnable
+
+                                    @if (Model.Properties?.ProductSearch_ShowStock == true)
+                                    {
+                                        <span class="cutting-info-status" data-bind="text: $data.ReturnableStatusDisplay, css: { 'bold': $data.ReturnableStatus === 'D' }"></span>
+                                    }
+                                </span>
+                                
+                                @if (Model.Properties?.ProductSearch_ShowStock == true)
+                                {
+                                    <span data-bind="text: $data.ReturnableStockDisplay"></span>
+                                }
+                                @if (Model.Properties?.ProductSearch_ShowPrices == true)
+                                {
+                                    <span class="price" data-bind="text: $data.ReturnablePriceDisplay"></span>
+                                }
+
+
+                                <!-- /ko -->
+                                @if (Model.Properties?.ProductSearch_ShowStock == false)
+                                {
+                                    <!-- ko if: $data.ReturnableStatus === 'D' -->
+                                    <span class="cutting-info-display bold">Returnable Samples Discontinued</span>
+                                    <!-- /ko -->
+                                }
+                            </div>
+                            <div class="col-xs-12">
+                                <span class="button-hint text-warning" data-bind="text: $parent.buttonTitle($data, 'R', null)"></span>
+                            </div>
+                            <!-- /ko -->
+                        </div>
+                    }
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+        <!-- /ko -->
+    </div>
+</div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/sample-request")
+
+    <script type="text/javascript">
+    @if(Model.CanSearch)
+    {
+        <text>
+        var clearTradeAccountSelectorOnReset = true;
+        </text>
+    }
+
+        @if(Model.Properties?.Account_ShowAddressBook == true)
+    {
+        <text>
+        function FetchAddresses(accountNumber) {
+            $.ajax({
+                url: "/Component/FetchAddresses",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    accountNumber: accountNumber
+                },
+                success: function (data) {
+                    if (data) {
+                        if (data.PrimaryAddresses) {
+                            if (data.PrimaryAddresses.length > 0) {
+                                var a = new Address(data.PrimaryAddresses[0]);
+
+                                var country = Enumerable.From(viewModel.availableCountries()).Where(function (x) {
+                                    if (x.Code === data.PrimaryAddresses[0].CountryCode)
+                                        return x;
+                                }).FirstOrDefault();
+
+                                if (country != null) {
+                                    a.Country(country);
+                                    viewModel.primaryAddress(a);
+                                }
+                            } else {
+                                viewModel.primaryAddress(null);
+                            }
+                        }
+
+                        if (data.SecondaryAddresses) {
+                            if (data.SecondaryAddresses.length > 0) {
+                                var sa = [];
+                                for (var a in data.SecondaryAddresses) {
+                                    var s = new Address(data.SecondaryAddresses[a]);
+
+                                    var country = Enumerable.From(viewModel.availableCountries()).Where(function (x) {
+                                        if (x.Code === data.SecondaryAddresses[a].CountryCode)
+                                            return x;
+                                    }).FirstOrDefault();
+
+                                    if (country != null) {
+                                        s.Country(country);
+                                        sa.push(s);
+                                    }
+                                }
+                                viewModel.secondaryAddresses(sa);
+                            } else {
+                                viewModel.secondaryAddresses([]);
+                            }
+                        }
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    //$.showError(xhr, textStatus, errorThrown);
+                }
+            });
+        }
+        </text>
+    }
+
+        function getAllCountries() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Countries));
+        }
+
+        function getAllHauliers() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Hauliers
+                                              .Where(p => p.Name == "UPS" || p.HAULCODE == "D3" || p.HAULCODE == "RM" || p.Name.Contains("DPD") || p.HAULCODE == "VAN")
+                                              .OrderBy(p => p.Name).ToList()));
+        }
+
+        function getAllCarriages() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Carriages));
+        }
+
+        function getAllLanguages() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Languages));
+        }
+
+        function getDefaultOrderTaker() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.DefaultOperator));
+        }
+
+        function getMaxOrderQuantity() {
+            return @(Model.Properties?.Sampling_MaxOrderQuantity ?? (object)"null");
+        }
+
+        function getMaxSKUQuantity() {
+            return @(Model.Properties?.Sampling_MaxSKUQuantity ?? (object)"null");
+        }
+
+        function getContactPreference() {
+            return @(Model.Properties?.Sampling_ShowFollowUpPreference == true ? (object)2 : null);
+        }
+
+        function getOrderReturnables() {
+            return @(Model.Properties?.Order_Returnables.ToString().ToLower() ?? (object)"false");
+        }
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        $(document).ready(function () {
+            viewModel = new sampleRequestViewModel();
+
+            @if (Model.Properties?.Order_PriceOverride == true)
+            {
+                @* Yeah, I hate this bit. *@
+                <text>
+            viewModel.cuttingPriceOverride = ko.observable();
+            viewModel.cuttingPriceOverride.subscribe(function (newValue) {
+                if (!isNaN(newValue || undefined)) {
+                    Enumerable.From(viewModel.basket()).ForEach(function (item) {
+                        if (item.Type === 'C') {
+                            item.Price(Number(newValue));
+                        }
+                    });
+                } else {
+                    Enumerable.From(viewModel.basket()).ForEach(function (item) {
+                        if (item.Type === 'C') {
+                            item.Price(item.OriginalPrice);
+                        }
+                    });
+                }
+            });
+
+            viewModel.returnablePriceOverride = ko.observable();
+            viewModel.returnablePriceOverride.subscribe(function (newValue) {
+                if (!isNaN(newValue || undefined)) {
+                    Enumerable.From(viewModel.basket()).ForEach(function (item) {
+                        if (item.Type === 'R')
+                            item.Price(Number(newValue));
+                    });
+                } else {
+                    Enumerable.From(viewModel.basket()).ForEach(function (item) {
+                        if (item.Type === 'R')
+                            item.Price(item.OriginalPrice);
+                    });
+                }
+            });
+
+            viewModel.basket.subscribe(function (newValue) {
+                if (!isNaN(viewModel.cuttingPriceOverride() || undefined)) {
+                    Enumerable.From(viewModel.basket()).ForEach(function (item) {
+                        if (item.Type === 'C')
+                            item.Price(Number(viewModel.cuttingPriceOverride()));
+                    });
+                } else {
+                    Enumerable.From(viewModel.basket()).ForEach(function (item) {
+                        if (item.Type === 'C')
+                            item.Price(item.OriginalPrice);
+                    });
+                }
+
+                if (!isNaN(viewModel.returnablePriceOverride() || undefined)) {
+                    Enumerable.From(viewModel.basket()).ForEach(function (item) {
+                        if (item.Type === 'R')
+                            item.Price(Number(viewModel.returnablePriceOverride()));
+                    });
+                } else {
+                    Enumerable.From(viewModel.basket()).ForEach(function (item) {
+                        if (item.Type === 'R')
+                            item.Price(item.OriginalPrice);
+                    });
+                }
+            });
+            </text>
+            }
+
+            ko.options.deferUpdates = true;
+            ko.applyBindings(viewModel, document.body);
+        });
+    </script>
+}

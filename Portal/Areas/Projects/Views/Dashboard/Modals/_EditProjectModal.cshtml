@@ -1,0 +1,441 @@
+﻿<div id="project-modal" class="project-modal modal fade" data-backdrop="static" data-keyboard="false" data-bind="with: projectFactory">
+    <div class="modal-dialog modal-lg modal-xl">
+        <div class="modal-content">
+            <div class="form-busy" style="display: none;" data-bind="fadeVisible: busy">
+                <div class="busy-bars">
+                    <div class="rect1 alert alert-info"></div>
+                    <div class="rect2 alert alert-info"></div>
+                    <div class="rect3 alert alert-info"></div>
+                    <div class="rect4 alert alert-info"></div>
+                    <div class="rect5 alert alert-info"></div>
+                </div>
+            </div>
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-bind="click: function() { closeModal(); }" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <!-- ko if: projectId() -->
+                <button type="button" class="btn btn-success btn-sm pull-right" data-bind="click: function() { showCompletedModal(); }" aria-label="Close" style="margin-right: 15px;"><span aria-hidden="true">Project Completed</span></button>
+                <button type="button" class="btn btn-danger btn-sm pull-right" data-bind="click: function() { showLostModal(); }" aria-label="Close" style="margin-right: 15px;"><span aria-hidden="true">Project Lost</span></button>
+                <!-- /ko -->
+                <h4 class="modal-title">
+                    <!-- ko if: name() -->
+                    <span data-bind="text: name"></span>
+                    <!-- /ko -->
+                    <!-- ko ifnot: name() -->
+                    New Project
+                    <!-- /ko -->
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div data-bind="with: stageInformation">
+                    <div class="stage-progression-wrapper" style="margin-bottom: 5px;">
+                        <!-- ko foreach: projectStages -->
+                        <div data-bind="css: $parent.currentStage() == $data.StageID ? 'green' : 'blue'" class="blue">
+                            <span data-bind="text: Description"></span>
+                            <div class="arrow-r"></div>
+                        </div>
+                        <!-- /ko -->
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+                <ul class="nav nav-pills" data-bind="css: { 'tabs-error': anyErrorsShown() }">
+                    @*<li>
+                        <a href="#tab-one" data-toggle="tab">
+                            Overview
+                        </a>
+                    </li>*@
+                    <li class="active">
+                        <a href="#tab-details" data-toggle="tab" data-bind="css: { 'alert-danger': detailsErrors.isAnyMessageShown() }">
+                            Project Details
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tab-classification" data-toggle="tab" data-bind="css: { 'alert-danger': classificationErrors.isAnyMessageShown() }">
+                            Classification
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tab-stakeholders" data-toggle="tab">
+                            Stakeholders
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tab-competitors" data-toggle="tab" data-bind="css: { 'alert-danger': competitorsErrors.isAnyMessageShown() }">
+                            Competitors
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tab-notes" data-toggle="tab" data-bind="css: { 'alert-danger': notesErrors.isAnyMessageShown() }">
+                            Notes
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tab-attachments" data-toggle="tab" data-bind="css: { 'alert-danger': attachmentsErrors.isAnyMessageShown() }">
+                            Attachments
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tab-specification" data-toggle="tab" data-bind="css: { 'alert-danger': specificationErrors.isAnyMessageShown() }">
+                            Specification
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tab-quotes" data-toggle="tab" data-bind="css: { 'alert-danger': quotesErrors.isAnyMessageShown() }">
+                            Quotes
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tab-orders" data-toggle="tab" data-bind="css: { 'alert-danger': ordersErrors.isAnyMessageShown() }">
+                            Orders
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tab-tasks" data-toggle="tab" data-bind="css: { 'alert-danger': ordersErrors.isAnyMessageShown() }">
+                            Tasks
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tab-profitability" data-toggle="tab" data-bind="css: { 'alert-danger': ordersErrors.isAnyMessageShown() }">
+                            Profitability
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tab-delivery" data-toggle="tab" data-bind="css: { 'alert-danger': ordersErrors.isAnyMessageShown() }">
+                            Delivery
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tab-delays" data-toggle="tab" data-bind="css: { 'alert-danger': ordersErrors.isAnyMessageShown() }">
+                            Delays
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tab-special-treatments" data-toggle="tab" data-bind="css: { 'alert-danger': ordersErrors.isAnyMessageShown() }">
+                            Special Treatments
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tab-pricing" data-toggle="tab" data-bind="css: { 'alert-danger': ordersErrors.isAnyMessageShown() }">
+                            Pricing
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tab-stock-availability" data-toggle="tab" data-bind="css: { 'alert-danger': ordersErrors.isAnyMessageShown() }">
+                            Stock Availability
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    @*<div id="tab-one" class="tab-pane">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <h3>[summary of all data presented]</h3>
+                            </div>
+                        </div>
+                    </div>*@
+                    <div id="tab-details" class="tab-pane active">
+                        <div class="form-group row">
+                            <div class="col-xs-12" data-bind="validationOptions: { insertMessages: false }">
+                                <label class="col-form-label project-label">
+                                    Name*
+                                </label>
+                                <input id="project-name" class="form-control project-control-wide" type="text" data-bind="textInput: name, forceNullOnEmpty: name" />
+                                <span class="validation-message nudge text-danger" data-bind="validationMessage: name"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label project-label">
+                                    Description
+                                </label>
+                                <textarea id="project-description" class="form-control project-control-wide" data-bind="textInput: description, forceNullOnEmpty: description"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label project-label">
+                                    Category
+                                </label>
+                                <div class="remaining-width-wrapper">
+                                    <div data-bind="component: { name: 'addable-list-component', params: projectCategoryListParams }"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label project-label">
+                                    Project Location
+                                </label>
+                                <div class="remaining-width-wrapper">
+                                    <div data-bind="kendoDropDownList: countrySettings"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label project-label">
+                                    Assigned To*
+                                </label>
+                                <div class="remaining-width-wrapper">
+                                    <div class="pull-left" data-bind="validationOptions: { insertMessages: false }">
+                                        <div data-bind="kendoDropDownTree: ownerMemberSettings, keepElement: ownerMember"></div>
+                                    </div>
+                                    <span class="validation-message nudge text-danger pull-left" data-bind="validationMessage: ownerMember"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label project-label">
+                                    Estimated Value
+                                </label>
+                                <div data-bind="component: { name: 'sterling-conversion-component', params: estimatedValueParams }"></div>
+                                @*<div data-bind="template: { name: 'sterling-adjacent-template', data: estimatedValueSettings }"></div>*@
+                            </div>
+                            <div class="col-xs-7">
+                                <div class="form-group right-form-group row">
+                                    <div class="col-xs-12">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xs-12" data-bind="validationOptions: { insertMessages: false }">
+                                <label class="col-form-label project-label">
+                                    First Enquiry
+                                </label>
+                                <div class="k-calendar-wrapper pull-left">
+                                    <input id="first-enquiry-date" data-bind="kendoDatePicker: firstEnquiryDateSettings, validationCore: firstEnquiryDate" />
+                                    <span class="validation-message text-danger" data-bind="validationMessage: firstEnquiryDate"></span>
+                                    <span class="col-form-span date-nudge" data-bind="with: firstEnquiryDate">
+                                        <span data-bind="text: moment($data).format('dddd Do MMMM YYYY')"></span>
+                                        <button type="button" class="clear-field close" data-bind="click: function() { $parent.clearFirstEnquiryDate(); }">
+                                            <span aria-hidden="true">×</span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label project-label">
+                                    Expected Completion
+                                </label>
+                                <div class="short-control pull-left" style="margin-right: 15px;">
+                                    <label class="col-form-label" style="display: block; width: 100%; text-align: right;">
+                                        specify Month and Year
+                                    </label>
+                                    <div class="input-group" style="width: 100%;">
+                                        <select class="form-control" data-bind="value: expectedCompletionMonth, options: expectedCompletionMonths, optionsText: 'name', optionsValue: $data, optionsCaption: 'Select Month'"></select>
+                                        <span class="input-group-addon" style="width: 64px;">
+                                            <input class="form-control" style="border-radius: 0 4px 4px 0" data-bind="keepElement: expectedCompletionYear, numeric, textInput: expectedCompletionYear, attr: { placeholder: 'Year' }" />
+                                        </span>
+                                    </div>
+                                </div>
+                                <label class="col-form-label pull-left" style="font-style: italic">
+                                    or
+                                </label>
+                                <div class="short-control pull-left" style="margin-left: 15px;">
+                                    <label class="col-form-label">
+                                        specify an exact date
+                                    </label>
+                                    <div class="k-calendar-wrapper">
+                                        <input id="expected-date" data-bind="kendoDatePicker: expectedCompletionDateSettings, validationCore: expectedCompletionDate" />
+                                        <span class="validation-message text-danger" data-bind="validationMessage: expectedCompletionDate"></span>
+                                        <span class="col-form-span date-nudge" data-bind="with: expectedCompletionDate">
+                                            <span data-bind="text: moment($data).format('dddd Do MMMM YYYY')"></span>
+                                            <button type="button" class="clear-field close" data-bind="click: function() { $parent.clearExpectedCompletionDate(); }">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tab-classification" class="tab-pane">
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label project-label">
+                                    Reporting Market
+                                </label>
+                                <div data-bind="kendoDropDownList: tradeMarketSettings"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div data-bind="component: { name: 'checkable-list-component', params: tagListParams }"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tab-stakeholders" class="tab-pane">
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <button class="btn btn-success" data-bind="click: stakeholderFactory.openEmptyStakeholderModal">
+                                    Add Stakeholder
+                                </button>
+                            </div>
+                        </div>
+                        <div id="stakeholder-container" class="row">
+                            <div class="col-xs-12">
+                                <div id="stakeholders-grid" data-bind="kendoGrid: stakeholderFactory.stakeholderGridSettings"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tab-competitors" class="tab-pane">
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <div data-bind="component: { name: 'checkable-list-component', params: competitorListParams }"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div id="competitor-grid" data-bind="kendoGrid: competitorGridSettings"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tab-notes" class="tab-pane">
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label project-label">
+                                    New Note
+                                </label>
+                                <div class="remaining-width-wrapper">
+                                    <textarea class="project-note form-control" data-bind="textInput: newNote"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row" data-bind="visible: notes().length > 3">
+                            <div class="col-xs-12">
+                                <bnt class="btn btn-default bold pull-right pointer no-select" data-bind="click: function () { allNotesExpanded(!allNotesExpanded()); }">
+                                    <span data-bind="text: allNotesExpanded() ? 'Collapse All' : 'Expand All'"></span>
+                                </bnt>
+                            </div>
+                        </div>
+                        <div class="notes-container">
+                            <!-- ko foreach: notes -->
+                            <div class="project-note">
+                                <label class="col-form-label" data-bind="with: Author">
+                                    <span data-bind="text: FullName"></span>
+                                    -
+                                    <span data-bind="text: moment($parent.CreatedDT).format('dddd Do MMMM YYYY HH:mm')"></span>
+                                    <!-- ko if: $parent.Note.length > 90 || $parent.Note.indexOf('\n') > -1 -->
+                                    <span class="pointer pull-right no-select comment-expander" data-bind="click: function (data, event) { $(event.target).closest('.project-note').find('.collapse').collapse('toggle') }">
+                                        <a data-bind="text: 'Expand / Collapse'"></a>
+                                    </span>
+                                    <!-- /ko -->
+                                </label>
+                                <div class="note-display">
+                                    <p class="collapse" aria-expanded="false" data-bind="html: Note.replace(/(\n)+/g, '<br /><br />'), attr: { 'aria-expanded': $index() == 0 ? 'true' : 'false' }, css: { 'in': $index() == 0 }"></p>
+                                </div>
+                            </div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <div id="tab-attachments" class="tab-pane">
+                        <!-- ko if: attachments().length -->
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <ul id="attachments-list" class="list-group margin-bottom-0">
+                                    <!-- ko foreach: attachments -->
+                                    <li class="list-group-item">
+                                        <a data-bind="attr: { href: FilePath, target: '_blank' }">
+                                            <span class="close pull-right" data-bind="click: function(data, event) { event.stopPropagation();  $parent.removeFirmAttachment(data, event.target); }">
+                                                <span aria-hidden="true">×</span>
+                                            </span>
+                                            <span class="line-30" style="display: block;">
+                                                <span data-bind="text: Name"></span>
+                                                <br />
+                                                <span data-bind="text: 'Uploaded by ' + UploadedByMember.FullName + ', ' + moment(CreatedDT).format('dddd DD/MM/YYYY HH:mm')"></span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <!-- /ko -->
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- /ko -->
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <form method="post" data-bind="kendoUpload: uploadSettings">
+                                    <input name="files" type="file" multiple="multiple" />
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tab-specification" class="tab-pane">
+
+                    </div>
+                    <div id="tab-quotes" class="tab-pane">
+
+                    </div>
+                    <div id="tab-orders" class="tab-pane">
+
+                    </div>
+                    <div id="tab-tasks" class="tab-pane">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <button class="btn btn-success" data-bind="click: showAddTask">
+                                    Add Task
+                                </button>
+                            </div>
+                        </div>
+                        <!-- ko if: taskDues().length -->
+                        <div class="row" style="margin-top: 15px;">
+                            <div class="col-xs-12">
+                                <ul id="attachments-list" class="list-group margin-bottom-0">
+                                    <!-- ko foreach: taskDues -->
+                                    <li class="list-group-item pointer">
+                                        <a data-bind="click: function(data, event) { $parentContext.$parent.taskEdit.load($data); }">
+                                            @*<span class="close pull-right" data-bind="click: function(data, event) { event.stopPropagation();  $parent.removeFirmAttachment(data, event.target); }">
+                                                <span aria-hidden="true">×</span>
+                                            </span>*@
+                                            <span class="line-30" style="display: block;">
+                                                <span data-bind="text: Task.AuthorDescription"></span>
+                                                <br />
+                                                @*<span data-bind="text: 'Uploaded by ' + UploadedByMember.FullName + ', ' + moment(CreatedDT).format('dddd DD/MM/YYYY HH:mm')"></span>*@
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <!-- /ko -->
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- /ko -->
+                    </div>
+                    <div id="tab-profitability" class="tab-pane">
+
+                    </div>
+                    <div id="tab-delivery" class="tab-pane">
+
+                    </div>
+                    <div id="tab-delays" class="tab-pane">
+
+                    </div>
+                    <div id="tab-special-treatments" class="tab-pane">
+
+                    </div>
+                    <div id="tab-pricing" class="tab-pane">
+
+                    </div>
+                    <div id="tab-stock-availability" class="tab-pane">
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-bind="click: function() { closeModal(); }">
+                    Cancel
+                </button>
+                <button class="btn btn-success pull-right" data-bind="click: function() { saveProject(); }">
+                    Save
+                </button>
+                <span class="col-form-span text-danger pull-right" data-bind="visible: anyErrorsShown()">
+                    Please correct all errors
+                </span>
+                <span id="latest-task-id" class="col-form-span pull-right" style="margin-right: 25px;">
+                </span>
+            </div>
+        </div>
+        @*<div data-bind="visible: attachValidation()"></div>*@
+    </div>
+</div>

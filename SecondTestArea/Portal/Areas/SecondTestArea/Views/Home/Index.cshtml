@@ -1,0 +1,30 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Second Test Area Index</h2>
+
+<p>
+    Second demonstation of area in separate project, with server side code publishable separately from the main Portal project. Hopefully retaining references for Razor views to not appear entirely broken.
+</p>
+
+<p>
+    ViewBag.Message was: @(ViewBag.Message)
+</p>
+
+<p>
+    Okay, the second test project appears to have retained sufficient references for Razor view files to be able to find System.Object, which is quite important.
+</p>
+
+<p>
+    What isn't too helpful is that, at the moment at least, in order to publish it requires a manual copy of the assembly that this project builds and the Area folder it creates and post-build drops in Portal/Areas.
+</p>
+
+<p>
+
+</p>
+
+<p>
+    Quite important now is the ability to regain functionality found in the main Portal project - things such as the DynamicRoleAuthorize attribute...
+    Also, absolutely everything else now needs to be chiselled apart into separate projects. Data layer now needs to be abstracted; there should be a shared implementation of the Portal EF code... Wowzers.
+</p>

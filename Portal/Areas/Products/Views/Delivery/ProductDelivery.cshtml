@@ -1,0 +1,819 @@
+﻿@model Portal.Areas.Products.ViewModels.ProductDeliveryViewModel
+@{
+    ViewBag.Title = "Delivery Maintenance";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/components")
+    @Styles.Render("~/bundles/css/kendo-custom")
+    @Styles.Render("~/bundles/css/product-delivery")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/components")
+    @Scripts.Render("~/bundles/js/datetime-picker")
+    @Scripts.Render("~/bundles/js/product-delivery")
+
+    <script type="text/javascript">
+
+        var viewModel = new productDeliveryBaseViewModel();
+
+        var vm = viewModel;
+
+        ko.options.deferUpdates = true;
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        $(document).ready(function () {
+            ko.applyBindings(viewModel, document.body);
+        });
+    </script>
+}
+
+<script id="alternative-delivery-row-template" type="text/x-kendo-template">
+    <tr>
+        <td>
+            <span data-bind="text: ServiceName, attr: { title: 'AlternateDeliveryServiceID: ' + AlternateDeliveryServiceID }"></span>
+        </td>
+        <td class="text-right">
+            <span data-bind="text: Charge"></span>
+        </td>
+        <td>
+            <span data-bind="text: DeliveryChargingLogic ? DeliveryChargingLogic.Name : ''"></span>
+        </td>
+        <td>
+            <span data-bind="text: SalesMarket ? SalesMarket.Name: ''"></span>
+        </td>
+        <td>
+            <span data-bind="text: FulfilmentType ? FulfilmentType.Name: ''"></span>
+        </td>
+        <td>
+            <span data-bind="text: DeliveryGroup ? DeliveryGroup.Name: ''"></span>
+        </td>
+        <td>
+            <span data-bind="text: DeliverToDGPremisesOnly ? 'Yes' : 'No'"></span>
+        </td>
+        <td>
+            <span data-bind="text: HAULCODE"></span>
+        </td>
+        <td>
+            <span data-bind="text: CARRCODE"></span>
+        </td>
+        <td>
+            <span data-bind="text: MertexCurrencyCode"></span>
+        </td>
+    </tr>
+</script>
+
+<script id="new-default-delivery-service-panel" type="text/html">
+    <div class="panel panel-default">
+        <div class="panel-title">
+            <h4 class="blue-heading">
+                <span>
+                    Delivery Service: 
+                    <span data-bind="text: serviceName()"></span>
+                </span>
+                <span>
+                    <i class="material-icons-outlined" data-bind="bootstrapPopover: carriageCodeMapPopoverDetails">
+                        info
+                    </i>
+                    <a href="javascript:;" class="edit-mode" data-bind="click: save">
+                        Save
+                    </a>
+                    <!-- ko if: $parent.hasOwnProperty('deliveryZone') -->
+                    <a href="javascript:;" class="edit-mode" data-bind="click: function () { $parent.deliveryZone.creatingNewDefaultDeliveryService(false); }">
+                        Cancel
+                    </a>
+                    <!-- /ko -->
+                </span>
+            </h4>
+        </div>
+        <div class="panel-body edit-mode">
+            <p></p>
+            <div class="delivery-group-hash-headings">
+                <label>
+                    Service Name
+                </label>
+                <label>
+                    Transfer Type
+                </label>
+                <label>
+                    HAULCODE
+                </label>
+                <label>
+                    Service Code
+                </label>
+                <label>
+                    Charging Logic
+                </label>
+                <label>
+                    Currency
+                </label>
+                <label>
+                    Threshold Type
+                </label>
+                <label>
+                    Delivery Day
+                </label>
+                <label>
+                    Weight Bracket
+                </label>
+                <label>
+                    Express Service
+                </label>
+            </div>
+            <div class="delivery-group-hash-values">
+                <div>
+                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: originCountryDropDownList }"></div>
+                </div>
+                <div>
+                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: destinationCountryDropDownList }"></div>
+                </div>
+                <div>
+                    <div data-bind="component: { name: 'mdc-text-field-component', params: serviceNameTextBox }"></div>
+                </div>
+                <div>
+                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: transferTypeDropDownList }"></div>
+                </div>
+                <div>
+                    <div data-bind="component: { name: 'mdc-text-field-component', params: haulCodeTextBox }"></div>
+                </div>
+                <div>
+                    <div data-bind="component: { name: 'mdc-text-field-component', params: haulierServiceCodeTextBox }"></div>
+                </div>
+                <div>
+                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: deliveryChargingLogicDropDownList }"></div>
+                </div>
+                <div>
+                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: currencyDropDownList }"></div>
+                </div>
+                <div>
+                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: deliveryThresholdTypeDropDownList }"></div>
+                </div>
+                <div>
+                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: deliveryWeekDayDropDownList }"></div>
+                </div>
+                <div>
+                    <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: weightBracketTextBox }"></div>
+                </div>
+                <div>
+                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: destinationDeliveryZoneDropDownList }"></div>
+                </div>
+                <div>
+                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: deliveryGroupDropDownList }"></div>
+                </div>
+                <div>
+                    <div data-bind="component: { name: 'mdc-checkbox-component', params: expressServiceCheckbox }"></div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <p>
+                <button class="btn btn-sm btn-default pull-right" data-bind="click: addDefaultDeliveryServiceToNewGroup">
+                    Add Price Point
+                </button>
+                <span class="clearfix"></span>
+            </p>
+            <div class="delivery-service-hash">
+                <div>
+                    <label>
+                        ID
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        Preference
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        Charge
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        Proportional Charge
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        Threshold Minimum
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        Threshold Maximum
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        Surcharge
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        Surcharge Charging Logic
+                    </label>
+                </div>
+            </div>
+            <!-- ko foreach: deliveryHashServices -->
+            <div class="delivery-service-hash edit-mode">
+                <div>
+                    <span class="text-right"></span>
+                </div>
+                <div>
+                    <div class="text-right" data-bind="component: { name: 'mdc-text-field-numeric-component-no-outline', params: preferenceTextBox }"></div>
+                </div>
+                <div>
+                    <div class="text-right" data-bind="component: { name: 'mdc-text-field-numeric-component-no-outline', params: chargeTextBox }"></div>
+                </div>
+                <div>
+                    <div class="text-right" data-bind="component: { name: 'mdc-text-field-numeric-component-no-outline', params: proportionalChargeTextBox }"></div>
+                </div>
+                <div>
+                    <div class="text-right" data-bind="component: { name: 'mdc-text-field-numeric-component-no-outline', params: thresholdMinimumTextBox }"></div>
+                </div>
+                <div>
+                    <div class="text-right" data-bind="component: { name: 'mdc-text-field-numeric-component-no-outline', params: thresholdMaximumTextBox }"></div>
+                </div>
+                <div>
+                    <div class="text-right" data-bind="component: { name: 'mdc-text-field-numeric-component-no-outline', params: surchargeTextBox }"></div>
+                </div>
+                <div>
+                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component-no-outline', params: surchargeDeliveryChargingLogicDropDownList }"></div>
+                </div>
+            </div>
+            <!-- /ko -->
+        </div>
+    </div>
+</script>
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+
+<ul class="nav nav-tabs">
+    <li>
+        <a href="#default-delivery-services" data-toggle="tab">
+            Default Delivery Service
+        </a>
+    </li>
+    <li>
+        <a href="#alternative-delivery-services" data-toggle="tab">
+            Alternative Delivery Services
+        </a>
+    </li>
+    <li>
+        <a href="#contract-delivery-services" data-toggle="tab">
+            Contract Delivery Services
+        </a>
+    </li>
+    <li class="active">
+        <a href="#trade-haulier-overrides" data-toggle="tab">
+            Trade Account Haulier Overrides
+        </a>
+    </li>
+</ul>
+<div id="delivery-tab-container" class="tab-content">
+    <div id="default-delivery-services" class="tab-pane">
+        <div class="blocker" style="display: none" data-bind="visible: defaultDeliveryServicesBusy">
+            <div class="busy-bars">
+                <div class="rect1 alert alert-info"></div>
+                <div class="rect2 alert alert-info"></div>
+                <div class="rect3 alert alert-info"></div>
+                <div class="rect4 alert alert-info"></div>
+                <div class="rect5 alert alert-info"></div>
+            </div>
+        </div>
+        <div class="delivery-service-prefilters">
+            <div class="delivery-service-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: originCountryDropDownList }"></div>
+            <div class="delivery-service-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: destinationCountryDropDownList }"></div>
+            <div class="delivery-service-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: deliveryGroupDropDownList }"></div>
+        </div>
+        <div class="default-delivery-services-wrapper" style="display: none" data-bind="visible: defaultDeliveryServicesDisplayReady">
+            <!-- ko foreach: defaultDeliveryServices -->
+            <div class="delivery-service-grouping origin-grouping">
+                <h4 class="blue-heading" data-bind="with: originCountry, click: function () { if (originCountry.expandable()) { originCountry.visible(!originCountry.visible()) } }">
+                    <!-- ko if: expandable -->
+                    <i class="material-icons collapse-control" data-bind="text: visible() ? 'expand_less' : 'expand_more'"></i>
+                    <!-- /ko -->
+                    Origin:
+                    <span data-bind="text: originCountry.Name"></span>
+                </h4>
+                <!-- ko foreach: originCountryServices -->
+                <div class="delivery-service-grouping destination-grouping">
+                    <h4 class="blue-heading" data-bind="with: destinationCountry, click: function () { if (destinationCountry.expandable()) { destinationCountry.visible(!destinationCountry.visible()) } }">
+                        <!-- ko if: expandable -->
+                        <i class="material-icons collapse-control" data-bind="text: visible() ? 'expand_less' : 'expand_more'"></i>
+                        <!-- /ko -->
+                        Destination:
+                        <span data-bind="text: destinationCountry.Name"></span>
+                    </h4>
+                    <div class="destination-country-collapse" data-bind="fadeSlideVisible: destinationCountry.visible">
+                        <!-- ko foreach: destinationCountryServices -->
+                        <div class="delivery-service-grouping zone-grouping">
+                            <h4 class="blue-heading" data-bind="with: deliveryZone, click: function () { if (deliveryZone.expandable()) { deliveryZone.visible(!deliveryZone.visible()) } }">
+                                <!-- ko if: expandable -->
+                                <i class="material-icons collapse-control" data-bind="text: visible() ? 'expand_less' : 'expand_more'"></i>
+                                <!-- /ko -->
+                                Delivery Zone:
+                                <span data-bind="text: deliveryZone ? deliveryZone.Name : '[Not Set]'"></span>
+                            </h4>
+                            <div class="delivery-zone-collapse" data-bind="fadeSlideVisible: deliveryZone.visible">
+                                <!-- ko foreach: deliveryZoneServices -->
+                                <div class="delivery-service-grouping delivery-group-grouping">
+                                    <h4 class="blue-heading" data-bind="with: deliveryGroup">
+                                        Delivery Group:
+                                        <span data-bind="text: deliveryGroup.Name"></span>
+                                        <i class="material-icons" data-bind="click: function (data) { $root.editDeliveryGroup(data.deliveryGroup) }">
+                                            edit
+                                        </i>
+                                    </h4>
+                                    <!-- ko foreach: deliveryGroupServices -->
+                                    <div class="panel panel-default">
+                                        <div class="blocker" style="display: none;" data-bind="visible: busy">
+                                            <div class="loading-spinner"></div>
+                                        </div>
+                                        <div class="panel-title">
+                                            <h4 class="blue-heading" data-bind="with: hash">
+                                                <span>
+                                                    Delivery Service:
+                                                    <span data-bind="text: $parent.serviceName() ? $parent.serviceName() : hash"></span>
+                                                </span>
+                                                <span>
+                                                    <i class="material-icons-outlined" data-bind="bootstrapPopover: $parent.carriageCodeMapPopoverDetails">
+                                                        info
+                                                    </i>
+                                                    <!-- ko if: view() == DEFAULT_DELIVERY_MODE_VIEW -->
+                                                    <a href="javascript:;" data-bind="click: edit">
+                                                        Edit
+                                                    </a>
+                                                    <!-- /ko -->
+                                                    <!-- ko if: view() == DEFAULT_DELIVERY_MODE_EDIT -->
+                                                    <a href="javascript:;" class="edit-mode" data-bind="click: $parent.save">
+                                                        Save
+                                                    </a>
+                                                    <a href="javascript:;" class="edit-mode" data-bind="click: $parent.cancelEdit">
+                                                        Cancel
+                                                    </a>
+                                                    <!-- /ko -->
+                                                </span>
+                                            </h4>
+                                        </div>
+                                        <div class="panel-body" data-bind="css: { 'edit-mode': hash.view() == DEFAULT_DELIVERY_MODE_EDIT }">
+                                            <p></p>
+                                            <div class="delivery-group-hash-headings">
+                                                <label>
+                                                    Service Name
+                                                </label>
+                                                <label>
+                                                    Transfer Type
+                                                </label>
+                                                <label>
+                                                    HAULCODE
+                                                </label>
+                                                <label>
+                                                    Service Code
+                                                </label>
+                                                <label>
+                                                    Charging Logic
+                                                </label>
+                                                <label>
+                                                    Currency
+                                                </label>
+                                                <label>
+                                                    Threshold Type
+                                                </label>
+                                                <label>
+                                                    Delivery Day
+                                                </label>
+                                                <label>
+                                                    Weight Bracket
+                                                </label>
+                                                <label>
+                                                    Express Service
+                                                </label>
+                                            </div>
+                                            <div class="delivery-group-hash-values">
+                                                <div>
+                                                    <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_VIEW -->
+                                                    <span data-bind="text: serviceName"></span>
+                                                    <!-- /ko -->
+                                                    <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_EDIT -->
+                                                    <div data-bind="component: { name: 'mdc-text-field-component', params: serviceNameTextBox }"></div>
+                                                    <!-- /ko -->
+                                                </div>
+                                                <div>
+                                                    <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_VIEW -->
+                                                    <span data-bind="with: transferType">
+                                                        <span data-bind="text: Name"></span>
+                                                    </span>
+                                                    <!-- /ko -->
+                                                    <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_EDIT -->
+                                                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: transferTypeDropDownList }"></div>
+                                                    <!-- /ko -->
+                                                </div>
+                                                <div>
+                                                    <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_VIEW -->
+                                                    <span data-bind="text: haulCode"></span>
+                                                    <!-- /ko -->
+                                                    <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_EDIT -->
+                                                    <div data-bind="component: { name: 'mdc-text-field-component', params: haulCodeTextBox }"></div>
+                                                    <!-- /ko -->
+                                                </div>
+                                                <div>
+                                                    <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_VIEW -->
+                                                    <span data-bind="text: haulierServiceCode"></span>
+                                                    <!-- /ko -->
+                                                    <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_EDIT -->
+                                                    <div data-bind="component: { name: 'mdc-text-field-component', params: haulierServiceCodeTextBox }"></div>
+                                                    <!-- /ko -->
+                                                </div>
+                                                <div>
+                                                    <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_VIEW -->
+                                                    <span data-bind="with: deliveryChargingLogic">
+                                                        <span data-bind="text: Name.replace('{WeightBracket}', $parent.weightBracket())"></span>
+                                                    </span>
+                                                    <!-- /ko -->
+                                                    <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_EDIT -->
+                                                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: deliveryChargingLogicDropDownList }"></div>
+                                                    <!-- /ko -->
+                                                </div>
+                                                <div>
+                                                    <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_VIEW -->
+                                                    <span data-bind="with: currency">
+                                                        <span data-bind="text: Name"></span>
+                                                    </span>
+                                                    <!-- /ko -->
+                                                    <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_EDIT -->
+                                                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: currencyDropDownList }"></div>
+                                                    <!-- /ko -->
+                                                </div>
+                                                <div>
+                                                    <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_VIEW -->
+                                                    <span data-bind="with: deliveryThresholdType">
+                                                        <span data-bind="text: Name"></span>
+                                                    </span>
+                                                    <!-- /ko -->
+                                                    <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_EDIT -->
+                                                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: deliveryThresholdTypeDropDownList }"></div>
+                                                    <!-- /ko -->
+                                                </div>
+                                                <div>
+                                                    <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_VIEW -->
+                                                    <span data-bind="with: deliveryWeekDay">
+                                                        <span data-bind="text: Name"></span>
+                                                    </span>
+                                                    <!-- /ko -->
+                                                    <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_EDIT -->
+                                                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: deliveryWeekDayDropDownList }"></div>
+                                                    <!-- /ko -->
+                                                </div>
+                                                <div>
+                                                    <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_VIEW -->
+                                                    <span data-bind="text: weightBracket"></span>
+                                                    <!-- /ko -->
+                                                    <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_EDIT -->
+                                                    <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: weightBracketTextBox }"></div>
+                                                    <!-- /ko -->
+                                                </div>
+                                                <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_EDIT -->
+                                                <div>
+                                                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: destinationDeliveryZoneDropDownList }"></div>
+                                                </div>
+                                                <div>
+                                                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: deliveryGroupDropDownList }"></div>
+                                                </div>
+                                                <!-- /ko -->
+                                                <div>
+                                                    <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_VIEW -->
+                                                    <span data-bind="text: expressService() ? 'Yes' : 'No'"></span>
+                                                    <!-- /ko -->
+                                                    <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_EDIT -->
+                                                    <div data-bind="component: { name: 'mdc-checkbox-component', params: expressServiceCheckbox }"></div>
+                                                    <!-- /ko -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel-footer">
+                                            <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_VIEW -->
+                                            <p></p>
+                                            <!-- /ko -->
+                                            <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_EDIT -->
+                                            <p class="text-right">
+                                                <button class="btn btn-sm btn-default pull-right" data-bind="click: addDefaultDeliveryService">
+                                                    Add Price Point
+                                                </button>
+                                                <span class="clearfix"></span>
+                                            </p>
+                                            <!-- /ko -->
+                                            <div class="delivery-service-hash">
+                                                <div>
+                                                    <label>
+                                                        ID
+                                                    </label>
+                                                </div>
+                                                <div>
+                                                    <label>
+                                                        Preference
+                                                    </label>
+                                                </div>
+                                                <div>
+                                                    <label>
+                                                        Charge
+                                                    </label>
+                                                </div>
+                                                <div>
+                                                    <label>
+                                                        Proportional Charge
+                                                    </label>
+                                                </div>
+                                                <div>
+                                                    <label>
+                                                        Threshold Minimum
+                                                    </label>
+                                                </div>
+                                                <div>
+                                                    <label>
+                                                        Threshold Maximum
+                                                    </label>
+                                                </div>
+                                                <div>
+                                                    <label>
+                                                        Surcharge
+                                                    </label>
+                                                </div>
+                                                <div>
+                                                    <label>
+                                                        Surcharge Charging Logic
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_VIEW -->
+                                            <!-- ko foreach: deliveryHashServices -->
+                                            <div class="delivery-service-hash">
+                                                <div>
+                                                    <span class="text-right" data-bind="text: DefaultDeliveryServiceID"></span>
+                                                </div>
+                                                <div>
+                                                    <span class="text-right" data-bind="text: Preference"></span>
+                                                </div>
+                                                <div>
+                                                    <span class="text-right" data-bind="text: formatCurrency(Charge, 2, Currency.FormattingCulture, Currency.Code)"></span>
+                                                </div>
+                                                <div>
+                                                    <!-- ko if: ProportionalCharge -->
+                                                    <span class="text-right" data-bind="text: `${ProportionalCharge}%`"></span>
+                                                    <!-- /ko -->
+                                                </div>
+                                                <div>
+                                                    <span class="text-right" data-bind="text: thresholdMinimumDisplay"></span>
+                                                </div>
+                                                <div>
+                                                    <span class="text-right" data-bind="text: thresholdMaximumDisplay"></span>
+                                                </div>
+                                                <div>
+                                                    <span class="text-right" data-bind="text: formatCurrency(Surcharge, 2, Currency.FormattingCulture, Currency.Code)"></span>
+                                                </div>
+                                                <div>
+                                                    <span data-bind="with: SurchargeChargingLogic">
+                                                        <span data-bind="text: Name"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <!-- /ko -->
+                                            <!-- /ko -->
+                                            <!-- ko if: hash.view() == DEFAULT_DELIVERY_MODE_EDIT -->
+                                            <!-- ko foreach: deliveryHashServices -->
+                                            <div class="delivery-service-hash edit-mode">
+                                                <div>
+                                                    <!-- ko ifnot: $index() == 0 -->
+                                                    <i class="material-icons-outlined pull-left" data-bind="click: function (data) {  $parent.removeDeliveryHashService(data) }">
+                                                        delete_forever
+                                                    </i>
+                                                    <!-- /ko -->
+                                                    <!-- ko ifnot: typeof DefaultDeliveryServiceID === 'undefined' -->
+                                                    <span class="text-right" data-bind="text: DefaultDeliveryServiceID"></span>
+                                                    <!-- /ko -->
+                                                </div>
+                                                <div>
+                                                    <div class="text-right" data-bind="component: { name: 'mdc-text-field-numeric-component-no-outline', params: preferenceTextBox }"></div>
+                                                </div>
+                                                <div>
+                                                    <div class="text-right" data-bind="component: { name: 'mdc-text-field-numeric-component-no-outline', params: chargeTextBox }"></div>
+                                                </div>
+                                                <div>
+                                                    <div class="text-right" data-bind="component: { name: 'mdc-text-field-numeric-component-no-outline', params: proportionalChargeTextBox }"></div>
+                                                </div>
+                                                <div>
+                                                    <div class="text-right" data-bind="component: { name: 'mdc-text-field-numeric-component-no-outline', params: thresholdMinimumTextBox }"></div>
+                                                </div>
+                                                <div>
+                                                    <div class="text-right" data-bind="component: { name: 'mdc-text-field-numeric-component-no-outline', params: thresholdMaximumTextBox }"></div>
+                                                </div>
+                                                <div>
+                                                    <div class="text-right" data-bind="component: { name: 'mdc-text-field-numeric-component-no-outline', params: surchargeTextBox }"></div>
+                                                </div>
+                                                <div>
+                                                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component-no-outline', params: surchargeDeliveryChargingLogicDropDownList }"></div>
+                                                </div>
+                                            </div>
+                                            <!-- /ko -->
+                                            <!-- /ko -->
+                                        </div>
+                                    </div>
+                                    <!-- /ko -->
+                                </div>
+                                <!-- /ko -->
+                                <div class="delivery-service-grouping delivery-group-grouping">
+                                    <button class="btn btn-default" data-bind="click: function () { deliveryZone.creatingNewDefaultDeliveryService(true); }">
+                                        New Default Delivery Service
+                                    </button>
+                                </div>
+                                <div id="additional-default-delivery-service" class="delivery-service-grouping delivery-group-grouping" style="display: none;" data-bind="fadeSlideVisible: deliveryZone.creatingNewDefaultDeliveryService, with: deliveryZone.additionalDefaultDeliveryService">
+                                    <div class="panel panel-default" data-bind="template: { name: 'new-default-delivery-service-panel', data: $data }"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /ko -->
+                        <div class="delivery-service-grouping zone-grouping">
+                            <button class="btn btn-default" data-target="#delivery-zone-modal" data-toggle="modal">
+                                Add Destination Delivery Zone
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- /ko -->
+            </div>
+            <!-- /ko -->
+        </div>
+        <!-- ko if: originCountryId() && destinationCountryId() && defaultDeliveryServices().length == 0 -->
+        <div class="form-group delivery-service-grouping delivery-group-grouping">
+            <div class="panel panel-default" data-bind="template: { name: 'new-default-delivery-service-panel', data: newDefaultDeliveryService }"></div>
+        </div>
+        <!-- /ko -->
+        <button class="btn btn-default" data-bind="click: createDeliveryGroup">
+            Add Delivery Group
+        </button>
+    </div>
+    <div id="alternative-delivery-services" class="tab-pane">
+        <div class="delivery-service-prefilters">
+            <div class="delivery-service-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: fulfilmentTypeDropDownList }"></div>
+            <div class="delivery-service-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: alternativeDeliveryGroupDropDownList }"></div>
+            <div></div>
+        </div>
+        <div data-bind="kendoGrid: alternateDeliveryServicesGridSettings"></div>
+    </div>
+    <div id="contract-delivery-services" class="tab-pane">
+        <div class="alert alert-danger">
+            <h4 class="alert-title">
+                This doesn't work because of some OData fixes which are still necessary, and this also needs extending because unbeknownst to Tom there was DestinationDeliveryZoneID added to
+                portal.TradeDeliveryContractPrice. Sorry.
+            </h4>
+        </div>
+        <div class="delivery-service-prefilters">
+            <div class="delivery-service-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: contractTradeAccountDropDownList }"></div>
+            <div class="delivery-service-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: contractDestinationCountryDropDownList }"></div>
+            <div class="delivery-service-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: contractDeliveryGroupDropDownList }"></div>
+        </div>
+        <div id="contract-delivery-services-grid" data-bind="kendoGrid: contractDeliveryServicesGridSettings"></div>
+    </div>
+    <div id="trade-haulier-overrides" class="tab-pane active">
+        <div data-bind="kendoGrid: tradeHaulierOverrideGridSettings"></div>
+    </div>
+</div>
+
+<div id="delivery-zone-modal" class="modal fade" data-backdrop="static" data-keyboard="false" data-bind="with: deliveryZoneFactory">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <h4 class="modal-title">
+                    Add Delivery Zone
+                </h4>
+            </div>
+            <div class="modal-body">
+                <p data-bind="with: destinationCountry">
+                    Add Delivery Zone to <span data-bind="text: Name"></span>
+                </p>
+                <div class="flex-container" style="justify-content: space-between">
+                    <div data-bind="component: { name: 'mdc-text-field-component', params: codeTextBox }"></div>
+                    <div data-bind="component: { name: 'mdc-text-field-component', params: nameTextBox }"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-bind="click: cancel">
+                    Cancel
+                </button>
+                <button class="btn btn-green" data-bind="click: save">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="delivery-zone-modal" class="modal fade" data-backdrop="static" data-keyboard="false" data-bind="with: deliveryZoneFactory">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <h4 class="modal-title">
+                    Add Delivery Zone
+                </h4>
+            </div>
+            <div class="modal-body">
+                <p data-bind="with: destinationCountry">
+                    Add Delivery Zone to <span data-bind="text: Name"></span>
+                </p>
+                <div class="flex-container" style="justify-content: space-between">
+                    <div data-bind="component: { name: 'mdc-text-field-component', params: codeTextBox }"></div>
+                    <div data-bind="component: { name: 'mdc-text-field-component', params: nameTextBox }"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-bind="click: cancel">
+                    Cancel
+                </button>
+                <button class="btn btn-green" data-bind="click: save">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="delivery-group-modal" class="modal fade" data-backdrop="static" data-keyboard="false" data-bind="with: deliveryGroupFactory">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="blocker" style="display: none" data-bind="visible: busy">
+                <div class="loading-spinner"></div>
+            </div>
+            <div class="modal-header grey-blue">
+                <h4 class="modal-title">
+                    Delivery Group
+                    <span data-bind="text: name() ? ': ' + name() : ''"></span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group row">
+                    <div class="col-xs-6">
+                        <div data-bind="component: { name: 'mdc-text-field-component', params: codeTextBox }"></div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div data-bind="component: { name: 'mdc-text-field-component', params: nameTextBox }"></div>
+                    </div>
+                </div>
+                <div class="margin-bottom-30" data-bind="component: { name: 'mdc-text-field-component', params: notesTextBox }"></div>
+                <div class="form-group row">
+                    <div class="col-xs-6">
+                        <div class="text-right" data-bind="component: { name: 'mdc-text-field-numeric-component', params: minimumParcelWeightTextBox }"></div>
+                        <div class="text-right" data-bind="component: { name: 'mdc-text-field-numeric-component', params: avgParcelWeightTextBox }"></div>
+                        <div class="text-right" data-bind="component: { name: 'mdc-text-field-numeric-component', params: avgPalletWeightTextBox }"></div>
+                        <div class="text-right" data-bind="component: { name: 'mdc-text-field-numeric-component', params: packagingAllowanceTextBox }"></div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="text-right" data-bind="component: { name: 'mdc-text-field-numeric-component', params: avgParcelLengthTextBox }"></div>
+                        <div class="text-right" data-bind="component: { name: 'mdc-text-field-numeric-component', params: avgParcelWidthTextBox }"></div>
+                        <div class="text-right" data-bind="component: { name: 'mdc-text-field-numeric-component', params: avgParcelHeightTextBox }"></div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-6 col-xs-push-6">
+                        <div class="text-right" data-bind="component: { name: 'mdc-text-field-numeric-component', params: courierSurchargeTextBox }"></div>
+                    </div>
+                </div>
+                <div class="checkbox-container" data-bind="component: { name: 'mdc-checkbox-component', params: splitBasketByAvailabilityCheckbox }"></div>
+                <div class="checkbox-container" data-bind="component: { name: 'mdc-checkbox-component', params: splitByBasketItemCheckbox }"></div>
+                <div class="checkbox-container" data-bind="component: { name: 'mdc-checkbox-component', params: allowDisplayDeliveryGroupConsolidationCheckbox }"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-bind="click: cancel">
+                    Cancel
+                </button>
+                <button class="btn btn-green" data-bind="click: save">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

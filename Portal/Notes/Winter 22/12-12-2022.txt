@@ -1,0 +1,62 @@
+
+Writing: 
+Replace the concept of merchandiser codes with a similar interface achieving the same outcome
+
+Maintaining a Merchandiser code: five text fields.
+Reviewing a Merchandiser code: review all products using that merchandiser code.
+SS.STMERCH
+
+
+
+
+
+MAKE details
+Make details is the first pass, they might not know the final running order but they will know the products involved
+
+"These are the elements that make the pattern book"
+Header
+Fabrics, 0.3m per [costs]
+Artwork
+Litho
+
+Total Cost of Book: £65
+
+when selling something made of multiple components, you have a process order
+ultimately you're ordering 50 pattern books from Pikes
+
+but in order to get those made we need a make detail record which lists the fabric and non-product components to make one THING
+
+creates the necessary transfer order to move the total stock for the quantity of books
+
+the stock gets moved from A to Book
+when made up, the redelivery back into the warehouse then downdates the stock
+
+
+Certain product types require a bit more than just creation - especially pattern book
+
+
+
+
+
+F&W Pattern Book Order
+This is how we put a pattern book together, in the order approved by Tricia.
+"This is book I'm making, and this is the ordering of the book"
+
+
+
+DON'T NEED FR TREATMENT DATA 
+
+
+
+
+Supplier Additional Costs
+
+
+Supplier Price List
+
+Creates entry in Purchase Order Price, for fabric they provide the purchase price
+for non-fabric it pulls in different fields to arrive at the purchase price 
+
+
+
+Sarah can't cope with internal imports: SQL processing do NOT part-process any TradeOrderImportFile

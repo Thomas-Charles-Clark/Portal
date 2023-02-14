@@ -1,0 +1,230 @@
+﻿
+<script type="text/kendo-x-tmpl" id="slicer-item-template">
+    <div class="list-group-item">#= Name #</div>
+</script>
+
+<script id="slicer-template" type="text/html">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="slicer panel panel-primary">
+                <div class="panel-heading">
+                    <span data-bind="text: name"></span>
+                    <span class="clear-selection glyphicon glyphicon-filter" style="display: none" data-bind="visible: clearAvailable(), click: function() { clearSelection(); }"><span>&times;</span></span>
+                </div>
+                <div class="panel-body no-padding">
+                    <div class="slicer-list list-group" data-bind="kendoListView: listViewSettings"></div>
+                </div>
+                @*<div class="panel-footer">
+
+                </div>*@
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript">
+    var slicerViewModel = function (params) {
+        var self = this;
+
+        params.boundTo(self);
+
+        self.widget = ko.observable();
+
+        self.name = params.name;
+
+        self.valueField = params.valueField;
+
+        self.textField = params.textField;
+
+        self.multiplicity = params.multiplicity;
+
+        self.siblings = params.slicerCollection;
+
+        self.selectedIds = ko.observableArray([]);
+
+        self.programmaticSelect = false;
+
+        //self.selectedItemIds = ko.pureComputed({
+        //    read: function () { 
+        //        if (self.widget()) {
+        //            var ids = [];
+
+        //            var items = self.widget().items();
+
+        //            var selection = self.widget().select();
+                    
+        //            selection.each(function (item) { 
+        //                ids.push(self.widget().dataItem(item)[self.valueField]);
+        //            });
+
+        //            return ids;
+        //        }
+        //    }
+        //}, self);
+
+        self.clearAvailable = ko.pureComputed({
+            read: function () {
+                if (self.selectedIds().length) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }, self);
+
+        self.clearSelection = function () {
+            self.selectedIds([]);
+            self.widget().clearSelection();
+        }
+
+        self.dataSourceData = function() {
+            var data = {};
+
+            self.siblings.forEach(function (s) {
+                if (s.boundTo == self) {
+                    return;
+                }
+                if (s.boundTo()) {
+                    var selection = s.boundTo().widget().select();
+                    if (selection.length) {
+                        var ids = [];
+                        for (var i = 0; i < selection.length; i++) {
+                            var element = selection[i];
+                            var dataItem = s.boundTo().widget().dataItem(element);
+                            ids.push(dataItem[s.valueField]);
+                        }
+                        data[s.valueField + 's'] = ids;
+                    }
+                }
+            });
+
+            return data;
+        }
+
+        self.dataSourceRead = function (options) {
+            var webapi = new kendo.data.transports.webapi({ prefix: "" });
+
+            var mapped = webapi.parameterMap(options.data);
+
+            var data = self.dataSourceData();
+
+            for (var propertyName in mapped) {
+                data[propertyName] = mapped[propertyName];
+            }
+
+            $.ajax({
+                url: params.endPoint,
+                type: "POST",
+                data: data,
+                success: function (data) {
+                    options.success(data);
+                },
+                error: function (data) {
+                    options.error();
+                }
+            });
+        }
+
+        self.dataSource = new kendo.data.DataSource({
+            serverFiltering: false,
+            serverSorting: false,
+            serverGrouping: false,
+            transport: {
+                read: self.dataSourceRead
+            }
+        });
+
+        self.onChange = function (e) {
+
+            // programmatic select prevents the automated reading of siblings' data sources
+            // it should be set before calling .select(items), if multiple siblings are to be set
+            // at once.
+            if (!self.programmaticSelect) {
+                var refreshSelf = false;
+                if (!e.sender.select().length) {
+                    refreshSelf = true;
+                    self.selectedIds([]);
+                } else {
+                    var selection = e.sender.select();
+                    var ids = [];
+                    for (var i = 0; i < selection.length; i++) {
+                        var element = selection[i];
+                        var dataItem = e.sender.dataItem(element);
+                        ids.push(dataItem[self.valueField]);
+                    }
+                    self.selectedIds(ids);
+                }
+
+                // should I be affecting my siblings?
+                // is that not my parent's decision?
+                //self.siblings.forEach(function (s) {
+                //    if (s.boundTo == self && !refreshSelf) {
+                //        return;
+                //    }
+                //    s.boundTo().widget().dataSource.read();
+                //});
+            } else {
+                self.programmaticSelect = false;
+            }
+        }
+
+        // programmatic select is there so that when a manual selection has been made,
+        // it can be retained and re-displayed following data binding.
+        // it is not exactly for just setting before you cause selection to change from code.
+
+        self.onDataBound = function (e) {
+            if (self.selectedIds().length) {
+                self.programmaticSelect = true;
+            }
+
+            var items = e.sender.items();
+
+            var itemsToSelect = [];
+
+            if (items.length) {
+                for (var i in self.selectedIds()) {
+                    var found = false;
+
+                    items.each(function (idx, item) {
+                        var di = e.sender.dataItem(item);
+                        if (self.selectedIds()[i] == di[self.valueField]) {
+                            found = true;
+                        }
+                    });
+
+                    if (!found) {
+                        console.log(self.selectedIds()[i], 'was not found in my items');
+                        self.selectedIds.remove(self.selectedIds()[i]);
+                    }
+                }
+                items.each(function (idx, item) {
+                    var di = e.sender.dataItem(item);
+                    if (self.selectedIds.indexOf(di[self.valueField]) > -1) {
+                        itemsToSelect.push(item);
+                    }
+                });
+            }
+
+            if (itemsToSelect.length) {
+                self.programmaticSelect = true;
+                e.sender.select(itemsToSelect);
+            }
+        }
+
+        self.listViewSettings = {
+            dataValueField: self.valueField,
+            dataTextField: self.textField,
+            selectable: self.multiplicity,
+            widget: self.widget,
+            data: self.dataSource,
+            change: self.onChange,
+            dataBound: self.onDataBound,
+            template: $('#slicer-item-template').html()
+        };
+    }
+
+    ko.components.register('slicer-component', {
+        viewModel: slicerViewModel,
+        template: { element: $('#slicer-template')[0] }
+    });
+</script>

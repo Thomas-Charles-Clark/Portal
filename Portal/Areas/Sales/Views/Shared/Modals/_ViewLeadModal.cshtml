@@ -1,0 +1,317 @@
+﻿<div id="view-lead-modal" class="modal fade" data-bind="with: leadEdit">
+    <div class="modal-dialog modal-lg modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 id="view-lead-title" class="modal-title">View Lead</h4>
+            </div>
+            <div class="modal-body">
+                <div class="loading-busy" data-bind="visible: viewLeadBusy()"></div>
+                <div data-bind="visible: !viewLeadBusy()">
+                    <div data-bind="with: viewingLead">
+                        <div class="row">
+                            <div class="col-md-4 col-sm-6 col-xs-12">
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">Company Name</label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <span class="form-group-span" data-bind="text: companyName"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">Company Registration</label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <span class="form-group-span" data-bind="text: companyRegistration"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">Company VAT No.</label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <span class="form-group-span" data-bind="text: companyVATNumber"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">Company EORI No.</label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <span class="form-group-span" data-bind="text: eoriNumber"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row" data-bind="with: secondaryContacts()[0]">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">Primary Contact</label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <span class="address-span" data-bind="with: LeadContactType">
+                                            <span data-bind="text: 'Position: ' + $data.Name"></span>
+                                        </span>
+                                        <span class="address-span" data-bind="with: FullName">
+                                            <span data-bind="with: $parent.Title">
+                                                <span data-bind="text: $data.Title"></span>&nbsp;
+                                            </span>
+                                            <span data-bind="text: $data"></span>
+                                        </span>
+                                        <span class="address-span" data-bind="with: WorkPhone">
+                                            Work: <a data-bind="attr: { href: 'tel:' + $data }, text: $data"></a>
+                                        </span>
+                                        <span class="address-span" data-bind="with: MobilePhone">
+                                            Mobile: <a data-bind="attr: { href: 'tel:' + $data }, text: $data"></a>
+                                        </span>
+                                        <span class="address-span" data-bind="with: Email">
+                                            Email: <a data-bind="attr: { href: 'mailto:' + $data }, text: $data"></a>
+                                        </span>
+                                        <span class="address-span" data-bind="with: Website">
+                                            Website: <a data-bind="attr: { href: $data }, text:$data"></a>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group row" data-bind="with: leadAddresses()[0]">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">Primary Address</label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <span class="address-span" data-bind="html: line1 || ''"></span>
+                                        <span class="address-span" data-bind="html: line2 || ''"></span>
+                                        <span class="address-span" data-bind="html: town || ''"></span>
+                                        <span class="address-span" data-bind="html: county || ''"></span>
+                                        <span class="address-span" data-bind="html: postcode || ''"></span>
+                                        <span class="address-span" data-bind="html: country().Name"></span>
+
+                                        <div class="directions-wrapper" data-bind="with: postcode">
+                                            <span data-bind="html: $parent.appleMapsButton"></span>
+                                            <span data-bind="html: $parent.wazeButton"></span>
+                                            <div class="streetview-wrapper">
+                                                <div style="display: none;" data-bind="visible: $parent.googleStreetViewBusy()" class="cssload-squeeze">
+                                                    <span></span><span></span><span></span><span></span><span></span>
+                                                </div>
+                                                <a class="btn btn-secondary-blue directions-link btn-sm" data-bind="attr: { href: $parent.googlePanoLink, target: '_blank' }">Google Streetview</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6 col-xs-12">
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">Status</label>
+                                    </div>
+                                    <div class="col-xs-12" data-bind="with: status">
+                                        <span class="form-group-span" data-bind="text: $data.Name"></span>
+                                    </div>
+                                </div>
+                                <!-- ko if: ownerMember -->
+                                <div class="form-group row" data-bind="with: ownerMember">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">Assigned to</label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <span class="address-span" data-bind="with: Email">
+                                            <span data-bind="with: $parent.FullName">
+                                                <span data-bind="text: $data"></span><br />
+                                            </span>
+                                            <a data-bind="attr: { href: 'mailto:' + $data }, text: $data"></a>
+                                        </span>
+                                    </div>
+                                </div>
+                                <!-- /ko -->
+                                <div class="form-group row" data-bind="with: country">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">Market</label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <span class="form-group-span">
+                                            <span data-bind="text: Name"></span>
+                                            <span data-bind="with: $parent.language">
+                                                &nbsp;/&nbsp;
+                                                <span data-bind="text: Name"></span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group row" data-bind="with: channel">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">Channel</label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <span class="form-group-span" data-bind="text: Name"></span>
+                                    </div>
+                                </div>
+                                <!-- ko if: willBuyPatternBooks() != null -->
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">Pattern Book Buyer</label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <span class="form-group-span" data-bind="text: willBuyPatternBooksDisplay"></span>
+                                    </div>
+                                </div>
+                                <!-- /ko -->
+                                <!-- ko if: companyType -->
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">Company Type</label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <span class="form-group-span" data-bind="text: companyType"></span>
+                                    </div>
+                                </div>
+                                <!-- /ko -->
+                                <!-- ko if: tradingSinceId -->
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">Trading For</label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <span class="form-group-span" data-bind="text: tradingSinceDisplay"></span>
+                                    </div>
+                                </div>
+                                <!-- /ko -->
+                                <!-- ko if: totalPotential -->
+                                <div class="form-group row" data-bind="with: currency">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">Total New Business Potential</label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <span class="form-group-span" data-bind="text: formatCurrency($parent.totalPotential(), 0, FormattingCulture, Code)"></span>
+                                    </div>
+                                </div>
+                                <!-- /ko -->
+                                <div class="form-group row" data-bind="with: starRating">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">Rating</label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <div class="star-rating non-interactive">
+                                            <!-- ko foreach: new Array(5) -->
+                                            <div class="star star-unrated material-icons" data-bind="css: ($index() < $parent ? 'star-rated-saved' : '')"></div>
+                                            <!-- /ko -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- ko if: $parent.annualRevenue -->
+                                <div class="form-group row" data-bind="with: currency">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">Annual Revenue</label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <span class="form-group-span" data-bind="text: formatCurrency($parent.annualRevenue(), 0, FormattingCulture, Code)"></span>
+                                    </div>
+                                </div>
+                                <!-- /ko -->
+                            </div>
+                            <div class="col-md-4 col-sm-12">
+                                <div class="form-group row" data-bind="with: leadSource">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">
+                                            Source
+                                        </label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <span class="form-group-span" data-bind="text: $data.Name"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row" data-bind="with: sourceMember">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">
+                                            Created by
+                                        </label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <span class="form-group-span" data-bind="text: $data.FullName"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">
+                                            Brand &amp; Product Interest
+                                        </label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <div class="lead-interest-table">
+                                            <table class="table-condensed table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th><div class="spacer">&nbsp;</div></th>
+                                                        <!-- ko foreach: brandGroups -->
+                                                        <th style="width: 30px; padding: 0 4px;" data-bind="html: '<div>' + Code + '</div>'"></th>
+                                                        <!-- /ko -->
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!-- ko foreach: productTypeGroups -->
+                                                    <tr>
+                                                        <th>
+                                                            <div class="spacer" data-bind="text: Key().Name"></div>
+                                                        </th>
+                                                        <!-- ko foreach: Enumerable.From($data.source).OrderBy('$.Brand.SortOrder').ToArray() -->
+                                                        <!-- ko if: Available -->
+                                                        <td>
+                                                            <label class="col-form-label pointer">
+                                                                <input disabled="disabled" type="checkbox" class="interest pointer" data-bind="checked: $parentContext.$parent.leadInterests, checkedValue: $parentContext.$parent.getBrandProductTypeGroupObject($data.BrandID, $data.ProductTypeGroupID)" />
+                                                            </label>
+                                                        </td>
+                                                        <!-- /ko -->
+                                                        <!-- ko ifnot: Available -->
+                                                        <td></td>
+                                                        <!-- /ko -->
+                                                        <!-- /ko -->
+                                                    </tr>
+                                                    <!-- /ko -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- ko if: competitors().length > 0 -->
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label">
+                                            Brands Currently Worked With
+                                        </label>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <div class="worked-with-display" data-bind="foreach: competitors">
+                                            <span class="label label-primary competitor">
+                                                <span data-bind="text:Name"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /ko -->
+                            </div>
+                        </div>
+                        <!-- ko if: notes().length -->
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="well well-sm margin-bottom-0">
+                                    <p data-bind="html: notes()[0].Note.replace('\n', '<br/><br/>')"></p>
+                                    <label class="col-form-label" style="float: none;">
+                                        <span data-bind="text: notes()[0].CreatedBy.FullName"></span> -
+                                        <span data-bind="text: moment(notes()[0].CreatedDT).format('dddd DD/MM/YYYY HH:mm')"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /ko -->
+                        @*<div class="row" data-bind="with: description">
+                            <div class="col-xs-12">
+                                <label class="col-form-label">
+                                    Description
+                                </label>
+                            </div>
+                            <div class="col-xs-12">
+                                <p class="description" data-bind="text: $data"></p>
+                            </div>
+                        </div>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

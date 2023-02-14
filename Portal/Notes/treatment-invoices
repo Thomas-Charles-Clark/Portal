@@ -1,0 +1,43 @@
+O&L address are truncated and we cannot get through despatch, example Beverly Hills is Bev H, need to check imported web orders are getting the address validated
+	
+	
+	
+Rob receives invoice for 9854354
+	finds the sales order on Mertex
+	allocates the stock
+	saves it
+	
+	
+	
+Back Coating Approval
+	List all back coating orders raised on the Portal
+	Give Customer, Name, Order Number, Part Number, 
+	Treatment Part Number, Quantity
+	Back Coating Description,
+	Supplier,
+	 new fields:
+		Approved
+		Date Approved
+		Supplier Invoice Number
+		Supplier Charge 
+	could be that we've asked them to treat 5m, they've treated 10m
+		Comments
+
+	
+	List the corresponding Order Number
+	List the LINE.STAT.DES for each line
+	
+	
+	
+	
+	Invoices Pending Approval
+	Invoices Approved
+	
+	
+	
+	
+Paint Invoice Approval
+
+
+
+ 

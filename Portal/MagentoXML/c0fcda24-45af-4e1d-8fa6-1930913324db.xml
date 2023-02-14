@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<products>
+  <product>
+    <id>FT2134/02</id>
+    <title>Cazziola - Ivory</title>
+    <long_description>A sophisticated and refined voile, with superb drape - inherently flame retardant.
+
+
+298cm wide width fabric.</long_description>
+    <price>10.0000</price>
+    <meta_description>A sophisticated and refined voile, with superb drape - inherently flame retardant.
+</meta_description>
+    <images>
+      <image>https://downloads.designersguild.com/images/18884.jpeg</image>
+    </images>
+    <short_description>Wide Width Fabric</short_description>
+    <category>Fabric</category>
+    <new>0</new>
+    <colour>White</colour>
+    <brand>Designers Guild Essentials</brand>
+    <season>SS14</season>
+    <status>Current</status>
+    <horizontal_pattern_repeat>0</horizontal_pattern_repeat>
+    <vertical_pattern_repeat>0</vertical_pattern_repeat>
+    <pattern_match>Plain</pattern_match>
+    <flamcode>(UK Flamcode Z) Not for upholstery</flamcode>
+    <weight>72</weight>
+    <width>298</width>
+    <composition>100%Polyester (FR)</composition>
+    <country_of_origin>TR</country_of_origin>
+    <intrastat>55151290</intrastat>
+    <comodity_code>5515120090</comodity_code>
+    <product_page_id>6118</product_page_id>
+    <collections>
+      <collection>
+        <collection_id>502</collection_id>
+        <collection_name>Contract Essentials Fabrics</collection_name>
+        <description>A highly versatile destination collection for all those immensely practical fabrics that are needed in so many contract applications (and some domestic ones too!). 
+
+It’s a great collection and includes voiles, dim out and blackout fabrics all with excellent surface effects and finishes. All are wide width (with some also available in standard width), are flame retardant to meet many UK and international standards and are fully washable. 
+
+The colour palette spans a wide range of neutral shades from chalk whites through creams, buffs and soft greys to deeper earth tones and a few indigo blues. All are incredibly practical and answer many of the demands of contract specifiers, hotel groups and interior designers.</description>
+        <related_collections>
+          <related_collection>
+            <collection_id>513</collection_id>
+            <collection_name>Aquarelle FR Voile Fabrics</collection_name>
+          </related_collection>
+          <related_collection>
+            <collection_id>499</collection_id>
+            <collection_name>Lucente Fabrics</collection_name>
+          </related_collection>
+          <related_collection>
+            <collection_id>432</collection_id>
+            <collection_name>Mezzola Alta Fabrics</collection_name>
+          </related_collection>
+          <related_collection>
+            <collection_id>422</collection_id>
+            <collection_name>Cara Fabrics</collection_name>
+          </related_collection>
+          <related_collection>
+            <collection_id>279</collection_id>
+            <collection_name>Canossa Fabrics</collection_name>
+          </related_collection>
+          <related_collection>
+            <collection_id>362</collection_id>
+            <collection_name>Bernadini Fabrics</collection_name>
+          </related_collection>
+          <related_collection>
+            <collection_id>307</collection_id>
+            <collection_name>Ferrara Fabrics</collection_name>
+          </related_collection>
+        </related_collections>
+      </collection>
+    </collections>
+    <aftercare>
+      <Aftercare>DRY CLEAN - P process (GENTLE)</Aftercare>
+      <Aftercare>MACHINE WASH @40c GENTLE CYCLE </Aftercare>
+      <Aftercare>NO BLEACH</Aftercare>
+      <Aftercare>NO TUMBLE DRY</Aftercare>
+    </aftercare>
+    <usage>
+      <Usage>Curtains And Blinds</Usage>
+      <Usage>Flame Retardant</Usage>
+    </usage>
+    <attributes>
+      <attribute group="Type" value="Plain / Textured" />
+      <attribute group="Type" value="Wide Width" />
+    </attributes>
+  </product>
+</products>

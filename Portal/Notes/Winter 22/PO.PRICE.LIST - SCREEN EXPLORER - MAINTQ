@@ -1,0 +1,15 @@
+Field Name     Process Before       Process After        Intuitive Help     
+W.SUPPLIER                                                                  
+W.SUPPNAME                                                                  
+W.QUALITY      P:(@WORK<2> = "")    P:(@KEY = W1:"*":W2)                    
+W.QUALDESC                                                                  
+PUNIT                                                                       
+PUNITDESC                                                                   
+SS.OPEN.ORD.PRICE                                                          
+SS.FUT.ORD.PRICE                                                            
+CURRENCY                                                                    
+CURRDESC                                                                    
+QUANTITY                                                                    
+PRICE2                                                                      
+LAST.AMEND                                                                  
+KP.LEGEND                                                                   

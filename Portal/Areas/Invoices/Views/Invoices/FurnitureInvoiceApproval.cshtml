@@ -1,0 +1,215 @@
+﻿@model Portal.Areas.Invoices.ViewModels.FurnitureInvoiceApprovalViewModel
+@{
+    ViewBag.Title = "Furniture Invoice Approval";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/kendo-custom")
+    @Styles.Render("~/bundles/css/furniture-invoice-approval")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/furniture-invoice-approval")
+
+    <script id="furniture-detail-grid-row-template" type="text/html">
+        <tr>
+            <td>
+                <span data-bind="text: type"></span>
+            </td>
+            <td>
+                <span data-bind="text: code + ' x ' + quantity + 'm'"></span>
+            </td>
+            <td>
+                <span data-bind="text: orderHeadId"></span>
+            </td>
+            <td>
+                <span data-bind="text: orderStatus"></span>
+            </td>
+            <td data-bind="css: { 'unavailable': type === 'Treatment' }">
+                <span data-bind="text: transferOrderHeadId"></span>
+            </td>
+            <td data-bind="css: { 'unavailable': type === 'Treatment' }">
+                <span data-bind="text: transferOrderStatus"></span>
+            </td>
+            <td data-bind="css: { 'unavailable': type === 'Fabric' }">
+                <span data-bind="text: supplierInvoiceNumber"></span>
+            </td>
+        </tr>
+    </script>
+
+    <script id="furniture-surcharge-grid-row-template" type="text/html">
+        <tr>
+            <td>
+                <span data-bind="text: orderHeadId"></span>
+            </td>
+            <td>
+                <span data-bind="text: code"></span>
+            </td>
+            <td>
+                <span data-bind="text: quantity"></span>
+            </td>
+            <td>
+                <span data-bind="text: orderStatus"></span>
+            </td>
+        </tr>
+    </script>
+
+    <script type="text/javascript">
+
+        function getTreatmentProviderFilterOptions() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.TreatmentProviders))
+        }
+
+        function getOrderStatusOptions() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.OrderStatuses))
+        }
+
+        function getFurnitureSupplierOptions() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.FurnitureSuppliers))
+        }
+
+        var viewModel = new furnitureApprovalViewModel();
+        
+        ko.options.deferUpdates = true;
+
+        $(document).ready(function () {
+            ko.applyBindings(viewModel, document.body);
+        });
+        
+    </script>
+}
+
+<div class="blocker" data-bind="visible: busy">
+    <div class="busy-bars">
+        <div class="rect1 alert alert-info"></div>
+        <div class="rect2 alert alert-info"></div>
+        <div class="rect3 alert alert-info"></div>
+        <div class="rect4 alert alert-info"></div>
+        <div class="rect5 alert alert-info"></div>
+    </div>
+    <!-- ko with: busyMessage -->
+    <h3 data-bind="html: $data"></h3>
+    <!-- /ko -->
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+    
+<div class="blocker" data-bind="visible: busy">
+    <div class="busy-bars">
+        <div class="rect1 alert alert-info"></div>
+        <div class="rect2 alert alert-info"></div>
+        <div class="rect3 alert alert-info"></div>
+        <div class="rect4 alert alert-info"></div>
+        <div class="rect5 alert alert-info"></div>
+    </div>
+    <!-- ko with: busyMessage -->
+    <h3 data-bind="html: $data"></h3>
+    <!-- /ko -->
+</div>
+
+<ul class="nav nav-pills">
+    <li class="active">
+        <a href="#tab-pending" data-toggle="tab">
+            Pending
+            <!-- ko if: pendingCount() -->
+            <span class="counter" data-bind="visible: true" style="display: none;">
+                <span data-bind="text: pendingCount"></span>
+            </span>
+            <!-- /ko -->
+        </a>
+    </li>
+    <li>
+        <a href="#tab-completed" data-toggle="tab">
+            Completed
+            <!-- ko if: approvedCount() -->
+            <span class="counter" data-bind="visible: true" style="display: none;">
+                <span data-bind="text: approvedCount"></span>
+            </span>
+            <!-- /ko -->
+        </a>
+    </li>
+</ul>
+<div class="tab-content">
+    <div id="tab-pending" class="tab-pane active">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="grid-container">
+                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: dateRangeParams }"></div>
+                    <div data-bind="component: { name: 'mdc-text-field-numeric-unformatted-component', params: orderHeadParams }"></div>
+                    <div data-bind="component: { name: 'mdc-text-field-component', params: supplierInvoiceParams }"></div>
+                    <button class="btn btn-success margin-bottom-15" data-bind="click: search">
+                        Search
+                        <span class="glyphicon glyphicon-search"></span>
+                    </button>
+                    <div></div>
+                    <button class="btn btn-battleship-blue margin-bottom-15" data-bind="click: clearPendingGridFilters">
+                        Clear Filters
+                    </button>
+                </div>
+                <div data-bind="kendoGrid: pendingGridSettings"></div>
+                <p class="note">
+                    To be considered "completed" the furniture lines and surcharges must all be invoiced, and the invoice must be approved.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div id="tab-completed" class="tab-pane">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="grid-container">
+                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: approvedDateRangeParams }"></div>
+                    <div data-bind="component: { name: 'mdc-text-field-numeric-unformatted-component', params: approvedOrderHeadParams }"></div>
+                    <div data-bind="component: { name: 'mdc-text-field-component', params: approvedSupplierInvoiceParams }"></div>
+                    <button class="btn btn-success margin-bottom-15" data-bind="click: approvedSearch">
+                        Search
+                        <span class="glyphicon glyphicon-search"></span>
+                    </button>
+                    <div></div>
+                    <button class="btn btn-battleship-blue margin-bottom-15" data-bind="click: clearApprovedGridFilters">
+                        Clear Filters
+                    </button>
+                </div>
+                <div data-bind="kendoGrid: approvedGridSettings"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<div id="document-wrapper" style="display: none;" class="row" data-bind="visible: showDocument">
+    <div class="col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div id="email-wrapper" class="flex-container margin-bottom-15">
+                    <div data-bind="component: { name: 'mdc-text-field-component', params: emailParams }"></div>
+                     <button class="btn btn-success" data-bind="click: emailBasketReceipt">
+                        Send
+                         <span class="glyphicon glyphicon-send"></span>
+                    </button>
+                </div>
+                <div id="receipt-sent-successfully" class="text-success margin-bottom-15" style="display: none; font-size: 14px;" data-bind="fadeVisible: showLastSentTo, fadeSpeed: 'slow', html: 'Sent successfully to: ' + sentTo() + ' &#x2714;'"></div>
+                <div id="document-iframe-container">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>*@

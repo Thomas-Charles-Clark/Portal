@@ -1,0 +1,540 @@
+FIELD NAME:     FIRST.USER.SCREEN
+POSITION:       1.2
+TYPE:           A
+LENGTH:         20
+OCONV:          MCU
+DESCRIPTION:    First User Screen
+DERIVATION:     
+VALIDATION:     E:F("STPROCESS","I*STPRODMASTER*":@VALUE)<1>
+PROCESS AFTER:  
+DEFAULT:		
+
+
+FIELD NAME:     PRODTYPE.DES
+POSITION:       191
+TYPE:           A
+LENGTH:         50
+OCONV:          (F("SS.PRODUCT.TYPE",@VALUE)<POS(SS.PRODUCT.TYPE,TITLE)>)
+DESCRIPTION:    
+DERIVATION:     
+VALIDATION:     
+PROCESS AFTER:  
+DEFAULT:		
+
+
+FIELD NAME:     QUAL.REMEASURE.LGTH
+POSITION:       57.59
+TYPE:           N
+LENGTH:         5
+OCONV:          MR12
+DESCRIPTION:    Re-measure Length
+DERIVATION:     
+VALIDATION:     
+PROCESS AFTER:  
+DEFAULT:		F("STPARMS","1")<84>
+
+
+FIELD NAME:     SS.STATUSDESC
+POSITION:       0
+TYPE:           A
+LENGTH:         40
+OCONV:          
+DESCRIPTION:    Status Description
+DERIVATION:     (F("STPRODSTATUS",CUR.STAT)<POS(STPRODSTATUS,DESCRIPTION)>)
+VALIDATION:     
+PROCESS AFTER:  
+DEFAULT:		
+
+
+FIELD NAME:     TEMPLATE.CODE
+POSITION:       0
+TYPE:           A
+LENGTH:         20
+OCONV:          MCU
+DESCRIPTION:    Template Code
+DERIVATION:     
+VALIDATION:     
+PROCESS AFTER:  
+DEFAULT:		
+
+
+FIELD NAME:     TEMPLATE.DESC
+POSITION:       1.1
+TYPE:           A
+LENGTH:         32
+OCONV:          
+DESCRIPTION:    Description
+DERIVATION:     
+VALIDATION:     
+PROCESS AFTER:  
+DEFAULT:		
+
+
+FIELD NAME:     GROUPCODE
+POSITION:       2
+TYPE:           A
+LENGTH:         2
+OCONV:          
+DESCRIPTION:    Group Code
+DERIVATION:     
+VALIDATION:     M: AND F:STPRODGROUPS	{Must exist on STPRODGROUPS}
+PROCESS AFTER:  
+DEFAULT:		"NA"
+
+
+FIELD NAME:     ITEMTYPE
+POSITION:       3
+TYPE:           A
+LENGTH:         3
+OCONV:          
+DESCRIPTION:    Item
+DERIVATION:     
+VALIDATION:     M: AND F:STITEMTYPE	{Must exist on STITEMTYPE}
+PROCESS AFTER:  
+DEFAULT:		
+
+
+FIELD NAME:     UNITPURCHASE
+POSITION:       7
+TYPE:           A
+LENGTH:         3
+OCONV:          
+DESCRIPTION:    Purchase Unit
+DERIVATION:     
+VALIDATION:     M: AND F:STUNITS,1,,6	{Must exist on STUNITS}
+PROCESS AFTER:  
+DEFAULT:		
+
+
+FIELD NAME:     UNITSTOCK
+POSITION:       8
+TYPE:           A
+LENGTH:         3
+OCONV:          
+DESCRIPTION:    Stock Unit
+DERIVATION:     
+VALIDATION:     M: AND F:STUNITS,1,,6	{Must exist on STUNITS}
+PROCESS AFTER:  
+DEFAULT:		
+
+
+FIELD NAME:     VATCODE
+POSITION:       10
+TYPE:           A
+LENGTH:         1
+OCONV:          
+DESCRIPTION:    VAT
+DERIVATION:     
+VALIDATION:     M: AND F:CFVAT	{Must be a valid VAT Code}
+PROCESS AFTER:  
+DEFAULT:		IF(F("COMPANY","1")<242> = "","S","F("COMPANY","1")<242>)
+
+
+FIELD NAME:     PIECE.LEVEL
+POSITION:       13
+TYPE:           A
+LENGTH:         1
+OCONV:          
+DESCRIPTION:    Item Level Stock?
+DERIVATION:     
+VALIDATION:     "Y","","N"
+PROCESS AFTER:  
+DEFAULT:		
+
+
+FIELD NAME:     PRODACC.MNT
+POSITION:       21
+TYPE:           A
+LENGTH:         12
+OCONV:          
+DESCRIPTION:    Sales Analysis (A)
+DERIVATION:     
+VALIDATION:     B:VGLCODE,A.S.SALE
+PROCESS AFTER:  
+DEFAULT:		B("DGLCODE,A.SALE")
+
+
+FIELD NAME:     BATCH.PROD
+POSITION:       28
+TYPE:           A
+LENGTH:         1
+OCONV:          
+DESCRIPTION:    Multiple Batches?
+DERIVATION:     
+VALIDATION:     "Y","N"
+PROCESS AFTER:  
+DEFAULT:		"Y"
+
+
+FIELD NAME:     STOCKACC.MNT
+POSITION:       78
+TYPE:           A
+LENGTH:         12
+OCONV:          
+DESCRIPTION:    Stock Analysis (A)
+DERIVATION:     
+VALIDATION:     B:VGLCODE,A.CA.STOCK
+PROCESS AFTER:  
+DEFAULT:		B("DGLCODE,A.STOCK")
+
+
+FIELD NAME:     PRODTYPE
+POSITION:       118
+TYPE:           A
+LENGTH:         1
+OCONV:          
+DESCRIPTION:    Product Type
+DERIVATION:     
+VALIDATION:     F:STPRODTYPE,,Y	{Invalid Product Type - must exist on STPRODTYPE}
+PROCESS AFTER:  
+DEFAULT:		P("PG.DEF.PRODTYPE")
+
+
+FIELD NAME:     PRODALYS
+POSITION:       202
+TYPE:           A
+LENGTH:         12
+OCONV:          
+DESCRIPTION:    Sales Analysis (D)
+DERIVATION:     
+VALIDATION:     B:VGLCODE,D..SALE
+PROCESS AFTER:  
+DEFAULT:		B("DGLCODE,D.SALE")
+
+
+FIELD NAME:     STOCKALYS
+POSITION:       203
+TYPE:           A
+LENGTH:         12
+OCONV:          
+DESCRIPTION:    Stock Analysis (D)
+DERIVATION:     
+VALIDATION:     B:VGLCODE,D..STOCK
+PROCESS AFTER:  
+DEFAULT:		B("DGLCODE,D.STOCK")
+
+
+FIELD NAME:     ALLOC.AT.BATCH
+POSITION:       218
+TYPE:           A
+LENGTH:         1
+OCONV:          MCU
+DESCRIPTION:    Alloc At Batch Level?
+DERIVATION:     
+VALIDATION:     V:,Y,N
+PROCESS AFTER:  
+DEFAULT:		P("PG.ALLOC.AT.BATCH")[M]
+
+
+FIELD NAME:     VALREPFLD
+POSITION:       260
+TYPE:           A
+LENGTH:         1
+OCONV:          
+DESCRIPTION:    Valuation Cost To Use
+DERIVATION:     
+VALIDATION:     "" OR V:L,A,S	{Should be L - Latest Cost, A - Actual Cost or S - Standard Cost}
+PROCESS AFTER:  
+DEFAULT:		
+
+
+FIELD NAME:     FORM.CODE
+POSITION:       271
+TYPE:           A
+LENGTH:         3
+OCONV:          
+DESCRIPTION:    Form Code
+DERIVATION:     
+VALIDATION:     F:STFORM,,Y OR ""	{Must be a valid Form Code or NULL}
+PROCESS AFTER:  
+DEFAULT:		IF(F("STFORM",OCONV(PRODCODE,'G2/1'))<0>,OCONV(PRODCODE,'G2/1'),"")
+
+
+FIELD NAME:     MAXREMLENGTH
+POSITION:       287
+TYPE:           A
+LENGTH:         8
+OCONV:          MR23
+DESCRIPTION:    Maximum Remnant Length
+DERIVATION:     
+VALIDATION:     
+PROCESS AFTER:  
+DEFAULT:		
+
+
+FIELD NAME:     CUR.STAT
+POSITION:       288
+TYPE:           A
+LENGTH:         1
+OCONV:          
+DESCRIPTION:    Status
+DERIVATION:     
+VALIDATION:     
+PROCESS AFTER:  
+DEFAULT:		"P"
+
+
+FIELD NAME:     PIECE.ALLOC
+POSITION:       300
+TYPE:           A
+LENGTH:         1
+OCONV:          
+DESCRIPTION:    Piece Alloc
+DERIVATION:     
+VALIDATION:     
+PROCESS AFTER:  
+DEFAULT:		P("PG.PIECE.ALLOC")[M]
+
+
+FIELD NAME:     REPETATIVE.BATCHES
+POSITION:       302
+TYPE:           A
+LENGTH:         1
+OCONV:          MCU
+DESCRIPTION:    Repetitive Batches?
+DERIVATION:     
+VALIDATION:     "Y","N"
+PROCESS AFTER:  
+DEFAULT:		IF(BATCH.PROD = "N","Y","N")
+
+
+FIELD NAME:     SAMPLE.PROD
+POSITION:       328
+TYPE:           A
+LENGTH:         1
+OCONV:          
+DESCRIPTION:    Samp
+DERIVATION:     
+VALIDATION:     "","N","Y" 	{Must be NULL, N or Y for sample}
+PROCESS AFTER:  
+DEFAULT:		IF(F("STFORM",FORM.CODE)<5> = "Y","Y","N")
+
+
+FIELD NAME:     PRINTPIECES
+POSITION:       341
+TYPE:           A
+LENGTH:         1
+OCONV:          
+DESCRIPTION:    Pce/Bat On Pick List?
+DERIVATION:     
+VALIDATION:     "" OR V:Y,N,R,S,P,B, {must be one of NULL, Y, N, R, S, P or B} 
+PROCESS AFTER:  
+DEFAULT:		(F("OEPARMS","1")<136>)
+
+
+FIELD NAME:     PIECE.ONLY.ORD
+POSITION:       462
+TYPE:           A
+LENGTH:         1
+OCONV:          
+DESCRIPTION:    Piece Only Orders?
+DERIVATION:     
+VALIDATION:     V:Y,N {Must be either Y or N}
+PROCESS AFTER:  
+DEFAULT:		"N"
+
+
+FIELD NAME:     PRODCLASS2
+POSITION:       564
+TYPE:           A
+LENGTH:         12
+OCONV:          
+DESCRIPTION:    Product Class 2
+DERIVATION:     
+VALIDATION:     "" OR F:STPRODCLASS2,,Y {Value must be a valid Product Class 2 Code}
+PROCESS AFTER:  
+DEFAULT:		PG.SEL.PRODLCASS,2
+
+
+FIELD NAME:     CUTTING.LEN.DES
+POSITION:       610
+TYPE:           A
+LENGTH:         8
+OCONV:          MR23
+DESCRIPTION:    Cutting Length
+DERIVATION:     
+VALIDATION:     C:PG.VAL.CUTTING.LEN.DES
+PROCESS AFTER:  
+DEFAULT:		IF(F("STPARMS","1")<505> = "Y",F("STPARMS","1")<506>,""[S])
+
+
+FIELD NAME:     PICK.MIN.STOCK.TDW
+POSITION:       612
+TYPE:           A
+LENGTH:         8
+OCONV:          MR23
+DESCRIPTION:    Minimum Replenishment
+DERIVATION:     
+VALIDATION:     C:PG.VAL.MIN.REPLEN
+PROCESS AFTER:  
+DEFAULT:		
+
+
+FIELD NAME:     BULK.RACK
+POSITION:       614
+TYPE:           A
+LENGTH:         9
+OCONV:          
+DESCRIPTION:    Bulk Rack
+DERIVATION:     
+VALIDATION:     C:PG.VAL.BULK.RACK
+PROCESS AFTER:  
+DEFAULT:		
+
+
+FIELD NAME:     AUTO.ALLOC.MULT
+POSITION:       653
+TYPE:           A
+LENGTH:         1
+OCONV:          MCU
+DESCRIPTION:    Auto Alloc Multiple Items
+DERIVATION:     
+VALIDATION:     V:Y,P,N {If entered, must be either Y or N}
+PROCESS AFTER:  
+DEFAULT:		IF(PIECE.LEVEL = "Y",F("OEPARMS","1")<POS(OEPARMS,AUTO.ALLOC.MULT.BATS)>)
+
+
+FIELD NAME:     ORDER.TYPE.DES
+POSITION:       682
+TYPE:           A
+LENGTH:         5
+OCONV:          
+DESCRIPTION:    Order Type
+DERIVATION:     
+VALIDATION:     F:OEMTMTYPES,,Y {Must be a valid Order / Product Type}
+PROCESS AFTER:  
+DEFAULT:		
+
+
+FIELD NAME:     LOGO.DES
+POSITION:       707
+TYPE:           A
+LENGTH:         1
+OCONV:          
+DESCRIPTION:    Label Logo
+DERIVATION:     
+VALIDATION:     "" OR F:STLOGO.DES,,Y
+PROCESS AFTER:  
+DEFAULT:		"A"
+
+
+FIELD NAME:     SO.ALLOC.FULL.DES
+POSITION:       735
+TYPE:           A
+LENGTH:         1
+OCONV:          
+DESCRIPTION:    Full Order Only
+DERIVATION:     
+VALIDATION:     "" OR V:Y {You must enter Y or leave blank}
+PROCESS AFTER:  
+DEFAULT:		""
+
+
+FIELD NAME:     CHARGE.ON.DES
+POSITION:       737
+TYPE:           A
+LENGTH:         1
+OCONV:          MCU
+DESCRIPTION:    Charge On
+DERIVATION:     
+VALIDATION:     V:V,P,S {If entered, must be (V)alue, (P)arcel or (S)pecial}
+PROCESS AFTER:  
+DEFAULT:		"V"
+
+
+FIELD NAME:     SALES.DIV.DES
+POSITION:       752
+TYPE:           A
+LENGTH:         3
+OCONV:          
+DESCRIPTION:    Sales Division
+DERIVATION:     
+VALIDATION:     
+PROCESS AFTER:  
+DEFAULT:		
+
+
+FIELD NAME:     PICK.LIST.GRP.DES
+POSITION:       756
+TYPE:           A
+LENGTH:         5
+OCONV:          
+DESCRIPTION:    Pick List Group
+DERIVATION:     
+VALIDATION:     F:PICKLISTGRP.DES,,A {If entered, must be a valid picking list group code}
+PROCESS AFTER:  
+DEFAULT:		
+
+
+FIELD NAME:     BESPOKE.RUG.DES
+POSITION:       811
+TYPE:           A
+LENGTH:         1
+OCONV:          MCU
+DESCRIPTION:    Bespoke Rug
+DERIVATION:     
+VALIDATION:     V:Y,N,	{If entered must be either 'Y'es or 'N'o}
+PROCESS AFTER:  
+DEFAULT:		
+
+
+FIELD NAME:     RANGE.FROM
+POSITION:       1005
+TYPE:           A
+LENGTH:         4
+OCONV:          
+DESCRIPTION:    Product Range From
+DERIVATION:     
+VALIDATION:     R:1 TO 9999
+PROCESS AFTER:  
+DEFAULT:		
+
+
+FIELD NAME:     RANGE.TO
+POSITION:       1006
+TYPE:           A
+LENGTH:         4
+OCONV:          
+DESCRIPTION:    Product Range To
+DERIVATION:     
+VALIDATION:     R:1 TO 9999
+PROCESS AFTER:  
+DEFAULT:		
+
+
+FIELD NAME:     RANGE.NAME
+POSITION:       1007
+TYPE:           A
+LENGTH:         10
+OCONV:          MCU
+DESCRIPTION:    Range Name
+DERIVATION:     
+VALIDATION:     
+PROCESS AFTER:  
+DEFAULT:		
+
+
+FIELD NAME:     LAST.RANGE
+POSITION:       1008
+TYPE:           A
+LENGTH:         4
+OCONV:          
+DESCRIPTION:    Last Range Used
+DERIVATION:     
+VALIDATION:     
+PROCESS AFTER:  
+DEFAULT:		
+
+
+FIELD NAME:     GEN.BARCODE
+POSITION:       1009
+TYPE:           A
+LENGTH:         1
+OCONV:          
+DESCRIPTION:    Create Ean Barcodes
+DERIVATION:     
+VALIDATION:     V:Y,N
+PROCESS AFTER:  
+DEFAULT:		
+
+

@@ -1,0 +1,310 @@
+﻿<script id="checkable-list-template" type="text/html">
+    <div class="form-group margin-bottom-0">
+        <div class="row">
+            <div class="col-xs-12">
+                <label class="col-form-label" data-bind="text: displayName, css: labelClass"></label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div data-bind="css: controlClass">
+                    <div class="input-group margin-bottom-0" data-bind="validationOptions: { insertMessages: false }">
+                        <input class="form-control" data-bind="keepElement: autocomplete, textInput: autocomplete, attr: { placeholder: 'Type to Search' }, validationCore: observableArray, enable: enabled" />
+                        <span class="tags-group input-group-addon" data-bind="visible: newItem() || addAlwaysVisible">
+                            <button class="btn btn-success" type="button" data-bind="visible: newItem() || addAlwaysVisible, click: function() { addItem(autocomplete()) }">Add</button>
+                        </span>
+                        <!-- ko if: displayList -->
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" data-bind="click: function() { autocomplete(undefined); }">
+                                <span>&times;</span>
+                            </button>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-bind="enable: enabled">
+                                List
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="checkable-ul dropdown-menu pointer" data-bind="css: listPull">
+                                <!-- ko if: itemsList().length == 0 -->
+                                <li>
+                                    <label>
+                                        No Results
+                                    </label>
+                                </li>
+                                <!-- /ko -->
+                                <!-- ko foreach: itemsList().sort() -->
+                                <li data-bind="click: function(data, event) { event.stopImmediatePropagation(); return true; }">
+                                    <label data-bind="css: { 'deletable': typeof $parent.itemListDelete === 'function' }">
+                                        <input type="checkbox" data-bind="checked: $parent.observableArray, checkedValue: $data" />
+                                        <!-- ko if: $data.hasOwnProperty('Title') -->
+                                        <span data-bind="with: Title">
+                                            <span data-bind="text: Title"></span>
+                                        </span>
+                                        <span data-bind="text: FullName"></span>
+                                        <!-- /ko -->
+                                        <!-- ko ifnot: $data.hasOwnProperty('Title') -->
+                                        <span data-bind="text: Name"></span>
+                                        <!-- /ko -->
+                                        <!-- ko if: typeof $parent.itemListDelete === 'function' -->
+                                        <a class="close pull-right" data-bind="attr: { href: 'javascript:;' }, click: function (data, event) { event.stopImmediatePropagation(); $parent.itemListDelete(data, event); }">
+                                            &times;
+                                        </a>
+                                        <!-- /ko -->
+                                    </label>
+                                </li>
+                                <!-- /ko -->
+                            </ul>
+                        </div>
+                        <!-- /ko -->
+                    </div>
+                    <!-- ko if: displayTagContainer -->
+                    <div class="tag-container" data-bind="foreach: observableArray.sort()">
+                        <span class="attendee tag pointer" data-bind="click: $parent.itemClick">
+                            <!-- ko if: $data.hasOwnProperty('Title') -->
+                            <span data-bind="with: Title">
+                                <span data-bind="text: Title"></span>
+                            </span>
+                            <span data-bind="text: FullName"></span>
+                            <!-- /ko -->
+                            <!-- ko ifnot: $data.hasOwnProperty('Title') -->
+                            <span data-bind="text: Name"></span>
+                            <!-- /ko -->
+                            <a class="close" data-bind="attr: { href: 'javascript:;' }, click: function(data, event) { event.stopImmediatePropagation(); $parent.observableArray.remove($data); }">
+                                &times;
+                            </a>
+                        </span>
+
+                        @*<span class="label label-primary tag pointer" data-bind="click: $parent.itemClick">
+                                <span data-bind="text: FullName"></span>
+                                <span class="remove" aria-hidden="true" data-bind="click: function(data, event) { event.stopImmediatePropagation(); $parent.observableArray.remove($data); }">[&times;]</span>
+                            </span>*@
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: init() -->
+                    <!-- /ko -->
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript">
+    var checkableListViewModel = function (params) {
+        var self = this;
+
+        self.displayList = typeof params.displayList === "undefined" ? true : params.displayList;
+        self.displayTagContainer = typeof params.displayTagContainer === 'undefined' ? true : params.displayTagContainer;
+
+        params.widget(self);
+
+        self.params = params;
+
+        self.name = self.params.name;
+
+        self.dataFieldName = self.params.dataFieldName;
+
+        self.enabled = ko.observable(true);
+
+        self.displayName = params.displayName;
+
+        self.textField = params.textField;
+
+        self.classField = params.classField;
+
+        self.typeField = params.typeField;
+
+        self.labelClass = params.labelClass;
+
+        self.controlClass = params.controlClass;
+
+        self.itemClick = params.itemClick || function (data, event) { };
+
+        if (params.itemListDelete) {
+            self.itemListDelete = params.itemListDelete;
+        }
+
+        if (params.enabled) {
+            self.enabled = params.enabled
+        }
+
+        self.newItem = ko.observable(false);
+
+        self.addAlwaysVisible = params.addAlwaysVisible;
+
+        self.observableArray = self.params.target;
+
+        self.observableArray.subscribe(function (newValues) {
+            self.autocomplete(undefined);
+        });
+
+        self.itemsList = self.params.itemsList;
+
+        self.listPull = self.params.listPull || '';
+
+        self.autocomplete = ko.observable();
+        
+        // <div data-bind="template: { name: 'mdc-text-field-component', data: mdcAutocomplete }"></div>
+        self.mdcAutocomplete = {
+            label: 'Type to Search',
+            observable: self.autocomplete,
+            useNativeValidation: false,
+            decorateInputElement: false,
+            insertValidationMessages: false,
+            showClear: true,
+            clearFunction: function () {
+                var self = this;
+                self.observable(undefined);
+                $(self.observable.DOMElement).focus();
+            },
+            charsRemainingOptions: {
+                maxLength: 50
+            }
+        };
+
+        self.initValidation = function () {
+            self.autocomplete.extend({
+                charsRemaining: {
+                    maxLength: self.params.autocompleteMaxLength,
+                    element: self.autocomplete.DOMElement
+                }
+            });
+        }
+
+        self.autocomplete.subscribe(function (newValue) {
+            if (newValue) {
+                if (newValue.length == 0) {
+                    self.newItem(false);
+                }
+            } else {
+                self.newItem(false);
+            }
+        });
+
+        self.customAddFunction = params.customAddFunction;
+
+        self.customSelectFunction = params.customSelectFunction;
+
+        self.addItem = function (name) {
+            if (typeof self.customAddFunction === 'function') {
+                self.customAddFunction({ Name: name });
+            } else {
+                var data = {
+                    name: name
+                };
+                if (self.params.additionalData) {
+                    $.extend(data, ko.toJS(self.params.additionalData));
+                }
+                $.ajax({
+                    url: self.params.addItemEndpoint,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: data,
+                    success: function (data) {
+                        var obj = {};
+
+                        obj[self.params.valueField] = data[self.params.valueField];
+                        obj[self.params.textField] = data[self.params.textField];
+
+                        self.observableArray.push(obj);
+
+                        self.itemsList.push(obj);
+
+                        self.newItem(false);
+
+                        self.autocomplete(obj[self.params.textField]);
+                    }
+                })
+            }
+        }
+
+        self.initAutocomplete = function () {
+            $(self.autocomplete.DOMElement).autocomplete({
+                appendTo: 'body',
+                source: function (request, response) {
+
+                    var data = {
+                        term: request.term
+                    };
+                    if (self.params.additionalData) {
+                        $.extend(data, ko.toJS(self.params.additionalData));
+                    }
+
+                    $.ajax({
+                        url: self.params.autocompleteEndpoint,
+                        type: "POST",
+                        dataType: "json",
+                        data: data,
+                        success: function (data) {
+
+                            self.newItem(true);
+
+                            data.forEach(function (item) {
+                                if (item[self.params.textField].toLowerCase() == request.term.toLowerCase()) {
+                                    self.newItem(false);
+                                }
+                            });
+
+                            response($.map(data, function (item) {
+                                return {
+                                    label: item[self.textField],
+                                    value: item
+                                };
+                            }));
+                        }
+                    });
+                },
+                minLength: 1,
+                select: function (event, ui) {
+
+                    event.preventDefault();
+
+                    if (typeof self.customSelectFunction === 'function') {
+                        //console.log(ui.item);
+                        self.customSelectFunction(ui.item.value, event);
+                    } else {
+                        var listItem = Enumerable.From(self.itemsList()).Where(function (x) {
+                            return x[self.dataFieldName] == ui.item.value[self.dataFieldName];
+                        }).SingleOrDefault();
+                        if (listItem) {
+                            self.observableArray.push(listItem);
+                        } else {
+                            // item should be added to both itemsList and... well, it should always exists in... maybe not
+                            self.itemsList.push(ui.item.value);
+                            self.observableArray.push(ui.item.value);
+                            //console.error(self.name, 'unexpected behaviour: ', ui.item.value, 'did not exist in self.itemsList()');
+                        }
+                    }
+
+                    self.autocomplete(undefined);
+                    self.newItem(false);
+                    return false;
+                },
+                focus: function (event, ui) {
+                    return false;
+                },
+                autoFocus: true,
+                create: function () {
+                    if (self.classField != null) {
+                        $(this).data("ui-autocomplete")._renderItem = function (ul, item) {
+                            var li = $("<li>");
+                            var div = li.append("<div class='ui-menu-item-wrapper'><a href='#'>" + item.label + "<span class='type'>" + item.value[self.typeField] + "</span></a></div>");
+
+                            li.addClass(item.value[self.classField]);
+
+                            return li.appendTo(ul);
+                        };
+                    }
+                }
+            });
+            return true;
+        }
+
+        self.init = function () {
+            self.initAutocomplete();
+            self.initValidation();
+        }
+    }
+
+    ko.components.register('checkable-list-component', {
+        viewModel: checkableListViewModel,
+        template: { element: $('#checkable-list-template')[0] }
+    });
+</script>

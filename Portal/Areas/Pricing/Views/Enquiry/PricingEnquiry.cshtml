@@ -1,0 +1,149 @@
+﻿@{
+    ViewBag.Title = "Pricing Enquiry";
+}
+
+@section styles {
+    @Styles.Render("~/bundles/css/components")
+    @Styles.Render("~/bundles/css/pricing-enquiry")
+    @*<style type="text/css">
+        @@media (min-width: 1200px) {
+            .container {
+                width: 1260px;
+            }
+        }
+    </style>*@
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/components")
+    @Scripts.Render("~/bundles/js/datetime-picker")
+    @Scripts.Render("~/bundles/js/pricing-enquiry")
+
+<script src="~/Scripts/kendo/cultures/kendo.culture.en-GB.min.js"></script>
+<script type="text/javascript">
+
+    kendo.culture("en-GB");
+
+        $('#price-search-accordion > .panel > .panel-collapse').collapse({
+            parent: '#accordion',
+            toggle: false
+        });
+
+        var viewModel = new pricingEnquiryViewModel();
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        $(document).ready(function () {
+
+            ko.applyBindings(viewModel, document.body);
+
+            $("#account-number").focus();
+            viewModel.priceChecker().currentQuery('ListPrices');
+            viewModel.priceChecker().resultGridWidget().table.kendoTooltip({
+                filter: "span[title]"
+            });
+
+            $("#include-samples").bootstrapSwitch({
+                animate: false,
+                labelText: 'Samples',
+                onText: 'Include',
+                offText: 'Excluded',
+                state: false,
+                onSwitchChange: function (event, state) {
+                    viewModel.priceChecker().selectedIncludeSamples(state);
+                }
+            });
+
+            $("#include-clearance").bootstrapSwitch({
+                animate: false,
+                labelText: 'Clearance',
+                onText: 'Include',
+                offText: 'Excluded',
+                state: false,
+                onSwitchChange: function (event, state) {
+                    viewModel.priceChecker().selectedIncludeClearance(state);
+                }
+            });
+        });
+
+        //$(document).ajaxSend(function (event, xhr, ajaxOptions) {
+        //    if (ajaxOptions.url.indexOf('api/pricing') > -1) {
+        //        console.log('ajaxSend hit');
+        //        if (viewModel.priceChecker().currentReadRequest) {
+        //            console.log('aborting pricing ajax');
+        //            viewModel.priceChecker().currentReadRequest.abort();
+        //        }
+        //        viewModel.priceChecker().currentReadRequest = xhr;
+        //    }
+        //});
+    </script>
+}
+@section modals {
+    @Html.Partial("Modals/_AddressModal")
+    @Html.Partial("Modals/_ImageModal")
+    @Html.Partial("Modals/_OrderEnquiryModal")
+    @Html.Partial("Modals/_CareSearchModal")
+    @Html.Partial("Modals/_TasksModal")
+}
+
+<div class="page-busy-wrapper" style="display: block;" data-bind="visible: false">
+    <div class="form-busy">
+        <div class="busy-bars">
+            <div class="rect1 alert alert-info"></div>
+            <div class="rect2 alert alert-info"></div>
+            <div class="rect3 alert alert-info"></div>
+            <div class="rect4 alert alert-info"></div>
+            <div class="rect5 alert alert-info"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+
+<p data-bind="text: priceChecker().currentReadRequest"></p>
+
+<script type="text/kendo-x-tmpl" id="list-item-template">
+    <div class="list-group-item">#= Name #</div>
+</script>
+
+@Html.Action("TradeAccountSelector", "Component", new { Area = "", canSearch = Model.Properties?.AccountSelector_CanSearch ?? false })
+
+<div class="row" style="display: none;" data-bind="visible: true">
+    <div class="col-xs-12" data-bind="with: priceChecker">
+        <div class="panel panel-primary">
+            <div class="panel-heading no-padding">
+                <h4 class="panel-title">
+                    <a class="panel-title">Price Enquiry</a>
+                </h4>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body bg-info">
+                @Html.Partial("Components/_PriceChecker")
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,260 @@
+﻿@model Portal.Areas.Products.ViewModels.TestBedViewModel
+@{
+    ViewBag.Title = "Designers Guild Sample Ordering - Test Bed";
+}
+@section styles {
+    @Styles.Render("~/Areas/Products/Content/samples-test-bed.css")
+}
+@section scripts {
+
+    <script type="text/kendo-x-tmpl" id="slicer-item-template">
+        <div class="list-group-item">#= Name #</div>
+    </script>
+
+    <script id="slicer-template" type="text/html">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="slicer panel panel-primary">
+                    <div class="panel-heading">
+                        <span data-bind="text: name"></span>
+                        <span class="clear-selection glyphicon glyphicon-filter" style="display: none" data-bind="visible: clearAvailable, click: function() { clearSelection(); }"><span>&times;</span></span>
+                    </div>
+                    <div class="panel-body no-padding">
+                        <div class="slicer-list list-group" data-bind="kendoListView: listViewSettings"></div>
+                    </div>
+                    <div class="panel-footer">
+                        @*<a data-bind="attr: { href: productTypeGroupDataSourceURL(), target: '_blank' }, text: productTypeGroupDataSourceURL()"></a>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/javascript">
+        //var slicerViewModel = function (params) {
+        //    var self = this;
+
+        //    params.boundTo(self);
+
+        //    self.widget = ko.observable();
+
+        //    self.name = params.name;
+
+        //    self.valueField = params.valueField;
+
+        //    self.textField = params.textField;
+
+        //    self.multiplicity = params.multiplicity;
+
+        //    self.siblings = params.slicerCollection;
+
+        //    self.selectedIds = ko.observableArray([]);
+
+        //    self.programmaticSelect = false;
+
+        //    self.clearAvailable = ko.pureComputed({
+        //        read: function () {
+        //            if (self.widget()) {
+        //                return self.widget().select().length > 0;
+        //            } else {
+        //                return false;
+        //            }
+        //        }
+        //    }, self);
+
+        //    self.dataSourceData = function() {
+        //        var data = {};
+
+        //        self.siblings.forEach(function (s) {
+        //            if (s.boundTo == self) {
+        //                return;
+        //            }
+        //            if (s.boundTo()) {
+        //                var selection = s.boundTo().widget().select();
+        //                if (selection.length) {
+        //                    var ids = [];
+        //                    for (var i = 0; i < selection.length; i++) {
+        //                        var element = selection[i];
+        //                        var dataItem = s.boundTo().widget().dataItem(element);
+        //                        ids.push(dataItem[s.valueField]);
+        //                    }
+        //                    data[s.valueField + 's'] = ids;
+        //                }
+        //            }
+        //        });
+
+        //        return data;
+        //    }
+
+        //    self.dataSourceRead = function (options) {
+        //        var webapi = new kendo.data.transports.webapi({ prefix: "" });
+
+        //        var mapped = webapi.parameterMap(options.data);
+
+        //        var data = self.dataSourceData();
+
+        //        for (var propertyName in mapped) {
+        //            data[propertyName] = mapped[propertyName];
+        //        }
+
+        //        $.ajax({
+        //            url: params.endPoint,
+        //            type: "POST",
+        //            data: data,
+        //            success: function (data) {
+        //                options.success(data);
+        //            },
+        //            error: function (data) {
+        //                options.error();
+        //            }
+        //        });
+        //    }
+
+        //    self.dataSource = new kendo.data.DataSource({
+        //        serverFiltering: false,
+        //        serverSorting: false,
+        //        serverGrouping: false,
+        //        transport: {
+        //            read: self.dataSourceRead
+        //        }
+        //    });
+
+        //    self.onChange = function (e) {
+        //        if (!self.programmaticSelect) {
+        //            var refreshSelf = false;
+        //            if (!e.sender.select().length) {
+        //                refreshSelf = true;
+        //                self.selectedIds([]);
+        //            } else {
+        //                var selection = e.sender.select();
+        //                var ids = [];
+        //                for (var i = 0; i < selection.length; i++) {
+        //                    var element = selection[i];
+        //                    var dataItem = e.sender.dataItem(element);
+        //                    ids.push(dataItem[self.valueField]);
+        //                }
+        //                self.selectedIds(ids);
+        //            }
+
+        //            self.siblings.forEach(function (s) {
+        //                if (s.boundTo == self && !refreshSelf) {
+        //                    return;
+        //                }
+        //                s.boundTo().widget().dataSource.read();
+        //            });
+        //        } else {
+        //            self.programmaticSelect = false;
+        //        }
+        //    }
+
+        //    self.onDataBound = function (e) {
+        //        if (self.selectedIds().length) {
+        //            self.programmaticSelect = true;
+        //        }
+
+        //        var items = e.sender.items();
+
+        //        var itemsToSelect = [];
+
+        //        if (items.length) {
+        //            for (var i in self.selectedIds()) {
+        //                var found = false;
+
+        //                items.each(function (idx, item) {
+        //                    var di = e.sender.dataItem(item);
+        //                    if (self.selectedIds()[i] == di[self.valueField]) {
+        //                        found = true;
+        //                    }
+        //                });
+
+        //                if (!found) {
+        //                    console.log(self.selectedIds()[i], 'was not found in my items');
+        //                    self.selectedIds.remove(self.selectedIds()[i]);
+        //                }
+        //            }
+        //            items.each(function (idx, item) {
+        //                var di = e.sender.dataItem(item);
+        //                if (self.selectedIds.indexOf(di[self.valueField]) > -1) {
+        //                    itemsToSelect.push(item);
+        //                }
+        //            });
+        //        }
+
+        //        if (itemsToSelect.length) {
+        //            self.programmaticSelect = true;
+        //            e.sender.select(itemsToSelect);
+        //        }
+        //    }
+
+        //    self.listViewSettings = {
+        //        dataValueField: self.valueField,
+        //        dataTextField: self.textField,
+        //        selectable: self.multiplicity,
+        //        widget: self.widget,
+        //        data: self.dataSource,
+        //        change: self.onChange,
+        //        dataBound: self.onDataBound,
+        //        template: $('#slicer-item-template').html()
+        //    };
+        //}
+
+        //ko.components.register('slicer-component', {
+        //    viewModel: slicerViewModel,
+        //    template: { element: $('#slicer-template')[0] }
+        //});
+
+        var viewModel = new testBedViewModel();
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        ko.applyBindings(viewModel, document.body);
+
+    </script>
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            <h1 class="main-heading">
+                Test Bed [Samples]
+            </h1>
+            <h4 class="sub-heading">
+                <span class="margin-bottom-15">
+                    Modular Slicers: building as KO components, N interactive capability
+                </span>
+            </h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <p>
+            Great, we've got the extensiblility of this slicer concept defined nicely. We can have a collection of slicers put
+            together in a matter of minutes, and rendered in seven lines of markup or fewer. Their interactions are all coherent.
+            We can define a computed which will inform us of any changes, when changes have stopped.
+        </p>
+        <p>
+            The next problem is that of data. At the moment, to arrive at those colours which a particular brand's products are
+            available in involves touching dbo.Product, and this approach will potentially lead to <i>many</i> touches to dbo.Product in succession. In order to alleviate this we wish there to be, specific to given groups of slicers' requirements, large cartesian product tables holding all of the combinations of data which we might want to query.
+        </p>
+        <p>
+            That can quickly become confusing. I'm slightly confused already.
+        </p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- ko foreach: slicerCollection -->
+    <div class="col-xs-4">
+        <div data-bind="component: { name: 'slicer-component', params: $data }"></div>
+    </div>
+    <!-- /ko -->
+</div>

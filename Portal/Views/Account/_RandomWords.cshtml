@@ -1,0 +1,25 @@
+﻿@model Portal.ViewModels.RandomWordsViewModel
+
+<div class="row">
+    <div class="col-xs-12">
+        <h4>Password Suggestor</h4>
+        <h5 id="password-suggestor">
+            @Model.Result.Trim()
+        </h5>
+        <button class="btn btn-success" onclick="usePasswordSuggestion();"><span style="font-weight: bold;" class="glyphicon glyphicon-check"></span> Use</button>
+        <button class="btn btn-default" onclick="loadPasswordSuggestion();"><span style="font-weight: bold;" class="glyphicon glyphicon-refresh"></span> Change</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function loadPasswordSuggestion() {
+        $.get('/account/ReloadRandomWords', null, function (data) {
+            $("#password-suggestor").html(data);
+        })
+    }
+
+    function usePasswordSuggestion() {
+        $("#Password").val($("#password-suggestor").text());
+        $("#ConfirmPassword").val($("#password-suggestor").text());
+    }
+</script>

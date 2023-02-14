@@ -1,0 +1,78 @@
+﻿@model Portal.ViewModels.ComponentModels.MemberSearchViewModel
+@*<div class="row">
+        <div class="col-xs-12">
+            <label for="member-search" id="member-search-title" class="col-form-label">@(Model.Heading ?? "Search for Users")</label>
+        </div>
+        <div class="col-md-8 col-xs-12 margin-bottom-15">
+            <div class="selector">
+                <div class="input-group">
+                    <input type="text" class="form-control" maxlength="100" data-bind="value: searchTerm, keepElement: searchTerm" />
+                    <span class="input-group-addon">
+                        <button class="clear-btn btn btn-default @(Model.ButtonCssOverride)" type="button" data-bind="click: function() { clearResults(); }">&times;</button>
+                    </span>
+                    <span class="input-group-btn">
+                        <button class="search-btn btn btn-default @(Model.ButtonCssOverride)" data-bind="click: function() { performSearch() }"><span class="glyphicon glyphicon-search"></span></button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-xs-6 margin-bottom-15" data-bind="with: recentlyUsedMembers">
+            @Html.Action("RecentlyUsedMembers", "Component", new { Area = "" })
+        </div>
+    </div>*@
+
+<div class="input-group member-search-group" data-bind="with: @(Model.ClientObjectName)">
+    <!-- ko if: showRecentlyUsed -->
+    <div class="input-group-btn">
+        <button type="button" class="btn btn-default @(Model.ButtonCssOverride) dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            @if (Model.ExtraProperties != null)
+            {
+                foreach (var e in Model.ExtraProperties)
+                {
+                    <li><a data-bind="attr: { href: 'javascript:;' }, click: function() { memberSelected(@(Json.Encode(e.Value))); }, text: '@e.Key'">@e.Key</a></li>
+                }
+            }
+            <!-- ko if: recentlyUsedMembers().length -->
+            <li role="separator" class="divider"></li>
+            <!-- /ko -->
+            <!-- ko foreach: recentlyUsedMembers -->
+            <li><a href="#" data-bind="attr: { href: 'javascript:;' }, click: function() { $parent.memberSelected($data); }, text: FullName"></a></li>
+            <!-- /ko -->
+        </ul>
+    </div>
+    <!-- /ko -->
+    <input type="text" class="form-control @(Model.ClientObjectName)" maxlength="100" data-bind="value: searchTerm, keepElement: searchTerm" placeholder="Type to Search"/>
+
+    @if (Model.ShowClearButton)
+    {
+        <span class="input-group-addon" data-bind="visible: initAutocomplete()">
+            <button class="clear-btn btn btn-default" type="button" data-bind="click: function() { memberSelected(undefined); }">&times;</button>
+        </span>
+    }
+    else
+    {
+        <span data-bind="visible: initAutocomplete()"></span>
+    }
+    <span class="input-group-btn">
+        <button class="search-btn btn btn-default" data-bind="click: function(data, event) { $(event.target).closest('.input-group').find('input').autocomplete('search'); }"><span class="glyphicon glyphicon-search"></span></button>
+    </span>
+</div>
+
+<script type="text/javascript">
+    function getTradeAccountGroupId() {
+        return @Html.Raw(Json.Encode(Model.TradeAccountGroupID))
+    }
+    function getTradeAccountId() {
+        return @Html.Raw(Json.Encode(Model.TradeAccountID))
+    }
+    function getRecentlyUsedMembers() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.RecentlyUsedMembers, new JsonSerializerSettings()
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            PreserveReferencesHandling = PreserveReferencesHandling.None
+        }))
+    }
+</script>

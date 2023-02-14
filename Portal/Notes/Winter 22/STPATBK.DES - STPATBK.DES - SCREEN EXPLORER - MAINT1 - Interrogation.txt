@@ -1,0 +1,77 @@
+FIELD NAME:     LAUNCHDATE
+POSITION:       0
+TYPE:           A
+LENGTH:         8
+OCONV:          D2/
+DESCRIPTION:    Launch Date
+DERIVATION:     (F("STPRODMASTER",PBCODE)<275>)
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     PBCODE
+POSITION:       0
+TYPE:           A
+LENGTH:         15
+OCONV:          
+DESCRIPTION:    Pattern Book Code
+DERIVATION:     
+VALIDATION:     F:STPRODMASTER,,Y
+PROCESS AFTER:  
+
+
+FIELD NAME:     PRODDESC
+POSITION:       0
+TYPE:           A
+LENGTH:         30
+OCONV:          
+DESCRIPTION:    Pattern Book Description
+DERIVATION:     (F("STPRODMASTER",PBCODE)<1.1>)
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     PRODDESC.MV
+POSITION:       0.M
+TYPE:           A
+LENGTH:         30
+OCONV:          
+DESCRIPTION:    Product Description
+DERIVATION:     (F("STPRODMASTER",FABCODE)<1>)
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     WEBDESC
+POSITION:       0
+TYPE:           A
+LENGTH:         50
+OCONV:          
+DESCRIPTION:    Web Description
+DERIVATION:     (F("STPRODMASTER",PBCODE)<193>)
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     SEQ.NO
+POSITION:       1.M
+TYPE:           A
+LENGTH:         3
+OCONV:          
+DESCRIPTION:    Seq No
+DERIVATION:     
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     FABCODE
+POSITION:       2.M
+TYPE:           A
+LENGTH:         15
+OCONV:          
+DESCRIPTION:    Product Code
+DERIVATION:     
+VALIDATION:     F:STP
+PROCESS AFTER:  
+
+

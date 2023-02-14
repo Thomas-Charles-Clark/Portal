@@ -1,0 +1,403 @@
+﻿<div id="edit-task-modal" class="task-modal modal fade" data-backdrop="static" data-keyboard="false" data-bind="with: taskEdit">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-bind="click: function() { closeModal(); }" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">
+                    View / Update Task
+                    <span style="font-size: 12px;" data-bind="visible: perspective() != 'disallow'">
+                        You are the <span data-bind="text: perspective"></span> of this task
+                    </span>
+                    <span class="pull-right smaller">
+                        Task ID: <span data-bind="text: taskId"></span>
+                        @*<span data-bind="with: taskStatus"><span data-bind="text: Name"></span></span>*@
+                        <br />
+                        <!-- ko with: taskDue -->
+                        <!-- ko ifnot: CompletedDT -->
+                        <span data-bind="with: $parent.createdDt">Created: <span data-bind="text: moment($data).format('DD/MM/YYYY HH:mm')"></span></span>
+                        <!-- /ko -->
+                        <!-- ko if: CompletedDT -->
+                        <span class="text-success">Completed</span> <span class="text-success" data-bind="text: moment(CompletedDT).format('DD/MM/YYYY HH:mm')"></span>
+                        <!-- /ko -->
+                        <!-- /ko -->
+                        <br />
+                        <span data-bind="with: currentAssignment">
+                            From: <span data-bind="text: AssignedByMember.FullName"></span>
+                            @*- <span data-bind="text: Enumerable.From(AssignedByMember.Departments).Select('$.Department.Name').ToArray().join(', ')"></span>*@
+                        </span>
+                        <br />
+                        <span data-bind="with: currentAssignment">
+                            Assigned to: <span data-bind="text: AssignedToMember.FullName"></span>
+                            @*- <span data-bind="text: Enumerable.From(AssignedToMember.Departments).Select('$.Department.Name').ToArray().join(', ')"></span>*@
+                        </span>
+                    </span>
+                    <!-- ko if: urgent -->
+                    <span class="text-urgent">
+                        Urgent
+                    </span>
+                    <!-- /ko -->
+                </h4>
+            </div>
+            <div id="edit-task-modal-body" class="modal-body" data-bind="visible: perspective() != 'disallow'">
+                <ul id="edit-task-tabs" class="nav nav-tabs" data-bind="css: { 'tabs-error': errors.isAnyMessageShown() }">
+                    <li class="active">
+                        <a href="#tab-core" data-toggle="tab" data-bind="css: { 'alert-danger': errors.isAnyMessageShown() }">
+                            Core
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tab-comments" data-toggle="tab">
+                            Comments
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#tab-task-attachments" data-toggle="tab">
+                            Attachments
+                            <!-- ko if: attachments().length -->
+                            <span data-bind="text: '(' + attachments().length + ')'"></span>
+                            <!-- /ko -->
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tab-core" class="tab-pane active">
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label edit-task-label">
+                                    <span data-bind=""></span> Description
+                                </label>
+                                <div class="remaining-width-wrapper">
+                                    <span class="form-control readonly" style="height: auto;" data-bind="text: authorDescription"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label edit-task-label">
+                                    Your Description
+                                </label>
+                                <div class="remaining-width-wrapper">
+                                    <input class="owner-description form-control" data-bind="textInput: ownerDescription" />
+                                </div>
+                            </div>
+                        </div>
+                        <!-- ko if: perspective() == 'owner' -->
+                        <div class="form-group row">
+                            <div class="col-xs-12" style="height: 34px;">
+                                <label class="col-form-label edit-task-label">
+                                    Project
+                                </label>
+                                <div class="remaining-width-wrapper">
+                                    <div class="input-group" style="width: 100%;">
+                                        <input id="edit-task-project" class="form-control" placeholder="Type to Search" data-bind="disable: projectReadonly()" />
+                                        <div class="input-group-btn">
+                                            <button class="btn btn-default" type="button" data-bind="click: function() { clearProject() }, disable: projectReadonly()">×</button>
+                                        </div>
+                                    </div>
+                                    <!-- ko if: initProjectListAutocomplete() -->
+                                    <!-- /ko -->
+                                </div>
+                            </div>
+                        </div>
+                        <div data-bind="with: taskType">
+                            <div class="form-group row">
+                                <div class="col-xs-12" style="height: 34px;">
+                                    <label class="col-form-label edit-task-label">
+                                        Task Group
+                                    </label>
+                                    <div class="remaining-width-wrapper">
+                                        <span class="form-control readonly readonly-half" data-bind="text: Name"></span>
+                                    </div>
+                                    @*<div class="task-project-wrapper" data-bind="component: { name: 'addable-list-component', params: taskTypeListParams }"></div>*@
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /ko -->
+                        <!-- ko if: perspective() == 'author' -->
+                        <div class="form-group row">
+                            <div class="col-xs-12" style="height: 34px;">
+                                <label class="col-form-label edit-task-label">
+                                    Project
+                                </label>
+                                <div class="remaining-width-wrapper">
+                                    <div class="input-group" style="width: 100%;">
+                                        <input id="edit-task-project" class="form-control" placeholder="Type to Search" data-bind="disable: projectReadonly()" />
+                                        <div class="input-group-btn">
+                                            <button class="btn btn-default" type="button" data-bind="click: function() { clearProject() }, disable: projectReadonly()">×</button>
+                                        </div>
+                                    </div>
+                                    <!-- ko if: initProjectListAutocomplete() -->
+                                    <!-- /ko -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xs-12" style="height: 34px;">
+                                <label class="col-form-label edit-task-label">
+                                    Task Type
+                                </label>
+                                <div class="task-project-wrapper" data-bind="component: { name: 'addable-list-component', params: taskTypeListParams }"></div>
+                            </div>
+                        </div>
+                        <!-- /ko -->
+                        <div data-bind="with: comments">
+                            <div class="form-group row" data-bind="visible: $data.length > 0">
+                                <div class="col-xs-12">
+                                    <label class="col-form-label edit-task-label">
+                                        Latest Comment
+                                    </label>
+                                    <div class="remaining-width-wrapper" data-bind="if: $data.length > 0">
+                                        <span class="form-control readonly" style="height: auto; font-size: 14px;" data-bind="html: '<b>' + $data[$data.length-1].CreatedBy.FullName + ' - ' + moment($data[$data.length-1].CreatedDT).format('dddd Do MMMM YYYY HH:mm') + '</b><br/>' + ($data[$data.length-1].Comment || '').replace(/(\n)+/g, '<br />')"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label edit-task-label">
+                                    Due by
+                                </label>
+                                <div class="remaining-width-wrapper">
+                                    <span class="form-control readonly fit" data-bind="with: taskDue">
+                                        <span data-bind="text: moment(Due).format('dddd Do MMMM YYYY')"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xs-12 k-calendar-wrapper" data-bind="validationOptions: { insertMessages: false }">
+                                <label class="col-form-label edit-task-label">
+                                    Your Expected Delivery Date
+                                </label>
+                                <input class="edit-task-delivery-date" data-bind="kendoDatePicker: expectedDeliverySettings, validationCore: expectedDelivery" />
+                                <span class="col-form-span date-nudge" data-bind="with: expectedDelivery">
+                                    <span data-bind="text: moment($data).format('dddd Do MMMM YYYY')"></span>
+                                    <button type="button" class="clear-field close" data-bind="click: function() { $parent.clearExpectedDeliveryDate(); }">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                        <div id="assignment-collapse" style="display: none;">
+                            <div class="form-group row">
+                                <div class="col-xs-12">
+                                    <label class="col-form-label edit-task-label">
+                                        Assigned To
+                                    </label>
+                                    <div class="btn-toolbar">
+                                        <div class="btn-group" style="margin-left: 0;">
+                                            <div class="assign-group input-group" data-bind="validationOptions: { insertMessages: false }">
+                                                <div class="assign-dropdown">
+                                                    <div data-bind="kendoDropDownTree: ownerSettings"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <span class="validation-message text-danger" data-bind="validationMessage: ownerMember"></span>
+                                </div>
+                            </div>
+                            <div data-bind="with: externalCompany">
+                                <div class="form-group row">
+                                    <div class="col-xs-12">
+                                        <label class="col-form-label edit-task-label">
+                                            External Company
+                                        </label>
+                                        <span style="display: inline-block;">
+                                            <span class="form-control readonly" data-bind="text: Name"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*<div id="history-collapse" class="form-group row margin-bottom-0">
+                                <div class="col-xs-12">
+                                    <label class="col-form-label edit-task-label">
+                                        History
+                                    </label>
+                                    <div class="remaining-width-wrapper">
+                                        <div class="btn-group btn-group-justified">
+                                            <div class="btn-group">
+                                                <button class="btn btn-primary">
+                                                    Add Comment
+                                                </button>
+                                            </div>
+                                            <div class="btn-group" data-bind="with: taskDue">
+                                                <!-- ko if: CompletedDT -->
+                                                <button class="btn btn-success" disabled>
+                                                    Task Complete
+                                                </button>
+                                                <!-- /ko -->
+                                                <!-- ko ifnot: CompletedDT -->
+                                                <button class="btn btn-danger" data-bind="click: $parent.completeTask">
+                                                    Close Task
+                                                </button>
+                                                <!-- /ko -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>*@
+                    </div>
+                    <div id="tab-comments" class="tab-pane">
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <label class="col-form-label edit-task-label">
+                                    Add Comment
+                                </label>
+                                <div class="remaining-width-wrapper">
+                                    <textarea id="new-task-comment" class="task-comment form-control" data-bind="textInput: newComment"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row" data-bind="visible: comments().length > 3">
+                            <div class="col-xs-12">
+                                <bnt class="btn btn-default bold pull-right pointer no-select" data-bind="click: function () { allCommentsExpanded(!allCommentsExpanded()); }">
+                                    <span data-bind="text: allCommentsExpanded() ? 'Collapse All' : 'Expand All'"></span>
+                                </bnt>
+                            </div>
+                        </div>
+                        <div class="comments-container">
+                            <!-- ko foreach: Enumerable.From(comments()).OrderByDescending('$.CreatedDT').ToArray() -->
+                            <div class="task-comment">
+                                <label class="col-form-label" data-bind="with: CreatedBy">
+                                    <span data-bind="text: FullName"></span>
+                                    -
+                                    <span data-bind="text: moment($parent.CreatedDT).format('dddd Do MMMM YYYY HH:mm')"></span>
+                                    <!-- ko if: $parent.Comment.length > 90 || $parent.Comment.indexOf('\n') > -1 -->
+                                    <span class="pointer pull-right no-select comment-expander" data-bind="click: function (data, event) { $(event.target).closest('.task-comment').find('.collapse').collapse('toggle') }">
+                                        <a data-bind="text: 'Expand / Collapse'"></a>
+                                    </span>
+                                    <!-- /ko -->
+                                </label>
+                                <div class="comment-display">
+                                    <p class="collapse" aria-expanded="false" data-bind="html: Comment.replace(/(\n)+/g, '<br /><br />'), attr: { 'aria-expanded': $index() == 0 ? 'true' : 'false' }, css: { 'in': $index() == 0 }"></p>
+                                </div>
+                            </div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <div id="tab-task-attachments" class="tab-pane">
+                        <!-- ko if: attachments().length -->
+                        <div class="form-group row">
+                            <div class="col-xs-12">
+                                <ul id="attachments-list" class="list-group margin-bottom-0">
+                                    <!-- ko foreach: attachments -->
+                                    <li class="list-group-item list-group-item-info">
+                                        <button type="button" class="close pull-right" data-bind="click: function(data, event) { $parent.removeFirmAttachment(data, event.target); }">
+                                            <span aria-hidden="true">×</span>
+                                        </button>
+                                        <a data-bind="attr: { href: FilePath, target: '_blank' }">
+                                            <span class="line-30" style="display: block;">
+                                                <span data-bind="text: Name"></span>
+                                                <br />
+                                                <span data-bind="text: 'Uploaded by ' + UploadedByMember.FullName + ', ' + moment(CreatedDT).format('dddd DD/MM/YYYY HH:mm')"></span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <!-- /ko -->
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- /ko -->
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <form method="post" data-bind="kendoUpload: uploadSettings">
+                                    <input name="files" type="file" multiple="multiple" />
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body alert-danger" data-bind="visible: perspective() === 'disallow'">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h4>
+                            Access to this view is restricted.
+                        </h4>
+                        <p>
+                            You are neither the author nor the owner of this task.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- ko if: perspective() != 'disallow' -->
+                <button class="btn btn-secondary-blue pull-left" data-bind="visible: readDt(), click: function() { markTaskAsUnread(); }">
+                    Mark as Unread
+                </button>
+                <button class="btn btn-secondary-blue pull-left" data-bind="visible: !readDt(), click: function() { markTaskAsRead(); }">
+                    Mark as Read
+                </button>
+                <button class="btn btn-primary pull-left" title="Reassign" data-bind="click: function (data, event) { $('#assignment-collapse').slideToggle('collapse'); }">
+                    Reassign Task
+                </button>
+                <button class="btn btn-primary pull-left" data-bind="click: function () { showExternalAssignmentModal(); }">
+                    External Assignment
+                </button>
+                <!-- ko if: taskDue.CompletedDT -->
+                <button type="button" class="btn btn-success pull-left" disabled>
+                    Task Completed
+                </button>
+                <!-- /ko -->
+                <!-- ko ifnot: taskDue.CompletedDT -->
+                <button type="button" class="btn btn-success pull-left" title="Close" data-bind="click: completeTask">
+                    Mark Task as Complete
+                </button>
+                <!-- /ko -->
+                @*<button class="btn btn-secondary-blue pull-left" data-bind="click: chase, visible: ownerMember() ? ownerMember().MemberID != getUserId() : false">*@
+                <button class="btn btn-secondary-blue pull-left" data-bind="click: chase, visible: true">
+                    Chase Task
+                </button>
+
+                @*<button class="btn btn-default pull-right" data-bind="click: function() { closeModal(); }">
+                        Close
+                    </button>*@
+                <!-- /ko -->
+                <!-- ko if: perspective() == 'disallow' -->
+                <button class="btn btn-default pull-right" data-bind="click: function() { closeModal(); }">
+                    Close
+                </button>
+                <!-- /ko -->
+                <button class="btn btn-success pull-right" data-bind="click: function() { save(); }, visible: perspective() != 'disallow'">
+                    Save / Close
+                </button>
+                <span class="col-form-span text-danger pull-right" data-bind="visible: errors.isAnyMessageShown() && perspective() != 'disallow'">
+                    Please correct all errors
+                </span>
+                <span id="latest-task-id" class="col-form-span pull-right" style="margin-right: 25px;">
+                </span>
+                <span style="display: none; margin-top: 10px;" class="validation-message text-danger pull-right" data-bind="visible: externalAssignmentErrors.isAnyMessageShown()">
+                    Please correct all External Assignment errors
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="completed-comment-modal" class="task-modal modal fade" data-backdrop="static" data-keyboard="false" data-bind="with: taskEdit">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-bind="click: function() { closeModal(); }" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">
+                    Task Completed
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group row margin-bottom-0">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">
+                            Comment
+                        </label>
+                    </div>
+                    <div class="col-xs-12">
+                        <textarea id="completed-comment" class="form-control" data-bind="textInput: completedComment"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

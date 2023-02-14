@@ -1,0 +1,211 @@
+﻿
+<script type="text/kendo-x-tmpl" id="drop-down-item-template">
+    <div class="dropdown-item">#= Name #</div>
+</script>
+
+<script id="drop-down-template" type="text/html">
+    <div class="slicer panel panel-primary">
+        <div class="panel-heading">
+            <span data-bind="text: name"></span>
+            <span class="clear-selection glyphicon glyphicon-filter" style="display: none" data-bind="visible: clearAvailable(), click: function() { clearSelection(); }"><span>&times;</span></span>
+        </div>
+        <div class="panel-body no-padding">
+            <div class="slicer-list list-group" data-bind="kendoDropDownList: dropDownSettings"></div>
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript">
+    var dropDownViewModel = function (params) {
+        var self = this;
+
+        params.boundTo(self);
+
+        self.noOptionLabel = params.noOptionLabel;
+        self.selectOnlyItem = params.selectOnlyItem;
+
+        self.clearValue = params.clearValue;
+
+        self.widget = ko.observable();
+
+        self.name = params.name;
+
+        self.valueField = params.valueField;
+
+        self.textField = params.textField;
+
+        self.siblings = params.slicerCollection;
+
+        self.selectedId = ko.observable(params.selectedId());
+
+        params.selectedId = self.selectedId;
+
+        self.selectedId.subscribe(function (newValue) {
+            console.log(self.name + '.selectedId subscribe hit:', newValue);
+        });
+
+        self.programmaticSelect = false;
+
+        self.clearAvailable = ko.pureComputed({
+            read: function () {
+
+                if (self.widget()) {
+                    if (self.selectOnlyItem && self.widget().dataSource.data().length == 1) {
+                        return false
+                    }
+                }
+
+                if (self.selectedId() == self.clearValue) {
+                    return false;
+                } else if (self.selectedId()) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }, self);
+
+        self.clearSelection = function () {
+            console.log(self.name + '.clearSelection was called');
+
+            self.selectedId(self.clearValue);
+            self.widget().select(self.clearValue);
+
+            self.widget().dataSource.read();
+
+            self.siblings.forEach(function (s) {
+                if (s.boundTo() == self) {
+                    return;
+                }
+                s.boundTo().widget().dataSource.read();
+            });
+        }
+
+        self.dataSourceData = function() {
+            var data = {};
+
+            // right... it's determining that it changes value on initialisation.
+
+            self.siblings.forEach(function (s) {
+                if (s.selectedId()) {
+                    data[s.valueField] = s.selectedId();
+                }
+            });
+
+            return data;
+        }
+
+        self.dataSourceRead = function (options) {
+            var webapi = new kendo.data.transports.webapi({ prefix: "" });
+
+            var mapped = webapi.parameterMap(options.data);
+
+            var data = self.dataSourceData();
+
+            for (var propertyName in mapped) {
+                data[propertyName] = mapped[propertyName];
+            }
+
+            $.ajax({
+                url: params.endPoint,
+                type: "POST",
+                data: data,
+                success: function (data) {
+                    console.log(self.name + ' returned', data);
+                    options.success(data);
+                },
+                error: function (data) {
+                    options.error();
+                }
+            });
+        }
+
+        self.dataSource = new kendo.data.DataSource({
+            serverFiltering: false,
+            serverSorting: false,
+            serverGrouping: false,
+            transport: {
+                read: self.dataSourceRead
+            }
+        });
+
+        self.onSelect = function (e) {
+            console.log(self.name, 'dropdown onchange hit', e.dataItem[self.valueField]);
+
+            self.selectedId(e.dataItem[self.valueField]);
+
+            self.siblings.forEach(function (s) {
+                if (s.boundTo() == self) {
+                    return;
+                }
+                s.boundTo().widget().dataSource.read();
+            });
+        }
+
+        self.dataBound = function (e) {
+            console.log(self.name + ' empty dataBound function hit');
+        };
+
+        // n.b. this will only work if you manually call widget().dataSource.read();
+        // against those dropdownlists which you wish to select their singular record,
+        // after some condition has arisen at which you think they should be bound.
+        // otherwise they'll only select their item upon binding, which happens when the user clicks to open them!
+        if (params.selectOnlyItem) {
+            self.dataBound = function (e) {
+                //console.log(self.name, 'dropdown dataBound hit', e);
+                var ds = e.sender.dataSource.data();
+                if (ds.length == 1) {
+                    self.selectedId(ds[0][self.valueField]);
+                    e.sender.value(ds[0][self.valueField]);
+                }
+                if (ds.length == 0) {
+                    //console.log(self.valueField, 'is setting itself to null');
+                    self.selectedId(self.clearValue);
+                }
+                if (ds.length > 1) {
+                    for (var i = 0; i < e.sender.dataSource.view().length; i++) {
+                        if (e.sender.dataSource.view()[i][self.valueField] == self.selectedId()) {
+                            return; // we've got our selectedId in the view. No need to clear.
+                        }
+                    }
+                    // we haven't got our selectedId in view. Clear.
+                    self.selectedId(self.clearValue);
+                } 
+            };
+        }
+
+        self.dropDownSettings = {
+            dataValueField: self.valueField,
+            dataTextField: self.textField,
+            widget: self.widget,
+            data: self.dataSource,
+            select: self.onSelect,
+            valuePrimitive: true,
+            value: self.selectedId,
+            autoWidth: true,
+            autoBind: false,
+            dataBound: self.dataBound
+        };
+
+        if (params.noOptionLabel) {
+
+        } else {
+            self.optionLabel = {};
+            self.optionLabel[self.valueField] = null;
+            self.optionLabel[self.textField] = 'Please Select';
+            self.dropDownSettings.optionLabel = self.optionLabel;
+        }
+
+        if (self.valueField == 'SalesAreaID' ||
+            self.valueField == 'SalesAgentID' ||
+            self.valueField == 'SalesRepresentativeID' || 
+            self.valueField == 'ItemTypeID') {
+            self.dropDownSettings.filter = "contains";
+        }
+    }
+
+    ko.components.register('drop-down-component', {
+        viewModel: dropDownViewModel,
+        template: { element: $('#drop-down-template')[0] }
+    });
+</script>

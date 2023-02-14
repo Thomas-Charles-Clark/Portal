@@ -1,0 +1,27 @@
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using LabelNS = Portal.LabelRecovery;
+using ShipNS = Portal.Ship;
+using VoidNS = Portal.Void;
+
+namespace Portal.UPSShipping
+{
+    public class RecoverLabelReply
+    {
+        public string ErrorDetails { get; set; }
+        public LabelNS.LabelRecoveryResponse Response { get; set; }
+        public List<LabelNS.LabelResultsType> Results { get; set; }
+
+        public string ResponseString
+        {
+            get
+            {
+                return JsonConvert.SerializeObject(Response, Formatting.Indented);
+            }
+        }
+    }
+}

@@ -1,0 +1,75 @@
+﻿@model Portal.Areas.Products.ViewModels.TreatmentMaintenanceViewModel
+@{
+    ViewBag.Title = "Treatment Maintenance";
+
+    Layout = "~/Views/Shared/_Layout-New.cshtml";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/components")
+    @Styles.Render("~/bundles/css/kendo-custom")
+    @Styles.Render("~/bundles/css/product-maintenance")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/components")
+    @Scripts.Render("~/bundles/js/treatment-maintenance")
+
+    <script type="text/javascript">
+
+        //function formatSelectedCurrency(value) {
+        //    return formatCurrency(value, 2, viewModel.tradeAccount().CurrencyCulture, viewModel.tradeAccount().CurrencyCode);
+        //}
+
+        function getTreatmentProvisionStatuses() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.TreatmentStatuses));
+        }
+
+        function getTreatments() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Treatments));
+        }
+
+        function getTreatmentStatuses() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.TreatmentStatuses));
+        }
+
+        function getTreatmentProviders() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.TreatmentProviders));
+        }
+
+        function getTreatmentTypes() {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.TreatmentTypes));
+        }
+
+        let viewModel = treatmentMaintenanceViewModel();
+
+        let ftf = viewModel.fabricTreatmentFactory;
+
+        ko.options.deferUpdates = true;
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        $(document).ready(function () {
+            ko.applyBindings(viewModel, document.body);
+            window.setTimeout(() => {
+                viewModel.ready();
+            }, 0);
+        });
+    </script>
+}
+
+<ul class="nav nav-tabs">
+    <li>
+        <button class="nav-link bg-light active" data-bs-toggle="tab" data-bs-target="#maintenance-tab-treatments">
+            Treatments
+        </button>
+    </li>
+</ul>
+<div id="product-tabs-container" class="tab-content">
+    <div id="maintenance-tab-treatments" class="tab-pane fade show active maintenance-tab" data-bind="with: fabricTreatmentFactory">
+        @Html.Partial("Partials/_Treatments")
+    </div>
+</div>

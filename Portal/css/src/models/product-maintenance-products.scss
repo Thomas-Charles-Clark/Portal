@@ -1,0 +1,85 @@
+﻿@import '../../../Content/common.scss';
+
+@import "../../../Content/bootstrap-5.3.1/scss/mixins/breakpoints";
+@import "../../../Content/bootstrap-5.3.1/scss/functions";
+@import "../../../Content/bootstrap-5.3.1/scss/variables";
+
+html,
+body {
+    font-size: 14px;
+}
+
+.nav-pills {
+    li {
+        margin-bottom: $l-gutter;
+    }
+}
+
+.nav-tabs {
+    .nav-link.bg-light {
+        border-bottom: 1px solid $gray-100;
+        font-size: $font-size-md;
+    }
+}
+
+#product-tabs-container {
+    background: $white;
+    border: 1px solid $gray-300;
+    border-top: 0;
+
+    .tab-pane {
+        h2 {
+            margin-top: $m-gutter;
+            margin-bottom: $xl-gutter;
+        }
+    }
+
+    .mdc-floating-label {
+        .remaining {
+            font-size: 1rem;
+            top: 0;
+        }
+    }
+}
+
+#alerting-target {
+    z-index: 1030;
+
+    .panel-heading {
+        text-shadow: 0 1px 1px #ccd9e8;
+    }
+
+    .panel-heading {
+        color: #333;
+        background-color: #acb9ca;
+        border-color: #99a9be;
+        background-image: -webkit-linear-gradient(top,#acb9ca 0,#7d92ac 100%);
+        background-image: -o-linear-gradient(top,#acb9ca 0,#7d92ac 100%);
+        background-image: linear-gradient(to bottom,#acb9ca 0,#7d92ac 100%);
+        background-repeat: repeat-x;
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffacb9ca',endColorstr='#ff7d92ac',GradientType=0);
+        border-bottom: 0;
+        cursor: pointer;
+        user-select: none;
+        padding: 10px 15px;
+        border-bottom: 1px solid transparent;
+        border-top-right-radius: 3px;
+        border-top-left-radius: 3px;
+
+        .panel-title {
+            margin-bottom: 0;
+            font-size: $font-size-md;
+        }
+    }
+
+    .panel-body {
+        padding: $l-gutter;
+
+        .col-form-label {
+            float: none;
+            display: block;
+            padding: 0;
+            margin: 0;
+        }
+    }
+}

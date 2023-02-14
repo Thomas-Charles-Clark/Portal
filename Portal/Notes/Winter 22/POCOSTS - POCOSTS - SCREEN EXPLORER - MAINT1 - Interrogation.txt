@@ -1,0 +1,198 @@
+FIELD NAME:     COSTLAB1
+POSITION:       0
+TYPE:           A
+LENGTH:         18
+OCONV:          
+DESCRIPTION:    Costlab1
+DERIVATION:     (F("STDEFN","IMPCODES.STD")<4,1>)
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     COSTLAB2
+POSITION:       0
+TYPE:           A
+LENGTH:         18
+OCONV:          
+DESCRIPTION:    Costlab1
+DERIVATION:     (F("STDEFN","IMPCODES.STD")<4,2>)
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     COSTLAB3
+POSITION:       0
+TYPE:           A
+LENGTH:         18
+OCONV:          
+DESCRIPTION:    Costlab1
+DERIVATION:     (F("STDEFN","IMPCODES.STD")<4,3>)
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     COSTLAB4
+POSITION:       0
+TYPE:           A
+LENGTH:         18
+OCONV:          
+DESCRIPTION:    Costlab1
+DERIVATION:     (F("STDEFN","IMPCODES.STD")<4,4>)
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     COSTLAB5
+POSITION:       0
+TYPE:           A
+LENGTH:         18
+OCONV:          
+DESCRIPTION:    Costlab1
+DERIVATION:     (F("STDEFN","IMPCODES.STD")<4,5>)
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     COUNDESC
+POSITION:       0
+TYPE:           A
+LENGTH:         30
+OCONV:          
+DESCRIPTION:    Name
+DERIVATION:     (F("ORCOUNTRY",COUNTRY)<1>)
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     DUTY%
+POSITION:       4.1
+TYPE:           N
+LENGTH:         8
+OCONV:          (IF(@VALUE = "","",@VALUE"MR33"))
+DESCRIPTION:    Duty
+DERIVATION:     
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     FREIGHTR
+POSITION:       5.1
+TYPE:           I
+LENGTH:         0
+OCONV:          (IF(@VALUE = "","",@VALUE"MR22"))
+DESCRIPTION:    
+DERIVATION:     
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     INLAND%
+POSITION:       4.2
+TYPE:           N
+LENGTH:         8
+OCONV:          (IF(@VALUE = "","",@VALUE"MR33"))
+DESCRIPTION:    Inland Charges
+DERIVATION:     
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     MODDESC
+POSITION:       0
+TYPE:           A
+LENGTH:         20
+OCONV:          
+DESCRIPTION:    Description
+DERIVATION:     (F("ORTRANSPORT",MOD)<1>)
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     PACKAGING%
+POSITION:       4.3
+TYPE:           N
+LENGTH:         8
+OCONV:          (IF(@VALUE = "","",@VALUE"MR33"))
+DESCRIPTION:    Packaging
+DERIVATION:     
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     QUALDESC
+POSITION:       0
+TYPE:           A
+LENGTH:         25
+OCONV:          
+DESCRIPTION:    Description
+DERIVATION:     (F("CLQUALDES",QUALITY)<1>)
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     QUOTAR
+POSITION:       5.2
+TYPE:           N
+LENGTH:         8
+OCONV:          (IF(@VALUE = "","",@VALUE"MR22"))
+DESCRIPTION:    Quota Levy	
+DERIVATION:     
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     SUPNAME
+POSITION:       0
+TYPE:           A
+LENGTH:         35
+OCONV:          
+DESCRIPTION:    Supname
+DERIVATION:     (F("PLSUP",SUPREF)<1,1>)
+VALIDATION:     
+PROCESS AFTER:  
+
+
+FIELD NAME:     QUALITY
+POSITION:       1
+TYPE:           A
+LENGTH:         10
+OCONV:          
+DESCRIPTION:    Code
+DERIVATION:     
+VALIDATION:     F:CLQUALDES,,Y OR ""{Quality must exist on CLQUALDES}
+PROCESS AFTER:  
+
+
+FIELD NAME:     COUNTRY
+POSITION:       2
+TYPE:           A
+LENGTH:         2
+OCONV:          
+DESCRIPTION:    Code
+DERIVATION:     
+VALIDATION:     PG.COUNTRY
+PROCESS AFTER:  
+
+
+FIELD NAME:     MOD
+POSITION:       3
+TYPE:           A
+LENGTH:         1
+OCONV:          MCU
+DESCRIPTION:    Method of Transport
+DERIVATION:     
+VALIDATION:     F:ORTRANSPORT,,Y OR ""{Must be blank or a value transport method}
+PROCESS AFTER:  
+
+
+FIELD NAME:     SUPREF
+POSITION:       6
+TYPE:           A
+LENGTH:         8
+OCONV:          
+DESCRIPTION:    Supplier
+DERIVATION:     
+VALIDATION:     PG.POCOSTS.KEY
+PROCESS AFTER:  
+
+

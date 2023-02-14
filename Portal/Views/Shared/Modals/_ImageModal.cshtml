@@ -1,0 +1,80 @@
+﻿<div id="image-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 id="large-image-title" class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <div id="large-image-wrapper">
+                    <div id="large-image-container">
+
+                    </div>
+                    <div class="largeimage-nav"></div>
+                </div>
+                <!-- ko if: $root.hasOwnProperty('orderFactory') -->
+                <!-- ko if: $root.orderFactory.searchWidgetShowSamplingOptionsButton() && $root.orderProductsDrilldown.largeImageProduct() -->
+                <div class="margin-top-15" data-bind="with: $root.stockViewer">
+                    <button class="btn btn-primary" data-bind="click: jumpToProductSampling">
+                        Product Sampling Options
+                    </button>
+                    <div class="clearfix"></div>
+                </div>
+                <!-- /ko -->
+                <!-- /ko -->
+            </div>
+            <div class="modal-footer">
+                <div class="row" data-bind="with: $root.orderProductsDrilldown">
+                    <div class="blocker" data-bind="visible: sendEmailBusy()">
+                        <div class="loading-spinner"></div>
+                    </div>
+                    <!-- ko if: largeImageProduct() -->
+                    <div class="col-xs-8">
+                        <div class="form-group row margin-bottom-0">
+                            <div class="col-xs-12 text-left">
+                                <button class="btn btn-success" data-bind="click: function() { emailInputVisible(!emailInputVisible()); }">
+                                    Email Product Card
+                                </button>
+                                <div id="large-image-email-input-wrapper" data-bind="fadeSlideVisible: emailInputVisible">
+                                    <div class="form-group mdc-validating-field margin-bottom-0">
+                                        <div class="mdc-text-field mdc-text-field--outlined" data-bind="keepElement: email, mdcTextField: { boundTo: email, useNativeValidation: false }, validationOptions: { insertMessages: false }">
+                                            <div class="input-group">
+                                                <input id="large-image-email" type="text" class="mdc-text-field__input" data-bind="textInput: email" />
+                                                <div class="input-group-btn">
+                                                    <button class="btn btn-success" data-bind="click: function() { emailImage(); }">
+                                                        Send
+                                                        <span class="glyphicon glyphicon-send"></span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="mdc-notched-outline mdc-notched-outline--notched">
+                                                <div class="mdc-notched-outline__leading"></div>
+                                                <div class="mdc-notched-outline__notch">
+                                                    <label for="input" class="col-form-label mdc-floating-label">
+                                                        Email Address
+                                                    </label>
+                                                </div>
+                                                <div class="mdc-notched-outline__trailing"></div>
+                                            </div>
+                                        </div>
+                                        <span class="validation-message text-danger" data-bind="validationMessage: email"></span>
+                                    </div>
+                                </div>
+                                <span class="tarf-last-send" style="display: none;" data-bind="fadeVisible: showLastSentTo, fadeSpeed: 'slow', text: 'Sent successfully to: ' + email()"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <button id="image-close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko ifnot: largeImageProduct() -->
+                    <div class="col-xs-12">
+                        <button id="image-close" type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+                    </div>
+                    <!-- /ko -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
