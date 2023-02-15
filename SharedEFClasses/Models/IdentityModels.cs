@@ -206,6 +206,22 @@ namespace SharedEFClasses.Models
         [InverseProperty("LastModifiedBy")]
         public virtual ICollection<MarketingBudget> MarketingBudgetRecordsModified { get; set; }
 
+        [JsonIgnore]
+        [InverseProperty("MixedBy")]
+        public virtual ICollection<MixingSession> MixingSessions { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("BasePaintOrderedByMember")]
+        public virtual ICollection<MixingSession> MixingSessionsOrderingBasePaint { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("TransferredByMember")]
+        public virtual ICollection<MixingSession> MixingSessionsTransferred { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("LockedBy")]
+        public virtual ICollection<PaintOrderHead> LockingPaintOrders { get; set; }
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType

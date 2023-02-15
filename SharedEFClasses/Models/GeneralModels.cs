@@ -491,6 +491,10 @@ namespace SharedEFClasses.Models.General
         [InverseProperty("CollectionCountry")]
         public virtual ICollection<Return> Returns { get; set; }
 
+        [JsonIgnore]
+        [InverseProperty("Country")]
+        public virtual ICollection<MixingLocation> MixingLocations { get; set; }
+
         [NotMapped]
         public string ContinentName
         {

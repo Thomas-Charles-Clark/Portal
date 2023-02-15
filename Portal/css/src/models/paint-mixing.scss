@@ -1,0 +1,58 @@
+﻿@import "common";
+@import "../../src/lib/bootstrap-5.3.1/scss/_variables.scss";
+
+#order-tabs {
+    border-bottom: 0;
+    z-index: 1;
+    position: relative;
+    .nav-link {
+        font-size: 1.15rem;
+    }
+    .nav-link.active {
+        border-color: $gray-400;
+        border-bottom-color: transparent;
+    }
+}
+
+#paint-mixing-wrapper {
+    border-top-left-radius: 0;
+
+    .k-grid {
+        .locked-indicator {
+            font-size: $font-size-lg;
+        }
+
+        tr {
+            td {
+                cursor: pointer;
+            }
+        }
+
+        tr.locked {
+            td {
+                cursor: default;
+                background-color: $gray-100;
+            }
+        }
+
+        tr.k-state-selected {
+            td {
+                background-color: $blue-700;
+            }
+        }
+
+        tr:not(.locked):active,
+        tr:not(.locked):focus,
+        tr:not(.locked):focus-within,
+        tr:not(.locked):hover,
+        tr.k-state-selected:active,
+        tr.k-state-selected:focus,
+        tr.k-state-selected:focus-within,
+        tr.k-state-selected:hover {
+            td {
+                background-color: $blue-600;
+                color: $white;
+            }
+        }
+    }
+}

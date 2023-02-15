@@ -168,9 +168,16 @@
                     }
                 }
 
-                if (a.ActionName != null)
+                if (a.ApplicationID == 99)
                 {
-                    url = Url.Action(a.ActionName, a.ControllerName, new { Area = a.AreaName });
+                    url = Url.Action("index", a.ControllerName, new { Area = a.AreaName, mixingLocation = a.ActionName });
+                }
+                else
+                {
+                    if (a.ActionName != null)
+                    {
+                        url = Url.Action(a.ActionName, a.ControllerName, new { Area = a.AreaName });
+                    }
                 }
 
                 <div class="application">

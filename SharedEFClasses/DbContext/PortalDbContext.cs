@@ -379,6 +379,21 @@ public DbSet<Lead> Leads { get; set; }
 
         #endregion
 
+        #region Paint
+
+        public DbSet<MixingLocation> MixingLocations { get; set; }
+        
+        public DbSet<MixingSession> MixingSessions { get; set; }
+
+        public DbSet<PaintOrderHead> PaintOrderHeads { get; set; }
+
+        public DbSet<PaintOrderLine> PaintOrderLines { get; set; }
+
+        public DbSet<PaintProduct> PaintProducts { get; set; }
+
+        #endregion
+
+
         #endregion
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

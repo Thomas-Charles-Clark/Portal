@@ -1,0 +1,58 @@
+:root {
+  --vsm-gutter: 0.25rem;
+  --sm-gutter: 0.5rem;
+  --m-gutter: 0.75rem;
+  --l-gutter: 1rem;
+  --mxl-gutter: 1.5rem;
+  --xl-gutter: 2rem;
+  --xxl-gutter: 3rem;
+  --disco-color: #e51f7c;
+  --letter-spacing-slight: 0.05rem;
+  --page-heading-colour: #44546b;
+}
+
+html, body {
+  font-size: 14px;
+}
+
+#order-tabs {
+  border-bottom: 0;
+  z-index: 1;
+  position: relative;
+}
+#order-tabs .nav-link {
+  font-size: 1.15rem;
+}
+#order-tabs .nav-link.active {
+  border-color: #ced4da;
+  border-bottom-color: transparent;
+}
+
+#paint-mixing-wrapper {
+  border-top-left-radius: 0;
+}
+#paint-mixing-wrapper .k-grid .locked-indicator {
+  font-size: 1.25rem;
+}
+#paint-mixing-wrapper .k-grid tr td {
+  cursor: pointer;
+}
+#paint-mixing-wrapper .k-grid tr.locked td {
+  cursor: default;
+  background-color: #f8f9fa;
+}
+#paint-mixing-wrapper .k-grid tr.k-state-selected td {
+  background-color: #084298;
+}
+#paint-mixing-wrapper .k-grid tr:not(.locked):active td,
+#paint-mixing-wrapper .k-grid tr:not(.locked):focus td,
+#paint-mixing-wrapper .k-grid tr:not(.locked):focus-within td,
+#paint-mixing-wrapper .k-grid tr:not(.locked):hover td,
+#paint-mixing-wrapper .k-grid tr.k-state-selected:active td,
+#paint-mixing-wrapper .k-grid tr.k-state-selected:focus td,
+#paint-mixing-wrapper .k-grid tr.k-state-selected:focus-within td,
+#paint-mixing-wrapper .k-grid tr.k-state-selected:hover td {
+  background-color: #0a58ca;
+  color: #fff;
+}
+/*# sourceMappingURL=paint-mixing.css.map */

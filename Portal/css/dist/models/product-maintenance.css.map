@@ -1,1 +1,1 @@
-{"version":3,"sources":[],"names":[],"mappings":"","file":"product-maintenance.css","sourcesContent":[]}
+{"version":3,"sources":["/css/dist/models/product-maintenance.scss"],"names":[],"mappings":"AAAA;EACI","file":"product-maintenance.css","sourcesContent":["body {\r\n    font-size: 16px;\r\n}\r\n"]}

@@ -289,6 +289,10 @@ namespace SharedEFClasses.Models.TradeAccounts
         [JsonIgnore]
         [InverseProperty("TradeAccount")]
         public virtual ICollection<Tuffnells.TuffnellsConsignment> TuffnellsConsignments { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("BasePaintOrderTradeAccount")]
+        public virtual ICollection<MixingLocation> MixingLocations { get; set; }
     }
     
     [Table("TradeAccountAddress_Tag", Schema = "dbo")]

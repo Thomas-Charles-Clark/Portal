@@ -321,6 +321,7 @@
     <Compile Include="BaseController.cs" />
     <Compile Include="BaseViewModel.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-General.cs" />
+    <Compile Include="DbContext\Dapper\PortalDbContext-Paint.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-Products.cs" />
     <Compile Include="DbContext\PortalDbContext-Delivery.cs" />
     <Compile Include="DbContext\PortalDbContext-Documents.cs" />
@@ -359,6 +360,7 @@
     <Compile Include="Models\MertexLive\ClaimLine.cs" />
     <Compile Include="Models\MertexLive\ClaimHead.cs" />
     <Compile Include="Models\MertexLive\Carriage.cs" />
+    <Compile Include="Models\PaintModels.cs" />
     <Compile Include="Models\ResourceModels.cs" />
     <Compile Include="Models\DeliveryModels.cs" />
     <Compile Include="Models\GenericKendoDataTransferModels.cs" />

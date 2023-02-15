@@ -257,6 +257,9 @@ namespace Portal
                       "~/css/dist/models/customer-maintenance.css"
                 ));
 
+            bundles.Add(new StyleBundle("~/bundles/css/paint-mixing").Include(
+                        "~/css/dist/models/paint-mixing.css"
+                ));
 #else
 
             bundles.Add(new StyleBundle("~/bundles/css/components").Include(
@@ -495,7 +498,10 @@ namespace Portal
             bundles.Add(new StyleBundle("~/bundles/css/customer-maintenance").Include(
                       "~/css/dist/models/customer-maintenance.min.css"
                 ));
-
+                
+            bundles.Add(new StyleBundle("~/bundles/css/paint-mixing").Include(
+                        "~/css/dist/models/paint-mixing.min.css"
+                ));
 #endif
 
             //  
@@ -853,6 +859,9 @@ namespace Portal
                         "~/js/src/models/common-modals.js"
                 ));
 
+            bundles.Add(new ScriptBundle("~/bundles/js/paint-mixing").Include(
+                        "~/js/src/models/paint-mixing.js"
+                ));
 #else
 
             bundles.Add(new ScriptBundle("~/bundles/js/bootstrap").Include(
@@ -1198,7 +1207,10 @@ namespace Portal
             bundles.Add(new ScriptBundle("~/bundles/js/common-modals").Include(
                         "~/js/dist/models/common-modals.min.js"
                 ));
-
+                
+            bundles.Add(new ScriptBundle("~/bundles/js/paint-mixing").Include(
+                        "~/js/dist/models/paint-mixing.min.js"
+                ));
 #endif
 
             foreach (var b in BundleTable.Bundles)

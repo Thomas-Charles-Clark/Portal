@@ -100,7 +100,7 @@
             console.error(error);
             if (error instanceof TypeError)
                 error = { message: error.message };
-            showError();
+            window.showError();
             window.logClientSideError(JSON.stringify(error));
         }
 
@@ -3058,7 +3058,6 @@
     <script type="text/javascript">
         var recentlyUsedMembersListener = new ko.subscribable();
     </script>
-    @Html.Partial("Modals/_ConfirmModal")
     @RenderSection("modals", required: false)
     @RenderSection("scripts", required: false)
     @RenderSection("postscripts", required: false)
@@ -3247,12 +3246,11 @@
             }
         }
     </script>
-    <div class="modal fade" tabindex="-1" id="confirm-modal">
+    <div class="modal fade" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" id="confirm-modal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title"></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                 </div>

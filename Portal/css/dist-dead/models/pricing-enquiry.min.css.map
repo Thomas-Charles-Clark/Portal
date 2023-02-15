@@ -1,1 +1,0 @@
-{"version":3,"sources":["models/pricing-enquiry.scss"],"names":[],"mappings":"AAAA;EACI;EACA;EACA","file":"pricing-enquiry.min.css","sourcesContent":[".grid-thumb {\r\n    width: 56px;\r\n    display: block;\r\n    margin: 0 auto;\r\n}"]}
