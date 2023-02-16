@@ -47,6 +47,14 @@ window.showConfirm = (title, message, confirm, reject) => {
 window.hideConfirm = () => {
     window.confirmModalInstance.hide();
 };
+window.centerConfirmModal = () => {
+    window.confirmModal.querySelector('.modal-dialog').classList.add('modal-dialog-centered');
+    window.confirmModal.addEventListener('hidden.bs.modal', () => {
+        window.confirmModal.querySelector('.modal-dialog').classList.remove('modal-dialog-centered');
+    }, {
+        once: true
+    })
+}
 
 /*
  Info Modal
@@ -129,7 +137,14 @@ window.errorModal.addEventListener('hidden.bs.modal', function (event) {
             f();
     });
 });
-window.showError = () => {
+window.showError = (message = null) => {
+    if (message) {
+        window.errorModalInstance.__storedContents = window.errorModal.querySelector('.modal-body').innerHTML;
+        window.errorModal.querySelector('.modal-body').innerHTML = `<p class="p-0">${message}</p>`
+        window.errorModalInstance.one('hidden.bs.modal', (e) => {
+            window.errorModal.querySelector('.modal-body').innerHTML = window.errorModalInstance.__storedContents;
+        });
+    }
     window.errorModalInstance.show();
 };
 window.hideError = () => {

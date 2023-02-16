@@ -127,6 +127,12 @@ label.mdc-floating-label {
     height: 34px;
 }
 
+.input-group-lg {
+    .mdc-text-field {
+        height: 42px;
+    }
+}
+
     .mdc-select.mdc-multiselect {
         min-height: 34px;
         height: auto;

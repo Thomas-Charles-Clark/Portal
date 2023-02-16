@@ -1706,10 +1706,6 @@ namespace SharedEFClasses.Models.Products
 
         [JsonIgnore]
         public virtual ICollection<RingFencePreAllocation> RingFencePreAllocations { get; set; }
-
-        [JsonIgnore]
-        [InverseProperty("BasePaintStockLocation")]
-        public virtual ICollection<MixingLocation> MixingLocations { get; set; }
     }
 
     [Table("RingFencePreAllocation", Schema = "portal")]

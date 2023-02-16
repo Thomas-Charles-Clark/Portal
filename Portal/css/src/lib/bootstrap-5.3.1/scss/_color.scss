@@ -1,0 +1,14 @@
+﻿//custom expansion for color properties
+//https://getbootstrap.com/docs/5.3/customize/color/#all-colors
+
+@import "functions";
+@import "variables";
+@import "mixins";
+@import "maps";
+@import "utilities";
+
+$all-colors: map-merge-multiple($blues, $indigos, $purples, $pinks, $reds, $oranges, $yellows, $greens, $teals, $cyans);
+
+$utilities: map-merge( $utilities, ( "color": map-merge( map-get($utilities, "color"), ( values: map-merge( map-get(map-get($utilities, "color"), "values"), ( $all-colors ), ), ), ), ) );
+
+@import "utilities/api";

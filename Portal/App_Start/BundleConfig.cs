@@ -197,12 +197,11 @@ namespace Portal
             bundles.Add(new StyleBundle("~/bundles/css/master-5.3.1").Include(
                         "~/css/dist/lib/jquery-ui/jquery-ui.css",
                         "~/css/dist/lib/bootstrap-5.3.1/scss/bootstrap-5.3.1.css",
-                        "~/css/dist/lib/bootstrap-icons/bootstrap-icons.css",
                         "~/css/dist/lib/bootstrap-switch/bootstrap-switch.css",
                         "~/css/dist/models/site.css",
                         "~/css/dist/models/site-new.css",
                         "~/css/dist/models/css-shake.css"
-                ));
+                ).Include("~/css/dist/lib/bootstrap-icons/bootstrap-icons.css", new CssRewriteUrlTransform()));
 
             bundles.Add(new StyleBundle("~/bundles/css/kendo-custom").Include(
                         "~/css/dist/lib/kendo/custom/kendo-custom.css"
@@ -439,12 +438,11 @@ namespace Portal
             bundles.Add(new StyleBundle("~/bundles/css/master-5.3.1").Include(
                         "~/css/dist/lib/jquery-ui/jquery-ui.min.css",
                         "~/css/dist/lib/bootstrap-5.3.1/scss/bootstrap-5.3.1.min.css",
-                        "~/css/dist/lib/bootstrap-icons/bootstrap-icons.min.css",
                         "~/css/dist/lib/bootstrap-switch/bootstrap-switch.min.css",
                         "~/css/dist/models/site.min.css",
                         "~/css/dist/models/site-new.min.css",
                         "~/css/dist/models/css-shake.min.css"
-                ));
+                ).Include("~/css/dist/lib/bootstrap-icons/bootstrap-icons.min.css", new CssRewriteUrlTransform()));
 
             bundles.Add(new StyleBundle("~/bundles/css/kendo-custom").Include(
                         "~/css/dist/lib/kendo/custom/kendo-custom.min.css"

@@ -380,4 +380,54 @@ input[type=search]::-webkit-search-results-decoration {
 .k-picker-wrap.k-state-default {
   border-color: #fff;
 }
+
+.mdc-form-field .mdc-checkbox__background {
+  box-sizing: border-box;
+}
+
+.sql-notice p:last-of-type {
+  margin-bottom: 0;
+}
+
+.nav.nav-pills li a,
+.nav.nav-pills li button {
+  color: #4472c7;
+  position: relative;
+}
+.nav.nav-pills li a .badge,
+.nav.nav-pills li button .badge {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  font-weight: normal;
+  background-color: #4472c7;
+  border: 1px solid #0e4f7b;
+  border-radius: 12px;
+  min-width: 24px;
+  height: 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 4px;
+  z-index: 10;
+  -webkit-box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+.nav.nav-pills li a .badge span,
+.nav.nav-pills li button .badge span {
+  flex: 1 1 auto;
+  text-align: center;
+  color: white;
+}
+.nav.nav-pills li a.active,
+.nav.nav-pills li button.active {
+  border: 1px solid #44546b;
+  color: #fff;
+  background-color: #4472c7;
+}
+.nav.nav-pills li a:not(.active),
+.nav.nav-pills li button:not(.active) {
+  border: 1px solid #7f97c1;
+  background-color: white;
+}
 /*# sourceMappingURL=site-new.css.map */

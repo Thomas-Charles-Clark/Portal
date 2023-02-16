@@ -1025,7 +1025,6 @@
     <Content Include="Areas\Paint\Views\web.config" />
     <Content Include="Areas\Paint\Views\Mixing\PaintMixing.cshtml" />
     <Content Include="css\src\lib\mdc\mdc-custom.scss" />
-    
     <Content Include="js\src\lib\bootstrap-datetime-picker\bootstrap-datetime-picker.js" />
     <Content Include="js\src\lib\bootstrap-switch\bootstrap-switch.js" />
     <Content Include="js\src\lib\google-maps\google-maps-markerer-clusterer.js" />
@@ -1036,6 +1035,12 @@
     <Content Include="js\src\lib\jquery-3.1.1\jquery.twbsPagination.js" />
     <Content Include="css\src\models\marketing-budget.scss" />
     <Content Include="css\src\models\paint-mixing.scss" />
+    <Content Include="css\src\lib\bootstrap-5.3.1\scss\_color.scss" />
+    <Content Include="css\src\lib\bootstrap-5.3.1\scss\_background-color.scss" />
+    <Content Include="css\src\lib\bootstrap-icons\fonts\bootstrap-icons.woff" />
+    <Content Include="css\src\lib\bootstrap-icons\fonts\bootstrap-icons.woff2" />
+    <Content Include="css\dist\lib\bootstrap-icons\fonts\bootstrap-icons.woff" />
+    <Content Include="css\dist\lib\bootstrap-icons\fonts\bootstrap-icons.woff2" />
     <None Include="js\src\lib\jquery-3.1.1\jquery.validate-vsdoc.js" />
     <Content Include="js\src\lib\jquery-3.1.1\jquery.validate.js" />
     <Content Include="js\src\lib\jquery-3.1.1\jquery.validate.unobtrusive.js" />

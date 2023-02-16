@@ -74,6 +74,33 @@
         </td>
     </tr>
 </script>
+<script id="order-lines-row-template" type="text/html">
+    <tr data-bind="keepElement: elementHolder, css: { 'locked': Locked }, attr: { 'data-order-line-id': OrderLineID }, click: () => { checkboxParams.observable(!checkboxParams.observable()) }">
+        <td>
+            <span data-bind="text: LineNumber"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: QuantityOrdered"></span>
+        </td>
+        <td>
+            <span class="d-block" data-bind="text: ProductCode"></span>
+            <span class="d-block" data-bind="text: ProductName"></span>
+        </td>
+        <td>
+            <span class="d-block" data-bind="text: BaseProductCode"></span>
+            <span class="d-block" data-bind="text: BaseProductName"></span>
+        </td>
+        <td class="text-center">
+            <span class="locked-indicator fa-solid" data-bind="class: Locked ? 'fa-lock' : 'fa-lock-open'"></span>
+        </td>
+        <td>
+            <span data-bind="html: Status"></span>
+        </td>
+        <td>
+            <div data-bind="component: { name: 'mdc-checkbox-component', params: checkboxParams }"></div>
+        </td>
+    </tr>
+</script>
 
 <div class="form-group row mb-5">
     <div class="col-xs-12">
@@ -97,10 +124,13 @@
     </div>
 </div>
 
-<ul class="nav nav-tabs" id="order-tabs" role="tablist">
+<ul class="nav nav-pills" id="order-tabs" role="tablist">
     <li class="nav-item" role="presentation">
         <button class="nav-link active" id="outstanding-orders-tab-btn" data-bs-toggle="tab" data-bs-target="#outstanding-orders-tab" type="button" role="tab" aria-controls="home" aria-selected="true">
             Outstanding Orders
+            <!-- ko if: outstandingOrderCount -->
+            <sup class="badge rounded-pill text-bg-primary" data-bind="text: outstandingOrderCount"></sup>
+            <!-- /ko -->
         </button>
     </li>
     <li class="nav-item" role="presentation">
@@ -130,7 +160,7 @@
 </div>
 
 <div class="modal fade" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" id="paint-order-lines-modal">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" data-bind="with: orderLinesResponse">
@@ -139,10 +169,48 @@
                 <button type="button" class="btn-close" aria-label="Close" data-bind="click: closeOrderLinesModal"></button>
             </div>
             <div class="modal-body">
-                <h3>
-                    Order Lines!
-                </h3>
+                <div data-bind="with: orderLinesResponse">
+                    <div class="sql-notice" data-bind="html: Notices.Notification"></div>
+                </div>
+                <div data-bind="kendoGrid: orderLinesGrid"></div>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" id="paint-box-count-modal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                </h5>
+                <button type="button" class="btn-close" aria-label="Close" data-bind="click: hideBoxCountModal"></button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="session-notification-wrapper">
+    <div id="session-notification">
+        <!-- ko ifnot: orderLinesResponse -->
+        <h3 class="text-center">
+            Closing...
+        </h3>
+        <!-- /ko -->
+        <!-- ko if: orderLinesResponse -->
+        <h3 class="text-center">
+            <span class="d-block mb-2" data-bind="text: checkedOrdersCountDisplay"></span>
+            <span class="d-block">
+
+                How many boxes have you used?
+            </span>
+        </h3>
+        <div id="box-count-wrapper" class="mb-3" data-bind="component: { name: 'mdc-text-field-numeric-unformatted-component', params: boxCountParams }"></div>
+        <button class="btn btn-success btn-lg" data-bind="click: doneMixingLines">
+            Done
+        </button>
+        <!-- /ko -->
     </div>
 </div>

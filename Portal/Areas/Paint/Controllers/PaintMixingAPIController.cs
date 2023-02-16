@@ -52,6 +52,8 @@ namespace Portal.Areas.Products.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> FetchOutstandingOrders([FromBody]PassPaintOrderHeadSelect objEnquiry)
         {
+            objEnquiry.MemberID = User.Identity.GetUserId<int>();
+
             return Ok(await PortalDb.PaintOrderHeadSelect(objEnquiry));
         }
 
@@ -77,6 +79,12 @@ namespace Portal.Areas.Products.Controllers
             objCancel.MemberID = User.Identity.GetUserId<int>();
 
             return Ok(await PortalDb.PaintOrderLineCancel(objCancel));
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> FetchBoxLabels([FromBody]PassPaintBoxLabelSelect objEnquiry)
+        {
+            return Ok(await PortalDb.PaintGenerateBoxLabels(objEnquiry));
         }
     }
 }

@@ -1,22 +1,33 @@
 ﻿@import "common";
 @import "../../src/lib/bootstrap-5.3.1/scss/_variables.scss";
 
+body {
+    > .blocker {
+        z-index: 20000;
+    }
+}
+
 #order-tabs {
     border-bottom: 0;
     z-index: 1;
     position: relative;
+
     .nav-link {
-        font-size: 1.15rem;
+        font-size: 1.0rem;
+        padding: 0.75rem 1.15rem 0.8rem 1.15rem;
     }
-    .nav-link.active {
-        border-color: $gray-400;
-        border-bottom-color: transparent;
+
+    #outstanding-orders-tab-btn {
+        position: relative;
+
+        .badge {
+            font-size: $font-size-regular;
+        }
     }
 }
 
-#paint-mixing-wrapper {
-    border-top-left-radius: 0;
-
+#paint-mixing-wrapper,
+#paint-order-lines-modal {
     .k-grid {
         .locked-indicator {
             font-size: $font-size-lg;
@@ -40,7 +51,11 @@
                 background-color: $blue-700;
             }
         }
+    }
+}
 
+#paint-mixing-wrapper {
+    .k-grid {
         tr:not(.locked):active,
         tr:not(.locked):focus,
         tr:not(.locked):focus-within,
@@ -52,7 +67,67 @@
             td {
                 background-color: $blue-600;
                 color: $white;
+                .mdc-checkbox {
+                    pointer-events: none;
+                }
             }
         }
     }
 }
+
+#paint-order-lines-modal {
+    .modal-dialog {
+        min-width: 928px;
+    }
+
+    .k-grid-header {
+        th.k-header {
+            vertical-align: top;
+        }
+    }
+}
+
+#session-notification-wrapper {
+    position: fixed;
+    bottom: -280px;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 500ms ease-in-out, bottom 300ms ease-in-out;
+    z-index: 1048;
+
+    #session-notification {
+        display: flex;
+        flex-direction: column;
+        gap: $l-gutter;
+        align-items: center;
+        justify-content: center;
+        height: 280px;
+        border: 1px solid #bbb;
+        padding: $xl-gutter calc($xl-gutter * 4);
+        background-color: $white;
+        border-top-left-radius: $border-radius-2xl;
+        border-top-right-radius: $border-radius-2xl;
+    }
+}
+
+#session-notification-wrapper.open {
+    bottom: 0;
+    opacity: 1.0;
+}
+
+    #box-count-wrapper {
+        width: 100%;
+
+        .mdc-numeric-field {
+            justify-content: center;
+        }
+        
+        input {
+            text-align: center;
+            min-width: 128px;
+        }
+    }

@@ -142,22 +142,20 @@ function wildcardscss() {
     return merge(tasks);
 }
 
-function wildcardcss() {
-    var tasks = gulp
-        .src('css/dist/**/!(*.min).css', { since: gulp.lastRun(wildcardcss) })
-        .pipe(cssmin())
-        .pipe(rename({ suffix: '.min' }))
-        .pipe(gulp.dest('css/dist'));
-
-    return merge(tasks);
-}
-
 function wildcardjs() {
     var tasks = gulp
         .src('js/src/**/!(*.min).js', { since: gulp.lastRun(wildcardjs) })
         .pipe(terser())
         .pipe(rename({ suffix: '.min' }))
         .pipe(gulp.dest('js/dist'));
+
+    return merge(tasks);
+}
+
+function wildcardfonts() {
+    var tasks = gulp
+        .src('css/src/**/*.{woff,woff2,ttf}', { since: gulp.lastRun(wildcardfonts) })
+        .pipe(gulp.dest('css/dist'));
 
     return merge(tasks);
 }
@@ -188,6 +186,8 @@ gulp.task('sass', gulp.series([compilesass]));
 
 gulp.task('js', gulp.series([minjs]));
 
+gulp.task('fonts', gulp.series([wildcardfonts]));
+
 gulp.task('all', gulp.series(['sass', 'css', 'js']));
 
 gulp.task('testing', gulp.parallel(mincssTaskArray));
@@ -205,13 +205,7 @@ gulp.task('watch', function () {
 
     gulp.watch('css/**/*.scss', gulp.series([wildcardscss]));
 
-    //gulp.watch('css/**/!(*.min).css', gulp.series([wildcardcss]));
-
     gulp.watch('js/**/!(*.min).js', gulp.series([wildcardjs]))
-
-    //getBundlesByInputFileNames(regex.scss).forEach(function (bundle) {
-    //    gulp.watch(bundle.inputFiles, compilesass);
-    //});
 
     getBundlesByInputFileNames(regex.rollup).forEach(function (bundle) {
         gulp.watch(bundle.inputFiles, compilerollup);

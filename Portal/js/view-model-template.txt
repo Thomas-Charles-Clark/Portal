@@ -4,7 +4,10 @@
     };
     
     //#region Properties
+    
+    // ELI5 it...
 
+    // Are we busy?
     self.busy = ko.observable(false);
 
     //#endregion
@@ -33,10 +36,12 @@
 
     //#region Methods
     
+    // To be called when we are first ready
     self.ready = () => {
         self.busy(false);
     }
 
+    // An example of a Fetch POST call
     self.fetch = () => {
         fetch('/api/...', {
             method: 'POST',
@@ -52,10 +57,12 @@
         .catch(err => window.catchFetchError)
     }
 
+    // We often want to serialize our salient properties to JS
     self.toJS = () => {
         return {};
     }
 
+    // We often want to stringify our salient properties
     self.toJSON = () => JSON.stringify(self.toJS());
 
     //#endregion

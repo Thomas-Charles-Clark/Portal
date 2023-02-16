@@ -1,4 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using Kendo.Mvc.UI;
+
+using Microsoft.AspNet.SignalR;
+
+using Newtonsoft.Json;
 
 using Org.BouncyCastle.Asn1.Mozilla;
 
@@ -26,18 +30,22 @@ namespace SharedEFClasses.Models
         public string URLKeywords { get; set; }
         public short CountryID { get; set; }
         public bool PlaceBasePaintStockOrder { get; set; }
-        public short? BasePaintStockLocationID { get; set; }
-        public int? BasePaintOrderTradeAccountID { get; set; }
+        public string BasePaintOrderStockLocationCode { get; set; }
+        public string BasePaintOrderTradeAccountCode { get; set; }
+        public string BasePaintOrderDeliveryName { get; set; }
+        public string BasePaintOrderDeliveryAddressLine1 { get; set; }
+        public string BasePaintOrderDeliveryAddressLine2 { get; set; }
+        public string BasePaintOrderDeliveryTown { get; set; }
+        public string BasePaintOrderDeliveryCounty { get; set; }
+        public string BasePaintOrderDeliveryCountryCode { get; set; }
+        public string BasePaintOrderDeliveryPhoneNumber { get; set; }
+        public string BasePaintOrderEmail { get; set; }
+        public string BasePaintOrderHaulierCode { get; set; }
+        public string BasePaintOrderCarriageCode { get; set; }
         public bool TransferRequiredPriorToDespatch { get; set; }
 
         [ForeignKey("CountryID")]
         public virtual Country Country { get; set; }
-
-        [ForeignKey("BasePaintStockLocationID")]
-        public virtual StockLocation BasePaintStockLocation { get; set; }
-
-        [ForeignKey("BasePaintOrderTradeAccountID")]
-        public virtual TradeAccount BasePaintOrderTradeAccount { get; set; }
 
         [JsonIgnore]
         [InverseProperty("MixingLocation")]
@@ -231,10 +239,12 @@ namespace SharedEFClasses.Models
         public IEnumerable<PaintOrderLineSelect> OrderLines { get; set; }
 
         public IEnumerable<PaintOrderLineMixingSession> MixingSessions { get; set; }
+        public PaintNotice Notices { get; set; } 
     }
 
     public class PaintOrderLineSelect
     {
+        public short LineNumber { get; set; }
         public string OrderLineID { get; set; }
         public decimal QuantityOrdered { get; set; }
         public string ProductCode { get; set; }
@@ -243,7 +253,7 @@ namespace SharedEFClasses.Models
         public string BaseProductName { get; set; }
         public bool Locked { get; set; }
         public string Status { get; set; }
-        public int MixingSessionID { get; set; }
+        public int? MixingSessionID { get; set; }
     }
 
     public class PaintOrderLineMixingSession
@@ -252,6 +262,12 @@ namespace SharedEFClasses.Models
         public DateTime MixedDT { get; set; }
         public string MixedBy { get; set; }
         public int BoxCount { get; set; }
+    }
+
+    public class PaintNotice
+    {
+        public string ErrorMessage { get; set; }
+        public string Notification { get; set; }
     }
 
     /*
@@ -264,7 +280,7 @@ namespace SharedEFClasses.Models
     {
         public string OrderID { get; set; }
         public int MemberID { get; set; }
-        public DataTable OrderLines { get; set; }
+        public IEnumerable<string> OrderLineIDs { get; set; }
         public int BoxCount { get; set; }
     }
 
@@ -290,5 +306,28 @@ namespace SharedEFClasses.Models
     public class PaintOrderLineCancelResponse
     {
         public string ErrorMessage { get; set; }
+    }
+
+    /*
+     * 
+     * 
+     * 
+     */
+
+    public class PassPaintBoxLabelSelect
+    {
+        public long MixingSessionID { get; set; }
+    }
+
+    public class PaintBoxLabel
+    {
+        public int PageNumber { get; set; }
+        public string Contents { get; set; }
+    }
+
+    public class PaintGenerateBoxLabelResponse
+    {
+        public IEnumerable<PaintBoxLabel> BoxLabels { get; set; }
+        public PaintNotice Notices { get; set; }
     }
 }
