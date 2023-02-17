@@ -463,8 +463,15 @@ input[type="search"]::-webkit-search-results-decoration {
     }
 }
 
+.alert,
 .sql-notice {
     p:last-of-type {
+        margin-bottom: 0;
+    }
+}
+
+.modal-body {
+    > div:last-of-type {
         margin-bottom: 0;
     }
 }

@@ -1180,7 +1180,13 @@
 
     <script id="mdc-checkbox-component" type="text/html">
         <div class="mdc-form-field">
-            <div class="mdc-checkbox" data-bind="mdcCheckboxComponent: $data, validationOptions: { insertMessages: false }">
+            <div class="mdc-checkbox" data-bind="mdcCheckboxComponent: $data,
+                 validationOptions: {
+                    insertMessages: false
+                 },
+                 css: {
+                    'default': disable() || !enable()
+                 }">
                 <input type="checkbox" class="mdc-checkbox__native-control" data-bind="
                     checked: $data.observable,
                     checkedValue: typeof checkedValue === 'undefined' ? true : checkedValue,

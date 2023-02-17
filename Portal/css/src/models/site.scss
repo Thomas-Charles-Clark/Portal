@@ -1183,8 +1183,6 @@ sup.remaining {
         border-radius: 6px;
     }
 
-    min-height: 101%;
-
     .modal-header.alert-danger {
         border-bottom-left-radius: 0px;
         border-bottom-right-radius: 0px;
@@ -2148,6 +2146,17 @@ a.ui-button {
 
 .pointer {
     cursor: pointer;
+}
+
+.default {
+    cursor: default;
+}
+
+.mdc-validating-field,
+.mdc-form-field {
+    .default {
+        cursor: default;    
+    }
 }
 
 .not-allowed {

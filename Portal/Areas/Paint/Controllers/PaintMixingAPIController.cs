@@ -7,6 +7,8 @@ using MertexerV2SQL.Models.Misc;
 
 using Microsoft.AspNet.Identity;
 
+using Portal.Areas.Paint.Utilities;
+
 using SharedEFClasses;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Components;
@@ -84,7 +86,11 @@ namespace Portal.Areas.Products.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> FetchBoxLabels([FromBody]PassPaintBoxLabelSelect objEnquiry)
         {
-            return Ok(await PortalDb.PaintGenerateBoxLabels(objEnquiry));
+            var response = await PortalDb.PaintGenerateBoxLabels(objEnquiry);
+
+            response.DocumentBytes = PaintLabelGenerator.GeneratePDF(response);
+
+            return Ok(response);
         }
     }
 }

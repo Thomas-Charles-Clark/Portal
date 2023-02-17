@@ -85,6 +85,9 @@
     <TypeScriptSourceRoot />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AngleSharp, Version=0.16.1.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
+      <HintPath>..\packages\AngleSharp.0.16.1\lib\net472\AngleSharp.dll</HintPath>
+    </Reference>
     <Reference Include="CommonServiceLocator, Version=2.0.3.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <HintPath>..\packages\Unity.5.8.6\lib\net47\CommonServiceLocator.dll</HintPath>
       <Private>True</Private>
@@ -251,9 +254,12 @@
       <HintPath>..\packages\OpenXmlPowerTools.4.5.3.2\lib\net45\OpenXmlPowerTools.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PreMailer.Net, Version=2.4.0.0, Culture=neutral, PublicKeyToken=23e3f43e29cae17f, processorArchitecture=MSIL">
+      <HintPath>..\packages\PreMailer.Net.2.4.0\lib\net461\PreMailer.Net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ComponentModel.Annotations.4.5.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
@@ -300,8 +306,8 @@
     </Reference>
     <Reference Include="System.Runtime" />
     <Reference Include="System.Runtime.Caching" />
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.6.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Extensions, Version=4.1.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.Extensions.4.3.1\lib\net462\System.Runtime.Extensions.dll</HintPath>
@@ -312,6 +318,9 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Spatial, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Spatial.5.8.4\lib\net40\System.Spatial.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encoding.CodePages, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encoding.CodePages.5.0.0\lib\net461\System.Text.Encoding.CodePages.dll</HintPath>
     </Reference>
     <Reference Include="System.Text.Encodings.Web, Version=4.0.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Text.Encodings.Web.4.6.0\lib\netstandard2.0\System.Text.Encodings.Web.dll</HintPath>
@@ -556,6 +565,8 @@
     <Compile Include="Areas\Paint\Controllers\PaintMixingAPIController.cs" />
     <Compile Include="Areas\Paint\Controllers\PaintMixingController.cs" />
     <Compile Include="Areas\Paint\PaintAreaRegistration.cs" />
+    <Compile Include="Areas\Paint\Utilities\PaintLabelGenerator.cs" />
+    <Compile Include="Areas\Paint\Utilities\ViewRenderer.cs" />
     <Compile Include="Areas\Paint\ViewModels\PaintMixingViewModel.cs" />
     <Compile Include="Areas\Products\Controllers\BasketStatusAPIController.cs" />
     <Compile Include="Areas\Products\Controllers\BasketStatusController.cs" />
@@ -1041,6 +1052,7 @@
     <Content Include="css\src\lib\bootstrap-icons\fonts\bootstrap-icons.woff2" />
     <Content Include="css\dist\lib\bootstrap-icons\fonts\bootstrap-icons.woff" />
     <Content Include="css\dist\lib\bootstrap-icons\fonts\bootstrap-icons.woff2" />
+    <Content Include="Areas\Paint\Views\_PaintLabelTemplate.cshtml" />
     <None Include="js\src\lib\jquery-3.1.1\jquery.validate-vsdoc.js" />
     <Content Include="js\src\lib\jquery-3.1.1\jquery.validate.js" />
     <Content Include="js\src\lib\jquery-3.1.1\jquery.validate.unobtrusive.js" />

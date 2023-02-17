@@ -78,13 +78,32 @@ body > .blocker {
 #paint-order-lines-modal .modal-dialog {
   min-width: 928px;
 }
+#paint-order-lines-modal .modal-dialog .modal-body {
+  max-height: 930px;
+  overflow-y: auto;
+}
+#paint-order-lines-modal .modal-dialog .modal-body #mixing-sessions-wrapper {
+  --bs-columns: 4;
+  gap: 1rem;
+}
+#paint-order-lines-modal .modal-dialog .modal-body #mixing-sessions-wrapper .mixing-session {
+  --bs-columns: 2;
+  gap: 0.1rem;
+}
+#paint-order-lines-modal .modal-dialog .modal-body #mixing-sessions-wrapper .mixing-session label {
+  font-weight: bold;
+}
+#paint-order-lines-modal .modal-dialog .modal-body #mixing-sessions-wrapper .mixing-session .btn {
+  margin-top: 0.75rem;
+  grid-column: auto/span 2;
+}
 #paint-order-lines-modal .k-grid-header th.k-header {
   vertical-align: top;
 }
 
 #session-notification-wrapper {
   position: fixed;
-  bottom: -280px;
+  bottom: -265px;
   left: 0;
   right: 0;
   display: flex;
@@ -97,10 +116,9 @@ body > .blocker {
 #session-notification-wrapper #session-notification {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  align-items: center;
-  justify-content: center;
-  height: 280px;
+  justify-content: space-between;
+  height: 264px;
+  min-width: 610px;
   border: 1px solid #bbb;
   padding: 2rem 8rem;
   background-color: #fff;
@@ -122,5 +140,9 @@ body > .blocker {
 #box-count-wrapper input {
   text-align: center;
   min-width: 128px;
+}
+
+.modal-backdrop.show {
+  opacity: 0.85;
 }
 /*# sourceMappingURL=paint-mixing.css.map */

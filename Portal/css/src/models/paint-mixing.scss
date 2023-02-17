@@ -78,6 +78,30 @@ body {
 #paint-order-lines-modal {
     .modal-dialog {
         min-width: 928px;
+
+        .modal-body {
+            max-height: 930px;
+            overflow-y: auto;
+
+            #mixing-sessions-wrapper {
+                --bs-columns: 4;
+                gap: $l-gutter;
+
+                .mixing-session {
+                    --bs-columns: 2;
+                    gap: $xs-gutter;
+
+                    label {
+                        font-weight: bold;
+                    }
+
+                    .btn {
+                        margin-top: $m-gutter;
+                        grid-column: auto/span 2;
+                    }
+                }
+            }
+        }
     }
 
     .k-grid-header {
@@ -89,7 +113,7 @@ body {
 
 #session-notification-wrapper {
     position: fixed;
-    bottom: -280px;
+    bottom: -265px;
     left: 0;
     right: 0;
     display: flex;
@@ -102,10 +126,9 @@ body {
     #session-notification {
         display: flex;
         flex-direction: column;
-        gap: $l-gutter;
-        align-items: center;
-        justify-content: center;
-        height: 280px;
+        justify-content: space-between;
+        height: 264px;
+        min-width: 610px;
         border: 1px solid #bbb;
         padding: $xl-gutter calc($xl-gutter * 4);
         background-color: $white;
@@ -119,15 +142,19 @@ body {
     opacity: 1.0;
 }
 
-    #box-count-wrapper {
-        width: 100%;
+#box-count-wrapper {
+    width: 100%;
 
-        .mdc-numeric-field {
-            justify-content: center;
-        }
-        
-        input {
-            text-align: center;
-            min-width: 128px;
-        }
+    .mdc-numeric-field {
+        justify-content: center;
     }
+        
+    input {
+        text-align: center;
+        min-width: 128px;
+    }
+}
+
+.modal-backdrop.show {
+    opacity: 0.85;
+}

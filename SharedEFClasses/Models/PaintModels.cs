@@ -321,13 +321,16 @@ namespace SharedEFClasses.Models
 
     public class PaintBoxLabel
     {
+        public string OrderID { get; set; }
         public int PageNumber { get; set; }
         public string Contents { get; set; }
+        public short BoxCount { get; set; }
     }
 
     public class PaintGenerateBoxLabelResponse
     {
         public IEnumerable<PaintBoxLabel> BoxLabels { get; set; }
         public PaintNotice Notices { get; set; }
+        public byte[] DocumentBytes { get; set; }
     }
 }

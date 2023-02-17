@@ -1061,9 +1061,6 @@ sup.remaining {
   border-radius: 0;
 }
 
-.modal-dialog {
-  min-height: 101%;
-}
 .modal-dialog .modal-header.grey-blue {
   color: white;
   border-radius: 4px 4px 0 0;
@@ -1859,6 +1856,15 @@ a.ui-button:active {
 
 .pointer {
   cursor: pointer;
+}
+
+.default {
+  cursor: default;
+}
+
+.mdc-validating-field .default,
+.mdc-form-field .default {
+  cursor: default;
 }
 
 .not-allowed {

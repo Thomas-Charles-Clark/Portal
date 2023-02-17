@@ -25,6 +25,10 @@
 
     self.orderLinesModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#paint-order-lines-modal'));
 
+    self.orderLinesModal._element.addEventListener('shown.bs.modal', () => {
+        self.orderLinesModal._focustrap.deactivate();
+    });
+
     self.boxCountModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#paint-box-count-modal'));
 
     self.checkedOrderLines = ko.observableArray([]);
@@ -39,14 +43,14 @@
             params: true,
             message: 'You must provide a box count'
         },
-        min: {
-            params: 1,
-            message: 'You must have packed at least one box'
-        },
-        max: {
-            value: 99,
-            message: 'We never honestly thought someone would pack that many lines at one time. Please consult itsupport@designersguild.com'
-        }
+        //min: {
+        //    params: 1,
+        //    message: 'You must have packed at least one box'
+        //},
+        //max: {
+        //    value: 99,
+        //    message: 'We never honestly thought someone would pack that many lines at one time. Please consult itsupport@designersguild.com'
+        //}
     });
 
     //#endregion
@@ -134,7 +138,8 @@
                     }
                 }
             }),
-            sort: { field: "Priority", dir: "asc" },
+            sort: { field: "Status", dir: "desc" },
+            //sort: { field: "Priority", dir: "asc" },
             requestStart: function (e) {
                 $("#grid-loading").show();
             },
@@ -362,7 +367,7 @@
     self.checkedOrdersCountDisplay = ko.computed(() => {
         let count = self.checkedOrderLines().length;
         if (count) {
-            return `You have mixed ${count} line${(count > 1 ? 's' : '')} so far`
+            return `You have mixed ${count} line${(count > 1 ? 's' : '')} so far.`
         }
     }, self);
 
@@ -406,7 +411,7 @@
     }
 
     self.closeOrderLinesModal = () => {
-        window.showConfirm('Are you sure?', `This will relinquish Order ${self.orderLinesResponse().OrderID}. Any changes you have made will not be saved.`, () => {
+        window.showConfirm('Are you sure?', `This will relinquish Order ${self.orderLinesResponse().OrderID}.`, () => {
             self.relinquishOrderLines(self.orderLinesResponse());
         });
     }
@@ -448,35 +453,25 @@
         }
     }
 
-    self.doneMixingLines = () => {
-
-        window.centerConfirmModal();
-    
-        window.showConfirm('Are you sure?', `Are you sure you're done processing lines for this order?`, () => {
-            self.showBoxCountModal();
-        })
-    }
-
     self.saveMixedLines = () => {
         let lineCount = self.checkedOrderLines().length;
         let boxCount = self.boxCount();
 
         window.centerConfirmModal();
 
-        self.boxCountModal._element.addEventListener('hide.bs.modal', () => {
-            window.showConfirm('Are you sure?', `Are you sure you've just processed ${lineCount} ${(lineCount > 1 ? 'lines' : 'line')} into ${boxCount} ${(boxCount > 1 ? 'boxes' : 'box')}?<br/><br/>Last chance! This action cannot be undone.`, () => {
-                self.busy(true);
-                fetch('/api/PaintMixingAPI/SaveOrderLines', {
-                    method: 'POST',
-                    headers: window.fetchHeaders,
-                    cache: 'no-store',
-                    credentials: 'same-origin',
-                    body: JSON.stringify({
-                        orderId: self.orderLinesResponse().OrderID,
-                        orderLineIds: self.checkedOrderLines().map(ol => ol.OrderLineID),
-                        boxCount: boxCount
-                    })
+        window.showConfirm('<span class="fs-4">Please Confirm</span>', `<p class="mb-0 fs-5">Are you sure you've just processed <span class="bold d-inline-block">${lineCount} ${(lineCount > 1 ? 'lines' : 'line')}</span> into <span class="bold d-inline-block">${boxCount} ${(boxCount > 1 ? 'boxes' : 'box')}</span>?</p>`, () => {
+            self.busy(true);
+            fetch('/api/PaintMixingAPI/SaveOrderLines', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                cache: 'no-store',
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    orderId: self.orderLinesResponse().OrderID,
+                    orderLineIds: self.checkedOrderLines().map(ol => ol.OrderLineID),
+                    boxCount: boxCount
                 })
+            })
                 .then(window.handleFetchResponse)
                 .then(response => {
                     self.busy(false);
@@ -484,24 +479,44 @@
                     if (response.ErrorMessage) {
                         window.showError(response.ErrorMessage);
                     } else {
+                        window.centerInfoModal();
+                        window.showInfo('<span class="fs-4 text-sucess">Success</span>', response.Notification);
                         self.orderLinesResponse().MixingSessionID = response.MixingSessionID;
-                        self.fetchBoxLabels();
+                        self.fetchBoxLabels(self.orderLinesResponse().MixingSessionID, () => {
+                            self.fetchOrderLines(self.orderLinesResponse());
+                        });
                     }
                 })
                 .catch(err => {
                     self.busy(false);
                     window.catchFetchError(err);
                 })
-            }, () => { // refused confirm: reshow boxcount modal
-                self.showBoxCountModal();
-            })
-        }, {
-            once: true
         });
-        self.hideBoxCountModal();
     }
 
-    self.fetchBoxLabels = () => {
+    // cheers: https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
+    self.b64toBlob = (b64Data, contentType = '', sliceSize = 512) => {
+        const byteCharacters = atob(b64Data);
+        const byteArrays = [];
+
+        for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+            const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+            const byteNumbers = new Array(slice.length);
+            for (let i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+            }
+
+            const byteArray = new Uint8Array(byteNumbers);
+            byteArrays.push(byteArray);
+        }
+
+        const blob = new Blob(byteArrays, { type: contentType });
+
+        return blob;
+    }
+
+    self.fetchBoxLabels = (mixingSessionId, onSuccess) => {
         self.busy(true);
         fetch('/api/PaintMixingAPI/FetchBoxLabels', {
             method: 'POST',
@@ -509,7 +524,7 @@
             cache: 'no-store',
             credentials: 'same-origin',
             body: JSON.stringify({
-                mixingSessionId: self.orderLinesResponse().MixingSessionID
+                mixingSessionId: mixingSessionId
             })
         })
         .then(window.handleFetchResponse)
@@ -519,7 +534,18 @@
             if (response.Notices.ErrorMessage) {
                 window.showError(response.Notices.ErrorMessage);
             } else {
-                
+                self.boxCount(1);
+                if (response.DocumentBytes) {
+                    let file = self.b64toBlob(response.DocumentBytes, 'application/pdf');
+                    let fileURL = window.URL.createObjectURL(file);
+                    let tab = window.open();
+                    tab.location.href = fileURL;
+                    tab.focus();
+                    tab.print();
+                }
+                if (typeof onSuccess === 'function') {
+                    onSuccess();
+                }
             }
         })
         .catch(err => {

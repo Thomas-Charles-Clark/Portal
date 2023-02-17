@@ -1,0 +1,25 @@
+﻿@model SharedEFClasses.Models.PaintBoxLabel
+@{
+    Layout = null;
+}
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <link rel="stylesheet" href="@Url.Content("~/css/dist/lib/bootstrap-3.3.7/bootstrap-3.3.7.css", toAbsolute: true)" />
+    </head>
+    <body style="text-align: center;">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 text-right h4">
+                    Order No. @Html.Raw(Model.OrderID)<br />
+                    Box @Html.Raw(Model.PageNumber) of @Html.Raw(Model.BoxCount)
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12" style="padding-top: @($"{(16 - Model.Contents.Split(new string[] { "<br/>" }, StringSplitOptions.None).Length)}em")">
+                    @Html.Raw(Model.Contents)
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -385,7 +385,12 @@ input[type=search]::-webkit-search-results-decoration {
   box-sizing: border-box;
 }
 
+.alert p:last-of-type,
 .sql-notice p:last-of-type {
+  margin-bottom: 0;
+}
+
+.modal-body > div:last-of-type {
   margin-bottom: 0;
 }
 
