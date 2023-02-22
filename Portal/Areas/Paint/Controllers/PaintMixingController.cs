@@ -47,5 +47,12 @@ namespace Portal.Areas.Paint.Controllers
 
             return View("PaintMixing", model);
         }
+
+        public async Task<ActionResult> ViewBoxLabel(int mixingSessionId)
+        {
+            var model = await PortalDb.PaintGenerateBoxLabels(new PassMixingSessionID() { MixingSessionID = mixingSessionId });
+
+            return View("_PaintLabelTemplate", model.BoxLabels.First());
+        }
     }
 }

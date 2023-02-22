@@ -1531,13 +1531,13 @@
 @media (-webkit-min-device-pixel-ratio: 2) {
   .iti__flag {
     background-size: 5652px 15px;
-    background-image: url("../images/icons/flags@2x.png");
+    background-image: url("../../../../Content/images/icons/flags@2x.png");
   }
 }
 @media (min-resolution: 192dpi) {
   .iti__flag {
     background-size: 5652px 15px;
-    background-image: url("../images/icons/flags@2x.png");
+    background-image: url("../../../../Content/images/icons/flags@2x.png");
   }
 }
 /*# sourceMappingURL=intl-tel-input.css.map */

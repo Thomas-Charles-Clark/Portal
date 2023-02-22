@@ -1052,8 +1052,8 @@
     <Content Include="css\src\lib\bootstrap-icons\fonts\bootstrap-icons.woff2" />
     <Content Include="css\dist\lib\bootstrap-icons\fonts\bootstrap-icons.woff" />
     <Content Include="css\dist\lib\bootstrap-icons\fonts\bootstrap-icons.woff2" />
-    <Content Include="Areas\Paint\Views\_PaintLabelTemplate.cshtml" />
-    <Content Include="Areas\Paint\Views\_PaintTransferManifest.cshtml" />
+    <Content Include="Areas\Paint\Views\Shared\_PaintLabelTemplate.cshtml" />
+    <Content Include="Areas\Paint\Views\Shared\_PaintTransferManifest.cshtml" />
     <None Include="js\src\lib\jquery-3.1.1\jquery.validate-vsdoc.js" />
     <Content Include="js\src\lib\jquery-3.1.1\jquery.validate.js" />
     <Content Include="js\src\lib\jquery-3.1.1\jquery.validate.unobtrusive.js" />
@@ -3124,7 +3124,6 @@
     <Folder Include="Areas\Marketing\Views\Messages\" />
     <Folder Include="Areas\Orders\Views\Shared\" />
     <Folder Include="Areas\Paint\Data\" />
-    <Folder Include="Areas\Paint\Views\Shared\" />
     <Folder Include="Areas\Pricing\Models\" />
     <Folder Include="Areas\Pricing\Views\PricingWebApi\" />
     <Folder Include="Areas\Pricing\Views\Shared\" />

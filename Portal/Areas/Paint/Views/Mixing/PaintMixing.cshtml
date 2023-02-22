@@ -215,7 +215,7 @@
             <div data-bind="kendoGrid: outstandingOrdersGrid"></div>
         </div>
         <div class="tab-pane fade" id="completed-orders-tab" role="tabpanel" aria-labelledby="completed-orders-tab-btn">
-            <div class="hstack gap-3 justify-content-center">
+            <div class="hstack gap-3 justify-content-center mb-3">
                 <div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: orderHistoryFromParams }"></div>
                 <div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: orderHistoryToParams }"></div>
             </div>
@@ -373,7 +373,7 @@
             </div>
             <div class="modal-body">
                 <div id="label-notices" data-bind="html: labelNotice"></div>
-                <iframe id="label-iframe" data-bind="attr: { src: labelSource }"></iframe>
+                <iframe id="label-iframe" name="labeliFrame" data-bind="attr: { src: labelSource }"></iframe>
             </div>
         </div>
     </div>

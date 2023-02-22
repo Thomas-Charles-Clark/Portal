@@ -69,6 +69,7 @@ body > .blocker {
 #outstanding-orders-tab .k-grid tr:not(.locked):focus td,
 #outstanding-orders-tab .k-grid tr:not(.locked):focus-within td,
 #outstanding-orders-tab .k-grid tr:not(.locked):hover td,
+#outstanding-orders-tab .k-grid tr.k-state-selected td,
 #outstanding-orders-tab .k-grid tr.k-state-selected:active td,
 #outstanding-orders-tab .k-grid tr.k-state-selected:focus td,
 #outstanding-orders-tab .k-grid tr.k-state-selected:focus-within td,
@@ -77,6 +78,7 @@ body > .blocker {
 #completed-orders-tab .k-grid tr:not(.locked):focus td,
 #completed-orders-tab .k-grid tr:not(.locked):focus-within td,
 #completed-orders-tab .k-grid tr:not(.locked):hover td,
+#completed-orders-tab .k-grid tr.k-state-selected td,
 #completed-orders-tab .k-grid tr.k-state-selected:active td,
 #completed-orders-tab .k-grid tr.k-state-selected:focus td,
 #completed-orders-tab .k-grid tr.k-state-selected:focus-within td,
@@ -84,10 +86,51 @@ body > .blocker {
   background-color: #0a58ca;
   color: #fff;
 }
+#outstanding-orders-tab .k-grid tr:not(.locked):active td > span,
+#outstanding-orders-tab .k-grid tr:not(.locked):focus td > span,
+#outstanding-orders-tab .k-grid tr:not(.locked):focus-within td > span,
+#outstanding-orders-tab .k-grid tr:not(.locked):hover td > span,
+#outstanding-orders-tab .k-grid tr.k-state-selected td > span,
+#outstanding-orders-tab .k-grid tr.k-state-selected:active td > span,
+#outstanding-orders-tab .k-grid tr.k-state-selected:focus td > span,
+#outstanding-orders-tab .k-grid tr.k-state-selected:focus-within td > span,
+#outstanding-orders-tab .k-grid tr.k-state-selected:hover td > span,
+#completed-orders-tab .k-grid tr:not(.locked):active td > span,
+#completed-orders-tab .k-grid tr:not(.locked):focus td > span,
+#completed-orders-tab .k-grid tr:not(.locked):focus-within td > span,
+#completed-orders-tab .k-grid tr:not(.locked):hover td > span,
+#completed-orders-tab .k-grid tr.k-state-selected td > span,
+#completed-orders-tab .k-grid tr.k-state-selected:active td > span,
+#completed-orders-tab .k-grid tr.k-state-selected:focus td > span,
+#completed-orders-tab .k-grid tr.k-state-selected:focus-within td > span,
+#completed-orders-tab .k-grid tr.k-state-selected:hover td > span {
+  color: #fff !important;
+}
+#outstanding-orders-tab .k-grid tr:not(.locked):active td > span > span,
+#outstanding-orders-tab .k-grid tr:not(.locked):focus td > span > span,
+#outstanding-orders-tab .k-grid tr:not(.locked):focus-within td > span > span,
+#outstanding-orders-tab .k-grid tr:not(.locked):hover td > span > span,
+#outstanding-orders-tab .k-grid tr.k-state-selected td > span > span,
+#outstanding-orders-tab .k-grid tr.k-state-selected:active td > span > span,
+#outstanding-orders-tab .k-grid tr.k-state-selected:focus td > span > span,
+#outstanding-orders-tab .k-grid tr.k-state-selected:focus-within td > span > span,
+#outstanding-orders-tab .k-grid tr.k-state-selected:hover td > span > span,
+#completed-orders-tab .k-grid tr:not(.locked):active td > span > span,
+#completed-orders-tab .k-grid tr:not(.locked):focus td > span > span,
+#completed-orders-tab .k-grid tr:not(.locked):focus-within td > span > span,
+#completed-orders-tab .k-grid tr:not(.locked):hover td > span > span,
+#completed-orders-tab .k-grid tr.k-state-selected td > span > span,
+#completed-orders-tab .k-grid tr.k-state-selected:active td > span > span,
+#completed-orders-tab .k-grid tr.k-state-selected:focus td > span > span,
+#completed-orders-tab .k-grid tr.k-state-selected:focus-within td > span > span,
+#completed-orders-tab .k-grid tr.k-state-selected:hover td > span > span {
+  color: #fff !important;
+}
 #outstanding-orders-tab .k-grid tr:not(.locked):active td .mdc-checkbox,
 #outstanding-orders-tab .k-grid tr:not(.locked):focus td .mdc-checkbox,
 #outstanding-orders-tab .k-grid tr:not(.locked):focus-within td .mdc-checkbox,
 #outstanding-orders-tab .k-grid tr:not(.locked):hover td .mdc-checkbox,
+#outstanding-orders-tab .k-grid tr.k-state-selected td .mdc-checkbox,
 #outstanding-orders-tab .k-grid tr.k-state-selected:active td .mdc-checkbox,
 #outstanding-orders-tab .k-grid tr.k-state-selected:focus td .mdc-checkbox,
 #outstanding-orders-tab .k-grid tr.k-state-selected:focus-within td .mdc-checkbox,
@@ -96,6 +139,7 @@ body > .blocker {
 #completed-orders-tab .k-grid tr:not(.locked):focus td .mdc-checkbox,
 #completed-orders-tab .k-grid tr:not(.locked):focus-within td .mdc-checkbox,
 #completed-orders-tab .k-grid tr:not(.locked):hover td .mdc-checkbox,
+#completed-orders-tab .k-grid tr.k-state-selected td .mdc-checkbox,
 #completed-orders-tab .k-grid tr.k-state-selected:active td .mdc-checkbox,
 #completed-orders-tab .k-grid tr.k-state-selected:focus td .mdc-checkbox,
 #completed-orders-tab .k-grid tr.k-state-selected:focus-within td .mdc-checkbox,
@@ -201,6 +245,6 @@ body > .blocker {
 
 #paint-labels-modal .modal-dialog .modal-body #label-iframe {
   width: 100%;
-  height: 900px;
+  height: 1190px;
 }
 /*# sourceMappingURL=paint-mixing.css.map */

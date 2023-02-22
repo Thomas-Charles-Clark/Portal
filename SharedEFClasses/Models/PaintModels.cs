@@ -43,6 +43,7 @@ namespace SharedEFClasses.Models
         public string BasePaintOrderHaulierCode { get; set; }
         public string BasePaintOrderCarriageCode { get; set; }
         public bool TransferRequiredPriorToDespatch { get; set; }
+        public string TransferDescription { get; set; }
 
         [ForeignKey("CountryID")]
         public virtual Country Country { get; set; }
@@ -397,6 +398,7 @@ namespace SharedEFClasses.Models
 
     public class PassPaintTransferSave
     {
+        public int MixingLocationID { get; set; }
         public IEnumerable<PaintTransferOrder> TransferOrders { get; set; }
     }
 
@@ -407,9 +409,11 @@ namespace SharedEFClasses.Models
 
     public class PaintTransferSaveResponse
     {
-        public IEnumerable<PaintTransferOrder> TransferOrders { get; set; }
-        //public IEnumerable<TransferSaveResult> Orders { get; set; }
         public PaintNotice Notices { get; set; }
+
+        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        public string TransferDescription { get; set; }
+        public IEnumerable<PaintTransferOrder> TransferOrders { get; set; }
         public byte[] DocumentBytes { get; set; }
     }
 

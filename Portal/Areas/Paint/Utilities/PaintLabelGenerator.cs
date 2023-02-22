@@ -1,8 +1,15 @@
-﻿using HtmlAgilityPack;
+﻿
+using HtmlAgilityPack;
+
+using iTextSharp.text;
 using iTextSharp.text.pdf;
 using iTextSharp.tool.xml;
 
 using Org.BouncyCastle.Utilities.IO;
+
+using Portal.Utilities.Basket;
+
+using Resources;
 
 using SharedEFClasses.Models;
 
@@ -23,57 +30,198 @@ namespace Portal.Areas.Paint.Utilities
     {
         public static byte[] GenerateBoxLabelPDF(PaintGenerateBoxLabelResponse objInput)
         {
+            iTextSharp.text.Font normalFont = FontFactory.GetFont("Arial", 10, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+            iTextSharp.text.Font smallerFont = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+            iTextSharp.text.Font smallerItalicFont = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.ITALIC, BaseColor.BLACK);
+            iTextSharp.text.Font boldFont = FontFactory.GetFont("Arial", 10, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+            iTextSharp.text.Font footerNormalFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+            iTextSharp.text.Font footerBoldFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+
+            System.Drawing.Image dgImage = System.Drawing.Image.FromFile(AppDomain.CurrentDomain.BaseDirectory + "Content\\Images\\Logos\\designers-guild.jpg");
+
+            var dgLogo = Image.GetInstance(dgImage, System.Drawing.Imaging.ImageFormat.Jpeg);
+
             var finalStream = new MemoryStream();
 
-            var pages = new List<byte[]>();
+            var pages = new List<(MemoryStream, string)>();
 
             foreach(var label in objInput.BoxLabels)
             {
-                var inlined = PreMailer.Net.PreMailer.MoveCssInline(ViewRenderer.RenderView("~/Areas/Paint/Views/_PaintLabelTemplate.cshtml", label), false).Html;
+                var html = ViewRenderer.RenderView("~/Areas/Paint/Views/Shared/_PaintLabelTemplate.cshtml", label);
 
-                pages.Add(ConvertHTMLToPDFBytes(inlined));
+                var inlined = PreMailer.Net.PreMailer.MoveCssInline(html, false).Html;
+
+                pages.Add((ConvertHTMLToPDF(inlined, true), label.DespatchGroup));
             }
 
-            //Create our copy object
-            var copy = new PdfCopyFields(finalStream);
+            ////Create our copy object
+            //var copy = new PdfCopyFields(finalStream);
 
-            //Loop through each MemoryStream
-            foreach (var byteArray in pages)
+            ////Loop through each MemoryStream
+            //foreach (var byteArray in pages)
+            //{
+            //    copy.AddDocument(new PdfReader(byteArray));
+            //}
+
+            dgLogo.ScaleAbsolute(280.0f, 21.0f);
+
+            iTextSharp.text.Document finalDocument = new iTextSharp.text.Document(PageSize.A4, 25, 25, 80, 80);
+
+            PdfCopy copy = new PdfCopy(finalDocument, finalStream);
+
+            copy.CloseStream = false;
+
+            finalDocument.Open();
+
+            var pageDespatchGroupMap = new List<(int, string)>();
+
+            foreach (var tuple in pages)
             {
-                copy.AddDocument(new PdfReader(byteArray));
+                PdfReader thisReader = new PdfReader(tuple.Item1.ToArray());
+
+                for (var i = 0; i < thisReader.NumberOfPages; i++)
+                {
+                    copy.AddPage(copy.GetImportedPage(thisReader, i + 1));
+                    pageDespatchGroupMap.Add((i, tuple.Item2));
+                }
+
+                copy.FreeReader(thisReader);
+                thisReader.Close();
             }
 
-            //Close the copy object
             copy.Close();
 
+            finalDocument.Close();
+
+            finalStream.Position = 0; // reset the finalStream to position 0
+
+            PdfReader reader = new PdfReader(finalStream); // create a reader on this finalStream
+
+            var stamperStream = new MemoryStream(); // create a stream for the stamping
+
+            PdfStamper stamper = new PdfStamper(reader, stamperStream); // create a stamper reading output using stamperStream
+
+            var count = reader.NumberOfPages; // for all the pages in the final document...
+
+            var counter = 0;
+
+            for (var i = 1; i <= count; i++) // for each page found in reader
+            {
+                counter++;
+
+                var c = stamper.GetOverContent(i); // get the page
+
+                var headerTable = new PdfPTable(2);
+
+                headerTable = GetPageNumberTable(dgLogo, i, count, normalFont, boldFont, "Despatch Group: ", pageDespatchGroupMap[i - 1].Item2);
+                headerTable.WriteSelectedRows(0, -1, 25, 812, c); // write stuff to it
+            }
+
+            ////Close the copy object
+            //copy.Close();
+
+            stamper.Close(); // close the stamper
+
+            reader.Close(); // close the reader
+
+            dgImage.Dispose();
+
             //Get the raw bytes
-            return finalStream.ToArray();
+            return stamperStream.ToArray();
+
         }
 
         public static byte[] GenerateTransferManifestPDF(PaintTransferSaveResponse objInput)
         {
+            iTextSharp.text.Font normalFont = FontFactory.GetFont("Arial", 10, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+            iTextSharp.text.Font smallerFont = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+            iTextSharp.text.Font smallerItalicFont = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.ITALIC, BaseColor.BLACK);
+            iTextSharp.text.Font boldFont = FontFactory.GetFont("Arial", 10, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+            iTextSharp.text.Font footerNormalFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+            iTextSharp.text.Font footerBoldFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+
+            System.Drawing.Image dgImage = System.Drawing.Image.FromFile(AppDomain.CurrentDomain.BaseDirectory + "Content\\Images\\Logos\\designers-guild.jpg");
+
+            var dgLogo = Image.GetInstance(dgImage, System.Drawing.Imaging.ImageFormat.Jpeg);
+
             var finalStream = new MemoryStream();
 
-            var pages = new List<byte[]>();
+            var pages = new List<MemoryStream>();
 
-            var inlined = PreMailer.Net.PreMailer.MoveCssInline(ViewRenderer.RenderView("~/Areas/Paint/Views/_PaintTransferManifest.cshtml", objInput), false).Html;
+            var html = ViewRenderer.RenderView("~/Areas/Paint/Views/Shared/_PaintTransferManifest.cshtml", objInput);
 
-            pages.Add(ConvertHTMLToPDFBytes(inlined));
+            var inlined = PreMailer.Net.PreMailer.MoveCssInline(html, false).Html;
 
-            //Create our copy object
-            var copy = new PdfCopyFields(finalStream);
+            var now = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
 
-            //Loop through each MemoryStream
-            foreach (var byteArray in pages)
+            pages.Add(ConvertHTMLToPDF(inlined, false));
+
+            dgLogo.ScaleAbsolute(280.0f, 21.0f);
+
+            iTextSharp.text.Document finalDocument = new iTextSharp.text.Document(PageSize.A4, 25, 25, 80, 80);
+
+            PdfCopy copy = new PdfCopy(finalDocument, finalStream);
+
+            copy.CloseStream = false;
+
+            finalDocument.Open();
+
+            foreach (var stream in pages)
             {
-                copy.AddDocument(new PdfReader(byteArray));
+                PdfReader thisReader = new PdfReader(stream.ToArray());
+
+                for (var i = 0; i < thisReader.NumberOfPages; i++)
+                {
+                    copy.AddPage(copy.GetImportedPage(thisReader, i + 1));
+                }
+
+                copy.FreeReader(thisReader);
+                thisReader.Close();
             }
 
-            //Close the copy object
             copy.Close();
 
+            finalDocument.Close();
+
+            finalStream.Position = 0; // reset the finalStream to position 0
+
+            PdfReader reader = new PdfReader(finalStream); // create a reader on this finalStream
+
+            var stamperStream = new MemoryStream(); // create a stream for the stamping
+
+            PdfStamper stamper = new PdfStamper(reader, stamperStream); // create a stamper reading output using stamperStream
+
+            var count = reader.NumberOfPages; // for all the pages in the final document...
+
+            var counter = 0;
+
+            for (var i = 1; i <= count; i++) // for each page found in reader
+            {
+                counter++;
+
+                var c = stamper.GetOverContent(i); // get the page
+
+                var headerTable = new PdfPTable(2);
+
+                headerTable = GetPageNumberTable(dgLogo, i, count, normalFont, boldFont, "Generated: ", now);
+                headerTable.WriteSelectedRows(0, -1, 25, 812, c); // write stuff to it
+            }
+
+            ////Close the copy object
+            //copy.Close();
+
+            stamper.Close(); // close the stamper
+
+            reader.Close(); // close the reader
+
+            dgImage.Dispose();
+
             //Get the raw bytes
-            return finalStream.ToArray();
+            return stamperStream.ToArray();
+
+
+
+
         }
 
         /// <summary>
@@ -83,7 +231,7 @@ namespace Portal.Areas.Paint.Utilities
         /// </summary>
         /// <param name="html"></param>
         /// <returns></returns>
-        public static byte[] ConvertHTMLToPDFBytes(string html)
+        public static MemoryStream ConvertHTMLToPDF(string html, bool verticallyCentered)
         {
             var bytes = new byte[] { };
 
@@ -92,31 +240,57 @@ namespace Portal.Areas.Paint.Utilities
             using (var ms = new MemoryStream())
             {
                 //Create an iTextSharp Document which is an abstraction of a PDF but **NOT** a PDF
-                using (var doc = new iTextSharp.text.Document())
+                using (var doc = new iTextSharp.text.Document(PageSize.A4, 25, 25, 80, 80))
                 {
+                    var table = new PdfPTable(new float[] { PageSize.A4.Width });
+
+                    var cell = new PdfPCell();
+
+                    cell.VerticalAlignment = verticallyCentered ? Element.ALIGN_MIDDLE : Element.ALIGN_TOP;
+
+                    cell.MinimumHeight = doc.PageSize.Height - 160;
+
+                    cell.Border = 0;
+
                     //Create a writer that's bound to our PDF abstraction and our stream
                     using (var writer = PdfWriter.GetInstance(doc, ms))
                     {
                         //Open the document for writing
                         doc.Open();
 
-                        //Our sample HTML and CSS
-                        var example_html = html;
-
                         HtmlDocument h = new HtmlDocument()
                         {
-                            OptionFixNestedTags = true,
+                            OptionFixNestedTags = false,
                             OptionWriteEmptyNodes = true
                         };
+
                         h.LoadHtml(html);
 
-                        using (var htmlStream = new MemoryStream(Encoding.UTF8.GetBytes(h.DocumentNode.Descendants("body").Single().WriteTo())))
+                        var list = XMLWorkerHelper.ParseToElementList(h.DocumentNode.Descendants("html").Single().WriteTo(), "");
+
+                        list.ForEach(l =>
                         {
-                            using (var cssStream = new MemoryStream(Encoding.UTF8.GetBytes("")))
-                            {
-                                XMLWorkerHelper.GetInstance().ParseXHtml(writer, doc, htmlStream, System.Text.Encoding.UTF8);
-                            }
-                        }
+                            if (l.IsContent())
+                                cell.AddElement(l);
+                        });
+
+                        ////Our sample HTML and CSS
+                        //var example_html = html;
+
+
+                        //using (var htmlStream = new MemoryStream(Encoding.UTF8.GetBytes(h.DocumentNode.Descendants("html").Single().WriteTo())))
+                        //{
+                        //    using (var cssStream = new MemoryStream(Encoding.UTF8.GetBytes("")))
+                        //    //using (var cssStream = new MemoryStream(System.IO.File.ReadAllBytes($"{AppDomain.CurrentDomain.BaseDirectory}css\\dist\\lib\\Bootstrap-3.3.7\\bootstrap-3.3.7.css")))
+                        //    {
+
+                        //        XMLWorkerHelper.GetInstance().ParseXHtml(writer, doc, htmlStream, cssStream, System.Text.Encoding.UTF8);
+                        //    }
+                        //}
+
+                        table.AddCell(cell);
+
+                        doc.Add(table);
 
                         /**************************************************
                             * Example #1                                     *
@@ -180,7 +354,77 @@ namespace Portal.Areas.Paint.Utilities
                 bytes = ms.ToArray();
             }
 
-            return bytes;
+            return new MemoryStream(bytes);
+        }
+        internal static PdfPTable GetPageNumberTable(Image logo, int x, int y, iTextSharp.text.Font normal, iTextSharp.text.Font bold, string extraDataLabel = null, string extraData = null)
+        {
+            PdfPTable HeaderTable = new PdfPTable(2);
+            HeaderTable.SetWidths(new float[] { logo.ScaledWidth, 545 - logo.ScaledWidth });
+            HeaderTable.TotalWidth = 545.0f;
+
+            // you add chunks to phrases and phrases to paragraphs.
+            // you add new lines in chunks? and hope the paragraph can sort itself out?
+            // if you don't use Cell.AddElement, the Paragraph that you're adding will take on the properties of the Cell and lose its own.
+            // this is because it is "reduced to a phrase".
+
+            var LeftHeaderCell = new PdfPCell();
+            var RightHeaderCell = new PdfPCell();
+
+            LeftHeaderCell.Padding = 0;
+            LeftHeaderCell.Border = 0;
+            LeftHeaderCell.AddElement(logo);
+
+            RightHeaderCell.Padding = 0;
+            RightHeaderCell.HorizontalAlignment = Element.ALIGN_RIGHT;
+            RightHeaderCell.Border = 0;
+
+            HeaderTable.AddCell(LeftHeaderCell);
+
+            PdfPTable RightTable = new PdfPTable(1);
+            RightTable.WidthPercentage = 100.0f;
+            RightTable.DefaultCell.HorizontalAlignment = Element.ALIGN_RIGHT;
+
+            var RightParagraph = new Paragraph();
+            RightParagraph.Alignment = Element.ALIGN_RIGHT;
+
+            var PageLabelChunk = new Chunk($"Page: ", bold);
+            var PageNumberChunk = new Chunk($"{x} {Receipts.Of} {y}\n", normal);
+            var PageNumberPhrase = new Phrase();
+            PageNumberPhrase.Add(PageLabelChunk);
+            PageNumberPhrase.Add(PageNumberChunk);
+
+            if (!String.IsNullOrEmpty(extraData))
+            {
+                if (!String.IsNullOrEmpty(extraDataLabel))
+                {
+                    var DespatchGroupLabel = new Chunk($"{extraDataLabel}", bold);
+                    PageNumberPhrase.Add(DespatchGroupLabel);
+                }
+
+                var DespatchGroupChunk = new Chunk($"{extraData}", normal);
+                PageNumberPhrase.Add(DespatchGroupChunk);
+            }
+
+            RightParagraph.Add(PageNumberPhrase);
+
+            //RightParagraph.Add(new Phrase($"{Receipts.PageLabel} {x} {Receipts.Of} {y}", normal));
+
+            PdfPCell RightCell = new PdfPCell();
+
+            RightCell.Border = 0;
+            RightCell.Padding = 0;
+
+            RightCell.UseAscender = true;
+
+            RightCell.AddElement(RightParagraph);
+
+            RightTable.AddCell(RightCell);
+
+            RightHeaderCell.AddElement(RightTable);
+
+            HeaderTable.AddCell(RightHeaderCell);
+
+            return HeaderTable;
         }
     }
 }

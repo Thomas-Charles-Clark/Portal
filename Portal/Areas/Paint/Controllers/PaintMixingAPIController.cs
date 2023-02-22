@@ -141,6 +141,10 @@ namespace Portal.Areas.Products.Controllers
         {
             var response = await PortalDb.PaintTransferSave(objSave);
 
+            var mixingLocation = PortalDb.MixingLocations.Single(ml => ml.MixingLocationID == objSave.MixingLocationID);
+
+            response.TransferDescription = mixingLocation.TransferDescription;
+
             response.TransferOrders = objSave.TransferOrders;
 
             response.DocumentBytes = PaintLabelGenerator.GenerateTransferManifestPDF(response);

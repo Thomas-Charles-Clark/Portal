@@ -78,6 +78,14 @@
 
     self.labelsModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#paint-labels-modal'));
 
+    self.labelsFrame = document.querySelector('#label-iframe');
+
+    self.labelsFrame.addEventListener('load', (event) => {
+        self.labelsFrame.focus();
+        window.frames.labeliFrame.print();
+    });
+
+
     //#endregion
 
 
@@ -542,6 +550,8 @@
         }
     }
 
+    self.transfersFirstRun = true;
+
     self.transfersGrid = {
         autoBind: true,
         widget: ko.observable(),
@@ -598,8 +608,9 @@
                                 });
                                 options.success(data.dsResult);
                                 self.allTransferOrders(data.AllResults);
-                                if (self.selectedTransferMixingSessionIds().length === 0) {
+                                if (self.transfersFirstRun) {
                                     self.selectedTransferMixingSessionIds(self.allTransferOrders().flatMap(o => o.MixingSessionID));
+                                    self.transfersFirstRun = false;
                                 }
                                 self.transferNotice(data.Notices.Notification)
                                 self.transfersCount(data.dsResult.Total);
@@ -886,7 +897,10 @@
             //});
         } else {
             self.selectedTransferMixingSessionIds([]);
-            self.transfersGrid.widget().select([]);
+            self.transfersGrid.widget().dataSource.data().forEach(d => {
+                d.checkboxParams.observable(false);
+            });
+            self.transfersGrid.widget().clearSelection();
         }
         //self.transfersGrid.widget().select(select);
     });
@@ -1134,6 +1148,8 @@
                     self.labelSource(fileURL);
                     self.showLabelsModal();
 
+
+
                     //let tab = window.open();
                     //tab.location.href = fileURL;
                     //tab.focus();
@@ -1159,6 +1175,7 @@
                 cache: 'no-store',
                 credentials: 'same-origin',
                 body: JSON.stringify({
+                    mixingLocationId: getMixingLocationId(),
                     transferOrders : self.allTransferOrders().flatMap(t => self.selectedTransferMixingSessionIds().indexOf(t.MixingSessionID) > -1 ? [t] : [])
                 })
             })
@@ -1172,10 +1189,9 @@
                     if (response.DocumentBytes) {
                         let file = self.b64toBlob(response.DocumentBytes, 'application/pdf');
                         let fileURL = window.URL.createObjectURL(file);
-                        let tab = window.open();
-                        tab.location.href = fileURL;
-                        tab.focus();
-                        tab.print();
+
+                        self.labelSource(fileURL);
+                        self.showLabelsModal();
                     }
                     if (typeof onSuccess === 'function') {
                         onSuccess();

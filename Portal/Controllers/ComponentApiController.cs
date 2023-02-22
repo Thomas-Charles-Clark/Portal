@@ -1352,7 +1352,7 @@ namespace Portal.Controllers
                             currentProductsInky += $@"
 <columns small=""12"" large=""3"" valign=""top"" style=""vertical-align: top;"">
     <center>
-        <img width=""192"" height=""192"" src=""https://www.designersguild.com/image/239/{rec.ImageID}"" alt=""{rec.BasketName}""/>
+        <img width=""192"" height=""192"" src=""https://www.designersguild.com/image-nonwebp/239/{rec.ImageID}"" alt=""{rec.BasketName}""/>
     </center>
     <p class=""product-name text-center small-text-center"">
         {rec.BasketName}
