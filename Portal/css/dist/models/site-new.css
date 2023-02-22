@@ -171,6 +171,14 @@ input[type=search]::-webkit-search-results-decoration {
   background-color: #fff;
 }
 
+.barber-busy {
+  pointer-events: none;
+  background-image: repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 1rem, transparent 1rem, transparent 2rem);
+  transition: background-color 300ms ease-in-out;
+  background-size: 200% 200%;
+  animation: barberpole 10s linear reverse infinite;
+}
+
 .mdc-validating-field .revert:hover,
 .mdc-validating-field .revert:active,
 .mdc-validating-field .revert:focus,

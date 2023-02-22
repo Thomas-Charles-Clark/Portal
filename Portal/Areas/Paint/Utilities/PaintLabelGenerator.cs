@@ -21,7 +21,7 @@ namespace Portal.Areas.Paint.Utilities
 {
     public static class PaintLabelGenerator
     {
-        public static byte[] GeneratePDF(PaintGenerateBoxLabelResponse objInput)
+        public static byte[] GenerateBoxLabelPDF(PaintGenerateBoxLabelResponse objInput)
         {
             var finalStream = new MemoryStream();
 
@@ -33,6 +33,32 @@ namespace Portal.Areas.Paint.Utilities
 
                 pages.Add(ConvertHTMLToPDFBytes(inlined));
             }
+
+            //Create our copy object
+            var copy = new PdfCopyFields(finalStream);
+
+            //Loop through each MemoryStream
+            foreach (var byteArray in pages)
+            {
+                copy.AddDocument(new PdfReader(byteArray));
+            }
+
+            //Close the copy object
+            copy.Close();
+
+            //Get the raw bytes
+            return finalStream.ToArray();
+        }
+
+        public static byte[] GenerateTransferManifestPDF(PaintTransferSaveResponse objInput)
+        {
+            var finalStream = new MemoryStream();
+
+            var pages = new List<byte[]>();
+
+            var inlined = PreMailer.Net.PreMailer.MoveCssInline(ViewRenderer.RenderView("~/Areas/Paint/Views/_PaintTransferManifest.cshtml", objInput), false).Html;
+
+            pages.Add(ConvertHTMLToPDFBytes(inlined));
 
             //Create our copy object
             var copy = new PdfCopyFields(finalStream);

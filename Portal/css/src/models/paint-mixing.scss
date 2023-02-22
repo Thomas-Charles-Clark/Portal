@@ -2,6 +2,8 @@
 @import "../../src/lib/bootstrap-5.3.1/scss/_variables.scss";
 
 body {
+    min-width: 993px;
+
     > .blocker {
         z-index: 20000;
     }
@@ -17,19 +19,23 @@ body {
         padding: 0.75rem 1.15rem 0.8rem 1.15rem;
     }
 
-    #outstanding-orders-tab-btn {
+    .nav-link {
         position: relative;
 
         .badge {
             font-size: $font-size-regular;
+            justify-content: center;
         }
     }
 }
 
-#paint-mixing-wrapper,
+#outstanding-orders-tab,
+#completed-orders-tab,
 #paint-order-lines-modal {
     .k-grid {
-        .locked-indicator {
+        .locked-indicator,
+        .requires-invoicing {
+            vertical-align: middle;
             font-size: $font-size-lg;
         }
 
@@ -54,7 +60,8 @@ body {
     }
 }
 
-#paint-mixing-wrapper {
+#outstanding-orders-tab,
+#completed-orders-tab {
     .k-grid {
         tr:not(.locked):active,
         tr:not(.locked):focus,
@@ -67,6 +74,7 @@ body {
             td {
                 background-color: $blue-600;
                 color: $white;
+
                 .mdc-checkbox {
                     pointer-events: none;
                 }
@@ -77,11 +85,21 @@ body {
 
 #paint-order-lines-modal {
     .modal-dialog {
-        min-width: 928px;
 
         .modal-body {
             max-height: 930px;
             overflow-y: auto;
+
+            #order-summary {
+                display: grid;
+                grid-template-columns: 220px 1fr;
+                gap: $l-gutter;
+
+                label {
+                    font-weight: bold;
+                    text-align: right;
+                }
+            }
 
             #mixing-sessions-wrapper {
                 --bs-columns: 4;
@@ -89,14 +107,15 @@ body {
 
                 .mixing-session {
                     --bs-columns: 2;
-                    gap: $xs-gutter;
+                    grid-template-columns: 80px 1fr;
+                    gap: $l-gutter;
 
                     label {
                         font-weight: bold;
+                        text-align: right;
                     }
 
                     .btn {
-                        margin-top: $m-gutter;
                         grid-column: auto/span 2;
                     }
                 }
@@ -107,6 +126,33 @@ body {
     .k-grid-header {
         th.k-header {
             vertical-align: top;
+        }
+    }
+}
+
+
+#paint-order-lines-modal,
+#paint-labels-modal {
+    .modal-dialog {
+        min-width: 928px;
+    }
+}
+
+@media (min-width: 1200px) {
+    #paint-order-lines-modal,
+    #paint-labels-modal {
+        .modal-dialog {
+            width: 1110px;
+        }
+    }
+}
+
+@media (min-width: 1400px) {
+    #paint-order-lines-modal,
+    #paint-labels-modal {
+        .modal-dialog {
+            max-width: 1270px;
+            width: 1270px;
         }
     }
 }
@@ -157,4 +203,15 @@ body {
 
 .modal-backdrop.show {
     opacity: 0.85;
+}
+
+#paint-labels-modal {
+    .modal-dialog {
+        .modal-body {
+            #label-iframe {
+                width: 100%;
+                height: 900px;
+            }
+        }
+    }
 }

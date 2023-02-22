@@ -203,6 +203,14 @@ namespace SharedEFClasses.Models
         public int MemberID { get; set; }
     }
 
+    public class PassPaintOrderHistorySelect
+    {
+        public short MixingLocationID { get; set; }
+        public int MemberID { get; set; }
+        public DateTime? FromDT { get; set; }
+        public DateTime? ToDT { get; set; }
+    }
+
     public class PaintOrderHeadSelectResponse
     {
         public IEnumerable<PaintOrderHeadSelect> Orders { get; set; }
@@ -220,6 +228,34 @@ namespace SharedEFClasses.Models
         public bool Locked { get; set; }
         public string Status { get; set; }
         public int Priority { get; set; }
+        public string DeliveryDescription { get; set; }
+    }
+
+    /*
+     * 
+     * 
+     * 
+     */
+
+    public class PassPaintOrdersToInvoice : PassPaintOrderHeadSelect
+    {
+
+    }
+
+    public class PaintBasePaintOrdersToInvoiceResponse
+    {
+        public IEnumerable<BasePaintOrderToInvoice> Orders { get; set; }
+    }
+
+    public class BasePaintOrderToInvoice
+    {
+        public string BasePaintOrderID { get; set; }
+        public string BasePaintOrderStatus { get; set; }
+        public DateTime OrderDT { get; set; }
+        public bool RequiresInvoicing { get; set; }
+        public int MixingSessionID { get; set; }
+        public string CustomerOrderID { get; set; }
+        public string CustomerOrderReference { get; set; }
     }
 
     /*
@@ -305,7 +341,7 @@ namespace SharedEFClasses.Models
 
     public class PaintOrderLineCancelResponse
     {
-        public string ErrorMessage { get; set; }
+        public PaintNotice Notices { get; set; }
     }
 
     /*
@@ -314,14 +350,14 @@ namespace SharedEFClasses.Models
      * 
      */
 
-    public class PassPaintBoxLabelSelect
+    public class PassMixingSessionID
     {
         public long MixingSessionID { get; set; }
     }
 
     public class PaintBoxLabel
     {
-        public string OrderID { get; set; }
+        public string DespatchGroup { get; set; }
         public int PageNumber { get; set; }
         public string Contents { get; set; }
         public short BoxCount { get; set; }
@@ -332,5 +368,53 @@ namespace SharedEFClasses.Models
         public IEnumerable<PaintBoxLabel> BoxLabels { get; set; }
         public PaintNotice Notices { get; set; }
         public byte[] DocumentBytes { get; set; }
+    }
+
+    /*
+     * 
+     * 
+     * 
+     */
+
+    public class PassTransferGridSelect : PassPaintOrderHeadSelect
+    {
+
+    }
+
+    public class PaintTransferOrdersResponse
+    {
+        public IEnumerable<PaintTransferOrder> Orders { get; set; }
+        public PaintNotice Notices { get; set; }
+    }
+
+    public class PaintTransferOrder
+    {
+        public string OrderID { get; set; }
+        public int BoxCount { get; set; }
+        public int MixingSessionID { get; set; }
+        public DateTime? LastPrintedDT { get; set; }
+    }
+
+    public class PassPaintTransferSave
+    {
+        public IEnumerable<PaintTransferOrder> TransferOrders { get; set; }
+    }
+
+    public class TransferSaveResult : PaintTransferOrder
+    {
+
+    }
+
+    public class PaintTransferSaveResponse
+    {
+        public IEnumerable<PaintTransferOrder> TransferOrders { get; set; }
+        //public IEnumerable<TransferSaveResult> Orders { get; set; }
+        public PaintNotice Notices { get; set; }
+        public byte[] DocumentBytes { get; set; }
+    }
+
+    public class PaintUpdateOrderStatusResult 
+    { 
+    
     }
 }

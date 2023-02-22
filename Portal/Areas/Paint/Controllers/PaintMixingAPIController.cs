@@ -14,6 +14,7 @@ using SharedEFClasses.Models;
 using SharedEFClasses.Models.Components;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Products;
+using SharedEFClasses.ReturnModels;
 
 using System;
 using System.Collections;
@@ -51,6 +52,48 @@ namespace Portal.Areas.Products.Controllers
             return Ok(result.Orders.AsQueryable().ToDataSourceResult(request));
         }
 
+        [HttpGet]
+        public async Task<IHttpActionResult> FetchOrderHistoryGrid(
+            [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+            [FromUri] PassPaintOrderHistorySelect objEnquiry)
+        {
+            objEnquiry.MemberID = User.Identity.GetUserId<int>();
+
+            var result = await PortalDb.PaintOrderHistorySelect(objEnquiry);
+
+            return Ok(result.Orders.AsQueryable().ToDataSourceResult(request));
+        }
+
+        [HttpGet]
+        public async Task<IHttpActionResult> FetchOrdersToInvoice(
+            [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+            [FromUri] PassPaintOrdersToInvoice objEnquiry)
+        {
+            objEnquiry.MemberID = User.Identity.GetUserId<int>();
+
+            var result = await PortalDb.PaintOrdersToInvoice(objEnquiry);
+
+            return Ok(result.Orders.AsQueryable().ToDataSourceResult(request));
+        }
+
+        [HttpGet]
+        public async Task<IHttpActionResult> FetchTranfers(
+            [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+            [FromUri] PassTransferGridSelect objEnquiry
+            )
+        {
+            objEnquiry.MemberID = User.Identity.GetUserId<int>();
+
+            var result = await PortalDb.PaintTransferOrders(objEnquiry);
+
+            return Ok(new
+            {
+                dsResult = result.Orders.AsQueryable().ToDataSourceResult(request),
+                AllResults = result.Orders.ToList(),
+                Notices = result.Notices
+            });
+        }
+
         [HttpPost]
         public async Task<IHttpActionResult> FetchOutstandingOrders([FromBody]PassPaintOrderHeadSelect objEnquiry)
         {
@@ -84,13 +127,37 @@ namespace Portal.Areas.Products.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> FetchBoxLabels([FromBody]PassPaintBoxLabelSelect objEnquiry)
+        public async Task<IHttpActionResult> FetchBoxLabels([FromBody]PassMixingSessionID objEnquiry)
         {
             var response = await PortalDb.PaintGenerateBoxLabels(objEnquiry);
 
-            response.DocumentBytes = PaintLabelGenerator.GeneratePDF(response);
+            response.DocumentBytes = PaintLabelGenerator.GenerateBoxLabelPDF(response);
 
             return Ok(response);
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> FetchTransferManifest([FromBody]PassPaintTransferSave objSave)
+        {
+            var response = await PortalDb.PaintTransferSave(objSave);
+
+            response.TransferOrders = objSave.TransferOrders;
+
+            response.DocumentBytes = PaintLabelGenerator.GenerateTransferManifestPDF(response);
+
+            return Ok(response);
+        }
+
+        [HttpPost] 
+        public async Task<IHttpActionResult> UpdateBasePaintOrderStatus([FromBody]PassMixingSessionID objEnquiry)
+        {
+            return Ok(await PortalDb.PaintUpdateOrderStatus(objEnquiry));
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> UpdateBasePaintOrderStatusAll()
+        {
+            return Ok(await PortalDb.PaintStockOrdersToInvoiceUpdateAll());
         }
     }
 }

@@ -16,6 +16,27 @@
     // How many outstanding orders are there? This appears in a little blue badge on the Outstanding Orders tab.
     self.outstandingOrderCount = ko.observable();
 
+    // History count
+    self.orderHistoryCount = ko.observable();
+
+    // How many orders are there to invocie? This appears in a little blue badge on the Stock Orders to Invoice tab.
+    self.ordersToInvoiceCount = ko.observable();
+
+    // How many transfer orders are there?
+    self.transfersCount = ko.observable();
+
+    // Any transfer notice?
+    self.transferNotice = ko.observable();
+
+    // Selected transfer orders
+    self.allTransferOrders = ko.observableArray([]);
+
+    // Selected transfer orders
+    self.selectedTransferMixingSessionIds = ko.observableArray([]);
+
+    // Notice above label iframe in paint-labels-modal
+    self.labelNotice = ko.observable();
+
     // Container for the response to [paint].[OrderLine_Select], called when a user selects a selectable Order from the Outstanding Orders Grid
     self.orderLinesResponse = ko.observable();
 
@@ -23,17 +44,9 @@
 
     self.mixingSessions = ko.observableArray([]);
 
-    self.orderLinesModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#paint-order-lines-modal'));
-
-    self.orderLinesModal._element.addEventListener('shown.bs.modal', () => {
-        self.orderLinesModal._focustrap.deactivate();
-    });
-
-    self.boxCountModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#paint-box-count-modal'));
-
     self.checkedOrderLines = ko.observableArray([]);
 
-    self.sessionNotificationWrapper = document.querySelector('#session-notification-wrapper');
+    self.labelSource = ko.observable();
 
     self.boxCount = ko.observable(1).extend({
         numericWhole: {
@@ -52,6 +65,18 @@
         //    message: 'We never honestly thought someone would pack that many lines at one time. Please consult itsupport@designersguild.com'
         //}
     });
+
+    self.sessionNotificationWrapper = document.querySelector('#session-notification-wrapper');
+
+    self.orderLinesModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#paint-order-lines-modal'));
+
+    self.orderLinesModal._element.addEventListener('shown.bs.modal', () => {
+        self.orderLinesModal._focustrap.deactivate();
+    });
+
+    self.boxCountModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#paint-box-count-modal'));
+
+    self.labelsModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#paint-labels-modal'));
 
     //#endregion
 
@@ -134,12 +159,14 @@
                         },
                         Priority: {
                             type: 'number'
+                        },
+                        DeliveryDescription: {
+                            type: 'string'
                         }
                     }
                 }
             }),
-            sort: { field: "Status", dir: "desc" },
-            //sort: { field: "Priority", dir: "asc" },
+            sort: { field: "Priority", dir: "asc" },
             requestStart: function (e) {
                 $("#grid-loading").show();
             },
@@ -157,8 +184,9 @@
             pageSizes: [10, 20, 50, 100, 250, 500, 'all']
         },
         columns: [{
-            field: 'TradeAccountCode',
-            title: 'Trade Account'
+            field: 'Priority',
+            title: 'Priority',
+            width: 64
         }, {
             field: 'OrderID',
             title: 'Order ID',
@@ -168,27 +196,164 @@
             title: 'Order Date',
             width: 128
         }, {
+            field: 'TradeAccountCode',
+            title: 'Trade Account'
+        }, {
             field: 'CustomerOrderReference',
-            title: 'Customer Order Reference',
-            width: 140
-        }, {
-            field: 'HaulierCode',
-            title: 'Haulier Code',
-            width: 80
-        }, {
-            field: 'CarriageCode',
-            title: 'Carriage Code',
-            width: 80
-        }, {
-            field: 'Locked',
-            title: 'Locked',
-            width: 64
+            title: 'Customer Order Reference'
         }, {
             field: 'Status',
             title: 'Status'
-        }, {
+        }],
+        change: (e) => {
+            let items = e.sender.select();
+            let grid = e.sender;
+
+            items.each((i, e) => {
+                let dataItem = grid.dataItem(e);
+                if (dataItem.Locked === true) {
+                    $(e).removeClass("k-state-selected");
+                }
+            });
+
+            items = e.sender.select();
+
+            if (items.length === 1) {
+                let dataItem = grid.dataItem(items[0]);
+                if (self.orderLinesResponse() && self.orderLinesResponse().OrderID == dataItem.OrderID) {
+                    return;
+                }
+                self.fetchOrderLines(dataItem);
+            }
+        }
+    }
+
+    self.orderHistoryGrid = {
+        autoBind: true,
+        widget: ko.observable(),
+        data: new kendo.data.DataSource({
+            transport: {
+                read: (options) => {
+                    var webapi = new kendo.data.transports.webapi({ prefix: "" });
+
+                    var mapped = webapi.parameterMap(options.data);
+
+                    var params = new URLSearchParams();
+
+                    params.append('MixingLocationID', self.mixingLocationId());
+
+                    if (self.orderHistoryFrom())
+                        params.append('FromDT', self.orderHistoryFrom().toISOString());
+
+                    if (self.orderHistoryTo())
+                        params.append('ToDT', self.orderHistoryTo().toISOString());
+
+                    for (var propertyName in mapped) {
+                        params.append(propertyName, mapped[propertyName]);
+                    }
+
+                    fetch('/api/PaintMixingAPI/FetchOrderHistoryGrid?' + params, {
+                        method: 'GET',
+                        headers: window.fetchHeaders
+                    })
+                        .then(resp => resp.json())
+                        .then(data => {
+                            options.success(data);
+                            self.orderHistoryCount(data.Total);
+                            console.log('FetchOrderHistoryGrid returned', data);
+                        })
+                        .catch(err => window.catchFetchError(err));
+                }
+            },
+            pageSize: 10,
+            pageable: {
+                pageSize: 10,
+                pageSizes: [10, 20, 50, 100, 250, 500, 'all']
+            },
+            serverPaging: true,
+            serverSorting: true,
+            serverFiltering: true,
+            schema: $.extend({}, kendo.data.schemas.webapi, {
+                data: "Data",
+                total: "Total",
+                errors: "Errors",
+                aggregates: "Aggregates",
+                model: {
+                    ìd: 'OrderID',
+                    fields: {
+                        OrderID: {
+                            type: 'number'
+                        },
+                        TradeAccountCode: {
+                            type: 'string'
+                        },
+                        TradeAccountName: {
+                            type: 'string'
+                        },
+                        OrderDT: {
+                            type: 'date'
+                        },
+                        CustomerOrderReference: {
+                            type: 'string'
+                        },
+                        HaulierCode: {
+                            type: 'string'
+                        },
+                        CarriageCode: {
+                            type: 'string'
+                        },
+                        Locked: {
+                            type: 'boolean'
+                        },
+                        Status: {
+                            type: 'string'
+                        },
+                        Priority: {
+                            type: 'number'
+                        }
+                    }
+                }
+            }),
+            sort: { field: "Status", dir: "desc" },
+            //sort: { field: "Priority", dir: "asc" },
+            requestStart: function (e) {
+                $("#grid-loading").show();
+            },
+            requestEnd: function (e) {
+                $("#grid-loading").hide();
+            }
+        }),
+        useKOTemplates: true,
+        rowTemplate: 'completed-orders-row-template',
+        selectable: 'single',
+        scrollable: false,
+        sortable: true,
+        pageable: {
+            pageSize: 10,
+            pageSizes: [10, 20, 50, 100, 250, 500, 'all']
+        },
+        columns: [{
             field: 'Priority',
-            title: 'Priority'
+            title: 'Priority',
+            width: 64,
+            hidden: true
+        }, {
+            field: 'OrderID',
+            title: 'Order ID',
+            width: 100
+        }, {
+            field: 'OrderDT',
+            title: 'Order Date',
+            width: 180
+        }, {
+            field: 'TradeAccountCode',
+            title: 'Trade Account'
+        }, {
+            field: 'CustomerOrderReference',
+            title: 'Customer Order Reference'
+        }, {
+            field: 'Status',
+            title: 'Status'
         }],
         change: (e) => {
             let items = e.sender.select();
@@ -247,13 +412,6 @@
             field: 'BaseProductCode',
             title: 'Base Product'
         }, {
-            field: 'Locked',
-            title: 'Locked',
-            width: 64,
-            headerAttributes: {
-                class: 'text-center'
-            }
-        }, {
             field: 'Status',
             title: 'Status'
         }, {
@@ -273,6 +431,304 @@
             //});
         }
     };
+
+    self.ordersToInvoiceGrid = {
+        autoBind: true,
+        widget: ko.observable(),
+        data: new kendo.data.DataSource({
+            transport: {
+                read: (options) => {
+                    var webapi = new kendo.data.transports.webapi({ prefix: "" });
+
+                    var mapped = webapi.parameterMap(options.data);
+
+                    var params = new URLSearchParams();
+
+                    params.append('MixingLocationID', self.mixingLocationId());
+
+                    for (var propertyName in mapped) {
+                        params.append(propertyName, mapped[propertyName]);
+                    }
+
+                    fetch('/api/PaintMixingAPI/FetchOrdersToInvoice?' + params, {
+                        method: 'GET',
+                        headers: window.fetchHeaders
+                    })
+                        .then(resp => resp.json())
+                        .then(data => {
+                            data.Data.map(d => {
+                                d.busy = ko.observable(false);
+                            })
+                            options.success(data);
+                            self.ordersToInvoiceCount(data.Total);
+                            console.log('FetchOrdersToInvoice returned', data);
+                        })
+                        .catch(err => window.catchFetchError(err));
+                }
+            },
+            pageSize: 10,
+            pageable: {
+                pageSize: 10,
+                pageSizes: [10, 20, 50, 100, 250, 500, 'all']
+            },
+            serverPaging: true,
+            serverSorting: true,
+            serverFiltering: true,
+            schema: $.extend({}, kendo.data.schemas.webapi, {
+                data: "Data",
+                total: "Total",
+                errors: "Errors",
+                aggregates: "Aggregates",
+                model: {
+                    ìd: 'BasePaintOrderID',
+                    fields: {
+                        BasePaintOrderID: {
+                            type: 'string'
+                        },
+                        BasePaintOrderStatus: {
+                            type: 'string'
+                        },
+                        OrderDT: {
+                            type: 'date'
+                        },
+                        RequiresInvoicing: {
+                            type: 'boolean'
+                        },
+                        MixingSessionID: {
+                            type: 'number'
+                        },
+                        CustomerOrderID: {
+                            type: 'string'
+                        },
+                        CustomerOrderReference: {
+                            type: 'string'
+                        }
+                    }
+                }
+            }),
+            sort: { field: "RequiresInvoicing", dir: "desc" },
+            requestStart: function (e) {
+
+            },
+            requestEnd: function (e) {
+
+            }
+        }),
+        useKOTemplates: true,
+        rowTemplate: 'orders-to-invoice-row-template',
+        selectable: false,
+        scrollable: false,
+        sortable: true,
+        pageable: {
+            pageSize: 10,
+            pageSizes: [10, 20, 50, 100, 250, 500, 'all']
+        },
+        columns: [{
+            field: 'BasePaintOrderID',
+            title: 'Stock Order #',
+            width: 140
+        }, {
+            field: 'BasePaintOrderStatus',
+            title: 'Status'
+        }, {
+            field: 'OrderDT',
+            title: 'Order Date'
+        }, {
+            field: '',
+            title: ''
+        }],
+        change: (e) => {
+
+        }
+    }
+
+    self.transfersGrid = {
+        autoBind: true,
+        widget: ko.observable(),
+        data: new kendo.data.DataSource({
+            transport: {
+                read: (options) => {
+                    var webapi = new kendo.data.transports.webapi({ prefix: "" });
+
+                    var mapped = webapi.parameterMap(options.data);
+
+                    var params = new URLSearchParams();
+
+                    params.append('MixingLocationID', self.mixingLocationId());
+
+                    for (var propertyName in mapped) {
+                        params.append(propertyName, mapped[propertyName]);
+                    }
+
+                    fetch('/api/PaintMixingAPI/FetchTranfers?' + params, {
+                        method: 'GET',
+                        headers: window.fetchHeaders
+                    })
+                        .then(resp => resp.json())
+                        .then(data => {
+                            console.log('FetchTranfers returned', data);
+                            if (data.Notices.ErrorMessage !== null) {
+                                window.showError(data.Notices.ErrorMessage);
+                            } else {
+                                data.dsResult.Data.map(o => {
+                                    let object = Object.assign(o, {
+                                        elementHolder: ko.observable(),
+                                        checkboxParams: {
+                                            checkboxId: `transfer-order-${o.OrderID}}-checkbox`,
+                                            observable: ko.observable(),
+                                            originalValue: false,
+                                            useNativeValidation: false,
+                                            disable: ko.observable(false),
+                                            enable: ko.observable(true),
+                                            busy: ko.observable(false)
+                                        }
+                                    });
+                                    object.checkboxParams.observable.subscribe(nv => {
+                                        console.log('order checkbox', nv);
+                                        if (nv) {
+                                            object.elementHolder.DOMElement.classList.add('k-state-selected');
+                                            if (self.selectedTransferMixingSessionIds().indexOf(object.MixingSessionID) == -1)
+                                                self.selectedTransferMixingSessionIds().push(object.MixingSessionID);
+                                        } else {
+                                            object.elementHolder.DOMElement.classList.remove('k-state-selected');
+                                            self.selectedTransferMixingSessionIds.remove(object.MixingSessionID);
+                                        }
+                                    });
+                                    return object;
+                                });
+                                options.success(data.dsResult);
+                                self.allTransferOrders(data.AllResults);
+                                if (self.selectedTransferMixingSessionIds().length === 0) {
+                                    self.selectedTransferMixingSessionIds(self.allTransferOrders().flatMap(o => o.MixingSessionID));
+                                }
+                                self.transferNotice(data.Notices.Notification)
+                                self.transfersCount(data.dsResult.Total);
+                            }
+                        })
+                        .catch(err => window.catchFetchError(err));
+                }
+            },
+            pageSize: 5,
+            pageable: {
+                pageSize: 5,
+                pageSizes: [1, 2, 5, 10, 20, 50, 100, 250, 500, 'all']
+            },
+            serverPaging: true,
+            serverSorting: true,
+            serverFiltering: true,
+            schema: $.extend({}, kendo.data.schemas.webapi, {
+                data: "Data",
+                total: "Total",
+                errors: "Errors",
+                aggregates: "Aggregates",
+                model: {
+                    ìd: 'MixingSessionID',
+                    fields: {
+                        OrderID: {
+                            type: 'string'
+                        },
+                        BoxCount: {
+                            type: 'number'
+                        },
+                        MixingSessionID: {
+                            type: 'number'
+                        },
+                        LastPrintedDT: {
+                            type: 'date'
+                        }
+                    }
+                }
+            }),
+            sort: { field: "OrderID", dir: "desc" }
+        }),
+        useKOTemplates: true,
+        rowTemplate: 'transfer-row-template',
+        selectable: false,
+        scrollable: false,
+        sortable: true,
+        pageable: {
+            pageSize: 5,
+            pageSizes: [1, 2, 5, 10, 20, 50, 100, 250, 500, 'all']
+        },
+        columns: [{
+            field: 'OrderID',
+            title: 'Order ID',
+            width: 140
+        }, {
+            field: 'BoxCount',
+            title: 'Box Count',
+            headerAttributes: {
+                class: 'text-center'
+            }
+        }, {
+            field: 'LastPrintedDT',
+            title: 'Last Printed',
+        }, {
+            field: 'MixingSessionID',
+            title: 'Mixing Session ID',
+            width: 140,
+            headerAttributes: {
+                class: 'text-center'
+            },
+            hidden: true
+        }, {
+            field: '',
+            title: ' ',
+            width: 56,
+            headerAttributes: {
+                class: 'text-center'
+            },
+            headerTemplate: `<div id="transfer-orders-select-all" data-bind="component: { name: 'mdc-checkbox-component', params: transferOrdersSelectAll }"></div>`
+        }],
+        change: function (e, args) {
+            let grid = e.sender;
+            let items = grid.items();
+
+            items.each(function (idx, row) {
+                var dataItem = grid.dataItem(row);
+                if (row.className.indexOf("k-state-selected") >= 0) {
+                    if (self.selectedTransferMixingSessionIds().indexOf(dataItem.MixingSessionID) == -1)
+                        self.selectedTransferMixingSessionIds.push(dataItem.MixingSessionID);
+                } else {
+                    self.selectedTransferMixingSessionIds.remove(so => {
+                        so == dataItem.MixingSessionID
+                    })
+                }
+            });
+        },
+        dataBound: function (e) {
+            if (ko.contextFor(document.querySelector('#transfer-orders-select-all')) == null) {
+                ko.cleanNode(document.querySelector('#transfer-orders-select-all'));
+                ko.applyBindings(self, document.querySelector('#transfer-orders-select-all'))
+            }
+
+            window.setTimeout(() => {
+                let grid = e.sender;
+                let items = grid.items();
+                
+                let itemsToSelect = [];
+
+                items.each(function (idx, row) {
+                    var dataItem = grid.dataItem(row);
+                    let o = self.selectedTransferMixingSessionIds().find(so => so == dataItem['MixingSessionID']);
+                    if (o) {
+                        itemsToSelect.push({ dataItem: o, element: row });
+                    }
+                });
+
+                e.sender.select(itemsToSelect.map(i => i.element));
+
+                window.setTimeout(() => {
+                    itemsToSelect.forEach(item => {
+                        let o = grid.dataItem(item.element)
+                        o.checkboxParams.observable(true);
+                        o.checkboxParams.observable.mdcCheckbox.checked = true;
+                    })
+                }, 0);
+
+            }, 0);
+        }
+    }
 
     self.boxCountParams = {
         inputType: 'number',
@@ -305,10 +761,135 @@
         }
     };
 
+    self.transferOrdersSelectAll = {
+        checkboxId: `transfer-orders-select-all`,
+        observable: ko.observable(true),
+        originalValue: false,
+        useNativeValidation: false,
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        busy: ko.observable(false)
+    }
+
+    let from = new Date();
+
+    from.setMonth(from.getMonth() - 1);
+
+    let to = new Date();
+
+    to.setDate(to.getDate() + 1);
+
+    self.orderHistoryFrom = ko.observable(from);
+
+    self.orderHistoryTo = ko.observable(to);
+
+    self.orderHistoryFromParams = {
+        label: 'From Date',
+        observable: self.orderHistoryFrom,
+        displayObservable: ko.observable(),
+        dateTimePickerOptions: {
+            localization: {
+                locale: 'en-GB',
+                format: 'ddd Do MMM yyyy'
+            },
+            display: {
+                sideBySide: false,
+                components: {
+                    clock: false
+                },
+                //cellSize: '4rem'
+            },
+            restrictions: {
+                disabledDates: []
+            },
+            allowInputToggle: true,
+            useCurrent: false,
+            keepInvalid: true,
+            debug: false,
+            eventHandlers: {
+                onChange: (e) => {
+                    self.orderHistoryTo.tempusDominus.updateOptions({
+                        restrictions: {
+                            minDate: e.date,
+                        },
+                    });
+                }
+            }
+        },
+        clearable: ko.observable(true),
+        clearFunction: () => {
+            self.orderHistoryFrom(undefined);
+        },
+        revertable: ko.observable(false),
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true
+    };
+
+    self.orderHistoryToParams = {
+        label: 'To Date',
+        observable: self.orderHistoryTo,
+        displayObservable: ko.observable(),
+        dateTimePickerOptions: {
+            localization: {
+                locale: 'en-GB',
+                format: 'ddd Do MMM yyyy'
+            },
+            display: {
+                sideBySide: false,
+                components: {
+                    clock: false
+                },
+                //cellSize: '4rem'
+            },
+            restrictions: {
+                disabledDates: []
+            },
+            allowInputToggle: true,
+            useCurrent: false,
+            keepInvalid: true,
+            debug: false,
+            eventHandlers: {
+                onChange: (e) => {
+                    self.orderHistoryFrom.tempusDominus.updateOptions({
+                        restrictions: {
+                            maxDate: e.date,
+                        },
+                    });
+                }
+            }
+        },
+        clearable: ko.observable(true),
+        clearFunction: () => {
+            self.orderHistoryTo(undefined);
+        },
+        revertable: ko.observable(false),
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true
+    };
     //#endregion
 
 
     //#region Subscriptions
+
+    self.transferOrdersSelectAll.observable.subscribe(nv => {
+        //let items = self.transfersGrid.widget().items();
+        //let select = [];
+        if (nv) {
+            self.selectedTransferMixingSessionIds(self.allTransferOrders().flatMap(o => o.MixingSessionID));
+            //items.each((i, item) => {
+            //    let o = self.transfersGrid.widget().dataItem(item);
+            //    o.checkboxParams.observable(true);
+            //    o.checkboxParams.observable.mdcCheckbox.checked = true;
+            //    select.push(item);
+            //});
+        } else {
+            self.selectedTransferMixingSessionIds([]);
+            self.transfersGrid.widget().select([]);
+        }
+        //self.transfersGrid.widget().select(select);
+    });
 
     self.checkedOrderLines.subscribe((nv) => {
         if (nv.length) {
@@ -381,6 +962,7 @@
     }
 
     self.fetchOrderLines = (dataItem) => {
+        self.busy(true);
         fetch('/api/PaintMixingAPI/FetchOrderLines', {
             method: 'POST',
             headers: window.fetchHeaders,
@@ -392,12 +974,13 @@
         })
         .then(window.handleFetchResponse)
         .then(response => {
+            self.busy(false);
             response.OrderID = dataItem.OrderID;
             console.log(response);
             if (response.Notices.ErrorMessage) {
                 window.showError(response.Notices.ErrorMessage);
             } else {
-                self.orderLinesResponse(response);
+                self.orderLinesResponse(Object.assign(response, dataItem));
                 self.showOrderLinesModal();
                 self.outstandingOrdersGrid.widget().one("dataBound", function (e) {
                     e.sender.select(document.querySelector(`tr[data-order-id="${self.orderLinesResponse().OrderID}"]`));
@@ -406,14 +989,19 @@
             }
         })
         .catch(err => {
+            self.busy(false);
             window.catchFetchError(err);
         })
     }
 
     self.closeOrderLinesModal = () => {
-        window.showConfirm('Are you sure?', `This will relinquish Order ${self.orderLinesResponse().OrderID}.`, () => {
+        if (self.checkedOrderLines().length) {
+            window.showConfirm('Are you sure?', `This will relinquish Order ${self.orderLinesResponse().OrderID}.`, () => {
+                self.relinquishOrderLines(self.orderLinesResponse());
+            });
+        } else {
             self.relinquishOrderLines(self.orderLinesResponse());
-        });
+        }
     }
 
     self.relinquishOrderLines = (dataItem, notify = true) => {
@@ -432,19 +1020,21 @@
             .then(response => {
                 console.log(response);
                 self.busy(false);
-                self.orderLinesResponse(undefined);
-                self.checkedOrderLines([]);
-                if (notify) {
-                    self.orderLinesModal._element.addEventListener('hidden.bs.modal', () => {
-                        window.showInfo('Okay', `Order ${dataItem.OrderID} was relinquished successfully.`);
+                if (response.Notices.ErrorMessage) {
+                    window.showError(response.Notices.ErrorMessage);
+                } else {
+                    self.orderLinesResponse(undefined);
+                    self.checkedOrderLines([]);
+                    if (notify) {
                         self.outstandingOrdersGrid.widget().dataSource.read();
-                    }, {
-                        once: true
-                    });
+                    }
+                    self.hideOrderLinesModal();
+                    self.hideBoxCountModal();
+                    window.hideConfirm();
+                    if (response.Notices.Notification) {
+                        window.showInfo('Info', response.Notices.Notification);
+                    }
                 }
-                self.hideOrderLinesModal();
-                self.hideBoxCountModal();
-                window.hideConfirm();
             })
             .catch(err => {
                 self.busy(false);
@@ -480,7 +1070,8 @@
                         window.showError(response.ErrorMessage);
                     } else {
                         window.centerInfoModal();
-                        window.showInfo('<span class="fs-4 text-sucess">Success</span>', response.Notification);
+                        //window.showInfo('<span class="fs-4 text-sucess">Success</span>', response.Notification);
+                        self.labelNotice(response.Notification);
                         self.orderLinesResponse().MixingSessionID = response.MixingSessionID;
                         self.fetchBoxLabels(self.orderLinesResponse().MixingSessionID, () => {
                             self.fetchOrderLines(self.orderLinesResponse());
@@ -535,13 +1126,18 @@
                 window.showError(response.Notices.ErrorMessage);
             } else {
                 self.boxCount(1);
+
                 if (response.DocumentBytes) {
                     let file = self.b64toBlob(response.DocumentBytes, 'application/pdf');
                     let fileURL = window.URL.createObjectURL(file);
-                    let tab = window.open();
-                    tab.location.href = fileURL;
-                    tab.focus();
-                    tab.print();
+
+                    self.labelSource(fileURL);
+                    self.showLabelsModal();
+
+                    //let tab = window.open();
+                    //tab.location.href = fileURL;
+                    //tab.focus();
+                    //tab.print();
                 }
                 if (typeof onSuccess === 'function') {
                     onSuccess();
@@ -552,6 +1148,88 @@
             self.busy(false);
             window.catchFetchError(err);
         })
+    }
+
+    self.produceTransferManifest = () => {
+        if (self.selectedTransferMixingSessionIds().length) {
+            self.busy(true);
+            fetch('/api/PaintMixingAPI/FetchTransferManifest', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                cache: 'no-store',
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    transferOrders : self.allTransferOrders().flatMap(t => self.selectedTransferMixingSessionIds().indexOf(t.MixingSessionID) > -1 ? [t] : [])
+                })
+            })
+            .then(window.handleFetchResponse)
+            .then(response => {
+                self.busy(false);
+                console.log('FetchTransferManifest returned', response);
+                if (response.Notices.ErrorMessage) {
+                    window.showError(response.Notices.ErrorMessage);
+                } else {
+                    if (response.DocumentBytes) {
+                        let file = self.b64toBlob(response.DocumentBytes, 'application/pdf');
+                        let fileURL = window.URL.createObjectURL(file);
+                        let tab = window.open();
+                        tab.location.href = fileURL;
+                        tab.focus();
+                        tab.print();
+                    }
+                    if (typeof onSuccess === 'function') {
+                        onSuccess();
+                    }
+                }
+            })
+            .catch(err => {
+                self.busy(false);
+                window.catchFetchError(err);
+            })
+        } else {
+            window.showError('You must selected at least one Transfer record');
+        }
+    }
+
+    self.stockOrderUpdateStatus = (dataItem) => {
+        dataItem.busy(true);
+        fetch('/api/PaintMixingAPI/UpdateBasePaintOrderStatus', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            cache: 'no-store',
+            credentials: 'same-origin',
+            body: JSON.stringify({
+                mixingSessionId: dataItem.MixingSessionID
+            })
+        })
+        .then(window.handleFetchResponse)
+        .then(response => {
+            dataItem.busy(false);
+            console.log('UpdateBasePaintOrderStatus returned', response);
+        })
+        .catch(err => {
+            dataItem.busy(false);
+            window.catchFetchError(err);
+        })
+    }
+
+    self.stockOrderUpdateAll = () => {
+        self.busy(true);
+        fetch('/api/PaintMixingAPI/UpdateBasePaintOrderStatusAll', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            cache: 'no-store',
+            credentials: 'same-origin'
+        })
+            .then(window.handleFetchResponse)
+            .then(response => {
+                self.busy(false);
+                console.log('UpdateBasePaintOrderStatusAll returned', response);
+            })
+            .catch(err => {
+                self.busy(false);
+                window.catchFetchError(err);
+            })
     }
 
     self.showOrderLinesModal = () => {
@@ -568,6 +1246,14 @@
 
     self.hideBoxCountModal = () => {
         self.boxCountModal.hide();
+    }
+
+    self.showLabelsModal = () => {
+        self.labelsModal.show();
+    }
+
+    self.hideLabelsModal = () => {
+        self.hideModal.show();
     }
 
     //self.refresh = () => {

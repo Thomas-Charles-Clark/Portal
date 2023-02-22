@@ -35,12 +35,59 @@ namespace SharedEFClasses.Models
             var results = await this.Database.Connection.QueryMultipleAsync("[paint].[OrderHead_Select]", new
             {
                 objEnquiry.MixingLocationID,
-                objEnquiry.MemberID
+                objEnquiry.MemberID,
+                Mode = 'M'
             }, null, null, System.Data.CommandType.StoredProcedure);
 
             return new PaintOrderHeadSelectResponse()
             {
                 Orders = results.Read<PaintOrderHeadSelect>()
+            };
+        }
+
+        public async Task<PaintOrderHeadSelectResponse> PaintOrderHistorySelect(PassPaintOrderHistorySelect objEnquiry)
+        {
+            var results = await this.Database.Connection.QueryMultipleAsync("[paint].[OrderHead_Select]", new
+            {
+                objEnquiry.MixingLocationID,
+                objEnquiry.MemberID,
+                Mode = 'H',
+                objEnquiry.FromDT,
+                objEnquiry.ToDT
+            }, null, null, System.Data.CommandType.StoredProcedure);
+
+            return new PaintOrderHeadSelectResponse()
+            {
+                Orders = results.Read<PaintOrderHeadSelect>()
+            };
+        }
+
+        public async Task<PaintBasePaintOrdersToInvoiceResponse> PaintOrdersToInvoice(PassPaintOrdersToInvoice objEnquiry)
+        {
+            var results = await this.Database.Connection.QueryMultipleAsync("[paint].[BasePaintOrdersToInvoice]", new
+            {
+                objEnquiry.MixingLocationID,
+                //objEnquiry.MemberID
+            }, null, null, System.Data.CommandType.StoredProcedure);
+
+            return new PaintBasePaintOrdersToInvoiceResponse()
+            {
+                Orders = results.Read<BasePaintOrderToInvoice>()
+            };
+        }
+
+        public async Task<PaintTransferOrdersResponse> PaintTransferOrders(PassTransferGridSelect objEnquiry)
+        {
+            var results = await this.Database.Connection.QueryMultipleAsync("[paint].[Transfer_SelectList]", new
+            {
+                objEnquiry.MixingLocationID,
+                //objEnquiry.MemberID
+            }, null, null, System.Data.CommandType.StoredProcedure);
+
+            return new PaintTransferOrdersResponse()
+            {
+                Orders = results.Read<PaintTransferOrder>(),
+                Notices = results.ReadSingle<PaintNotice>()
             };
         }
 
@@ -81,16 +128,19 @@ namespace SharedEFClasses.Models
 
         public async Task<PaintOrderLineCancelResponse> PaintOrderLineCancel(PassPaintOrderLineCancel objCancel)
         {
-            var result = await this.Database.Connection.QuerySingleAsync<PaintOrderLineCancelResponse>("[paint].[OrderLine_Cancel]", new
+            var results = await this.Database.Connection.QueryMultipleAsync("[paint].[OrderLine_Cancel]", new
             {
                 objCancel.OrderID,
                 objCancel.MemberID
             }, null, null, System.Data.CommandType.StoredProcedure);
 
-            return result;
+            return new PaintOrderLineCancelResponse()
+            {
+                Notices = results.ReadSingle<PaintNotice>()
+            };
         }
 
-        public async Task<PaintGenerateBoxLabelResponse> PaintGenerateBoxLabels(PassPaintBoxLabelSelect objEnquiry)
+        public async Task<PaintGenerateBoxLabelResponse> PaintGenerateBoxLabels(PassMixingSessionID objEnquiry)
         {
             var results = await this.Database.Connection.QueryMultipleAsync("[paint].[GenerateBoxLabel]", new
             {
@@ -102,6 +152,51 @@ namespace SharedEFClasses.Models
                 BoxLabels = results.Read<PaintBoxLabel>(),
                 Notices = results.ReadSingle<PaintNotice>()
             };
+        }
+
+        public async Task<PaintTransferSaveResponse> PaintTransferSave(PassPaintTransferSave objSave)
+        {
+            var mixingSessions = new DataTable();
+
+            mixingSessions.Columns.Add("I");
+
+            objSave.TransferOrders.ForEach(o => mixingSessions.Rows.Add(o.MixingSessionID));
+
+            var results = await this.Database.Connection.QueryMultipleAsync("[paint].[Transfer_Save]", new
+            {
+                MixingSessionIDs = mixingSessions.AsTableValuedParameter("BIGINTTableType")
+            }, null, null, System.Data.CommandType.StoredProcedure);
+
+            return new PaintTransferSaveResponse()
+            {
+                //Orders = results.Read<TransferSaveResult>(),
+                Notices = results.ReadSingle<PaintNotice>()
+            };
+        }
+
+        public async Task<PaintUpdateOrderStatusResult> PaintUpdateOrderStatus(PassMixingSessionID objEnquiry)
+        {
+            var results = await this.Database.Connection.QueryMultipleAsync("[paint].[BasePaintOrderStatusUpdate]", new
+            {
+                SingleMixingSessionID = objEnquiry.MixingSessionID
+            }, null, null, System.Data.CommandType.StoredProcedure);
+
+            return new PaintUpdateOrderStatusResult();
+        }
+
+        public async Task<PaintUpdateOrderStatusResult> PaintStockOrdersToInvoiceUpdateAll()
+        {
+            var results = await this.Database.Connection.QueryMultipleAsync("[paint].[BasePaintOrderStatusUpdate]", new
+            {
+
+            }, null, null, System.Data.CommandType.StoredProcedure);
+
+            var nextResults = await this.Database.Connection.QueryMultipleAsync("[paint].[BasePaintOrderGenerate]", new
+            {
+
+            }, null, null, System.Data.CommandType.StoredProcedure);
+
+            return new PaintUpdateOrderStatusResult();
         }
     }
 }

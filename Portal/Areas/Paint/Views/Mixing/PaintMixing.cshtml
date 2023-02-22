@@ -44,9 +44,8 @@
 }
 <script id="outstanding-orders-row-template" type="text/html">
     <tr data-bind="css: { 'locked': Locked }, attr: { 'data-order-id': OrderID }">
-        <td>
-            <span class="d-block" data-bind="text: TradeAccountCode"></span>
-            <span class="d-block" data-bind="text: TradeAccountName"></span>
+        <td class="text-center">
+            <span data-bind="text: Priority"></span>
         </td>
         <td>
             <span data-bind="text: OrderID"></span>
@@ -55,25 +54,60 @@
             <span data-bind="html: moment(OrderDT).format('ddd DD/MM/YYYY<br/>HH:mm')"></span>
         </td>
         <td>
+            <span class="d-block" data-bind="text: TradeAccountCode"></span>
+            <span class="d-block" data-bind="text: TradeAccountName"></span>
+        </td>
+        <td>
             <span data-bind="text: CustomerOrderReference"></span>
-        </td>
-        <td>
-            <span data-bind="text: HaulierCode"></span>
-        </td>
-        <td>
-            <span data-bind="text: CarriageCode"></span>
-        </td>
-        <td class="text-center">
-            <span class="locked-indicator fa-solid" data-bind="class: Locked ? 'fa-lock' : 'fa-lock-open'"></span>
         </td>
         <td>
             <span data-bind="html: Status"></span>
         </td>
-        <td class="text-center">
-            <span data-bind="text: Priority"></span>
+    </tr>
+</script>
+
+<script id="completed-orders-row-template" type="text/html">
+    <tr data-bind="css: { 'locked': Locked }, attr: { 'data-order-id': OrderID }">
+        <td>
+            <span data-bind="text: OrderID"></span>
+        </td>
+        <td>
+            <span data-bind="html: moment(OrderDT).format('ddd DD/MM/YYYY HH:mm')"></span>
+        </td>
+        <td>
+            <span class="d-block" data-bind="text: TradeAccountCode"></span>
+            <span class="d-block" data-bind="text: TradeAccountName"></span>
+        </td>
+        <td>
+            <span data-bind="text: CustomerOrderReference"></span>
+        </td>
+        <td>
+            <span data-bind="html: Status"></span>
         </td>
     </tr>
 </script>
+
+<script id="orders-to-invoice-row-template" type="text/html">
+    <tr data-bind="css: { 'barber-busy': busy, 'locked': !RequiresInvoicing }">
+        <td>
+            <span data-bind="text: BasePaintOrderID"></span>
+        </td>
+        <td>
+            <span data-bind="html: BasePaintOrderStatus"></span>
+        </td>
+        <td>
+            <span data-bind="html: moment(OrderDT).format('ddd DD/MM/YYYY HH:mm')"></span>
+        </td>
+        <td>
+            <!-- ko if: RequiresInvoicing -->
+            <button class="btn btn-primary btn-sm d-block w-100 border-box" data-bind="click: $parent.stockOrderUpdateStatus, css: { 'disable': busy }, attr: { 'disabled': busy }">
+                Update
+            </button>
+            <!-- /ko -->
+        </td>
+    </tr>
+</script>
+
 <script id="order-lines-row-template" type="text/html">
     <tr data-bind="keepElement: elementHolder, css: { 'locked': Locked }, attr: { 'data-order-line-id': OrderLineID }">
         <td data-bind="click: () => { if (!Locked) checkboxParams.observable(!checkboxParams.observable()) }">
@@ -90,11 +124,27 @@
             <span class="d-block" data-bind="text: BaseProductCode"></span>
             <span class="d-block" data-bind="text: BaseProductName"></span>
         </td>
-        <td class="text-center" data-bind="click: () => { if (!Locked) checkboxParams.observable(!checkboxParams.observable()) }">
-            <span class="locked-indicator fa-solid" data-bind="class: Locked ? 'fa-lock' : 'fa-lock-open'"></span>
-        </td>
         <td data-bind="click: () => { if (!Locked) checkboxParams.observable(!checkboxParams.observable()) }">
             <span data-bind="html: Status"></span>
+        </td>
+        <td>
+            <!-- ko if: !Locked -->
+            <div data-bind="component: { name: 'mdc-checkbox-component', params: checkboxParams }"></div>
+            <!-- /ko -->
+        </td>
+    </tr>
+</script>
+
+<script id="transfer-row-template" type="text/html">
+    <tr data-bind="keepElement: elementHolder, attr: { 'data-order-id': OrderID }">
+        <td data-bind="click: () => { checkboxParams.observable(!checkboxParams.observable()) }">
+            <span data-bind="text: OrderID"></span>
+        </td>
+        <td class="text-center" data-bind="click: () => { checkboxParams.observable(!checkboxParams.observable()) }">
+            <span data-bind="text: BoxCount"></span>
+        </td>
+        <td data-bind="click: () => { checkboxParams.observable(!checkboxParams.observable()) }">
+            <span data-bind="html: moment(LastPrintedDT).format('ddd DD/MM/YYYY HH:mm')"></span>
         </td>
         <td>
             <div data-bind="component: { name: 'mdc-checkbox-component', params: checkboxParams }"></div>
@@ -127,20 +177,34 @@
 <ul class="nav nav-pills" id="order-tabs" role="tablist">
     <li class="nav-item" role="presentation">
         <button class="nav-link active" id="outstanding-orders-tab-btn" data-bs-toggle="tab" data-bs-target="#outstanding-orders-tab" type="button" role="tab" aria-controls="home" aria-selected="true">
-            Outstanding Orders
+            Orders to Mix
             <!-- ko if: outstandingOrderCount -->
-            <sup class="badge rounded-pill text-bg-primary" data-bind="text: outstandingOrderCount"></sup>
+            <sup class="badge rounded-pill text-bg-primary" style="display: none;" data-bind="visible: outstandingOrderCount, text: outstandingOrderCount"></sup>
             <!-- /ko -->
         </button>
     </li>
     <li class="nav-item" role="presentation">
         <button class="nav-link" id="completed-orders-tab-btn" data-bs-toggle="tab" data-bs-target="#completed-orders-tab" type="button" role="tab" aria-controls="profile" aria-selected="false">
-            Completed Order History
+            Order History
+            <!-- ko if: orderHistoryCount -->
+            <sup class="badge rounded-pill text-bg-primary" style="display: none;" data-bind="visible: orderHistoryCount, text: orderHistoryCount"></sup>
+            <!-- /ko -->
         </button>
     </li>
     <li class="nav-item" role="presentation">
         <button class="nav-link" id="stock-orders-tab-btn" data-bs-toggle="tab" data-bs-target="#stock-orders-tab" type="button" role="tab" aria-controls="contact" aria-selected="false">
             Stock Orders to Invoice
+            <!-- ko if: ordersToInvoiceCount -->
+            <sup class="badge rounded-pill text-bg-primary" style="display: none;" data-bind="visible: ordersToInvoiceCount, text: ordersToInvoiceCount"></sup>
+            <!-- /ko -->
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="transfers-tab-btn" data-bs-toggle="tab" data-bs-target="#transfers-tab" type="button" role="tab" aria-controls="contact" aria-selected="false">
+            Transfers
+            <!-- ko if: transfersCount -->
+            <sup class="badge rounded-pill text-bg-primary" style="display: none;" data-bind="visible: transfersCount, text: transfersCount"></sup>
+            <!-- /ko -->
         </button>
     </li>
 </ul>
@@ -151,10 +215,30 @@
             <div data-bind="kendoGrid: outstandingOrdersGrid"></div>
         </div>
         <div class="tab-pane fade" id="completed-orders-tab" role="tabpanel" aria-labelledby="completed-orders-tab-btn">
-
+            <div class="hstack gap-3 justify-content-center">
+                <div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: orderHistoryFromParams }"></div>
+                <div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: orderHistoryToParams }"></div>
+            </div>
+            <div data-bind="kendoGrid: orderHistoryGrid"></div>
         </div>
         <div class="tab-pane fade" id="stock-orders-tab" role="tabpanel" aria-labelledby="stock-orders-tab-btn">
-
+            <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-primary" data-bind="click: stockOrderUpdateAll">
+                    Refresh All
+                </button>
+            </div>
+            <div data-bind="kendoGrid: ordersToInvoiceGrid"></div>
+        </div>
+        <div class="tab-pane fade" id="transfers-tab" role="tabpanel" aria-labelledby="transfers-tab-btn">
+            <!-- ko if: transferNotice -->
+            <div data-bind="html: transferNotice"></div>
+            <!-- /ko -->
+            <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-primary" data-bind="click: produceTransferManifest">
+                    Produce Manifest
+                </button>
+            </div>
+            <div data-bind="kendoGrid: transfersGrid"></div>
         </div>
     </div>
 </div>
@@ -171,6 +255,36 @@
             <div class="modal-body">
                 <div data-bind="with: orderLinesResponse">
                     <div class="sql-notice" data-bind="html: Notices.Notification"></div>
+                    <div id="order-summary" class="alert alert-primary">
+                        <label>
+                            Trade Account
+                        </label>
+                        <span>
+                            <span data-bind="text: TradeAccountCode"></span>
+                            -
+                            <span data-bind="text: TradeAccountName"></span>
+                        </span>
+                        <label>
+                            Status
+                        </label>
+                        <span data-bind="html: Status"></span>
+                        <label>
+                            Order Number
+                        </label>
+                        <span data-bind="text: OrderID"></span>
+                        <label>
+                            Order Date
+                        </label>
+                        <span data-bind="text: moment(OrderDT).format('ddd DD/MM/YYYY HH:mm')"></span>
+                        <label>
+                            Customer Order Reference
+                        </label>
+                        <span data-bind="text: CustomerOrderReference"></span>
+                        <label>
+                            Delivery Description
+                        </label>
+                        <span data-bind="text: DeliveryDescription"></span>
+                    </div>
                     <!-- ko if: MixingSessions.length -->
                     <div id="mixing-sessions-wrapper" class="grid">
                         <!-- ko foreach: MixingSessions.sort((a, b) => {
@@ -184,7 +298,7 @@
                                 Date
                             </label>
                             <span>
-                                <span data-bind="html: moment(MixedDT).format('ddd DD/MM/YYYY<br/>HH:mm')"></span>
+                                <span data-bind="html: moment(MixedDT).format('ddd DD/MM/YYYY HH:mm')"></span>
                             </span>
                             <label>
                                 Mixed By
@@ -237,7 +351,6 @@
         <h3 class="text-center mb-0">
             <span class="d-block mb-2" data-bind="text: checkedOrdersCountDisplay"></span>
             <span class="d-block">
-
                 How many boxes have you used?
             </span>
         </h3>
@@ -246,5 +359,22 @@
             Done
         </button>
         <!-- /ko -->
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" id="paint-labels-modal">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    Labels
+                </h5>
+                <button type="button" class="btn-close" aria-label="Close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="label-notices" data-bind="html: labelNotice"></div>
+                <iframe id="label-iframe" data-bind="attr: { src: labelSource }"></iframe>
+            </div>
+        </div>
     </div>
 </div>
