@@ -32,6 +32,8 @@
         });
 
         ko.applyBindings(viewModel, document.body);
+
+        window.self = viewModel;
     </script>
 }
 @section beforeContainer {
@@ -144,7 +146,9 @@
             <span data-bind="text: BoxCount"></span>
         </td>
         <td data-bind="click: () => { checkboxParams.observable(!checkboxParams.observable()) }">
+            <!-- ko if: LastPrintedDT -->
             <span data-bind="html: moment(LastPrintedDT).format('ddd DD/MM/YYYY HH:mm')"></span>
+            <!-- /ko -->
         </td>
         <td>
             <div data-bind="component: { name: 'mdc-checkbox-component', params: checkboxParams }"></div>
@@ -324,6 +328,27 @@
             </div>
         </div>
     </div>
+    <div id="session-notification-wrapper">
+        <div id="session-notification">
+            <!-- ko ifnot: checkedOrdersCountDisplay -->
+            <h3 class="text-center mb-0">
+                Closing...
+            </h3>
+            <!-- /ko -->
+            <!-- ko if: checkedOrdersCountDisplay -->
+            <h3 class="text-center mb-0">
+                <span class="d-block mb-2" data-bind="text: checkedOrdersCountDisplay"></span>
+                <span class="d-block">
+                    How many boxes have you used?
+                </span>
+            </h3>
+            <div id="box-count-wrapper" class="mb-0" data-bind="component: { name: 'mdc-text-field-numeric-unformatted-component', params: boxCountParams }"></div>
+            <button class="btn btn-success btn-lg" data-bind="click: saveMixedLines">
+                Done
+            </button>
+            <!-- /ko -->
+        </div>
+    </div>
 </div>
 
 <div class="modal fade" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" id="paint-box-count-modal">
@@ -337,28 +362,6 @@
             <div class="modal-body">
             </div>
         </div>
-    </div>
-</div>
-
-<div id="session-notification-wrapper">
-    <div id="session-notification">
-        <!-- ko ifnot: checkedOrdersCountDisplay -->
-        <h3 class="text-center mb-0">
-            Closing...
-        </h3>
-        <!-- /ko -->
-        <!-- ko if: checkedOrdersCountDisplay -->
-        <h3 class="text-center mb-0">
-            <span class="d-block mb-2" data-bind="text: checkedOrdersCountDisplay"></span>
-            <span class="d-block">
-                How many boxes have you used?
-            </span>
-        </h3>
-        <div id="box-count-wrapper" class="mb-0" data-bind="component: { name: 'mdc-text-field-numeric-unformatted-component', params: boxCountParams }"></div>
-        <button class="btn btn-success btn-lg" data-bind="click: saveMixedLines">
-            Done
-        </button>
-        <!-- /ko -->
     </div>
 </div>
 

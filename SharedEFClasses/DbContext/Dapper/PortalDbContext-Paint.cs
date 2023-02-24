@@ -96,7 +96,8 @@ namespace SharedEFClasses.Models
             var results = await this.Database.Connection.QueryMultipleAsync("[paint].[OrderLine_Select]", new
             {
                 objEnquiry.OrderID,
-                objEnquiry.MemberID
+                objEnquiry.MemberID,
+                objEnquiry.Mode
             }, null, null, System.Data.CommandType.StoredProcedure);
 
             return new PaintOrderLineSelectResponse()

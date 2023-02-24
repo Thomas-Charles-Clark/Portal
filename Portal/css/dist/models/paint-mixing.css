@@ -147,6 +147,9 @@ body > .blocker {
   pointer-events: none;
 }
 
+#paint-order-lines-modal .modal-dialog {
+  z-index: 1041 !important;
+}
 #paint-order-lines-modal .modal-dialog .modal-body {
   max-height: 930px;
   overflow-y: auto;
@@ -208,7 +211,7 @@ body > .blocker {
   justify-content: center;
   opacity: 0;
   transition: opacity 500ms ease-in-out, bottom 300ms ease-in-out;
-  z-index: 1048;
+  z-index: 1040;
 }
 #session-notification-wrapper #session-notification {
   display: flex;
@@ -221,6 +224,13 @@ body > .blocker {
   background-color: #fff;
   border-top-left-radius: 2rem;
   border-top-right-radius: 2rem;
+}
+
+#session-notification-wrapper:active,
+#session-notification-wrapper:hover,
+#session-notification-wrapper:focus,
+#session-notification-wrapper:focus-within {
+  z-index: 1050;
 }
 
 #session-notification-wrapper.open {

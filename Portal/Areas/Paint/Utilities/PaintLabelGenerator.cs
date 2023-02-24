@@ -1,4 +1,6 @@
 ﻿
+using DocumentFormat.OpenXml.Drawing.Charts;
+
 using HtmlAgilityPack;
 
 using iTextSharp.text;
@@ -24,6 +26,8 @@ using System.Web.Routing;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
 
+using Unity.Interception.Utilities;
+
 namespace Portal.Areas.Paint.Utilities
 {
     public static class PaintLabelGenerator
@@ -43,15 +47,15 @@ namespace Portal.Areas.Paint.Utilities
 
             var finalStream = new MemoryStream();
 
-            var pages = new List<(MemoryStream, string)>();
+            var pages = new List<(MemoryStream, string, string)>();
 
-            foreach(var label in objInput.BoxLabels)
+            foreach (var label in objInput.BoxLabels)
             {
                 var html = ViewRenderer.RenderView("~/Areas/Paint/Views/Shared/_PaintLabelTemplate.cshtml", label);
 
                 var inlined = PreMailer.Net.PreMailer.MoveCssInline(html, false).Html;
 
-                pages.Add((ConvertHTMLToPDF(inlined, true), label.DespatchGroup));
+                pages.Add((ConvertHTMLToPDF(inlined, true), label.DespatchGroup, $"{label.BoxNumber} of {label.BoxCount}"));
             }
 
             ////Create our copy object
@@ -65,7 +69,7 @@ namespace Portal.Areas.Paint.Utilities
 
             dgLogo.ScaleAbsolute(280.0f, 21.0f);
 
-            iTextSharp.text.Document finalDocument = new iTextSharp.text.Document(PageSize.A4, 25, 25, 80, 80);
+            iTextSharp.text.Document finalDocument = new iTextSharp.text.Document(PageSize.A4, 15, 15, 80, 55);
 
             PdfCopy copy = new PdfCopy(finalDocument, finalStream);
 
@@ -73,7 +77,7 @@ namespace Portal.Areas.Paint.Utilities
 
             finalDocument.Open();
 
-            var pageDespatchGroupMap = new List<(int, string)>();
+            var pageErrataMap = new List<(int, string, string)>();
 
             foreach (var tuple in pages)
             {
@@ -82,7 +86,7 @@ namespace Portal.Areas.Paint.Utilities
                 for (var i = 0; i < thisReader.NumberOfPages; i++)
                 {
                     copy.AddPage(copy.GetImportedPage(thisReader, i + 1));
-                    pageDespatchGroupMap.Add((i, tuple.Item2));
+                    pageErrataMap.Add((i, tuple.Item2, tuple.Item3));
                 }
 
                 copy.FreeReader(thisReader);
@@ -113,8 +117,13 @@ namespace Portal.Areas.Paint.Utilities
 
                 var headerTable = new PdfPTable(2);
 
-                headerTable = GetPageNumberTable(dgLogo, i, count, normalFont, boldFont, "Despatch Group: ", pageDespatchGroupMap[i - 1].Item2);
+                headerTable = GetHeaderTable(dgLogo, i, count, normalFont, boldFont, false, new (string, string)[] { ("Despatch Group", pageErrataMap[i - 1].Item2), ("Box", pageErrataMap[i - 1].Item3) });
                 headerTable.WriteSelectedRows(0, -1, 25, 812, c); // write stuff to it
+
+                var footerTable = new PdfPTable(2);
+
+                footerTable = GetFooterTable(i, count, normalFont, boldFont, true, null);
+                footerTable.WriteSelectedRows(0, -1, 25, 32, c); // write stuff to it
             }
 
             ////Close the copy object
@@ -158,7 +167,7 @@ namespace Portal.Areas.Paint.Utilities
 
             dgLogo.ScaleAbsolute(280.0f, 21.0f);
 
-            iTextSharp.text.Document finalDocument = new iTextSharp.text.Document(PageSize.A4, 25, 25, 80, 80);
+            iTextSharp.text.Document finalDocument = new iTextSharp.text.Document(PageSize.A4, 15, 15, 80, 55);
 
             PdfCopy copy = new PdfCopy(finalDocument, finalStream);
 
@@ -203,7 +212,7 @@ namespace Portal.Areas.Paint.Utilities
 
                 var headerTable = new PdfPTable(2);
 
-                headerTable = GetPageNumberTable(dgLogo, i, count, normalFont, boldFont, "Generated: ", now);
+                headerTable = GetHeaderTable(dgLogo, i, count, normalFont, boldFont, true, new (string, string)[] { ("Generated", now) });
                 headerTable.WriteSelectedRows(0, -1, 25, 812, c); // write stuff to it
             }
 
@@ -233,6 +242,13 @@ namespace Portal.Areas.Paint.Utilities
         /// <returns></returns>
         public static MemoryStream ConvertHTMLToPDF(string html, bool verticallyCentered)
         {
+            iTextSharp.text.Font normalFont = FontFactory.GetFont("Arial", 10, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+            iTextSharp.text.Font smallerFont = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+            iTextSharp.text.Font smallerItalicFont = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.ITALIC, BaseColor.BLACK);
+            iTextSharp.text.Font boldFont = FontFactory.GetFont("Arial", 10, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+            iTextSharp.text.Font footerNormalFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+            iTextSharp.text.Font footerBoldFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+
             var bytes = new byte[] { };
 
             //Boilerplate iTextSharp setup here
@@ -240,21 +256,30 @@ namespace Portal.Areas.Paint.Utilities
             using (var ms = new MemoryStream())
             {
                 //Create an iTextSharp Document which is an abstraction of a PDF but **NOT** a PDF
-                using (var doc = new iTextSharp.text.Document(PageSize.A4, 25, 25, 80, 80))
+                using (var doc = new iTextSharp.text.Document(PageSize.A4, 15, 15, 80, 55))
                 {
                     var table = new PdfPTable(new float[] { PageSize.A4.Width });
 
                     var cell = new PdfPCell();
 
+                    table.WidthPercentage = 100;
+
+                    cell.Padding = 0;
+
                     cell.VerticalAlignment = verticallyCentered ? Element.ALIGN_MIDDLE : Element.ALIGN_TOP;
 
-                    cell.MinimumHeight = doc.PageSize.Height - 160;
+                    cell.MinimumHeight = doc.PageSize.Height - 135;
 
                     cell.Border = 0;
+
+                    cell.UseAscender = true;
 
                     //Create a writer that's bound to our PDF abstraction and our stream
                     using (var writer = PdfWriter.GetInstance(doc, ms))
                     {
+                        if (verticallyCentered)
+                            writer.PageEvent = new BoxLabelPDFEventHelper();
+
                         //Open the document for writing
                         doc.Open();
 
@@ -270,6 +295,11 @@ namespace Portal.Areas.Paint.Utilities
 
                         list.ForEach(l =>
                         {
+                            l.Chunks.ForEach(c =>
+                            {
+                                c.Font = smallerFont;
+                            });
+
                             if (l.IsContent())
                                 cell.AddElement(l);
                         });
@@ -356,7 +386,8 @@ namespace Portal.Areas.Paint.Utilities
 
             return new MemoryStream(bytes);
         }
-        internal static PdfPTable GetPageNumberTable(Image logo, int x, int y, iTextSharp.text.Font normal, iTextSharp.text.Font bold, string extraDataLabel = null, string extraData = null)
+
+        internal static PdfPTable GetHeaderTable(Image logo, int x, int y, iTextSharp.text.Font normal, iTextSharp.text.Font bold, bool includePageNumber = true, IEnumerable<(string, string)> extraData = null)
         {
             PdfPTable HeaderTable = new PdfPTable(2);
             HeaderTable.SetWidths(new float[] { logo.ScaledWidth, 545 - logo.ScaledWidth });
@@ -387,25 +418,29 @@ namespace Portal.Areas.Paint.Utilities
             var RightParagraph = new Paragraph();
             RightParagraph.Alignment = Element.ALIGN_RIGHT;
 
-            var PageLabelChunk = new Chunk($"Page: ", bold);
-            var PageNumberChunk = new Chunk($"{x} {Receipts.Of} {y}\n", normal);
-            var PageNumberPhrase = new Phrase();
-            PageNumberPhrase.Add(PageLabelChunk);
-            PageNumberPhrase.Add(PageNumberChunk);
+            var TopRightPhrase = new Phrase();
 
-            if (!String.IsNullOrEmpty(extraData))
+            if (includePageNumber)
             {
-                if (!String.IsNullOrEmpty(extraDataLabel))
-                {
-                    var DespatchGroupLabel = new Chunk($"{extraDataLabel}", bold);
-                    PageNumberPhrase.Add(DespatchGroupLabel);
-                }
-
-                var DespatchGroupChunk = new Chunk($"{extraData}", normal);
-                PageNumberPhrase.Add(DespatchGroupChunk);
+                var PageLabelChunk = new Chunk($"Page: ", bold);
+                var PageNumberChunk = new Chunk($"{x} {Receipts.Of} {y}\n", normal);
+                TopRightPhrase.Add(PageLabelChunk);
+                TopRightPhrase.Add(PageNumberChunk);
             }
 
-            RightParagraph.Add(PageNumberPhrase);
+            if (extraData != null && extraData.Any())
+            {
+                foreach (var ed in extraData)
+                {
+                    var label = new Chunk($"{ed.Item1}: ", bold);
+                    TopRightPhrase.Add(label);
+
+                    var value = new Chunk($"{ed.Item2}\n", normal);
+                    TopRightPhrase.Add(value);
+                }
+            }
+
+            RightParagraph.Add(TopRightPhrase);
 
             //RightParagraph.Add(new Phrase($"{Receipts.PageLabel} {x} {Receipts.Of} {y}", normal));
 
@@ -425,6 +460,111 @@ namespace Portal.Areas.Paint.Utilities
             HeaderTable.AddCell(RightHeaderCell);
 
             return HeaderTable;
+        }
+
+        internal static PdfPTable GetFooterTable(int x, int y, iTextSharp.text.Font normal, iTextSharp.text.Font bold, bool includePageNumber = true, IEnumerable<(string, string)> extraData = null)
+        {
+            PdfPTable FooterTable = new PdfPTable(2);
+
+            FooterTable.TotalWidth = 545.0f;
+
+            // you add chunks to phrases and phrases to paragraphs.
+            // you add new lines in chunks? and hope the paragraph can sort itself out?
+            // if you don't use Cell.AddElement, the Paragraph that you're adding will take on the properties of the Cell and lose its own.
+            // this is because it is "reduced to a phrase".
+
+            var LeftFooterCell = new PdfPCell();
+            LeftFooterCell.Border = 0;
+
+            var RightFooterCell = new PdfPCell();
+
+            RightFooterCell.Padding = 0;
+            RightFooterCell.HorizontalAlignment = Element.ALIGN_RIGHT;
+            RightFooterCell.Border = 0;
+
+            FooterTable.AddCell(LeftFooterCell);
+
+            PdfPTable RightTable = new PdfPTable(1);
+            RightTable.WidthPercentage = 100.0f;
+            RightTable.DefaultCell.HorizontalAlignment = Element.ALIGN_RIGHT;
+
+            var RightParagraph = new Paragraph();
+            RightParagraph.Alignment = Element.ALIGN_RIGHT;
+
+            var TopRightPhrase = new Phrase();
+
+            if (includePageNumber)
+            {
+                var PageLabelChunk = new Chunk($"Page: ", bold);
+                var PageNumberChunk = new Chunk($"{x} {Receipts.Of} {y}\n", normal);
+                TopRightPhrase.Add(PageLabelChunk);
+                TopRightPhrase.Add(PageNumberChunk);
+            }
+
+            if (extraData != null && extraData.Any())
+            {
+                foreach (var ed in extraData)
+                {
+                    var label = new Chunk($"{ed.Item1}: ", bold);
+                    TopRightPhrase.Add(label);
+
+                    var value = new Chunk($"{ed.Item2}\n", normal);
+                    TopRightPhrase.Add(value);
+                }
+            }
+
+            RightParagraph.Add(TopRightPhrase);
+
+            //RightParagraph.Add(new Phrase($"{Receipts.PageLabel} {x} {Receipts.Of} {y}", normal));
+
+            PdfPCell RightCell = new PdfPCell();
+
+            RightCell.Border = 0;
+            RightCell.Padding = 0;
+
+            RightCell.UseAscender = true;
+
+            RightCell.AddElement(RightParagraph);
+
+            RightTable.AddCell(RightCell);
+
+            RightFooterCell.AddElement(RightTable);
+
+            FooterTable.AddCell(RightFooterCell);
+
+            return FooterTable;
+        }
+    }
+
+    internal class BoxLabelPDFEventHelper : PdfPageEventHelper
+    {
+        // This is the contentbyte object of the writer
+        PdfContentByte cb;
+
+        // we will put the final number of pages in a template
+        PdfTemplate headerTemplate, footerTemplate;
+
+        // this is the BaseFont we are going to use for the header / footer
+        BaseFont bf = null;
+
+        // This keeps track of the creation time
+        DateTime PrintTime = DateTime.Now;
+
+        #region Fields
+        private string _header;
+        #endregion
+
+        #region Properties
+        public string Header
+        {
+            get { return _header; }
+            set { _header = value; }
+        }
+        #endregion
+
+        public override void OnStartPage(iTextSharp.text.pdf.PdfWriter writer, iTextSharp.text.Document document)
+        {
+            base.OnEndPage(writer, document);
         }
     }
 }

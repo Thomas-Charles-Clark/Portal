@@ -269,6 +269,7 @@ namespace SharedEFClasses.Models
     {
         public string OrderID { get; set; }
         public int MemberID { get; set; }
+        public string Mode { get; set; }
     }
 
     public class PaintOrderLineSelectResponse
@@ -359,7 +360,7 @@ namespace SharedEFClasses.Models
     public class PaintBoxLabel
     {
         public string DespatchGroup { get; set; }
-        public int PageNumber { get; set; }
+        public int BoxNumber { get; set; }
         public string Contents { get; set; }
         public short BoxCount { get; set; }
     }

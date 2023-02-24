@@ -2790,18 +2790,18 @@ ko.bindingHandlers.matrixLoader = {
         //0x2744 snowflake...?
         self.newCharArray = function () {//U+26F7
             //Spring
-            //return [
-            //    String.fromCodePoint(0x1F490), // Bouquet of flowers
-            //    String.fromCodePoint(0x1F994), // Hedgehog
-            //    String.fromCodePoint(0x1F338), // Pink flower
-            //    String.fromCodePoint(0x1F407), // White rabbit
-            //    String.fromCodePoint(0x1F33C), // Daisy
-            //    String.fromCodePoint(0x1F343), // Leaf
-            //    String.fromCodePoint(0x1F331), // Sprouting seedling
-            //    String.fromCodePoint(0x1F337), // Tulip
-            //    String.fromCodePoint(0x1F423), // Chick hatching
-            //    String.fromCodePoint(0x1F340)  // Four-leaf clover
-            //]
+            return [
+                String.fromCodePoint(0x1F490), // Bouquet of flowers
+                String.fromCodePoint(0x1F994), // Hedgehog
+                String.fromCodePoint(0x1F338), // Pink flower
+                String.fromCodePoint(0x1F407), // White rabbit
+                String.fromCodePoint(0x1F33C), // Daisy
+                String.fromCodePoint(0x1F343), // Leaf
+                String.fromCodePoint(0x1F331), // Sprouting seedling
+                String.fromCodePoint(0x1F337), // Tulip
+                String.fromCodePoint(0x1F423), // Chick hatching
+                String.fromCodePoint(0x1F340)  // Four-leaf clover
+            ]
 
             //Winter
             //return [String.fromCodePoint(0x2744), String.fromCodePoint(0x26C4), String.fromCodePoint(0x1F3BF), String.fromCodePoint(0x1F3C2), String.fromCodePoint(0x2B50)]
@@ -2828,27 +2828,27 @@ ko.bindingHandlers.matrixLoader = {
             //]
 
             //Valentine's
-            return [String.fromCodePoint(0x1F970), // smiling face with hearts
-            String.fromCodePoint(0x1F3F5), // yellow rosette
-            String.fromCodePoint(0x1F490), // bouquet
-            String.fromCodePoint(0x1F490), // bouquet
-            String.fromCodePoint(0x1F490), // bouquet
-            String.fromCodePoint(0x1F337), // tuplip
-            String.fromCodePoint(0x1F33C), // daisy
-            String.fromCodePoint(0x1F380), // ribbon
-            String.fromCodePoint(0x1F33A), // hibiscus
-            String.fromCodePoint(0x1F36D), // lollipop
-            String.fromCodePoint(0x2764), // red heart
-            String.fromCodePoint(0x1F9E1), // orange heart
-            String.fromCodePoint(0x1F49B), // yellow heart
-            String.fromCodePoint(0x1F49A), // green heart
-            String.fromCodePoint(0x1F499), // blue heart
-            String.fromCodePoint(0x1F49C),  // purple heart
-            String.fromCodePoint(0x1F49D), // heart with ribbon
-            String.fromCodePoint(0x1F498), // heart with arrow
-            String.fromCodePoint(0x1F49F), // heart decoration
-            String.fromCodePoint(0x1F49E), // revolving hearts
-            ]
+            //return [String.fromCodePoint(0x1F970), // smiling face with hearts
+            //String.fromCodePoint(0x1F3F5), // yellow rosette
+            //String.fromCodePoint(0x1F490), // bouquet
+            //String.fromCodePoint(0x1F490), // bouquet
+            //String.fromCodePoint(0x1F490), // bouquet
+            //String.fromCodePoint(0x1F337), // tuplip
+            //String.fromCodePoint(0x1F33C), // daisy
+            //String.fromCodePoint(0x1F380), // ribbon
+            //String.fromCodePoint(0x1F33A), // hibiscus
+            //String.fromCodePoint(0x1F36D), // lollipop
+            //String.fromCodePoint(0x2764), // red heart
+            //String.fromCodePoint(0x1F9E1), // orange heart
+            //String.fromCodePoint(0x1F49B), // yellow heart
+            //String.fromCodePoint(0x1F49A), // green heart
+            //String.fromCodePoint(0x1F499), // blue heart
+            //String.fromCodePoint(0x1F49C),  // purple heart
+            //String.fromCodePoint(0x1F49D), // heart with ribbon
+            //String.fromCodePoint(0x1F498), // heart with arrow
+            //String.fromCodePoint(0x1F49F), // heart decoration
+            //String.fromCodePoint(0x1F49E), // revolving hearts
+            //]
 
             /*
              
@@ -2926,9 +2926,9 @@ bg #1ca9c9
             //self.ctx.fillStyle = "#f0b447"; // autumn (golden yellow)
 
             //self.ctx.fillStyle = "#66b8ff"; //winter
-            self.ctx.fillStyle = "#ffbbd7"; //valentine's (pink)
+            //self.ctx.fillStyle = "#ffbbd7"; //valentine's (pink)
             //self.ctx.fillStyle = '#f8c9dd'; // spring (pink)
-            //self.ctx.fillStyle = '#53bfea'; // spring (sky blue)
+            self.ctx.fillStyle = '#53bfea'; // spring (sky blue)
             //self.ctx.fillStyle = '#c1e0ff'; // summer
             //self.ctx.fillStyle = '#1ca9c9'; // summer, Lianne's Pacific Ocean Blue
 

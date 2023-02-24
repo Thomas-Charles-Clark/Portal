@@ -94,6 +94,7 @@ body {
 
 #paint-order-lines-modal {
     .modal-dialog {
+        z-index: 1041 !important;
 
         .modal-body {
             max-height: 930px;
@@ -176,7 +177,7 @@ body {
     justify-content: center;
     opacity: 0;
     transition: opacity 500ms ease-in-out, bottom 300ms ease-in-out;
-    z-index: 1048;
+    z-index: 1040;
 
     #session-notification {
         display: flex;
@@ -190,6 +191,14 @@ body {
         border-top-left-radius: $border-radius-2xl;
         border-top-right-radius: $border-radius-2xl;
     }
+}
+
+
+#session-notification-wrapper:active,
+#session-notification-wrapper:hover,
+#session-notification-wrapper:focus,
+#session-notification-wrapper:focus-within {
+    z-index: 1050;
 }
 
 #session-notification-wrapper.open {

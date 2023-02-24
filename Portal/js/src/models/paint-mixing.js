@@ -85,6 +85,21 @@
         window.frames.labeliFrame.print();
     });
 
+    document.querySelector('#outstanding-orders-tab-btn').addEventListener('click', () => {
+        self.outstandingOrdersGrid.widget().dataSource.read();
+    });
+
+    document.querySelector('#completed-orders-tab-btn').addEventListener('click', () => {
+        self.orderHistoryGrid.widget().dataSource.read();
+    });
+
+    document.querySelector('#stock-orders-tab-btn').addEventListener('click', () => {
+        self.ordersToInvoiceGrid.widget().dataSource.read();
+    });
+
+    document.querySelector('#transfers-tab-btn').addEventListener('click', () => {
+        self.transfersGrid.widget().dataSource.read();
+    });
 
     //#endregion
 
@@ -381,7 +396,7 @@
                 if (self.orderLinesResponse() && self.orderLinesResponse().OrderID == dataItem.OrderID) {
                     return;
                 }
-                self.fetchOrderLines(dataItem);
+                self.fetchOrderLines(dataItem, 'H');
             }
         }
     }
@@ -552,8 +567,32 @@
 
     self.transfersFirstRun = true;
 
+    self.getTransferGridFilteredItems = () => {
+        let ds = self.transfersGrid.widget().dataSource;
+
+        let filters = ds.filter();
+
+        let allData = ds.data();
+
+        let query = new kendo.data.Query(allData);
+
+        let results = query.filter(filters).data.slice();
+
+        self.transfersCount(results.length);
+
+        return results;
+    }
+
+    self.clearSelectedTransferMixingSessionIds = () => {
+        self.selectedTransferMixingSessionIds([]);
+        self.transfersGrid.widget().dataSource.data().forEach(d => {
+            d.checkboxParams.observable(false);
+        });
+        self.transfersGrid.widget().clearSelection();
+    }
+
     self.transfersGrid = {
-        autoBind: true,
+        autoBind: false,
         widget: ko.observable(),
         data: new kendo.data.DataSource({
             transport: {
@@ -585,7 +624,7 @@
                                         elementHolder: ko.observable(),
                                         checkboxParams: {
                                             checkboxId: `transfer-order-${o.OrderID}}-checkbox`,
-                                            observable: ko.observable(),
+                                            observable: ko.observable(false),
                                             originalValue: false,
                                             useNativeValidation: false,
                                             disable: ko.observable(false),
@@ -596,24 +635,24 @@
                                     object.checkboxParams.observable.subscribe(nv => {
                                         console.log('order checkbox', nv);
                                         if (nv) {
-                                            object.elementHolder.DOMElement.classList.add('k-state-selected');
+                                            if (object.elementHolder.DOMElement)
+                                                object.elementHolder.DOMElement.classList.add('k-state-selected');
                                             if (self.selectedTransferMixingSessionIds().indexOf(object.MixingSessionID) == -1)
                                                 self.selectedTransferMixingSessionIds().push(object.MixingSessionID);
                                         } else {
-                                            object.elementHolder.DOMElement.classList.remove('k-state-selected');
+                                            if (object.elementHolder.DOMElement)
+                                                object.elementHolder.DOMElement.classList.remove('k-state-selected');
                                             self.selectedTransferMixingSessionIds.remove(object.MixingSessionID);
                                         }
                                     });
                                     return object;
                                 });
-                                options.success(data.dsResult);
+
                                 self.allTransferOrders(data.AllResults);
-                                if (self.transfersFirstRun) {
-                                    self.selectedTransferMixingSessionIds(self.allTransferOrders().flatMap(o => o.MixingSessionID));
-                                    self.transfersFirstRun = false;
-                                }
+
                                 self.transferNotice(data.Notices.Notification)
-                                self.transfersCount(data.dsResult.Total);
+
+                                options.success(data.dsResult);
                             }
                         })
                         .catch(err => window.catchFetchError(err));
@@ -624,9 +663,9 @@
                 pageSize: 5,
                 pageSizes: [1, 2, 5, 10, 20, 50, 100, 250, 500, 'all']
             },
-            serverPaging: true,
-            serverSorting: true,
-            serverFiltering: true,
+            serverPaging: false,
+            serverSorting: false,
+            serverFiltering: false,
             schema: $.extend({}, kendo.data.schemas.webapi, {
                 data: "Data",
                 total: "Total",
@@ -650,10 +689,12 @@
                     }
                 }
             }),
-            sort: { field: "OrderID", dir: "desc" }
+            sort: { field: 'OrderID', dir: 'desc' },
+            filter: { field: 'LastPrintedDT', operator: 'isnull' }
         }),
         useKOTemplates: true,
         rowTemplate: 'transfer-row-template',
+        filterable: true,
         selectable: false,
         scrollable: false,
         sortable: true,
@@ -674,6 +715,9 @@
         }, {
             field: 'LastPrintedDT',
             title: 'Last Printed',
+            filterable: {
+                
+            }
         }, {
             field: 'MixingSessionID',
             title: 'Mixing Session ID',
@@ -691,7 +735,7 @@
             },
             headerTemplate: `<div id="transfer-orders-select-all" data-bind="component: { name: 'mdc-checkbox-component', params: transferOrdersSelectAll }"></div>`
         }],
-        change: function (e, args) {
+        change: (e, args) => {
             let grid = e.sender;
             let items = grid.items();
 
@@ -707,7 +751,10 @@
                 }
             });
         },
-        dataBound: function (e) {
+        filter: (e) => {
+            self.clearSelectedTransferMixingSessionIds();
+        },
+        dataBound: (e) => {
             if (ko.contextFor(document.querySelector('#transfer-orders-select-all')) == null) {
                 ko.cleanNode(document.querySelector('#transfer-orders-select-all'));
                 ko.applyBindings(self, document.querySelector('#transfer-orders-select-all'))
@@ -736,6 +783,17 @@
                         o.checkboxParams.observable.mdcCheckbox.checked = true;
                     })
                 }, 0);
+
+                let filteredItems = self.getTransferGridFilteredItems();
+
+                if (self.transfersFirstRun) {
+                    self.selectedTransferMixingSessionIds(filteredItems.flatMap(o => o.MixingSessionID));
+                    self.transfersFirstRun = false;
+                }
+
+                if (self.selectedTransferMixingSessionIds().length === 0) {
+                    self.transferOrdersSelectAll.observable(false);
+                }
 
             }, 0);
         }
@@ -886,23 +944,25 @@
 
     self.transferOrdersSelectAll.observable.subscribe(nv => {
         //let items = self.transfersGrid.widget().items();
-        //let select = [];
         if (nv) {
-            self.selectedTransferMixingSessionIds(self.allTransferOrders().flatMap(o => o.MixingSessionID));
-            //items.each((i, item) => {
-            //    let o = self.transfersGrid.widget().dataItem(item);
-            //    o.checkboxParams.observable(true);
-            //    o.checkboxParams.observable.mdcCheckbox.checked = true;
-            //    select.push(item);
-            //});
-        } else {
-            self.selectedTransferMixingSessionIds([]);
-            self.transfersGrid.widget().dataSource.data().forEach(d => {
-                d.checkboxParams.observable(false);
+
+            let filteredItems = self.getTransferGridFilteredItems();
+
+            //let allItems = self.transfersGrid.widget().dataSource.data().slice();
+
+            self.selectedTransferMixingSessionIds(filteredItems.flatMap(o => o.MixingSessionID));
+
+            filteredItems.forEach(item => {
+                item.checkboxParams.observable(true);
+                if (item.checkboxParams.observable.hasOwnProperty('mdcCheckbox'))
+                    item.checkboxParams.observable.mdcCheckbox.checked = true;
             });
-            self.transfersGrid.widget().clearSelection();
+
+            self.transfersGrid.widget().select(self.transfersGrid.widget().items());
+
+        } else {
+            self.clearSelectedTransferMixingSessionIds();
         }
-        //self.transfersGrid.widget().select(select);
     });
 
     self.checkedOrderLines.subscribe((nv) => {
@@ -975,7 +1035,7 @@
         self.busy(false);
     }
 
-    self.fetchOrderLines = (dataItem) => {
+    self.fetchOrderLines = (dataItem, mode = 'M') => {
         self.busy(true);
         fetch('/api/PaintMixingAPI/FetchOrderLines', {
             method: 'POST',
@@ -983,7 +1043,8 @@
             cache: 'no-store',
             credentials: 'same-origin',
             body: JSON.stringify({
-                orderId: dataItem.OrderID
+                orderId: dataItem.OrderID,
+                mode: mode
             })
         })
         .then(window.handleFetchResponse)
@@ -1015,6 +1076,7 @@
             });
         } else {
             self.relinquishOrderLines(self.orderLinesResponse());
+            self.orderHistoryGrid.widget().dataSource.read();
         }
     }
 
@@ -1088,7 +1150,7 @@
                         self.labelNotice(response.Notification);
                         self.orderLinesResponse().MixingSessionID = response.MixingSessionID;
                         self.fetchBoxLabels(self.orderLinesResponse().MixingSessionID, () => {
-                            self.fetchOrderLines(self.orderLinesResponse());
+                            self.fetchOrderLines(self.orderLinesResponse(), 'M');
                         });
                     }
                 })
