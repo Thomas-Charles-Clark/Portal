@@ -111,7 +111,8 @@
 </script>
 
 <script id="order-lines-row-template" type="text/html">
-    <tr data-bind="keepElement: elementHolder, css: { 'locked': Locked }, attr: { 'data-order-line-id': OrderLineID }">
+    <tr data-bind="keepElement: elementHolder, css: { 'locked': Locked }, attr: { 'data-order-line-id': OrderLineID, 'data-uid': $data.uid }">
+        <td class="k-group-cell"></td>
         <td data-bind="click: () => { if (!Locked) checkboxParams.observable(!checkboxParams.observable()) }">
             <span data-bind="text: LineNumber"></span>
         </td>
@@ -135,6 +136,12 @@
             <!-- /ko -->
         </td>
     </tr>
+</script>
+
+<script id="order-lines-group-header-template" type="text/html">
+    <h1>
+        POTATO
+    </h1>
 </script>
 
 <script id="transfer-row-template" type="text/html">
@@ -197,7 +204,7 @@
     </li>
     <li class="nav-item" role="presentation">
         <button class="nav-link" id="stock-orders-tab-btn" data-bs-toggle="tab" data-bs-target="#stock-orders-tab" type="button" role="tab" aria-controls="contact" aria-selected="false">
-            Stock Orders to Invoice
+            Base Paint Orders to Despatch
             <!-- ko if: ordersToInvoiceCount -->
             <sup class="badge rounded-pill text-bg-primary" style="display: none;" data-bind="visible: ordersToInvoiceCount, text: ordersToInvoiceCount"></sup>
             <!-- /ko -->
@@ -205,7 +212,7 @@
     </li>
     <li class="nav-item" role="presentation">
         <button class="nav-link" id="transfers-tab-btn" data-bs-toggle="tab" data-bs-target="#transfers-tab" type="button" role="tab" aria-controls="contact" aria-selected="false">
-            Transfers
+            Generate Collection Paperwork
             <!-- ko if: transfersCount -->
             <sup class="badge rounded-pill text-bg-primary" style="display: none;" data-bind="visible: transfersCount, text: transfersCount"></sup>
             <!-- /ko -->
@@ -259,70 +266,45 @@
             <div class="modal-body">
                 <div data-bind="with: orderLinesResponse">
                     <div class="sql-notice" data-bind="html: Notices.Notification"></div>
-                    <div id="order-summary" class="alert alert-primary">
-                        <label>
-                            Trade Account
-                        </label>
-                        <span>
-                            <span data-bind="text: TradeAccountCode"></span>
-                            -
-                            <span data-bind="text: TradeAccountName"></span>
-                        </span>
-                        <label>
-                            Status
-                        </label>
-                        <span data-bind="html: Status"></span>
-                        <label>
-                            Order Number
-                        </label>
-                        <span data-bind="text: OrderID"></span>
-                        <label>
-                            Order Date
-                        </label>
-                        <span data-bind="text: moment(OrderDT).format('ddd DD/MM/YYYY HH:mm')"></span>
-                        <label>
-                            Customer Order Reference
-                        </label>
-                        <span data-bind="text: CustomerOrderReference"></span>
-                        <label>
-                            Delivery Description
-                        </label>
-                        <span data-bind="text: DeliveryDescription"></span>
-                    </div>
-                    <!-- ko if: MixingSessions.length -->
-                    <div id="mixing-sessions-wrapper" class="grid">
-                        <!-- ko foreach: MixingSessions.sort((a, b) => {
-                                                                        let at = new Date(a.MixedDT).getTime();
-                                                                        let bt = new Date(b.MixedDT).getTime();
-                                                                        console.log(at, bt);
-                                                                        return at > bt ? 1 : -1
-                                                                    }) -->
-                        <div class="alert alert-primary mixing-session grid">
-                            <label>
-                                Date
-                            </label>
-                            <span>
-                                <span data-bind="html: moment(MixedDT).format('ddd DD/MM/YYYY HH:mm')"></span>
-                            </span>
-                            <label>
-                                Mixed By
-                            </label>
-                            <span>
-                                <span data-bind="text: MixedBy"></span>
-                            </span>
-                            <label>
-                                Box Count
-                            </label>
-                            <span>
-                                <span data-bind="text: BoxCount"></span>
-                            </span>
-                            <button class="btn btn-primary" data-bind="click: () => { $parentContext.$parent.fetchBoxLabels(MixingSessionID); }">
-                                Reprint Labels
-                            </button>
+                    <div class="accordion mb-3" id="order-details-accordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="order-details-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#order-details-collapse" aria-expanded="true" aria-controls="order-details-collapse">
+                                    <span data-bind="text: `Order Details: ${OrderID}`"></span>
+                                </button>
+                            </h2>
+                            <div id="order-details-collapse" class="accordion-collapse collapse" aria-labelledby="order-details-header" data-bs-parent="#order-details-accordion">
+                                <div class="accordion-body">
+                                    <div id="order-summary">
+                                        <label>
+                                            Trade Account
+                                        </label>
+                                        <span>
+                                            <span data-bind="text: TradeAccountCode"></span>
+                                            -
+                                            <span data-bind="text: TradeAccountName"></span>
+                                        </span>
+                                        <label>
+                                            Order Number
+                                        </label>
+                                        <span data-bind="text: OrderID"></span>
+                                        <label>
+                                            Order Date
+                                        </label>
+                                        <span data-bind="text: moment(OrderDT).format('ddd DD/MM/YYYY HH:mm')"></span>
+                                        <label>
+                                            Customer Order Reference
+                                        </label>
+                                        <span data-bind="text: CustomerOrderReference"></span>
+                                        <label>
+                                            Delivery Description
+                                        </label>
+                                        <span data-bind="text: DeliveryDescription"></span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <!-- /ko -->
                     </div>
-                    <!-- /ko -->
                 </div>
                 <div data-bind="kendoGrid: orderLinesGrid"></div>
             </div>

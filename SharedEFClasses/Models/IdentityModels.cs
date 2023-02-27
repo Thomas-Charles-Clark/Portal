@@ -214,10 +214,6 @@ namespace SharedEFClasses.Models
         public virtual ICollection<MixingSession> MixingSessions { get; set; }
 
         [JsonIgnore]
-        [InverseProperty("BasePaintOrderedByMember")]
-        public virtual ICollection<MixingSession> MixingSessionsOrderingBasePaint { get; set; }
-
-        [JsonIgnore]
         [InverseProperty("TransferredByMember")]
         public virtual ICollection<MixingSession> MixingSessionsTransferred { get; set; }
 

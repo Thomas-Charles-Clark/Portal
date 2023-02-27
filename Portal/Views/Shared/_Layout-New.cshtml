@@ -759,7 +759,10 @@
 
     <script id="mdc-text-field-numeric-unformatted-component" type="text/html">
         <div class="mdc-validating-field" data-bind="visible: $data.hasOwnProperty('visible') ? $data.visible : true">
-            <div class="mdc-numeric-field input-group" data-bind="css: { 'input-group-lg': typeof large !== 'undefined' && large }">
+            <div class="mdc-numeric-field input-group" data-bind="css: { 
+                 'input-group-lg': typeof large !== 'undefined' && large, 
+                 'barber-busy': typeof busy == 'undefined' ? false : ko.unwrap(busy)
+                }">
                 <button type="button" class="btn btn-secondary" data-bind="click: decrement">
                     <i class="bi bi-dash-lg"></i>
                 </button>

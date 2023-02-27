@@ -23,6 +23,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
+using System.Web.Http.Results;
 
 using Unity.Interception.Utilities;
 
@@ -107,7 +108,39 @@ namespace Portal.Areas.Products.Controllers
         {
             objEnquiry.MemberID = User.Identity.GetUserId<int>();
 
-            return Ok(await PortalDb.PaintOrderLineSelect(objEnquiry));
+            var results = await PortalDb.PaintOrderLineSelect(objEnquiry);
+
+            var withMixingSession = results.OrderLines.Where(ol => ol.MixingSessionID != null).ToList();
+
+            return Ok(results);
+        }
+
+        [HttpGet]
+        public async Task<IHttpActionResult> FetchOrderLinesGrid([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+            [FromUri] PassPaintOrderLineSelect objEnquiry)
+        {
+            objEnquiry.MemberID = User.Identity.GetUserId<int>();
+
+            var result = await PortalDb.PaintOrderLineSelect(objEnquiry);
+
+            return Ok(new
+            {
+                dsResult = result.OrderLines.AsQueryable().ToDataSourceResult(request),
+                MixingSessions = result.MixingSessions.ToList(),
+                Notices = result.Notices
+            });
+        }
+        
+        [HttpPost]
+        public async Task<IHttpActionResult> SaveBoxCount([FromBody] PassMixingSessionBoxCount objSave)
+        {
+            var mixingSession = PortalDb.MixingSessions.Single(ms => ms.MixingSessionID == objSave.MixingSessionID);
+
+            mixingSession.BoxCount = objSave.BoxCount;
+
+            await PortalDb.SaveChangesAsync();
+
+            return Ok(new { });
         }
 
         [HttpPost]

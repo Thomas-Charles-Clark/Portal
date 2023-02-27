@@ -53,15 +53,15 @@ body > .blocker {
 #paint-order-lines-modal .k-grid tr td {
   cursor: pointer;
 }
-#outstanding-orders-tab .k-grid tr.locked td,
-#completed-orders-tab .k-grid tr.locked td,
-#paint-order-lines-modal .k-grid tr.locked td {
+#outstanding-orders-tab .k-grid tr.locked td:not(.k-group-cell),
+#completed-orders-tab .k-grid tr.locked td:not(.k-group-cell),
+#paint-order-lines-modal .k-grid tr.locked td:not(.k-group-cell) {
   cursor: default;
-  background-color: #f8f9fa;
+  background-color: #e9ecef;
 }
-#outstanding-orders-tab .k-grid tr.k-state-selected td,
-#completed-orders-tab .k-grid tr.k-state-selected td,
-#paint-order-lines-modal .k-grid tr.k-state-selected td {
+#outstanding-orders-tab .k-grid tr.k-state-selected td:not(.k-group-cell),
+#completed-orders-tab .k-grid tr.k-state-selected td:not(.k-group-cell),
+#paint-order-lines-modal .k-grid tr.k-state-selected td:not(.k-group-cell) {
   background-color: #084298;
 }
 
@@ -154,6 +154,9 @@ body > .blocker {
   max-height: 930px;
   overflow-y: auto;
 }
+#paint-order-lines-modal .modal-dialog .modal-body #order-details-accordion .accordion-item .accordion-button {
+  background-color: #fff;
+}
 #paint-order-lines-modal .modal-dialog .modal-body #order-summary {
   display: grid;
   grid-template-columns: 220px 1fr;
@@ -162,6 +165,9 @@ body > .blocker {
 #paint-order-lines-modal .modal-dialog .modal-body #order-summary label {
   font-weight: bold;
   text-align: right;
+}
+#paint-order-lines-modal .modal-dialog .modal-body .mdc-numeric-field input {
+  text-align: center;
 }
 #paint-order-lines-modal .modal-dialog .modal-body #mixing-sessions-wrapper {
   --bs-columns: 4;
@@ -181,6 +187,9 @@ body > .blocker {
 }
 #paint-order-lines-modal .k-grid-header th.k-header {
   vertical-align: top;
+}
+#paint-order-lines-modal .k-grouping-row td {
+  font-weight: 400;
 }
 
 #paint-order-lines-modal .modal-dialog,

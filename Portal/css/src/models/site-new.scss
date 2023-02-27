@@ -22,6 +22,7 @@ input::-webkit-inner-spin-button {
     right: 1px;
     width: 12px;
     height: calc(100% - 4px);
+    display: none;
 }
 
 .form-control[type=file] {

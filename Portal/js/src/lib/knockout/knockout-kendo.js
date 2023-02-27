@@ -718,7 +718,7 @@ createBinding({
             ko.kendo.setDataSource(this, value, options);
         }
     },
-    templates: ["rowTemplate", "altRowTemplate", "detailTemplate"]
+    templates: ["rowTemplate", "altRowTemplate", "detailTemplate", "groupHeaderTemplate", "groupFooterTemplate"]
 });
 
 createBinding({

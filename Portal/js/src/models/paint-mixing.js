@@ -37,10 +37,19 @@
     // Notice above label iframe in paint-labels-modal
     self.labelNotice = ko.observable();
 
+    self.selectedOrderId = ko.observable();
+
+    self.orderLinesGridMode = ko.observable('M');
+
     // Container for the response to [paint].[OrderLine_Select], called when a user selects a selectable Order from the Outstanding Orders Grid
+    self.dataItem = ko.observable();
     self.orderLinesResponse = ko.observable();
 
     self.orderLines = ko.observableArray([]);
+
+    self.orderLines.subscribe(nv => {
+        console.log('orderLines change', nv)
+    }, self, 'arrayChange');
 
     self.mixingSessions = ko.observableArray([]);
 
@@ -393,6 +402,7 @@
 
             if (items.length === 1) {
                 let dataItem = grid.dataItem(items[0]);
+
                 if (self.orderLinesResponse() && self.orderLinesResponse().OrderID == dataItem.OrderID) {
                     return;
                 }
@@ -402,14 +412,206 @@
     }
 
     self.orderLinesGrid = {
-        autoBind: true,
+        autoBind: false,
         widget: ko.observable(),
-        data: self.orderLines,
+        data: new kendo.data.DataSource({
+            transport: {
+                read: (options) => {
+                    var webapi = new kendo.data.transports.webapi({ prefix: "" });
+
+                    var mapped = webapi.parameterMap(options.data);
+
+                    var params = new URLSearchParams();
+
+                    params.append('MixingLocationID', self.mixingLocationId());
+
+                    params.append('OrderID', self.selectedOrderId());
+
+                    params.append('Mode', self.orderLinesGridMode());
+
+                    for (var propertyName in mapped) {
+                        params.append(propertyName, mapped[propertyName]);
+                    }
+
+                    fetch('/api/PaintMixingAPI/FetchOrderLinesGrid?' + params, {
+                        method: 'GET',
+                        headers: window.fetchHeaders
+                    })
+                        .then(resp => resp.json())
+                        .then(data => {
+                            data.dsResult.Data = data.dsResult.Data.map(ol => {
+                                let orderLine = Object.assign(ol, {
+                                    elementHolder: ko.observable(),
+                                    checkboxParams: {
+                                        checkboxId: `order-line-${ol.OrderLineID}-checkbox`,
+                                        observable: ko.observable(),
+                                        originalValue: false,
+                                        useNativeValidation: false,
+                                        disable: ko.observable(ol.Locked),
+                                        enable: ko.observable(!ol.Locked),
+                                        busy: ko.observable(false)
+                                    }
+                                });
+                                orderLine.checkboxParams.observable.subscribe(nv => {
+                                    if (nv) {
+                                        orderLine.elementHolder.DOMElement.classList.add('k-state-selected');
+                                    } else {
+                                        orderLine.elementHolder.DOMElement.classList.remove('k-state-selected');
+                                    }
+                                });
+                                return orderLine;
+                            });
+                            self.orderLines(data.dsResult.Data);
+                            options.success(data.dsResult);
+                            self.mixingSessions(data.MixingSessions.map(ms => {
+                                ms.boxCount = ko.observable(ms.BoxCount);
+                                ms.fetchBoxLabels = () => {
+                                    self.fetchBoxLabels(ms.MixingSessionID);
+                                }
+                                ms = Object.assign({
+                                    boxCountParams: {
+                                        inputType: 'number',
+                                        minValue: 1,
+                                        maxValue: 99,
+                                        step: 1,
+                                        large: false,
+                                        observable: ms.boxCount,
+                                        busy: ko.observable(false),
+                                        enable: ko.observable(true),
+                                        disable: ko.observable(false),
+                                        clearable: ko.observable(false),
+                                        clearFunction: () => {
+                                            self.boxCount(undefined);
+                                        },
+                                        revertable: ko.observable(false),
+                                        useNativeValidation: false,
+                                        insertValidationMessages: false,
+                                        decorateInputElement: true,
+                                        increment: () => {
+                                            if (ms.boxCount() < 99)
+                                                ms.boxCount((+ms.boxCount()) + 1);
+                                        },
+                                        decrement: () => {
+                                            if (ms.boxCount() > 1)
+                                                ms.boxCount((+ms.boxCount()) - 1);
+                                        },
+                                        enterKey: () => {
+
+                                        }
+                                    }
+                                }, ms);
+
+                                ms.saveBoxCount = () => {
+                                    ms.boxCountParams.busy(true);
+                                    fetch('/api/PaintMixingAPI/SaveBoxCount', {
+                                        method: 'POST',
+                                        headers: window.fetchHeaders,
+                                        cache: 'no-store',
+                                        credentials: 'same-origin',
+                                        body: JSON.stringify({
+                                            mixingSessionId: ms.MixingSessionID,
+                                            boxCount: ms.boxCount()
+                                        })
+                                    })
+                                        .then(window.handleFetchResponse)
+                                        .then(response => {
+                                            ms.boxCountParams.busy(false);
+                                            console.log('SaveBoxCount returned', response);
+                                            if (response.ErrorMessage) {
+                                                window.showError(response.ErrorMessage);
+                                            } else {
+                                                self.fetchOrderLines(self.orderLinesResponse(), 'M');
+                                            }
+                                        })
+                                        .catch(err => {
+                                            ms.boxCountParams.busy(false);
+                                            window.catchFetchError(err);
+                                        })
+                                }
+
+                                return ms;
+                            }));
+                            data.OrderID = self.selectedOrderId();
+                            self.orderLinesResponse(Object.assign(self.dataItem(), data));
+                            console.log('FetchOrderLinesGrid returned', data);
+                        })
+                        .catch(err => window.catchFetchError(err));
+                }
+            },
+            pageSize: 10,
+            pageable: {
+                pageSize: 10,
+                pageSizes: [10, 20, 50, 100, 250, 500, 'all']
+            },
+            serverPaging: true,
+            serverSorting: true,
+            serverFiltering: true,
+            schema: $.extend({}, kendo.data.schemas.webapi, {
+                data: "Data",
+                total: "Total",
+                errors: "Errors",
+                aggregates: "Aggregates",
+                model: {
+                    ìd: 'OrderLineID',
+                    fields: {
+                        OrderLineID: {
+                            type: 'string'
+                        },
+                        LineNumber: {
+                            type: 'number'
+                        },
+                        QuantityOrdered: {
+                            type: 'number'
+                        },
+                        ProductCode: {
+                            type: 'string'
+                        },
+                        ProductName: {
+                            type: 'string'
+                        },
+                        BaseProductCode: {
+                            type: 'string'
+                        },
+                        BaseProductName: {
+                            type: 'string'
+                        },
+                        Locked: {
+                            type: 'boolean'
+                        },
+                        Status: {
+                            type: 'string'
+                        },
+                        MixingSessionID: {
+                            type: 'number'
+                        },
+                        MixedDT: {
+                            type: 'date'
+                        },
+                        MixedBy: {
+                            type: 'string'
+                        },
+                        BoxCount: {
+                            type: 'number'
+                        },
+                        MixingSessionLabel: {
+                            type: 'string'
+                        }
+                    }
+                }
+            }),
+            group: [{
+                field: 'MixingSessionLabel',
+                sort: {
+                    dir: 'asc'
+                }
+            }]
+        }),
         useKOTemplates: true,
         rowTemplate: 'order-lines-row-template',
         selectable: false,
         scrollable: false,
         sortable: true,
+        groupable: false,
         pageable: {
             pageSize: 10,
             pageSizes: [10, 20, 50, 100, 250, 500, 'all']
@@ -438,20 +640,48 @@
             field: 'Status',
             title: 'Status'
         }, {
+            field: 'MixingSessionLabel',
+            title: 'Mixing Session Label',
+            groupHeaderTemplate: (row, aggregates) => {
+                return row.value ?? "<strong>Not Yet Mixed</strong>";
+            },
+            hidden: true
+        }, {
             field: 'Checkbox',
             title: ' ',
             width: 56
         }],
-        change: (e) => {
-            //let items = e.sender.select();
-            //let grid = e.sender;
+        dataBound: (e) => {
+            window.setTimeout(() => {
+                document.querySelectorAll('#paint-order-lines-modal .k-grouping-row').forEach(r => {
+                    let mixingSession = self.mixingSessions().find(ms => {
+                        if (r.querySelector('.d-inline-flex'))
+                            return r.querySelector('.d-inline-flex').dataset.mixingSessionId == ms.MixingSessionID;
+                    });
+                    ko.cleanNode(r);
+                    ko.applyBindings(mixingSession, r);
+                })
+            }, 0);
 
-            //items.each((i, e) => {
-            //    let dataItem = grid.dataItem(e);
-            //    if (dataItem.Locked === true) {
-            //        $(e).removeClass("k-state-selected");
-            //    }
-            //});
+            let dataView = e.sender.dataSource.view();
+
+            for (var i = 0; i < dataView.length; i++) {
+                for (var j = 0; j < dataView[i].items.length; j++) {
+                    if (dataView[i].items[j].MixingSessionID != null) {
+
+                        let prevEleSub = dataView[i].items[j].elementHolder.DOMElement.previousElementSibling;
+
+                        while (prevEleSub != null && !prevEleSub.classList.contains('k-grouping-row')) {
+                            prevEleSub = prevEleSub.previousElementSibling;
+                        }
+
+                        e.sender.collapseGroup(prevEleSub);
+                    }
+                }
+            }
+        },
+        change: (e) => {
+
         }
     };
 
@@ -978,39 +1208,6 @@
 
     //#region Computeds
 
-    self.orderLineResponseComputer = ko.computed(() => {
-        let response = self.orderLinesResponse();
-
-        if (response) {
-            self.orderLines(response.OrderLines.map(ol => {
-                let orderLine = Object.assign(ol, {
-                    elementHolder: ko.observable(),
-                    checkboxParams: {
-                        checkboxId: `order-line-${ol.OrderLineID}}-checkbox`,
-                        observable: ko.observable(),
-                        originalValue: false,
-                        useNativeValidation: false,
-                        disable: ko.observable(ol.Locked),
-                        enable: ko.observable(!ol.Locked),
-                        busy: ko.observable(false)
-                    }
-                });
-                orderLine.checkboxParams.observable.subscribe(nv => {
-                    if (nv) {
-                        orderLine.elementHolder.DOMElement.classList.add('k-state-selected');
-                    } else {
-                        orderLine.elementHolder.DOMElement.classList.remove('k-state-selected');
-                    }
-                });
-                return orderLine;
-            }));
-            self.mixingSessions(response.MixingSessions);
-        } else {
-            self.orderLines([]);
-            self.mixingSessions([]);
-        }
-    }, self);
-
     self.checkedOrderLinesComputer = ko.computed(() => {
         if (self.orderLines()) {
             self.checkedOrderLines(self.orderLines().filter(ol => ol.checkboxParams.observable()))
@@ -1037,46 +1234,35 @@
 
     self.fetchOrderLines = (dataItem, mode = 'M') => {
         self.busy(true);
-        fetch('/api/PaintMixingAPI/FetchOrderLines', {
-            method: 'POST',
-            headers: window.fetchHeaders,
-            cache: 'no-store',
-            credentials: 'same-origin',
-            body: JSON.stringify({
-                orderId: dataItem.OrderID,
-                mode: mode
-            })
-        })
-        .then(window.handleFetchResponse)
-        .then(response => {
+
+        self.selectedOrderId(dataItem.OrderID);
+
+        self.orderLinesGridMode(mode);
+
+        self.dataItem(dataItem);
+
+        self.orderLinesGrid.widget().one('dataBound', (event) => {
+            self.showOrderLinesModal();
             self.busy(false);
-            response.OrderID = dataItem.OrderID;
-            console.log(response);
-            if (response.Notices.ErrorMessage) {
-                window.showError(response.Notices.ErrorMessage);
-            } else {
-                self.orderLinesResponse(Object.assign(response, dataItem));
-                self.showOrderLinesModal();
-                self.outstandingOrdersGrid.widget().one("dataBound", function (e) {
-                    e.sender.select(document.querySelector(`tr[data-order-id="${self.orderLinesResponse().OrderID}"]`));
-                });
-                self.outstandingOrdersGrid.widget().dataSource.read();
-            }
-        })
-        .catch(err => {
-            self.busy(false);
-            window.catchFetchError(err);
-        })
+        });
+
+        self.orderLinesGrid.widget().dataSource.read();
     }
 
     self.closeOrderLinesModal = () => {
         if (self.checkedOrderLines().length) {
             window.showConfirm('Are you sure?', `This will relinquish Order ${self.orderLinesResponse().OrderID}.`, () => {
                 self.relinquishOrderLines(self.orderLinesResponse());
+                self.orderLinesResponse(undefined);
+                self.orderLines([]);
+                self.mixingSessions([]);
             });
         } else {
             self.relinquishOrderLines(self.orderLinesResponse());
             self.orderHistoryGrid.widget().dataSource.read();
+            self.orderLinesResponse(undefined);
+            self.orderLines([]);
+            self.mixingSessions([]);
         }
     }
 
@@ -1133,7 +1319,7 @@
                 cache: 'no-store',
                 credentials: 'same-origin',
                 body: JSON.stringify({
-                    orderId: self.orderLinesResponse().OrderID,
+                    orderId: self.selectedOrderId(),
                     orderLineIds: self.checkedOrderLines().map(ol => ol.OrderLineID),
                     boxCount: boxCount
                 })
@@ -1149,9 +1335,8 @@
                         //window.showInfo('<span class="fs-4 text-sucess">Success</span>', response.Notification);
                         self.labelNotice(response.Notification);
                         self.orderLinesResponse().MixingSessionID = response.MixingSessionID;
-                        self.fetchBoxLabels(self.orderLinesResponse().MixingSessionID, () => {
-                            self.fetchOrderLines(self.orderLinesResponse(), 'M');
-                        });
+                        self.fetchOrderLines(self.orderLinesResponse(), 'M');
+                        self.fetchBoxLabels(self.orderLinesResponse().MixingSessionID);
                     }
                 })
                 .catch(err => {

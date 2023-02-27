@@ -46,14 +46,14 @@ body {
         }
 
         tr.locked {
-            td {
+            td:not(.k-group-cell) {
                 cursor: default;
-                background-color: $gray-100;
+                background-color: $gray-200;
             }
         }
 
         tr.k-state-selected {
-            td {
+            td:not(.k-group-cell) {
                 background-color: $blue-700;
             }
         }
@@ -100,6 +100,14 @@ body {
             max-height: 930px;
             overflow-y: auto;
 
+            #order-details-accordion {
+                .accordion-item {
+                    .accordion-button {
+                        background-color: $white;
+                    }
+                }
+            }
+
             #order-summary {
                 display: grid;
                 grid-template-columns: 220px 1fr;
@@ -108,6 +116,12 @@ body {
                 label {
                     font-weight: bold;
                     text-align: right;
+                }
+            }
+
+            .mdc-numeric-field {
+                input {
+                    text-align: center;
                 }
             }
 
@@ -136,6 +150,12 @@ body {
     .k-grid-header {
         th.k-header {
             vertical-align: top;
+        }
+    }
+
+    .k-grouping-row {
+        td {
+            font-weight: 400;
         }
     }
 }

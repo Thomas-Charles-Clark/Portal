@@ -17,8 +17,9 @@ using UPSShippingWebService.Classes;
 namespace SharedEFClasses.Models
 {
     /*
-     
+        
         USE Flock;
+		UPDATE paint.OrderHead SET LockedByMemberID = NULL, LockedDT = NULL;
         UPDATE paint.OrderLine SET MixingSessionID = NULL;
         GO
         DELETE FROM paint.MixingSession;

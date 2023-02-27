@@ -18,6 +18,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace SharedEFClasses.Models
 {
@@ -63,28 +64,23 @@ namespace SharedEFClasses.Models
         public DateTime CreatedDT { get; set; }
         public DateTime ModifiedDT { get; set; }
         public DateTime? DeletedDT { get; set; }
-        public bool PlaceBasePaintStockOrder { get; set; }
-        public DateTime? BasePaintOrderedDT { get; set; }
-        public int? BasePaintOrderedByMemberID { get; set; }
-        public int? BasePaintTransactionID { get; set; }
+        public byte BasePaintOrderStatusID { get; set; }
+        public long? BasePaintOrderImportHeadID { get; set; }
+        public long? BasePaintOrderBasketID { get; set; }
+        public int? BasePaintOrderTransactionID { get; set; }
         public DateTime? TransferredDT { get; set; }
         public int? TransferredByMemberID { get; set; }
+        public int Sequence { get; set; }   
 
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool Deleted { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public bool BasePaintOrdered { get; set; }
-
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool Transferred { get; set; }
 
         [ForeignKey("MixedByMemberID")]
         public Member MixedBy { get; set; }
-
-        [ForeignKey("BasePaintOrderedByMemberID")]
-        public Member BasePaintOrderedByMember { get; set; }
 
         [ForeignKey("TransferredByMemberID")]
         public Member TransferredByMember { get; set; }
@@ -254,7 +250,7 @@ namespace SharedEFClasses.Models
         public string BasePaintOrderStatus { get; set; }
         public DateTime OrderDT { get; set; }
         public bool RequiresInvoicing { get; set; }
-        public int MixingSessionID { get; set; }
+        public long MixingSessionID { get; set; }
         public string CustomerOrderID { get; set; }
         public string CustomerOrderReference { get; set; }
     }
@@ -277,6 +273,7 @@ namespace SharedEFClasses.Models
         public IEnumerable<PaintOrderLineSelect> OrderLines { get; set; }
 
         public IEnumerable<PaintOrderLineMixingSession> MixingSessions { get; set; }
+
         public PaintNotice Notices { get; set; } 
     }
 
@@ -291,12 +288,31 @@ namespace SharedEFClasses.Models
         public string BaseProductName { get; set; }
         public bool Locked { get; set; }
         public string Status { get; set; }
-        public int? MixingSessionID { get; set; }
+
+        public long? MixingSessionID { get; set; }
+        public DateTime MixedDT { get; set; }
+        public string MixedBy { get; set; }
+        public int BoxCount { get; set; }
+
+        public string MixingSessionLabel
+        {
+            get
+            {
+                if (MixingSessionID.HasValue)
+                {
+                    return $"<div data-mixing-session-id=\"{MixingSessionID}\" class=\"d-inline-flex align-items-center gap-3\"><strong>Date:</strong>{MixedDT.ToString("ddd dd/MM/yyyy HH:mm")}<strong>Mixed By:</strong>{MixedBy}<strong>Box Count:</strong><div data-bind=\"component: {{ name: 'mdc-text-field-numeric-unformatted-component', params: boxCountParams }}\"></div><button type=\"button\" class=\"btn btn-success\" data-bind=\"click: saveBoxCount\">Save</button><button type=\"button\" class=\"btn btn-secondary\" data-bind=\"click: fetchBoxLabels\">Reprint Labels</button></div>";
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
     }
 
     public class PaintOrderLineMixingSession
     {
-        public short MixingSessionID { get; set; }
+        public long MixingSessionID { get; set; }
         public DateTime MixedDT { get; set; }
         public string MixedBy { get; set; }
         public int BoxCount { get; set; }
@@ -393,7 +409,7 @@ namespace SharedEFClasses.Models
     {
         public string OrderID { get; set; }
         public int BoxCount { get; set; }
-        public int MixingSessionID { get; set; }
+        public long MixingSessionID { get; set; }
         public DateTime? LastPrintedDT { get; set; }
     }
 
@@ -421,5 +437,11 @@ namespace SharedEFClasses.Models
     public class PaintUpdateOrderStatusResult 
     { 
     
+    }
+
+    public class PassMixingSessionBoxCount
+    {
+        public long MixingSessionID { get; set; }
+        public short BoxCount { get; set; }
     }
 }
