@@ -61,6 +61,9 @@ namespace SharedEFClasses.Models
         public short MarketingCountryID { get; set; }
         public byte MarketingLanguageID { get; set; }
 
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public bool InvalidEmail { get; set; }
+
         public bool TradeAuthenticationComplete { get; set; }
         
         [JsonIgnore]

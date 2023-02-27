@@ -215,6 +215,10 @@ namespace Portal.Controllers
                                             .Select(p => p.OwnerMember)
                                             .ToList();
 
+            dashboardMembers.AddRange(PortalDb.Users.Where(u => u.Deleted == false && u.InvalidEmail == false && u.Roles.Select(r => r.RoleId).Contains(13)));
+
+            dashboardMembers = dashboardMembers.Distinct().ToList();
+
             var clientSideDashboardMembers = dashboardMembers.Distinct()
                                                                 .ToList()
                                                                 .ConvertAll(p => new ClientSideMember()
