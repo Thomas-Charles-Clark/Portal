@@ -236,12 +236,13 @@ namespace SharedEFClasses.Models
 
     public class PassPaintOrdersToInvoice : PassPaintOrderHeadSelect
     {
-
+        public string Mode { get; set; } /* D = Awaiting Despatch, E = Exception */
     }
 
     public class PaintBasePaintOrdersToInvoiceResponse
     {
         public IEnumerable<BasePaintOrderToInvoice> Orders { get; set; }
+        public PaintNotice Notices { get; set; }
     }
 
     public class BasePaintOrderToInvoice
@@ -300,7 +301,37 @@ namespace SharedEFClasses.Models
             {
                 if (MixingSessionID.HasValue)
                 {
-                    return $"<div data-mixing-session-id=\"{MixingSessionID}\" class=\"d-inline-flex align-items-center gap-3\"><strong>Date:</strong>{MixedDT.ToString("ddd dd/MM/yyyy HH:mm")}<strong>Mixed By:</strong>{MixedBy}<strong>Box Count:</strong><div data-bind=\"component: {{ name: 'mdc-text-field-numeric-unformatted-component', params: boxCountParams }}\"></div><button type=\"button\" class=\"btn btn-success\" data-bind=\"click: saveBoxCount\">Save</button><button type=\"button\" class=\"btn btn-secondary\" data-bind=\"click: fetchBoxLabels\">Reprint Labels</button></div>";
+                    return $@"<div data-mixing-session-id=""{MixingSessionID}"" class=""d-inline-flex align-items-center gap-3 mixing-session"">
+    <strong>
+        Date:
+    </strong>
+    <span>
+        {MixedDT.ToString("ddd dd/MM/yyyy HH:mm")}
+    </span>    
+    <strong>
+        Mixed By:
+    </strong>
+    <span>
+        {MixedBy}
+    </span>
+    <strong>
+        Box Count:
+    </strong>
+    <span>
+        {BoxCount}
+    </span>
+    <button id=""mixing-session-{MixingSessionID}-collapse-btn"" class=""btn btn-secondary"" type=""button"" data-bs-toggle=""collapse"" data-bs-target=""#mixing-session-{MixingSessionID}-edit-collapse"">
+        <i class=""material-icons"">edit</i>
+    </button>
+    <div class=""collapse collapse-horizontal"" id=""mixing-session-{MixingSessionID}-edit-collapse"">
+        <div style=""width: 198px;"" class=""d-inline-flex align-items-center gap-3"">
+            <div data-bind=""component: {{ name: 'mdc-text-field-numeric-unformatted-component', params: boxCountParams }}""></div>
+            <button type=""button"" class=""btn btn-success"" data-bind=""click: saveBoxCount, disable: boxCountParams.busy"">Save</button>
+        </div>
+    </div>
+    <i class=""material-icons text-success"" data-bind=""css: {{ 'saved': boxCountSavedSuccessfully }}"">check</i>
+    <button type=""button"" class=""btn btn-secondary"" data-bind=""click: fetchBoxLabels"">Reprint Labels</button>
+</div>";
                 }
                 else
                 {
@@ -396,7 +427,7 @@ namespace SharedEFClasses.Models
 
     public class PassTransferGridSelect : PassPaintOrderHeadSelect
     {
-
+        public string Mode { get; set; }
     }
 
     public class PaintTransferOrdersResponse

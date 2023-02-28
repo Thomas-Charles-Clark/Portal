@@ -3332,3 +3332,24 @@ ko.validation.rules['numeric'] = {
     message: 'Invalid value for numeric'
 };
 ko.validation.addExtender('validJson');
+
+ko.bindingHandlers.toggleOpacity = {
+    init: function (element, valueAccessor) {
+        var blockerVisible = ko.unwrap(valueAccessor());
+        if (blockerVisible) {
+            element.classList.remove('d-none');
+            element.classList.add('opacity-100');
+        }
+    },
+    update: function (element, valueAccessor, allBindingsAccessor) {
+        // Whenever the value subsequently changes, slowly fade the element in or out
+        var blockerVisible = ko.unwrap(valueAccessor());
+        if (blockerVisible) {
+            element.classList.remove('d-none');
+            element.classList.add('opacity-100');
+        } else {
+            element.classList.remove('opacity-100');
+            setTimeout(() => element.classList.add('d-none'), 150);
+        }
+    }
+}

@@ -30,7 +30,7 @@
             errorElementClass: 'alert-danger',
             errorMessageClass: 'validation-message text-danger'
         });
-
+        6
         ko.applyBindings(viewModel, document.body);
 
         window.self = viewModel;
@@ -138,13 +138,21 @@
     </tr>
 </script>
 
-<script id="order-lines-group-header-template" type="text/html">
-    <h1>
-        POTATO
-    </h1>
+<script id="transfer-row-template" type="text/html">
+    <tr data-bind="keepElement: elementHolder, attr: { 'data-order-id': OrderID }">
+        <td data-bind="click: () => { checkboxParams.observable(!checkboxParams.observable()) }">
+            <span data-bind="text: OrderID"></span>
+        </td>
+        <td class="text-center" data-bind="click: () => { checkboxParams.observable(!checkboxParams.observable()) }">
+            <span data-bind="text: BoxCount"></span>
+        </td>
+        <td>
+            <div data-bind="component: { name: 'mdc-checkbox-component', params: checkboxParams }"></div>
+        </td>
+    </tr>
 </script>
 
-<script id="transfer-row-template" type="text/html">
+<script id="transfer-history-row-template" type="text/html">
     <tr data-bind="keepElement: elementHolder, attr: { 'data-order-id': OrderID }">
         <td data-bind="click: () => { checkboxParams.observable(!checkboxParams.observable()) }">
             <span data-bind="text: OrderID"></span>
@@ -197,9 +205,6 @@
     <li class="nav-item" role="presentation">
         <button class="nav-link" id="completed-orders-tab-btn" data-bs-toggle="tab" data-bs-target="#completed-orders-tab" type="button" role="tab" aria-controls="profile" aria-selected="false">
             Order History
-            <!-- ko if: orderHistoryCount -->
-            <sup class="badge rounded-pill text-bg-primary" style="display: none;" data-bind="visible: orderHistoryCount, text: orderHistoryCount"></sup>
-            <!-- /ko -->
         </button>
     </li>
     <li class="nav-item" role="presentation">
@@ -210,12 +215,23 @@
             <!-- /ko -->
         </button>
     </li>
+    <li class="nav-item" role="presentation" style="display: none" data-bind="visible: ordersToInvoiceExceptionCount">
+        <button class="nav-link bg-danger border-danger" id="stock-orders-exception-tab-btn" data-bs-toggle="tab" data-bs-target="#stock-orders-exception-tab" type="button" role="tab" aria-controls="contact" aria-selected="false">
+            Base Paint Orders Exceptions
+            <sup class="badge badge-danger border-danger rounded-pill text-bg-danger" style="display: none;" data-bind="visible: ordersToInvoiceExceptionCount, text: ordersToInvoiceExceptionCount"></sup>
+        </button>
+    </li>
     <li class="nav-item" role="presentation">
         <button class="nav-link" id="transfers-tab-btn" data-bs-toggle="tab" data-bs-target="#transfers-tab" type="button" role="tab" aria-controls="contact" aria-selected="false">
             Generate Collection Paperwork
             <!-- ko if: transfersCount -->
             <sup class="badge rounded-pill text-bg-primary" style="display: none;" data-bind="visible: transfersCount, text: transfersCount"></sup>
             <!-- /ko -->
+        </button>
+    </li>
+    <li class="nav-item" role="presentation" style="display: none;" data-bind="visible: historicalTransfersCount">
+        <button class="nav-link" id="transfers-history-tab-btn" data-bs-toggle="tab" data-bs-target="#transfers-history-tab" type="button" role="tab" aria-controls="contact" aria-selected="false">
+            Reprint Collection Paperwork
         </button>
     </li>
 </ul>
@@ -226,13 +242,16 @@
             <div data-bind="kendoGrid: outstandingOrdersGrid"></div>
         </div>
         <div class="tab-pane fade" id="completed-orders-tab" role="tabpanel" aria-labelledby="completed-orders-tab-btn">
-            <div class="hstack gap-3 justify-content-center mb-3">
+            <div class="hstack gap-3 mb-3">
                 <div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: orderHistoryFromParams }"></div>
                 <div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: orderHistoryToParams }"></div>
             </div>
             <div data-bind="kendoGrid: orderHistoryGrid"></div>
         </div>
         <div class="tab-pane fade" id="stock-orders-tab" role="tabpanel" aria-labelledby="stock-orders-tab-btn">
+            <!-- ko if: ordersToInvoiceNotice -->
+            <div data-bind="html: ordersToInvoiceNotice"></div>
+            <!-- /ko -->
             <div class="d-flex justify-content-end mb-3">
                 <button class="btn btn-primary" data-bind="click: stockOrderUpdateAll">
                     Refresh All
@@ -240,16 +259,38 @@
             </div>
             <div data-bind="kendoGrid: ordersToInvoiceGrid"></div>
         </div>
+        <div class="tab-pane fade" id="stock-orders-exception-tab" role="tabpanel" aria-labelledby="stock-orders-exception-tab-btn">
+            <!-- ko if: ordersToInvoiceExceptionNotice -->
+            <div data-bind="html: ordersToInvoiceExceptionNotice"></div>
+            <!-- /ko -->
+            <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-primary" data-bind="click: stockOrderUpdateAll">
+                    Refresh All
+                </button>
+            </div>
+            <div data-bind="kendoGrid: ordersToInvoiceExceptionsGrid"></div>
+        </div>
         <div class="tab-pane fade" id="transfers-tab" role="tabpanel" aria-labelledby="transfers-tab-btn">
             <!-- ko if: transferNotice -->
             <div data-bind="html: transferNotice"></div>
             <!-- /ko -->
             <div class="d-flex justify-content-end mb-3">
                 <button class="btn btn-primary" data-bind="click: produceTransferManifest">
-                    Produce Manifest
+                    Produce Collection Paperwork
                 </button>
             </div>
             <div data-bind="kendoGrid: transfersGrid"></div>
+        </div>
+        <div class="tab-pane fade" id="transfers-history-tab" role="tabpanel" aria-labelledby="transfers-tab-btn">
+            <!-- ko if: transferNotice -->
+            <div data-bind="html: transferNotice"></div>
+            <!-- /ko -->
+            <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-primary" data-bind="click: produceTransferManifest">
+                    Produce Collection Paperwork
+                </button>
+            </div>
+            <div data-bind="kendoGrid: transfersHistoryGrid"></div>
         </div>
     </div>
 </div>

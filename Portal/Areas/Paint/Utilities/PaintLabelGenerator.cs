@@ -240,7 +240,7 @@ namespace Portal.Areas.Paint.Utilities
         /// </summary>
         /// <param name="html"></param>
         /// <returns></returns>
-        public static MemoryStream ConvertHTMLToPDF(string html, bool verticallyCentered)
+        public static MemoryStream ConvertHTMLToPDF(string html, bool boxLabels)
         {
             iTextSharp.text.Font normalFont = FontFactory.GetFont("Arial", 10, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
             iTextSharp.text.Font smallerFont = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
@@ -266,7 +266,7 @@ namespace Portal.Areas.Paint.Utilities
 
                     cell.Padding = 0;
 
-                    cell.VerticalAlignment = verticallyCentered ? Element.ALIGN_MIDDLE : Element.ALIGN_TOP;
+                    cell.VerticalAlignment = Element.ALIGN_TOP;
 
                     cell.MinimumHeight = doc.PageSize.Height - 135;
 
@@ -277,7 +277,7 @@ namespace Portal.Areas.Paint.Utilities
                     //Create a writer that's bound to our PDF abstraction and our stream
                     using (var writer = PdfWriter.GetInstance(doc, ms))
                     {
-                        if (verticallyCentered)
+                        if (boxLabels)
                             writer.PageEvent = new BoxLabelPDFEventHelper();
 
                         //Open the document for writing
@@ -295,13 +295,18 @@ namespace Portal.Areas.Paint.Utilities
 
                         list.ForEach(l =>
                         {
-                            l.Chunks.ForEach(c =>
+                            if (boxLabels)
                             {
-                                c.Font = smallerFont;
-                            });
+                                l.Chunks.ForEach(c =>
+                                {
+                                    c.Font = smallerFont;
+                                });
+                            }
 
                             if (l.IsContent())
+                            {
                                 cell.AddElement(l);
+                            }
                         });
 
                         ////Our sample HTML and CSS

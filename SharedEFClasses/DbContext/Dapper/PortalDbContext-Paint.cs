@@ -65,15 +65,17 @@ namespace SharedEFClasses.Models
 
         public async Task<PaintBasePaintOrdersToInvoiceResponse> PaintOrdersToInvoice(PassPaintOrdersToInvoice objEnquiry)
         {
-            var results = await this.Database.Connection.QueryMultipleAsync("[paint].[BasePaintOrdersToInvoice]", new
+            var results = await this.Database.Connection.QueryMultipleAsync("[paint].[BasePaintOrders_Select]", new
             {
                 objEnquiry.MixingLocationID,
+                Mode = String.IsNullOrEmpty(objEnquiry.Mode) ? "D" : objEnquiry.Mode,
                 //objEnquiry.MemberID
             }, null, null, System.Data.CommandType.StoredProcedure);
 
             return new PaintBasePaintOrdersToInvoiceResponse()
             {
-                Orders = results.Read<BasePaintOrderToInvoice>()
+                Orders = results.Read<BasePaintOrderToInvoice>(),
+                Notices = results.ReadSingle<PaintNotice>()
             };
         }
 
@@ -82,7 +84,7 @@ namespace SharedEFClasses.Models
             var results = await this.Database.Connection.QueryMultipleAsync("[paint].[Transfer_SelectList]", new
             {
                 objEnquiry.MixingLocationID,
-                //objEnquiry.MemberID
+                Mode = String.IsNullOrEmpty(objEnquiry.Mode) ? "P" : objEnquiry.Mode
             }, null, null, System.Data.CommandType.StoredProcedure);
 
             return new PaintTransferOrdersResponse()

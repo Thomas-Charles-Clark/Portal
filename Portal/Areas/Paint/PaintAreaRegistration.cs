@@ -27,6 +27,12 @@ namespace Portal.Areas.Paint
                 "paint/boxlabel/{mixingSessionId}",
                 new { Area = "Paint", Controller = "Mixing", Action = "ViewBoxLabel" }
             );
+
+            context.MapRoute(
+                "Paint_ManfiestDemo",
+                "paint/manifestdemo",
+                new { Area = "Paint", Controller = "Mixing", Action = "TransferManifestDemo" }
+            );
         }
     }
 }

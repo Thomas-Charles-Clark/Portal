@@ -54,5 +54,25 @@ namespace Portal.Areas.Paint.Controllers
 
             return View("_PaintLabelTemplate", model.BoxLabels.First());
         }
+
+        public async Task<ActionResult> TransferManifestDemo()
+        {
+            var select = new PassTransferGridSelect() 
+            { 
+                MemberID = User.Identity.GetUserId<int>(),
+                MixingLocationID = 1
+            };
+
+            var orders = await PortalDb.PaintTransferOrders(select);
+
+            var model = new PaintTransferSaveResponse()
+            {
+                Notices = new PaintNotice(),
+                TransferDescription = "Transfer Demonstration",
+                TransferOrders = orders.Orders.Skip(0).Take(20)
+            };
+
+            return View("_PaintTransferManifest", model);
+        }
     }
 }

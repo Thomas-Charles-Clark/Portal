@@ -74,7 +74,29 @@ namespace Portal.Areas.Products.Controllers
 
             var result = await PortalDb.PaintOrdersToInvoice(objEnquiry);
 
-            return Ok(result.Orders.AsQueryable().ToDataSourceResult(request));
+            return Ok(new
+            {
+                dsResult = result.Orders.AsQueryable().ToDataSourceResult(request),
+                AllResults = result.Orders.ToList(),
+                Notices = result.Notices
+            });
+        }
+
+        [HttpGet]
+        public async Task<IHttpActionResult> FetchOrdersToInvoiceExceptions(
+            [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+            [FromUri] PassPaintOrdersToInvoice objEnquiry)
+        {
+            objEnquiry.MemberID = User.Identity.GetUserId<int>();
+
+            var result = await PortalDb.PaintOrdersToInvoice(objEnquiry);
+
+            return Ok(new
+            {
+                dsResult = result.Orders.AsQueryable().ToDataSourceResult(request),
+                AllResults = result.Orders.ToList(),
+                Notices = result.Notices
+            });
         }
 
         [HttpGet]

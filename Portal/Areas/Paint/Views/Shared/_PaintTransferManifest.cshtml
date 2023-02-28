@@ -7,6 +7,34 @@
 <head>
     <link rel="stylesheet" href="@Url.Content("~/css/dist/lib/bootstrap-3.3.7/bootstrap-3.3.7.css", toAbsolute: true)" />
     <style type="text/css">
+        .mt-0 {
+            margin-top: 0;
+        }
+
+        .mt-1 {
+            margin-top: 5px;
+        }
+
+        .mt-2 {
+            margin-top: 10px;
+        }
+
+        .mt-3 {
+            margin-top: 15px;
+        }
+
+        .mt-4 {
+            margin-top: 30px;
+        }
+
+        .mt-5 {
+            margin-top: 45px;
+        }
+
+        .mb-0 {
+            margin-bottom: 0;
+        }
+
         .mb-1 {
             margin-bottom: 5px;
         }
@@ -26,16 +54,43 @@
         .mb-5 {
             margin-bottom: 45px;
         }
+
+        h2 {
+        }
+
+        div > .table > tbody > tr > td {
+            padding: 5px 4px 4px 4px;
+            vertical-align: middle;
+        }
+
+        .checkbox-box {
+            width: 32px;
+            height: 32px;
+            border: 3px solid #dadada;
+            margin: 0 auto;
+        }
+
+        .table > tbody > tr > td {
+            vertical-align: middle;
+        }
     </style>
 </head>
     <body style="text-align: center;">
         <h1 class="mb-3">
             Paint Transfer Manifest
         </h1>
-        <h3 class="mb-5">
+        <h3 class="mb-3">
             @Html.Raw(Model.TransferDescription)
         </h3>
+        <h3 class="mb-5">
+            Total Boxes: @Html.Raw(Model.TransferOrders.Select(t => t.BoxCount).Sum())
+        </h3>
         <table class="table">
+            <colgroup>
+                <col style="width: 33.333%" />
+                <col style="width: 33.333%" />
+                <col style="width: 33.333%" />
+            </colgroup>
             <thead>
                 <tr>
                     <th class="text-center">
@@ -44,17 +99,42 @@
                     <th class="text-center">
                         Box Count
                     </th>
+                    <th class="text-center">
+                        Checked
+                    </th>
                 </tr>
             </thead>
             <tbody>
+                @{
+                    var cellWidth = "20";
+                    var cellWidthPx = $"{cellWidth}%";
+
+                    var cellHeight = "34";
+                    var cellHeightPx = $"{cellHeight}px";
+                }
                 @foreach (var order in Model.TransferOrders.GroupBy(o => o.OrderID).OrderBy(g => g.Select(ord => ord.BoxCount).Sum()))
                 {
                     <tr>
-                        <td>
+                        <td style="width: 33.3333%; padding-top: 12px;" valign="middle">
                             @(order.Key)
                         </td>
-                        <td>
+                        <td style="width: 33.3333%; padding-top: 12px" valign="middle">
                             @(order.Select(ord => ord.BoxCount).Sum())
+                        </td>
+                        <td style="width: 33.3333%; padding-top: 0;" class="text-center" valign="top">
+                            <table class="table table-condensed" style="height: 100%; margin-bottom: 0; border-top: 0;">
+                                <tbody style="border-top: 0;">
+                                    <tr style="border-top: 0">
+                                        <td style="border-top: 0; width: @(cellWidthPx) ; height: @(cellHeightPx) ;"></td>
+                                        <td style="border-top: 0; width: @(cellWidthPx); height: @(cellHeightPx);"></td>
+                                        <td style="border-top: 0; width: @(cellWidthPx); height: @(cellHeightPx);"></td>
+                                        <td style="border: 2px solid #ccc; width: @(cellWidthPx); height: @(cellHeightPx);"></td>
+                                        <td style="border-top: 0; width: @(cellWidthPx); height: @(cellHeightPx);"></td>
+                                        <td style="border-top: 0; width: @(cellWidthPx); height: @(cellHeightPx);"></td>
+                                        <td style="border-top: 0; width: @(cellWidthPx); height: @(cellHeightPx);"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </td>
                     </tr>
                 }

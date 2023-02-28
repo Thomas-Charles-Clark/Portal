@@ -17,6 +17,16 @@ body {
     .nav-link {
         font-size: 1.0rem;
         padding: 0.75rem 1.15rem 0.8rem 1.15rem;
+
+        &.bg-danger {
+            color: $red-500;
+            background-color: $white !important;
+
+            &.active {
+                color: $white;
+                background-color: $danger !important;
+            }
+        }
     }
 
     .nav-link {
@@ -26,6 +36,10 @@ body {
             font-size: $font-size-regular;
             justify-content: center;
         }
+    }
+
+    li:last-of-type {
+        margin-left: auto;
     }
 }
 
@@ -119,29 +133,39 @@ body {
                 }
             }
 
-            .mdc-numeric-field {
-                input {
-                    text-align: center;
+            .k-grouping-row {
+                cursor: default;
+                td {
+                    cursor: default;
+                }
+
+                .mixing-session + p {
+                    display: none;
                 }
             }
 
-            #mixing-sessions-wrapper {
-                --bs-columns: 4;
-                gap: $l-gutter;
+            .mixing-session {
+                height: 34px;
+                width: calc(100% - 32px);
 
-                .mixing-session {
-                    --bs-columns: 2;
-                    grid-template-columns: 80px 1fr;
-                    gap: $l-gutter;
-
-                    label {
-                        font-weight: bold;
-                        text-align: right;
+                .mdc-numeric-field {
+                    input {
+                        text-align: center;
                     }
+                }
 
-                    .btn {
-                        grid-column: auto/span 2;
-                    }
+                .text-success {
+                    opacity: 0;
+                    transition: opacity 300ms ease-in-out;
+                }
+
+                .text-success.saved {
+                    opacity: 1.0;
+                    transition: opacity 150ms ease-in-out;
+                }
+
+                button:last-of-type {
+                    margin-left: auto;
                 }
             }
         }
@@ -159,7 +183,6 @@ body {
         }
     }
 }
-
 
 #paint-order-lines-modal,
 #paint-labels-modal {

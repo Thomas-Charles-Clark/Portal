@@ -31,12 +31,23 @@ body > .blocker {
   font-size: 1rem;
   padding: 0.75rem 1.15rem 0.8rem 1.15rem;
 }
+#order-tabs .nav-link.bg-danger {
+  color: #dc3545;
+  background-color: #fff !important;
+}
+#order-tabs .nav-link.bg-danger.active {
+  color: #fff;
+  background-color: #dc3545 !important;
+}
 #order-tabs .nav-link {
   position: relative;
 }
 #order-tabs .nav-link .badge {
   font-size: 1rem;
   justify-content: center;
+}
+#order-tabs li:last-of-type {
+  margin-left: auto;
 }
 
 #outstanding-orders-tab .k-grid .locked-indicator,
@@ -166,24 +177,32 @@ body > .blocker {
   font-weight: bold;
   text-align: right;
 }
-#paint-order-lines-modal .modal-dialog .modal-body .mdc-numeric-field input {
+#paint-order-lines-modal .modal-dialog .modal-body .k-grouping-row {
+  cursor: default;
+}
+#paint-order-lines-modal .modal-dialog .modal-body .k-grouping-row td {
+  cursor: default;
+}
+#paint-order-lines-modal .modal-dialog .modal-body .k-grouping-row .mixing-session + p {
+  display: none;
+}
+#paint-order-lines-modal .modal-dialog .modal-body .mixing-session {
+  height: 34px;
+  width: calc(100% - 32px);
+}
+#paint-order-lines-modal .modal-dialog .modal-body .mixing-session .mdc-numeric-field input {
   text-align: center;
 }
-#paint-order-lines-modal .modal-dialog .modal-body #mixing-sessions-wrapper {
-  --bs-columns: 4;
-  gap: 1rem;
+#paint-order-lines-modal .modal-dialog .modal-body .mixing-session .text-success {
+  opacity: 0;
+  transition: opacity 300ms ease-in-out;
 }
-#paint-order-lines-modal .modal-dialog .modal-body #mixing-sessions-wrapper .mixing-session {
-  --bs-columns: 2;
-  grid-template-columns: 80px 1fr;
-  gap: 1rem;
+#paint-order-lines-modal .modal-dialog .modal-body .mixing-session .text-success.saved {
+  opacity: 1;
+  transition: opacity 150ms ease-in-out;
 }
-#paint-order-lines-modal .modal-dialog .modal-body #mixing-sessions-wrapper .mixing-session label {
-  font-weight: bold;
-  text-align: right;
-}
-#paint-order-lines-modal .modal-dialog .modal-body #mixing-sessions-wrapper .mixing-session .btn {
-  grid-column: auto/span 2;
+#paint-order-lines-modal .modal-dialog .modal-body .mixing-session button:last-of-type {
+  margin-left: auto;
 }
 #paint-order-lines-modal .k-grid-header th.k-header {
   vertical-align: top;
