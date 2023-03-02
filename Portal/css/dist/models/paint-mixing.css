@@ -22,31 +22,45 @@ body > .blocker {
   z-index: 20000;
 }
 
-#order-tabs {
+.order-tabs {
   border-bottom: 0;
   z-index: 1;
   position: relative;
 }
-#order-tabs .nav-link {
+.order-tabs .nav-link {
   font-size: 1rem;
   padding: 0.75rem 1.15rem 0.8rem 1.15rem;
 }
-#order-tabs .nav-link.bg-danger {
+.order-tabs .nav-link.bg-danger {
   color: #dc3545;
   background-color: #fff !important;
 }
-#order-tabs .nav-link.bg-danger.active {
+.order-tabs .nav-link.bg-danger.active {
   color: #fff;
   background-color: #dc3545 !important;
 }
-#order-tabs .nav-link {
+.order-tabs .nav-link {
   position: relative;
 }
-#order-tabs .nav-link .badge {
+.order-tabs .nav-link .badge {
   font-size: 1rem;
   justify-content: center;
 }
-#order-tabs li:last-of-type {
+
+#order-tabs-wrapper ul {
+  width: 100%;
+}
+#order-tabs-wrapper ul .nav-link.bg-default {
+  color: #6c757d;
+  background-color: #fff !important;
+  border-color: #ced4da;
+}
+#order-tabs-wrapper ul .nav-link.bg-default.active {
+  color: #fff;
+  background-color: #343a40 !important;
+  border-color: #adb5bd;
+}
+#order-tabs-wrapper ul li:last-of-type {
   margin-left: auto;
 }
 
@@ -177,6 +191,10 @@ body > .blocker {
   font-weight: bold;
   text-align: right;
 }
+#paint-order-lines-modal .modal-dialog .modal-body .thumb {
+  width: 100%;
+  height: auto;
+}
 #paint-order-lines-modal .modal-dialog .modal-body .k-grouping-row {
   cursor: default;
 }
@@ -192,6 +210,15 @@ body > .blocker {
 }
 #paint-order-lines-modal .modal-dialog .modal-body .mixing-session .mdc-numeric-field input {
   text-align: center;
+}
+#paint-order-lines-modal .modal-dialog .modal-body .mixing-session .mixing-edit-btn {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  color: #ced4da;
+  font-weight: normal;
+}
+#paint-order-lines-modal .modal-dialog .modal-body .mixing-session .mixing-edit-btn:hover, #paint-order-lines-modal .modal-dialog .modal-body .mixing-session .mixing-edit-btn:focus, #paint-order-lines-modal .modal-dialog .modal-body .mixing-session .mixing-edit-btn:focus-within {
+  color: #495057;
 }
 #paint-order-lines-modal .modal-dialog .modal-body .mixing-session .text-success {
   opacity: 0;

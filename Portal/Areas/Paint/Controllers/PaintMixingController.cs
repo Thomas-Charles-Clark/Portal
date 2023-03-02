@@ -36,7 +36,7 @@ namespace Portal.Areas.Paint.Controllers
 
             if (location == null)
             {
-                location = PortalDb.MixingLocations.Single(ml => ml.MixingLocationID == 2);
+                location = PortalDb.MixingLocations.Single(ml => ml.MixingLocationID == 1);
             }
 
             var model = await PaintMixingViewModel.CreateAsync(

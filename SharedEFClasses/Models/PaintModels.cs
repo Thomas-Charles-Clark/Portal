@@ -282,6 +282,7 @@ namespace SharedEFClasses.Models
     {
         public short LineNumber { get; set; }
         public string OrderLineID { get; set; }
+        public long? ImageID { get; set; }
         public decimal QuantityOrdered { get; set; }
         public string ProductCode { get; set; }
         public string ProductName { get; set; }
@@ -320,7 +321,7 @@ namespace SharedEFClasses.Models
     <span>
         {BoxCount}
     </span>
-    <button id=""mixing-session-{MixingSessionID}-collapse-btn"" class=""btn btn-secondary"" type=""button"" data-bs-toggle=""collapse"" data-bs-target=""#mixing-session-{MixingSessionID}-edit-collapse"">
+    <button id=""mixing-session-{MixingSessionID}-collapse-btn"" class=""btn mixing-edit-btn"" type=""button"" data-bs-toggle=""collapse"" data-bs-target=""#mixing-session-{MixingSessionID}-edit-collapse"">
         <i class=""material-icons"">edit</i>
     </button>
     <div class=""collapse collapse-horizontal"" id=""mixing-session-{MixingSessionID}-edit-collapse"">
@@ -404,6 +405,11 @@ namespace SharedEFClasses.Models
         public long MixingSessionID { get; set; }
     }
 
+    public class PassNullableMixingSessionID
+    {
+        public long? MixingSessionID { get; set; }
+    }
+
     public class PaintBoxLabel
     {
         public string DespatchGroup { get; set; }
@@ -433,15 +439,19 @@ namespace SharedEFClasses.Models
     public class PaintTransferOrdersResponse
     {
         public IEnumerable<PaintTransferOrder> Orders { get; set; }
+        public IEnumerable<DateTime> Dates { get; set; }
         public PaintNotice Notices { get; set; }
     }
 
     public class PaintTransferOrder
     {
         public string OrderID { get; set; }
+        public string DespatchGroup { get; set; }
         public int BoxCount { get; set; }
         public long MixingSessionID { get; set; }
         public DateTime? LastPrintedDT { get; set; }
+        public DateTime Date { get; set; }
+        public string Time { get; set; }
     }
 
     public class PassPaintTransferSave

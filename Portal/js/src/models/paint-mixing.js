@@ -112,6 +112,10 @@
         //window.frames.labeliFrame.print();
     });
 
+    self.transferDates = ko.observableArray([]);
+
+    self.transferHistoricalDates = ko.observableArray([]);
+
     document.querySelector('#outstanding-orders-tab-btn').addEventListener('click', () => {
         self.outstandingOrdersGrid.widget().dataSource.read();
     });
@@ -596,6 +600,9 @@
                         LineNumber: {
                             type: 'number'
                         },
+                        ImageID: {
+                            type: 'number'
+                        },
                         QuantityOrdered: {
                             type: 'number'
                         },
@@ -655,7 +662,14 @@
         columns: [{
             field: 'LineNumber',
             title: '#',
-            width: 40
+            width: 40,
+            headerAttributes: {
+                class: 'text-end'
+            }
+        }, {
+            field: 'ImageID',
+            title: ' ',
+            width: 64
         }, {
             field: 'Quantity Ordered',
             title: 'Quantity',
@@ -1002,10 +1016,21 @@
             field: 'OrderID',
             title: 'Order ID',
             width: 140,
+            hidden: true,
+            filterable: {
+                extra: false
+            }
+        }, {
+            field: 'DespatchGroup',
+            title: 'Despatch Group',
+            width: 160,
             hidden: false,
             filterable: {
                 extra: false
             }
+        }, {
+            field: 'Time',
+            title: 'Time'
         }, {
             field: 'BoxCount',
             title: 'Box Count',
@@ -1021,6 +1046,13 @@
 
             },
             hidden: true
+        }, {
+            field: 'Date',
+            title: 'Date',
+            hidden: true,
+            groupHeaderTemplate: (row, aggregates) => {
+                return moment(row.value).format('dddd DD/MM/YYYY');
+            }
         }, {
             field: 'MixingSessionID',
             title: 'Mixing Session ID',
@@ -1098,6 +1130,35 @@
                                     return object;
                                 });
 
+                                self.transferDates(data.Dates.map(d => {
+                                    let object = Object.assign(d, {
+                                        elementHolder: ko.observable(),
+                                        checkboxParams: {
+                                            checkboxId: `transfer-date-${++counter}}-checkbox`,
+                                            observable: ko.observable(false),
+                                            originalValue: false,
+                                            useNativeValidation: false,
+                                            disable: ko.observable(false),
+                                            enable: ko.observable(true),
+                                            busy: ko.observable(false)
+                                        }
+                                    });
+                                    object.checkboxParams.observable.subscribe(nv => {
+                                        console.log('transfer checkbox', nv);
+                                        if (nv) {
+                                            //if (object.elementHolder.DOMElement)
+                                            //    object.elementHolder.DOMElement.classList.add('k-state-selected');
+                                            //if (self.selectedHistoricalTransferMixingSessionIds().indexOf(object.MixingSessionID) == -1)
+                                            //    self.selectedHistoricalTransferMixingSessionIds().push(object.MixingSessionID);
+                                        } else {
+                                            //if (object.elementHolder.DOMElement)
+                                            //    object.elementHolder.DOMElement.classList.remove('k-state-selected');
+                                            //self.selectedHistoricalTransferMixingSessionIds.remove(object.MixingSessionID);
+                                        }
+                                    });
+                                    return object;
+                                }));
+
                                 self.allTransferOrders(data.AllResults);
 
                                 self.transferNotice(data.Notices.Notification)
@@ -1108,9 +1169,8 @@
                         .catch(err => window.catchFetchError(err));
                 }
             },
-            pageSize: 5,
             pageable: {
-                pageSize: 5,
+                pageSize: 'all',
                 pageSizes: [1, 2, 5, 10, 20, 50, 100, 250, 500, 'all']
             },
             serverPaging: false,
@@ -1135,12 +1195,24 @@
                         },
                         LastPrintedDT: {
                             type: 'date'
+                        },
+                        Date: {
+                            type: 'date'
+                        },
+                        Time: {
+                            type: 'string'
                         }
                     }
                 }
             }),
             sort: { field: 'OrderID', dir: 'desc' },
-            filter: { field: 'LastPrintedDT', operator: 'isnull' }
+            filter: { field: 'LastPrintedDT', operator: 'isnull' },
+            group: [{
+                field: 'Date',
+                sort: {
+                    dir: 'asc'
+                }
+            }]
         }),
         useKOTemplates: true,
         rowTemplate: 'transfer-row-template',
@@ -1148,6 +1220,7 @@
         selectable: false,
         scrollable: false,
         sortable: true,
+        groupable: false,
         pageable: {
             pageSize: 5,
             pageSizes: [1, 2, 5, 10, 20, 50, 100, 250, 500, 'all']
@@ -1173,6 +1246,35 @@
             self.clearSelectedTransferMixingSessionIds();
         },
         dataBound: (e) => {
+
+            window.setTimeout(() => {
+                document.querySelectorAll('.transfers-tab .k-grouping-row').forEach(r => {
+                    let mixingSession = self.mixingSessions().find(ms => {
+                        if (r.querySelector('.d-inline-flex'))
+                            return r.querySelector('.d-inline-flex').dataset.mixingSessionId == ms.MixingSessionID;
+                    });
+                    ko.cleanNode(r);
+                    ko.applyBindings(mixingSession, r);
+                })
+            }, 0);
+
+            let dataView = e.sender.dataSource.view();
+
+            for (var i = 0; i < dataView.length; i++) {
+                for (var j = 0; j < dataView[i].items.length; j++) {
+                    if (dataView[i].items[j].MixingSessionID != null) {
+
+                        let prevEleSub = dataView[i].items[j].elementHolder.DOMElement.previousElementSibling;
+
+                        while (prevEleSub != null && !prevEleSub.classList.contains('k-grouping-row')) {
+                            prevEleSub = prevEleSub.previousElementSibling;
+                        }
+
+                        e.sender.collapseGroup(prevEleSub);
+                    }
+                }
+            }
+
             if (ko.contextFor(document.querySelector('#transfer-orders-select-all')) == null) {
                 ko.cleanNode(document.querySelector('#transfer-orders-select-all'));
                 ko.applyBindings(self, document.querySelector('#transfer-orders-select-all'))
@@ -1286,6 +1388,37 @@
                                     return object;
                                 });
 
+                                let counter = 0;
+
+                                self.transferHistoricalDates(data.Dates.map(d => {
+                                    let object = Object.assign(d, {
+                                        elementHolder: ko.observable(),
+                                        checkboxParams: {
+                                            checkboxId: `transfer-date-${++counter}}-checkbox`,
+                                            observable: ko.observable(false),
+                                            originalValue: false,
+                                            useNativeValidation: false,
+                                            disable: ko.observable(false),
+                                            enable: ko.observable(true),
+                                            busy: ko.observable(false)
+                                        }
+                                    });
+                                    object.checkboxParams.observable.subscribe(nv => {
+                                        console.log('transfer checkbox', nv);
+                                        if (nv) {
+                                            //if (object.elementHolder.DOMElement)
+                                            //    object.elementHolder.DOMElement.classList.add('k-state-selected');
+                                            //if (self.selectedHistoricalTransferMixingSessionIds().indexOf(object.MixingSessionID) == -1)
+                                            //    self.selectedHistoricalTransferMixingSessionIds().push(object.MixingSessionID);
+                                        } else {
+                                            //if (object.elementHolder.DOMElement)
+                                            //    object.elementHolder.DOMElement.classList.remove('k-state-selected');
+                                            //self.selectedHistoricalTransferMixingSessionIds.remove(object.MixingSessionID);
+                                        }
+                                    });
+                                    return object;
+                                }));
+
                                 self.allHistoricalTransferOrders(data.AllResults);
 
                                 self.transferNotice(data.Notices.Notification)
@@ -1323,12 +1456,23 @@
                         },
                         LastPrintedDT: {
                             type: 'date'
+                        },
+                        Date: {
+                            type: 'date'
+                        },
+                        Time: {
+                            type: 'string'
                         }
                     }
                 }
             }),
             sort: { field: 'OrderID', dir: 'desc' },
-            //filter: { field: 'LastPrintedDT', operator: 'isnotnull' }
+            group: [{
+                field: 'Date',
+                sort: {
+                    dir: 'asc'
+                }
+            }]
         }),
         useKOTemplates: true,
         rowTemplate: 'transfer-history-row-template',
@@ -1891,7 +2035,8 @@
             method: 'POST',
             headers: window.fetchHeaders,
             cache: 'no-store',
-            credentials: 'same-origin'
+            credentials: 'same-origin',
+            timeout: 60000
         })
             .then(window.handleFetchResponse)
             .then(response => {

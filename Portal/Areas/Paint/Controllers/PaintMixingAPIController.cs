@@ -113,6 +113,7 @@ namespace Portal.Areas.Products.Controllers
             {
                 dsResult = result.Orders.AsQueryable().ToDataSourceResult(request),
                 AllResults = result.Orders.ToList(),
+                Dates = result.Dates,
                 Notices = result.Notices
             });
         }
@@ -208,7 +209,7 @@ namespace Portal.Areas.Products.Controllers
         }
 
         [HttpPost] 
-        public async Task<IHttpActionResult> UpdateBasePaintOrderStatus([FromBody]PassMixingSessionID objEnquiry)
+        public async Task<IHttpActionResult> UpdateBasePaintOrderStatus([FromBody]PassNullableMixingSessionID objEnquiry)
         {
             return Ok(await PortalDb.PaintUpdateOrderStatus(objEnquiry));
         }

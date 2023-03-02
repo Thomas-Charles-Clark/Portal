@@ -87,11 +87,15 @@ namespace SharedEFClasses.Models
                 Mode = String.IsNullOrEmpty(objEnquiry.Mode) ? "P" : objEnquiry.Mode
             }, null, null, System.Data.CommandType.StoredProcedure);
 
-            return new PaintTransferOrdersResponse()
+            var result = new PaintTransferOrdersResponse()
             {
                 Orders = results.Read<PaintTransferOrder>(),
                 Notices = results.ReadSingle<PaintNotice>()
             };
+
+            result.Dates = result.Orders.Select(o => o.Date).Distinct();
+
+            return result;
         }
 
         public async Task<PaintOrderLineSelectResponse> PaintOrderLineSelect(PassPaintOrderLineSelect objEnquiry)
@@ -178,7 +182,7 @@ namespace SharedEFClasses.Models
             };
         }
 
-        public async Task<PaintUpdateOrderStatusResult> PaintUpdateOrderStatus(PassMixingSessionID objEnquiry)
+        public async Task<PaintUpdateOrderStatusResult> PaintUpdateOrderStatus(PassNullableMixingSessionID objEnquiry)
         {
             var results = await this.Database.Connection.QueryMultipleAsync("[paint].[BasePaintOrderStatusUpdate]", new
             {
@@ -193,12 +197,12 @@ namespace SharedEFClasses.Models
             var results = await this.Database.Connection.QueryMultipleAsync("[paint].[BasePaintOrderStatusUpdate]", new
             {
 
-            }, null, null, System.Data.CommandType.StoredProcedure);
+            }, null, 300, System.Data.CommandType.StoredProcedure);
 
             var nextResults = await this.Database.Connection.QueryMultipleAsync("[paint].[BasePaintOrderGenerate]", new
             {
 
-            }, null, null, System.Data.CommandType.StoredProcedure);
+            }, null, 300, System.Data.CommandType.StoredProcedure);
 
             return new PaintUpdateOrderStatusResult();
         }
