@@ -1051,7 +1051,10 @@
             title: 'Date',
             hidden: true,
             groupHeaderTemplate: (row, aggregates) => {
-                return moment(row.value).format('dddd DD/MM/YYYY');
+                return `<div class='d-inline-flex justify-content-center align-items-center gap-3' data-date='${moment(row.value).format('DD/MM/YYYY')}'>
+                    <span>${moment(row.value).format('dddd DD/MM/YYYY')}</span>
+                    <div data-bind="component: { name: 'mdc-checkbox-component', params: checkboxParams }"></div>
+                </div>`;
             }
         }, {
             field: 'MixingSessionID',
@@ -1130,19 +1133,22 @@
                                     return object;
                                 });
 
+                                let counter = 0;
+
                                 self.transferDates(data.Dates.map(d => {
-                                    let object = Object.assign(d, {
+                                    let object = {
+                                        date: moment(d).format('DD/MM/YYYY'),
                                         elementHolder: ko.observable(),
                                         checkboxParams: {
                                             checkboxId: `transfer-date-${++counter}}-checkbox`,
-                                            observable: ko.observable(false),
+                                            observable: ko.observable(true),
                                             originalValue: false,
                                             useNativeValidation: false,
                                             disable: ko.observable(false),
                                             enable: ko.observable(true),
                                             busy: ko.observable(false)
                                         }
-                                    });
+                                    }
                                     object.checkboxParams.observable.subscribe(nv => {
                                         console.log('transfer checkbox', nv);
                                         if (nv) {
@@ -1249,12 +1255,12 @@
 
             window.setTimeout(() => {
                 document.querySelectorAll('.transfers-tab .k-grouping-row').forEach(r => {
-                    let mixingSession = self.mixingSessions().find(ms => {
+                    let date = self.transferDates().find(d => {
                         if (r.querySelector('.d-inline-flex'))
-                            return r.querySelector('.d-inline-flex').dataset.mixingSessionId == ms.MixingSessionID;
+                            return r.querySelector('.d-inline-flex').dataset.date == d.date;
                     });
                     ko.cleanNode(r);
-                    ko.applyBindings(mixingSession, r);
+                    ko.applyBindings(date, r);
                 })
             }, 0);
 
@@ -1391,7 +1397,8 @@
                                 let counter = 0;
 
                                 self.transferHistoricalDates(data.Dates.map(d => {
-                                    let object = Object.assign(d, {
+                                    let object = {
+                                        date: moment(d).format('DD/MM/YYYY'),
                                         elementHolder: ko.observable(),
                                         checkboxParams: {
                                             checkboxId: `transfer-date-${++counter}}-checkbox`,
@@ -1402,7 +1409,7 @@
                                             enable: ko.observable(true),
                                             busy: ko.observable(false)
                                         }
-                                    });
+                                    }
                                     object.checkboxParams.observable.subscribe(nv => {
                                         console.log('transfer checkbox', nv);
                                         if (nv) {

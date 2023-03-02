@@ -144,7 +144,7 @@
 </script>
 
 <script id="transfer-row-template" type="text/html">
-    <tr data-bind="keepElement: elementHolder, attr: { 'data-order-id': OrderID }">
+    <tr data-bind="keepElement: elementHolder, attr: { 'data-order-id': OrderID, 'data-date': Date }">
         <td class="k-group-cell"></td>
         <td data-bind="click: () => { checkboxParams.observable(!checkboxParams.observable()) }">
             <span data-bind="text: DespatchGroup"></span>
@@ -162,7 +162,7 @@
 </script>
 
 <script id="transfer-history-row-template" type="text/html">
-    <tr data-bind="keepElement: elementHolder, attr: { 'data-order-id': OrderID }">
+    <tr data-bind="keepElement: elementHolder, attr: { 'data-order-id': OrderID, 'data-date': Date }">
         <td class="k-group-cell"></td>
         <td data-bind="click: () => { checkboxParams.observable(!checkboxParams.observable()) }">
             <span data-bind="text: DespatchGroup"></span>
