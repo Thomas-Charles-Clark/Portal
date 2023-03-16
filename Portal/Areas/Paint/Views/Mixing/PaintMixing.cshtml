@@ -173,11 +173,6 @@
         <td class="text-center" data-bind="click: () => { checkboxParams.observable(!checkboxParams.observable()) }">
             <span data-bind="text: BoxCount"></span>
         </td>
-        <td data-bind="click: () => { checkboxParams.observable(!checkboxParams.observable()) }">
-            <!-- ko if: LastPrintedDT -->
-            <span data-bind="html: moment(LastPrintedDT).format('ddd DD/MM/YYYY HH:mm')"></span>
-            <!-- /ko -->
-        </td>
         <td>
             <div data-bind="component: { name: 'mdc-checkbox-component', params: checkboxParams }"></div>
         </td>
@@ -224,18 +219,18 @@
                 <!-- /ko -->
             </button>
         </li>
-        <li class="nav-item" role="presentation" style="display: none" data-bind="visible: ordersToInvoiceExceptionCount">
-            <button class="nav-link bg-danger border-danger" id="stock-orders-exception-tab-btn" data-bs-toggle="tab" data-bs-target="#stock-orders-exception-tab" type="button" role="tab" aria-controls="contact" aria-selected="false">
-                Base Paint Orders Exceptions
-                <sup class="badge badge-danger border-danger rounded-pill text-bg-danger" style="display: none;" data-bind="visible: ordersToInvoiceExceptionCount, text: ordersToInvoiceExceptionCount"></sup>
-            </button>
-        </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="transfers-tab-btn" data-bs-toggle="tab" data-bs-target="#transfers-tab" type="button" role="tab" aria-controls="contact" aria-selected="false">
                 Generate Collection Paperwork
                 <!-- ko if: transfersCount -->
                 <sup class="badge rounded-pill text-bg-primary" style="display: none;" data-bind="visible: transfersCount, text: transfersCount"></sup>
                 <!-- /ko -->
+            </button>
+        </li>
+        <li class="nav-item" role="presentation" style="display: none" data-bind="visible: ordersToInvoiceExceptionCount">
+            <button class="nav-link bg-danger border-danger" id="stock-orders-exception-tab-btn" data-bs-toggle="tab" data-bs-target="#stock-orders-exception-tab" type="button" role="tab" aria-controls="contact" aria-selected="false">
+                Base Paint Orders Exceptions
+                <sup class="badge badge-danger border-danger rounded-pill text-bg-danger" style="display: none;" data-bind="visible: ordersToInvoiceExceptionCount, text: ordersToInvoiceExceptionCount"></sup>
             </button>
         </li>
         <li>
@@ -290,7 +285,7 @@
             <div data-bind="html: transferNotice"></div>
             <!-- /ko -->
             <div class="d-flex justify-content-end mb-3">
-                <button class="btn btn-primary" data-bind="click: produceTransferManifest">
+                <button class="btn btn-primary" data-bind="click: () => { produceTransferManifest('current') }">
                     Produce Collection Paperwork
                 </button>
             </div>
@@ -369,19 +364,19 @@
     <div id="session-notification-wrapper">
         <div id="session-notification">
             <!-- ko ifnot: checkedOrdersCountDisplay -->
-            <h3 class="text-center mb-0">
+            <h5 class="text-center mb-0">
                 Closing...
-            </h3>
+            </h5>
             <!-- /ko -->
             <!-- ko if: checkedOrdersCountDisplay -->
-            <h3 class="text-center mb-0">
+            <h5 class="text-center mb-0">
                 <span class="d-block mb-2" data-bind="text: checkedOrdersCountDisplay"></span>
                 <span class="d-block">
                     How many boxes have you used?
                 </span>
-            </h3>
+            </h5>
             <div id="box-count-wrapper" class="mb-0" data-bind="component: { name: 'mdc-text-field-numeric-unformatted-component', params: boxCountParams }"></div>
-            <button class="btn btn-success btn-lg" data-bind="click: saveMixedLines">
+            <button class="btn btn-success" data-bind="click: saveMixedLines">
                 Done
             </button>
             <!-- /ko -->

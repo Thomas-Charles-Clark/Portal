@@ -20,7 +20,7 @@ namespace SharedEFClasses.SignalR.Hubs
 
         public void Notify(string userId, string message)
         {
-            //Clients.User(userId).receiveAlert(new { message = message, type = "task" });
+            Clients.User(userId).receiveAlert(new { message = message, type = "task" });
         }
 
         public void ReadAlert(string alertId)

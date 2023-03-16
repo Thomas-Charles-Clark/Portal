@@ -79,7 +79,7 @@
                                 </label>
                                 <div class="assign-group input-group" data-bind="validationOptions: { insertMessages: false }">
                                     <div class="assign-dropdown">
-                                        <div data-bind="kendoDropDownTree: assignedToSettings"></div>
+                                        <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: assignedToParams }"></div>
                                     </div>
                                     <div class="input-group-btn">
                                         <button id="assign-ext-btn" class="btn btn-secondary-blue" data-bind="click: function () { showExternalAssignmentModal(); }">

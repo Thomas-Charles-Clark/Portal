@@ -1,12 +1,19 @@
-﻿@import '../../../Content/common.scss';
+﻿@import 'common';
 
 @import "../../../Content/bootstrap-5.3.1/scss/mixins/breakpoints";
 @import "../../../Content/bootstrap-5.3.1/scss/functions";
 @import "../../../Content/bootstrap-5.3.1/scss/variables";
 
-html,
-body {
+html {
     font-size: 14px;
+}
+
+.navbar-nav {
+    > li {
+        > a {
+            font-size: 1rem;
+        }
+    }
 }
 
 .nav-pills {
@@ -18,7 +25,6 @@ body {
 .nav-tabs {
     .nav-link.bg-light {
         border-bottom: 1px solid $gray-100;
-        font-size: $font-size-md;
     }
 }
 

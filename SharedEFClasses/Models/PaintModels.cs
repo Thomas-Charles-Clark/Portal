@@ -331,7 +331,7 @@ namespace SharedEFClasses.Models
         </div>
     </div>
     <i class=""material-icons text-success"" data-bind=""css: {{ 'saved': boxCountSavedSuccessfully }}"">check</i>
-    <button type=""button"" class=""btn btn-secondary"" data-bind=""click: fetchBoxLabels"">Reprint Labels</button>
+    <button type=""button"" class=""btn btn-secondary btn-sm"" data-bind=""click: fetchBoxLabels"">Reprint Labels</button>
 </div>";
                 }
                 else

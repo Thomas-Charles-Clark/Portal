@@ -1042,7 +1042,7 @@
                 <p class="margin-bottom-15">
                     Providing all of the beneath will greatly assist this order in transit.
                 </p>
-                <!-- ko if: parent.basketRequiresEORI() -->
+                <!-- ko if: parent.basketRequestsEORI() && parent.basketRequiresEORI() -->
                 <div class="alert alert-warning">
                     <p class="margin-bottom-15 bold">
                         EORI Number and Delivery Contact Name are mandatory.
@@ -1057,15 +1057,16 @@
                 <!-- ko if: typeof PhoneNumber !== 'undefined' -->
                 <!-- ko if: PhoneNumber -->
                 <!--The primary phone number we have on file for
-                <span data-bind="text: Label"></span>
-                is
-                <a href="javascript" data-bind="attr: { title: 'Click to Copy Below' }, text: PhoneNumber, click: function (data) { $parent.lastChancePhone.observable(data.PhoneNumber); }"></a>-->
+    <span data-bind="text: Label"></span>
+    is
+    <a href="javascript" data-bind="attr: { title: 'Click to Copy Below' }, text: PhoneNumber, click: function (data) { $parent.lastChancePhone.observable(data.PhoneNumber); }"></a>-->
                 <!-- /ko -->
                 <!-- ko ifnot: PhoneNumber -->
                 <!--We don't appear to have a telephone number on file for <span data-bind="text: Label"></span>. Please inform Credit Control.-->
                 <!-- /ko -->
                 <!-- /ko -->
                 <!--</p>-->
+                <!-- ko if: parent.basketRequestsEORI() -->
                 <div class="input-group margin-bottom-15">
                     <div data-bind="component: { name: 'mdc-text-field-component', params: parent.eoriNumberParams }"></div>
                     <span class="input-group-addon">
@@ -1074,6 +1075,7 @@
                         </span>
                     </span>
                 </div>
+                <!-- /ko -->
                 <!-- ko if: parent.eoriNumberMessage() -->
                 <span class="validation-message margin-bottom-15 display-block" style="margin-top: -10px;" data-bind="css: { 'red-text': parent.eoriNumberError, 'text-success': parent.eoriNumberValid }, html: parent.eoriNumberMessage()"></span>
                 <!-- /ko -->

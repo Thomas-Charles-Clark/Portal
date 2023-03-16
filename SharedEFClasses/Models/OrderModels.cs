@@ -2372,6 +2372,12 @@ namespace SharedEFClasses.Models.Orders
     }
 
 
+    public class DispatchFactorySaveResult
+    {
+        public bool RequestEORI { get; set; }
+        public bool RequireEORI { get; set; }
+    }
+
     public class PassMertexAddressInsert
     {
 

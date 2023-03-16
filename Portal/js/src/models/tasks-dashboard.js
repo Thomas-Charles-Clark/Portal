@@ -702,6 +702,11 @@ var preFiltersViewModel = function (parent) {
         }
     };
 
+    self.assignedToParams = {
+        observable: self.assignedTo,
+        dropDownListSettings: self.assignedToSettings
+    }
+
     self.statusSlicerSettings = {
         dataValueField: 'TaskStatusID',
         dataTextField: 'Name',

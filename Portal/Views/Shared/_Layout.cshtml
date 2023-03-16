@@ -283,125 +283,6 @@
         </div>
     </script>
 
-    <script type="text/html" id="alerting-component-template">
-        <a id="alerting-display" href="javascript:;" data-bind="click: function(data, event) { toggleAlerts(event); }">
-            <div id="alerting-display-inner">
-                <i class="fas fa-bell"></i>
-                <span id="alerting-count" style="display: none;" data-bind="visible: alerts().length, text: alerts().length"></span>
-            </div>
-        </a>
-        <div id="alerting-target" class="panel panel-secondary-blue" style="display: none;" data-bind="click: function(data, event) { event.stopImmediatePropagation() }">
-            <div class="panel-heading">
-                <h4 class="panel-title">
-                    Notifications
-                    <span id="alerting-close" class="close pull-right" data-bind="click: hideAlerting">
-                        &times;
-                    </span>
-                </h4>
-            </div>
-            <div class="panel-body">
-                <label class="col-form-label" style="display: none; padding-bottom: 0;" data-bind="visible: alerts().length == 0">
-                    You have no notifications.
-                </label>
-                <!-- ko if: completedTasks().length -->
-                <div class="row" data-bind="visible: completedTasks().length">
-                    <div class="col-xs-12">
-                        <label class="col-form-label">
-                            <span data-bind="text: completedTasks().length"></span> Completed Task<span data-bind="text: completedTasks().length == 1 ? '' : 's'"></span>
-                        </label>
-                    </div>
-                    <div class="col-xs-12">
-                        <ul class="notification-list" data-bind="foreach: completedTasks">
-                            <li>
-                                <a data-bind="attr: { href: $parent.generateTaskHref($data), target: '_blank' }, click: $parent.unreadTaskClick">
-                                    <span class="notification-record" data-bind="text: source + ' - '  + message"></span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- /ko -->
-                <!-- ko if: unreadTasks().length -->
-                <div class="row" data-bind="visible: unreadTasks().length">
-                    <div class="col-xs-12">
-                        <label class="col-form-label">
-                            <span data-bind="text: unreadTasks().length"></span> Unread Task<span data-bind="text: unreadTasks().length == 1 ? '' : 's'"></span>
-                        </label>
-                    </div>
-                    <div class="col-xs-12">
-                        <ul class="notification-list" data-bind="foreach: unreadTasks">
-                            <li>
-                                <a data-bind="attr: { href: $parent.generateTaskHref($data), target: '_blank' }, click: $parent.unreadTaskClick">
-                                    <span class="notification-record" data-bind="text: source + ' - '  + message"></span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- /ko -->
-                <!-- ko if: commentedTasks().length -->
-                <div class="row" data-bind="visible: commentedTasks().length">
-                    <div class="col-xs-12">
-                        <label class="col-form-label">
-                            <!-- ko if: commentedTasks().length == 1 -->
-                            <span data-bind="text: commentedTasks().length"></span> Task with a new Comment
-                            <!-- /ko -->
-                            <!-- ko ifnot: commentedTasks().length == 1 -->
-                            <span data-bind="text: commentedTasks().length"></span> Tasks with new Comments
-                            <!-- /ko -->
-                        </label>
-                    </div>
-                    <div class="col-xs-12">
-                        <ul class="notification-list" data-bind="foreach: commentedTasks">
-                            <li>
-                                <a data-bind="attr: { href: $parent.generateTaskHref($data), target: '_blank' }, click: $parent.unreadTaskClick">
-                                    <span class="notification-record" data-bind="text: source + ' - '  + message"></span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- /ko -->
-                <!-- ko if: chasedTasks().length -->
-                <div class="row" data-bind="visible: chasedTasks().length">
-                    <div class="col-xs-12">
-                        <label class="col-form-label">
-                            <span data-bind="text: chasedTasks().length"></span> Chased Task<span data-bind="text: chasedTasks().length == 1 ? '' : 's'"></span>
-                        </label>
-                    </div>
-                    <div class="col-xs-12">
-                        <ul class="notification-list" data-bind="foreach: chasedTasks">
-                            <li>
-                                <a data-bind="attr: { href: $parent.generateTaskHref($data), target: '_blank' }, click: $parent.unreadTaskClick">
-                                    <span class="notification-record" data-bind="text: source + ' - '  + message"></span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- /ko -->
-                <!-- ko if: expectedDeliveryChangedTasks().length -->
-                <div class="row" data-bind="visible: expectedDeliveryChangedTasks().length">
-                    <div class="col-xs-12">
-                        <label class="col-form-label">
-                            <span data-bind="text: expectedDeliveryChangedTasks().length"></span> Task Expected Delivery Changed<span data-bind="text: expectedDeliveryChangedTasks().length == 1 ? '' : 's'"></span>
-                        </label>
-                    </div>
-                    <div class="col-xs-12">
-                        <ul class="notification-list" data-bind="foreach: expectedDeliveryChangedTasks">
-                            <li>
-                                <a data-bind="attr: { href: $parent.generateTaskHref($data), target: '_blank' }, click: $parent.unreadTaskClick">
-                                    <span class="notification-record" data-bind="text: source + ' - '  + message"></span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- /ko -->
-            </div>
-        </div>
-    </script>
-
     <script id="basket-lock-template" type="text/html">
         <div id="basket-lock-modal" class="modal fade" data-backdrop="static">
             <div class="modal-dialog">
@@ -1463,7 +1344,6 @@
         </div>
     </div>
 
-
     @Scripts.Render("~/bundles/js/bootstrap")
 
     @Scripts.Render("~/bundles/js/knockout")
@@ -1480,7 +1360,13 @@
 
     @RenderSection("components", required: false)
 
-<script type="text/javascript">
+    @Scripts.Render("~/bundles/js/global")
+
+    @Scripts.Render("~/signalr/hubs")
+
+    @Html.Partial("Components/_MenuNotifications")
+
+    <script type="text/javascript">
         var sendTARFComponentViewModel = function (params) {
             var self = this;
 
@@ -1858,196 +1744,6 @@
                 @:$.get('/api/forceauth/forceAuth');
             }
         }
-
-        var alertingComponentViewModel = function () {
-            var self = this;
-
-            self.alerts = ko.observableArray([]);
-
-            self.taskHref = function () {
-                if (typeof viewModel !== 'undefined') {
-                    if (viewModel.hasOwnProperty('taskGridWidget')) {
-                        return '#';
-                    } else {
-                        return '/tasks'
-                    }
-                }
-            }
-
-            self.unreadTasks = ko.pureComputed(function () {
-                return ko.utils.arrayFilter(self.alerts(), function (item) {
-                    return item.alertType == 1 && item.unread()
-                });
-            }, self);
-
-            self.generateTaskHref = function (task) {
-                if (typeof viewModel !== 'undefined') {
-                    if (viewModel.hasOwnProperty('taskGridWidget')) {
-                        return 'javascript:;'
-                    }
-                }
-
-                return '/tasks?i=' + task.id;
-            }
-
-            self.unreadTaskClick = function (task, event) {
-                if (typeof viewModel !== 'undefined') {
-                    if (viewModel.hasOwnProperty('taskGridWidget')) {
-                        viewModel.taskEdit.load(task.data);
-                        self.alerts.remove(task);
-                        //event.stopImmediatePropagation();
-                        //event.preventDefault();
-                        //event.stopPropagation();
-                        //return true;
-                    }
-                }
-
-                event.stopPropagation();
-                return true;
-            }
-
-            self.chasedTasks = ko.pureComputed(function () {
-                return ko.utils.arrayFilter(self.alerts(), function (item) {
-                    return item.alertType == 2 && item.unread();
-                });
-            });
-
-            self.commentedTasks = ko.pureComputed(function () {
-                return ko.utils.arrayFilter(self.alerts(), function (item) {
-                    return item.alertType == 3 && item.unread();
-                });
-            })
-
-            self.completedTasks = ko.pureComputed(function () {
-                return ko.utils.arrayFilter(self.alerts(), function (item) {
-                    return item.alertType == 4 && item.unread();
-                });
-            })
-
-            self.expectedDeliveryChangedTasks = ko.pureComputed(function () {
-                return ko.utils.arrayFilter(self.alerts(), function (item) {
-                    return item.alertType == 5 && item.unread();
-                });
-            })
-
-            self.hideAlerting = function () {
-                $("#alerting-target").stop(true, false).slideUp();//stop(true, false).slideUp();
-                //$("#alerting-target").stop(true, false).animate({
-                //    left: -300,
-                //    top: -350
-                //}, 500);
-            }
-
-            $('body').on('click', function (ev, ui) {
-                self.hideAlerting();
-            });
-
-            self.toggleAlerts = function (ev) {
-                $("#alerting-display .fa-bell").removeClass('bell-ringing');
-                $("#alerting-target").slideToggle();
-                ev.stopPropagation();
-                return true;
-            }
-
-            self.displayAlerts = function () {
-                $("#alerting-target").show();//.stop(true, false).slideDown();
-                //$('#alerting-target').stop(true, false).animate({
-                //    left: 0,
-                //    top: 0
-                //}, 400);
-            }
-
-            self.clearAllAlerts = function () {
-                self.alerts().forEach(function (item) {
-                    item.unread(false);
-                });
-            }
-
-            self.clearNotifications = function () {
-                self.alerts([]);
-            }
-
-            self.receiveAlert = function (alert) {
-                console.log(alert.message);
-                switch (alert.alertType) {
-                    case 1:
-                        //if (typeof viewModel !== 'undefined') {
-                        //    if (viewModel.hasOwnProperty('taskGridWidget'))
-                        //        if (viewModel.taskGridWidget())
-                        //            viewModel.taskGridWidget().dataSource.read();
-                        //}
-                        break;
-                    default:
-                        break;
-                }
-                self.alerts.push({ id: alert.Id, alertType: alert.alertType, message: alert.message, source: alert.source, unread: ko.observable(true), data: alert.data });
-
-                $("#alerting-display .fa-bell").addClass('bell-ringing');
-            }
-
-            self.anyUnreadAlerts = ko.pureComputed(function () {
-                return ko.utils.arrayFilter(self.alerts(), function (item) {
-                    return item.unread() == true;
-                }).length;
-            }, self);
-
-            self.setAlerts = function (incomingAlerts) {
-                //console.log('alertingComponent: received alerts', incomingAlerts);
-                var refreshTasks = false;
-                var alerts = [];
-                incomingAlerts.forEach(function (alert) {
-                    switch (alert.alertType) {
-                        case 1:
-                        case 2:
-                            refreshTasks = true;
-                            break;
-                    }
-                    alerts.push({ id: alert.id, alertType: alert.alertType, message: alert.message, source: alert.source, unread: ko.observable(true), data: alert.data });
-                });
-                var countBefore = self.alerts().length;
-                self.alerts(alerts);
-                var countAfter = self.alerts().length;
-                if (countBefore < countAfter) {
-                    $("#alerting-display .fa-bell").addClass('bell-ringing');
-                    refreshTasks = true;
-                } else {
-                    refreshTasks = false;
-                }
-                // this logic doesn't hold... we want to refresh Tasks grid when we KNOW that we have differing IDs
-                // on either unread or chased
-                // so... sum the IDs?
-
-                if (refreshTasks) {
-                    if (typeof viewModel !== 'undefined') {
-                        if (viewModel.hasOwnProperty('taskGridWidget'))
-                            if (viewModel.taskGridWidget())
-                                viewModel.taskGridWidget().dataSource.read();
-                    }
-                }
-            }
-
-            self.taskAlertHub = $.connection.taskAlertHub;
-
-            self.taskAlertHub.client.receiveAlert = self.receiveAlert;
-            self.taskAlertHub.client.setAlerts = self.setAlerts;
-
-            self.readAlert = function (alertId) {
-                self.taskAlertHub.server.readAlert(alertId);
-            }
-
-            self.fetchInterval = null;
-
-            self.taskAlertHub.connection.start().done(function () {
-                self.taskAlertHub.server.fetchAlerts();
-                self.fetchInterval = setInterval(function () {
-                    if (self.taskAlertHub.connection.state === $.signalR.connectionState.connected) {
-                        self.taskAlertHub.server.fetchAlerts();
-                    } else {
-                        console.log('alertingComponent: did not fetchAlerts because hub was disconnected');
-                    }
-                }, 30000);
-            });
-        };
 
         // Load exchange rates data via AJAX:
         $.getJSON(
@@ -2440,11 +2136,6 @@
             template: { element: $('#webapi-auth-template')[0] }
         });
 
-        ko.components.register('alerting-component', {
-            viewModel: alertingComponentViewModel,
-            template: { element: $('#alerting-component-template')[0] }
-        });
-
         ko.components.register('sterling-conversion-component', {
             viewModel: sterlingConversionViewModel,
             template: { element: $("#sterling-conversion-template")[0] }
@@ -2559,12 +2250,12 @@
             template: { element: document.getElementById('tempus-dominus-datetimepicker-template') }
         });
 
-</script>
+    </script>
 
     <script type="text/javascript">
         var recentlyUsedMembersListener = new ko.subscribable();
     </script>
-    @Scripts.Render("~/bundles/js/global")
+
     @Html.Partial("Modals/_ConfirmModal")
     @RenderSection("modals", required: false)
     @RenderSection("scripts", required: false)
@@ -2772,8 +2463,6 @@
     </script>
 
 
-
-    @Scripts.Render("~/signalr/hubs")
 
     <script type="text/javascript">
         function foo() {

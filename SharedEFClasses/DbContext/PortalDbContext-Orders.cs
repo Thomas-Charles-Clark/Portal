@@ -1998,9 +1998,9 @@ namespace SharedEFClasses.Models
             return result;
         }
 
-        public int SaveBasketSplitDeliveryOption(PassDispatchFactorySave objSave)
+        public DispatchFactorySaveResult SaveBasketSplitDeliveryOption(PassDispatchFactorySave objSave)
         {
-            var result = -1;
+            var result = new DispatchFactorySaveResult();
 
             var serviceTable = new DataTable();
 
@@ -2052,7 +2052,11 @@ namespace SharedEFClasses.Models
             {
                 this.Database.Connection.Open();
 
-                result = cmd.ExecuteNonQuery();
+                var reader = cmd.ExecuteReader();
+
+                result = ((IObjectContextAdapter)this)
+                    .ObjectContext
+                    .Translate<DispatchFactorySaveResult>(reader).Single();
             }
             catch (SqlException e)
             {

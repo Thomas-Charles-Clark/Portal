@@ -32,6 +32,12 @@ $font-size-md: 1.15rem;
 $font-size-regular: 1.0rem;
 $mdc-error-color: #db0028;
 
-html, body {
-    font-size: 14px;
+.body-content {
+    font-size: $small-font-size;
+}
+
+.input-group-lg {
+    .btn {
+        font-size: 1rem;
+    }
 }

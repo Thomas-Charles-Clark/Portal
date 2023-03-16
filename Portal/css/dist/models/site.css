@@ -445,6 +445,11 @@ body {
   overflow-x: hidden;
   padding-top: 50px;
   padding-bottom: 20px;
+  overflow-y: auto;
+}
+body .modal.in {
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 mark {
@@ -2290,25 +2295,58 @@ textarea.form-control {
 }
 
 #alerting-target {
-  width: 372px;
   position: absolute;
-  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.75);
-  transition: opacity 125ms linear;
-  background-color: white;
-  border-bottom-left-radius: 8px;
-  border: 1px solid;
+  background-color: none;
   border-radius: 0 0 12px 0;
+  transition: height 300ms ease-out, opacity 300ms ease-out;
+  overflow: hidden;
+  height: 0;
+  opacity: 0;
 }
-#alerting-target .panel-body {
+#alerting-target > div {
+  padding: 12px;
+  padding-top: 0;
+}
+#alerting-target > div .panel {
+  min-width: 720px;
+  max-width: 720px;
+  border-bottom-left-radius: 8px;
+  border-radius: 0 0 12px 0;
+  box-shadow: 0 2px 6px 1px rgba(0, 0, 0, 0.75);
+  margin: 0;
+}
+#alerting-target > div .panel .panel-body {
   padding-top: 10px;
 }
-#alerting-target .panel-body .row + .row {
+#alerting-target > div .panel .panel-body .notification-list {
+  padding-left: 0;
+  max-height: 420px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 1rem;
+}
+#alerting-target > div .panel .panel-body .notification-list p {
+  white-space: normal;
+}
+#alerting-target > div .panel .panel-body .notification-list strong {
+  word-break: break-word;
+  white-space: normal;
+}
+#alerting-target > div .panel .panel-body .notification-list li {
+  list-style-type: none;
+}
+#alerting-target > div .panel .panel-body .notification-list li + .notification-list li {
+  margin-bottom: 4px;
+}
+#alerting-target > div .panel .panel-body .row + .row {
   margin-top: 15px;
 }
-#alerting-target .panel-heading {
+#alerting-target > div .panel .panel-heading {
   border-radius: 0;
 }
-
+#alerting-target.open {
+  opacity: 1;
+}
 #alerting-close {
   float: right;
   font-size: inherit;
@@ -2319,26 +2357,37 @@ textarea.form-control {
   margin-left: 6px;
 }
 
-#alerting-display .bell-ringing {
+@keyframes rainbow {
+  0% {
+    background-color: #ff0000;
+  }
+  20% {
+    background-color: #ff7f00;
+  }
+  40% {
+    background-color: #00ff00;
+  }
+  60% {
+    background-color: #00ffff;
+  }
+  80% {
+    background-color: #0000ff;
+  }
+  90% {
+    background-color: #7f00ff;
+  }
+}
+#alerting-display .ringing {
   transform-origin: top center;
-  animation: bell-ringer 0.6s linear infinite, bell-ringer-color 2.4s linear infinite;
+  animation: bell-ringer 0.6s linear infinite, rainbow 2s linear infinite;
+  background-color: #ff2400;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 }
 
 .notifications-unread-wrap {
   max-height: 200px;
-}
-
-.notification-list {
-  padding-left: 0;
-  max-height: 192px;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-.notification-list li {
-  list-style-type: none;
-}
-.notification-list li + .notification-list li {
-  margin-bottom: 4px;
 }
 
 .notification-record {

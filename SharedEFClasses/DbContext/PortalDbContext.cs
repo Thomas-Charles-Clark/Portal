@@ -78,6 +78,7 @@ namespace SharedEFClasses.Models
         public DbSet<Document> Documents { get; set; }
         public DbSet<DocumentResource> DocumentResources { get; set; }
         public DbSet<Image> Images { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         #endregion
 

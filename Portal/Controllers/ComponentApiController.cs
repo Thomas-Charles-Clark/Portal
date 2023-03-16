@@ -2486,7 +2486,7 @@ namespace Portal.Controllers
         {
             var result = PortalDb.SaveBasketSplitDeliveryOption(objService);
 
-            return Ok(new { result });
+            return Ok(result);
         }
 
         [HttpPost]

@@ -1,0 +1,50 @@
+﻿@Scripts.Render("~/bundles/js/notifications")
+
+<script type="text/html" id="alerting-component-template">
+    <a id="alerting-display" href="javascript:;" data-bind="click: function(data, event) { toggle(event); }">
+        <div id="alerting-display-inner">
+            <i class="fas fa-bell"></i>
+            <span id="alerting-count" style="display: none;" data-bind="visible: notifications().length, text: notifications().length"></span>
+        </div>
+    </a>
+    <div id="alerting-target" data-bind="click: function(data, event) { event.stopImmediatePropagation() }">
+        <div class="shadow-wrapper">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <!-- ko if: notifications().length -->
+                        <span>
+                            <span data-bind="text: notifications().length"></span>
+                            Notification<span data-bind="text: notifications().length == 1 ? '' : 's'"></span>
+                        </span>
+                        <!-- /ko -->
+                        <!-- ko ifnot: notifications().length -->
+                        <span>
+                            You have no notifications.
+                        </span>
+                        <!-- /ko -->
+                        <span id="alerting-close" class="btn-close" data-bind="click: hide">
+                            &times;
+                        </span>
+                    </h4>
+                </div>
+                <!-- ko if: notifications().length -->
+                <div class="panel-body">
+                    <ul class="notification-list" data-bind="foreach: sortedNotifications">
+                        <li>
+                            <span class="notification-record" data-bind="html: Message"></span>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /ko -->
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript">
+    ko.components.register('alerting-component', {
+        viewModel: notificationsViewModel,
+        template: { element: $('#alerting-component-template')[0] }
+    });
+</script>

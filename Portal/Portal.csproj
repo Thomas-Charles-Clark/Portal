@@ -577,6 +577,7 @@
     <Compile Include="Areas\Products\ViewModels\ProductTypeMaintenanceViewModel.cs" />
     <Compile Include="Controllers\GeneralAPIController.cs" />
     <Compile Include="Controllers\MarketingBudgetsController.cs" />
+    <Compile Include="Controllers\NotificationController.cs" />
     <Compile Include="Service References\PCAFind_v1_10\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -603,6 +604,7 @@
     <Compile Include="UPSTracking\TrackingReply.cs" />
     <Compile Include="Utilities\EU_EORI_Lookup.cs" />
     <Compile Include="Utilities\InMemoryMultipartFormDataStreamProvider\InMemoryMultipartFormDataStreamProvider.cs" />
+    <Compile Include="Utilities\NotificationAuthentication.cs" />
     <Compile Include="Web References\EU_EORI_Lookup\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1017,6 +1019,7 @@
     <Content Include="Content\images\product-tests\usage\3.gif" />
     <Content Include="Content\images\product-tests\usage\4.gif" />
     <Content Include="Content\images\product-tests\usage\5.gif" />
+    <Content Include="Content\sounds\notification-sound.mp3" />
     <Content Include="Content\tempus-dominus\tempus-dominus.css">
       <DependentUpon>tempus-dominus.scss</DependentUpon>
     </Content>
@@ -1037,6 +1040,7 @@
     <Content Include="Areas\Paint\Views\Mixing\PaintMixing.cshtml" />
     <Content Include="css\src\lib\mdc\mdc-custom.scss" />
     <Content Include="js\dist\lib\google-maps\google-maps-marker-clusterer.min.js" />
+    <Content Include="js\dist\models\notifications.min.js" />
     <Content Include="js\src\lib\bootstrap-datetime-picker\bootstrap-datetime-picker.js" />
     <Content Include="js\src\lib\bootstrap-switch\bootstrap-switch.js" />
     <Content Include="js\src\lib\google-maps\google-maps-marker-clusterer.js" />
@@ -1102,6 +1106,7 @@
     <Content Include="js\src\models\download-products.js" />
     <Content Include="js\src\models\emailer.js" />
     <Content Include="js\src\models\extensions.js" />
+    <Content Include="js\src\models\functions-new.js" />
     <Content Include="js\src\models\functions.js" />
     <Content Include="js\src\models\furniture-invoice-approval.js" />
     <Content Include="js\src\models\furniture-maintenance.js" />
@@ -1116,6 +1121,7 @@
     <Content Include="js\src\models\marketing-budget.js" />
     <Content Include="js\src\models\marketing-messages.js" />
     <Content Include="js\src\models\member-search.js" />
+    <Content Include="js\src\models\notifications.js" />
     <Content Include="js\src\models\order-import.js" />
     <Content Include="js\src\models\order-products-base.js" />
     <Content Include="js\src\models\order-products-drilldown.js" />
@@ -3088,6 +3094,7 @@
     </Content>
     <Content Include="Views\Shared\_Layout-New.cshtml" />
     <Content Include="Views\Shared\Components\_GenericFormsTemplates.cshtml" />
+    <Content Include="Views\Shared\Components\_MenuNotifications.cshtml" />
     <None Include="Web References\EU_EORI_Lookup\validation.wsdl" />
     <None Include="Web References\EU_EORI_Lookup\validation.xsd">
       <SubType>Designer</SubType>

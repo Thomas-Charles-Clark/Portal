@@ -11,7 +11,11 @@
   --page-heading-colour: #44546b;
 }
 
-html, body {
-  font-size: 14px;
+.body-content {
+  font-size: 0.875em;
+}
+
+.input-group-lg .btn {
+  font-size: 1rem;
 }
 /*# sourceMappingURL=common.css.map */

@@ -94,7 +94,7 @@
             <thead>
                 <tr>
                     <th class="text-center">
-                        Order ID
+                        Despatch Group
                     </th>
                     <th class="text-center">
                         Box Count
@@ -112,7 +112,7 @@
                     var cellHeight = "34";
                     var cellHeightPx = $"{cellHeight}px";
                 }
-                @foreach (var order in Model.TransferOrders.GroupBy(o => o.OrderID).OrderBy(g => g.Select(ord => ord.BoxCount).Sum()))
+                @foreach (var order in Model.TransferOrders.GroupBy(o => o.DespatchGroup).OrderBy(g => g.Select(ord => ord.BoxCount).Sum()))
                 {
                     <tr>
                         <td style="width: 33.3333%; padding-top: 12px;" valign="middle">

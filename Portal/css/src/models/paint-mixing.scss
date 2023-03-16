@@ -15,7 +15,6 @@ body {
     position: relative;
 
     .nav-link {
-        font-size: 1.0rem;
         padding: 0.75rem 1.15rem 0.8rem 1.15rem;
 
         &.bg-danger {
@@ -33,9 +32,14 @@ body {
         position: relative;
 
         .badge {
-            font-size: $font-size-regular;
             justify-content: center;
         }
+    }
+}
+
+.k-pager-wrap {
+    .k-dropdown {
+        width: 5.5rem;
     }
 }
 
@@ -51,7 +55,7 @@ body {
 
                 &.active {
                     color: $white;
-                    background-color: $gray-800 !important;
+                    background-color: #adaaaa !important;
                     border-color: $gray-500;
                 }
             }

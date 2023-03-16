@@ -1374,4 +1374,28 @@ namespace SharedEFClasses.Models.General
     {
         public string term { get; set; }
     }
+
+    [Table("Notification", Schema = "portal")]
+    public class Notification
+    {
+        public long NotificationID { get; set; }
+        public string Message { get; set; }
+        public int FAOMemberID { get; set; }
+        public int CreatedMemberID { get; set; }    
+        public DateTime CreatedDT { get; set; }
+        public DateTime? AcknowledgedDT { get; set; }
+        public DateTime? DeletedDT { get; set; }
+        public byte Priority { get; set; }
+        public DateTime? FirstPushDT { get; set; }
+        public DateTime? LastPushDT { get; set; }
+        public DateTime? NextPushDT { get; set; }
+        public int PushCount { get; set; }
+
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public bool Acknowledged { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public bool Deleted { get; set; }
+    }
 }

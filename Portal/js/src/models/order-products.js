@@ -4931,64 +4931,69 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
     // Manages the dispatch phase of the process
     self.dispatchFactory = new dispatchFactory(self);
 
+    // Do we even bother requesting an EORI number?
+    self.basketRequestsEORI = ko.observable(true);
+
     // This needs to reside here: deliveryAddress must exist, and dispatchFactory must exist...
     // however, EORINumber above does need to evaluate this computed... might cause problems.
     // Paint going out on Pallets must mandate EORI and ContactName (see )
-    self.basketRequiresEORI = ko.pureComputed(function () {
+    self.basketRequiresEORI = ko.observable(false);
 
-        if (self.euExitCode.observable()) {
-            return false; // we have an EU Exit Code - EORI etc are not mandatory
-        }
-        if (self.deliveryAddress.country()) {
-            if (self.deliveryAddress.country().EU) {
+    //    ko.pureComputed(function () {
 
-                if (Enumerable.From(self.dispatchFactory.deliveryGroups()).Where(function (x) {
+    //    if (self.euExitCode.observable()) {
+    //        return false; // we have an EU Exit Code - EORI etc are not mandatory
+    //    }
+    //    if (self.deliveryAddress.country()) {
+    //        if (self.deliveryAddress.country().EU) {
 
-                    if (x.deliveryService()
-                        && x.deliveryService().HaulierCode == 'FL'
-                        && [6, 13, 14, 15].indexOf(x.deliveryGroup.deliveryGroupId) > -1) {
-                        return true
-                    }
+    //            if (Enumerable.From(self.dispatchFactory.deliveryGroups()).Where(function (x) {
 
-                    return false;
-                }).Any()) {
-                    return true; // We're delivering Bespoke Rugs, Rug - Large, Rug - Extra Large, or 3m Wide Pole 
-                    // into Germany via Flight Logistics.EORI mandated.
-                }
+    //                if (x.deliveryService()
+    //                    && x.deliveryService().HaulierCode == 'FL'
+    //                    && [6, 13, 14, 15].indexOf(x.deliveryGroup.deliveryGroupId) > -1) {
+    //                    return true
+    //                }
 
-                if (Enumerable.From(self.dispatchFactory.deliveryGroups()).Where(function (x) {
-                    if (x.deliveryService())
-                        return x.deliveryService().HaulierCode == 'TUF'
-                    else
-                        return false;
-                }).Any()) {
-                    return true; // We're via Tuffnells. EORI mandated.
-                }
+    //                return false;
+    //            }).Any()) {
+    //                return true; // We're delivering Bespoke Rugs, Rug - Large, Rug - Extra Large, or 3m Wide Pole 
+    //                // into Germany via Flight Logistics.EORI mandated.
+    //            }
 
-                if (Enumerable.From(self.dispatchFactory.deliveryGroups()).Where(function (x) {
-                    if (x.deliveryService())
-                        return x.deliveryService().HaulierCode == 'PT'
-                    else
-                        return false;
-                }).Any()) {
-                    return true; // We're delivering into the EU and the order contains some paint to be despatched on a pallet.
-                }
+    //            if (Enumerable.From(self.dispatchFactory.deliveryGroups()).Where(function (x) {
+    //                if (x.deliveryService())
+    //                    return x.deliveryService().HaulierCode == 'TUF'
+    //                else
+    //                    return false;
+    //            }).Any()) {
+    //                return true; // We're via Tuffnells. EORI mandated.
+    //            }
 
-                return false;
-            }
-            if (self.deliveryAddress.countryId() == 81 && self.deliveryAddress.postcode.observable()?.toUpperCase()?.indexOf('BT') == 0) {
+    //            if (Enumerable.From(self.dispatchFactory.deliveryGroups()).Where(function (x) {
+    //                if (x.deliveryService())
+    //                    return x.deliveryService().HaulierCode == 'PT'
+    //                else
+    //                    return false;
+    //            }).Any()) {
+    //                return true; // We're delivering into the EU and the order contains some paint to be despatched on a pallet.
+    //            }
 
-                if (Enumerable.From(self.dispatchFactory.deliveryGroups()).Where(function (x) {
-                    if (x.deliveryService())
-                        return x.deliveryService().HaulierCode == 'TUF'
-                    else
-                        return false;
-                }).Any()) {
-                    return true; // We're delivering into Northern Ireland via Tuffnells. EORI mandated.
-                }
-            }
-        }
-    }, self);
+    //            return false;
+    //        }
+    //        if (self.deliveryAddress.countryId() == 81 && self.deliveryAddress.postcode.observable()?.toUpperCase()?.indexOf('BT') == 0) {
+
+    //            if (Enumerable.From(self.dispatchFactory.deliveryGroups()).Where(function (x) {
+    //                if (x.deliveryService())
+    //                    return x.deliveryService().HaulierCode == 'TUF'
+    //                else
+    //                    return false;
+    //            }).Any()) {
+    //                return true; // We're delivering into Northern Ireland via Tuffnells. EORI mandated.
+    //            }
+    //        }
+    //    }
+    //}, self);
 
     self.anyTuffnellsDespatches = ko.pureComputed(function () {
         if (Enumerable.From(self.dispatchFactory.deliveryGroups()).Where(function (x) {
@@ -20202,6 +20207,9 @@ var dispatchFactory = function (parent) {
                             self.busyMessage(undefined);
                         }
 
+                        self.parent.basketRequestsEORI(data.RequestEORI);
+                        self.parent.basketRequiresEORI(data.RequireEORI);
+
                         if (typeof onComplete === 'function') {
                             onComplete();
                         }
@@ -21279,7 +21287,7 @@ var discounterFactory = function (args) {
                         FormattingCulture: args.currency.FormattingCulture
                     },
                     minValue: 0,
-                    maxValue: +ko.unwrap(args.originalPriceEx ?? (Number.MAX_VALUE * 0.01)) * 100
+                    maxValue: +ko.unwrap((args.originalPriceEx == null || args.originalPriceEx  == 0) ? (Number.MAX_VALUE * 0.01) : args.originalPriceEx) * 100
                 },
                 required: {
                     params: true,

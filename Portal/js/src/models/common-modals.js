@@ -162,74 +162,29 @@ window.hideError = () => {
 
 // Thanks to: https://stackoverflow.com/questions/19305821/multiple-modals-overlay
 document.addEventListener('show.bs.modal', function (event) {
-    if (typeof Enumerable === 'undefined') {
-        var self = event.target;
+    var self = event.target;
 
-        var zIndex = 1040 + (10 * document.querySelectorAll('.modal.show').length);
+    var zIndex = 1040 + (10 * document.querySelectorAll('.modal.show').length);
 
-        var adj = 0;
+    var adj = 0;
 
-        document.querySelectorAll('.modal.show').forEach(function (i, ele) {
-            if (+ele.style.zIndex >= zIndex) {
-                adj++;
-            }
-        });
-
-        zIndex += adj * 10;
-
-        console.log(self.id + ' showing at', zIndex);
-
-        self.style.zIndex = zIndex;
-
-        window.setTimeout(function () {
-            console.log(self.id + ' backdrop showing at', zIndex - 1);
-            let backdropNodes = document.querySelectorAll('.modal-backdrop:not(.modal-stack)');
-            let backdrops = [];
-            backdropNodes.forEach(bd => {
-                backdrops.push(bd);
-            })
-            if (backdrops.length) {
-                backdrops[backdrops.length - 1].style.zIndex = zIndex - 1;
-                backdrops[backdrops.length - 1].classList.add('modal-stack');
-            }
-        }, 0);
-    } else {
-        self = event.target;
-
-        let zIndex = 1040;
-
-        let openModals = [];
-
-        document.querySelectorAll('.modal.show').forEach(n => {
-            if (n != self) {
-                openModals.push(n);
-            }
-        })
-
-        if (openModals.length) {
-            zIndex = Enumerable.From(openModals).Select(function (x) {
-                return +(x.style.zIndex);
-            }).Max() + 10;
+    document.querySelectorAll('.modal.show').forEach((ele, i) => {
+        if (+ele.style.zIndex >= zIndex) {
+            adj++;
         }
-        console.log(self.id + ' showing at', zIndex);
+    });
 
-        self.style.zIndex = zIndex;
+    zIndex += adj * 10;
 
-        window.setTimeout(function () {
-            console.log(self.id + ' backdrop showing at', zIndex - 1);
-            let backdropNodes = document.querySelectorAll('.modal-backdrop:not(.modal-stack)');
-            let backdrops = [];
-            backdropNodes.forEach(bd => {
-                backdrops.push(bd);
-            })
-            if (backdrops.length) {
-                backdrops[backdrops.length - 1].style.zIndex = zIndex - 1;
-                backdrops[backdrops.length - 1].classList.add('modal-stack');
-            }
-        }, 0);
-    }
+    console.log(self.id + ' showing at', zIndex);
+
+    self.style.zIndex = zIndex;
+
+    window.setTimeout(() => {
+        bootstrap.Modal.getOrCreateInstance(self)._backdrop._element.style.zIndex = zIndex - 1;
+    }, 0);
 });
 
 document.addEventListener('hidden.bs.modal', function (event) {
-    document.querySelectorAll('.modal.show').length && document.body.classList.add('modal-open');
+    document.querySelectorAll('.modal.show').length == 0 ? document.body.classList.remove('modal-open') : null;
 });

@@ -66,7 +66,7 @@
     self.orderLines = ko.observableArray([]);
 
     self.orderLines.subscribe(nv => {
-        console.log('orderLines change', nv)
+        //console.log('orderLines change', nv)
     }, self, 'arrayChange');
 
     self.mixingSessions = ko.observableArray([]);
@@ -133,6 +133,11 @@
     });
 
     document.querySelector('#transfers-tab-btn').addEventListener('click', () => {
+        self.transfersGrid.widget().one('dataBound', (ev) => {
+            window.setTimeout(() => {
+                self.transferOrdersSelectAll.observable(true);
+            }, 0)
+        });
         self.transfersGrid.widget().dataSource.read();
     });
 
@@ -171,7 +176,7 @@
                         .then(data => {
                             options.success(data);
                             self.outstandingOrderCount(data.Total);
-                            console.log('FetchOutstandingOrdersGrid returned', data);
+                            //console.log('FetchOutstandingOrdersGrid returned', data);
                         })
                         .catch(err => window.catchFetchError(err));
                 }
@@ -322,7 +327,7 @@
                         .then(data => {
                             options.success(data);
                             self.orderHistoryCount(data.Total);
-                            console.log('FetchOrderHistoryGrid returned', data);
+                            //console.log('FetchOrderHistoryGrid returned', data);
                         })
                         .catch(err => window.catchFetchError(err));
                 }
@@ -549,7 +554,7 @@
                                         .then(window.handleFetchResponse)
                                         .then(response => {
                                             ms.boxCountParams.busy(false);
-                                            console.log('SaveBoxCount returned', response);
+                                            //console.log('SaveBoxCount returned', response);
                                             if (response.ErrorMessage) {
                                                 window.showError(response.ErrorMessage);
                                             } else {
@@ -573,7 +578,7 @@
                             }));
                             data.OrderID = self.selectedOrderId();
                             self.orderLinesResponse(Object.assign(self.dataItem(), data));
-                            console.log('FetchOrderLinesGrid returned', data);
+                            //console.log('FetchOrderLinesGrid returned', data);
                         })
                         .catch(err => window.catchFetchError(err));
                 }
@@ -765,7 +770,7 @@
                             options.success(data.dsResult);
                             self.ordersToInvoiceCount(data.dsResult.Total);
                             self.ordersToInvoiceNotice(data.Notices.Notification);
-                            console.log('FetchOrdersToInvoice returned', data);
+                            //console.log('FetchOrdersToInvoice returned', data);
                         })
                         .catch(err => window.catchFetchError(err));
                 }
@@ -878,7 +883,7 @@
                             options.success(data.dsResult);
                             self.ordersToInvoiceExceptionCount(data.dsResult.Total);
                             self.ordersToInvoiceExceptionNotice(data.Notices.Notification);
-                            console.log('FetchOrdersToInvoiceExceptions returned', data);
+                            //console.log('FetchOrdersToInvoiceExceptions returned', data);
                         })
                         .catch(err => window.catchFetchError(err));
                 }
@@ -1008,7 +1013,11 @@
         self.transfersHistoryGrid.widget().dataSource.data().forEach(d => {
             d.checkboxParams.observable(false);
         });
-        self.transferHistorysGrid.widget().clearSelection();
+        self.transfersHistoryGrid.widget().clearSelection();
+    }
+
+    self.getTransferDate = (date) => {
+        return self.transferDates().find(d => d.date == date);
     }
 
     self.transferGridColumns = () => {
@@ -1051,10 +1060,10 @@
             title: 'Date',
             hidden: true,
             groupHeaderTemplate: (row, aggregates) => {
-                return `<div class='d-inline-flex justify-content-center align-items-center gap-3' data-date='${moment(row.value).format('DD/MM/YYYY')}'>
+                return `<div class="d-inline" data-bind="stopBinding"><div class='d-inline-flex justify-content-center align-items-center gap-3' data-date='${moment(row.value).format('DD/MM/YYYY')}'>
                     <span>${moment(row.value).format('dddd DD/MM/YYYY')}</span>
                     <div data-bind="component: { name: 'mdc-checkbox-component', params: checkboxParams }"></div>
-                </div>`;
+                </div></div>`;
             }
         }, {
             field: 'MixingSessionID',
@@ -1100,13 +1109,14 @@
                     })
                         .then(resp => resp.json())
                         .then(data => {
-                            console.log('FetchTransfers returned', data);
+                            //console.log('FetchTransfers returned', data);
                             if (data.Notices.ErrorMessage !== null) {
                                 window.showError(data.Notices.ErrorMessage);
                             } else {
                                 data.dsResult.Data = data.dsResult.Data.map(o => {
                                     let object = Object.assign(o, {
                                         elementHolder: ko.observable(),
+                                        date: moment(o.Date).format('DD/MM/YYYY'),
                                         checkboxParams: {
                                             checkboxId: `transfer-order-${o.OrderID}}-checkbox`,
                                             observable: ko.observable(false),
@@ -1118,7 +1128,7 @@
                                         }
                                     });
                                     object.checkboxParams.observable.subscribe(nv => {
-                                        console.log('order checkbox', nv);
+                                        //console.log('order checkbox', nv);
                                         if (nv) {
                                             if (object.elementHolder.DOMElement)
                                                 object.elementHolder.DOMElement.classList.add('k-state-selected');
@@ -1140,7 +1150,7 @@
                                         date: moment(d).format('DD/MM/YYYY'),
                                         elementHolder: ko.observable(),
                                         checkboxParams: {
-                                            checkboxId: `transfer-date-${++counter}}-checkbox`,
+                                            checkboxId: `transfer-date-${++counter}-checkbox`,
                                             observable: ko.observable(true),
                                             originalValue: false,
                                             useNativeValidation: false,
@@ -1150,16 +1160,66 @@
                                         }
                                     }
                                     object.checkboxParams.observable.subscribe(nv => {
-                                        console.log('transfer checkbox', nv);
+                                        //console.log('transferDate checkbox', nv, object);
                                         if (nv) {
-                                            //if (object.elementHolder.DOMElement)
-                                            //    object.elementHolder.DOMElement.classList.add('k-state-selected');
-                                            //if (self.selectedHistoricalTransferMixingSessionIds().indexOf(object.MixingSessionID) == -1)
-                                            //    self.selectedHistoricalTransferMixingSessionIds().push(object.MixingSessionID);
+                                            let filteredItems = self.getTransferGridFilteredItems();
+
+                                            let currentSelection = self.selectedTransferMixingSessionIds();
+
+                                            filteredItems = filteredItems.flatMap(o => o.date == object.date ? [o] : []);
+
+                                            let filteredItemsMixingSessionIds = filteredItems.map(o => o.MixingSessionID);
+
+                                            let distinct = [...new Set(currentSelection.concat(filteredItemsMixingSessionIds))];
+
+                                            self.selectedTransferMixingSessionIds(distinct);
+
+                                            filteredItems.forEach(item => {
+                                                item.checkboxParams.observable(true);
+                                                if (item.checkboxParams.observable.hasOwnProperty('mdcCheckbox'))
+                                                    item.checkboxParams.observable.mdcCheckbox.checked = true;
+                                            });
+
+                                            let selectedRows = self.transfersGrid.widget().select();
+
+                                            filteredItemsMixingSessionIds.forEach(fimsi => {
+                                                let row = self.transfersGrid.widget().dataSource.get(fimsi);
+                                                selectedRows.push(row);
+                                            });
+
+                                            self.transfersGrid.widget().select(selectedRows);
+
                                         } else {
-                                            //if (object.elementHolder.DOMElement)
-                                            //    object.elementHolder.DOMElement.classList.remove('k-state-selected');
-                                            //self.selectedHistoricalTransferMixingSessionIds.remove(object.MixingSessionID);
+
+                                            let filteredItems = self.getTransferGridFilteredItems();
+
+                                            let currentSelection = self.selectedTransferMixingSessionIds();
+
+                                            filteredItems = filteredItems.flatMap(o => o.date == object.date ? [o] : []);
+
+                                            let filteredItemsMixingSessionIds = filteredItems.map(o => o.MixingSessionID);
+
+                                            let distinct = currentSelection.filter(cs => filteredItemsMixingSessionIds.indexOf(cs) == -1);
+
+                                            self.selectedTransferMixingSessionIds(distinct);
+
+                                            filteredItems.forEach(item => {
+                                                item.checkboxParams.observable(false);
+                                                if (item.checkboxParams.observable.hasOwnProperty('mdcCheckbox'))
+                                                    item.checkboxParams.observable.mdcCheckbox.checked = false;
+                                            });
+
+                                            let selectedRows = self.transfersGrid.widget().select();
+
+                                            filteredItemsMixingSessionIds.forEach(fimsi => {
+                                                let row = self.transfersGrid.widget().dataSource.get(fimsi);
+                                                selectedRows = selectedRows.filter(r => r != row);
+                                            });
+
+                                            self.transfersGrid.widget().select(selectedRows);
+
+                                            //self.clearSelectedTransferMixingSessionIds();
+
                                         }
                                     });
                                     return object;
@@ -1175,10 +1235,7 @@
                         .catch(err => window.catchFetchError(err));
                 }
             },
-            pageable: {
-                pageSize: 'all',
-                pageSizes: [1, 2, 5, 10, 20, 50, 100, 250, 500, 'all']
-            },
+            pageSize: 500,
             serverPaging: false,
             serverSorting: false,
             serverFiltering: false,
@@ -1228,7 +1285,7 @@
         sortable: true,
         groupable: false,
         pageable: {
-            pageSize: 5,
+            pageSize: 500,
             pageSizes: [1, 2, 5, 10, 20, 50, 100, 250, 500, 'all']
         },
         columns: self.transferGridColumns(),
@@ -1254,13 +1311,18 @@
         dataBound: (e) => {
 
             window.setTimeout(() => {
-                document.querySelectorAll('.transfers-tab .k-grouping-row').forEach(r => {
+                document.querySelectorAll('#transfers-tab .k-grouping-row').forEach(r => {
                     let date = self.transferDates().find(d => {
                         if (r.querySelector('.d-inline-flex'))
                             return r.querySelector('.d-inline-flex').dataset.date == d.date;
                     });
-                    ko.cleanNode(r);
-                    ko.applyBindings(date, r);
+                    // for whatever reason the kendo grid wants to render a header group in its own directly beneath the k-grid-header thead element, this is totally separate and was driving me spare for a while
+                    // essentially that means we aren't guaranteed to be dealing with a grouping row we actuall yw
+                    if (date) {
+                        let bindingElement = r.querySelector('.d-inline-flex');
+                        ko.cleanNode(bindingElement);
+                        ko.applyBindings(date, bindingElement);
+                    } 
                 })
             }, 0);
 
@@ -1333,7 +1395,7 @@
     historyColumns[2].hidden = false;
     historyColumns[2].filterable = false;
 
-    historyColumns[4].headerTemplate = `<div id="transfer-orders-select-all" data-bind="component: { name: 'mdc-checkbox-component', params: historicalTransferOrdersSelectAll }"></div>`
+    historyColumns[7].headerTemplate = `<div id="historical-transfer-orders-select-all" data-bind="component: { name: 'mdc-checkbox-component', params: historicalTransferOrdersSelectAll }"></div>`
 
     self.transfersHistoryGrid = {
         autoBind: true,
@@ -1361,13 +1423,14 @@
                     })
                         .then(resp => resp.json())
                         .then(data => {
-                            console.log('FetchHistoricalTranfers returned', data);
+                            //console.log('FetchHistoricalTranfers returned', data);
                             if (data.Notices.ErrorMessage !== null) {
                                 window.showError(data.Notices.ErrorMessage);
                             } else {
                                 data.dsResult.Data = data.dsResult.Data.map(o => {
                                     let object = Object.assign(o, {
                                         elementHolder: ko.observable(),
+                                        date: moment(o.Date).format('DD/MM/YYYY'),
                                         checkboxParams: {
                                             checkboxId: `transfer-order-${o.OrderID}}-checkbox`,
                                             observable: ko.observable(false),
@@ -1379,7 +1442,7 @@
                                         }
                                     });
                                     object.checkboxParams.observable.subscribe(nv => {
-                                        console.log('order checkbox', nv);
+                                        //console.log('order checkbox', nv);
                                         if (nv) {
                                             if (object.elementHolder.DOMElement)
                                                 object.elementHolder.DOMElement.classList.add('k-state-selected');
@@ -1411,16 +1474,66 @@
                                         }
                                     }
                                     object.checkboxParams.observable.subscribe(nv => {
-                                        console.log('transfer checkbox', nv);
+                                        //console.log('transferHistoricalDate checkbox', nv);
                                         if (nv) {
-                                            //if (object.elementHolder.DOMElement)
-                                            //    object.elementHolder.DOMElement.classList.add('k-state-selected');
-                                            //if (self.selectedHistoricalTransferMixingSessionIds().indexOf(object.MixingSessionID) == -1)
-                                            //    self.selectedHistoricalTransferMixingSessionIds().push(object.MixingSessionID);
+                                            let filteredItems = self.getHistoricalTransferGridFilteredItems();
+
+                                            let currentSelection = self.selectedHistoricalTransferMixingSessionIds();
+
+                                            filteredItems = filteredItems.flatMap(o => o.date == object.date ? [o] : []);
+
+                                            let filteredItemsMixingSessionIds = filteredItems.map(o => o.MixingSessionID);
+
+                                            let distinct = [...new Set(currentSelection.concat(filteredItemsMixingSessionIds))];
+
+                                            self.selectedHistoricalTransferMixingSessionIds(distinct);
+
+                                            filteredItems.forEach(item => {
+                                                item.checkboxParams.observable(true);
+                                                if (item.checkboxParams.observable.hasOwnProperty('mdcCheckbox'))
+                                                    item.checkboxParams.observable.mdcCheckbox.checked = true;
+                                            });
+
+                                            let selectedRows = self.transfersHistoryGrid.widget().select();
+
+                                            filteredItemsMixingSessionIds.forEach(fimsi => {
+                                                let row = self.transfersHistoryGrid.widget().dataSource.get(fimsi);
+                                                selectedRows.push(row);
+                                            });
+
+                                            self.transfersHistoryGrid.widget().select(selectedRows);
+
                                         } else {
-                                            //if (object.elementHolder.DOMElement)
-                                            //    object.elementHolder.DOMElement.classList.remove('k-state-selected');
-                                            //self.selectedHistoricalTransferMixingSessionIds.remove(object.MixingSessionID);
+
+                                            let filteredItems = self.getHistoricalTransferGridFilteredItems();
+
+                                            let currentSelection = self.selectedHistoricalTransferMixingSessionIds();
+
+                                            filteredItems = filteredItems.flatMap(o => o.date == object.date ? [o] : []);
+
+                                            let filteredItemsMixingSessionIds = filteredItems.map(o => o.MixingSessionID);
+
+                                            let distinct = currentSelection.filter(cs => filteredItemsMixingSessionIds.indexOf(cs) == -1);
+
+                                            self.selectedHistoricalTransferMixingSessionIds(distinct);
+
+                                            filteredItems.forEach(item => {
+                                                item.checkboxParams.observable(false);
+                                                if (item.checkboxParams.observable.hasOwnProperty('mdcCheckbox'))
+                                                    item.checkboxParams.observable.mdcCheckbox.checked = false;
+                                            });
+
+                                            let selectedRows = self.transfersHistoryGrid.widget().select();
+
+                                            filteredItemsMixingSessionIds.forEach(fimsi => {
+                                                let row = self.transfersHistoryGrid.widget().dataSource.get(fimsi);
+                                                selectedRows = selectedRows.filter(r => r != row);
+                                            });
+
+                                            self.transfersHistoryGrid.widget().select(selectedRows);
+
+                                            //self.clearSelectedTransferMixingSessionIds();
+
                                         }
                                     });
                                     return object;
@@ -1512,49 +1625,85 @@
             self.clearSelectedHistoricalTransferMixingSessionIds();
         },
         dataBound: (e) => {
-            if (ko.contextFor(document.querySelector('#transfer-orders-select-all')) == null) {
-                ko.cleanNode(document.querySelector('#transfer-orders-select-all'));
-                ko.applyBindings(self, document.querySelector('#transfer-orders-select-all'))
+
+            window.setTimeout(() => {
+                document.querySelectorAll('#transfers-history-tab .k-grouping-row').forEach(r => {
+                    let date = self.transferHistoricalDates().find(d => {
+                        if (r.querySelector('.d-inline-flex'))
+                            return r.querySelector('.d-inline-flex').dataset.date == d.date;
+                    });
+                    // for whatever reason the kendo grid wants to render a header group in its own directly beneath the k-grid-header thead element, this is totally separate and was driving me spare for a while
+                    // essentially that means we aren't guaranteed to be dealing with a grouping row we actuall yw
+                    if (date) {
+                        let bindingElement = r.querySelector('.d-inline-flex');
+                        ko.cleanNode(bindingElement);
+                        ko.applyBindings(date, bindingElement);
+                    }
+                })
+            }, 0);
+
+            let dataView = e.sender.dataSource.view();
+
+            for (var i = 0; i < dataView.length; i++) {
+                for (var j = 0; j < dataView[i].items.length; j++) {
+                    if (dataView[i].items[j].MixingSessionID != null) {
+
+                        let prevEleSub = dataView[i].items[j].elementHolder.DOMElement.previousElementSibling;
+
+                        while (prevEleSub != null && !prevEleSub.classList.contains('k-grouping-row')) {
+                            prevEleSub = prevEleSub.previousElementSibling;
+                        }
+
+                        e.sender.collapseGroup(prevEleSub);
+                    }
+                }
+            }
+
+            if (ko.contextFor(document.querySelector('#historical-transfer-orders-select-all')) == null) {
+                ko.cleanNode(document.querySelector('#historical-transfer-orders-select-all'));
+                ko.applyBindings(self, document.querySelector('#historical-transfer-orders-select-all'))
             }
 
             window.setTimeout(() => {
                 // this because we set self.transfersCount in the function
                 let filteredItems = self.getHistoricalTransferGridFilteredItems();
 
-                if (document.querySelector('#transfers-tab').classList.contains('active')) {
-                    let grid = e.sender;
 
-                    let items = grid.items();
+                // Commented out because we don't want to be selecting all on the history grid
+                //if (document.querySelector('#transfers-history-tab').classList.contains('active')) {
+                //    let grid = e.sender;
 
-                    let itemsToSelect = [];
+                //    let items = grid.items();
 
-                    if (self.historicalTransfersFirstRun) {
-                        self.selectedHistoricalTransferMixingSessionIds(filteredItems.flatMap(o => o.MixingSessionID));
-                        self.historicalTransfersFirstRun = false;
-                    }
+                //    let itemsToSelect = [];
 
-                    items.each(function (idx, row) {
-                        var dataItem = grid.dataItem(row);
-                        let o = self.selectedHistoricalTransferMixingSessionIds().find(so => so == dataItem['MixingSessionID']);
-                        if (o) {
-                            itemsToSelect.push({ dataItem: o, element: row });
-                        }
-                    });
+                //    if (self.historicalTransfersFirstRun) {
+                //        self.selectedHistoricalTransferMixingSessionIds(filteredItems.flatMap(o => o.MixingSessionID));
+                //        self.historicalTransfersFirstRun = false;
+                //    }
 
-                    e.sender.select(itemsToSelect.map(i => i.element));
+                //    items.each(function (idx, row) {
+                //        var dataItem = grid.dataItem(row);
+                //        let o = self.selectedHistoricalTransferMixingSessionIds().find(so => so == dataItem['MixingSessionID']);
+                //        if (o) {
+                //            itemsToSelect.push({ dataItem: o, element: row });
+                //        }
+                //    });
 
-                    window.setTimeout(() => {
-                        itemsToSelect.forEach(item => {
-                            let o = grid.dataItem(item.element)
-                            o.checkboxParams.observable(true);
-                            o.checkboxParams.observable.mdcCheckbox.checked = true;
-                        })
-                    }, 0);
+                //    e.sender.select(itemsToSelect.map(i => i.element));
 
-                    if (self.selectedHistoricalTransferMixingSessionIds().length === 0) {
-                        self.historicalTransferOrdersSelectAll.observable(false);
-                    }
-                }
+                //    window.setTimeout(() => {
+                //        itemsToSelect.forEach(item => {
+                //            let o = grid.dataItem(item.element)
+                //            o.checkboxParams.observable(true);
+                //            o.checkboxParams.observable.mdcCheckbox.checked = true;
+                //        })
+                //    }, 0);
+
+                //    if (self.selectedHistoricalTransferMixingSessionIds().length === 0) {
+                //        self.historicalTransferOrdersSelectAll.observable(false);
+                //    }
+                //}
             }, 0);
         }
     }
@@ -1602,7 +1751,7 @@
 
     self.historicalTransferOrdersSelectAll = {
         checkboxId: `historical-transfer-orders-select-all`,
-        observable: ko.observable(true),
+        observable: ko.observable(false),
         originalValue: false,
         useNativeValidation: false,
         disable: ko.observable(false),
@@ -1713,12 +1862,8 @@
     //#region 
 
     self.transferOrdersSelectAll.observable.subscribe(nv => {
-        //let items = self.transfersGrid.widget().items();
         if (nv) {
-
             let filteredItems = self.getTransferGridFilteredItems();
-
-            //let allItems = self.transfersGrid.widget().dataSource.data().slice();
 
             self.selectedTransferMixingSessionIds(filteredItems.flatMap(o => o.MixingSessionID));
 
@@ -1730,8 +1875,43 @@
 
             self.transfersGrid.widget().select(self.transfersGrid.widget().items());
 
+            self.transferDates().forEach(td => {
+                td.checkboxParams.observable(true);
+            });
+
         } else {
             self.clearSelectedTransferMixingSessionIds();
+
+            self.transferDates().forEach(td => {
+                td.checkboxParams.observable(false);
+            });
+        }
+    });
+
+    self.historicalTransferOrdersSelectAll.observable.subscribe(nv => {
+        if (nv) {
+            let filteredItems = self.getHistoricalTransferGridFilteredItems();
+
+            self.selectedHistoricalTransferMixingSessionIds(filteredItems.flatMap(o => o.MixingSessionID));
+
+            filteredItems.forEach(item => {
+                item.checkboxParams.observable(true);
+                if (item.checkboxParams.observable.hasOwnProperty('mdcCheckbox'))
+                    item.checkboxParams.observable.mdcCheckbox.checked = true;
+            });
+
+            self.transfersHistoryGrid.widget().select(self.transfersHistoryGrid.widget().items());
+
+            self.transferHistoricalDates().forEach(td => {
+                td.checkboxParams.observable(true);
+            });
+
+        } else {
+            self.clearSelectedHistoricalTransferMixingSessionIds();
+
+            self.transferHistoricalDates().forEach(td => {
+                td.checkboxParams.observable(false);
+            });
         }
     });
 
@@ -1820,7 +2000,7 @@
             })
             .then(window.handleFetchResponse)
             .then(response => {
-                console.log(response);
+                //console.log(response);
                 self.busy(false);
                 if (response.Notices.ErrorMessage) {
                     window.showError(response.Notices.ErrorMessage);
@@ -1851,7 +2031,7 @@
 
         window.centerConfirmModal();
 
-        window.showConfirm('<span class="fs-4">Please Confirm</span>', `<p class="mb-0 fs-5">Are you sure you've just processed <span class="bold d-inline-block">${lineCount} ${(lineCount > 1 ? 'lines' : 'line')}</span> into <span class="bold d-inline-block">${boxCount} ${(boxCount > 1 ? 'boxes' : 'box')}</span>?</p>`, () => {
+        window.showConfirm('<span class="fs-5">Please Confirm</span>', `<p class="mb-0">Are you sure you've just processed <span class="bold d-inline-block">${lineCount} ${(lineCount > 1 ? 'lines' : 'line')}</span> into <span class="bold d-inline-block">${boxCount} ${(boxCount > 1 ? 'boxes' : 'box')}</span>?</p>`, () => {
             self.busy(true);
             fetch('/api/PaintMixingAPI/SaveOrderLines', {
                 method: 'POST',
@@ -1866,9 +2046,9 @@
             })
                 .then(window.handleFetchResponse)
                 .then(response => {
-                    self.busy(false);
-                    console.log('SaveOrderLines returned', response);
+                    //console.log('SaveOrderLines returned', response);
                     if (response.ErrorMessage) {
+                        self.busy(false);
                         window.showError(response.ErrorMessage);
                     } else {
                         window.centerInfoModal();
@@ -1923,7 +2103,7 @@
         .then(window.handleFetchResponse)
         .then(response => {
             self.busy(false);
-            console.log('FetchBoxLabels returned', response);
+            //console.log('FetchBoxLabels returned', response);
             if (response.Notices.ErrorMessage) {
                 window.showError(response.Notices.ErrorMessage);
             } else {
@@ -1954,19 +2134,16 @@
         })
     }
 
-    self.produceTransferManifest = () => {
+    self.produceTransferManifest = (from) => {
         var keys = [];
         var orders = [];
 
-        if (self.selectedTransferMixingSessionIds().length) {
+        if (from == 'current') {
             keys = self.selectedTransferMixingSessionIds();
             orders = self.allTransferOrders().flatMap(t => keys.indexOf(t.MixingSessionID) > -1 ? [t] : []);
-        }
-        else {
-            if (self.selectedHistoricalTransferMixingSessionIds().length) {
-                keys = self.selectedHistoricalTransferMixingSessionIds();
-                orders = self.allHistoricalTransferOrders().flatMap(t => keys.indexOf(t.MixingSessionID) > -1 ? [t] : []);
-            }
+        } else {
+            keys = self.selectedHistoricalTransferMixingSessionIds();
+            orders = self.allHistoricalTransferOrders().flatMap(t => keys.indexOf(t.MixingSessionID) > -1 ? [t] : []);
         }
 
         if (keys.length && orders.length) {
@@ -1984,14 +2161,18 @@
             .then(window.handleFetchResponse)
             .then(response => {
                 self.busy(false);
-                console.log('FetchTransferManifest returned', response);
+                //console.log('FetchTransferManifest returned', response);
                 if (response.Notices.ErrorMessage) {
                     window.showError(response.Notices.ErrorMessage);
                 } else {
 
                     self.clearSelectedTransferMixingSessionIds();
-                    self.transfersGrid.widget().dataSource.read();
-                    self.transfersHistoryGrid.widget().dataSource.read();
+
+                    if (from == 'current')
+                        self.transfersGrid.widget().dataSource.read();
+
+                    // don't want to refresh the history grid widget here
+                    //self.transfersHistoryGrid.widget().dataSource.read();
 
                     if (response.DocumentBytes) {
                         let file = self.b64toBlob(response.DocumentBytes, 'application/pdf');
@@ -2010,7 +2191,7 @@
                 window.catchFetchError(err);
             })
         } else {
-            window.showError('You must selected at least one Transfer record');
+            window.showError('You must selected at least one Despatch Group');
         }
     }
 
@@ -2028,7 +2209,7 @@
         .then(window.handleFetchResponse)
         .then(response => {
             dataItem.busy(false);
-            console.log('UpdateBasePaintOrderStatus returned', response);
+            //console.log('UpdateBasePaintOrderStatus returned', response);
         })
         .catch(err => {
             dataItem.busy(false);
@@ -2051,7 +2232,7 @@
                 self.ordersToInvoiceGrid.widget().dataSource.read();
                 if (self.ordersToInvoiceExceptionsGrid.widget())
                     self.ordersToInvoiceExceptionsGrid.widget().dataSource.read();
-                console.log('UpdateBasePaintOrderStatusAll returned', response);
+                //console.log('UpdateBasePaintOrderStatusAll returned', response);
             })
             .catch(err => {
                 self.busy(false);
@@ -2080,7 +2261,7 @@
     }
 
     self.hideLabelsModal = () => {
-        self.hideModal.show();
+        self.labelsModal.hide();
     }
 
     //self.refresh = () => {

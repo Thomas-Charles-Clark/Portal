@@ -210,6 +210,6 @@
 
     ko.components.register('addable-list-component', {
         viewModel: addableListViewModel,
-        template: { element: $('#addable-list-template')[0] }
+        template: { element: document.querySelector('#addable-list-template') }
     });
 </script>

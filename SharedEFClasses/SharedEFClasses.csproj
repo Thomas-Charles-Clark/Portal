@@ -369,6 +369,7 @@
     <Compile Include="Models\TuffnellsModels.cs" />
     <Compile Include="Models\UPSModels.cs" />
     <Compile Include="SignalR\Hubs\BasketLockHub.cs" />
+    <Compile Include="SignalR\Hubs\NotificationHub.cs" />
     <Compile Include="Utilities\BouncyCastle\BouncyCastleHelper.cs" />
     <Compile Include="Utilities\ClassIdentifierAttribute.cs" />
     <Compile Include="Utilities\CustomMultipartFormDataStreamProvider.cs" />

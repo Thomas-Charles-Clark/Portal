@@ -11,14 +11,20 @@
   --page-heading-colour: #44546b;
 }
 
-html,
-body {
+.body-content {
+  font-size: 0.875em;
+}
+
+.input-group-lg .btn {
+  font-size: 1rem;
+}
+
+html {
   font-size: 14px;
 }
 
-html,
-body {
-  font-size: 14px;
+.navbar-nav > li > a {
+  font-size: 1rem;
 }
 
 .nav-pills li {
@@ -27,7 +33,6 @@ body {
 
 .nav-tabs .nav-link.bg-light {
   border-bottom: 1px solid #f8f9fa;
-  font-size: 1.15rem;
 }
 
 #product-tabs-container {

@@ -70,20 +70,23 @@ namespace Portal
             container.RegisterType<TaskAlertHub>(new InjectionFactory(CreateTaskAlertHub));
 
             container.RegisterType<BasketLockHub>(new InjectionFactory(CreateBasketLockHub));
+
+            container.RegisterType<NotificationHub>(new InjectionFactory(CreateNotificationHub));
         }
         
         private static object CreateTaskAlertHub(IUnityContainer p)
         {
-            var taskAlertHub = new TaskAlertHub(p.Resolve<PortalDbContext>());
-
-            return taskAlertHub;
+            return new TaskAlertHub(p.Resolve<PortalDbContext>());
         }
 
         private static object CreateBasketLockHub(IUnityContainer p)
         {
-            var basketLockHub = new BasketLockHub(p.Resolve<PortalDbContext>());
+            return new BasketLockHub(p.Resolve<PortalDbContext>());
+        }
 
-            return basketLockHub;
+        private static object CreateNotificationHub(IUnityContainer p)
+        {
+            return new NotificationHub(p.Resolve<PortalDbContext>());
         }
     }
 }

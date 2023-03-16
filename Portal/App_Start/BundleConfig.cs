@@ -790,6 +790,15 @@ namespace Portal
                         "~/js/src/lib/jquery-3.1.1/jquery.signalR.js"
                 ));
 
+            bundles.Add(new ScriptBundle("~/bundles/js/global-new").Include(
+                        "~/js/src/lib/money/money.js",
+                        "~/js/src/lib/moment/moment-with-locales.js",
+                        "~/js/src/lib/linq/linq.js",
+                        "~/js/src/models/functions-new.js",
+                        "~/js/src/models/extensions.js",
+                        "~/js/src/lib/jquery-3.1.1/jquery.signalR.js"
+                ));
+
             bundles.Add(new ScriptBundle("~/bundles/js/order-returns").Include(
                         "~/js/src/models/address.js",
                         "~/js/src/lib/bootstrap-datetime-picker/bootstrap-datetime-picker.js",
@@ -859,6 +868,10 @@ namespace Portal
 
             bundles.Add(new ScriptBundle("~/bundles/js/paint-mixing").Include(
                         "~/js/src/models/paint-mixing.js"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/notifications").Include(
+                        "~/js/src/models/notifications.js"
                 ));
 #else
 
@@ -1208,6 +1221,10 @@ namespace Portal
                 
             bundles.Add(new ScriptBundle("~/bundles/js/paint-mixing").Include(
                         "~/js/dist/models/paint-mixing.min.js"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/notifications").Include(
+                        "~/js/dist/models/notifications.min.js"
                 ));
 #endif
 
