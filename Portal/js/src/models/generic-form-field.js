@@ -323,6 +323,7 @@ const fieldViewModel = ((data, parent) => {
                         var params = new URLSearchParams();
 
                         params.append('FieldName', self.fieldName);
+
                         if (Array.isArray(options.value)) {
                             options.value.forEach(v => {
                                 params.append('Values', v);
@@ -330,6 +331,7 @@ const fieldViewModel = ((data, parent) => {
                         } else {
                             params.append('Values', options.value);
                         }
+
                         params.append('ReferenceDataSet', self.ReferenceDataSet);
 
                         fetch('/api/GeneralAPI/FetchDataItems?' + params, {
@@ -338,8 +340,12 @@ const fieldViewModel = ((data, parent) => {
                         })
                             .then(resp => resp.json())
                             .then(data => {
-                                options.success(data);
-                                console.log('FetchDataItem returned', data);
+                                console.log('valueMapper FetchDataItems returned', data);
+                                if (self.multiple) {
+                                    options.success(data);
+                                } else {
+                                    options.success(data[0]);
+                                }
                             })
                             .catch(err => window.catchFetchError(err));
                     }
@@ -357,6 +363,7 @@ const fieldViewModel = ((data, parent) => {
     self.buildKendoMultiSelectProperties = () => {
         self.multiple = true;
         self.buildKendoDropDownProperties();
+        delete self.params.dropDownListSettings.filter;
         self.params.dropDownListSettings.autoClose = false;
     }
 
@@ -618,12 +625,27 @@ const fieldViewModel = ((data, parent) => {
         });
 
         self.value.isValid.subscribe(nv => {
-            self.params.fileFullPath.DOMElement.classList.remove('form-control-error');
+            if (self.params.fileFullPath.DOMElement) {
+                self.params.fileFullPath.DOMElement.classList.remove('form-control-error');
+            }
             window.setTimeout(() => {
                 if (!nv) {
                     self.params.fileFullPath.DOMElement.classList.add('form-control-error');
                 }
             }, 0);
+        });
+    }
+
+    self.buildCheckboxParams = () => {
+        Object.assign(self.params, {
+            checkboxId: `${self.fieldId}-chkbx`,
+            checkedValue: true
+        });
+    }
+
+    self.buildImageDisplayParams = () => {
+        Object.assign(self.params, {
+            elementId: `${self.fieldId}-img`
         });
     }
 
@@ -645,9 +667,9 @@ const fieldViewModel = ((data, parent) => {
                 self.templateName = 'mdc-select-component';
                 Object.assign(self.params, {
                     options: JSON.parse(self.options),
-                    optionsText: self.optionTextPropertyName,
-                    optionsValue: self.optionValuePropertyName,
-                    optionsCaption: self.optionCaption
+                    optionsText: self.optionsTextPropertyName,
+                    optionsValue: self.optionsValuePropertyName,
+                    optionsCaption: self.optionsCaption
                 });
                 break;
             case 4:
@@ -675,6 +697,7 @@ const fieldViewModel = ((data, parent) => {
                 break;
             case 10:
                 self.templateName = 'mdc-checkbox-component';
+                self.buildCheckboxParams();
                 break;
             case 11:
                 self.templateName = 'mdc-text-field-numeric-component';
@@ -683,6 +706,10 @@ const fieldViewModel = ((data, parent) => {
             case 12:
                 self.templateName = 'tempus-dominus-date-picker-component';
                 self.buildDateTimePickerOptions();
+                break;
+            case 13:
+                self.templateName = 'image-display-component';
+                self.buildImageDisplayParams();
                 break;
             default:
                 self.templateName = 'hidden-field-component';

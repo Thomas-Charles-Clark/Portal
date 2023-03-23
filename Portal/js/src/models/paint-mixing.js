@@ -135,8 +135,11 @@
     document.querySelector('#transfers-tab-btn').addEventListener('click', () => {
         self.transfersGrid.widget().one('dataBound', (ev) => {
             window.setTimeout(() => {
-                self.transferOrdersSelectAll.observable(true);
-            }, 0)
+                self.transferOrdersSelectAll.observable(false);
+                window.setTimeout(() => {
+                    self.transferOrdersSelectAll.observable(true);
+                }, 0);
+            }, 0);
         });
         self.transfersGrid.widget().dataSource.read();
     });
@@ -200,6 +203,9 @@
                         OrderID: {
                             type: 'number'
                         },
+                        Delivery: {
+                            type: 'boolean'
+                        },
                         TradeAccountCode: {
                             type: 'string'
                         },
@@ -253,6 +259,10 @@
         columns: [{
             field: 'Priority',
             title: 'Priority',
+            width: 64
+        }, {
+            field: 'Delivery',
+            title: ' ',
             width: 64
         }, {
             field: 'OrderID',
@@ -351,6 +361,9 @@
                         OrderID: {
                             type: 'number'
                         },
+                        Delivery: {
+                            type: 'boolean'
+                        },
                         TradeAccountCode: {
                             type: 'string'
                         },
@@ -404,6 +417,10 @@
             title: 'Priority',
             width: 64,
             hidden: true
+        }, {
+            field: 'Delivery',
+            title: ' ',
+            width: 64
         }, {
             field: 'OrderID',
             title: 'Order ID',
@@ -617,6 +634,9 @@
                         ProductName: {
                             type: 'string'
                         },
+                        BaseProductQuantity: {
+                            type: 'number'
+                        },
                         BaseProductCode: {
                             type: 'string'
                         },
@@ -676,7 +696,7 @@
             title: ' ',
             width: 64
         }, {
-            field: 'Quantity Ordered',
+            field: 'QuantityOrdered',
             title: 'Quantity',
             width: 74,
             attributes: {
@@ -688,6 +708,16 @@
         }, {
             field: 'ProductCode',
             title: 'Product'
+        }, {
+            field: 'BaseProductQuantity',
+            title: 'Base Quantity',
+            width: 110,
+            attributes: {
+                class: 'text-end'
+            },
+            headerAttributes: {
+                class: 'text-end'
+            }
         }, {
             field: 'BaseProductCode',
             title: 'Base Product'
@@ -2056,7 +2086,9 @@
                         self.labelNotice(response.Notification);
                         self.orderLinesResponse().MixingSessionID = response.MixingSessionID;
                         self.fetchOrderLines(self.orderLinesResponse(), 'M');
-                        self.fetchBoxLabels(self.orderLinesResponse().MixingSessionID);
+                        if (self.orderLinesResponse().GenerateBoxLabels) {
+                            self.fetchBoxLabels(self.orderLinesResponse().MixingSessionID);
+                        }
                         self.transfersGrid.widget().dataSource.read();
                     }
                 })

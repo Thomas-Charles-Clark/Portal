@@ -1,46 +1,50 @@
 ﻿<script type="text/html" id="generic-form-template">
-    <form class="form-container" data-bind="class: displayClass, event: { 'onsubmit': (ev) => { ev.preventDefault() } }">
-        <div class="form-header">
-            <!-- ko if: heading -->
-            <h3 data-bind="html: heading"></h3>
-            <!-- /ko -->
+    <form class="form-container card" data-bind="class: displayClass, event: { 'onsubmit': (ev) => { ev.preventDefault() } }">
+        <!-- ko if: heading -->
+        <div class="card-header">
+            <h4 data-bind="html: heading"></h4>
             <!-- ko if: subHeading -->
-            <h5 class="form-subheading" data-bind="html: subHeading"></h5>
+            <h6 class="card-subtitle" data-bind="html: subHeading"></h6>
             <!-- /ko -->
+        </div>
+        <!-- /ko -->
+        <div class="card-body bg-light">
             <!-- ko if: intro -->
             <div class="form-description" data-bind="html: intro"></div>
             <!-- /ko -->
-        </div>
-        <div data-bind="
-             class: layoutClass,
-             template: {
-                 foreach: panels,
-                 name: 'generic-form-panel-template'
+            <div data-bind="
+                class: layoutClass,
+                template: {
+                    foreach: panels,
+                    name: 'generic-form-panel-template'
                 }"></div>
-        <!-- ko if: submittable -->
-        <div class="d-flex gap-3 pt-3">
-            <button type="button" class="btn btn-success" data-bind="click: submit">
-                Submit
-            </button>
-            <span class="validation-message" data-bind="visible: isInvalid">
-                Please correct all errors before submitting this form
-            </span>
+            <!-- ko if: submittable -->
+            <div class="d-flex gap-3 pt-3">
+                <button type="button" class="btn btn-success" data-bind="click: submit">
+                    Submit
+                </button>
+                <span class="validation-message" data-bind="visible: isInvalid">
+                    Please correct all errors before submitting this form
+                </span>
+            </div>
+            <!-- /ko -->
         </div>
-        <!-- /ko -->
     </form>
 </script>
 
 <script type="text/html" id="generic-form-panel-template">
     <fieldset class="form-fieldset card" data-bind="class: layoutClass">
         <!-- ko if: heading -->
-        <legend class="h3" data-bind="html: heading"></legend>
+        <div class="card-header">
+            <h5 class="card-title" data-bind="html: heading"></h5>
+            <!-- ko if: subHeading -->
+            <h6 class="card-subtitle" data-bind="html: subHeading"></h6>
+            <!-- /ko -->
+        </div>
         <!-- /ko -->
         <div class="card-body">
-            <!-- ko if: subHeading -->
-            <h5 class="form-panel-subheading" data-bind="html: subHeading"></h5>
-            <!-- /ko -->
             <!-- ko if: intro -->
-            <div class="form-panel-intro" data-bind="html: intro"></div>
+            <div class="panel-description" data-bind="html: intro"></div>
             <!-- /ko -->
             <div data-bind="
                  class: layoutClass,

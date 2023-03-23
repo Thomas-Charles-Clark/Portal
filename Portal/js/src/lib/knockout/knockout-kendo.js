@@ -751,13 +751,13 @@ createBinding({
     defaultOption: DATA,
     events: {
         change: function (options, e) {
-            //console.log('kendoMultiSelect change event', options, e);
+            console.log('kendoMultiSelect change event', options, e);
             options.dataItems(e.sender.dataItems());
             options.value(e.sender.value());
         },
         dataBound: function (options, e) {
             //console.log('kendoMultiSelect dataBound event', options, e);
-            options.dataItems(e.sender.dataItems());
+            //options.dataItems(e.sender.dataItems());
         },
         open: {
             writeTo: ISOPEN,
@@ -775,15 +775,15 @@ createBinding({
             ko.kendo.setDataSource(this, value);
         },
         value: function (value, options) {
-            //console.log('kendoMultiSelect value watch hit', value);
+            console.log('kendoMultiSelect value watch hit', value);
             //this.dataSource.filter({});
-            this.value(value);
+            //this.value(value);
             //console.log('multiselect watch value', value, e);
-            options.dataItems(this.dataItems());
+            //options.dataItems(this.dataItems());
         },
-        //dataItems: function (values) {
-        //    console.log('kendoMultiSelect dataItems watch hit', values);
-        //}
+        dataItems: function (values) {
+            console.log('kendoMultiSelect dataItems watch hit', values);
+        }
     },
     templates: ["template"]
 });

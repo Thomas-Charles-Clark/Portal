@@ -39,7 +39,7 @@ namespace SharedEFClasses.SignalR.Hubs
         {
             var memberId = Context.User.Identity.GetUserId<int>();
 
-            var notifications = portalDb.Notifications.Where(n => n.FAOMemberID == memberId && n.Acknowledged == false).ToList();
+            var notifications = portalDb.Notifications.Where(n => n.FAOMemberID == memberId && n.Acknowledged == false && n.Deleted == false).ToList();
 
             Clients.User($"{memberId}").receiveNotifications(notifications);
         }

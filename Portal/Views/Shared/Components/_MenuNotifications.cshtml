@@ -9,9 +9,9 @@
     </a>
     <div id="alerting-target" data-bind="click: function(data, event) { event.stopImmediatePropagation() }">
         <div class="shadow-wrapper">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
+            <div class="panel panel-default card">
+                <div class="panel-heading card-header bg-gray-400" data-bind="css: { 'rounded': notifications().length === 0 }">
+                    <h4 class="panel-title fs-6">
                         <!-- ko if: notifications().length -->
                         <span>
                             <span data-bind="text: notifications().length"></span>
@@ -23,16 +23,23 @@
                             You have no notifications.
                         </span>
                         <!-- /ko -->
-                        <span id="alerting-close" class="btn-close" data-bind="click: hide">
-                            &times;
+                        <span id="alerting-close" class="btn btn-close" data-bind="click: hide">
+                            <span aria-hidden="true">
+                                &times;
+                            </span>
                         </span>
                     </h4>
                 </div>
                 <!-- ko if: notifications().length -->
-                <div class="panel-body">
+                <div class="panel-body card-body">
                     <ul class="notification-list" data-bind="foreach: sortedNotifications">
-                        <li>
-                            <span class="notification-record" data-bind="html: Message"></span>
+                        <li class="notification-record">
+                            <button type="button" class="btn btn-close" data-bind="click: $parent.acknowledgeNotification, attr: { title: `Dismiss Notification ID ${NotificationID}` }">
+                                <span aria-hidden="true">
+                                    &times;
+                                </span>
+                            </button>
+                            <div data-bind="html: Message"></div>
                         </li>
                     </ul>
                 </div>

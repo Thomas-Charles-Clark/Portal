@@ -8,6 +8,16 @@ html {
     font-size: 14px;
 }
 
+.container.body-content {
+    width: 100%;
+    max-width: 98% !important;
+
+    .nav {
+        display: none;
+        border-bottom: 0;
+    }
+}
+
 .navbar-nav {
     > li {
         > a {
@@ -16,22 +26,7 @@ html {
     }
 }
 
-.nav-pills {
-    li {
-        margin-bottom: $l-gutter;
-    }
-}
-
-.nav-tabs {
-    .nav-link.bg-light {
-        border-bottom: 1px solid $gray-100;
-    }
-}
-
 #product-tabs-container {
-    background: $white;
-    border: 1px solid $gray-300;
-    border-top: 0;
 
     .tab-pane {
         h2 {
@@ -57,13 +52,6 @@ html {
 
     .panel-heading {
         color: #333;
-        background-color: #acb9ca;
-        border-color: #99a9be;
-        background-image: -webkit-linear-gradient(top,#acb9ca 0,#7d92ac 100%);
-        background-image: -o-linear-gradient(top,#acb9ca 0,#7d92ac 100%);
-        background-image: linear-gradient(to bottom,#acb9ca 0,#7d92ac 100%);
-        background-repeat: repeat-x;
-        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffacb9ca',endColorstr='#ff7d92ac',GradientType=0);
         border-bottom: 0;
         cursor: pointer;
         user-select: none;

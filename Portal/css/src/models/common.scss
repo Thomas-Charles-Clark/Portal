@@ -2,6 +2,8 @@
 @import "../lib/bootstrap-5.3.1/scss/functions";
 @import "../lib/bootstrap-5.3.1/scss/variables";
 
+@import "../lib/mdc/mdc-custom";
+
 $xs-gutter: 0.1rem;
 $vsm-gutter: 0.25rem;
 $sm-gutter: 0.5rem;
@@ -31,10 +33,6 @@ $font-size-xs: 0.85rem;
 $font-size-md: 1.15rem;
 $font-size-regular: 1.0rem;
 $mdc-error-color: #db0028;
-
-.body-content {
-    font-size: $small-font-size;
-}
 
 .input-group-lg {
     .btn {

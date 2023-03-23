@@ -49,6 +49,16 @@
         <td class="text-center">
             <span data-bind="text: Priority"></span>
         </td>
+        <td class="delivery-cell">
+            <i class="material-icons">
+                <!-- ko if: Deliver -->
+                local_shipping
+                <!-- /ko -->
+                <!-- ko ifnot: Deliver -->
+                directions_walk
+                <!-- /ko -->
+            </i>
+        </td>
         <td>
             <span data-bind="text: OrderID"></span>
         </td>
@@ -70,6 +80,16 @@
 
 <script id="completed-orders-row-template" type="text/html">
     <tr data-bind="css: { 'locked': Locked }, attr: { 'data-order-id': OrderID }">
+        <td class="delivery-cell">
+            <i class="material-icons">
+                <!-- ko if: Deliver -->
+                local_shipping
+                <!-- /ko -->
+                <!-- ko ifnot: Deliver -->
+                directions_walk
+                <!-- /ko -->
+            </i>
+        </td>
         <td>
             <span data-bind="text: OrderID"></span>
         </td>
@@ -118,7 +138,7 @@
         </td>
         <td data-bind="click: () => { if (!Locked) checkboxParams.observable(!checkboxParams.observable()) }">
             <!-- ko if: ImageID -->
-            <img class="thumb" width="64" height="64" data-bind="attr: { src: `https://www.designersguild.com/image/156/${ImageID}` }"/>
+            <img class="thumb" width="64" height="64" data-bind="attr: { src: `https://www.designersguild.com/image/156/${ImageID}` }" />
             <!-- /ko -->
         </td>
         <td class="text-end" data-bind="click: () => { if (!Locked) checkboxParams.observable(!checkboxParams.observable()) }">
@@ -127,6 +147,9 @@
         <td data-bind="click: () => { if (!Locked) checkboxParams.observable(!checkboxParams.observable()) }">
             <span class="d-block" data-bind="text: ProductCode"></span>
             <span class="d-block" data-bind="text: ProductName"></span>
+        </td>
+        <td class="text-end" data-bind="click: () => { if (!Locked) checkboxParams.observable(!checkboxParams.observable()) }, css: { 'bg-dark text-white': BaseProductQuantity != QuantityOrdered }">
+            <span data-bind="text: BaseProductQuantity"></span>
         </td>
         <td data-bind="click: () => { if (!Locked) checkboxParams.observable(!checkboxParams.observable()) }">
             <span class="d-block" data-bind="text: BaseProductCode"></span>
@@ -347,6 +370,10 @@
                                             Customer Order Reference
                                         </label>
                                         <span data-bind="text: CustomerOrderReference"></span>
+                                        <label>
+                                            Delivery Country
+                                        </label>
+                                        <span data-bind="text: DeliveryCountryCode"></span>
                                         <label>
                                             Delivery Description
                                         </label>

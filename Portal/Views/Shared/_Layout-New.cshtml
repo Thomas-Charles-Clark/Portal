@@ -10,7 +10,7 @@
     @Styles.Render("~/bundles/css/mdc-custom")
 
     @Scripts.Render("~/bundles/js/kendo-modernizr")
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Material+Icons|Material+Icons+Sharp|Material+Icons+Outlined|Maven+Pro:500" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Material+Icons|Material+Icons+Sharp|Material+Icons+Outlined|Maven+Pro:400,500,700" rel="stylesheet">
     <script src="https://kit.fontawesome.com/f14d33a7ec.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
     @Scripts.Render("~/bundles/js/jquery")
@@ -33,6 +33,7 @@
     <script type="text/javascript">
         kendo.culture("en-GB");
     </script>
+    @Styles.Render("~/bundles/css/generic-forms")
     @Scripts.Render("~/bundles/js/kendo-modernizr")
     @RenderSection("styles", required: false)
     @RenderSection("earlyScripts", required: false)
@@ -567,7 +568,7 @@
     <script id="mdc-text-field-numeric-component" type="text/html">
         <div class="mdc-validating-field" data-bind="visible: $data.hasOwnProperty('visible') ? $data.visible : true">
             <div class="mdc-numeric-field input-group">
-                <button type="button" class="btn btn-secondary" data-bind="click: decrement">
+                <button type="button" class="btn btn-light border-dark-subtle" data-bind="click: decrement">
                     <i class="bi bi-dash-lg"></i>
                 </button>
                 <div class="mdc-text-field mdc-text-field--outlined" data-bind="
@@ -631,7 +632,7 @@
                         <!-- /ko -->
                     </div>
                 </div>
-                <button type="button" class="btn btn-secondary" data-bind="click: increment">
+                <button type="button" class="btn btn-light border-dark-subtle" data-bind="click: increment">
                     <i class="bi bi-plus-lg"></i>
                 </button>
             </div>
@@ -644,7 +645,7 @@
                  'input-group-lg': typeof large !== 'undefined' && large,
                  'barber-busy': typeof busy == 'undefined' ? false : ko.unwrap(busy)
                 }">
-                <button type="button" class="btn btn-secondary" data-bind="click: decrement">
+                <button type="button" class="btn btn-light border-dark-subtle" data-bind="click: decrement">
                     <i class="bi bi-dash-lg"></i>
                 </button>
                 <div class="mdc-text-field mdc-text-field--outlined" data-bind="
@@ -709,7 +710,7 @@
                         <!-- /ko -->
                     </div>
                 </div>
-                <button type="button" class="btn btn-secondary" data-bind="click: increment">
+                <button type="button" class="btn btn-light border-dark-subtle" data-bind="click: increment">
                     <i class="bi bi-plus-lg"></i>
                 </button>
             </div>
@@ -719,7 +720,7 @@
     <script id="mdc-text-field-numeric-component-no-outline" type="text/html">
         <div class="mdc-validating-field" data-bind="visible: $data.hasOwnProperty('visible') ? $data.visible : true">
             <div class="mdc-numeric-field input-group">
-                <button type="button" class="btn btn-secondary" data-bind="click: decrement">
+                <button type="button" class="btn btn-light border-dark-subtle" data-bind="click: decrement">
                     <i class="bi bi-dash-lg"></i>
                 </button>
                 <div class="mdc-text-field mdc-text-field--outlined" data-bind="
@@ -771,7 +772,7 @@
                         <!-- /ko -->
                     </div>
                 </div>
-                <button type="button" class="btn btn-secondary" data-bind="click: increment">
+                <button type="button" class="btn btn-light border-dark-subtle" data-bind="click: increment">
                     <i class="bi bi-plus-lg"></i>
                 </button>
             </div>
@@ -1090,7 +1091,7 @@
                 <div class="mdc-checkbox__ripple"></div>
             </div>
             <!-- ko if: typeof label !== 'undefined' && label -->
-            <label data-bind="html: label, attr: { for: checkboxId }, css: { 'checkbox-label-disabled': (typeof disabled === 'undefined' ? false : disabled) }"></label>
+            <label class="mdc-checkbox--label" data-bind="html: label, attr: { for: checkboxId }, css: { 'checkbox-label-disabled': (typeof disabled === 'undefined' ? false : disabled) }"></label>
             <!-- /ko -->
         </div>
     </script>
@@ -1349,7 +1350,7 @@
                     </div>
                     <!-- /ko -->
                     <!-- ko if: clearable -->
-                    <div class="close pull-right" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
+                    <div class="close clear" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
                         &times;
                     </div>
                     <!-- /ko -->
@@ -1481,6 +1482,15 @@
 
     <script id="code-mirror-component-template" type="text/html">
         <div class="code-mirror" data-bind="codeMirror: observable, codeMirrorSettings: codeMirrorSettings"></div>
+    </script>
+
+    <script id="image-display-component-template" type="text/html">
+        <div class="mdc-form-field">
+            <img width="90" height="90" class="thumb" data-bind="css: {  }, attr: {
+                    id: elementId,
+                    src: `https://www.designersguild.com/image/239/${ko.unwrap(observable)}` 
+                }" />
+        </div>
     </script>
 
     <script id="mdc-address-search-component" type="text/html">
@@ -1784,39 +1794,40 @@
                     Please Wait...
                 </h3>
             </div>
-            <h4>
-                File Upload
-            </h4>
+            @*<h4>
+                    File Upload
+                </h4>*@
             <form class="file-upload-form" data-bind="keepElement: observable">
                 <input type="hidden" name="destination" data-bind="value: destination" />
-                <div class="file-wrapper" data-bind="keepElement: fileFullPath">
-                    <!-- ko if: fileFullPath() -->
-                    <div class="d-flex align-items-center gap-2">
-                        <a class="file-placeholder" data-bind="attr: { href: fileFullPath, target: '_blank' },text: fileFullPath" />
-                        <button type="button" class="btn-close" aria-label="Close" data-bind="click: clearFile"></button>
+                @*<div class="file-wrapper" data-bind="keepElement: fileFullPath">
+                        <!-- ko if: fileFullPath() -->
+                        <div class="d-flex align-items-center gap-2">
+                            <a class="file-placeholder" data-bind="attr: { href: fileFullPath, target: '_blank' },text: fileFullPath" />
+                            <button type="button" class="btn-close" aria-label="Close" data-bind="click: clearFile"></button>
+                        </div>
+                        <!-- /ko -->
+                        <!-- ko ifnot: fileFullPath() -->
+                        <h5 class="mb-0 py-3">
+                            No File
+                        </h5>
+                        <!-- /ko -->
                     </div>
-                    <!-- /ko -->
-                    <!-- ko ifnot: fileFullPath() -->
-                    <h5 class="mb-0 py-3">
-                        No File
-                    </h5>
-                    <!-- /ko -->
-                </div>
-                <label class="form-label" data-bind="attr: { 'for': `${fieldId}-file-upload` }">
-                    Select a File
-                    <!-- ko if: accept -->
-                    (<span data-bind="html: accept"></span>)
-                    <!-- /ko -->
-                </label>
-                <input class="form-control mb-3" name="image" type="file" data-bind="
+                    <label class="form-label" data-bind="attr: { 'for': `${fieldId}-file-upload` }">
+                        Select a File
+                        <!-- ko if: accept -->
+                        (<span data-bind="html: accept"></span>)
+                        <!-- /ko -->
+                    </label>*@
+                <input class="form-control border-dark-subtle" name="image" type="file" data-bind="
                     value: fileName,
                     keepElement: fileName,
                     attr: {
                         'id': `${fieldId}-file-upload`,
                         'accept': accept
                     }">
-                <div class="d-flex justify-content-end">
-                    <button type="button" class="btn btn-primary" data-bind="click: upload">
+                <div class="d-flex align-items-center justify-content-end">
+                    <a class="me-auto file-anchor" data-bind="text: fileFullPath, attr: { href: fileFullPath, title: fileFullPath }"></a>
+                    <button type="button" class="btn btn-light border-dark-subtle" data-bind="click: upload">
                         Upload
                     </button>
                 </div>
@@ -2750,6 +2761,10 @@
 
         ko.components.register('code-mirror-component', {
             template: { element: document.getElementById('code-mirror-component-template') }
+        })
+
+        ko.components.register('image-display-component', {
+            template: { element: document.getElementById('image-display-component-template') }
         })
 
         ko.components.register('file-upload-component', {

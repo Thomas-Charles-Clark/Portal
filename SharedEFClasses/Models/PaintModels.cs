@@ -100,6 +100,8 @@ namespace SharedEFClasses.Models
         public string HaulierCode { get; set; }
         public string CarriageCode { get; set; }
         public short MixingLocationID { get; set; }
+        public bool Deliver { get; set; }
+        public bool GenerateBoxLabel { get; set; }
         public DateTime CreatedDT { get; set; }
         public DateTime ModifiedDT { get; set; }
         public DateTime? DeletedDT { get; set; }
@@ -217,6 +219,8 @@ namespace SharedEFClasses.Models
     {
         public string TradeAccountCode { get; set; }
         public string TradeAccountName { get; set; }
+        public bool Deliver { get; set; }
+        public bool GenerateBoxLabel { get; set; }
         public string OrderID { get; set; }
         public DateTime OrderDT { get; set; }
         public string CustomerOrderReference { get; set; }
@@ -225,6 +229,7 @@ namespace SharedEFClasses.Models
         public bool Locked { get; set; }
         public string Status { get; set; }
         public int Priority { get; set; }
+        public string DeliveryCountryCode { get; set; }
         public string DeliveryDescription { get; set; }
     }
 
@@ -286,6 +291,7 @@ namespace SharedEFClasses.Models
         public decimal QuantityOrdered { get; set; }
         public string ProductCode { get; set; }
         public string ProductName { get; set; }
+        public decimal BaseProductQuantity { get; set; }
         public string BaseProductCode { get; set; }
         public string BaseProductName { get; set; }
         public bool Locked { get; set; }

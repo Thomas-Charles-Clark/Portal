@@ -145,24 +145,13 @@ namespace Portal.Controllers
             }
         }
 
-        //[HttpGet]
-        //public async Task<DataSourceResult> FetchDataItem(
-        //    [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
-        //    [FromBody]PassDataItemEnquiry objEnquiry)
-        //{
-        //    var results = await PortalDb.FetchDataItem(objEnquiry);
-
-        //    return results.AsQueryable().ToDataSourceResult(request);
-        //}
-
         [HttpGet]
-        public DataSourceResult FetchDataItems(
-            [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+        public IHttpActionResult FetchDataItems(
             [FromUri] PassDataItemsEnquiry objEnquiry)
         {
             var results = PortalDb.FetchDataItems(objEnquiry);
 
-            return results.AsQueryable().ToDataSourceResult(request);
+            return Ok(results);
         }
     }
 }

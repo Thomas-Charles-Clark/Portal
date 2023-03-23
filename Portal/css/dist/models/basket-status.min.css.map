@@ -1,1 +1,1 @@
-{"version":3,"sources":["/css/dist/models/basket-status.scss"],"names":[],"mappings":"AAEQ;EACI","file":"basket-status.min.css","sourcesContent":["#basket-status-search-controls {\r\n    .hstack {\r\n        > div:first-of-type {\r\n            flex: 1;\r\n        }\r\n    }\r\n}"]}
+{"version":3,"sources":["models/basket-status.css"],"names":[],"mappings":"AAAA,wD,CACE,M","file":"basket-status.min.css","sourcesContent":["#basket-status-search-controls .hstack > div:first-of-type {\n  flex: 1;\n}\n/*# sourceMappingURL=basket-status.css.map */\n"]}

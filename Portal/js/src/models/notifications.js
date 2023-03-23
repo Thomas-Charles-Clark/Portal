@@ -27,9 +27,22 @@
     }, self);
 
     self.sortedNotifications = ko.pureComputed(() => {
-        return self.notifications().sort((a, b) => {
-            return a.LastPushDT > b.LastPushDT ? 1 : -1;
-        })
+        return Enumerable.From(self.notifications())
+            .OrderBy(n => n.Priority)
+            .ThenByDescending(n => n.NotificationID)
+            .ToArray();
+        //return self.notifications().sort((a, b) => {
+        //    let priorityA = a.Priority;
+        //    let priorityB = b.Priority;
+        //    let notificationIdA = a.NotificationID;
+        //    let notificationIdB = b.NotificationID;
+
+        //    if (priorityA === priorityB) {
+        //        return notificationIdA > notificationIdB ? -1 : 1;
+        //    } else {
+        //        return priorityA > priorityB ? -1 : 1;
+        //    }
+        //})
     }, self);
 
     //#endregion
@@ -117,11 +130,9 @@
     self.receiveNotification = function (incoming) {
         console.log('notificationsViewModel: received', incoming);
 
-        let extant = self.notifications().find(n => n.NotificationID == incoming.NotificationID);
+        self.notifications.remove(n => n.NotificationID == incoming.NotificationID);
 
-        if (!extant) {
-            self.notifications.push(incoming);
-        }
+        self.notifications.push(incoming);
 
         self.bellElement.classList.add('ringing');
 
@@ -153,8 +164,9 @@
     self.hub.client.receiveNotification = self.receiveNotification;
     self.hub.client.receiveNotifications = self.receiveNotifications;
 
-    self.acknowledgeNotification = (notificationId) => {
-        self.hub.server.acknowledgeNotification(notificationId);
+    self.acknowledgeNotification = (notification) => {
+        self.hub.server.acknowledgeNotification(notification.NotificationID);
+        self.notifications.remove(n => n.NotificationID === notification.NotificationID);
     }
 
     self.fetchInterval = null;

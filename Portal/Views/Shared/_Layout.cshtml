@@ -1150,7 +1150,12 @@
                                 </p>
                                 <p>
                                     Please contact Credit Control immediately and request that they correct the invoice address for
+                                    <!-- ko if: $parentContext.$parent.endCustomer() -->
+                                    <span data-bind="text: $parentContext.$parent.endCustomer().Code"></span>.
+                                    <!-- /ko -->
+                                    <!-- ko ifnot: $parentContext.$parent.endCustomer() -->
                                     <span data-bind="text: $parentContext.$parent.parent.tradeAccount().Code"></span>.
+                                    <!-- /ko -->
                                 </p>
                                 <p>
                                     Once they have corrected the address, please click this button to reload the Address section.

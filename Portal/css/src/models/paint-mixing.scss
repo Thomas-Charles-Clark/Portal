@@ -130,6 +130,15 @@ body {
     }
 }
 
+.delivery-cell {
+    text-align: center;
+    vertical-align: middle;
+
+    .material-icons {
+        display: block;    
+    }
+}
+
 #paint-order-lines-modal {
     .modal-dialog {
         z-index: 1041 !important;

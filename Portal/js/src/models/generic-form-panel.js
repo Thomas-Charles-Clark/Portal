@@ -106,6 +106,8 @@
 
         if (self.isValid()) {
 
+            console.log('Calling saveGenericForm with', self.toJS());
+
             fetch('/api/productMaintenanceApi/SaveGenericForm', {
                 method: 'POST',
                 headers: window.fetchHeaders,
@@ -144,6 +146,8 @@
                 result.row[f.fieldName] = ko.unwrap(f.value);
             }
         });
+
+        console.log('toJS called', result);
 
         return { json: JSON.stringify([result]) };
     }

@@ -1270,6 +1270,9 @@
                                         Please select an End Customer belonging to <span data-bind="text: parent.tradeAccount().Name"></span> 
                                     </span>
                                     <div data-bind="component: { name: 'mdc-text-field-autocomplete-component', params: endCustomerAutocomplete }"></div>
+                                    <button class="btn btn-default margin-top-15" data-bind="click: deliveryToParent">
+                                        Cancel and order directly for <span data-bind="text: parent.tradeAccount().Name"></span> instead
+                                    </button>
                                 </div>
                                 <!-- /ko -->
                                 <!-- ko if: !deliverToEndCustomer() || (deliverToEndCustomer() && endCustomer()) -->

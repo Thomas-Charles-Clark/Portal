@@ -2,6 +2,9 @@
 using System;
 using System.Web;
 using System.Web.Optimization;
+using System.Linq;
+using System.Web.UI.WebControls;
+using System.Collections.Generic;
 
 namespace Portal
 {
@@ -18,489 +21,263 @@ namespace Portal
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             //
 
- #if DEBUG
+#if DEBUG
+            var cssPrefix = "~/css/dist";
+            var cssSuffix = ".css";
 
-            bundles.Add(new StyleBundle("~/bundles/css/components").Include(
-                    "~/css/dist/lib/tiny-slider/tiny-slider.css",
-                    "~/css/dist/models/order-search.css",
-                    "~/css/dist/models/order-products.css",
-                    "~/css/dist/models/stock-viewer.css",
-                    "~/css/dist/models/care-search.css",
-                    "~/css/dist/models/task-search.css",
-                    "~/css/dist/models/visit-search.css",
-                    "~/css/dist/models/visit-booker.css",
-                    "~/css/dist/models/member-search.css",
-                    "~/css/dist/models/recently-used-members.css",
-                    "~/css/dist/models/business-potential.css",
-                    "~/css/dist/models/slicer-component.css",
-                    "~/css/dist/lib/owl-carousel/owl.carousel.css",
-                    "~/css/dist/lib/owl-carousel/owl.theme.default.css"
-                ).Include("~/css/dist/lib/intl-tel-input/intl-tel-input.css", new CssRewriteUrlTransform()));
-
-            bundles.Add(new StyleBundle("~/bundles/css/mdc-custom").Include(
-                      "~/css/dist/lib/mdc/mdc-custom.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/order-search").Include(
-                      "~/css/dist/models/order-search.css"
-                ));
-
-
-            bundles.Add(new StyleBundle("~/bundles/css/care-search").Include(
-                      "~/css/dist/models/care-search.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/task-search").Include(
-                      "~/css/dist/models/task-search.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/visit-search").Include(
-                      "~/css/dist/models/visit-search.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/member-search").Include(
-                        "~/css/dist/models/recently-used-members.css",
-                        "~/css/dist/models/member-search.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/visit-booker").Include(
-                        "~/css/dist/models/visit-booker.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/lead-search").Include(
-                        "~/css/dist/models/lead-search.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/download-products").Include(
-                        "~/css/dist/models/download-products.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/projects-dashboard").Include(
-                        "~/css/dist/models/projects-dashboard.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/tasks-dashboard").Include(
-                        "~/css/dist/models/tasks-dashboard.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/customer-tagging").Include(
-                        "~/css/dist/models/customer-tagging.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/sales-statistics").Include(
-                        "~/css/dist/models/sales-statistics.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/gdpr-survey").Include(
-                        "~/css/dist/models/gdpr-survey.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/sample-request-dg").Include(
-                      "~/css/dist/models/sample-request-dg.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/sample-request").Include(
-                      "~/css/dist/models/sample-request.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/alternative-products").Include(
-                      "~/css/dist/models/alternative-products.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/customer-enquiry").Include(
-                      "~/css/dist/models/customer-enquiry.css"
-                ));
-
-
-            bundles.Add(new StyleBundle("~/bundles/css/pricing-enquiry").Include(
-                      "~/css/dist/models/pricing-enquiry.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/customer-visit").Include(
-                        "~/css/dist/models/customer-visit.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/customer-care").Include(
-                        "~/css/dist/models/customer-care.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/lead-enquiry").Include(
-                        "~/css/dist/models/price-checker.css",
-                        "~/css/dist/models/visit-search.css",
-                        "~/css/dist/models/visit-booker.css",
-                        "~/css/dist/models/member-search.css",
-                        "~/css/dist/models/lead-search.css",
-                        "~/css/dist/models/care-search.css",
-                        "~/css/dist/models/lead-enquiry.css"
-                ).Include("~/css/dist/lib/intl-tel-input/intl-tel-input.css", new CssRewriteUrlTransform()));
-
-            bundles.Add(new StyleBundle("~/bundles/css/order-products").Include(
-                        "~/css/dist/models/order-products.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/product-maintenance").Include(
-                        "~/css/dist/models/product-maintenance.css",
-                        "~/css/dist/models/product-maintenance-treatments.css",
-                        "~/css/dist/models/product-maintenance-products.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/product-type-maintenance").Include(
-                        "~/css/dist/lib/codemirror/codemirror.css",
-                        "~/css/dist/models/product-type-maintenance.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/basket-status").Include(
-                        "~/css/dist/models/basket-status.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/product-delivery").Include(
-                        "~/css/dist/models/product-delivery.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/product-categories").Include(
-                        "~/css/dist/models/product-categories.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/order-tracking").Include(
-                        "~/css/dist/models/order-tracking.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/ring-fenced-stock").Include(
-                        "~/css/dist/models/ring-fenced-stock.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/translations").Include(
-                        "~/css/dist/models/translations.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/marketing-messages").Include(
-                        "~/css/dist/models/marketing-messages.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/marketing-budget").Include(
-                        "~/css/dist/models/marketing-budget.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/bare").Include(
-                      "~/css/dist/lib/jquery-ui/jquery-ui.css",
-                      "~/css/dist/lib/bootstrap-3.3.7/bootstrap-3.3.7.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/master").Include(
-                        "~/css/dist/lib/jquery-ui/jquery-ui.css",
-                        "~/css/dist/lib/bootstrap-3.3.7/bootstrap-3.3.7.css",
-                        "~/css/dist/lib/bootstrap-switch/bootstrap-switch.css",
-                        "~/css/dist/models/site.css",
-                        "~/css/dist/models/css-shake.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/master-5.3.1").Include(
-                        "~/css/dist/lib/jquery-ui/jquery-ui.css",
-                        "~/css/dist/lib/bootstrap-5.3.1/scss/bootstrap-5.3.1.css",
-                        "~/css/dist/lib/bootstrap-switch/bootstrap-switch.css",
-                        "~/css/dist/models/site.css",
-                        "~/css/dist/models/site-new.css",
-                        "~/css/dist/models/css-shake.css"
-                ).Include("~/css/dist/lib/bootstrap-icons/bootstrap-icons.css", new CssRewriteUrlTransform()));
-
-            bundles.Add(new StyleBundle("~/bundles/css/kendo-custom").Include(
-                        "~/css/dist/lib/kendo/custom/kendo-custom.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/order-returns").Include(
-                        "~/css/dist/lib/kendo/custom/kendo-custom.css",
-                        "~/css/dist/models/order-returns.css"
-                ).Include("~/css/dist/lib/intl-tel-input/intl-tel-input.css", new CssRewriteUrlTransform()));
-
-            bundles.Add(new StyleBundle("~/bundles/css/furniture-maintenance").Include(
-                        "~/css/dist/models/furniture-maintenance.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/documents-preview").Include(
-                        "~/css/dist/models/documents-preview.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/application-groups").Include(
-                        "~/css/dist/models/application-groups.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/customer-invite").Include(
-                        "~/css/dist/models/customer-invite.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/treatment-invoice-approval").Include(
-                        "~/css/dist/models/invoice-approval-shared.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/paint-invoice-approval").Include(
-                        "~/css/dist/models/invoice-approval-shared.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/furniture-invoice-approval").Include(
-                        "~/css/dist/models/invoice-approval-shared.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/customer-ordering-notes").Include(
-                        "~/css/dist/models/customer-ordering-notes.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/order-import").Include(
-                        "~/css/dist/models/order-import.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/tempus-dominus").Include(
-                        "~/css/dist/lib/tempus-dominus/tempus-dominus.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/customer-maintenance").Include(
-                      "~/css/dist/models/customer-maintenance.css"
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/paint-mixing").Include(
-                        "~/css/dist/models/paint-mixing.css"
-                ));
+            var jsPrefix = "~/js/src";
+            var jsSuffix = ".js";
 #else
+            var cssPrefix = "~/css/dist";
+            var cssSuffix = ".min.css";
+
+            var jsPrefix = "~/js/dist";
+            var jsSuffix = ".min.js";
+#endif
 
             bundles.Add(new StyleBundle("~/bundles/css/components").Include(
-                    "~/css/dist/lib/tiny-slider/tiny-slider.min.css",
-                    "~/css/dist/models/order-search.min.css",
-                    "~/css/dist/models/order-products.min.css",
-                    "~/css/dist/models/stock-viewer.min.css",
-                    "~/css/dist/models/care-search.min.css",
-                    "~/css/dist/models/task-search.min.css",
-                    "~/css/dist/models/visit-search.min.css",
-                    "~/css/dist/models/visit-booker.min.css",
-                    "~/css/dist/models/member-search.min.css",
-                    "~/css/dist/models/recently-used-members.min.css",
-                    "~/css/dist/models/business-potential.min.css",
-                    "~/css/dist/models/slicer-component.min.css",
-                    "~/css/dist/lib/owl-carousel/owl.carousel.min.css",
-                    "~/css/dist/lib/owl-carousel/owl.theme.default.min.css"
-                ).Include("~/css/dist/lib/intl-tel-input/intl-tel-input.min.css", new CssRewriteUrlTransform()));
-                
+                    $"{cssPrefix}/lib/tiny-slider/tiny-slider{cssSuffix}",
+                    $"{cssPrefix}/models/order-search{cssSuffix}",
+                    $"{cssPrefix}/models/order-products{cssSuffix}",
+                    $"{cssPrefix}/models/stock-viewer{cssSuffix}",
+                    $"{cssPrefix}/models/care-search{cssSuffix}",
+                    $"{cssPrefix}/models/task-search{cssSuffix}",
+                    $"{cssPrefix}/models/visit-search{cssSuffix}",
+                    $"{cssPrefix}/models/visit-booker{cssSuffix}",
+                    $"{cssPrefix}/models/member-search{cssSuffix}",
+                    $"{cssPrefix}/models/recently-used-members{cssSuffix}",
+                    $"{cssPrefix}/models/business-potential{cssSuffix}",
+                    $"{cssPrefix}/models/slicer-component{cssSuffix}",
+                    $"{cssPrefix}/lib/owl-carousel/owl.carousel{cssSuffix}",
+                    $"{cssPrefix}/lib/owl-carousel/owl.theme.default{cssSuffix}"
+                ).Include($"{cssPrefix}/lib/intl-tel-input/intl-tel-input{cssSuffix}", new CssRewriteUrlTransform()));
+
             bundles.Add(new StyleBundle("~/bundles/css/mdc-custom").Include(
-                      "~/css/dist/lib/mdc/mdc-custom.min.css"
+                      $"{cssPrefix}/lib/mdc/mdc-custom{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/order-search").Include(
-                      "~/css/dist/models/order-search.min.css"
+                      $"{cssPrefix}/models/order-search{cssSuffix}"
                 ));
 
 
             bundles.Add(new StyleBundle("~/bundles/css/care-search").Include(
-                      "~/css/dist/models/care-search.min.css"
+                      $"{cssPrefix}/models/care-search{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/task-search").Include(
-                      "~/css/dist/models/task-search.min.css"
+                      $"{cssPrefix}/models/task-search{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/visit-search").Include(
-                      "~/css/dist/models/visit-search.min.css"
+                      $"{cssPrefix}/models/visit-search{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/member-search").Include(
-                        "~/css/dist/models/recently-used-members.min.css",
-                        "~/css/dist/models/member-search.min.css"
+                        $"{cssPrefix}/models/recently-used-members{cssSuffix}",
+                        $"{cssPrefix}/models/member-search{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/visit-booker").Include(
-                        "~/css/dist/models/visit-booker.min.css"
+                        $"{cssPrefix}/models/visit-booker{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/lead-search").Include(
-                        "~/css/dist/models/lead-search.min.css"
+                        $"{cssPrefix}/models/lead-search{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/download-products").Include(
-                        "~/css/dist/models/download-products.min.css"
+                        $"{cssPrefix}/models/download-products{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/projects-dashboard").Include(
-                        "~/css/dist/models/projects-dashboard.min.css"
+                        $"{cssPrefix}/models/projects-dashboard{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/tasks-dashboard").Include(
-                        "~/css/dist/models/tasks-dashboard.min.css"
+                        $"{cssPrefix}/models/tasks-dashboard{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/customer-tagging").Include(
-                        "~/css/dist/models/customer-tagging.min.css"
+                        $"{cssPrefix}/models/customer-tagging{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/sales-statistics").Include(
-                        "~/css/dist/models/sales-statistics.min.css"
+                        $"{cssPrefix}/models/sales-statistics{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/gdpr-survey").Include(
-                        "~/css/dist/models/gdpr-survey.min.css"
+                        $"{cssPrefix}/models/gdpr-survey{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/sample-request-dg").Include(
-                      "~/css/dist/models/sample-request-dg.min.css"
+                      $"{cssPrefix}/models/sample-request-dg{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/sample-request").Include(
-                      "~/css/dist/models/sample-request.min.css"
+                      $"{cssPrefix}/models/sample-request{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/alternative-products").Include(
-                      "~/css/dist/models/alternative-products.min.css"
+                      $"{cssPrefix}/models/alternative-products{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/customer-enquiry").Include(
-                      "~/css/dist/models/customer-enquiry.min.css"
+                      $"{cssPrefix}/models/customer-enquiry{cssSuffix}"
                 ));
 
 
             bundles.Add(new StyleBundle("~/bundles/css/pricing-enquiry").Include(
-                      "~/css/dist/models/pricing-enquiry.min.css"
+                      $"{cssPrefix}/models/pricing-enquiry{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/customer-visit").Include(
-                        "~/css/dist/models/customer-visit.min.css"
+                        $"{cssPrefix}/models/customer-visit{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/customer-care").Include(
-                        "~/css/dist/models/customer-care.min.css"
+                        $"{cssPrefix}/models/customer-care{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/lead-enquiry").Include(
-                        "~/css/dist/models/price-checker.min.css",
-                        "~/css/dist/models/visit-search.min.css",
-                        "~/css/dist/models/visit-booker.min.css",
-                        "~/css/dist/models/member-search.min.css",
-                        "~/css/dist/models/lead-search.min.css",
-                        "~/css/dist/models/care-search.min.css",
-                        "~/css/dist/models/lead-enquiry.min.css"
-                ).Include("~/css/dist/lib/intl-tel-input/intl-tel-input.min.css", new CssRewriteUrlTransform()));
+                        $"{cssPrefix}/models/price-checker{cssSuffix}",
+                        $"{cssPrefix}/models/visit-search{cssSuffix}",
+                        $"{cssPrefix}/models/visit-booker{cssSuffix}",
+                        $"{cssPrefix}/models/member-search{cssSuffix}",
+                        $"{cssPrefix}/models/lead-search{cssSuffix}",
+                        $"{cssPrefix}/models/care-search{cssSuffix}",
+                        $"{cssPrefix}/models/lead-enquiry{cssSuffix}"
+                ).Include($"{cssPrefix}/lib/intl-tel-input/intl-tel-input{cssSuffix}", new CssRewriteUrlTransform()));
 
             bundles.Add(new StyleBundle("~/bundles/css/order-products").Include(
-                        "~/css/dist/models/order-products.min.css"
+                        $"{cssPrefix}/models/order-products{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/product-maintenance").Include(
-                        "~/css/dist/models/product-maintenance.min.css",
-                        "~/css/dist/models/product-maintenance-treatments.min.css",
-                        "~/css/dist/models/product-maintenance-products.min.css"
+                        $"{cssPrefix}/models/product-maintenance{cssSuffix}",
+                        $"{cssPrefix}/models/product-maintenance-treatments{cssSuffix}",
+                        $"{cssPrefix}/models/product-maintenance-products{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/product-type-maintenance").Include(
-                        "~/css/dist/lib/codemirror/codemirror.min.css",
-                        "~/css/dist/models/product-type-maintenance.min.css"
+                        $"{cssPrefix}/lib/codemirror/codemirror{cssSuffix}",
+                        $"{cssPrefix}/models/product-type-maintenance{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/basket-status").Include(
-                        "~/css/dist/models/basket-status.min.css"
+                        $"{cssPrefix}/models/basket-status{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/product-delivery").Include(
-                        "~/css/dist/models/product-delivery.min.css"
+                        $"{cssPrefix}/models/product-delivery{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/product-categories").Include(
-                        "~/css/dist/models/product-categories.min.css"
+                        $"{cssPrefix}/models/product-categories{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/order-tracking").Include(
-                        "~/css/dist/models/order-tracking.min.css"
+                        $"{cssPrefix}/models/order-tracking{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/ring-fenced-stock").Include(
-                        "~/css/dist/models/ring-fenced-stock.min.css"
+                        $"{cssPrefix}/models/ring-fenced-stock{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/translations").Include(
-                        "~/css/dist/models/translations.min.css"
+                        $"{cssPrefix}/models/translations{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/marketing-messages").Include(
-                        "~/css/dist/models/marketing-messages.min.css"
+                        $"{cssPrefix}/models/marketing-messages{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/marketing-budget").Include(
-                        "~/css/dist/models/marketing-budget.min.css"
+                        $"{cssPrefix}/models/marketing-budget{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/bare").Include(
-                      "~/css/dist/lib/jquery-ui/jquery-ui.min.css",
-                      "~/css/dist/lib/bootstrap-3.3.7/bootstrap-3.3.7.min.css"
+                      $"{cssPrefix}/lib/jquery-ui/jquery-ui{cssSuffix}",
+                      $"{cssPrefix}/lib/bootstrap-3.3.7/bootstrap-3.3.7{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/master").Include(
-                        "~/css/dist/lib/jquery-ui/jquery-ui.min.css",
-                        "~/css/dist/lib/bootstrap-3.3.7/bootstrap-3.3.7.min.css",
-                        "~/css/dist/lib/bootstrap-switch/bootstrap-switch.min.css",
-                        "~/css/dist/models/site.min.css",
-                        "~/css/dist/models/css-shake.min.css"
+                        $"{cssPrefix}/lib/jquery-ui/jquery-ui{cssSuffix}",
+                        $"{cssPrefix}/lib/bootstrap-3.3.7/bootstrap-3.3.7{cssSuffix}",
+                        $"{cssPrefix}/lib/bootstrap-switch/bootstrap-switch{cssSuffix}",
+                        $"{cssPrefix}/models/site{cssSuffix}",
+                        $"{cssPrefix}/models/css-shake{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/master-5.3.1").Include(
-                        "~/css/dist/lib/jquery-ui/jquery-ui.min.css",
-                        "~/css/dist/lib/bootstrap-5.3.1/scss/bootstrap-5.3.1.min.css",
-                        "~/css/dist/lib/bootstrap-switch/bootstrap-switch.min.css",
-                        "~/css/dist/models/site.min.css",
-                        "~/css/dist/models/site-new.min.css",
-                        "~/css/dist/models/css-shake.min.css"
-                ).Include("~/css/dist/lib/bootstrap-icons/bootstrap-icons.min.css", new CssRewriteUrlTransform()));
+                        $"{cssPrefix}/lib/jquery-ui/jquery-ui{cssSuffix}",
+                        $"{cssPrefix}/lib/bootstrap-5.3.1/scss/bootstrap-5.3.1{cssSuffix}",
+                        $"{cssPrefix}/lib/bootstrap-switch/bootstrap-switch{cssSuffix}",
+                        $"{cssPrefix}/models/site{cssSuffix}",
+                        $"{cssPrefix}/models/site-new{cssSuffix}",
+                        $"{cssPrefix}/models/css-shake{cssSuffix}"
+                ).Include($"{cssPrefix}/lib/bootstrap-icons/bootstrap-icons{cssSuffix}", new CssRewriteUrlTransform()));
 
             bundles.Add(new StyleBundle("~/bundles/css/kendo-custom").Include(
-                        "~/css/dist/lib/kendo/custom/kendo-custom.min.css"
+                        $"{cssPrefix}/lib/kendo/custom/kendo-custom{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/order-returns").Include(
-                        "~/css/dist/lib/kendo/custom/kendo-custom.min.css",
-                        "~/css/dist/models/order-returns.min.css"
-                ).Include("~/css/dist/lib/intl-tel-input/intl-tel-input.min.css", new CssRewriteUrlTransform()));
+                        $"{cssPrefix}/lib/kendo/custom/kendo-custom{cssSuffix}",
+                        $"{cssPrefix}/models/order-returns{cssSuffix}"
+                ).Include($"{cssPrefix}/lib/intl-tel-input/intl-tel-input{cssSuffix}", new CssRewriteUrlTransform()));
 
             bundles.Add(new StyleBundle("~/bundles/css/furniture-maintenance").Include(
-                        "~/css/dist/models/furniture-maintenance.min.css"
+                        $"{cssPrefix}/models/furniture-maintenance{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/documents-preview").Include(
-                        "~/css/dist/models/documents-preview.min.css"
+                        $"{cssPrefix}/models/documents-preview{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/application-groups").Include(
-                        "~/css/dist/models/application-groups.min.css"
+                        $"{cssPrefix}/models/application-groups{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/customer-invite").Include(
-                        "~/css/dist/models/customer-invite.min.css"
+                        $"{cssPrefix}/models/customer-invite{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/treatment-invoice-approval").Include(
-                        "~/css/dist/models/invoice-approval-shared.min.css"
+                        $"{cssPrefix}/models/invoice-approval-shared{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/paint-invoice-approval").Include(
-                        "~/css/dist/models/invoice-approval-shared.min.css"
+                        $"{cssPrefix}/models/invoice-approval-shared{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/furniture-invoice-approval").Include(
-                        "~/css/dist/models/invoice-approval-shared.min.css"
+                        $"{cssPrefix}/models/invoice-approval-shared{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/customer-ordering-notes").Include(
-                        "~/css/dist/models/customer-ordering-notes.min.css"
+                        $"{cssPrefix}/models/customer-ordering-notes{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/order-import").Include(
-                        "~/css/dist/models/order-import.min.css"
+                        $"{cssPrefix}/models/order-import{cssSuffix}"
+                ));
+
+            bundles.Add(new StyleBundle("~/bundles/css/generic-forms").Include(
+                        $"{cssPrefix}/models/generic-forms{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/tempus-dominus").Include(
-                        "~/css/dist/lib/tempus-dominus/tempus-dominus.min.css"
+                        $"{cssPrefix}/lib/tempus-dominus/tempus-dominus{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/customer-maintenance").Include(
-                      "~/css/dist/models/customer-maintenance.min.css"
+                      $"{cssPrefix}/models/customer-maintenance{cssSuffix}"
                 ));
-                
+
             bundles.Add(new StyleBundle("~/bundles/css/paint-mixing").Include(
-                        "~/css/dist/models/paint-mixing.min.css"
+                        $"{cssPrefix}/models/paint-mixing{cssSuffix}"
                 ));
-#endif
 
             //  
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -510,723 +287,367 @@ namespace Portal
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             //
 
-#if DEBUG
-
             bundles.Add(new ScriptBundle("~/bundles/js/bootstrap").Include(
-                      "~/js/src/lib/bootstrap-3.3.7/bootstrap-3.3.7.js",
-                      "~/js/src/lib/respond/respond.js"
+                      $"{jsPrefix}/lib/bootstrap-3.3.7/bootstrap-3.3.7{jsSuffix}",
+                      $"{jsPrefix}/lib/respond/respond{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/bootstrap-5.3.1").Include(
-                      "~/js/src/lib/bootstrap-5.3.1/bootstrap.bundle-5.3.1.js"
+                      $"{jsPrefix}/lib/bootstrap-5.3.1/bootstrap.bundle-5.3.1{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/bootstrap-switch").Include(
-                      "~/js/src/lib/bootstrap-switch/bootstrap-switch.js"
+                      $"{jsPrefix}/lib/bootstrap-switch/bootstrap-switch{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/kendo").Include(
-                      "~/js/src/lib/kendo/kendo.2018.3.1017.all.js"
+                      $"{jsPrefix}/lib/kendo/kendo.2018.3.1017.all{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/popper").Include(
-                      "~/js/src/lib/popper-2.11.6/popper-2.11.6.js"
+                      $"{jsPrefix}/lib/popper-2.11.6/popper-2.11.6{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/knockout").Include(
-                      "~/js/src/lib/knockout/knockout-3.5.0.js",
-                      "~/js/src/lib/knockout/knockout-fast-foreach.js",
-                      "~/js/src/lib/knockout/knockout-mapping-latest.js",
-                      "~/js/src/lib/knockout/knockout-kendo.js",
-                      "~/js/src/lib/knockout/knockout-validation.js",
-                      "~/js/src/lib/knockout/knockout-extensions.js",
-                      "~/js/src/lib/knockout/knockout-infinite-scroll.js",
-                      "~/js/src/lib/knockout/knockout-sortable.js",
-                      "~/js/src/lib/owl-carousel/owl-carousel.js",
-                      "~/js/src/lib/tiny-slider/tiny-slider.js",
-                      "~/js/src/lib/knockout/knockout-owl-carousel.js"
+                      $"{jsPrefix}/lib/knockout/knockout-3.5.0{jsSuffix}",
+                      $"{jsPrefix}/lib/knockout/knockout-fast-foreach{jsSuffix}",
+                      $"{jsPrefix}/lib/knockout/knockout-mapping-latest{jsSuffix}",
+                      $"{jsPrefix}/lib/knockout/knockout-kendo{jsSuffix}",
+                      $"{jsPrefix}/lib/knockout/knockout-validation{jsSuffix}",
+                      $"{jsPrefix}/lib/knockout/knockout-extensions{jsSuffix}",
+                      $"{jsPrefix}/lib/knockout/knockout-infinite-scroll{jsSuffix}",
+                      $"{jsPrefix}/lib/knockout/knockout-sortable{jsSuffix}",
+                      $"{jsPrefix}/lib/owl-carousel/owl-carousel{jsSuffix}",
+                      $"{jsPrefix}/lib/tiny-slider/tiny-slider{jsSuffix}",
+                      $"{jsPrefix}/lib/knockout/knockout-owl-carousel{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/jquery").Include(
-                        "~/js/src/lib/jquery-3.1.1/jquery-3.1.1.js",
-                        "~/js/dist/models/extensions.js"
+                        $"{jsPrefix}/lib/jquery-3.1.1/jquery-3.1.1{jsSuffix}",
+                        "~/js/dist/models/extensions{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/jqueryui").Include(
-                        "~/js/src/lib/jquery-ui-1.12.1/jquery-ui-1.12.1.js",
-                        "~/js/src/lib/jquery-ui-1.12.1/jquery-ui-extensions.js",
-                        "~/js/src/lib/jquery-ui-1.12.1/jquery-ui-touch-punch.js"
+                        $"{jsPrefix}/lib/jquery-ui-1.12.1/jquery-ui-1.12.1{jsSuffix}",
+                        $"{jsPrefix}/lib/jquery-ui-1.12.1/jquery-ui-extensions{jsSuffix}",
+                        $"{jsPrefix}/lib/jquery-ui-1.12.1/jquery-ui-touch-punch{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/jqueryval").Include(
-                        "~/js/src/lib/jquery-3.1.1/jquery.validate.js",
-                        "~/js/src/lib/jquery-3.1.1/jquery.validate.unobtrusive.js"
-                        //"~/js/src/lib/jquery-3.1.1/jquery.validate-vsdoc.js"
+                        $"{jsPrefix}/lib/jquery-3.1.1/jquery.validate{jsSuffix}",
+                        $"{jsPrefix}/lib/jquery-3.1.1/jquery.validate.unobtrusive{jsSuffix}"
+                        //$"{jsPrefix}/lib/jquery-3.1.1/jquery.validate-vsdoc{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/kendo-modernizr").Include(
-                        "~/js/src/lib/kendo/kendo.modernizr.custom.js"));
+                        $"{jsPrefix}/lib/kendo/kendo.modernizr.custom{jsSuffix}"));
 
             bundles.Add(new ScriptBundle("~/bundles/js/components").Include(
-                    "~/js/src/models/kendo-mdc-drop-down-list-factory.js",
-                    "~/js/src/models/trade-account-selector.js",
-                    "~/js/src/models/product-search.js",
-                    "~/js/src/models/order-search.js",
-                    "~/js/src/models/order-products.js",
-                    "~/js/src/models/order-products-drilldown.js",
-                    "~/js/src/models/care-search.js",
-                    "~/js/src/models/task-search.js",
-                    "~/js/src/models/visit-search.js",
-                    "~/js/src/models/visit-booker.js",
-                    "~/js/src/models/member-search.js",
-                    "~/js/src/models/recently-used-members.js",
-                    "~/js/src/models/address.js",
-                    "~/js/src/lib/jquery-3.1.1/jquery.twbsPagination.js"
+                    $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                    $"{jsPrefix}/models/trade-account-selector{jsSuffix}",
+                    $"{jsPrefix}/models/product-search{jsSuffix}",
+                    $"{jsPrefix}/models/order-search{jsSuffix}",
+                    $"{jsPrefix}/models/order-products{jsSuffix}",
+                    $"{jsPrefix}/models/order-products-drilldown{jsSuffix}",
+                    $"{jsPrefix}/models/care-search{jsSuffix}",
+                    $"{jsPrefix}/models/task-search{jsSuffix}",
+                    $"{jsPrefix}/models/visit-search{jsSuffix}",
+                    $"{jsPrefix}/models/visit-booker{jsSuffix}",
+                    $"{jsPrefix}/models/member-search{jsSuffix}",
+                    $"{jsPrefix}/models/recently-used-members{jsSuffix}",
+                    $"{jsPrefix}/models/address{jsSuffix}",
+                    $"{jsPrefix}/lib/jquery-3.1.1/jquery.twbsPagination{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/datetime-picker").Include(
-                    "~/js/src/lib/bootstrap-datetime-picker/bootstrap-datetime-picker.js"
+                    $"{jsPrefix}/lib/bootstrap-datetime-picker/bootstrap-datetime-picker{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/tempus-dominus").Include(
-                    "~/js/src/lib/popper-2.11.6/popper-2.11.6.js",
-                    "~/js/src/lib/tempus-dominus/tempus-dominus.js",
-                    "~/js/src/lib/tempus-dominus/custom-date-format.js",
-                    "~/js/src/lib/tempus-dominus/tempus-dominus-knockout.js"
+                    $"{jsPrefix}/lib/popper-2.11.6/popper-2.11.6{jsSuffix}",
+                    $"{jsPrefix}/lib/tempus-dominus/tempus-dominus{jsSuffix}",
+                    $"{jsPrefix}/lib/tempus-dominus/custom-date-format{jsSuffix}",
+                    $"{jsPrefix}/lib/tempus-dominus/tempus-dominus-knockout{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/intl-tel").Include(
-                    "~/js/src/lib/intl-tel-input/intl-tel-input.js",
-                    "~/js/src/lib/intl-tel-input/utils.js"
+                    $"{jsPrefix}/lib/intl-tel-input/intl-tel-input{jsSuffix}",
+                    $"{jsPrefix}/lib/intl-tel-input/utils{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/address").Include(
-                    "~/js/src/models/address.js"
+                    $"{jsPrefix}/models/address{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/trade-account-selector").Include(
-                    "~/js/src/models/trade-account-selector.js"
+                    $"{jsPrefix}/models/trade-account-selector{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/product-search").Include(
-                        "~/js/src/models/product-search.js"
+                        $"{jsPrefix}/models/product-search{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-search").Include(
-                        "~/js/src/lib/jquery-3.1.1/jquery.twbsPagination.js",
-                        "~/js/src/lib/bootstrap-datetime-picker/bootstrap-datetime-picker.js",
-                        "~/js/src/models/order-search.js"
+                        $"{jsPrefix}/lib/jquery-3.1.1/jquery.twbsPagination{jsSuffix}",
+                        $"{jsPrefix}/lib/bootstrap-datetime-picker/bootstrap-datetime-picker{jsSuffix}",
+                        $"{jsPrefix}/models/order-search{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/care-search").Include(
-                      "~/js/src/models/care-search.js"
+                      $"{jsPrefix}/models/care-search{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/task-search").Include(
-                      "~/js/src/models/task-search.js"
+                      $"{jsPrefix}/models/task-search{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/customer-maintenance").Include(
-                      "~/js/src/models/customer-maintenance.js"
+                      $"{jsPrefix}/models/customer-maintenance{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/visit-search").Include(
-                        "~/js/src/lib/jquery-3.1.1/jquery.twbsPagination.js",
-                        "~/js/src/lib/bootstrap-datetime-picker/bootstrap-datetime-picker.js",
-                        "~/js/src/models/visit-search.js"
+                        $"{jsPrefix}/lib/jquery-3.1.1/jquery.twbsPagination{jsSuffix}",
+                        $"{jsPrefix}/lib/bootstrap-datetime-picker/bootstrap-datetime-picker{jsSuffix}",
+                        $"{jsPrefix}/models/visit-search{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/member-search").Include(
-                        "~/js/src/models/recently-used-members.js",
-                        "~/js/src/models/member-search.js"
+                        $"{jsPrefix}/models/recently-used-members{jsSuffix}",
+                        $"{jsPrefix}/models/member-search{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/visit-booker").Include(
-                        "~/js/src/models/visit-booker.js"
+                        $"{jsPrefix}/models/visit-booker{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/lead-search").Include(
-                        "~/js/src/lib/jquery-3.1.1/jquery.twbsPagination.js",
-                        "~/js/src/lib/bootstrap-datetime-picker/bootstrap-datetime-picker.js",
-                        "~/js/src/models/lead-search.js"
+                        $"{jsPrefix}/lib/jquery-3.1.1/jquery.twbsPagination{jsSuffix}",
+                        $"{jsPrefix}/lib/bootstrap-datetime-picker/bootstrap-datetime-picker{jsSuffix}",
+                        $"{jsPrefix}/models/lead-search{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/download-products").Include(
-                        "~/js/src/models/download-products.js"
+                        $"{jsPrefix}/models/download-products{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/projects-dashboard").Include(
-                        "~/js/src/models/projects-dashboard.js"
+                        $"{jsPrefix}/models/projects-dashboard{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/tasks-dashboard").Include(
-                        "~/js/src/models/tasks-dashboard.js"
+                        $"{jsPrefix}/models/tasks-dashboard{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/customer-tagging").Include(
-                        "~/js/src/models/customer-tagging.js"
+                        $"{jsPrefix}/models/customer-tagging{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/sales-statistics").Include(
-                        "~/js/src/models/sales-statistics.js"
+                        $"{jsPrefix}/models/sales-statistics{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/gdpr-survey").Include(
-                        "~/js/src/models/gdpr-survey.js"
+                        $"{jsPrefix}/models/gdpr-survey{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/home").Include(
-                        "~/js/src/models/home.js"
+                        $"{jsPrefix}/models/home{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/sample-request").Include(
-                        "~/js/src/models/sample-request.js"
+                        $"{jsPrefix}/models/sample-request{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/sample-request-dg").Include(
-                        "~/js/src/models/sample-request-dg.js"
+                        $"{jsPrefix}/models/sample-request-dg{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/alternative-products").Include(
-                        "~/js/src/models/alternative-products.js"
+                        $"{jsPrefix}/models/alternative-products{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/trade-order-enquiry").Include(
-                        "~/js/src/models/trade-order-enquiry.js"
+                        $"{jsPrefix}/models/trade-order-enquiry{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/customer-enquiry").Include(
-                      "~/js/src/models/business-potential.js",
-                      "~/js/src/models/customer-enquiry.js"
+                      $"{jsPrefix}/models/business-potential{jsSuffix}",
+                      $"{jsPrefix}/models/customer-enquiry{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/pricing-enquiry").Include(
-                        "~/js/src/models/price-checker.js",
-                      "~/js/src/models/pricing-enquiry.js"
+                        $"{jsPrefix}/models/price-checker{jsSuffix}",
+                      $"{jsPrefix}/models/pricing-enquiry{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/customer-visit").Include(
-                        "~/js/src/models/customer-visit.js"
+                        $"{jsPrefix}/models/customer-visit{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/customer-care").Include(
-                        "~/js/src/models/customer-care.js"
+                        $"{jsPrefix}/models/customer-care{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/lead-enquiry").Include(
-                    "~/js/src/models/lead-enquiry.js",
-                    "~/js/src/models/price-checker.js",
-                    "~/js/src/lib/jquery-3.1.1/jquery.twbsPagination.js",
-                    "~/js/src/lib/bootstrap-datetime-picker/bootstrap-datetime-picker.js",
-                    "~/js/src/models/address.js",
-                    "~/js/src/models/trade-account-contact.js",
-                    "~/js/src/models/business-potential.js",
-                    "~/js/src/lib/google-maps/google-maps-marker-clusterer.js",
-                    "~/js/src/models/lead-search.js",
-                    "~/js/src/models/visit-search.js",
-                    "~/js/src/models/visit-booker.js",
-                    "~/js/src/models/member-search.js",
-                    "~/js/src/models/care-search.js"
+                    $"{jsPrefix}/models/lead-enquiry{jsSuffix}",
+                    $"{jsPrefix}/models/price-checker{jsSuffix}",
+                    $"{jsPrefix}/lib/jquery-3.1.1/jquery.twbsPagination{jsSuffix}",
+                    $"{jsPrefix}/lib/bootstrap-datetime-picker/bootstrap-datetime-picker{jsSuffix}",
+                    $"{jsPrefix}/models/address{jsSuffix}",
+                    $"{jsPrefix}/models/trade-account-contact{jsSuffix}",
+                    $"{jsPrefix}/models/business-potential{jsSuffix}",
+                    $"{jsPrefix}/lib/google-maps/google-maps-marker-clusterer{jsSuffix}",
+                    $"{jsPrefix}/models/lead-search{jsSuffix}",
+                    $"{jsPrefix}/models/visit-search{jsSuffix}",
+                    $"{jsPrefix}/models/visit-booker{jsSuffix}",
+                    $"{jsPrefix}/models/member-search{jsSuffix}",
+                    $"{jsPrefix}/models/care-search{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-products-base").Include(
-                        "~/js/src/models/order-products-base.js",
-                        "~/js/src/models/basket-status.js"
+                        $"{jsPrefix}/models/order-products-base{jsSuffix}",
+                        $"{jsPrefix}/models/basket-status{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/product-maintenance").Include(
-                        "~/js/src/models/product-maintenance.js"
+                        $"{jsPrefix}/models/product-maintenance{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/treatment-maintenance").Include(
-                        "~/js/src/models/treatment-maintenance.js"
+                        $"{jsPrefix}/models/treatment-maintenance{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/product-type-maintenance").Include(
-                        "~/js/src/models/product-type-maintenance-code-mirror.bundle.js",
-                        "~/js/src/models/product-type-maintenance.js"
+                        $"{jsPrefix}/models/product-type-maintenance-code-mirror.bundle{jsSuffix}",
+                        $"{jsPrefix}/models/product-type-maintenance{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/basket-status").Include(
-                        "~/js/src/models/basket-status.js"
+                        $"{jsPrefix}/models/basket-status{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/translations").Include(
-                    "~/js/src/models/kendo-mdc-drop-down-list-factory.js",
-                    "~/js/src/models/translations-base.js"
+                    $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                    $"{jsPrefix}/models/translations-base{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/product-delivery").Include(
-                        "~/js/src/models/product-delivery.js"
+                        $"{jsPrefix}/models/product-delivery{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/product-categories").Include(
-                        "~/js/src/models/product-categories.js"
+                        $"{jsPrefix}/models/product-categories{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-tracking").Include(
-                        "~/js/src/models/emailer.js",
-                        "~/js/src/models/order-tracking.js"
+                        $"{jsPrefix}/models/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/order-tracking{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/ring-fenced-stock").Include(
-                        "~/js/src/models/ring-fenced-stock.js"
+                        $"{jsPrefix}/models/ring-fenced-stock{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/marketing-messages").Include(
-                        "~/js/src/models/marketing-messages.js"
+                        $"{jsPrefix}/models/marketing-messages{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/marketing-budget").Include(
-                        "~/js/src/models/marketing-budget.js"
+                        $"{jsPrefix}/models/marketing-budget{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/global").Include(
-                        "~/js/src/lib/money/money.js",
-                        "~/js/src/lib/moment/moment-with-locales.js",
-                        "~/js/src/lib/linq/linq.js",
-                        "~/js/src/models/functions.js",
-                        "~/js/src/models/extensions.js",
-                        "~/js/src/lib/jquery-3.1.1/jquery.signalR.js"
+                        $"{jsPrefix}/lib/money/money{jsSuffix}",
+                        $"{jsPrefix}/lib/moment/moment-with-locales{jsSuffix}",
+                        $"{jsPrefix}/lib/linq/linq{jsSuffix}",
+                        $"{jsPrefix}/models/functions{jsSuffix}",
+                        $"{jsPrefix}/models/extensions{jsSuffix}",
+                        $"{jsPrefix}/lib/jquery-3.1.1/jquery.signalR{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/global-new").Include(
-                        "~/js/src/lib/money/money.js",
-                        "~/js/src/lib/moment/moment-with-locales.js",
-                        "~/js/src/lib/linq/linq.js",
-                        "~/js/src/models/functions-new.js",
-                        "~/js/src/models/extensions.js",
-                        "~/js/src/lib/jquery-3.1.1/jquery.signalR.js"
+                        $"{jsPrefix}/lib/money/money{jsSuffix}",
+                        $"{jsPrefix}/lib/moment/moment-with-locales{jsSuffix}",
+                        $"{jsPrefix}/lib/linq/linq{jsSuffix}",
+                        $"{jsPrefix}/models/functions-new{jsSuffix}",
+                        $"{jsPrefix}/models/extensions{jsSuffix}",
+                        $"{jsPrefix}/lib/jquery-3.1.1/jquery.signalR{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-returns").Include(
-                        "~/js/src/models/address.js",
-                        "~/js/src/lib/bootstrap-datetime-picker/bootstrap-datetime-picker.js",
-                        "~/js/src/lib/moment/moment-with-locales.js",
-                        "~/js/src/lib/intl-tel-input/intl-tel-input.js",
-                        "~/js/src/lib/intl-tel-input/utils.js",
-                        "~/js/src/models/kendo-mdc-drop-down-list-factory.js",
-                        "~/js/src/models/ups-references.js",
-                        "~/js/src/models/trade-order-returns.js"
+                        $"{jsPrefix}/models/address{jsSuffix}",
+                        $"{jsPrefix}/lib/bootstrap-datetime-picker/bootstrap-datetime-picker{jsSuffix}",
+                        $"{jsPrefix}/lib/moment/moment-with-locales{jsSuffix}",
+                        $"{jsPrefix}/lib/intl-tel-input/intl-tel-input{jsSuffix}",
+                        $"{jsPrefix}/lib/intl-tel-input/utils{jsSuffix}",
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/ups-references{jsSuffix}",
+                        $"{jsPrefix}/models/trade-order-returns{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/documents-preview").Include(
-                        "~/js/src/models/emailer.js",
-                        "~/js/src/models/kendo-mdc-drop-down-list-factory.js",
-                        "~/js/src/models/documents-preview.js"
+                        $"{jsPrefix}/models/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/documents-preview{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/application-groups").Include(
-                        "~/js/src/models/kendo-mdc-drop-down-list-factory.js",
-                        "~/js/src/models/application-groups.js"
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/application-groups{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/customer-invite").Include(
-                        "~/js/src/models/emailer.js",
-                        "~/js/src/models/kendo-mdc-drop-down-list-factory.js",
-                        "~/js/src/models/customer-invite.js"
+                        $"{jsPrefix}/models/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/customer-invite{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/treatment-invoice-approval").Include(
-                        "~/js/src/models/kendo-mdc-drop-down-list-factory.js",
-                        "~/js/src/models/treatment-invoice-approval.js"
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/treatment-invoice-approval{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/paint-invoice-approval").Include(
-                        "~/js/src/models/kendo-mdc-drop-down-list-factory.js",
-                        "~/js/src/models/paint-invoice-approval.js"
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/paint-invoice-approval{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/furniture-invoice-approval").Include(
-                        "~/js/src/models/kendo-mdc-drop-down-list-factory.js",
-                        "~/js/src/models/furniture-invoice-approval.js"
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/furniture-invoice-approval{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/furniture-maintenance").Include(
-                        "~/js/src/models/kendo-mdc-drop-down-list-factory.js",
-                        "~/js/src/models/furniture-maintenance.js"
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/furniture-maintenance{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/customer-ordering-notes").Include(
-                        "~/js/src/models/kendo-mdc-drop-down-list-factory.js",
-                        "~/js/src/models/customer-ordering-notes.js"
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/customer-ordering-notes{jsSuffix}"
                 ));
             bundles.Add(new ScriptBundle("~/bundles/js/order-import").Include(
-                        "~/js/src/models/kendo-mdc-drop-down-list-factory.js",
-                        "~/js/src/models/order-import.js"
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/order-import{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/generic-forms").Include(
-                        "~/js/src/models/generic-form-factory.js",
-                        "~/js/src/models/generic-form-field.js",
-                        "~/js/src/models/generic-form-panel.js"
+                        $"{jsPrefix}/models/generic-form-factory{jsSuffix}",
+                        $"{jsPrefix}/models/generic-form-field{jsSuffix}",
+                        $"{jsPrefix}/models/generic-form-panel{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/common-modals").Include(
-                        "~/js/src/models/common-modals.js"
+                        $"{jsPrefix}/models/common-modals{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/paint-mixing").Include(
-                        "~/js/src/models/paint-mixing.js"
+                        $"{jsPrefix}/models/paint-mixing{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/notifications").Include(
-                        "~/js/src/models/notifications.js"
+                        $"{jsPrefix}/models/notifications{jsSuffix}"
                 ));
-#else
-
-            bundles.Add(new ScriptBundle("~/bundles/js/bootstrap").Include(
-                      "~/js/dist/lib/bootstrap-3.3.7/bootstrap-3.3.7.min.js",
-                      "~/js/dist/lib/respond/respond.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/bootstrap-5.3.1").Include(
-                      "~/js/dist/lib/bootstrap-5.3.1/bootstrap.bundle-5.3.1.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/bootstrap-switch").Include(
-                      "~/js/dist/lib/bootstrap-switch/bootstrap-switch.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/kendo").Include(
-                      "~/js/dist/lib/kendo/kendo.2018.3.1017.all.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/popper").Include(
-                      "~/js/dist/lib/popper-2.11.6/popper-2.11.6.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/knockout").Include(
-                      "~/js/dist/lib/knockout/knockout-3.5.0.min.js",
-                      "~/js/dist/lib/knockout/knockout-fast-foreach.min.js",
-                      "~/js/dist/lib/knockout/knockout-mapping-latest.min.js",
-                      "~/js/dist/lib/knockout/knockout-kendo.min.js",
-                      "~/js/dist/lib/knockout/knockout-validation.min.js",
-                      "~/js/dist/lib/knockout/knockout-extensions.min.js",
-                      "~/js/dist/lib/knockout/knockout-infinite-scroll.min.js",
-                      "~/js/dist/lib/knockout/knockout-sortable.min.js",
-                      "~/js/dist/lib/owl-carousel/owl-carousel.min.js",
-                      "~/js/dist/lib/tiny-slider/tiny-slider.min.js",
-                      "~/js/dist/lib/knockout/knockout-owl-carousel.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/jquery").Include(
-                        "~/js/dist/lib/jquery-3.1.1/jquery-3.1.1.min.js",
-                        "~/js/dist/models/extensions.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/jqueryui").Include(
-                        "~/js/dist/lib/jquery-ui-1.12.1/jquery-ui-1.12.1.min.js",
-                        "~/js/dist/lib/jquery-ui-1.12.1/jquery-ui-extensions.min.js",
-                        "~/js/dist/lib/jquery-ui-1.12.1/jquery-ui-touch-punch.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/jqueryval").Include(
-                        "~/js/dist/lib/jquery-3.1.1/jquery.validate.min.js",
-                        "~/js/dist/lib/jquery-3.1.1/jquery.validate.unobtrusive.min.js"
-                        //"~/js/dist/lib/jquery-3.1.1/jquery.validate-vsdoc.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/kendo-modernizr").Include(
-                        "~/js/dist/lib/kendo/kendo.modernizr.custom.min.js"));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/components").Include(
-                    "~/js/dist/models/kendo-mdc-drop-down-list-factory.min.js",
-                    "~/js/dist/models/trade-account-selector.min.js",
-                    "~/js/dist/models/product-search.min.js",
-                    "~/js/dist/models/order-search.min.js",
-                    "~/js/dist/models/order-products.min.js",
-                    "~/js/dist/models/order-products-drilldown.min.js",
-                    "~/js/dist/models/care-search.min.js",
-                    "~/js/dist/models/task-search.min.js",
-                    "~/js/dist/models/visit-search.min.js",
-                    "~/js/dist/models/visit-booker.min.js",
-                    "~/js/dist/models/member-search.min.js",
-                    "~/js/dist/models/recently-used-members.min.js",
-                    "~/js/dist/models/address.min.js",
-                    "~/js/dist/lib/jquery-3.1.1/jquery.twbsPagination.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/datetime-picker").Include(
-                    "~/js/dist/lib/bootstrap-datetime-picker/bootstrap-datetime-picker.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/tempus-dominus").Include(
-                    "~/js/src/lib/popper-2.11.6/popper-2.11.6.min.js",
-                    "~/js/dist/lib/tempus-dominus/tempus-dominus.min.js",
-                    "~/js/dist/lib/tempus-dominus/custom-date-format.min.js",
-                    "~/js/dist/lib/tempus-dominus/tempus-dominus-knockout.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/intl-tel").Include(
-                    "~/js/dist/lib/intl-tel-input/intl-tel-input.min.js",
-                    "~/js/dist/lib/intl-tel-input/utils.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/address").Include(
-                    "~/js/dist/models/address.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/trade-account-selector").Include(
-                    "~/js/dist/models/trade-account-selector.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/product-search").Include(
-                        "~/js/dist/models/product-search.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/order-search").Include(
-                        "~/js/dist/lib/jquery-3.1.1/jquery.twbsPagination.min.js",
-                        "~/js/dist/lib/bootstrap-datetime-picker/bootstrap-datetime-picker.min.js",
-                        "~/js/dist/models/order-search.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/care-search").Include(
-                      "~/js/dist/models/care-search.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/task-search").Include(
-                      "~/js/dist/models/task-search.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/customer-maintenance").Include(
-                      "~/js/dist/models/customer-maintenance.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/visit-search").Include(
-                        "~/js/dist/lib/jquery-3.1.1/jquery.twbsPagination.min.js",
-                        "~/js/dist/lib/bootstrap-datetime-picker/bootstrap-datetime-picker.min.js",
-                        "~/js/dist/models/visit-search.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/member-search").Include(
-                        "~/js/dist/models/recently-used-members.min.js",
-                        "~/js/dist/models/member-search.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/visit-booker").Include(
-                        "~/js/dist/models/visit-booker.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/lead-search").Include(
-                        "~/js/dist/lib/jquery-3.1.1/jquery.twbsPagination.min.js",
-                        "~/js/dist/lib/bootstrap-datetime-picker/bootstrap-datetime-picker.min.js",
-                        "~/js/dist/models/lead-search.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/download-products").Include(
-                        "~/js/dist/models/download-products.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/projects-dashboard").Include(
-                        "~/js/dist/models/projects-dashboard.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/tasks-dashboard").Include(
-                        "~/js/dist/models/tasks-dashboard.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/customer-tagging").Include(
-                        "~/js/dist/models/customer-tagging.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/sales-statistics").Include(
-                        "~/js/dist/models/sales-statistics.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/gdpr-survey").Include(
-                        "~/js/dist/models/gdpr-survey.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/home").Include(
-                        "~/js/dist/models/home.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/sample-request").Include(
-                        "~/js/dist/models/sample-request.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/sample-request-dg").Include(
-                        "~/js/dist/models/sample-request-dg.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/alternative-products").Include(
-                        "~/js/dist/models/alternative-products.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/trade-order-enquiry").Include(
-                        "~/js/dist/models/trade-order-enquiry.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/customer-enquiry").Include(
-                      "~/js/dist/models/business-potential.min.js",
-                      "~/js/dist/models/customer-enquiry.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/pricing-enquiry").Include(
-                    "~/js/dist/models/price-checker.min.js",
-                      "~/js/dist/models/pricing-enquiry.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/customer-visit").Include(
-                        "~/js/dist/models/customer-visit.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/customer-care").Include(
-                        "~/js/dist/models/customer-care.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/lead-enquiry").Include(
-                    "~/js/dist/models/lead-enquiry.min.js",
-                    "~/js/dist/models/price-checker.min.js",
-                    "~/js/dist/lib/jquery-3.1.1/jquery.twbsPagination.min.js",
-                    "~/js/dist/lib/bootstrap-datetime-picker/bootstrap-datetime-picker.min.js",
-                    "~/js/dist/models/address.min.js",
-                    "~/js/dist/models/trade-account-contact.min.js",
-                    "~/js/dist/models/business-potential.min.js",
-                    "~/js/dist/lib/google-maps/google-maps-marker-clusterer.min.js",
-                    "~/js/dist/models/lead-search.min.js",
-                    "~/js/dist/models/visit-search.min.js",
-                    "~/js/dist/models/visit-booker.min.js",
-                    "~/js/dist/models/member-search.min.js",
-                    "~/js/dist/models/care-search.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/order-products-base").Include(
-                        "~/js/dist/models/order-products-base.min.js",
-                        "~/js/dist/models/basket-status.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/product-maintenance").Include(
-                        "~/js/dist/models/product-maintenance.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/treatment-maintenance").Include(
-                        "~/js/dist/models/treatment-maintenance.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/product-type-maintenance").Include(
-                        "~/js/dist/models/product-type-maintenance-code-mirror.bundle.min.js",
-                        "~/js/dist/models/product-type-maintenance.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/basket-status").Include(
-                        "~/js/dist/models/basket-status.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/translations").Include(
-                    "~/js/dist/models/kendo-mdc-drop-down-list-factory.min.js",
-                    "~/js/dist/models/translations-base.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/product-delivery").Include(
-                        "~/js/dist/models/product-delivery.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/product-categories").Include(
-                        "~/js/dist/models/product-categories.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/order-tracking").Include(
-                        "~/js/dist/models/emailer.min.js",
-                        "~/js/dist/models/order-tracking.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/ring-fenced-stock").Include(
-                        "~/js/dist/models/ring-fenced-stock.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/marketing-budget").Include(
-                        "~/js/dist/models/marketing-budget.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/marketing-messages").Include(
-                        "~/js/dist/models/marketing-messages.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/global").Include(
-                        "~/js/dist/lib/money/money.min.js",
-                        "~/js/dist/lib/moment/moment-with-locales.min.js",
-                        "~/js/dist/lib/linq/linq.min.js",
-                        "~/js/dist/models/functions.min.js",
-                        "~/js/dist/lib/jquery-3.1.1/jquery.signalR.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/order-returns").Include(
-                        "~/js/dist/models/address.min.js",
-                        "~/js/dist/lib/bootstrap-datetime-picker/bootstrap-datetime-picker.min.js",
-                        "~/js/dist/lib/moment/moment-with-locales.min.js",
-                        "~/js/dist/lib/intl-tel-input/intl-tel-input.min.js",
-                        "~/js/dist/lib/intl-tel-input/utils.min.js",
-                        "~/js/dist/models/kendo-mdc-drop-down-list-factory.min.js",
-                        "~/js/dist/models/ups-references.min.js",
-                        "~/js/dist/models/trade-order-returns.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/documents-preview").Include(
-                        "~/js/dist/models/emailer.min.js",
-                        "~/js/dist/models/kendo-mdc-drop-down-list-factory.min.js",
-                        "~/js/dist/models/documents-preview.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/application-groups").Include(
-                        "~/js/dist/models/kendo-mdc-drop-down-list-factory.min.js",
-                        "~/js/dist/models/application-groups.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/customer-invite").Include(
-                        "~/js/dist/models/emailer.min.js",
-                        "~/js/dist/models/kendo-mdc-drop-down-list-factory.min.js",
-                        "~/js/dist/models/customer-invite.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/treatment-invoice-approval").Include(
-                        "~/js/dist/models/kendo-mdc-drop-down-list-factory.min.js",
-                        "~/js/dist/models/treatment-invoice-approval.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/paint-invoice-approval").Include(
-                        "~/js/dist/models/kendo-mdc-drop-down-list-factory.min.js",
-                        "~/js/dist/models/paint-invoice-approval.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/furniture-invoice-approval").Include(
-                        "~/js/dist/models/kendo-mdc-drop-down-list-factory.min.js",
-                        "~/js/dist/models/furniture-invoice-approval.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/furniture-maintenance").Include(
-                        "~/js/dist/models/kendo-mdc-drop-down-list-factory.min.js",
-                        "~/js/dist/models/furniture-maintenance.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/customer-ordering-notes").Include(
-                        "~/js/dist/models/kendo-mdc-drop-down-list-factory.min.js",
-                        "~/js/dist/models/customer-ordering-notes.min.js"
-                ));
-            bundles.Add(new ScriptBundle("~/bundles/js/order-import").Include(
-                        "~/js/dist/models/kendo-mdc-drop-down-list-factory.min.js",
-                        "~/js/dist/models/order-import.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/generic-forms").Include(
-                        "~/js/dist/models/generic-form-factory.min.js",
-                        "~/js/dist/models/generic-form-field.min.js",
-                        "~/js/dist/models/generic-form-panel.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/common-modals").Include(
-                        "~/js/dist/models/common-modals.min.js"
-                ));
-                
-            bundles.Add(new ScriptBundle("~/bundles/js/paint-mixing").Include(
-                        "~/js/dist/models/paint-mixing.min.js"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/notifications").Include(
-                        "~/js/dist/models/notifications.min.js"
-                ));
-#endif
 
             foreach (var b in BundleTable.Bundles)
             {
@@ -1240,8 +661,6 @@ namespace Portal
 #endif
 
         }
-
-
 
         // adapted from: https://stackoverflow.com/questions/12577108/asp-net-mvc4-bundling-with-twitter-bootstrap#answer-17702773
         // with thanks

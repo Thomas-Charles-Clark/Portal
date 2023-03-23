@@ -20516,8 +20516,6 @@ var deliveryAddressFactory = function (parent) {
             self.endCustomer(undefined);
             self.endCustomerAutocomplete.observable(undefined);
             $(self.endCustomerAutocomplete.observable.DOMElement).focus();
-            self.deliveryAddressSearch.reset();
-            self.deliveryAddressSearch.tradeAccount(self.parent.tradeAccount());
         },
         readOnly: false,
         autocompleteSettings: {
@@ -20945,8 +20943,12 @@ var deliveryAddressFactory = function (parent) {
 
     self.deliveryToParent = function () {
         $('#end-customer-or-parent-modal').modal('hide');
+        //why on earth were we doing this...?
         self.busy(false);
+        self.endCustomer(undefined);
         self.deliverToEndCustomer(false);
+        self.deliveryAddressSearch.reset();
+        self.refreshAddresses();
     }
 
     self.deliveryToEndCustomer = function () {

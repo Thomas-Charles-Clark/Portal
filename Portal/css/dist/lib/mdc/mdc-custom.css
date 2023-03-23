@@ -3522,7 +3522,7 @@ svg.mdc-button__icon {
   background-color: var(--mdc-theme-secondary, #6ebe2c);
 }
 
-@keyframes mdc-checkbox-fade-in-background-ui14isl {
+@keyframes mdc-checkbox-fade-in-background-uuwj9bi {
   0% {
     border-color: rgba(0, 0, 0, 0.54);
     background-color: transparent;
@@ -3536,7 +3536,7 @@ svg.mdc-button__icon {
     background-color: var(--mdc-theme-secondary, #6ebe2c);
   }
 }
-@keyframes mdc-checkbox-fade-out-background-ui14isl {
+@keyframes mdc-checkbox-fade-out-background-uuwj9bi {
   0%, 80% {
     border-color: #6ebe2c;
     /* @alternate */
@@ -3551,10 +3551,10 @@ svg.mdc-button__icon {
   }
 }
 .mdc-checkbox--anim-unchecked-checked .mdc-checkbox__native-control:enabled ~ .mdc-checkbox__background, .mdc-checkbox--anim-unchecked-indeterminate .mdc-checkbox__native-control:enabled ~ .mdc-checkbox__background {
-  animation-name: mdc-checkbox-fade-in-background-ui14isl;
+  animation-name: mdc-checkbox-fade-in-background-uuwj9bi;
 }
 .mdc-checkbox--anim-checked-unchecked .mdc-checkbox__native-control:enabled ~ .mdc-checkbox__background, .mdc-checkbox--anim-indeterminate-unchecked .mdc-checkbox__native-control:enabled ~ .mdc-checkbox__background {
-  animation-name: mdc-checkbox-fade-out-background-ui14isl;
+  animation-name: mdc-checkbox-fade-out-background-uuwj9bi;
 }
 
 .mdc-checkbox__checkmark {
@@ -3981,11 +3981,18 @@ label.mdc-floating-label {
   top: 7px;
 }
 
-.mdc-text-field--outlined.mdc-notched-outline--upgraded .mdc-floating-label--float-above,
-.mdc-text-field--outlined .mdc-notched-outline--upgraded .mdc-floating-label--float-above,
-.mdc-select--outlined.mdc-notched-outline--upgraded .mdc-floating-label--float-above,
-.mdc-select--outlined .mdc-notched-outline--upgraded .mdc-floating-label--float-above {
-  transform: translateY(-80%) scale(0.75);
+.mdc-validating-field .k-list-optionlabel {
+  display: none;
+}
+.mdc-validating-field .mdc-text-field--outlined.mdc-notched-outline--upgraded .mdc-floating-label--float-above,
+.mdc-validating-field .mdc-text-field--outlined .mdc-notched-outline--upgraded .mdc-floating-label--float-above,
+.mdc-validating-field .mdc-select--outlined.mdc-notched-outline--upgraded .mdc-floating-label--float-above,
+.mdc-validating-field .mdc-select--outlined .mdc-notched-outline--upgraded .mdc-floating-label--float-above {
+  transform: translateY(-1.1rem) scale(0.75);
+}
+.mdc-validating-field .mdc-text-field--textarea.mdc-notched-outline--upgraded .mdc-floating-label--float-above,
+.mdc-validating-field .mdc-text-field--textarea .mdc-notched-outline--upgraded .mdc-floating-label--float-above {
+  transform: translateY(-1.7rem) scale(0.75);
 }
 
 .mdc-text-field div.close,
@@ -4010,7 +4017,7 @@ label.mdc-floating-label {
 }
 
 .mdc-validating-field .mdc-select.clearable.revertable span.k-input {
-  padding-right: 84px;
+  padding-right: 104px;
 }
 
 .mdc-text-field__input,
@@ -4225,6 +4232,10 @@ label.mdc-floating-label {
 
 .mdc-select.mdc-multiselect.clearable div.close {
   right: 29px;
+}
+
+.mdc-select.mdc-multiselect.clearable.revertable .k-multiselect-clearable .k-multiselect-wrap {
+  padding-right: 104px;
 }
 
 .mdc-select__native-control.ui-autocomplete-loading,

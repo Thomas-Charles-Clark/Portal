@@ -17,7 +17,9 @@
     @Scripts.Render("~/bundles/js/tempus-dominus")
     @Scripts.Render("~/bundles/js/product-maintenance")
 
-    <script type="text/javascript">
+    @if (Request.IsAuthenticated)
+    {
+        <script type="text/javascript">
 
         window.getFormDefinitions = () => {
             return @Html.Raw(Model.FormJSON);
@@ -45,7 +47,8 @@
                 viewModel.ready();
             }, 0);
         });
-    </script>
+        </script>
+    }
 }
 
 <div class="form-group row">
@@ -70,9 +73,9 @@
     </div>
 </div>
 
-<ul class="nav nav-tabs">
+<ul class="nav nav-pills">
     <li>
-        <button class="nav-link bg-light active" data-bs-toggle="tab" data-bs-target="#maintenance-tab-products" data-bind="click: productsMode">
+        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#maintenance-tab-products" data-bind="click: productsMode">
             Products
         </button>
     </li>
