@@ -36,6 +36,75 @@ const fieldViewModel = ((data, parent) => {
 
     self.dataItems = ko.observableArray([]);
 
+    self.searchTerm = ko.observable();
+
+    self.popperOptions = {
+        modifiers: [
+            {
+                name: 'offset',
+                options: {
+                    offset: [0, -25],
+                },
+            },
+            //{
+            //    name: 'preventOverflow',
+            //    options: {
+
+            //    }
+            //}
+        ],
+    };
+
+    if (self.creationForm) {
+        self.creationModel = ko.observable(formFactory.createForm(JSON.parse(JSON.stringify(self.creationForm)), []));
+        self.showCreation = () => {
+            let nameContainingPanel = self.creationForm.panels.find(p => p.fields.find(f => f.fieldName === 'Name'));
+
+            let data = [];
+
+            if (nameContainingPanel) {
+                data.push({
+                    schema: nameContainingPanel.schemaName,
+                    table: nameContainingPanel.tableName,
+                    row: [{
+                        name: self.searchTerm()
+                    }]
+                })
+            }
+
+            self.creationModel(formFactory.createForm(JSON.parse(JSON.stringify(self.creationForm)), data));
+
+            if (document.querySelector(`#${self.fieldId}-creation-form`)) {
+                self.params.dropDownListSettings.widget().close();
+                document.querySelector(`#${self.fieldId}-creation-form`).setAttribute('data-show', '');
+                if (self.popperInstance == null) {
+                    self.popperInstance = Popper.createPopper(
+                        document.querySelector(`#${self.fieldId}-creation-form`).parentNode,
+                        document.querySelector(`#${self.fieldId}-creation-form`),
+                        self.popperOptions);
+                } else {
+                    self.popperInstance.update();
+                }
+
+                document.querySelector(`#${self.fieldId}-creation-form`).addEventListener('click', (ev) => {
+                    ev.stopPropagation();
+                });
+
+                window.setTimeout(() => {
+                    document.body.addEventListener('click', (ev) => {
+                        document.querySelector(`#${self.fieldId}-creation-form`).removeAttribute('data-show');
+                    }, {
+                        once: true
+                    });
+                }, 0);
+            }
+        }
+        self.cancelCreation = () => {
+            document.querySelector(`#${self.fieldId}-creation-form`).removeAttribute('data-show');
+            //self.creationModel = formFactory.createForm(self.creationForm, []);
+        }
+    }
+
     self.originalValue = ko.observable();
 
     self.busy = ko.observable(false);
@@ -280,7 +349,7 @@ const fieldViewModel = ((data, parent) => {
                         .then(resp => resp.json())
                         .then(data => {
                             options.success(data);
-                            console.log('FetchDataList returned', data);
+                            //console.log('FetchDataList returned', data);
                         })
                         .catch(err => window.catchFetchError(err));
                 }
@@ -291,7 +360,41 @@ const fieldViewModel = ((data, parent) => {
                 field: self.optionGroupByPropertyName
             }
         }
+        if (true) {
+            dataSourceParams.requestEnd = (e) => {
+                //console.log('requestEnd', e);
+            }
+            dataSourceParams.batch = true;
+            dataSourceParams.transport.create = (options) => {
+                //console.log('create', options);
+
+                var webapi = new kendo.data.transports.webapi({ prefix: "" });
+                var mapped = webapi.parameterMap(options.data);
+
+                var params = new URLSearchParams();
+
+                for (var propertyName in mapped) {
+                    params.append(propertyName, mapped[propertyName]);
+                }
+
+                params.append('FieldName', self.fieldName);
+                params.append('ReferenceDataSet', self.ReferenceDataSet);
+
+                fetch('/api/GeneralAPI/CreateDataItem?' + params, {
+                    method: 'POST',
+                    headers: window.fetchHeaders
+                })
+                    .then(resp => resp.json())
+                    .then(data => {
+                        //options.success(data);
+                        //console.log('CreateDataItem returned', data);
+                    })
+                    .catch(err => window.catchFetchError(err));
+            }
+        }
+
         let dataSource = new kendo.data.DataSource(dataSourceParams);
+
         Object.assign(self.params, {
             controlClass: 'form-control',
             dropDownListSettings: {
@@ -341,10 +444,14 @@ const fieldViewModel = ((data, parent) => {
                             .then(resp => resp.json())
                             .then(data => {
                                 console.log('valueMapper FetchDataItems returned', data);
-                                if (self.multiple) {
-                                    options.success(data);
-                                } else {
-                                    options.success(data[0]);
+                                try {
+                                    if (self.multiple) {
+                                        options.success(data);
+                                    } else {
+                                        options.success(data[0]);
+                                    }
+                                } catch (e) {
+
                                 }
                             })
                             .catch(err => window.catchFetchError(err));
@@ -361,9 +468,34 @@ const fieldViewModel = ((data, parent) => {
     }
 
     self.buildKendoMultiSelectProperties = () => {
+
         self.multiple = true;
+
         self.buildKendoDropDownProperties();
+
         delete self.params.dropDownListSettings.filter;
+
+        self.params.dropDownListSettings.filtering = (e) => {
+
+        }
+
+        self.params.dropDownListSettings.noDataTemplate = (e) => {
+
+            console.log('noDataTemplate', self);
+
+            if (e.instance.hasOwnProperty('input')) {
+                if (e.instance.input.val()) {
+                    self.searchTerm(e.instance.input.val());
+                }
+            }
+
+            window.setTimeout(() => {
+                ko.applyBindings(self, document.querySelector(`#${self.fieldId}-creation-btn`))
+            }, 0)
+
+            return `<span class="d-block fs-5 mb-3">"${self.searchTerm()}" not found</span><button id="${self.fieldId}-creation-btn" class="btn btn-secondary" type="button" data-bind="click: showCreation">Create New</button>`;
+        };
+
         self.params.dropDownListSettings.autoClose = false;
     }
 
@@ -505,8 +637,10 @@ const fieldViewModel = ((data, parent) => {
             increment: () => {
                 let v = +self.value() || 0;
 
+                let factor = Math.pow(10, self.numericScale);
+
                 if (self.numericStep) {
-                    self.value(v + self.numericStep);
+                    self.value(Math.round((v + self.numericStep) * factor) / factor);
                 } else {
                     self.value(v++);
                 }
@@ -514,8 +648,10 @@ const fieldViewModel = ((data, parent) => {
             decrement: () => {
                 let v = +self.value() || 0;
 
+                let factor = Math.pow(10, self.numericScale);
+
                 if (self.numericStep) {
-                    self.value(v - self.numericStep);
+                    self.value(Math.round((v - self.numericStep) * factor) / factor);
                 } else {
                     self.value(v--);
                 }

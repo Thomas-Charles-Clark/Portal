@@ -15,6 +15,28 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models
 {
+    public class PassDataItemCreation
+    {
+        public object Properties { get; set; }
+
+        public string ReferenceDataSet { get; set; }
+
+        public string ReferenceDataSetDecrypted
+        {
+            get
+            {
+                var json = JsonConvert.SerializeObject(new { ReferenceDataSet });
+
+                var replaced = JToken.Parse(json).FindAndReplace(
+                    "ReferenceDataSet",
+                    (string message) => AESGCM.SimpleDecrypt(message, AESGCM.ProductMaintenanceKeyBytes)
+                );
+
+                return replaced["ReferenceDataSet"].Value<string>();
+            }
+        }
+    }
+
     public class PassGenericFormSave
     {
         public string json { get; set; }

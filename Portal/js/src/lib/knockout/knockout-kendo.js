@@ -775,17 +775,17 @@ createBinding({
             ko.kendo.setDataSource(this, value);
         },
         value: function (value, options) {
-            console.log('kendoMultiSelect value watch hit', value);
+            //console.log('kendoMultiSelect value watch hit', value);
             //this.dataSource.filter({});
             //this.value(value);
             //console.log('multiselect watch value', value, e);
             //options.dataItems(this.dataItems());
         },
         dataItems: function (values) {
-            console.log('kendoMultiSelect dataItems watch hit', values);
+            //console.log('kendoMultiSelect dataItems watch hit', values);
         }
     },
-    templates: ["template"]
+    templates: ["template", "noDataTemplate"]
 });
 
 createBinding({

@@ -25,24 +25,28 @@ namespace Portal.Areas.Products.ViewModels
         public List<TreatmentProvider> TreatmentProviders { get; set; }
         public List<TreatmentType> TreatmentTypes { get; set; }
 
+        public int MemberID { get; set; }
+
         public string FormJSON { get; set; }
 
         public string DataJSON { get; set; }
 
         private ProductMaintenanceViewModel(
+            int memberId,
             RoleProperties properties,
             string applicationHeading,
             string applicationSubHeading) : base(properties, applicationHeading, applicationSubHeading)
         {
-
+            MemberID = memberId;
         }
 
         public static async Task<ProductMaintenanceViewModel> CreateAsync(
+            int memberId,
             RoleProperties properties,
             string applicationHeading,
             string applicationSubHeading)
         {
-            var result = new ProductMaintenanceViewModel(properties, applicationHeading, applicationSubHeading);
+            var result = new ProductMaintenanceViewModel(memberId, properties, applicationHeading, applicationSubHeading);
 
             await result.InitialiseAsync();
 
@@ -58,7 +62,7 @@ namespace Portal.Areas.Products.ViewModels
             //TreatmentProviders = db.TreatmentProviders.OrderBy(p => p.SortOrder).ToList();
             //TreatmentTypes = db.TreatmentTypes.OrderBy(p => p.SortOrder).ToList();
 
-            FormJSON = await db.GetProductMaintenanceFormJsonAsync();
+            FormJSON = await db.GetProductMaintenanceFormJsonAsync(MemberID);
 
             DataJSON = await db.GetProductMaintenanceFormDataJsonAsync();
 

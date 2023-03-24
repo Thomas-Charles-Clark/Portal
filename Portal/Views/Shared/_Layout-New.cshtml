@@ -17,18 +17,16 @@
     @Scripts.Render("~/bundles/js/popper")
     @Scripts.Render("~/bundles/js/global-new")
     @Scripts.Render("~/signalr/hubs")
-    @*@Scripts.Render("~/bundles/js/kendo")
-        @Scripts.Render("~/bundles/js/kendo-cultures")*@
+
     <link href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.common-bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.mobile.all.min.css" rel="stylesheet" type="text/css" />
     <link href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.bootstrap.min.css" rel="stylesheet" type="text/css" />
-    @*<link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet" type="text/css" />*@
-    @*<script src="https://kendo.cdn.telerik.com/2018.3.1017/js/jquery.min.js"></script>*@
     <script src="https://kendo.cdn.telerik.com/2018.3.1017/js/jszip.min.js"></script>
+
     @Scripts.Render("~/bundles/js/kendo")
+
     <script src="https://kendo.cdn.telerik.com/2018.3.1017/js/kendo.aspnetmvc.min.js"></script>
     <script src="https://kendo.cdn.telerik.com/2018.3.1017/js/cultures/kendo.culture.en-GB.min.js"></script>
-    @*<script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>*@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/material-components-web/3.2.0/material-components-web.min.js"></script>
     <script type="text/javascript">
         kendo.culture("en-GB");
@@ -1320,7 +1318,8 @@
                     boundTo: observable,
                     useNativeValidation: useNativeValidation,
                     optionsValue: dropDownListSettings.dataValueField,
-                    disabled: disable() || !enable()
+                    disabled: disable() || !enable(),
+                    widget: dropDownListSettings.widget
                  },
                  validationOptions: {
                     insertMessages: insertValidationMessages,

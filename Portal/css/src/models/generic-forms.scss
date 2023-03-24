@@ -1,4 +1,10 @@
-﻿@import 'common';
+﻿@import 'common.scss';
+
+.k-animation-container {
+    .k-list-optionlabel {
+        display: none;
+    }
+}
 
 .mdc-validating-field {
     .k-list-optionlabel {
@@ -7,14 +13,14 @@
 
     .k-multiselect-wrap {
         .k-input {
-            display: none;
+            display: inline;
+            float: none;
         }
     }
 
     .mdc-select {
         .k-multiselect-wrap {
             .k-button {
-                background-color: $gray-600;
             }
         }
     }
@@ -321,5 +327,32 @@
             border-color: $mdc-error-color;
             animation: form-control-error-shake 250ms 1;
         }
+    }
+}
+
+.popper-form {
+    position: absolute;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 300ms ease-out, visibility 300ms ease-out;
+    z-index: 2000;
+    box-shadow: 0 0 6px $gray-800;
+    background-color: $white;
+    border-radius: $border-radius;
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        padding: $l-gutter;
+        align-items: center;
+    }
+
+    .popper-body {
+        padding: $l-gutter;
+    }
+
+    &[data-show] {
+        visibility: visible;
+        opacity: 1.0;
     }
 }

@@ -2,7 +2,10 @@
 @import "../lib/bootstrap-5.3.1/scss/functions";
 @import "../lib/bootstrap-5.3.1/scss/variables";
 
-@import "../lib/mdc/mdc-custom";
+$mdc-theme-primary: #888;
+$mdc-theme-secondary: #6ebe2c;
+$mdc-theme-background: #fff;
+$mdc-theme-error: #db0028;
 
 $xs-gutter: 0.1rem;
 $vsm-gutter: 0.25rem;

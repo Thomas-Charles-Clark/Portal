@@ -80,6 +80,16 @@
         <!-- ko if: note -->
         <div class="field-note" data-bind="html: note"></div>
         <!-- /ko -->
+        <!-- ko if: typeof creationModel !== 'undefined' -->
+        @*<div class="popper-form card" data-bind="attr: { 'id': `${fieldId}-creation-form` }">
+            <h4 class="card-header">
+                <span></span>
+                <button type="button" class="btn btn-close" data-bind="click: cancelCreation"></button>
+            </h4>
+            <div class="card-body" data-bind="template: { name: 'generic-form-template', data: creationModel }"></div>
+        </div>*@
+        <div class="popper-form" data-bind="template: { name: 'generic-form-template', data: creationModel }, attr: { 'id': `${fieldId}-creation-form` }"></div>
+        <!-- /ko -->
     </div>
 </script>
 
@@ -114,4 +124,10 @@
             <!-- /ko -->
         </tbody>
     </table>
+</script>
+
+<script type="text/html" id="no-data-template">
+    <h4 class="text-danger">
+        Blah
+    </h4>
 </script>

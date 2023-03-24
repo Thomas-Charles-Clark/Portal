@@ -1,4 +1,8 @@
-﻿@font-face {
+﻿@import "../../bootstrap-5.3.1/scss/mixins/breakpoints";
+@import "../../bootstrap-5.3.1/scss/functions";
+@import "../../bootstrap-5.3.1/scss/variables";
+
+@font-face {
     font-family: 'WebComponentsIcons';
     font-style: normal;
     font-weight: normal;
@@ -187,6 +191,8 @@
 
     .k-list {
         .k-item {
+            border-color: $white;
+
             > .k-group {
                 position: absolute;
                 top: 0;
@@ -531,14 +537,12 @@
 
     .k-item.k-state-hover {
         color: rgba(0, 0, 0, 0.87);
-        background-color: rgba(0, 0, 0, 0.04);
+        background-color: $gray-200;
     }
 
     .k-item.k-state-selected {
-        color: #ff4081;
-        background-color: white;
         color: white;
-        background-color: #3a64b0;
+        background-color: $gray-500;
     }
 
     height: auto;
@@ -586,7 +590,7 @@
         background-color: whitesmoke;
         text-decoration: underline;
         color: white;
-        background-color: #3a64b0;
+        background-color: $gray-600;
     }
 
     .k-item.k-state-focused:not(.k-state-selected) {
@@ -2849,16 +2853,16 @@ kendo-sortable {
         }
 
         border-color: rgba(0, 0, 0, 0.87);
-
-        .k-select {
-            opacity: 0.87;
-        }
     }
 
     .k-select {
         border-width: 0;
         font-size: 14px;
         opacity: 0.54;
+
+        &:hover {
+            opacity: 0.87;
+        }
     }
 
     &::before {
@@ -2869,7 +2873,7 @@ kendo-sortable {
     }
 
     ul {
-        display: flex;
+        display: inline-flex;
         flex-wrap: wrap;
     }
 
@@ -2923,7 +2927,6 @@ kendo-sortable {
         }
 
         &:last-child {
-
         }
 
         &::before {
@@ -3019,6 +3022,14 @@ kendo-sortable {
 
     .k-button.k-state-disabled {
         color: rgba(0, 0, 0, 0.42);
+    }
+}
+
+.clearable.revertable {
+    .k-multiselect-wrap {
+        .k-i-loading {
+            right: 74px;
+        }
     }
 }
 
@@ -9245,7 +9256,7 @@ kendo-sortable {
     .k-dropdown-wrap {
         border-bottom-color: rgba(0, 0, 0, 0.12);
     }
-
+    /*
     &:hover {
         .mdc-notched-outline__leading {
             border-color: rgba(0, 0, 0, 0.87);
@@ -9266,7 +9277,7 @@ kendo-sortable {
                 color: rgba(0, 0, 0, 0.87);
             }
         }
-    }
+    }*/
 
     .k-dropdown-wrap.k-state-active {
         background-color: transparent;
@@ -9278,12 +9289,14 @@ kendo-sortable {
     }
 
     .k-multiselect-wrap {
+        display: flex;
         border-width: 0;
         box-shadow: none;
 
         .k-button {
             margin: 5px 0 5px 4px;
-            background-color: #3a64b0;
+            background-color: $gray-300;
+            color: $gray-800;
             padding-right: 26px;
 
             .k-select {
@@ -9294,6 +9307,10 @@ kendo-sortable {
                 color: white;
                 margin-left: 0;
                 margin-right: 0;
+            }
+
+            &:active {
+                box-shadow: inset 0 0 10px 3px $gray-600;
             }
         }
     }
@@ -9386,7 +9403,6 @@ kendo-sortable {
     &:focus-within {
         .mdc-notched-outline {
             > div {
-                border-color: #3a64b0;
                 border-width: 2px;
             }
         }

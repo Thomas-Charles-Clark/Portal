@@ -2477,6 +2477,42 @@ ko.bindingHandlers.mdcMultiSelectComponent = {
 
         params.boundTo.mdcSelect.useNativeValidation = params.useNativeValidation;
 
+        if (params.widget()) {
+            params.widget().input[0].addEventListener('blur', (e) => {
+                if (!params.boundTo().length && !params.widget().input[0].value) {
+                    params.boundTo.mdcSelect.label_.float(false);
+                    params.boundTo.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
+                }
+            });
+            params.widget().input[0].addEventListener('keyup', (e) => {
+                if (params.widget().input[0].value) {
+                    params.boundTo.mdcSelect.label_.float(true);
+                    params.boundTo.mdcSelect.getDefaultFoundation().adapter_.notchOutline(params.boundTo.mdcSelect.getDefaultFoundation().adapter_.getLabelWidth() * 0.75);
+                } else if (!params.boundTo().length) {
+                    params.boundTo.mdcSelect.label_.float(false);
+                    params.boundTo.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
+                }
+            });
+        } else {
+            params.widget.subscribe(nv => {
+                params.widget().input[0].addEventListener('blur', (e) => {
+                    if (!params.boundTo().length && !params.widget().input[0].value) {
+                        params.boundTo.mdcSelect.label_.float(false);
+                        params.boundTo.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
+                    }
+                });
+                nv.input[0].addEventListener('keyup', (e) => {
+                    if (params.widget().input[0].value) {
+                        params.boundTo.mdcSelect.label_.float(true);
+                        params.boundTo.mdcSelect.getDefaultFoundation().adapter_.notchOutline(params.boundTo.mdcSelect.getDefaultFoundation().adapter_.getLabelWidth() * 0.75);
+                    } else if (!params.boundTo().length) {
+                        params.boundTo.mdcSelect.label_.float(false);
+                        params.boundTo.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
+                    }
+                });
+            });
+        }
+
         if (params.useNativeValidation == false) {
             if (!params.hasOwnProperty('validate')) {
                 //console.warn('mdcMultiSelectComponent params had no validate property', element);

@@ -48,33 +48,34 @@
     //#region Functions
 
     self.loadRows = (json) => {
+        if (json) {
+            for (let i = 0; i < json.row.length; i++) {
+                // we always already have at least one panel defined by the form definition itself
+                if (i == 0) {
+                    self.loadRow(json.row[i]);
+                }
+                // however data comes along and might go "oi, I've got multiple rows here..." in which case we need a panel per row.
+                else {
+                    let nextDefinition = JSON.parse(self.originalDefinition);
+                    let nextDefinitionPanelIdSplit = nextDefinition.panelId.split('-');
+                    let thisPanelId = i + 1;
 
-        for (let i = 0; i < json.row.length; i++) {
-            // we always already have at least one panel defined by the form definition itself
-            if (i == 0) {
-                self.loadRow(json.row[i]);
-            }
-            // however data comes along and might go "oi, I've got multiple rows here..." in which case we need a panel per row.
-            else {
-                let nextDefinition = JSON.parse(self.originalDefinition);
-                let nextDefinitionPanelIdSplit = nextDefinition.panelId.split('-');
-                let thisPanelId = i + 1;
+                    nextDefinitionPanelIdSplit.pop();
 
-                nextDefinitionPanelIdSplit.pop();
+                    nextDefinition.fields.forEach(f => {
+                        let fieldIdSplit = f.fieldId.split('-');
+                        fieldIdSplit[3] = thisPanelId;
+                        f.fieldId = fieldIdSplit.join('-');
+                    });
 
-                nextDefinition.fields.forEach(f => {
-                    let fieldIdSplit = f.fieldId.split('-');
-                    fieldIdSplit[3] = thisPanelId;
-                    f.fieldId = fieldIdSplit.join('-');
-                });
+                    nextDefinition.panelId = `${nextDefinitionPanelIdSplit.join('-')}-${thisPanelId}`;
 
-                nextDefinition.panelId = `${nextDefinitionPanelIdSplit.join('-')}-${thisPanelId}`;
+                    let nextPanel = panelViewModel(nextDefinition, self.parent);
 
-                let nextPanel = panelViewModel(nextDefinition, self.parent);
+                    nextPanel.loadRow(json.row[i]);
 
-                nextPanel.loadRow(json.row[i]);
-
-                self.parent.panels.push(nextPanel);
+                    self.parent.panels.push(nextPanel);
+                }
             }
         }
     }

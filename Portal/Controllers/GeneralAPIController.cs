@@ -146,6 +146,35 @@ namespace Portal.Controllers
         }
 
         [HttpGet]
+        public async Task<IHttpActionResult> CreateDataItem(
+            [FromBody]PassDataItemCreation objEnquiry)
+        {
+            var assembly = PortalFramework.GetAssembly("SharedEFClasses");
+
+            var classList = assembly.GetTypes()
+                .Where(ty => ty.IsDefined(typeof(ClassIdentifierAttribute), false))
+                .ToList();
+
+            var t = classList.SingleOrDefault(cl => cl.GetCustomAttributesData().SingleOrDefault(p => p.AttributeType == typeof(ClassIdentifierAttribute) &&
+                (string)p.ConstructorArguments[0].Value == objEnquiry.ReferenceDataSetDecrypted) != null);
+
+            //if (t != null)
+            //{
+            //    var results = PortalDb.FetchDataList(t, objEnquiry);
+
+            //    return results.AsQueryable().ToDataSourceResult(request);
+            //}
+            //else
+            //{
+            //    var results = await PortalDb.FetchDataList(objEnquiry);
+
+            //    return results.AsQueryable().ToDataSourceResult(request);
+            //}
+
+            return Ok(new { });
+        }
+
+        [HttpGet]
         public IHttpActionResult FetchDataItems(
             [FromUri] PassDataItemsEnquiry objEnquiry)
         {

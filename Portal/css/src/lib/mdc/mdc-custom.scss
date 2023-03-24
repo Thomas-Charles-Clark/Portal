@@ -1,7 +1,18 @@
-$mdc-theme-primary: #3a64b0;
-$mdc-theme-secondary: #6ebe2c;
+@import "../bootstrap-5.3.1/scss/mixins/breakpoints";
+@import "../bootstrap-5.3.1/scss/functions";
+@import "../bootstrap-5.3.1/scss/variables";
+
+$mdc-theme-primary: #888;
+$mdc-theme-secondary: #a5a5a5;
 $mdc-theme-background: #fff;
 $mdc-theme-error: #db0028;
+
+:root {
+    --mdc-theme-primary: #{$mdc-theme-primary};
+    --mdc-theme-secondary: #{$mdc-theme-secondary};
+    --mdc-theme-background: #{$mdc-theme-background};
+    --mdc-theme-error: #{$mdc-theme-error};
+}
 
 @import "@material/list/mdc-list";
 @import "@material/ripple/mdc-ripple";

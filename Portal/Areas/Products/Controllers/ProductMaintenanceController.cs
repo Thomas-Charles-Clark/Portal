@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNet.Identity;
+
+using Org.BouncyCastle.Bcpg;
+
 using Portal.Areas.Products.ViewModels;
 using SharedEFClasses;
 using SharedEFClasses.Models;
@@ -29,6 +32,7 @@ namespace Portal.Areas.Products.Controllers
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
             var model = await ProductMaintenanceViewModel.CreateAsync(
+                user.Id,
                 user.GetActiveRoleProperties(),
                 application.Heading,
                 application.SubHeading);

@@ -14,9 +14,10 @@ namespace SharedEFClasses.Models
 {
     public partial class PortalDbContext : IdentityDbContext<Member, Role, int, Member_Login, Member_Role, Member_Claim>
     {
-        public async Task<string> GetProductMaintenanceFormJsonAsync()
+        public async Task<string> GetProductMaintenanceFormJsonAsync(int memberId)
         {
-            var reader = await this.Database.Connection.ExecuteReaderAsync("[portal].[ProductMaintenance_Form_Select]", new { 
+            var reader = await this.Database.Connection.ExecuteReaderAsync("[portal].[ProductMaintenance_Form_Select]", new {
+                MemberID = memberId,
                 ProductTypeID = 1
             }, null, null, System.Data.CommandType.StoredProcedure);
 
