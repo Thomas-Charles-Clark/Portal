@@ -5,7 +5,7 @@ using SharedEFClasses.Models;
 using SharedEFClasses;
 using SharedEFClasses.Models.Applications;
 using System.Linq;
-using MertexerV2SQL.Models.Misc;
+using SharedEFClasses.Models.TradeAccounts;
 
 namespace Portal.ViewModels.ComponentModels
 {

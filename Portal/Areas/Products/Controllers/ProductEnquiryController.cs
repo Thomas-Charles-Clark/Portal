@@ -13,6 +13,8 @@ using SharedEFClasses.Models;
 using SharedEFClasses.Models.Components;
 using SharedEFClasses.Models.Samples;
 using SharedEFClasses.Models.Orders;
+using SharedEFClasses.Models.TradeAccounts;
+using SharedEFClasses.Models.Products;
 
 namespace Portal.Areas.Products.Controllers
 {
@@ -30,7 +32,7 @@ namespace Portal.Areas.Products.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult OperatorAutocomplete(MertexerV2SQL.Models.Misc.PassAutocompleteTerm objAutocomplete)
+        public ActionResult OperatorAutocomplete(PassAutocompleteTerm objAutocomplete)
         {
             //|| p.Name.Contains(objAutocomplete.term)
             var results = PortalDb.MertexOperators.Where(p => p.Code.StartsWith(objAutocomplete.term) || p.Name.Contains(objAutocomplete.term)).Distinct().OrderBy(p => p.Name).Skip(0).Take(100).ToList();
@@ -48,16 +50,16 @@ namespace Portal.Areas.Products.Controllers
         }
 
         [HttpPost]
-        public ActionResult LoadStockInfo(PassProductCode objProductCode)
+        public ActionResult LoadStockInfo(PassFetchProductStockInfoSingular objFetch)
         {
-            var result = MertexerV2SQL.Stock.StockFunctions.PerformStockEnquiry(objProductCode.code);
+            var result = PortalDb.FetchStockInfoSingular(objFetch);
 
             return Json(result, JsonRequestBehavior.DenyGet);
         }
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult PCAPredictFind(MertexerV2SQL.Models.Misc.PassPCAPredictFind objSearch)
+        public ActionResult PCAPredictFind(PassPCAPredictFind objSearch)
         {
             try
             {

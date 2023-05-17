@@ -1,8 +1,6 @@
 ﻿using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
-using MertexerV2SQL.Models.Misc;
-
 using Microsoft.AspNet.Identity;
 
 using SharedEFClasses;
@@ -56,7 +54,7 @@ namespace Portal.Areas.Products.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> FetchTradeAccount([FromBody]PassTradeAccountID objEnquiry)
+        public IHttpActionResult FetchTradeAccount([FromBody] PassTradeAccountID objEnquiry)
         {
             return Ok(PortalDb.TradeAccounts.Single(ta => ta.TradeAccountID == objEnquiry.tradeAccountId));
         }

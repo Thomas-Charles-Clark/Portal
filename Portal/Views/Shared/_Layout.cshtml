@@ -719,11 +719,16 @@
                     </div>
                     <div class="mdc-notched-outline__trailing"></div>
                 </div>
-                <!-- ko if: typeof showClear != 'undefined' && showClear && typeof clearFunction === 'function' -->
-                <div class="close pull-right" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
-                    &times;
+                <div class="d-flex pull-right gap-3">
+                    <!-- ko if: typeof showClear != 'undefined' && showClear && typeof clearFunction === 'function' -->
+                    <div class="close" style="position: relative;" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
+                        &times;
+                    </div>
+                    <!-- /ko -->
+                    <button class="btn btn-secondary-blue autocomplete-search-btn pull-right"  data-bind="click: function() { $(observable.DOMElement).autocomplete('search'); }">
+                        Search
+                    </button>
                 </div>
-                <!-- /ko -->
             </div>
         </div>
     </script>

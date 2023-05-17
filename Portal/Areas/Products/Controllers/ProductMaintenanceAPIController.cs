@@ -1,10 +1,9 @@
-﻿using MertexerV2SQL.Models.Misc;
-
-using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNet.Identity;
 
 using SharedEFClasses;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Products;
+using SharedEFClasses.Models.TradeAccounts;
 
 using System;
 using System.Collections;

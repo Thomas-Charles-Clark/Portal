@@ -3,6 +3,7 @@ using SharedEFClasses.Models;
 using SharedEFClasses.Models.Components;
 using SharedEFClasses.Models.Maintenance;
 using SharedEFClasses.Models.Products;
+using SharedEFClasses.Models.TradeAccounts;
 using SharedEFClasses.Utilities;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace SharedEFClasses.Models
 {
     public partial class PortalDbContext : IdentityDbContext<Member, Role, int, Member_Login, Member_Role, Member_Claim>
     {
-        public FabricQualityAutocompleteReturn FabricQualityAutocomplete(MertexerV2SQL.Models.Misc.PassAutocompleteTerm objTerm)
+        public FabricQualityAutocompleteReturn FabricQualityAutocomplete(PassAutocompleteTerm objTerm)
         {
             var result = new FabricQualityAutocompleteReturn();
 

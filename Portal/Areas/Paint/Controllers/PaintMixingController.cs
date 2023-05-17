@@ -15,7 +15,7 @@ using System.Web.Mvc;
 
 namespace Portal.Areas.Paint.Controllers
 {
-    [DynamicRoleAuthorise]
+    [DynamicRoleAuthorise(actionNameAgnostic: true)]
     [RouteArea("paint")]
     [RoutePrefix("mixing")]
     public class MixingController : BaseController
@@ -26,9 +26,9 @@ namespace Portal.Areas.Paint.Controllers
         }
 
         [Route("{mixingLocation}")]
-        public async Task<ActionResult> Index(string mixingLocation)
+        public ActionResult Index(string mixingLocation)
         {
-            var application = PortalDb.Applications.Where(p => p.ControllerName == "mixing" && p.AreaName == "paint").Single();
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "mixing" && p.AreaName == "paint" && p.ActionName == mixingLocation).FirstOrDefault();
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
@@ -36,10 +36,10 @@ namespace Portal.Areas.Paint.Controllers
 
             if (location == null)
             {
-                location = PortalDb.MixingLocations.Single(ml => ml.MixingLocationID == 1);
+                throw new Exception("Sorry, could not determine mixing location.");
             }
 
-            var model = await PaintMixingViewModel.CreateAsync(
+            var model = PaintMixingViewModel.Create(
                 location.MixingLocationID,
                 user.GetActiveRoleProperties(),
                 application.Heading,

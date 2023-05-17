@@ -19,6 +19,7 @@ using SharedEFClasses.SignalR.Hubs;
 using System.Threading.Tasks;
 using System.Web;
 using MertexerV2SQL.Models.Misc;
+using PassAutocompleteTerm = SharedEFClasses.Models.TradeAccounts.PassAutocompleteTerm;
 
 namespace Tasks.Controllers
 {

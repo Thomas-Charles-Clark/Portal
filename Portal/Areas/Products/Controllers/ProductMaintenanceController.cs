@@ -40,13 +40,13 @@ namespace Portal.Areas.Products.Controllers
             return View("ProductMaintenance", model);
         }
 
-        public async Task<ActionResult> Treatments()
+        public ActionResult Treatments()
         {
             var application = PortalDb.Applications.Where(p => p.ControllerName == "maintenance" && p.AreaName == "products" && p.ActionName == "treatments").Single();
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
-            var model = await TreatmentMaintenanceViewModel.CreateAsync(
+            var model = TreatmentMaintenanceViewModel.Create(
                 user.GetActiveRoleProperties(),
                 application.Heading,
                 application.SubHeading);

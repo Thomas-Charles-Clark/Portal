@@ -130,6 +130,14 @@ body {
     }
 }
 
+#completed-orders-tab {
+    .hstack {
+        > div:last-of-type {
+            flex-grow: 1;
+        }
+    }
+}
+
 .delivery-cell {
     text-align: center;
     vertical-align: middle;

@@ -9,6 +9,7 @@ using SharedEFClasses.Models.Components;
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Orders;
+using SharedEFClasses.Models.TradeAccounts;
 using SharedEFClasses.Utilities;
 using System;
 using System.Collections.Generic;
@@ -76,7 +77,7 @@ namespace Portal.Controllers
             
             TradeAccountNumber_AutocompleteResult tradeAccountResult = null;
 
-            MertexerV2SQL.Models.Misc.TradeAccountAddressReturn addressesResult = null;
+            TradeAccountAddressReturn addressesResult = null;
 
             var autocompleteResult = PortalDb.TradeAccountNumber_Autocomplete(selected?.Name, user.Id, selected?.TradeAccountID).FirstOrDefault();
 
@@ -434,7 +435,7 @@ namespace Portal.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult FetchAddresses(MertexerV2SQL.Models.Misc.PassTradeAccountNumber objAccountNumber)
+        public ActionResult FetchAddresses(PassTradeAccountNumber objAccountNumber)
         {
             var queryResults = PortalDb.TradeAccountNumber_FetchAddresses(objAccountNumber.accountNumber);
 
@@ -458,7 +459,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public ActionResult CompetitorAutocomplete(MertexerV2SQL.Models.Misc.PassAutocompleteTerm objAutocomplete)
+        public ActionResult CompetitorAutocomplete(PassAutocompleteTerm objAutocomplete)
         {
             var results = PortalDb.Competitors.Where(p => 
                 p.Deleted == false &&
@@ -471,7 +472,7 @@ namespace Portal.Controllers
         
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult PriceCheckerAutocomplete(MertexerV2SQL.Models.Misc.PassAutocompleteTerm objAutocomplete)
+        public ActionResult PriceCheckerAutocomplete(PassAutocompleteTerm objAutocomplete)
         {
             var results = new List<PriceCheckerAutocompleteResult>();
 
@@ -567,7 +568,7 @@ namespace Portal.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult OrderEntry_ProductSearchAutocomplete(MertexerV2SQL.Models.Misc.PassAutocompleteTerm objAutocomplete)
+        public ActionResult OrderEntry_ProductSearchAutocomplete(PassAutocompleteTerm objAutocomplete)
         {
             var results = new List<PriceCheckerAutocompleteResult>();
 
@@ -658,7 +659,7 @@ namespace Portal.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult OrderEntry_QuickAddProductSearchAutocomplete(MertexerV2SQL.Models.Misc.PassAutocompleteTerm objAutocomplete)
+        public ActionResult OrderEntry_QuickAddProductSearchAutocomplete(PassAutocompleteTerm objAutocomplete)
         {
             var results = new List<PriceCheckerAutocompleteResult>();
             

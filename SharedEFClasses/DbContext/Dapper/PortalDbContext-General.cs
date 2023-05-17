@@ -98,5 +98,33 @@ namespace SharedEFClasses.Models
 
             return results;
         }
+
+        public Task<string> FetchPaymentTerms(string tradeAccountCode)
+        {
+            return this.Database.Connection.QuerySingleAsync<string>($"[portal].[TradeAccount_PaymentTerms_Select]", new { 
+                TradeAccountCode = tradeAccountCode
+            }, null, 30, CommandType.StoredProcedure);
+        }
+
+        public Task<string> FetchEORINumber(string tradeAccountCode)
+        {
+            return this.Database.Connection.QuerySingleAsync<string>($"[portal].[TradeAccount_EORINumber_Select]", new
+            {
+                TradeAccountCode = tradeAccountCode
+            }, null, 30, CommandType.StoredProcedure);
+        }
+
+        public async Task<SharedEFClasses.Models.Products.FetchLinkedDocumentsResult> FetchLinkedDocuments(SharedEFClasses.Models.Orders.PassProductCode objCode)
+        {
+            var results = await this.Database.Connection.QueryMultipleAsync("[portal].[Product_LinkedDocuments_Select]", new
+            {
+                ProductCode = objCode.code
+            }, null, null, System.Data.CommandType.StoredProcedure);
+
+            return new SharedEFClasses.Models.Products.FetchLinkedDocumentsResult()
+            {
+                LinkedDocuments = results.Read<SharedEFClasses.Models.Products.LinkedDocument>().ToList()
+            };
+        }
     }
 }

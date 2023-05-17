@@ -24,7 +24,7 @@ namespace Portal.Areas.Products.Controllers
 
         }
 
-        public async Task<ActionResult> Index()
+        public ActionResult Index()
         {
             var application = PortalDb.Applications.Where(p => p.ControllerName == "basketstatus" && p.AreaName == "products" && p.ActionName == "index").Single();
 
@@ -46,7 +46,7 @@ namespace Portal.Areas.Products.Controllers
                 preselected = PortalDb.TradeAccountNumber_Autocomplete("", user.Id, 36691).FirstOrDefault();
             }
 
-            var model = await BasketStatusViewModel.CreateAsync(
+            var model = BasketStatusViewModel.Create(
                 //preselected,
                 null,
                 user.GetActiveRoleProperties(),
@@ -56,7 +56,7 @@ namespace Portal.Areas.Products.Controllers
             return View("BasketStatus", model);
         }
 
-        public async Task<ActionResult> IndexPartial()
+        public ActionResult IndexPartial()
         {
             var application = PortalDb.Applications.Where(p => p.ControllerName == "basketstatus" && p.AreaName == "products" && p.ActionName == "index").Single();
 
@@ -78,7 +78,7 @@ namespace Portal.Areas.Products.Controllers
                 preselected = PortalDb.TradeAccountNumber_Autocomplete("", user.Id, 36691).FirstOrDefault();
             }
 
-            var model = await BasketStatusViewModel.CreateAsync(
+            var model = BasketStatusViewModel.Create(
                 //preselected,
                 null,
                 user.GetActiveRoleProperties(),

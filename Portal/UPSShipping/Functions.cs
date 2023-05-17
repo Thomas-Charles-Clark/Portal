@@ -1,5 +1,4 @@
-﻿using MertexerV2SQL.DAL;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Portal.Areas.Orders.Controllers;
 using System;
 using System.Collections.Generic;
@@ -220,116 +219,116 @@ namespace Portal.UPS
 
     public static partial class UPSFunctions
     {
-        public static Address BuildReturnAddressFromCCRNumber(string ccrNumber)
-        {
-            var result = new Address();
+//        public static Address BuildReturnAddressFromCCRNumber(string ccrNumber)
+//        {
+//            var result = new Address();
 
-            using (var mertexSql = new MertexSQLConnection("MERTEX", 10))
-            {
-                var conn = mertexSql.Connection;
+//            using (var mertexSql = new MertexSQLConnection("MERTEX", 10))
+//            {
+//                var conn = mertexSql.Connection;
 
-                var selectComm = conn.CreateCommand();
+//                var selectComm = conn.CreateCommand();
 
-                //selectComm.CommandText = $@"SELECT   TH.[COLNAME],
-                //                                     TH.[COLADDR1],
-                //                                     TH.[COLADDR2],
-                //                                     TH.[COLADDR3],
-                //                                     TH.[COLADDR4],
-                //                                     TH.[COLPCODE],
-                //                                     TH.[TO.COUNTRY],
-                //                                     C.COUNTRY,
-                //                                     TH.[CONTACT.EMAIL.DES],
-                //                                     C.[EMAIL],
-                //                                     TH.[CONTACT.PHONE.DES],
-                //                                     C.[CONPHONE],
-                //                                     TH.CUSREF
-                //                            FROM     TCCHEAD AS TH
-                //                            INNER JOIN SLCUST AS C ON C.[@ID] = TH.CUSREF
-                //                            INNER JOIN TOEHEAD AS TOH ON TOH.[@ID] = TH.[SORDERNO] 
-                //                            WHERE    TH.[@ID] = @CCRNumber
-                //                            NOWAIT";
+//                //selectComm.CommandText = $@"SELECT   TH.[COLNAME],
+//                //                                     TH.[COLADDR1],
+//                //                                     TH.[COLADDR2],
+//                //                                     TH.[COLADDR3],
+//                //                                     TH.[COLADDR4],
+//                //                                     TH.[COLPCODE],
+//                //                                     TH.[TO.COUNTRY],
+//                //                                     C.COUNTRY,
+//                //                                     TH.[CONTACT.EMAIL.DES],
+//                //                                     C.[EMAIL],
+//                //                                     TH.[CONTACT.PHONE.DES],
+//                //                                     C.[CONPHONE],
+//                //                                     TH.CUSREF
+//                //                            FROM     TCCHEAD AS TH
+//                //                            INNER JOIN SLCUST AS C ON C.[@ID] = TH.CUSREF
+//                //                            INNER JOIN TOEHEAD AS TOH ON TOH.[@ID] = TH.[SORDERNO] 
+//                //                            WHERE    TH.[@ID] = @CCRNumber
+//                //                            NOWAIT";
 
-                selectComm.CommandText = $@"SELECT   TOH.[DELNAME],
-                                                     TOH.[DELADDR1],
-                                                     TOH.[DELADDR2],
-                                                     TOH.[DELADDR3],
-                                                     TOH.[DELADDR4],
-                                                     TOH.[DELPCODE],
-                                                     TOH.[TO.COUNTRY],
-                                                     C.COUNTRY,
-                                                     TOH.[SS.EMAIL],
-                                                     C.[EMAIL],
-                                                     TH.[CONTACT.PHONE.DES],
-                                                     C.[CONPHONE],
-                                                     TH.CUSREF
-                                            FROM     TCCHEAD AS TH
-                                            INNER JOIN SLCUST AS C ON C.[@ID] = TH.CUSREF
-                                            INNER JOIN TOEHEAD AS TOH ON TOH.[@ID] = TH.[SORDERNO] 
-                                            WHERE    TH.[@ID] = @CCRNumber
-                                            NOWAIT";
+//                selectComm.CommandText = $@"SELECT   TOH.[DELNAME],
+//                                                     TOH.[DELADDR1],
+//                                                     TOH.[DELADDR2],
+//                                                     TOH.[DELADDR3],
+//                                                     TOH.[DELADDR4],
+//                                                     TOH.[DELPCODE],
+//                                                     TOH.[TO.COUNTRY],
+//                                                     C.COUNTRY,
+//                                                     TOH.[SS.EMAIL],
+//                                                     C.[EMAIL],
+//                                                     TH.[CONTACT.PHONE.DES],
+//                                                     C.[CONPHONE],
+//                                                     TH.CUSREF
+//                                            FROM     TCCHEAD AS TH
+//                                            INNER JOIN SLCUST AS C ON C.[@ID] = TH.CUSREF
+//                                            INNER JOIN TOEHEAD AS TOH ON TOH.[@ID] = TH.[SORDERNO] 
+//                                            WHERE    TH.[@ID] = @CCRNumber
+//                                            NOWAIT";
 
-                var selectParams = new List<U2Parameter>()
-                {
-                    new U2Parameter("@CCRNumber", ccrNumber)
-                };
+//                var selectParams = new List<U2Parameter>()
+//                {
+//                    new U2Parameter("@CCRNumber", ccrNumber)
+//                };
 
-                selectComm.Parameters.AddRange(selectParams.ToArray());
+//                selectComm.Parameters.AddRange(selectParams.ToArray());
 
-                conn.Open();
+//                conn.Open();
 
-                var reader = selectComm.ExecuteReader();
+//                var reader = selectComm.ExecuteReader();
 
-                while (reader.Read())
-                {
-#if DEBUG
-                    Console.WriteLine("Address: ");
-                    for (var i = 0; i < reader.FieldCount; i++)
-                    {
-                        Console.WriteLine(reader.IsDBNull(i) ? "" : reader.GetString(i));
-                    }
-#endif
+//                while (reader.Read())
+//                {
+//#if DEBUG
+//                    Console.WriteLine("Address: ");
+//                    for (var i = 0; i < reader.FieldCount; i++)
+//                    {
+//                        Console.WriteLine(reader.IsDBNull(i) ? "" : reader.GetString(i));
+//                    }
+//#endif
 
-                    result.Name = reader.IsDBNull(0) ? null : reader.GetString(0);
-                    result.AddressLine1 = reader.IsDBNull(1) ? null : reader.GetString(1);
-                    result.AddressLine2 = reader.IsDBNull(2) ? null : reader.GetString(2);
-                    result.Town = reader.IsDBNull(3) ? null : reader.GetString(3);
-                    result.County = reader.IsDBNull(4) ? null : reader.GetString(4);
-                    result.Postcode = reader.IsDBNull(5) ? null : reader.GetString(5);
-                    result.CountryCodeISOAlpha2 = reader.IsDBNull(6) ? reader.IsDBNull(7) ? null : reader.GetString(7) : reader.GetString(6);
-                    result.Email = reader.IsDBNull(8) ? reader.IsDBNull(9) ? null : reader.GetString(9) : reader.GetString(8);
-                    result.Phone = reader.IsDBNull(10) ? reader.IsDBNull(11) ? null : reader.GetString(11) : reader.GetString(10);
-                }
+//                    result.Name = reader.IsDBNull(0) ? null : reader.GetString(0);
+//                    result.AddressLine1 = reader.IsDBNull(1) ? null : reader.GetString(1);
+//                    result.AddressLine2 = reader.IsDBNull(2) ? null : reader.GetString(2);
+//                    result.Town = reader.IsDBNull(3) ? null : reader.GetString(3);
+//                    result.County = reader.IsDBNull(4) ? null : reader.GetString(4);
+//                    result.Postcode = reader.IsDBNull(5) ? null : reader.GetString(5);
+//                    result.CountryCodeISOAlpha2 = reader.IsDBNull(6) ? reader.IsDBNull(7) ? null : reader.GetString(7) : reader.GetString(6);
+//                    result.Email = reader.IsDBNull(8) ? reader.IsDBNull(9) ? null : reader.GetString(9) : reader.GetString(8);
+//                    result.Phone = reader.IsDBNull(10) ? reader.IsDBNull(11) ? null : reader.GetString(11) : reader.GetString(10);
+//                }
 
-                reader.Close();
-            }
+//                reader.Close();
+//            }
 
-            if (!String.IsNullOrEmpty(result.CountryCodeISOAlpha2))
-            {
-                using (var conn = new SqlConnection("Data Source=vm-sql1.designersguild.com;Initial Catalog=Flock;Integrated Security=False;Persist Security Info=True;User ID=dg;Password=mattm00;MultipleActiveResultSets=true"))
-                {
-                    var comm = conn.CreateCommand();
+//            if (!String.IsNullOrEmpty(result.CountryCodeISOAlpha2))
+//            {
+//                using (var conn = new SqlConnection("Data Source=vm-sql1.designersguild.com;Initial Catalog=Flock;Integrated Security=False;Persist Security Info=True;User ID=dg;Password=mattm00;MultipleActiveResultSets=true"))
+//                {
+//                    var comm = conn.CreateCommand();
 
-                    comm.CommandText = "SELECT CountryID FROM dbo.Country WHERE Code = @CountryCode";
+//                    comm.CommandText = "SELECT CountryID FROM dbo.Country WHERE Code = @CountryCode";
 
-                    comm.Parameters.AddWithValue("@CountryCode", result.CountryCodeISOAlpha2);
+//                    comm.Parameters.AddWithValue("@CountryCode", result.CountryCodeISOAlpha2);
 
-                    conn.Open();
+//                    conn.Open();
 
-                    var reader = comm.ExecuteReader();
+//                    var reader = comm.ExecuteReader();
 
-                    while (reader.Read())
-                    {
-                        result.CountryID = reader.IsDBNull(0) ? (short?)null : reader.GetInt16(0);
-                    }
+//                    while (reader.Read())
+//                    {
+//                        result.CountryID = reader.IsDBNull(0) ? (short?)null : reader.GetInt16(0);
+//                    }
 
-                    reader.Close();
+//                    reader.Close();
 
-                    conn.Close();
-                }
-            }
+//                    conn.Close();
+//                }
+//            }
 
-            return result;
-        }
+//            return result;
+//        }
 
         public static VoidReply VoidLabel(string trackingNumber)
         {

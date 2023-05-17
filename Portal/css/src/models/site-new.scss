@@ -1,6 +1,33 @@
 ﻿@import 'common.scss';
 
 body {
+
+    @media screen and (min-width: 576px) {
+        .navbar-expand {
+            max-width: unset;
+
+            > .container {
+                max-width: unset;
+            }
+        }
+    }
+
+    @media screen and (min-width: 768px) {
+        .navbar-expand {
+            max-width: unset;
+
+            > .container {
+                max-width: unset;
+            }
+        }
+    }
+
+    @media screen and (max-width: 767px) {
+        #page-navbar-logo {
+            height: 22px;
+        }
+    }
+
     > nav.navbar {
         padding: 1px 0;
 
@@ -454,6 +481,7 @@ input[type="search"]::-webkit-search-results-decoration {
 
     .fa-bell {
         margin-right: 0;
+        font-size: 17px;
     }
 }
 

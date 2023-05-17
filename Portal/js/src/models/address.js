@@ -1097,76 +1097,73 @@
     }
 
     self.loadInvoiceAddress = function (address) {
-        return new Promise(function (resolve, reject) {
 
-            self.reset();
+        self.reset();
 
-            self.deletable(false);
+        self.deletable(false);
 
-            self.deliveryReference('C');
+        self.deliveryReference('C');
 
-            self.companyName.readOnly(true);
-            self.companyName.disabled(true);
-            self.name.readOnly(true);
-            self.name.disabled(true);
-            self.addressLine1.readOnly(true);
-            self.addressLine1.disabled(true);
-            self.addressLine2.readOnly(true);
-            self.addressLine2.disabled(true);
-            self.town.readOnly(true);
-            self.town.disabled(true);
-            self.county.readOnly(true);
-            self.county.disabled(true);
-            self.postcode.readOnly(true);
-            self.postcode.disabled(true);
-            self.phone.readOnly(true);
-            self.phone.disabled(true);
-            self.email.readOnly(true);
-            self.email.disabled(true);
-            self.addressSearchCountryDropDownList.disabled(true);
-            self.countryDropDownList.disabled(true);
+        self.companyName.readOnly(true);
+        self.companyName.disabled(true);
+        self.name.readOnly(true);
+        self.name.disabled(true);
+        self.addressLine1.readOnly(true);
+        self.addressLine1.disabled(true);
+        self.addressLine2.readOnly(true);
+        self.addressLine2.disabled(true);
+        self.town.readOnly(true);
+        self.town.disabled(true);
+        self.county.readOnly(true);
+        self.county.disabled(true);
+        self.postcode.readOnly(true);
+        self.postcode.disabled(true);
+        self.phone.readOnly(true);
+        self.phone.disabled(true);
+        self.email.readOnly(true);
+        self.email.disabled(true);
+        self.addressSearchCountryDropDownList.disabled(true);
+        self.countryDropDownList.disabled(true);
 
 
-            self.name.observable(address.DeliveryName);
-            self.companyName.observable(address.DeliveryCompanyName);
-            self.companyName.label = 'Company Name';
-            self.addressLine1.observable(address.DeliveryAddressLine1);
-            self.addressLine2.observable(address.DeliveryAddressLine2);
-            self.town.observable(address.DeliveryTown);
-            self.county.observable(address.DeliveryCounty);
-            self.postcode.observable(address.DeliveryPostcode);
-            self.phone.observable(address.DeliveryPhoneNumber);
-            self.phone.visible(true);
-            self.email.observable(address.OrderConfirmationsEmail);
-            self.email.visible(true);
+        self.name.observable(address.Name);
+        self.companyName.observable(address.CompanyName);
+        self.companyName.label = 'Company Name';
+        self.addressLine1.observable(address.AddressLine1);
+        self.addressLine2.observable(address.AddressLine2);
+        self.town.observable(address.Town);
+        self.county.observable(address.County);
+        self.postcode.observable(address.Postcode);
+        //self.phone.observable(address.PhoneNumber);
+        //self.phone.visible(true);
+        self.email.observable(address.Email);
+        //self.email.visible(true);
 
-            self.endCustomerTradeAccountName = address.EndCustomerTradeAccountName;
+        self.endCustomerTradeAccountName = address.EndCustomerTradeAccountName;
 
-            if (self.countryWidget()) {
-                self.countryWidget().bind('dataBound', function () {
-                    self.countryWidget().value(address.DeliveryCountryID);
-                    self.countryWidget().trigger('change');
-                    self.countryWidget().unbind('dataBound');
-                    //self.detectChanges();
-                });
-                self.countryWidget().dataSource.read();
-            } else {
-                self.countryId(address.DeliveryCountryID);
-                if (address.DeliveryCountry) {
-                    self.country({
-                        Name: address.DeliveryCountry.Name,
-                        Code: address.DeliveryCountry.Code,
-                        EU: address.DeliveryCountry.EU,
-                        CountryID: address.DeliveryCountryID
-                    });
-                }
+        if (self.countryWidget()) {
+            self.countryWidget().bind('dataBound', function () {
+                self.countryWidget().value(address.CountryID);
+                self.countryWidget().trigger('change');
+                self.countryWidget().unbind('dataBound');
                 //self.detectChanges();
-            }
+            });
+            self.countryWidget().dataSource.read();
+        } else {
+            self.countryId(address.CountryID);
+            //self.detectChanges();
+        }
 
-            self.havePerformedLoqateSearch(address.CleansePerformed);
+        if (address.CountryName) {
+            self.country({
+                Name: address.CountryName,
+                Code: address.CountryCode,
+                EU: address.EU,
+                CountryID: address.CountryID
+            });
+        }
 
-            resolve();
-        });
+        self.havePerformedLoqateSearch(address.CleansePerformed);
     }
 
     self.loadTradeAccountAddressForDelivery = function (address) {
@@ -1225,8 +1222,8 @@
         self.companyName.observable(address.CompanyName);
         self.addressLine1.observable(address.AddressLine1);
         self.addressLine2.observable(address.AddressLine2);
-        self.town.observable(address.AddressLine3);
-        self.county.observable(address.AddressLine4);
+        self.town.observable(address.AddressLine3 || address.Town);
+        self.county.observable(address.AddressLine4 || address.County);
         self.postcode.observable(address.Postcode);
         self.phone.observable(address.Phone);
         self.email.observable(address.Email);
@@ -1241,13 +1238,16 @@
             self.countryWidget().dataSource.read();
         } else {
             self.countryId(address.CountryID);
+            self.detectChanges();
+        }
+
+        if (address.CountryName) {
             self.country({
-                Name: address.Country,
+                Name: address.CountryName,
                 Code: address.CountryCode,
                 EU: address.EU,
                 CountryID: address.CountryID
             });
-            self.detectChanges();
         }
 
         var tags = [];
@@ -1794,7 +1794,7 @@
                 result.append($("<span class='address-block-span no-comma red-text'>No delivery email address provided</span>"));
             }
 
-            if (self.deliveryReference() && self.deliveryReference() != 'C') {
+            if (self.deliveryReference( ) && self.deliveryReference() != 'C') {
                 result.append($('<span class="address-block-spacer"></span>'));
 
                 if (self.cleanseResultAccepted()) {
@@ -1948,7 +1948,7 @@ var addressSearchFactory = function (
 
     self.mertexEndpoint = '/api/componentapi/mertexAddressSearch',
 
-        self.pcaEndpoint = '/Products/Enquiry/PCAPredictFind'
+    self.pcaEndpoint = '/Products/Enquiry/PCAPredictFind'
 
     self.title = ko.observable(title || '');
 
@@ -2129,6 +2129,7 @@ var addressSearchFactory = function (
         inputGroup: self.pcaInputGroup,
         searchResultsList: ko.observableArray([]),
         searchEndpoint: ko.observable(self.mertexEndpoint), // current endpoint to search against; default to Mertex. Only Misc accounts should default to pca.
+        delay: 86|400000,
         tradeAccount: self.tradeAccount,
         endCustomerTradeAccount: self.endCustomerTradeAccount,
         miscTradeAccount: self.isMiscTradeAccount,

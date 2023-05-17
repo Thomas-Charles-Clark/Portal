@@ -132,14 +132,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\KENDOUIMVC\2017.3.1026.545\Kendo.Mvc.dll</HintPath>
     </Reference>
-    <Reference Include="MertexerV2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c602798f13fc5144, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\MertexerV2.dll</HintPath>
-    </Reference>
-    <Reference Include="MertexerV2SQL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\MertexerV2SQL.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.AnalysisServices.AdomdClient, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <HintPath>..\packages\Unofficial.Microsoft.AnalysisServices.AdomdClient.13.0.4001\lib\net40\Microsoft.AnalysisServices.AdomdClient.dll</HintPath>
       <Private>True</Private>
@@ -735,7 +727,6 @@
     <Compile Include="Controllers\TradeAccount_TradeHaulier_OverridesController.cs" />
     <Compile Include="Controllers\TradeDeliveryContractPricesController.cs" />
     <Compile Include="Controllers\TradeAccountsController.cs" />
-    <Compile Include="MertexDAL\MertexerV2DAL.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

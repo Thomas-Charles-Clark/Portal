@@ -1,7 +1,6 @@
 ﻿using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using Newtonsoft.Json;
-using Portal.MertexDAL;
 using Portal.Utilities;
 using SharedEFClasses;
 using SharedEFClasses.Models;

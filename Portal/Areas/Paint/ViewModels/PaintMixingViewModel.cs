@@ -24,6 +24,8 @@ namespace Portal.Areas.Products.ViewModels
     {
         public short MixingLocationID { get; set; }
 
+        public MixingLocation MixingLocation { get; set; }
+
         private PaintMixingViewModel(
             RoleProperties properties,
             string applicationHeading,
@@ -32,7 +34,7 @@ namespace Portal.Areas.Products.ViewModels
 
         }
 
-        public static async Task<PaintMixingViewModel> CreateAsync(
+        public static PaintMixingViewModel Create(
             short mixingLocationId,
             RoleProperties properties,
             string applicationHeading,
@@ -40,16 +42,18 @@ namespace Portal.Areas.Products.ViewModels
         {
             var result = new PaintMixingViewModel(properties, applicationHeading, applicationSubHeading);
 
-            await result.InitialiseAsync(mixingLocationId);
+            result.Initialise(mixingLocationId);
 
             return result;
         }
 
-        protected async System.Threading.Tasks.Task InitialiseAsync(short mixingLocationId)
+        protected void Initialise(short mixingLocationId)
         {
             var db = new SharedEFClasses.Models.PortalDbContext();
 
             MixingLocationID = mixingLocationId;
+
+            MixingLocation = db.MixingLocations.SingleOrDefault(ml => ml.MixingLocationID == MixingLocationID);
         }
     }
 }

@@ -86,14 +86,6 @@
     <Reference Include="Kendo.Mvc">
       <HintPath>..\lib\KENDOUIMVC\2017.3.1026.545\Kendo.Mvc.dll</HintPath>
     </Reference>
-    <Reference Include="MertexerV2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c602798f13fc5144, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Portal\Libraries\MertexerV2.dll</HintPath>
-    </Reference>
-    <Reference Include="MertexerV2SQL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Portal\Libraries\MertexerV2SQL.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.AnalysisServices.AdomdClient, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <HintPath>..\packages\Unofficial.Microsoft.AnalysisServices.AdomdClient.13.0.4001\lib\net40\Microsoft.AnalysisServices.AdomdClient.dll</HintPath>
       <Private>True</Private>
@@ -321,6 +313,7 @@
     <Compile Include="BaseController.cs" />
     <Compile Include="BaseViewModel.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-General.cs" />
+    <Compile Include="DbContext\Dapper\PortalDbContext-Retail.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-Paint.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-Products.cs" />
     <Compile Include="DbContext\PortalDbContext-Delivery.cs" />
@@ -335,6 +328,20 @@
     <Compile Include="Models\DocumentModels.cs" />
     <Compile Include="Models\FurnitureModels.cs" />
     <Compile Include="Models\MarketingBudgetModels.cs" />
+    <Compile Include="Models\Mertexer\DeliveryAddress.cs" />
+    <Compile Include="Models\Mertexer\DuplicateLineCheckResult.cs" />
+    <Compile Include="Models\Mertexer\InvoiceAddress.cs" />
+    <Compile Include="Models\Mertexer\Reason.cs" />
+    <Compile Include="Models\Mertexer\RetailTill.cs" />
+    <Compile Include="Models\Mertexer\RetailTillSession.cs" />
+    <Compile Include="Models\Mertexer\TrackingModels.cs" />
+    <Compile Include="Models\Mertexer\TradeAccountDataSourceInfo.cs" />
+    <Compile Include="Models\Mertexer\UniVerse\UniVerseFieldName.cs" />
+    <Compile Include="Models\Mertexer\UniVerse\UniVerseFileName.cs" />
+    <Compile Include="Models\Mertexer\UniVerse\UniVerseForeignKey.cs" />
+    <Compile Include="Models\Mertexer\UniVerse\UniVerseIndex.cs" />
+    <Compile Include="Models\Mertexer\UniVerse\UniVerseMultiValue.cs" />
+    <Compile Include="Models\Mertexer\UniVerse\UniVerseSerializationBase.cs" />
     <Compile Include="Models\MertexLive\Supplier.cs" />
     <Compile Include="Models\MertexLive\Sundry.cs" />
     <Compile Include="Models\MertexLive\QualityLive.cs" />
@@ -411,8 +418,11 @@
     <Compile Include="SignalR\Hubs\TaskAlertHub.cs" />
     <Compile Include="Utilities\dgCrypto.cs" />
     <Compile Include="Utilities\EntityUtils.cs" />
+    <Compile Include="Utilities\Framework.cs" />
     <Compile Include="Utilities\NewtonsoftExtensions\JsonExtensions.cs" />
+    <Compile Include="Utilities\OrderedContractResolver.cs" />
     <Compile Include="Utilities\ResourceCacheProvider.cs" />
+    <Compile Include="Utilities\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

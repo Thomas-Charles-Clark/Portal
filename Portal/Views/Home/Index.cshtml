@@ -168,7 +168,7 @@
                     }
                 }
 
-                if (a.ApplicationID == 99)
+                if (a.ApplicationID == 99 || a.ApplicationID == 100)
                 {
                     url = Url.Action("index", a.ControllerName, new { Area = a.AreaName, mixingLocation = a.ActionName });
                 }

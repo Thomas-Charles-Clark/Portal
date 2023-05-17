@@ -1,7 +1,6 @@
 ﻿using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using Portal.Models;
-using Portal.MertexDAL;
 using System;
 using System.Collections.Generic;
 using System.Linq;

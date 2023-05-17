@@ -593,7 +593,7 @@ namespace Portal.Areas.Sales.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult TagAutocomplete(MertexerV2SQL.Models.Misc.PassAutocompleteTerm objAutocomplete)
+        public IHttpActionResult TagAutocomplete(PassAutocompleteTerm objAutocomplete)
         {
             var results = portalDb.Tags.Where(p =>
                 p.Deleted == false &&

@@ -33,19 +33,19 @@ namespace Portal.Areas.Products.ViewModels
 
         }
 
-        public static async Task<TreatmentMaintenanceViewModel> CreateAsync(
+        public static TreatmentMaintenanceViewModel Create(
             RoleProperties properties,
             string applicationHeading,
             string applicationSubHeading)
         {
             var result = new TreatmentMaintenanceViewModel(properties, applicationHeading, applicationSubHeading);
 
-            await result.InitialiseAsync();
+            result.Initialise();
 
             return result;
         }
 
-        protected async System.Threading.Tasks.Task InitialiseAsync()
+        protected void Initialise()
         {
             var db = new SharedEFClasses.Models.PortalDbContext();
 

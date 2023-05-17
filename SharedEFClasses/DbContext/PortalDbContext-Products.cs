@@ -8,6 +8,7 @@ using SharedEFClasses.Models.Maintenance;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.Samples;
+using SharedEFClasses.Models.TradeAccounts;
 using SharedEFClasses.Utilities;
 using System;
 using System.Collections.Generic;
@@ -141,7 +142,7 @@ namespace SharedEFClasses.Models
             return results;
         }
 
-        public List<KeywordHintResult> SearchTerm_KeywordHint(MertexerV2SQL.Models.Misc.PassAutocompleteTerm objTerm)
+        public List<KeywordHintResult> SearchTerm_KeywordHint(PassAutocompleteTerm objTerm)
         {
             var result = new List<KeywordHintResult>();
 
@@ -1401,6 +1402,54 @@ namespace SharedEFClasses.Models
             var cmd = this.Database.Connection.CreateCommand();
 
             cmd.CommandText = "[portal].[Stock_Select]";
+
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddRange(parameters.ToArray());
+
+            try
+            {
+                this.Database.Connection.Open();
+
+                var reader = cmd.ExecuteReader();
+
+                result.stockResults = ((IObjectContextAdapter)this)
+                    .ObjectContext
+                    .Translate<ProductStockFetchResult>(reader).ToList();
+
+                reader.NextResult();
+
+                result.availabilityMessages = ((IObjectContextAdapter)this)
+                    .ObjectContext
+                    .Translate<StockInfoAvailabilityMessage>(reader).ToList();
+            }
+            catch (SqlException e)
+            {
+                PortalFramework.LogErrorToDatabase(e);
+                throw e;
+            }
+            finally
+            {
+                this.Database.Connection.Close();
+            }
+
+            return result;
+        }
+
+        public FetchStockInfoResult FetchStockInfoSingular(PassFetchProductStockInfoSingular objFetch)
+        {
+            var result = new FetchStockInfoResult();
+
+            var parameters = new List<SqlParameter>()
+            {
+                new SqlParameter("@TradeAccountID", objFetch.TradeAccountID),
+                new SqlParameter("@ProductID", objFetch.ProductID ?? (object)DBNull.Value),
+                new SqlParameter("@ProductCode", objFetch.ProductCode ?? (object)DBNull.Value)
+            };
+
+            var cmd = this.Database.Connection.CreateCommand();
+
+            cmd.CommandText = "[portal].[Stock_Select_Singular]";
 
             cmd.CommandType = CommandType.StoredProcedure;
 

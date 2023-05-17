@@ -38,7 +38,7 @@ namespace SharedEFClasses.Models
                 objEnquiry.MixingLocationID,
                 objEnquiry.MemberID,
                 Mode = 'M'
-            }, null, null, System.Data.CommandType.StoredProcedure);
+            }, null, null, CommandType.StoredProcedure);
 
             return new PaintOrderHeadSelectResponse()
             {
@@ -54,8 +54,9 @@ namespace SharedEFClasses.Models
                 objEnquiry.MemberID,
                 Mode = 'H',
                 objEnquiry.FromDT,
-                objEnquiry.ToDT
-            }, null, null, System.Data.CommandType.StoredProcedure);
+                objEnquiry.ToDT,
+                objEnquiry.SearchTerm
+            }, null, null, CommandType.StoredProcedure);
 
             return new PaintOrderHeadSelectResponse()
             {
@@ -70,7 +71,7 @@ namespace SharedEFClasses.Models
                 objEnquiry.MixingLocationID,
                 Mode = String.IsNullOrEmpty(objEnquiry.Mode) ? "D" : objEnquiry.Mode,
                 //objEnquiry.MemberID
-            }, null, null, System.Data.CommandType.StoredProcedure);
+            }, null, null, CommandType.StoredProcedure);
 
             return new PaintBasePaintOrdersToInvoiceResponse()
             {
@@ -129,7 +130,7 @@ namespace SharedEFClasses.Models
                 objSave.MemberID,
                 OrderLines = orderLines.AsTableValuedParameter("NVARCHAR30TableType"),
                 objSave.BoxCount
-            }, null, null, System.Data.CommandType.StoredProcedure);
+            }, null, null, CommandType.StoredProcedure);
 
             return result;
         }
@@ -140,7 +141,7 @@ namespace SharedEFClasses.Models
             {
                 objCancel.OrderID,
                 objCancel.MemberID
-            }, null, null, System.Data.CommandType.StoredProcedure);
+            }, null, null, CommandType.StoredProcedure);
 
             return new PaintOrderLineCancelResponse()
             {
@@ -153,7 +154,7 @@ namespace SharedEFClasses.Models
             var results = await this.Database.Connection.QueryMultipleAsync("[paint].[GenerateBoxLabel]", new
             {
                 objEnquiry.MixingSessionID
-            }, null, null, System.Data.CommandType.StoredProcedure);
+            }, null, null, CommandType.StoredProcedure);
 
             return new PaintGenerateBoxLabelResponse()
             {
@@ -173,7 +174,7 @@ namespace SharedEFClasses.Models
             var results = await this.Database.Connection.QueryMultipleAsync("[paint].[Transfer_Save]", new
             {
                 MixingSessionIDs = mixingSessions.AsTableValuedParameter("BIGINTTableType")
-            }, null, null, System.Data.CommandType.StoredProcedure);
+            }, null, null, CommandType.StoredProcedure);
 
             return new PaintTransferSaveResponse()
             {
@@ -187,7 +188,7 @@ namespace SharedEFClasses.Models
             var results = await this.Database.Connection.QueryMultipleAsync("[paint].[BasePaintOrderStatusUpdate]", new
             {
                 SingleMixingSessionID = objEnquiry.MixingSessionID
-            }, null, null, System.Data.CommandType.StoredProcedure);
+            }, null, null, CommandType.StoredProcedure);
 
             return new PaintUpdateOrderStatusResult();
         }
@@ -197,12 +198,12 @@ namespace SharedEFClasses.Models
             var results = await this.Database.Connection.QueryMultipleAsync("[paint].[BasePaintOrderStatusUpdate]", new
             {
 
-            }, null, 300, System.Data.CommandType.StoredProcedure);
+            }, null, 300, CommandType.StoredProcedure);
 
             var nextResults = await this.Database.Connection.QueryMultipleAsync("[paint].[BasePaintOrderGenerate]", new
             {
 
-            }, null, 300, System.Data.CommandType.StoredProcedure);
+            }, null, 300, CommandType.StoredProcedure);
 
             return new PaintUpdateOrderStatusResult();
         }

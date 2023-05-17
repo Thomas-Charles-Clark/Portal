@@ -15,6 +15,14 @@ namespace SharedEFClasses
         [Dependency]
         public ApplicationUserManager userManager { get; set; }
 
+        
+        private bool ActionNameAgnostic { get; set; }
+
+        public DynamicRoleAuthoriseAttribute(bool actionNameAgnostic = false)
+        {
+            ActionNameAgnostic = actionNameAgnostic;
+        }
+
         protected override bool AuthorizeCore(HttpContextBase httpContext)
         {
             var controller = httpContext.Request.RequestContext.RouteData.GetRequiredString("controller");
@@ -27,7 +35,7 @@ namespace SharedEFClasses
             {
                 Roles = String.Join(",", appDbContext.Applications
                     .Where(p => p.ControllerName == controller.ToLower() &&
-                                p.ActionName == action.ToLower())
+                                (ActionNameAgnostic || p.ActionName == action.ToLower()))
                     .SelectMany(p => p.Application_Roles)
                     .Select(p => p.Role.Name).ToList().ToArray());
             }
@@ -35,7 +43,7 @@ namespace SharedEFClasses
             {
                 Roles = String.Join(",", appDbContext.Applications
                     .Where(p => p.ControllerName == controller.ToLower() &&
-                                p.ActionName == action.ToLower() &&
+                                (ActionNameAgnostic || p.ActionName == action.ToLower()) &&
                                 p.AreaName == area.ToLower())
                     .SelectMany(p => p.Application_Roles)
                     .Select(p => p.Role.Name).ToList().ToArray());

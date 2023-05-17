@@ -242,14 +242,17 @@
                 <!-- /ko -->
             </button>
         </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="transfers-tab-btn" data-bs-toggle="tab" data-bs-target="#transfers-tab" type="button" role="tab" aria-controls="contact" aria-selected="false">
-                Generate Collection Paperwork
-                <!-- ko if: transfersCount -->
-                <sup class="badge rounded-pill text-bg-primary" style="display: none;" data-bind="visible: transfersCount, text: transfersCount"></sup>
-                <!-- /ko -->
-            </button>
-        </li>
+       @if (Model.MixingLocation?.TransferRequiredPriorToDespatch == true)
+        {
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="transfers-tab-btn" data-bs-toggle="tab" data-bs-target="#transfers-tab" type="button" role="tab" aria-controls="contact" aria-selected="false">
+                    Generate Collection Paperwork
+                    <!-- ko if: transfersCount -->
+                    <sup class="badge rounded-pill text-bg-primary" style="display: none;" data-bind="visible: transfersCount, text: transfersCount"></sup>
+                    <!-- /ko -->
+                </button>
+            </li>
+        }
         <li class="nav-item" role="presentation" style="display: none" data-bind="visible: ordersToInvoiceExceptionCount">
             <button class="nav-link bg-danger border-danger" id="stock-orders-exception-tab-btn" data-bs-toggle="tab" data-bs-target="#stock-orders-exception-tab" type="button" role="tab" aria-controls="contact" aria-selected="false">
                 Base Paint Orders Exceptions
@@ -278,6 +281,7 @@
             <div class="hstack gap-3 mb-3">
                 <div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: orderHistoryFromParams }"></div>
                 <div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: orderHistoryToParams }"></div>
+                <div data-bind="component: { name: 'mdc-text-field-component', params: orderHistorySearchParams }"></div>
             </div>
             <div data-bind="kendoGrid: orderHistoryGrid"></div>
         </div>

@@ -5620,7 +5620,7 @@ a.supplier-link {
 .retail-parameters-header > div {
   padding: 15px;
 }
-.retail-parameters-header > div:first-child {
+.retail-parameters-header > div:nth-child(2) {
   flex: 0 1 75%;
   position: relative;
 }

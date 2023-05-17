@@ -2447,6 +2447,9 @@ textarea.form-control {
     background-color: #7f00ff;
   }
 }
+#alerting-display .fas.fa-bell {
+  font-size: 17px;
+}
 #alerting-display .ringing {
   transform-origin: top center;
   animation: bell-ringer 0.6s linear infinite, rainbow 2s linear infinite;
@@ -3896,5 +3899,13 @@ span.glyphicon.glyphicon-send {
   .atv {
     color: #060;
   }
+}
+.autocomplete-search-btn {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.d-flex {
+  display: flex;
 }
 /*# sourceMappingURL=site.css.map */

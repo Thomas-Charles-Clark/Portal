@@ -3,8 +3,6 @@
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
-using MertexerV2SQL.Models.Misc;
-
 using Microsoft.AspNet.Identity;
 
 using Portal.Utilities;
@@ -29,6 +27,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
+
+using Framework = Portal.Utilities.Framework;
 
 namespace Portal.Controllers
 {
@@ -146,7 +146,7 @@ namespace Portal.Controllers
         }
 
         [HttpGet]
-        public async Task<IHttpActionResult> CreateDataItem(
+        public IHttpActionResult CreateDataItem(
             [FromBody]PassDataItemCreation objEnquiry)
         {
             var assembly = PortalFramework.GetAssembly("SharedEFClasses");

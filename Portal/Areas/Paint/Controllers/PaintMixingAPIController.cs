@@ -3,8 +3,6 @@
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
-using MertexerV2SQL.Models.Misc;
-
 using Microsoft.AspNet.Identity;
 
 using Portal.Areas.Paint.Utilities;

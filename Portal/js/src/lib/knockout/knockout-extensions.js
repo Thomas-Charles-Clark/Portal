@@ -999,7 +999,7 @@ ko.extenders.pcaPredictList = function (observable, options) {
 
             var data = {
                 id: observable.PCASearchId(),
-                text: observable(),
+                text: observable() ?? '',
                 container: observable.PCAContainer(),
                 origin: null,
                 countries: ko.unwrap(options.country).Code,
@@ -1020,25 +1020,25 @@ ko.extenders.pcaPredictList = function (observable, options) {
                     //if (observable.PCASearchId() != null || (observable.searchEndpoint().indexOf('mertex') > -1)) {
 
                     var results = $.map(data.mertexResults, function (item) {
-                        var county = item.Province || item.ProvinceName || item.ProvinceCode || item.AdminAreaName || item.AdminAreaCode;
-                        if (item.City === "London" && ko.unwrap(options.country).Code == "GB")
+                        var county = item.County;
+                        if (item.Town === "London" && ko.unwrap(options.country).Code == "GB")
                             county = "London";
                         return {
                             customCatch: true,
                             label: item.Label,
                             value: item.Id,
-                            companyName: item.Company,
-                            name: item.Name,
-                            addressLine1: item.Line1,
-                            addressLine2: item.Line2,
-                            addressLine3: item.City,
+                            companyName: item.CompanyName,
+                            name: item.ContactName,
+                            addressLine1: item.AddressLine1,
+                            addressLine2: item.AddressLine2,
+                            addressLine3: item.Town,
                             addressLine4: county,
-                            postcode: item.PostalCode,
-                            phone: item.Phone,
+                            postcode: item.Postcode,
+                            phone: item.PhoneNumber,
                             email: item.Email,
-                            deliveryReference: item.DeliveryReference,
+                            deliveryReference: item.Code,
                             obj: item,
-                            type: item.Type,
+                            type: item.type,
                             loqateAddress: false,
                             countryId: item.CountryID
                         };
@@ -1241,7 +1241,7 @@ ko.extenders.pcaPredictList = function (observable, options) {
             event.preventDefault();
         },
         autoFocus: typeof options.autoFocus === 'undefined' ? true : options.autoFocus,
-        delay: 500,
+        delay: options.delay ?? 500,
         position: options.position || { my: "left top", at: "left bottom", collision: "none" }
     });
 }
@@ -2477,31 +2477,15 @@ ko.bindingHandlers.mdcMultiSelectComponent = {
 
         params.boundTo.mdcSelect.useNativeValidation = params.useNativeValidation;
 
-        if (params.widget()) {
-            params.widget().input[0].addEventListener('blur', (e) => {
-                if (!params.boundTo().length && !params.widget().input[0].value) {
-                    params.boundTo.mdcSelect.label_.float(false);
-                    params.boundTo.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
-                }
-            });
-            params.widget().input[0].addEventListener('keyup', (e) => {
-                if (params.widget().input[0].value) {
-                    params.boundTo.mdcSelect.label_.float(true);
-                    params.boundTo.mdcSelect.getDefaultFoundation().adapter_.notchOutline(params.boundTo.mdcSelect.getDefaultFoundation().adapter_.getLabelWidth() * 0.75);
-                } else if (!params.boundTo().length) {
-                    params.boundTo.mdcSelect.label_.float(false);
-                    params.boundTo.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
-                }
-            });
-        } else {
-            params.widget.subscribe(nv => {
+        if (typeof params.widget === 'function') {
+            if (params.widget()) {
                 params.widget().input[0].addEventListener('blur', (e) => {
                     if (!params.boundTo().length && !params.widget().input[0].value) {
                         params.boundTo.mdcSelect.label_.float(false);
                         params.boundTo.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
                     }
                 });
-                nv.input[0].addEventListener('keyup', (e) => {
+                params.widget().input[0].addEventListener('keyup', (e) => {
                     if (params.widget().input[0].value) {
                         params.boundTo.mdcSelect.label_.float(true);
                         params.boundTo.mdcSelect.getDefaultFoundation().adapter_.notchOutline(params.boundTo.mdcSelect.getDefaultFoundation().adapter_.getLabelWidth() * 0.75);
@@ -2510,7 +2494,25 @@ ko.bindingHandlers.mdcMultiSelectComponent = {
                         params.boundTo.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
                     }
                 });
-            });
+            } else {
+                params.widget.subscribe(nv => {
+                    params.widget().input[0].addEventListener('blur', (e) => {
+                        if (!params.boundTo().length && !params.widget().input[0].value) {
+                            params.boundTo.mdcSelect.label_.float(false);
+                            params.boundTo.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
+                        }
+                    });
+                    nv.input[0].addEventListener('keyup', (e) => {
+                        if (params.widget().input[0].value) {
+                            params.boundTo.mdcSelect.label_.float(true);
+                            params.boundTo.mdcSelect.getDefaultFoundation().adapter_.notchOutline(params.boundTo.mdcSelect.getDefaultFoundation().adapter_.getLabelWidth() * 0.75);
+                        } else if (!params.boundTo().length) {
+                            params.boundTo.mdcSelect.label_.float(false);
+                            params.boundTo.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
+                        }
+                    });
+                });
+            }
         }
 
         if (params.useNativeValidation == false) {

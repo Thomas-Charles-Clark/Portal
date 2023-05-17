@@ -2,7 +2,11 @@
 
 using Microsoft.AspNet.Identity.EntityFramework;
 
+using SharedEFClasses.Models.Mertexer;
+using SharedEFClasses.Models.MertexLive;
+using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Products;
+using SharedEFClasses.Models.TradeAccounts;
 
 using System;
 using System.Collections.Generic;
@@ -139,6 +143,56 @@ namespace SharedEFClasses.Models
             {
                 FileInfo = results.Read<BasketStatusImportFileInfo>().FirstOrDefault()
             };
+        }
+
+        public async Task<bool> WaterfallCheck(string waterfallProductCode)
+        {
+            return await this.Database.Connection.QuerySingleAsync<bool>("[portal].[PremadeWaterfall_Check]", new
+            {
+                WaterfallProductCode = waterfallProductCode
+            }, null, null, System.Data.CommandType.StoredProcedure);
+        }
+
+        public async Task<IEnumerable<Supplier>> SupplierList(SharedEFClasses.Models.Orders.PassProductCode objProductCode)
+        {
+            return await this.Database.Connection.QueryAsync<Supplier>("[portal].[Supplier_SelectByProductCode]", new
+            {
+                ProductCode = objProductCode.code
+            }, null, null, System.Data.CommandType.StoredProcedure);
+        }
+
+        public async Task<DuplicateLineCheckResult> OrderLineDuplicateCheck(string tradeAccountCode, PassDuplicateLineCheck objCheck)
+        {
+            var results = await this.Database.Connection.QueryMultipleAsync("[portal].[OrderLine_DuplicateCheck]", new
+            {
+                TradeAccountCode = tradeAccountCode,
+                LineReference = objCheck.lineReference,
+                ProductCode = objCheck.productCode,
+                Quantity = objCheck.quantity
+            }, null, null, System.Data.CommandType.StoredProcedure);
+
+            var result = new DuplicateLineCheckResult()
+            {
+                orderNumbers = results.Read<string>().ToList()
+            };
+
+            return result;
+        }
+
+        public async Task<DuplicateLineCheckResult> OrderReferenceDuplicateCheck(string tradeDataSourceJson, PassOrderReference objCheck)
+        {
+            var results = await this.Database.Connection.QueryMultipleAsync("[portal].[OrderReference_DuplicateCheck]", new
+            {
+                TradeAccountCode = tradeAccountCode,
+                OrderReference = objCheck.OrderReference
+            }, null, null, System.Data.CommandType.StoredProcedure);
+
+            var result = new DuplicateLineCheckResult()
+            {
+                orderNumbers = results.Read<string>().ToList()
+            };
+
+            return result;
         }
     }
 }

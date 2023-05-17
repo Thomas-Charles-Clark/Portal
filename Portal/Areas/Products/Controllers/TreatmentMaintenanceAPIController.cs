@@ -7,6 +7,7 @@ using SharedEFClasses.Models.Products;
 using System.Web.Http.ModelBinding;
 using Kendo.Mvc.UI;
 using Kendo.Mvc.Extensions;
+using SharedEFClasses.Models.TradeAccounts;
 
 namespace Portal.Areas.Products.Controllers
 {
@@ -22,7 +23,7 @@ namespace Portal.Areas.Products.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FabricQualityAutocomplete([FromBody] MertexerV2SQL.Models.Misc.PassAutocompleteTerm objTerm)
+        public IHttpActionResult FabricQualityAutocomplete([FromBody]PassAutocompleteTerm objTerm)
         {
             var results = PortalDb.FabricQualityAutocomplete(objTerm);
 

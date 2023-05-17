@@ -112,10 +112,10 @@ function wildcardscss() {
     var tasks = gulp
         .src(micromatches.scss, { since: gulp.lastRun(wildcardscss) })
         .pipe(debug())
+        .pipe(sourcemaps.init())
         .pipe(sourcemaps.mapSources(function (sourcePath, file) {
             return `/${destinations.css}/${sourcePath}`;
         }))
-        .pipe(sourcemaps.init())
         .pipe(sass({
             includePaths: ['node_modules']
         }).on('error', sass.logError))
@@ -127,7 +127,16 @@ function wildcardscss() {
             sourceMap: true
         }))
         .pipe(rename({ suffix: '.min' }))
-        .pipe(sourcemaps.write(''))
+        .pipe(sourcemaps.write('', {
+            sourceMappingURL: (file) => {
+                let replaced = file.relative.replace(/\\/g, '/');
+                let final = `/${destinations.css}/${replaced}.map`;
+                //console.log(`file.relative: "${file.relative}"`);
+                //console.log(`replaced: ${replaced}`);
+                //console.log(`final: ${final}`);
+                return final;
+            }
+        }))
         .pipe(gulp.dest(destinations.css));
 
     return merge(tasks);
@@ -136,13 +145,23 @@ function wildcardscss() {
 function wildcardjs() {
     var tasks = gulp
         .src(micromatches.js, { since: gulp.lastRun(wildcardjs) })
+        .pipe(debug())
         .pipe(sourcemaps.init())
         //.pipe(babel({
         //    presets: ['@babel/preset-env']
         //}))
         .pipe(terser())
         .pipe(rename({ suffix: '.min' }))
-        .pipe(sourcemaps.write(''))
+        .pipe(sourcemaps.write('', {
+            sourceMappingURL: (file) => {
+                let replaced = file.relative.replace(/\\/g, '/');
+                let final = `/${destinations.js}/${replaced}.map`;
+                //console.log(`file.relative: "${file.relative}"`);
+                //console.log(`replaced: ${replaced}`);
+                //console.log(`final: ${final}`);
+                return final;
+            }
+        }))
         .pipe(gulp.dest(destinations.js));
 
     return merge(tasks);

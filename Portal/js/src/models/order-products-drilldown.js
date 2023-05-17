@@ -3770,6 +3770,7 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
             delete product.Currency;
 
             var data = {
+                tradeAccountId: self.parent.orderFactory.tradeAccount().TradeAccountID,
                 recipient: self.email(),
                 product: product
             };

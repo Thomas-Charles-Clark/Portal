@@ -1146,6 +1146,7 @@ namespace SharedEFClasses.Models.General
 
     public class PassSendProductInfo
     {
+        public int? tradeAccountId { get; set; }
         public string recipient { get; set; }
         public ProductSearchResult product { get; set; }
     }
@@ -1397,5 +1398,10 @@ namespace SharedEFClasses.Models.General
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool Deleted { get; set; }
+    }
+
+    public class PassRetailTillNumber
+    {
+        public string RetailTillNumber { get; set; }
     }
 }

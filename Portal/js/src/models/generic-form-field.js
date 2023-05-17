@@ -57,6 +57,10 @@ const fieldViewModel = ((data, parent) => {
 
     if (self.creationForm) {
         self.creationModel = ko.observable(formFactory.createForm(JSON.parse(JSON.stringify(self.creationForm)), []));
+        self.hideCreation = () => {
+            document.querySelector(`#${self.fieldId}-creation-form`).removeAttribute('data-show');
+            document.body.removeEventListener('click', self.creationClickHandler);
+        }
         self.showCreation = () => {
             let nameContainingPanel = self.creationForm.panels.find(p => p.fields.find(f => f.fieldName === 'Name'));
 
@@ -90,18 +94,16 @@ const fieldViewModel = ((data, parent) => {
                     ev.stopPropagation();
                 });
 
+                self.creationClickHandler = (ev) => {
+                    let infoModal = document.getElementById('info-modal');
+                    if (ev.target != infoModal && !infoModal.contains(ev.target))
+                        self.hideCreation();
+                };
+
                 window.setTimeout(() => {
-                    document.body.addEventListener('click', (ev) => {
-                        document.querySelector(`#${self.fieldId}-creation-form`).removeAttribute('data-show');
-                    }, {
-                        once: true
-                    });
+                    document.body.addEventListener('click', self.creationClickHandler);
                 }, 0);
             }
-        }
-        self.cancelCreation = () => {
-            document.querySelector(`#${self.fieldId}-creation-form`).removeAttribute('data-show');
-            //self.creationModel = formFactory.createForm(self.creationForm, []);
         }
     }
 
@@ -123,7 +125,10 @@ const fieldViewModel = ((data, parent) => {
         originalValue: self.originalValue,
         revertable: true,
         revertFunction: () => {
-            self.value(self.originalValue())
+            if (self.params.hasOwnProperty('dropDownListSettings')) {
+                self.params.dropDownListSettings.widget().value(self.originalValue());
+            }
+            self.value(self.originalValue());
         },
         clearable: true,
         clearFunction: function () {
@@ -348,8 +353,8 @@ const fieldViewModel = ((data, parent) => {
                     })
                         .then(resp => resp.json())
                         .then(data => {
+                            console.log('FetchDataList returned', data);
                             options.success(data);
-                            //console.log('FetchDataList returned', data);
                         })
                         .catch(err => window.catchFetchError(err));
                 }
@@ -480,8 +485,6 @@ const fieldViewModel = ((data, parent) => {
         }
 
         self.params.dropDownListSettings.noDataTemplate = (e) => {
-
-            console.log('noDataTemplate', self);
 
             if (e.instance.hasOwnProperty('input')) {
                 if (e.instance.input.val()) {

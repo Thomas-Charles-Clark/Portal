@@ -544,13 +544,13 @@ namespace Portal.Areas.Paint.Utilities
     internal class BoxLabelPDFEventHelper : PdfPageEventHelper
     {
         // This is the contentbyte object of the writer
-        PdfContentByte cb;
+        //PdfContentByte cb;
 
         // we will put the final number of pages in a template
-        PdfTemplate headerTemplate, footerTemplate;
+        //PdfTemplate headerTemplate, footerTemplate;
 
         // this is the BaseFont we are going to use for the header / footer
-        BaseFont bf = null;
+        //BaseFont bf = null;
 
         // This keeps track of the creation time
         DateTime PrintTime = DateTime.Now;

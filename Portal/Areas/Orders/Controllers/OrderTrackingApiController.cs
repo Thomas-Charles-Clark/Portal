@@ -2,7 +2,6 @@
 using Kendo.Mvc.UI;
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
-using Portal.MertexDAL;
 using Portal.Models;
 using SharedEFClasses;
 using SharedEFClasses.Models;
@@ -45,7 +44,7 @@ namespace Portal.Areas.Sales.Controllers
 
 
         [HttpPost]
-        public IHttpActionResult OrderSearch([FromBody]MertexerV2SQL.Models.Misc.PassAutocompleteTerm objSearch)
+        public IHttpActionResult OrderSearch([FromBody]PassAutocompleteTerm objSearch)
         {
             //var result = MertexerV2DAL.OrderTrackingSearch(objSearch);
 

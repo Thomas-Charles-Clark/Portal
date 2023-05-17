@@ -16,14 +16,16 @@ using SharedEFClasses.Models.Customers;
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Utilities;
 using SharedEFClasses.Models.Leads;
+using Dapper;
+using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models
 {
     public partial class PortalDbContext : IdentityDbContext<SharedEFClasses.Models.Member, Role, int, Member_Login, Member_Role, Member_Claim>
     {
-        public MertexerV2SQL.Models.Misc.TradeAccountAddressReturn TradeAccountNumber_FetchAddresses(string tradeAccountNumber)
+        public TradeAccountAddressReturn TradeAccountNumber_FetchAddresses(string tradeAccountNumber)
         {
-            var result = new MertexerV2SQL.Models.Misc.TradeAccountAddressReturn();
+            var result = new TradeAccountAddressReturn();
 
             var cmd = this.Database.Connection.CreateCommand();
             cmd.CommandText = "[portal].[TradeAccountNumber_FetchAddresses_Samples] @TradeAccountNumber";
@@ -40,7 +42,7 @@ namespace SharedEFClasses.Models
 
                 var primary = ((IObjectContextAdapter)this)
                     .ObjectContext
-                    .Translate<MertexerV2SQL.Models.Misc.TradeAccountPrimaryAddress>(reader);
+                    .Translate<TradeAccountPrimaryAddress>(reader);
 
                 result.PrimaryAddresses = primary.ToList();
 
@@ -48,7 +50,7 @@ namespace SharedEFClasses.Models
 
                 var secondaries = ((IObjectContextAdapter)this)
                     .ObjectContext
-                    .Translate<MertexerV2SQL.Models.Misc.TradeAccountSecondaryAddress>(reader);
+                    .Translate<TradeAccountSecondaryAddress>(reader);
 
                 result.SecondaryAddresses = secondaries.ToList();
             }
@@ -2326,6 +2328,17 @@ c.Currency = currency.Name;
             }
 
             return results;
+        }
+
+
+        public async Task<string> FetchTradeAccountInvoiceEmailAddress(string tradeAccountCode)
+        {
+            var result = await this.Database.Connection.QuerySingleAsync<string>("[portal].[Tradeaccount_InvoiceEmailAddress_Select]", new
+            {
+                TradeAccountCode = tradeAccountCode
+            }, null, 300, CommandType.StoredProcedure);
+
+            return result;
         }
     }
 }

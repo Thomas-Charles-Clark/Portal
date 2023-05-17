@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace Portal.Areas.Customers.Controllers
@@ -60,11 +61,9 @@ namespace Portal.Areas.Customers.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult refreshTradeEmail([FromBody]MertexerV2SQL.Models.Misc.PassTradeAccountNumber objTrade)
+        public async Task<IHttpActionResult> refreshTradeEmail([FromBody]PassTradeAccountNumber objTrade)
         {
-            var tradeDataSourceJson = PortalDb.TradeAccounts.Where(p => p.Code == objTrade.accountNumber).Select(p => p.UniVerseDataSources).Single();
-
-            return Ok(MertexerV2SQL.MiscFunctions.MiscellaneousFunctions.RefreshTradeAccountInvoiceEmailAddress(tradeDataSourceJson, objTrade));
+            return Ok(await PortalDb.FetchTradeAccountInvoiceEmailAddress(objTrade.accountNumber));
         }
     }
 }

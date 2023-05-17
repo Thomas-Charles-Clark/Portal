@@ -373,6 +373,13 @@ namespace SharedEFClasses.Models.Products
         public List<int> ProductIDs { get; set; }
     }
 
+    public class PassFetchProductStockInfoSingular
+    {
+        public int TradeAccountID { get; set; }
+        public int? ProductID { get; set; }
+        public string ProductCode { get; set; } 
+    }
+
     public class ProductSearchResult
     {
         public long? ImageID { get; set; }
@@ -2076,5 +2083,31 @@ namespace SharedEFClasses.Models.Products
     public class PassImageForm 
     { 
         public string Destination { get; set; }
+    }
+
+    public class FetchLinkedDocumentsResult
+    {
+        public List<LinkedDocument> LinkedDocuments { get; set; }
+
+        public FetchLinkedDocumentsResult()
+        {
+            LinkedDocuments = new List<LinkedDocument>();
+        }
+    }
+
+    public class LinkedDocument
+    {
+        public string Path { get; set; }
+        public string Description { get; set; }
+
+        [NotMapped]
+        public string FileName
+        {
+            get
+            {
+                return Path.Substring(Path.LastIndexOf("\\") + 1);
+            }
+            set { }
+        }
     }
 }

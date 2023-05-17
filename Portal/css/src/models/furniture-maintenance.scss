@@ -395,3 +395,11 @@ a.stitch-colour {
 .pending-stitch {
     background-color: #fffae1;
 }
+
+.k-multiselect {
+    > .k-multiselect-wrap {
+        > .k-i-close {
+            display: none !important;    
+        }
+    }
+}

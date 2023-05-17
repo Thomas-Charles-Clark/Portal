@@ -10,6 +10,20 @@
     // Is this view model busy
     self.busy = ko.observable(false);
 
+    // Do we want to "hold" busy: sometimes we're doing two or more fetch calls at once,
+    // and we don't want busy being cleared by the first call returning.
+    // Set holdBusy to some number, make sure the involved fetch calls decrement holdBusy on return.
+    self.holdBusy = ko.observable(0);
+
+    self.holdBusy.subscribe(nv => {
+        if (nv <= 0) {
+            self.busy(false);
+            self.holdBusy(0);
+        }
+        else
+            self.busy(true);
+    });
+
     // The mixing location is given via the route parameter: /paint/mixing/{mixingLocation} is matched to [paint].[MixingLocation].[URLKeywords] and then serialized to JS
     self.mixingLocationId = ko.observable(getMixingLocationId());
 
@@ -61,6 +75,7 @@
 
     // Container for the response to [paint].[OrderLine_Select], called when a user selects a selectable Order from the Outstanding Orders Grid
     self.dataItem = ko.observable();
+
     self.orderLinesResponse = ko.observable();
 
     self.orderLines = ko.observableArray([]);
@@ -109,7 +124,7 @@
 
     self.labelsFrame.addEventListener('load', (event) => {
         self.labelsFrame.focus();
-        //window.frames.labeliFrame.print();
+        //window.frames.labelsFrame.print();
     });
 
     self.transferDates = ko.observableArray([]);
@@ -235,6 +250,9 @@
                         },
                         DeliveryDescription: {
                             type: 'string'
+                        },
+                        GenerateBoxLabel: {
+                            type: 'boolean'
                         }
                     }
                 }
@@ -325,6 +343,9 @@
                     if (self.orderHistoryTo())
                         params.append('ToDT', self.orderHistoryTo().toISOString());
 
+                    if (self.orderHistorySearch()) 
+                        params.append('SearchTerm', self.orderHistorySearch())
+
                     for (var propertyName in mapped) {
                         params.append(propertyName, mapped[propertyName]);
                     }
@@ -390,6 +411,9 @@
                         },
                         Priority: {
                             type: 'number'
+                        },
+                        GenerateBoxLabel: {
+                            type: 'boolean'
                         }
                     }
                 }
@@ -491,110 +515,116 @@
                     })
                         .then(resp => resp.json())
                         .then(data => {
-                            data.dsResult.Data.map(ol => {
-                                let orderLine = Object.assign(ol, {
-                                    elementHolder: ko.observable(),
-                                    checkboxParams: {
-                                        checkboxId: `order-line-${ol.OrderLineID}-checkbox`,
-                                        observable: ko.observable(),
-                                        originalValue: false,
-                                        useNativeValidation: false,
-                                        disable: ko.observable(ol.Locked),
-                                        enable: ko.observable(!ol.Locked),
-                                        busy: ko.observable(false)
-                                    }
-                                });
-                                orderLine.checkboxParams.observable.subscribe(nv => {
-                                    if (nv) {
-                                        orderLine.elementHolder.DOMElement.classList.add('k-state-selected');
-                                    } else {
-                                        orderLine.elementHolder.DOMElement.classList.remove('k-state-selected');
-                                    }
-                                });
-                                return orderLine;
-                            });
-                            self.orderLines(data.dsResult.Data);
-                            options.success(data.dsResult);
-                            self.mixingSessions(data.MixingSessions.map(ms => {
-                                ms.boxCount = ko.observable(ms.BoxCount);
-                                ms.fetchBoxLabels = () => {
-                                    self.fetchBoxLabels(ms.MixingSessionID);
-                                }
-                                ms.boxCountSavedSuccessfully = ko.observable(false);
-                                ms = Object.assign({
-                                    boxCountParams: {
-                                        inputType: 'number',
-                                        minValue: 1,
-                                        maxValue: 99,
-                                        step: 1,
-                                        large: false,
-                                        observable: ms.boxCount,
-                                        busy: ko.observable(false),
-                                        enable: ko.observable(true),
-                                        disable: ko.observable(false),
-                                        clearable: ko.observable(false),
-                                        clearFunction: () => {
-                                            self.boxCount(undefined);
-                                        },
-                                        revertable: ko.observable(false),
-                                        useNativeValidation: false,
-                                        insertValidationMessages: false,
-                                        decorateInputElement: true,
-                                        increment: () => {
-                                            if (ms.boxCount() < 99)
-                                                ms.boxCount((+ms.boxCount()) + 1);
-                                        },
-                                        decrement: () => {
-                                            if (ms.boxCount() > 1)
-                                                ms.boxCount((+ms.boxCount()) - 1);
-                                        },
-                                        enterKey: () => {
-
+                            if (data.dsResult) {
+                                data.dsResult.Data.map(ol => {
+                                    let orderLine = Object.assign(ol, {
+                                        elementHolder: ko.observable(),
+                                        checkboxParams: {
+                                            checkboxId: `order-line-${ol.OrderLineID}-checkbox`,
+                                            observable: ko.observable(),
+                                            originalValue: false,
+                                            useNativeValidation: false,
+                                            disable: ko.observable(ol.Locked),
+                                            enable: ko.observable(!ol.Locked),
+                                            busy: ko.observable(false)
                                         }
+                                    });
+                                    orderLine.checkboxParams.observable.subscribe(nv => {
+                                        if (nv) {
+                                            orderLine.elementHolder.DOMElement.classList.add('k-state-selected');
+                                        } else {
+                                            orderLine.elementHolder.DOMElement.classList.remove('k-state-selected');
+                                        }
+                                    });
+                                    return orderLine;
+                                });
+                                self.orderLines(data.dsResult.Data);
+                                options.success(data.dsResult);
+                                self.mixingSessions(data.MixingSessions.map(ms => {
+                                    ms.boxCount = ko.observable(ms.BoxCount);
+                                    ms.fetchBoxLabels = () => {
+                                        self.fetchBoxLabels(ms.MixingSessionID);
                                     }
-                                }, ms);
+                                    ms.boxCountSavedSuccessfully = ko.observable(false);
+                                    ms = Object.assign({
+                                        boxCountParams: {
+                                            inputType: 'number',
+                                            minValue: 1,
+                                            maxValue: 99,
+                                            step: 1,
+                                            large: false,
+                                            observable: ms.boxCount,
+                                            busy: ko.observable(false),
+                                            enable: ko.observable(true),
+                                            disable: ko.observable(false),
+                                            clearable: ko.observable(false),
+                                            clearFunction: () => {
+                                                self.boxCount(undefined);
+                                            },
+                                            revertable: ko.observable(false),
+                                            useNativeValidation: false,
+                                            insertValidationMessages: false,
+                                            decorateInputElement: true,
+                                            increment: () => {
+                                                if (ms.boxCount() < 99)
+                                                    ms.boxCount((+ms.boxCount()) + 1);
+                                            },
+                                            decrement: () => {
+                                                if (ms.boxCount() > 1)
+                                                    ms.boxCount((+ms.boxCount()) - 1);
+                                            },
+                                            enterKey: () => {
 
-                                ms.savedTimer = null;
-
-                                ms.saveBoxCount = () => {
-                                    ms.boxCountParams.busy(true);
-                                    fetch('/api/PaintMixingAPI/SaveBoxCount', {
-                                        method: 'POST',
-                                        headers: window.fetchHeaders,
-                                        cache: 'no-store',
-                                        credentials: 'same-origin',
-                                        body: JSON.stringify({
-                                            mixingSessionId: ms.MixingSessionID,
-                                            boxCount: ms.boxCount()
-                                        })
-                                    })
-                                        .then(window.handleFetchResponse)
-                                        .then(response => {
-                                            ms.boxCountParams.busy(false);
-                                            //console.log('SaveBoxCount returned', response);
-                                            if (response.ErrorMessage) {
-                                                window.showError(response.ErrorMessage);
-                                            } else {
-                                                if (ms.savedTimer)
-                                                    window.clearTimeout(ms.savedTimer);
-                                                ms.boxCountSavedSuccessfully(true);
-                                                document.querySelector(`#mixing-session-${ms.MixingSessionID}-collapse-btn`).click();
-                                                ms.savedTimer = window.setTimeout(() => {
-                                                    ms.boxCountSavedSuccessfully(false);
-                                                    self.orderLinesGrid.widget().dataSource.read();
-                                                }, 500);
                                             }
-                                        })
-                                        .catch(err => {
-                                            ms.boxCountParams.busy(false);
-                                            window.catchFetchError(err);
-                                        })
-                                }
+                                        }
+                                    }, ms);
 
-                                return ms;
-                            }));
-                            data.OrderID = self.selectedOrderId();
-                            self.orderLinesResponse(Object.assign(self.dataItem(), data));
+                                    ms.savedTimer = null;
+
+                                    ms.saveBoxCount = () => {
+                                        ms.boxCountParams.busy(true);
+                                        fetch('/api/PaintMixingAPI/SaveBoxCount', {
+                                            method: 'POST',
+                                            headers: window.fetchHeaders,
+                                            cache: 'no-store',
+                                            credentials: 'same-origin',
+                                            body: JSON.stringify({
+                                                mixingSessionId: ms.MixingSessionID,
+                                                boxCount: ms.boxCount()
+                                            })
+                                        })
+                                            .then(window.handleFetchResponse)
+                                            .then(response => {
+                                                ms.boxCountParams.busy(false);
+                                                //console.log('SaveBoxCount returned', response);
+                                                if (response.ErrorMessage) {
+                                                    window.showError(response.ErrorMessage);
+                                                } else {
+                                                    if (ms.savedTimer)
+                                                        window.clearTimeout(ms.savedTimer);
+                                                    ms.boxCountSavedSuccessfully(true);
+                                                    document.querySelector(`#mixing-session-${ms.MixingSessionID}-collapse-btn`).click();
+                                                    ms.savedTimer = window.setTimeout(() => {
+                                                        ms.boxCountSavedSuccessfully(false);
+                                                        self.orderLinesGrid.widget().dataSource.read();
+                                                    }, 500);
+                                                }
+                                            })
+                                            .catch(err => {
+                                                ms.boxCountParams.busy(false);
+                                                window.catchFetchError(err);
+                                            })
+                                    }
+
+                                    return ms;
+                                }));
+                                data.OrderID = self.selectedOrderId();
+                                self.orderLinesResponse(Object.assign(self.dataItem(), data));
+                            } else {
+                                options.success({});
+                                console.error('FetchOrderLinesGrid returned a NULL dsResult');
+                                window.showError();
+                            }
                             //console.log('FetchOrderLinesGrid returned', data);
                         })
                         .catch(err => window.catchFetchError(err));
@@ -794,12 +824,18 @@
                     })
                         .then(resp => resp.json())
                         .then(data => {
-                            data.dsResult.Data.map(d => {
-                                d.busy = ko.observable(false);
-                            })
-                            options.success(data.dsResult);
-                            self.ordersToInvoiceCount(data.dsResult.Total);
-                            self.ordersToInvoiceNotice(data.Notices.Notification);
+                            if (data.dsResult) {
+                                data.dsResult.Data.map(d => {
+                                    d.busy = ko.observable(false);
+                                })
+                                options.success(data.dsResult);
+                                self.ordersToInvoiceCount(data.dsResult.Total);
+                                self.ordersToInvoiceNotice(data.Notices.Notification);
+                            } else {
+                                options.success({});
+                                console.error('FetchOrdersToInvoice returned a NULL dsResult');
+                                window.showError();
+                            }
                             //console.log('FetchOrdersToInvoice returned', data);
                         })
                         .catch(err => window.catchFetchError(err));
@@ -907,13 +943,17 @@
                     })
                         .then(resp => resp.json())
                         .then(data => {
-                            data.dsResult.Data.map(d => {
-                                d.busy = ko.observable(false);
-                            })
-                            options.success(data.dsResult);
-                            self.ordersToInvoiceExceptionCount(data.dsResult.Total);
-                            self.ordersToInvoiceExceptionNotice(data.Notices.Notification);
-                            //console.log('FetchOrdersToInvoiceExceptions returned', data);
+                            console.log('FetchOrdersToInvoiceExceptions returned', data);
+                            if (data.dsResult) {
+                                data.dsResult.Data.map(d => {
+                                    d.busy = ko.observable(false);
+                                })
+                                options.success(data.dsResult);
+                                self.ordersToInvoiceExceptionCount(data.dsResult.Total);
+                                self.ordersToInvoiceExceptionNotice(data.Notices.Notification);
+                            } else {
+                                options.success({});
+                            }
                         })
                         .catch(err => window.catchFetchError(err));
                 }
@@ -1140,126 +1180,132 @@
                         .then(resp => resp.json())
                         .then(data => {
                             //console.log('FetchTransfers returned', data);
-                            if (data.Notices.ErrorMessage !== null) {
-                                window.showError(data.Notices.ErrorMessage);
+                            if (data.dsResult) {
+                                if (data.Notices.ErrorMessage !== null) {
+                                    window.showError(data.Notices.ErrorMessage);
+                                } else {
+                                    data.dsResult.Data = data.dsResult.Data.map(o => {
+                                        let object = Object.assign(o, {
+                                            elementHolder: ko.observable(),
+                                            date: moment(o.Date).format('DD/MM/YYYY'),
+                                            checkboxParams: {
+                                                checkboxId: `transfer-order-${o.OrderID}}-checkbox`,
+                                                observable: ko.observable(false),
+                                                originalValue: false,
+                                                useNativeValidation: false,
+                                                disable: ko.observable(false),
+                                                enable: ko.observable(true),
+                                                busy: ko.observable(false)
+                                            }
+                                        });
+                                        object.checkboxParams.observable.subscribe(nv => {
+                                            //console.log('order checkbox', nv);
+                                            if (nv) {
+                                                if (object.elementHolder.DOMElement)
+                                                    object.elementHolder.DOMElement.classList.add('k-state-selected');
+                                                if (self.selectedTransferMixingSessionIds().indexOf(object.MixingSessionID) == -1)
+                                                    self.selectedTransferMixingSessionIds().push(object.MixingSessionID);
+                                            } else {
+                                                if (object.elementHolder.DOMElement)
+                                                    object.elementHolder.DOMElement.classList.remove('k-state-selected');
+                                                self.selectedTransferMixingSessionIds.remove(object.MixingSessionID);
+                                            }
+                                        });
+                                        return object;
+                                    });
+
+                                    let counter = 0;
+
+                                    self.transferDates(data.Dates.map(d => {
+                                        let object = {
+                                            date: moment(d).format('DD/MM/YYYY'),
+                                            elementHolder: ko.observable(),
+                                            checkboxParams: {
+                                                checkboxId: `transfer-date-${++counter}-checkbox`,
+                                                observable: ko.observable(true),
+                                                originalValue: false,
+                                                useNativeValidation: false,
+                                                disable: ko.observable(false),
+                                                enable: ko.observable(true),
+                                                busy: ko.observable(false)
+                                            }
+                                        }
+                                        object.checkboxParams.observable.subscribe(nv => {
+                                            //console.log('transferDate checkbox', nv, object);
+                                            if (nv) {
+                                                let filteredItems = self.getTransferGridFilteredItems();
+
+                                                let currentSelection = self.selectedTransferMixingSessionIds();
+
+                                                filteredItems = filteredItems.flatMap(o => o.date == object.date ? [o] : []);
+
+                                                let filteredItemsMixingSessionIds = filteredItems.map(o => o.MixingSessionID);
+
+                                                let distinct = [...new Set(currentSelection.concat(filteredItemsMixingSessionIds))];
+
+                                                self.selectedTransferMixingSessionIds(distinct);
+
+                                                filteredItems.forEach(item => {
+                                                    item.checkboxParams.observable(true);
+                                                    if (item.checkboxParams.observable.hasOwnProperty('mdcCheckbox'))
+                                                        item.checkboxParams.observable.mdcCheckbox.checked = true;
+                                                });
+
+                                                let selectedRows = self.transfersGrid.widget().select();
+
+                                                filteredItemsMixingSessionIds.forEach(fimsi => {
+                                                    let row = self.transfersGrid.widget().dataSource.get(fimsi);
+                                                    selectedRows.push(row);
+                                                });
+
+                                                self.transfersGrid.widget().select(selectedRows);
+
+                                            } else {
+
+                                                let filteredItems = self.getTransferGridFilteredItems();
+
+                                                let currentSelection = self.selectedTransferMixingSessionIds();
+
+                                                filteredItems = filteredItems.flatMap(o => o.date == object.date ? [o] : []);
+
+                                                let filteredItemsMixingSessionIds = filteredItems.map(o => o.MixingSessionID);
+
+                                                let distinct = currentSelection.filter(cs => filteredItemsMixingSessionIds.indexOf(cs) == -1);
+
+                                                self.selectedTransferMixingSessionIds(distinct);
+
+                                                filteredItems.forEach(item => {
+                                                    item.checkboxParams.observable(false);
+                                                    if (item.checkboxParams.observable.hasOwnProperty('mdcCheckbox'))
+                                                        item.checkboxParams.observable.mdcCheckbox.checked = false;
+                                                });
+
+                                                let selectedRows = self.transfersGrid.widget().select();
+
+                                                filteredItemsMixingSessionIds.forEach(fimsi => {
+                                                    let row = self.transfersGrid.widget().dataSource.get(fimsi);
+                                                    selectedRows = selectedRows.filter(r => r != row);
+                                                });
+
+                                                self.transfersGrid.widget().select(selectedRows);
+
+                                                //self.clearSelectedTransferMixingSessionIds();
+
+                                            }
+                                        });
+                                        return object;
+                                    }));
+
+                                    self.allTransferOrders(data.AllResults);
+
+                                    self.transferNotice(data.Notices.Notification)
+
+                                    options.success(data.dsResult);
+                                }
                             } else {
-                                data.dsResult.Data = data.dsResult.Data.map(o => {
-                                    let object = Object.assign(o, {
-                                        elementHolder: ko.observable(),
-                                        date: moment(o.Date).format('DD/MM/YYYY'),
-                                        checkboxParams: {
-                                            checkboxId: `transfer-order-${o.OrderID}}-checkbox`,
-                                            observable: ko.observable(false),
-                                            originalValue: false,
-                                            useNativeValidation: false,
-                                            disable: ko.observable(false),
-                                            enable: ko.observable(true),
-                                            busy: ko.observable(false)
-                                        }
-                                    });
-                                    object.checkboxParams.observable.subscribe(nv => {
-                                        //console.log('order checkbox', nv);
-                                        if (nv) {
-                                            if (object.elementHolder.DOMElement)
-                                                object.elementHolder.DOMElement.classList.add('k-state-selected');
-                                            if (self.selectedTransferMixingSessionIds().indexOf(object.MixingSessionID) == -1)
-                                                self.selectedTransferMixingSessionIds().push(object.MixingSessionID);
-                                        } else {
-                                            if (object.elementHolder.DOMElement)
-                                                object.elementHolder.DOMElement.classList.remove('k-state-selected');
-                                            self.selectedTransferMixingSessionIds.remove(object.MixingSessionID);
-                                        }
-                                    });
-                                    return object;
-                                });
-
-                                let counter = 0;
-
-                                self.transferDates(data.Dates.map(d => {
-                                    let object = {
-                                        date: moment(d).format('DD/MM/YYYY'),
-                                        elementHolder: ko.observable(),
-                                        checkboxParams: {
-                                            checkboxId: `transfer-date-${++counter}-checkbox`,
-                                            observable: ko.observable(true),
-                                            originalValue: false,
-                                            useNativeValidation: false,
-                                            disable: ko.observable(false),
-                                            enable: ko.observable(true),
-                                            busy: ko.observable(false)
-                                        }
-                                    }
-                                    object.checkboxParams.observable.subscribe(nv => {
-                                        //console.log('transferDate checkbox', nv, object);
-                                        if (nv) {
-                                            let filteredItems = self.getTransferGridFilteredItems();
-
-                                            let currentSelection = self.selectedTransferMixingSessionIds();
-
-                                            filteredItems = filteredItems.flatMap(o => o.date == object.date ? [o] : []);
-
-                                            let filteredItemsMixingSessionIds = filteredItems.map(o => o.MixingSessionID);
-
-                                            let distinct = [...new Set(currentSelection.concat(filteredItemsMixingSessionIds))];
-
-                                            self.selectedTransferMixingSessionIds(distinct);
-
-                                            filteredItems.forEach(item => {
-                                                item.checkboxParams.observable(true);
-                                                if (item.checkboxParams.observable.hasOwnProperty('mdcCheckbox'))
-                                                    item.checkboxParams.observable.mdcCheckbox.checked = true;
-                                            });
-
-                                            let selectedRows = self.transfersGrid.widget().select();
-
-                                            filteredItemsMixingSessionIds.forEach(fimsi => {
-                                                let row = self.transfersGrid.widget().dataSource.get(fimsi);
-                                                selectedRows.push(row);
-                                            });
-
-                                            self.transfersGrid.widget().select(selectedRows);
-
-                                        } else {
-
-                                            let filteredItems = self.getTransferGridFilteredItems();
-
-                                            let currentSelection = self.selectedTransferMixingSessionIds();
-
-                                            filteredItems = filteredItems.flatMap(o => o.date == object.date ? [o] : []);
-
-                                            let filteredItemsMixingSessionIds = filteredItems.map(o => o.MixingSessionID);
-
-                                            let distinct = currentSelection.filter(cs => filteredItemsMixingSessionIds.indexOf(cs) == -1);
-
-                                            self.selectedTransferMixingSessionIds(distinct);
-
-                                            filteredItems.forEach(item => {
-                                                item.checkboxParams.observable(false);
-                                                if (item.checkboxParams.observable.hasOwnProperty('mdcCheckbox'))
-                                                    item.checkboxParams.observable.mdcCheckbox.checked = false;
-                                            });
-
-                                            let selectedRows = self.transfersGrid.widget().select();
-
-                                            filteredItemsMixingSessionIds.forEach(fimsi => {
-                                                let row = self.transfersGrid.widget().dataSource.get(fimsi);
-                                                selectedRows = selectedRows.filter(r => r != row);
-                                            });
-
-                                            self.transfersGrid.widget().select(selectedRows);
-
-                                            //self.clearSelectedTransferMixingSessionIds();
-
-                                        }
-                                    });
-                                    return object;
-                                }));
-
-                                self.allTransferOrders(data.AllResults);
-
-                                self.transferNotice(data.Notices.Notification)
-
-                                options.success(data.dsResult);
+                                console.error('FetchTranfers returned a NULL dsResult')
+                                options.success({});
+                                window.showError();
                             }
                         })
                         .catch(err => window.catchFetchError(err));
@@ -1454,126 +1500,132 @@
                         .then(resp => resp.json())
                         .then(data => {
                             //console.log('FetchHistoricalTranfers returned', data);
-                            if (data.Notices.ErrorMessage !== null) {
-                                window.showError(data.Notices.ErrorMessage);
+                            if (data.dsResult) {
+                                if (data.Notices.ErrorMessage !== null) {
+                                    window.showError(data.Notices.ErrorMessage);
+                                } else {
+                                    data.dsResult.Data = data.dsResult.Data.map(o => {
+                                        let object = Object.assign(o, {
+                                            elementHolder: ko.observable(),
+                                            date: moment(o.Date).format('DD/MM/YYYY'),
+                                            checkboxParams: {
+                                                checkboxId: `transfer-order-${o.OrderID}}-checkbox`,
+                                                observable: ko.observable(false),
+                                                originalValue: false,
+                                                useNativeValidation: false,
+                                                disable: ko.observable(false),
+                                                enable: ko.observable(true),
+                                                busy: ko.observable(false)
+                                            }
+                                        });
+                                        object.checkboxParams.observable.subscribe(nv => {
+                                            //console.log('order checkbox', nv);
+                                            if (nv) {
+                                                if (object.elementHolder.DOMElement)
+                                                    object.elementHolder.DOMElement.classList.add('k-state-selected');
+                                                if (self.selectedHistoricalTransferMixingSessionIds().indexOf(object.MixingSessionID) == -1)
+                                                    self.selectedHistoricalTransferMixingSessionIds().push(object.MixingSessionID);
+                                            } else {
+                                                if (object.elementHolder.DOMElement)
+                                                    object.elementHolder.DOMElement.classList.remove('k-state-selected');
+                                                self.selectedHistoricalTransferMixingSessionIds.remove(object.MixingSessionID);
+                                            }
+                                        });
+                                        return object;
+                                    });
+
+                                    let counter = 0;
+
+                                    self.transferHistoricalDates(data.Dates.map(d => {
+                                        let object = {
+                                            date: moment(d).format('DD/MM/YYYY'),
+                                            elementHolder: ko.observable(),
+                                            checkboxParams: {
+                                                checkboxId: `transfer-date-${++counter}}-checkbox`,
+                                                observable: ko.observable(false),
+                                                originalValue: false,
+                                                useNativeValidation: false,
+                                                disable: ko.observable(false),
+                                                enable: ko.observable(true),
+                                                busy: ko.observable(false)
+                                            }
+                                        }
+                                        object.checkboxParams.observable.subscribe(nv => {
+                                            //console.log('transferHistoricalDate checkbox', nv);
+                                            if (nv) {
+                                                let filteredItems = self.getHistoricalTransferGridFilteredItems();
+
+                                                let currentSelection = self.selectedHistoricalTransferMixingSessionIds();
+
+                                                filteredItems = filteredItems.flatMap(o => o.date == object.date ? [o] : []);
+
+                                                let filteredItemsMixingSessionIds = filteredItems.map(o => o.MixingSessionID);
+
+                                                let distinct = [...new Set(currentSelection.concat(filteredItemsMixingSessionIds))];
+
+                                                self.selectedHistoricalTransferMixingSessionIds(distinct);
+
+                                                filteredItems.forEach(item => {
+                                                    item.checkboxParams.observable(true);
+                                                    if (item.checkboxParams.observable.hasOwnProperty('mdcCheckbox'))
+                                                        item.checkboxParams.observable.mdcCheckbox.checked = true;
+                                                });
+
+                                                let selectedRows = self.transfersHistoryGrid.widget().select();
+
+                                                filteredItemsMixingSessionIds.forEach(fimsi => {
+                                                    let row = self.transfersHistoryGrid.widget().dataSource.get(fimsi);
+                                                    selectedRows.push(row);
+                                                });
+
+                                                self.transfersHistoryGrid.widget().select(selectedRows);
+
+                                            } else {
+
+                                                let filteredItems = self.getHistoricalTransferGridFilteredItems();
+
+                                                let currentSelection = self.selectedHistoricalTransferMixingSessionIds();
+
+                                                filteredItems = filteredItems.flatMap(o => o.date == object.date ? [o] : []);
+
+                                                let filteredItemsMixingSessionIds = filteredItems.map(o => o.MixingSessionID);
+
+                                                let distinct = currentSelection.filter(cs => filteredItemsMixingSessionIds.indexOf(cs) == -1);
+
+                                                self.selectedHistoricalTransferMixingSessionIds(distinct);
+
+                                                filteredItems.forEach(item => {
+                                                    item.checkboxParams.observable(false);
+                                                    if (item.checkboxParams.observable.hasOwnProperty('mdcCheckbox'))
+                                                        item.checkboxParams.observable.mdcCheckbox.checked = false;
+                                                });
+
+                                                let selectedRows = self.transfersHistoryGrid.widget().select();
+
+                                                filteredItemsMixingSessionIds.forEach(fimsi => {
+                                                    let row = self.transfersHistoryGrid.widget().dataSource.get(fimsi);
+                                                    selectedRows = selectedRows.filter(r => r != row);
+                                                });
+
+                                                self.transfersHistoryGrid.widget().select(selectedRows);
+
+                                                //self.clearSelectedTransferMixingSessionIds();
+
+                                            }
+                                        });
+                                        return object;
+                                    }));
+
+                                    self.allHistoricalTransferOrders(data.AllResults);
+
+                                    self.transferNotice(data.Notices.Notification)
+
+                                    options.success(data.dsResult);
+                                }
                             } else {
-                                data.dsResult.Data = data.dsResult.Data.map(o => {
-                                    let object = Object.assign(o, {
-                                        elementHolder: ko.observable(),
-                                        date: moment(o.Date).format('DD/MM/YYYY'),
-                                        checkboxParams: {
-                                            checkboxId: `transfer-order-${o.OrderID}}-checkbox`,
-                                            observable: ko.observable(false),
-                                            originalValue: false,
-                                            useNativeValidation: false,
-                                            disable: ko.observable(false),
-                                            enable: ko.observable(true),
-                                            busy: ko.observable(false)
-                                        }
-                                    });
-                                    object.checkboxParams.observable.subscribe(nv => {
-                                        //console.log('order checkbox', nv);
-                                        if (nv) {
-                                            if (object.elementHolder.DOMElement)
-                                                object.elementHolder.DOMElement.classList.add('k-state-selected');
-                                            if (self.selectedHistoricalTransferMixingSessionIds().indexOf(object.MixingSessionID) == -1)
-                                                self.selectedHistoricalTransferMixingSessionIds().push(object.MixingSessionID);
-                                        } else {
-                                            if (object.elementHolder.DOMElement)
-                                                object.elementHolder.DOMElement.classList.remove('k-state-selected');
-                                            self.selectedHistoricalTransferMixingSessionIds.remove(object.MixingSessionID);
-                                        }
-                                    });
-                                    return object;
-                                });
-
-                                let counter = 0;
-
-                                self.transferHistoricalDates(data.Dates.map(d => {
-                                    let object = {
-                                        date: moment(d).format('DD/MM/YYYY'),
-                                        elementHolder: ko.observable(),
-                                        checkboxParams: {
-                                            checkboxId: `transfer-date-${++counter}}-checkbox`,
-                                            observable: ko.observable(false),
-                                            originalValue: false,
-                                            useNativeValidation: false,
-                                            disable: ko.observable(false),
-                                            enable: ko.observable(true),
-                                            busy: ko.observable(false)
-                                        }
-                                    }
-                                    object.checkboxParams.observable.subscribe(nv => {
-                                        //console.log('transferHistoricalDate checkbox', nv);
-                                        if (nv) {
-                                            let filteredItems = self.getHistoricalTransferGridFilteredItems();
-
-                                            let currentSelection = self.selectedHistoricalTransferMixingSessionIds();
-
-                                            filteredItems = filteredItems.flatMap(o => o.date == object.date ? [o] : []);
-
-                                            let filteredItemsMixingSessionIds = filteredItems.map(o => o.MixingSessionID);
-
-                                            let distinct = [...new Set(currentSelection.concat(filteredItemsMixingSessionIds))];
-
-                                            self.selectedHistoricalTransferMixingSessionIds(distinct);
-
-                                            filteredItems.forEach(item => {
-                                                item.checkboxParams.observable(true);
-                                                if (item.checkboxParams.observable.hasOwnProperty('mdcCheckbox'))
-                                                    item.checkboxParams.observable.mdcCheckbox.checked = true;
-                                            });
-
-                                            let selectedRows = self.transfersHistoryGrid.widget().select();
-
-                                            filteredItemsMixingSessionIds.forEach(fimsi => {
-                                                let row = self.transfersHistoryGrid.widget().dataSource.get(fimsi);
-                                                selectedRows.push(row);
-                                            });
-
-                                            self.transfersHistoryGrid.widget().select(selectedRows);
-
-                                        } else {
-
-                                            let filteredItems = self.getHistoricalTransferGridFilteredItems();
-
-                                            let currentSelection = self.selectedHistoricalTransferMixingSessionIds();
-
-                                            filteredItems = filteredItems.flatMap(o => o.date == object.date ? [o] : []);
-
-                                            let filteredItemsMixingSessionIds = filteredItems.map(o => o.MixingSessionID);
-
-                                            let distinct = currentSelection.filter(cs => filteredItemsMixingSessionIds.indexOf(cs) == -1);
-
-                                            self.selectedHistoricalTransferMixingSessionIds(distinct);
-
-                                            filteredItems.forEach(item => {
-                                                item.checkboxParams.observable(false);
-                                                if (item.checkboxParams.observable.hasOwnProperty('mdcCheckbox'))
-                                                    item.checkboxParams.observable.mdcCheckbox.checked = false;
-                                            });
-
-                                            let selectedRows = self.transfersHistoryGrid.widget().select();
-
-                                            filteredItemsMixingSessionIds.forEach(fimsi => {
-                                                let row = self.transfersHistoryGrid.widget().dataSource.get(fimsi);
-                                                selectedRows = selectedRows.filter(r => r != row);
-                                            });
-
-                                            self.transfersHistoryGrid.widget().select(selectedRows);
-
-                                            //self.clearSelectedTransferMixingSessionIds();
-
-                                        }
-                                    });
-                                    return object;
-                                }));
-
-                                self.allHistoricalTransferOrders(data.AllResults);
-
-                                self.transferNotice(data.Notices.Notification)
-
-                                options.success(data.dsResult);
+                                options.success({});
+                                console.error('FetchTranfers returned a NULL dsResult');
+                                window.showError();
                             }
                         })
                         .catch(err => window.catchFetchError(err));
@@ -1886,6 +1938,45 @@
         insertValidationMessages: false,
         decorateInputElement: true
     };
+
+    self.orderHistorySearch = ko.observable().extend({
+        rateLimit: {
+            timeout: 300,
+            method: 'notifyWhenChangesStop'
+        }
+    });
+
+    self.originalOrderHistorySearch = ko.observable();
+
+    self.orderHistorySearchParams = {
+        label: 'Search by Order Number, Customer Order Reference or Trade Account Code',
+        observable: self.orderHistorySearch,
+        busy: self.busy,
+        permitRevert: true,
+        originalValue: ko.observable(),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        revertable: true,
+        revertFunction: () => {
+            self.orderHistorySearch(self.originalOrderHistorySearch())
+        },
+        clearable: true,
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            $(self.observable.DOMElement).focus();
+        },
+        charsRemainingOptions: {
+            maxLength: 50
+        },
+        enterFunction: (e) => {
+            console.log('enter');
+        },
+        useNativeValidation: false, // this feeds through to mdc objects and affects them
+        decorateInputElement: true,
+        insertValidationMessages: false
+    }
+
     //#endregion
 
 
@@ -1993,7 +2084,11 @@
 
         self.orderLinesGrid.widget().one('dataBound', (event) => {
             self.showOrderLinesModal();
-            self.busy(false);
+            if (self.holdBusy()) {
+                self.holdBusy(self.holdBusy() - 1);
+            } else {
+                self.busy(false);
+            }
         });
 
         self.orderLinesGrid.widget().dataSource.read();
@@ -2085,10 +2180,11 @@
                         //window.showInfo('<span class="fs-4 text-sucess">Success</span>', response.Notification);
                         self.labelNotice(response.Notification);
                         self.orderLinesResponse().MixingSessionID = response.MixingSessionID;
-                        self.fetchOrderLines(self.orderLinesResponse(), 'M');
-                        if (self.orderLinesResponse().GenerateBoxLabels) {
+                        if (self.orderLinesResponse().GenerateBoxLabel) {
+                            self.holdBusy(2);
                             self.fetchBoxLabels(self.orderLinesResponse().MixingSessionID);
                         }
+                        self.fetchOrderLines(self.orderLinesResponse(), 'M');
                         self.transfersGrid.widget().dataSource.read();
                     }
                 })
@@ -2134,7 +2230,7 @@
         })
         .then(window.handleFetchResponse)
         .then(response => {
-            self.busy(false);
+            self.holdBusy(self.holdBusy() - 1);
             //console.log('FetchBoxLabels returned', response);
             if (response.Notices.ErrorMessage) {
                 window.showError(response.Notices.ErrorMessage);

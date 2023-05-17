@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNet.Identity;
 using Portal.Areas.Products.ViewModels;
-using Portal.MertexDAL;
 using SharedEFClasses;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.General;

@@ -937,7 +937,8 @@
                 dataType: 'json',
                 cache: false,
                 data: {
-                    code: result.Code
+                    productCode: result.Code,
+                    tradeAccountId: self.tradeAccountSelector().selected().TradeAccountID
                 },
                 success: function (data) {
                     self.productStockBusy(false);

@@ -1,6 +1,6 @@
-﻿using MertexerV2SQL.Models.Misc;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SharedEFClasses.Models.General;
+using SharedEFClasses.Models.Mertexer;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.TradeAccounts;
 using SharedEFClasses.Utilities;
@@ -2635,8 +2635,8 @@ namespace SharedEFClasses.Models.Orders
     public class OrderTrackingSearchResult
     {
         public TradeAccount TradeAccount { get; set; }
-        public List<MertexerV2SQL.Models.Tracking.DeliveryNoteHeadRecord> DeliveryNotes { get; set; }
-        public List<MertexerV2SQL.Models.Tracking.OrderLineRecord> OrderLines { get; set; }
+        public List<DeliveryNoteHeadRecord> DeliveryNotes { get; set; }
+        public List<OrderLineRecord> OrderLines { get; set; }
         public string ResultStatus { get; set; }
         public string HaulierName { get; set; }
         public string HaulierCode { get; set; }
@@ -2644,12 +2644,12 @@ namespace SharedEFClasses.Models.Orders
         public string DeliveryAddress { get; set; }
         public string DeliveryName { get; set; }
         public string CustomerName { get; set; }
-        public List<MertexerV2SQL.Models.Tracking.MertexReportDataOrderSearchResult> MertexReportDataOrderSearchResults { get; set; }
+        public List<MertexReportDataOrderSearchResult> MertexReportDataOrderSearchResults { get; set; }
         public string CustomerReference { get; set; }
         public string CustomerOrderReference { get; set; }
         public string OrderNumber { get; set; }
-        public List<MertexerV2SQL.Models.Tracking.ParcelContent> undespatched { get; set; }
-        public List<MertexerV2SQL.Models.Tracking.OrderParcelDetail> despatched { get; set; }
+        public List<ParcelContent> undespatched { get; set; }
+        public List<OrderParcelDetail> despatched { get; set; }
         public string body { get; set; }
         public string subject { get; set; }
         public string replyTo { get; set; }
@@ -2694,7 +2694,7 @@ namespace SharedEFClasses.Models.Orders
             TradeAccount = null;
         }
 
-        public OrderTrackingSearchResult(MertexerV2SQL.Models.Tracking.OrderTrackingSearchResultWrapper i)
+        public OrderTrackingSearchResult(OrderTrackingSearchResultWrapper i)
         {
             TradeAccount = null;
 

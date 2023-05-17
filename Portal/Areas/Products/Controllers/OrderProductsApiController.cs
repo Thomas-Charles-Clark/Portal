@@ -1,7 +1,6 @@
 ﻿using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using Portal.Models;
-using Portal.MertexDAL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,12 +25,12 @@ namespace Portal.Areas.Products.Controllers
     [Authorize]
     public class OrderProductsController : ApiController
     {
-        private PortalDbContext portalDb { get; set; }
+        private PortalDbContext PortalDb { get; set; }
         private readonly ApplicationUserManager userManager;
 
         public OrderProductsController(PortalDbContext portalDbContext, ApplicationUserManager userManager)
         {
-            this.portalDb = portalDbContext;
+            this.PortalDb = portalDbContext;
             this.userManager = userManager;
         }
 
@@ -54,7 +53,7 @@ namespace Portal.Areas.Products.Controllers
         [HttpGet]
         public IHttpActionResult GetSpecialPriceInfo([FromUri] PassLoadSPA objLoad)
         {
-            var result = portalDb.ContractAgreementCheck(objLoad);
+            var result = PortalDb.ContractAgreementCheck(objLoad);
 
             return Json(result);
         }
@@ -71,29 +70,31 @@ namespace Portal.Areas.Products.Controllers
         [HttpPost]
         public IHttpActionResult SaveBasketRetailParameters([FromBody]PassBasketRetailParameters objRetail)
         {
-            return Ok(portalDb.SaveBasketRetailParameters(objRetail));
+            return Ok(PortalDb.SaveBasketRetailParameters(objRetail));
         }
 
         [HttpPost]
-        public IHttpActionResult FetchRetailTills([FromBody]PassBasketID objBasketId)
+        public async Task<IHttpActionResult> FetchRetailTills([FromBody]PassBasketID objBasketId)
         {
             return Ok(new
             {
-                tills = MertexerV2SQL.MiscFunctions.MiscellaneousFunctions.FetchRetailTills().Distinct(),
-                basketGroupPaymentInfo = portalDb.FetchRetailTillPhase(objBasketId).results
+                tills = await PortalDb.FetchRetailTills(),
+                basketGroupPaymentInfo = PortalDb.FetchRetailTillPhase(objBasketId).results
             });
         }
 
         [HttpPost]
-        public IHttpActionResult fetchRetailTillSessions([FromBody]MertexerV2SQL.Models.Misc.PassRetailTillNumber objTill)
+        public async Task<IHttpActionResult> fetchRetailTillSessions([FromBody]PassRetailTillNumber objTill)
         {
-            return Ok(new { sessions = MertexerV2SQL.MiscFunctions.MiscellaneousFunctions.FetchRetailTillSessions(objTill) });
+            var preresults = await PortalDb.FetchRetailTillSessions();
+
+            return Ok(new { sessions = preresults.Where(ts => ts.TillNumber == objTill.RetailTillNumber) });
         }
 
         [HttpPost]
         public IHttpActionResult fetchBasketReceipt([FromBody]PassBasketID objBasketId)
         {
-            var receiptData = portalDb.Basket_FetchReceipt(objBasketId.BasketID);
+            var receiptData = PortalDb.Basket_FetchReceipt(objBasketId.BasketID);
 
             var stream = Utilities.Basket.BasketReceiptPDFWriter.GenerateReceipt(System.Web.Hosting.HostingEnvironment.MapPath("~"),
                 receiptData);
@@ -111,7 +112,7 @@ namespace Portal.Areas.Products.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> emailBasketReceipt([FromBody]PassBasketIDEmail objBasketEmail)
         {
-            var receiptData = portalDb.Basket_FetchReceipt(objBasketEmail.basketId);
+            var receiptData = PortalDb.Basket_FetchReceipt(objBasketEmail.basketId);
 
             var stream = Utilities.Basket.BasketReceiptPDFWriter.GenerateReceipt(System.Web.Hosting.HostingEnvironment.MapPath("~"),
                 receiptData);
@@ -206,7 +207,7 @@ namespace Portal.Areas.Products.Controllers
         DataSourceRequest request,
             [FromUri]PassTransactionSearch objSearch)
         {
-            var results = portalDb.FetchTransactions(objSearch);
+            var results = PortalDb.FetchTransactions(objSearch);
 
             return Ok(results.AsQueryable().ToDataSourceResult(request));
         }
@@ -214,25 +215,25 @@ namespace Portal.Areas.Products.Controllers
         [HttpPost]
         public IHttpActionResult TransactionFetchSingle([FromBody]PassTransactionSearch objSearch)
         {
-            return Ok(portalDb.FetchTransactions(objSearch).FirstOrDefault());
+            return Ok(PortalDb.FetchTransactions(objSearch).FirstOrDefault());
         }
 
         [HttpPost]
         public IHttpActionResult FetchTransactionView([FromBody]PassTransactionID objTransactionId)
         {
-            return Ok(portalDb.FetchTransactionView(objTransactionId));
+            return Ok(PortalDb.FetchTransactionView(objTransactionId));
         }
 
         [HttpPost]
         public IHttpActionResult FetchBasketView([FromBody]PassBasketID objBasketId)
         {
-            return Ok(portalDb.FetchBasketView(objBasketId));
+            return Ok(PortalDb.FetchBasketView(objBasketId));
         }
 
         [HttpPost]
         public IHttpActionResult DeleteTransaction([FromBody]PassTransactionID objTransactionId)
         {
-            return Ok(portalDb.DeleteTransaction(objTransactionId));
+            return Ok(PortalDb.DeleteTransaction(objTransactionId));
         }
 
         [HttpPost]

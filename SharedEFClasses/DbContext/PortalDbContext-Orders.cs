@@ -21,6 +21,9 @@ using System.Web;
 using SharedEFClasses.Models.TradeAccounts;
 using Dapper;
 using System.Threading.Tasks;
+using NLog.Internal;
+using PassAutocompleteTerm = SharedEFClasses.Models.TradeAccounts.PassAutocompleteTerm;
+using SharedEFClasses.Models.Mertexer;
 
 namespace SharedEFClasses.Models
 {
@@ -1711,7 +1714,7 @@ namespace SharedEFClasses.Models
 
                 result.MiscInvoiceAddress = ((IObjectContextAdapter)this)
                     .ObjectContext
-                    .Translate<MertexerV2SQL.Models.Misc.MiscellaneousInvoiceAddress>(reader).SingleOrDefault();
+                    .Translate<MiscellaneousInvoiceAddress>(reader).SingleOrDefault();
 
                 reader.NextResult();
 
@@ -1731,6 +1734,259 @@ namespace SharedEFClasses.Models
 
             return result;
         }
+
+        public TradeAccountAddressResponse FetchTradeAccountAddresses(string tradeAccountCode)
+        {
+            var result = new TradeAccountAddressResponse();
+
+            var parameters = new List<SqlParameter>()
+            {
+                new SqlParameter("@TradeAccountCode",  tradeAccountCode)
+            };
+
+            var cmd = this.Database.Connection.CreateCommand();
+
+            cmd.CommandText = "[portal].[TradeAccount_Address_Select]";
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddRange(parameters.ToArray());
+
+            try
+            {
+                this.Database.Connection.Open();
+
+                var reader = cmd.ExecuteReader();
+
+                result.InvoiceAddress = ((IObjectContextAdapter)this)
+                    .ObjectContext
+                    .Translate<InvoiceAddress>(reader).SingleOrDefault();
+
+                reader.NextResult();
+
+                result.DefaultDeliveryAddress = ((IObjectContextAdapter)this)
+                    .ObjectContext
+                    .Translate<DeliveryAddress>(reader).SingleOrDefault();
+
+                reader.NextResult();
+
+                result.DeliveryAddresses = ((IObjectContextAdapter)this)
+                    .ObjectContext
+                    .Translate<DeliveryAddress>(reader).ToList();
+            }
+            catch (SqlException e)
+            {
+                PortalFramework.LogErrorToDatabase(e);
+                throw e;
+            }
+            finally
+            {
+                this.Database.Connection.Close();
+            }
+
+            return result;
+        }
+
+        public IEnumerable<string> FetchTradeAccountEndCustomers(PassAutocompleteTerm objTerm)
+        {
+            var results = new List<string>();
+
+            var parameters = new List<SqlParameter>()
+            {
+                new SqlParameter("@TradeAccountCode",  objTerm.tradeAccountCode),
+                new SqlParameter("@SearchTerm",  objTerm.term ?? ""),
+            };
+
+            var cmd = this.Database.Connection.CreateCommand();
+
+            cmd.CommandText = "[portal].[TradeAccount_EndCustomer_Select]";
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddRange(parameters.ToArray());
+
+            try
+            {
+                this.Database.Connection.Open();
+
+                var reader = cmd.ExecuteReader();
+
+                results = ((IObjectContextAdapter)this)
+                    .ObjectContext
+                    .Translate<string>(reader).ToList();
+            }
+            catch (SqlException e)
+            {
+                PortalFramework.LogErrorToDatabase(e);
+                throw e;
+            }
+            finally
+            {
+                this.Database.Connection.Close();
+            }
+
+            return results;
+        }
+
+
+        public IEnumerable<DeliveryAddress> DeliveryAddressSearch(string tradeAccountCode, string searchTerm)
+        {
+            var result = new List<DeliveryAddress>();
+
+            var parameters = new List<SqlParameter>()
+            {
+                new SqlParameter("@TradeAccountCode",  tradeAccountCode), 
+                new SqlParameter("@SearchTerm",  searchTerm ?? "")
+            };
+
+            var cmd = this.Database.Connection.CreateCommand();
+
+            cmd.CommandText = "[portal].[TradeAccount_Address_Search]";
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddRange(parameters.ToArray());
+
+            try
+            {
+                this.Database.Connection.Open();
+
+                var reader = cmd.ExecuteReader();
+
+                while(reader.Read())
+                {
+                    result.Add(new DeliveryAddress(
+                        deliveryReference: reader.GetString(0),
+                        companyName: reader.IsDBNull(1) ? null : reader.GetString(1),
+                        addressLine1: reader.IsDBNull(2) ? null : reader.GetString(2),
+                        addressLine2: reader.IsDBNull(3) ? null : reader.GetString(3),
+                        town: reader.IsDBNull(4) ? null : reader.GetString(4),
+                        county: reader.IsDBNull(5) ? null : reader.GetString(5),
+                        postcode: reader.IsDBNull(6) ? null : reader.GetString(6),
+                        domesticOrTrade: reader.IsDBNull(7) ? null : reader.GetString(7),
+                        tradeAccountCode: reader.IsDBNull(8) ? null : reader.GetString(8),
+                        phoneNumber: reader.IsDBNull(9) ? null : reader.GetString(9),
+                        countryCode: reader.IsDBNull(10) ? null : reader.GetString(10),
+                        email: reader.IsDBNull(11) ? null : reader.GetString(11),
+                        haulierCode: reader.IsDBNull(12) ? null : reader.GetString(12),
+                        carriageCode: reader.IsDBNull(13) ? null : reader.GetString(13),
+                        usTaxExemptionCertificateReference: reader.IsDBNull(14) ? null : reader.GetString(14),
+                        usStateCode: reader.IsDBNull(15) ? null : reader.GetString(15),
+                        usCountyCode: reader.IsDBNull(16) ? null : reader.GetString(16),
+                        countryId: reader.IsDBNull(17) ? (short?)null : reader.GetInt16(17)));
+                }
+            }
+            catch (SqlException e)
+            {
+                PortalFramework.LogErrorToDatabase(e);
+                throw e;
+            }
+            finally
+            {
+                this.Database.Connection.Close();
+            }
+
+            return result;
+        }
+
+        public IEnumerable<string> DeliveryAddressExists(
+            string tradeAccountCode,
+            DeliveryAddress address)
+        {
+            var results = new List<string>();
+
+            var parameters = new List<SqlParameter>()
+            {
+                new SqlParameter("@TradeAccountCode", tradeAccountCode),
+                new SqlParameter("@CompanyName", address.CompanyName),
+                new SqlParameter("@ContactName", address.ContactName),
+                new SqlParameter("@AddressLine1", address.AddressLine1),
+                new SqlParameter("@AddressLine2", address.AddressLine2),
+                new SqlParameter("@Town", address.Town),
+                new SqlParameter("@County", address.County),
+                new SqlParameter("@Postcode", address.Postcode),
+                new SqlParameter("@CountryCode", address.CountryCode),
+            };
+
+            var cmd = this.Database.Connection.CreateCommand();
+
+            cmd.CommandText = "[portal].[TradeAccount_DeliveryAddress_Exists]";
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddRange(parameters.ToArray());
+
+            try
+            {
+                this.Database.Connection.Open();
+
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    results.Add(reader.GetString(0));
+                }
+            }
+            catch (SqlException e)
+            {
+                PortalFramework.LogErrorToDatabase(e);
+                throw e;
+            }
+            finally
+            {
+                this.Database.Connection.Close();
+            }
+
+            return results;
+        }
+
+        public string DeliveryAddressUpsert(
+            string tradeAccountCode,
+            DeliveryAddress address)
+        {
+            var result = (string)null;
+
+            var parameters = new List<SqlParameter>()
+            {
+                new SqlParameter("@TradeAccountCode", tradeAccountCode),
+                new SqlParameter("@DeliveryReference", address.DeliveryReference),
+                new SqlParameter("@CompanyName", address.CompanyName),
+                new SqlParameter("@ContactName", address.ContactName),
+                new SqlParameter("@AddressLine1", address.AddressLine1),
+                new SqlParameter("@AddressLine2", address.AddressLine2),
+                new SqlParameter("@Town", address.Town),
+                new SqlParameter("@County", address.County),
+                new SqlParameter("@Postcode", address.Postcode),
+                new SqlParameter("@CountryCode", address.CountryCode),
+            };
+
+            var cmd = this.Database.Connection.CreateCommand();
+
+            cmd.CommandText = "[portal].[TradeAccount_DeliveryAddress_Upsert]";
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddRange(parameters.ToArray());
+
+            try
+            {
+                this.Database.Connection.Open();
+
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    result =  reader.GetString(0);
+                }
+            }
+            catch (SqlException e)
+            {
+                PortalFramework.LogErrorToDatabase(e);
+                throw e;
+            }
+            finally
+            {
+                this.Database.Connection.Close();
+            }
+
+            return result;
+        }
+
 
         public List<ForbiddenDestinationCountry> FetchBasketDeliveryRestrictions(long basketId, string invoiceCountryCode, string invoicePostcode, string deliveryCountryCode, string deliveryPostcode)
         {
@@ -2494,7 +2750,7 @@ namespace SharedEFClasses.Models
                     this.Database.Connection.Close();
                 }
             }
-            catch (Exception _)
+            catch (Exception)
             {
                 result.Errored = true;
             }
@@ -2646,9 +2902,14 @@ namespace SharedEFClasses.Models
 
                 reader.NextResult();
 
-                var notices = ((IObjectContextAdapter)this)
-                    .ObjectContext
-                    .Translate<string>(reader).Single();
+                var sb = new StringBuilder();
+
+                while (reader.Read())
+                {
+                    sb.Append(reader.GetString(0));
+                }
+
+                var notices = sb.ToString();
 
                 result.Notifications = new DatabaseJSONResult()
                 {
@@ -3372,9 +3633,9 @@ namespace SharedEFClasses.Models
             return result;
         }
 
-        public List<MertexerV2SQL.Models.Tracking.MertexReportDataOrderSearchResult> TradeOrder_SearchByReference(string customerOrderReference)
+        public List<MertexReportDataOrderSearchResult> TradeOrder_SearchByReference(string customerOrderReference)
         {
-            var results = new List<MertexerV2SQL.Models.Tracking.MertexReportDataOrderSearchResult>();
+            var results = new List<MertexReportDataOrderSearchResult>();
 
             var parameters = new List<SqlParameter>()
             {
@@ -3403,7 +3664,7 @@ namespace SharedEFClasses.Models
 
                 results = ((IObjectContextAdapter)this)
                     .ObjectContext
-                    .Translate<MertexerV2SQL.Models.Tracking.MertexReportDataOrderSearchResult>(reader).ToList();
+                    .Translate<MertexReportDataOrderSearchResult>(reader).ToList();
             }
             catch (SqlException e)
             {
@@ -3534,6 +3795,19 @@ namespace SharedEFClasses.Models
                 From = objEnquiry.FromDT,
                 To = objEnquiry.ToDT
             }, null, 30, CommandType.StoredProcedure);
+        }
+
+        public IEnumerable<Reason> HeldForSalesReasonAutocomplete(PassAutocompleteTerm objTerm)
+        {
+            return this.Database.Connection.QueryAsync("[portal].[HeldForSalesReason_Search]", new
+            {
+                objTerm.searchTerm
+            }, null, 30, CommandType.StoredProcedure).Result.Select(row =>
+            {
+                var r = new Reason((string)row.Code);
+                r.Name = (string)row.Name;
+                return r;
+            });
         }
     }
 }

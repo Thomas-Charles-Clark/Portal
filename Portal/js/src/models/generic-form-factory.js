@@ -88,30 +88,33 @@ const formViewModel = ((definition) => {
     self.submit = () => {
         self.panels().filter(p => p.validateNow(true));
 
-        if (self.isValid()) {
-            fetch('/api/productMaintenanceApi/SaveGenericForm', {
-                method: 'POST',
-                headers: window.fetchHeaders,
-                cache: 'no-store',
-                credentials: 'same-origin',
-                body: self.toJSON()
-            })
-                .then(window.handleFetchResponse)
-                .then(data => {
-                    console.trace(data);
-                    let success = data.Success;
-                    if (success) {
-                        let summary = document.createElement('div');
-                        ko.renderTemplate('change-summary-template', data.ChangeSummary, {}, summary);
-                        window.showInfo('Success', `Form saved successfully<br/><br/>${summary.innerHTML}`, () => {
+        window.setTimeout(() => {
+            if (self.isValid()) {
 
-                        });
-                    } else {
-                        window.showInfo('Sorry', data.ErrorMessage);
-                    }
+                fetch('/api/productMaintenanceApi/SaveGenericForm', {
+                    method: 'POST',
+                    headers: window.fetchHeaders,
+                    cache: 'no-store',
+                    credentials: 'same-origin',
+                    body: self.toJSON()
                 })
-                .catch(err => window.catchFetchError)
-        }
+                    .then(window.handleFetchResponse)
+                    .then(data => {
+                        console.trace(data);
+                        let success = data.Success;
+                        if (success) {
+                            let summary = document.createElement('div');
+                            ko.renderTemplate('change-summary-template', data.ChangeSummary, {}, summary);
+                            window.showInfo('Success', `Form saved successfully<br/><br/>${summary.innerHTML}`, () => {
+
+                            });
+                        } else {
+                            window.showInfo('Sorry', data.ErrorMessage);
+                        }
+                    })
+                    .catch(err => window.catchFetchError)
+            }
+        }, 0);
     }
 
     self.toJS = () => {
@@ -133,7 +136,7 @@ const formViewModel = ((definition) => {
             result.push(panel);
         });
 
-        return { json: JSON.stringify(result) };
+        return { json: JSON.stringify(result, (key, value) => value === undefined ? null : value) };
     }
 
     self.toJSON = () => JSON.stringify(self.toJS());

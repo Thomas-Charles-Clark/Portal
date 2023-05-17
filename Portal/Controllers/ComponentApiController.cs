@@ -1,18 +1,18 @@
 ﻿using Kendo.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using MertexerV2SQL.Models.Misc;
+
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Portal.MertexDAL;
 using Portal.UPS_Rate_Service;
 using SharedEFClasses;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Applications;
 using SharedEFClasses.Models.Components;
 using SharedEFClasses.Models.General;
+using SharedEFClasses.Models.Mertexer;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.Samples;
@@ -405,7 +405,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchProductsByQuality([FromBody]PassProductFetchByQuality objQuality)
+        public async Task<IHttpActionResult> FetchProductsByQuality([FromBody]PassProductFetchByQuality objQuality)
         {
             objQuality.qualityId = PortalDb.QualitySelectByCode(objQuality);
 
@@ -430,8 +430,10 @@ namespace Portal.Controllers
                 try
                 {
                     var waterfallCode = results[0].Code.Split(new char[] { '/' }, StringSplitOptions.None)[0];
+
                     waterfallCode += "/W";
-                    waterfallPermitted = MertexerV2SQL.MiscFunctions.MiscellaneousFunctions.WaterfallCheck(waterfallCode);
+
+                    waterfallPermitted = await PortalDb.WaterfallCheck(waterfallCode);
                 }
                 catch
                 {
@@ -459,9 +461,9 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchSupplierDetails([FromBody]MertexerV2SQL.Models.Misc.PassProductCode objProductCode)
+        public async Task<IHttpActionResult> FetchSupplierDetails([FromBody]SharedEFClasses.Models.Orders.PassProductCode objProductCode)
         {
-            return Ok(MertexerV2DAL.SupplierList(PortalDb, objProductCode));
+            return Ok(await PortalDb.SupplierList(objProductCode));
         }
 
         [HttpPost]
@@ -773,14 +775,22 @@ namespace Portal.Controllers
         {
             var member = UserManager.FindById(User.Identity.GetUserId<int>());
 
-            var stockInfo = MertexerV2SQL.Stock.StockFunctions.PerformStockEnquiry(objSend.product.Code);
-
-            if ((String.IsNullOrEmpty(stockInfo.TotalStock) || stockInfo.TotalStock == "0") && (
-                    String.IsNullOrEmpty(stockInfo.TotalPurchaseOrderLength) ||
-                    stockInfo.TotalPurchaseOrderLength == "0"))
+            var stockInfo = PortalDb.FetchStockInfoSingular(new PassFetchProductStockInfoSingular()
             {
-                stockInfo = MertexerV2SQL.Stock.StockFunctions.FinishedProductStockEnquiry(objSend.product.Code);
-            }
+                TradeAccountID = objSend.tradeAccountId.Value,
+                ProductCode = objSend.product.Code
+            });
+
+            //var stockInfo = await PortalDb.StockEnquiry(objSend.product.Code);
+                
+                //MertexerV2SQL.Stock.StockFunctions.PerformStockEnquiry(objSend.product.Code);
+
+            //if ((String.IsNullOrEmpty(stockInfo.TotalStock) || stockInfo.TotalStock == "0") && (
+            //        String.IsNullOrEmpty(stockInfo.TotalPurchaseOrderLength) ||
+            //        stockInfo.TotalPurchaseOrderLength == "0"))
+            //{
+            //    stockInfo = MertexerV2SQL.Stock.StockFunctions.FinishedProductStockEnquiry(objSend.product.Code);
+            //}
 
             var inkyMarkup = $@"
                 <style type=""text/css"">
@@ -837,7 +847,7 @@ namespace Portal.Controllers
 	                </row>
 	                <row>
 		                <columns>
-			                <img src=""https://www.designersguild.com/image/600/{objSend.product.ImageID}"" width=""600"" height=""600"" />
+			                <img src=""https://www.designersguild.com/image-nonwebp/600/{objSend.product.ImageID}"" width=""600"" height=""600"" />
 		                </columns>
 	                </row>
 	                <spacer size=""10""></spacer>
@@ -854,7 +864,7 @@ namespace Portal.Controllers
 			                <strong>Available Stock</strong>
 		                </columns>
 		                <columns small=""8"" large=""9"">
-			                <span>{stockInfo.TotalStock} {objSend.product.Units}</span>
+			                <span>{stockInfo.stockResults.Select(s => s.AvailableNowQuantity).Sum()?.ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}</span>
 		                </columns>
 	                </row>
 	                <row>
@@ -862,13 +872,13 @@ namespace Portal.Controllers
 			                <strong>Incoming Stock</strong>
 		                </columns>
 		                <columns small=""8"" large=""9"">
-			                <span>{stockInfo.TotalPurchaseOrderLength} {objSend.product.Units}</span>
+			                <span>{stockInfo.stockResults.Select(s => s.DueInQuantity).Sum().ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}</span>
 		                </columns>
 	                </row>";
 
             var batchInky = "";
 
-            if (stockInfo.Batches.Count > 0)
+            if (stockInfo.stockResults.Select(s => s.Batch).Distinct().Count() > 1)
             {
                 batchInky = $@"
 	                <spacer size=""30""></spacer>
@@ -891,7 +901,7 @@ namespace Portal.Controllers
 		                <columns small=""2"">
 			                <p class=""text-right"">
 				                <strong>
-					                Quantity
+					                Piece No.
 				                </strong>
 			                </p>
 		                </columns>
@@ -911,32 +921,32 @@ namespace Portal.Controllers
 		                </columns>
 	                </row>";
 
-                foreach (var batch in stockInfo.Batches)
+                foreach (var batch in stockInfo.stockResults.Where(s => s.AvailableNowQuantity > 0).GroupBy(s => s.Batch))
                 {
-                    foreach (var piece in batch.Pieces)
+                    foreach (var piece in batch)
                     { 
-                        if (piece == batch.Pieces.First())
+                        if (piece == batch.First())
                         {
                             batchInky += $@"
 	                            <row>
 		                            <columns small=""2"">
 			                            <p class=""text-left"">
-				                            {batch.BatchNumber}
+				                            {batch.Key}
 			                            </p>
 		                            </columns>
 		                            <columns small=""2"">
 			                            <p class=""text-right"">
-                                            {piece.Quantity}
+                                            {(String.IsNullOrEmpty(piece.Piece?.Trim()) ? "-" : piece.Piece)}
 			                            </p>
 		                            </columns>
 		                            <columns small=""3"">
 			                            <p class=""text-right"">
-				                            {piece.Length} {objSend.product.Units}
+				                            {piece.AvailableNowQuantity?.ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}
 			                            </p>
 		                            </columns>
 		                            <columns small=""3"">
 			                            <p class=""text-right"">
-				                            {(Convert.ToDecimal(piece.Quantity) * Convert.ToDecimal(piece.Length)).ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}
+				                            {(1 * Convert.ToDecimal(piece.AvailableNowQuantity)).ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}
 			                            </p>
 		                            </columns>
 	                            </row>";
@@ -952,17 +962,17 @@ namespace Portal.Controllers
 		                            </columns>
 		                            <columns small=""2"">
 			                            <p class=""text-right"">
-                                            {piece.Quantity}
+                                            {(String.IsNullOrEmpty(piece.Piece?.Trim()) ? "-" : piece.Piece)}
 			                            </p>
 		                            </columns>
 		                            <columns small=""3"">
 			                            <p class=""text-right"">
-				                            {piece.Length} {objSend.product.Units}
+				                            {piece.AvailableNowQuantity?.ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}
 			                            </p>
 		                            </columns>
 		                            <columns small=""3"">
 			                            <p class=""text-right"">
-				                            {(Convert.ToDecimal(piece.Quantity) * Convert.ToDecimal(piece.Length)).ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}
+				                            {(1 * Convert.ToDecimal(piece.AvailableNowQuantity)).ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}
 			                            </p>
 		                            </columns>
 	                            </row>";
@@ -978,7 +988,7 @@ namespace Portal.Controllers
 		                <columns small=""2"">
 			                <p class=""text-right"">
 				                <strong>
-					                {stockInfo.Batches.SelectMany(p => p.Pieces).Select(p => Convert.ToDecimal(p.Quantity)).Sum().ToString($"N{objSend.product.QuantityPrecisionA}")}
+
 				                </strong>
 			                </p>
 		                </columns>
@@ -988,7 +998,7 @@ namespace Portal.Controllers
 		                <columns small=""3"">
 			                <p class=""text-right"">
 				                <strong>
-					                {stockInfo.Batches.SelectMany(p => p.Pieces).Select(p => Convert.ToDecimal(p.Length)).Sum().ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}
+					                {stockInfo.stockResults.Select(p => Convert.ToDecimal(p.AvailableNowQuantity)).Sum().ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}
 				                </strong>
 			                </p>
 		                </columns>
@@ -998,7 +1008,7 @@ namespace Portal.Controllers
 
             var poInky = "";
 
-            if (stockInfo.PurchaseOrders.Count > 0)
+            if (stockInfo.stockResults.Where(s => s.DueInQuantity > 0).Any())
             {
                 poInky = $@"
 	            <row>
@@ -1033,23 +1043,23 @@ namespace Portal.Controllers
 		            </columns>
 	            </row>";
 
-                foreach (var po in stockInfo.PurchaseOrders)
+                foreach (var po in stockInfo.stockResults.Where(s => s.DueInQuantity > 0))
                 {
                     poInky += $@"
 	                    <row>
 		                    <columns small=""4"" large=""4"">
 			                    <p class=""text-left"">
-				                    {po.PurchaseOrderNumber}
+				                    {po.DueInMessage}
 			                    </p>
 		                    </columns>
 		                    <columns small=""3"" large=""4"">
 			                    <p class=""text-right"">
-				                    {po.DueDate}
+				                    {po.DueInDate}
 			                    </p>
 		                    </columns>
 		                    <columns small=""3"" large=""4"">
 			                    <p class=""text-right"">
-				                    {Convert.ToDecimal(po.Length).ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}
+				                    {Convert.ToDecimal(po.DueInQuantity).ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}
 			                    </p>
 		                    </columns>
 	                    </row>";
@@ -1070,7 +1080,7 @@ namespace Portal.Controllers
 		                    <columns small=""3"" large=""4"">
 			                    <p class=""text-right"">
 				                    <strong>
-				                        {stockInfo.PurchaseOrders.Select(p => Convert.ToDecimal(p.Length)).Sum().ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}
+				                        {stockInfo.stockResults.Where(s => s.DueInQuantity > 0).Select(p => Convert.ToDecimal(p.DueInQuantity)).Sum().ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}
                                     </strong>
 			                    </p>
 		                    </columns>
@@ -2030,7 +2040,9 @@ namespace Portal.Controllers
         {
             var basketAddressResult = PortalDb.FetchBasketDeliveryAddress(objBasket);
 
-            var tradeAccountAddressResult = MertexerV2DAL.FetchTradeAccountAddresses(objBasket.TradeAccountNumber, PortalDb);
+            var tradeAccountAddressResult = PortalDb.FetchTradeAccountAddresses(objBasket.TradeAccountNumber);
+
+            //var b = MertexerV2DAL.FetchTradeAccountAddresses(objBasket.TradeAccountNumber, PortalDb);
 
             var restrictions = PortalDb.FetchBasketDeliveryRestrictions(objBasket.BasketID, tradeAccountAddressResult.InvoiceAddress.CountryCode, tradeAccountAddressResult.InvoiceAddress.Postcode,
                 null, null);
@@ -2049,7 +2061,7 @@ namespace Portal.Controllers
             //    endCustomers = PortalDb.TradeAccounts.Where(p => endCustomerCusRefs.Contains(p.Code)).ToList();
             //}
 
-            TradeAccount endCustomer = null;
+            SharedEFClasses.Models.TradeAccounts.TradeAccount endCustomer = null;
 
             if (!String.IsNullOrEmpty(ba.EndCustomerTradeAccountCode))
             {
@@ -2063,11 +2075,13 @@ namespace Portal.Controllers
                     }
                 }
 
-                if (tradeAccountAddressResult.PrimaryAddress != null)
+                if (tradeAccountAddressResult.DefaultDeliveryAddress != null)
                 {
-                    if (tradeAccountAddressResult.PrimaryAddress.DeliveryReference == "C")
+                    if (tradeAccountAddressResult.DefaultDeliveryAddress.Key == "C")
                     {
-                        tradeAccountAddressResult.PrimaryAddress.DeliveryReference = ba.EndCustomerTradeAccountCode;
+                        tradeAccountAddressResult.DefaultDeliveryAddress  = new DeliveryAddress(
+                            ba.EndCustomerTradeAccountCode, tradeAccountAddressResult.DefaultDeliveryAddress
+                        );
                     }
                 }
             }
@@ -2075,7 +2089,7 @@ namespace Portal.Controllers
             return Ok(new {
                 basketAddress = basketAddressResult.DeliveryAddress,
                 miscInvoiceAddress = basketAddressResult.MiscInvoiceAddress,
-                DefaultDeliveryAddress = tradeAccountAddressResult.PrimaryAddress,
+                DefaultDeliveryAddress = tradeAccountAddressResult.DefaultDeliveryAddress,
                 tradeAccountAddressResult.InvoiceAddress,
                 IsParentAccount = ta.HasEndCustomers,
                 endCustomer,
@@ -2090,9 +2104,9 @@ namespace Portal.Controllers
 
             var endCustomerCusRefs = new List<string>();
 
-            var endCustomers = new List<TradeAccount>();
+            var endCustomers = new List<SharedEFClasses.Models.TradeAccounts.TradeAccount>();
 
-            endCustomerCusRefs = MertexerV2SQL.MiscFunctions.MiscellaneousFunctions.EndCustomerList(tradeDataSourceJson, objTerm);
+            endCustomerCusRefs = PortalDb.FetchTradeAccountEndCustomers(objTerm).ToList();
 
             endCustomerCusRefs.Sort();
 
@@ -2106,9 +2120,9 @@ namespace Portal.Controllers
         {
             var tradeDataSourceJson = PortalDb.TradeAccounts.Where(p => p.Code == objAddress.tradeAccountCode).Select(p => p.UniVerseDataSources).Single();
 
-            var dataSources = JsonConvert.DeserializeObject<MertexerV2.Models.DataSource.TradeAccountDataSourceInfo>(tradeDataSourceJson);
+            var dataSources = JsonConvert.DeserializeObject<TradeAccountDataSourceInfo>(tradeDataSourceJson);
 
-            var dataSource = dataSources.EnquiryTypes.Where(p => p.EnquiryType == MertexerV2.Models.DataSource.EnquiryType.Address)
+            var dataSource = dataSources.EnquiryTypes.Where(p => p.EnquiryType == SharedEFClasses.Models.Mertexer.EnquiryType.Address)
                 .Single()
                 .DataSources
                 .Single();
@@ -2142,7 +2156,7 @@ namespace Portal.Controllers
             objAddress.email = PortalFramework.RemoveDiacritics(objAddress.email)?.ToUpperInvariant();
             objAddress.deliveryPhoneNumber = PortalFramework.RemoveDiacritics(objAddress.deliveryPhoneNumber)?.ToUpperInvariant();
 
-            var address = new MertexerV2.Models.DeliveryAddress(
+            var address = new DeliveryAddress(
                     tradeAccountCode: objAddress.endCustomerCode ?? objAddress.tradeAccountCode, // we might be dealing with an end customer, if so we want to write to THEIR address book.
                     addressLine1: objAddress.deliveryAddressLine1,
                     addressLine2: objAddress.deliveryAddressLine2,
@@ -2183,7 +2197,7 @@ namespace Portal.Controllers
                     // and we haven't been instructed to skip the de-duplication process
 
                     // get a collection of DELADD records which match this one (before... stupidly doctoring the names and companynames around...)
-                    var extantDelrefs = MertexerV2SQL.MiscFunctions.MiscellaneousFunctions.Exists(tradeDataSourceJson, address);
+                    var extantDelrefs = PortalDb.DeliveryAddressExists(dataSource.CustomerReference, address);
 
                     // if we have any extant DELADD records which match the details of the address we're trying to save
                     if (extantDelrefs.Any())
@@ -2237,7 +2251,7 @@ namespace Portal.Controllers
                 if (String.IsNullOrEmpty(objAddress.deliveryReference))
                 {
                     // No? Well, that's because we need to create a new DELADD record.
-                    objAddress.deliveryReference = MertexerV2.AddressBookFunctions.AddDeliveryAddress(dataSource.UniVerseAccount, address);
+                    objAddress.deliveryReference = PortalDb.DeliveryAddressUpsert(dataSource.CustomerReference, address);
                 }
 
                 // Right. Have we got a TAAC for the DELREF at play?
@@ -2319,9 +2333,9 @@ namespace Portal.Controllers
             }
             else
             {
-                if (address.DeliveryReference != "C")
+                if (address.Key != "C")
                 {
-                    var extantDelrefs = MertexerV2SQL.MiscFunctions.MiscellaneousFunctions.Exists(tradeDataSourceJson, address);
+                    var extantDelrefs = PortalDb.DeliveryAddressExists(dataSource.CustomerReference, address);
 
                     if (extantDelrefs.Any())
                     {
@@ -2446,7 +2460,7 @@ namespace Portal.Controllers
                     }
 
                     // No DELADD records match on this address's details - update the DELADD record having this DELREF.
-                    MertexerV2.AddressBookFunctions.UpdateDeliveryAddress(dataSource.UniVerseAccount, address);
+                    PortalDb.DeliveryAddressUpsert(dataSource.CustomerReference, address);
                 }
                 else
                 {
@@ -2584,17 +2598,19 @@ namespace Portal.Controllers
         [HttpPost]
         public IHttpActionResult HeldForSalesAutocomplete([FromBody]PassAutocompleteTerm objTerm)
         {
-            var results = MertexerV2SQL.MiscFunctions.MiscellaneousFunctions.HeldForSalesReasonCode(objTerm);
+            var results = PortalDb.HeldForSalesReasonAutocomplete(objTerm);
 
             return Ok(results);
         }
 
         [HttpPost]
-        public IHttpActionResult LineDuplicateCheck([FromBody]PassDuplicateLineCheck objCheck)
+        public async Task<IHttpActionResult> LineDuplicateCheck([FromBody]PassDuplicateLineCheck objCheck)
         {
             var tradeDataSourceJson = PortalDb.TradeAccounts.Where(p => p.Code == objCheck.tradeAccountCode).Select(p => p.UniVerseDataSources).Single();
 
-            var result = MertexerV2SQL.MiscFunctions.MiscellaneousFunctions.LineDuplicateCheck(tradeDataSourceJson, objCheck);
+            //var result = MertexerV2SQL.MiscFunctions.MiscellaneousFunctions.LineDuplicateCheck(tradeDataSourceJson, objCheck);
+
+            var result = await PortalDb.OrderLineDuplicateCheck(tradeDataSourceJson, objCheck);
 
             var basketItemResult = PortalDb.BasketItems.Where(p => p.BasketID == objCheck.basketId && 
                                                                    p.ProductID == objCheck.productId && 
@@ -2605,7 +2621,6 @@ namespace Portal.Controllers
 
             if (basketItemResult.Count > 0)
             {
-                result.isDuplicate = true;
                 result.isCurrentBasketDuplicate = true;
             }
 
@@ -2613,13 +2628,13 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult UniqueOrderReferenceCheck([FromBody]PassOrderReference objOrderReference)
+        public async Task<IHttpActionResult> UniqueOrderReferenceCheck([FromBody]PassOrderReference objOrderReference)
         {
             var tradeDataSourceJson = PortalDb.TradeAccounts.Where(p => p.Code == objOrderReference.tradeAccountCode).Select(p => p.UniVerseDataSources).Single();
 
-            var result = MertexerV2SQL.MiscFunctions.MiscellaneousFunctions.OrderReferenceUniqueCheck(tradeDataSourceJson, objOrderReference);
+            var result = await PortalDb.OrderReferenceDuplicateCheck(tradeDataSourceJson, objOrderReference);
 
-            return Ok(result);
+            return Ok(result.orderNumbers);
         }
 
         [HttpPost]
@@ -2630,38 +2645,28 @@ namespace Portal.Controllers
             return Ok(data);
         }
 
-        [HttpPost]
-        public IHttpActionResult RefreshTradeAccountInvoiceAddress([FromBody]PassTradeAccountNumber objTradeAccount)
-        {
-            var tradeDataSourceJson = PortalDb.TradeAccounts.Where(p => p.Code == objTradeAccount.accountNumber).Select(p => p.UniVerseDataSources).Single();
+        //Defunct? 15/03/2023
+        //[HttpPost]
+        //public IHttpActionResult RefreshTradeAccountInvoiceAddress([FromBody]PassTradeAccountNumber objTradeAccount)
+        //{
+        //    var tradeDataSourceJson = PortalDb.TradeAccounts.Where(p => p.Code == objTradeAccount.accountNumber).Select(p => p.UniVerseDataSources).Single();
 
-            var preData = MertexerV2SQL.MiscFunctions.MiscellaneousFunctions.RefreshTradeAccountInvoiceAddress(tradeDataSourceJson, objTradeAccount);
+        //    var invoiceAddress = PortalDb.FetchTradeAccountAddresses(objTradeAccount.accountNumber);
 
-            if (preData.CountryCode != null)
-            {
-                var country = PortalDb.Countries.Where(p => p.Code == preData.CountryCode).Single();
-
-                preData.Country = country.Name;
-                preData.EU = country.EU;
-                preData.CountryID = country.CountryID;
-
-                return Ok(preData);
-            }
-
-            return Ok(preData);
-        }
+        //    return Ok(invoiceAddress.InvoiceAddress);
+        //}
 
 
         [HttpPost]
-        public IHttpActionResult RefreshTradeAccountInvoiceTerms([FromBody]PassTradeAccountNumber objTradeAccount)
+        public async Task<IHttpActionResult> RefreshTradeAccountInvoiceTerms([FromBody]PassTradeAccountNumber objTradeAccount)
         {
             var tradeDataSourceJson = PortalDb.TradeAccounts.Where(p => p.Code == objTradeAccount.accountNumber).Select(p => p.UniVerseDataSources).Single();
 
-            var preData = MertexerV2SQL.MiscFunctions.MiscellaneousFunctions.InvoiceTermsLookup(tradeDataSourceJson, objTradeAccount);
+            var paymentTermsCode = await PortalDb.FetchPaymentTerms(objTradeAccount.accountNumber);
 
-            if (preData.Code != null)
+            if (paymentTermsCode != null)
             {
-                return Ok(PortalDb.PaymentTerms.Where(p => p.Code == preData.Code).Single());
+                return Ok(PortalDb.PaymentTerms.Where(p => p.Code == paymentTermsCode).Single());
             }
             else
             {
@@ -2682,14 +2687,11 @@ namespace Portal.Controllers
         {
             var tradeDataSourceJson = PortalDb.TradeAccounts.Where(p => p.Code == objTradeAccount.accountNumber).Select(p => p.UniVerseDataSources).Single();
 
-            var results = MertexerV2.SQLFunctions.EORI.Lookup(tradeDataSourceJson).OfType<MertexerV2.Models.EORI.EORINumberLookupResult>().ToList();
+            var result = PortalDb.FetchEORINumber(objTradeAccount.accountNumber);
 
-            if (results != null)
+            if (result != null)
             {
-                if (results.Count == 1)
-                {
-                    return Ok(results[0]);
-                }
+                return Ok(new { EORINumber = result });
             }
 
             return Ok(new { EORINumber = (string)null });
@@ -2835,11 +2837,13 @@ namespace Portal.Controllers
             var tradeDataSourceJson = PortalDb.TradeAccounts.Where(p => p.Code == objSearch.tradeAccountCode).Select(p => p.UniVerseDataSources).Single();
 
             // "countries" is the country code. Could be useful.
-            var mertexResults = MertexerV2SQL.MiscFunctions.MiscellaneousFunctions.AddressBookSearch(tradeDataSourceJson, objSearch);
+            //var mertexResults = MertexerV2SQL.MiscFunctions.MiscellaneousFunctions.AddressBookSearch(tradeDataSourceJson, objSearch);
+
+            var mertexResults = PortalDb.DeliveryAddressSearch(objSearch.tradeAccountCode, objSearch.text).ToList();
 
             mertexResults.ForEach(mr => 
             {
-                var country = PortalDb.Countries.Where(p => p.Code == mr.Country).SingleOrDefault();
+                var country = PortalDb.Countries.Where(p => p.Code == mr.CountryCode).SingleOrDefault();
 
                 if (country != null)
                 {
@@ -2847,15 +2851,15 @@ namespace Portal.Controllers
                 }
             });
 
-            mertexResults = mertexResults.GroupBy(p => p.MD5Hash).Select(p => p.OrderBy(q => q.DeliveryReference).First()).ToList();
+            mertexResults = mertexResults.GroupBy(p => p.MD5Hash).Select(p => p.OrderBy(q => q.Key).First()).ToList();
 
-            var removeMarkedAsDeleted = new List<MertexPCALookupResult>();
+            var removeMarkedAsDeleted = new List<DeliveryAddress>();
 
             mertexResults.ForEach(c => 
             {
                 var extantCleanse = PortalDb.TradeAccountAddressCleanses.Where(p =>
                     p.TradeAccountCode == c.TradeAccountCode &&
-                    p.DeliveryReference == c.DeliveryReference).SingleOrDefault();
+                    p.DeliveryReference == c.Key).SingleOrDefault();
 
                 if (extantCleanse != null)
                 {
@@ -2888,7 +2892,7 @@ namespace Portal.Controllers
                     var a = new TradeAccountAddressCleanse()
                     {
                         TradeAccountCode = c.TradeAccountCode,
-                        DeliveryReference = c.DeliveryReference,
+                        DeliveryReference = c.Key,
                         SourceAddressHash = c.MD5Hash,
                         SourceAddress = JsonConvert.SerializeObject(c),
                         Status = null,
@@ -3030,9 +3034,9 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchLinkedDocuments([FromBody] MertexerV2SQL.Models.Misc.PassProductCode objProductCode)
+        public async Task<IHttpActionResult> FetchLinkedDocuments([FromBody]SharedEFClasses.Models.Orders.PassProductCode objProductCode)
         {
-            var results = MertexerV2SQL.MiscFunctions.MiscellaneousFunctions.FetchLinkedDocuments(objProductCode);
+            var results = await PortalDb.FetchLinkedDocuments(objProductCode);
 
             return Ok(results);
         }

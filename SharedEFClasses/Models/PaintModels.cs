@@ -208,6 +208,7 @@ namespace SharedEFClasses.Models
         public int MemberID { get; set; }
         public DateTime? FromDT { get; set; }
         public DateTime? ToDT { get; set; }
+        public string SearchTerm { get; set; }
     }
 
     public class PaintOrderHeadSelectResponse

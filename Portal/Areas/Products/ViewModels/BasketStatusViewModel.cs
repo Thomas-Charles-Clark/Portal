@@ -33,7 +33,7 @@ namespace Portal.Areas.Products.ViewModels
             PreselectedTradeAccount = preselected;
         }
 
-        public static async Task<BasketStatusViewModel> CreateAsync(
+        public static BasketStatusViewModel Create(
             TradeAccountNumber_AutocompleteResult preselected,
             RoleProperties properties,
             string applicationHeading,
@@ -41,14 +41,14 @@ namespace Portal.Areas.Products.ViewModels
         {
             var result = new BasketStatusViewModel(preselected, properties, applicationHeading, applicationSubHeading);
 
-            await result.InitialiseAsync();
+            result.Initialise();
 
             return result;
         }
 
-        protected async System.Threading.Tasks.Task InitialiseAsync()
+        protected void Initialise()
         {
             var db = new SharedEFClasses.Models.PortalDbContext();
-         }
+        }
     }
 }

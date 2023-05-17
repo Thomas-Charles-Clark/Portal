@@ -1,5 +1,4 @@
-﻿using MertexerV2.Utilities;
-using Microsoft.AspNet.Identity.EntityFramework;
+﻿using Microsoft.AspNet.Identity.EntityFramework;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Samples;
 using SharedEFClasses.Utilities;

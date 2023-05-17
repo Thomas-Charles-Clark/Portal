@@ -1483,7 +1483,7 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
             $(self.observable.DOMElement).focus();
         },
         charsRemainingOptions: {
-            maxLength: 24
+            maxLength: 50
         }
     };
 
@@ -2749,8 +2749,8 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                     success: function (data) {
                         response($.map(data, function (item) {
                             return {
-                                label: item.Item2,
-                                value: item.Item1,
+                                label: `${item.Code} - ${item.Name}`,
+                                value: item.Code,
                                 obj: item
                             };
                         }));
@@ -3047,8 +3047,8 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
         decorateInputElement: false,
         insertValidationMessages: false,
         options: self.availableRetailTills,
-        optionsText: 'Name',
-        optionsValue: 'TillNumber',
+        optionsText: 'Description',
+        optionsValue: 'Code',
         optionsCaption: ' ',
         width: 'auto',
         showClear: true,
@@ -3091,7 +3091,7 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
         observable: self.retailSessionNumber,
         options: self.availableRetailTillSessions,
         optionsText: 'Label',
-        optionsValue: 'SessionNumber',
+        optionsValue: 'Code',
         optionsCaption: ' ',
         width: 'auto',
         useNativeValidation: false,
@@ -10044,11 +10044,12 @@ var searchResult = function (data, parent, patternBookSaturation) {
     //self.fulfilmentOption.subscribe(function (newValue) {
     self.supplierDetailFetch = function () {
         //if (newValue) {
-        //if (newValue.FulfilmentTypeID == 5) { // Direct Dispatch 
+        //if (newValue.FulfilmentTypeID == 5) { // Direct Dispatch
 
         // This can no longer occur here. This must occur only when the user has clicked Order [addBasketItem]
 
         // stop! supplier time!
+        $('#supplier-modal').modal('show');
         self.supplierBusy(true);
         var data = {
             code: self.record.Code
@@ -10064,8 +10065,8 @@ var searchResult = function (data, parent, patternBookSaturation) {
 
                 self.availableSuppliers($.map(data, function (supplier) {
                     var item = {
-                        code: supplier.Item1,
-                        label: supplier.Item1 + ' - ' + supplier.Item2,
+                        code: supplier.Code,
+                        label: supplier.Code + ' - ' + supplier.Name,
                         address: new addressViewModel({
                             labelClass: 'delivery-address-label',
                             controlClass: 'form-control mdc-text-field__input',
@@ -10073,18 +10074,16 @@ var searchResult = function (data, parent, patternBookSaturation) {
                             emailValidation: true,
                             phoneIntlMobile: true
                         }),
-                        value: supplier.Item1
+                        value: supplier.Code
                     };
                     item.address.phone.visible(true);
                     item.address.email.visible(true);
-                    item.addressToLoad = supplier.Item3;
+                    item.addressToLoad = supplier;
 
                     return item;
                 }));
 
                 self.supplierBusy(false);
-
-                $('#supplier-modal').modal('show');
             },
             error: function (xhr, s, a) {
                 self.supplierBusy(false);
@@ -20361,28 +20360,29 @@ var deliveryAddressFactory = function (parent) {
         }, 0);
     }
 
-    self.refreshInvoiceAddress = function () {
-        self.busy(true);
-        var data = {
-            accountNumber: self.parent.tradeAccount().Code
-        };
-        console.log('refresh invoice address calling with', data);
-        $.ajax({
-            url: '/api/componentApi/RefreshTradeAccountInvoiceAddress',
-            type: 'POST',
-            dataType: 'json',
-            data: data,
-            success: function (data) {
-                self.busy(false);
-                console.log('refresh invoice address returned', data);
-                self.invoiceAddress.loadTradeAccountAddressForDelivery(data);
-            },
-            error: function (xhr, s, a) {
-                self.busy(false);
-                $.ajaxSettings.error(xhr, s, a);
-            }
-        });
-    }
+    // 15/05/2023 - Defunct?
+    //self.refreshInvoiceAddress = function () {
+    //    self.busy(true);
+    //    var data = {
+    //        accountNumber: self.parent.tradeAccount().Code
+    //    };
+    //    console.log('refresh invoice address calling with', data);
+    //    $.ajax({
+    //        url: '/api/componentApi/RefreshTradeAccountInvoiceAddress',
+    //        type: 'POST',
+    //        dataType: 'json',
+    //        data: data,
+    //        success: function (data) {
+    //            self.busy(false);
+    //            console.log('refresh invoice address returned', data);
+    //            self.invoiceAddress.loadInvoiceAddress(data);
+    //        },
+    //        error: function (xhr, s, a) {
+    //            self.busy(false);
+    //            $.ajaxSettings.error(xhr, s, a);
+    //        }
+    //    });
+    //}
 
     self.selectInvoiceAddressForDelivery = function () {
 
@@ -20632,7 +20632,7 @@ var deliveryAddressFactory = function (parent) {
                 }
 
                 if (data.InvoiceAddress != null) {
-                    self.invoiceAddress.loadTradeAccountAddressForDelivery(data.InvoiceAddress);
+                    self.invoiceAddress.loadInvoiceAddress(data.InvoiceAddress);
                 }
 
                 if (data.miscInvoiceAddress != null) {
