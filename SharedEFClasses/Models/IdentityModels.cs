@@ -239,6 +239,12 @@ namespace SharedEFClasses.Models
 
         public RoleProperties GetActiveRoleProperties()
         {
+            var r = Roles.Select(p => p.Role).OrderBy(p => p.Precedence).ToList();
+
+            var ra = r.FirstOrDefault();
+
+            var rap = ra?.Properties;
+
             return Roles?.Select(p => p.Role).OrderBy(p => p.Precedence).FirstOrDefault()?.Properties;
         }
     }

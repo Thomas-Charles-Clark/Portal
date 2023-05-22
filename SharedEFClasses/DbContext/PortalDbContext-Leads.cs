@@ -125,8 +125,9 @@ namespace SharedEFClasses.Models
             }
             
             result.Leads.ForEach(p => {
-                p.OpenSince = PortalFramework.DateTimeDistanceString(p.CreatedDT, true, false);
-                p.Modified = PortalFramework.DateTimeDistanceString(p.ModifiedDT, true);
+                p.OpenSince = PortalFramework.ToRelativeDateString(p.CreatedDT, true);
+                p.Modified = p.ModifiedDT.HasValue ? PortalFramework.ToRelativeDateString(p.ModifiedDT.Value, true) : null; 
+                p.TransferredToCCSince = p.TransferredToCreditControlDT.HasValue ? PortalFramework.ToRelativeDateString(p.TransferredToCreditControlDT.Value, true) : null;
             });
 
             return result;

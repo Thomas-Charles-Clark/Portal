@@ -3801,7 +3801,7 @@ namespace SharedEFClasses.Models
         {
             return this.Database.Connection.QueryAsync("[portal].[HeldForSalesReason_Search]", new
             {
-                objTerm.searchTerm
+                SearchTerm = objTerm.term
             }, null, 30, CommandType.StoredProcedure).Result.Select(row =>
             {
                 var r = new Reason((string)row.Code);

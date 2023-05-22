@@ -8075,7 +8075,13 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
 
                                 self.basketLocker.showOrderFactoryArguments = [customerVisitId, onComplete, retailPaymentMode]
 
-                                self.basketLocker.show();
+                                if (self.tradeAccountOrderingNotifications().length) {
+                                    window.setTimeout(() => {
+                                        self.basketLocker.show();
+                                    }, 300);
+                                } else {
+                                    self.basketLocker.show();
+                                }
 
                                 return;
                             }

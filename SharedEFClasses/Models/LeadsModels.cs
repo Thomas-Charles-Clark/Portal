@@ -620,6 +620,8 @@ namespace SharedEFClasses.Models.Leads
         public string RetailAppointmentActualShop { get; set; }
         public string RetailAppointmentActualTime { get; set; }
         public DateTime? RetailAppointmentActualDate { get; set; }
+        public DateTime? TransferredToCreditControlDT { get; set; }
+        public string TransferredToCCSince { get; set; }
     }
     
     public class CustomerSearchViewResult

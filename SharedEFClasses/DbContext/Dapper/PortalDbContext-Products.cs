@@ -2,6 +2,8 @@
 
 using Microsoft.AspNet.Identity.EntityFramework;
 
+using Newtonsoft.Json;
+
 using SharedEFClasses.Models.Mertexer;
 using SharedEFClasses.Models.MertexLive;
 using SharedEFClasses.Models.Orders;
@@ -161,11 +163,11 @@ namespace SharedEFClasses.Models
             }, null, null, System.Data.CommandType.StoredProcedure);
         }
 
-        public async Task<DuplicateLineCheckResult> OrderLineDuplicateCheck(string tradeAccountCode, PassDuplicateLineCheck objCheck)
+        public async Task<DuplicateLineCheckResult> OrderLineDuplicateCheck(string tradeDataSourceJson, PassDuplicateLineCheck objCheck)
         {
             var results = await this.Database.Connection.QueryMultipleAsync("[portal].[OrderLine_DuplicateCheck]", new
             {
-                TradeAccountCode = tradeAccountCode,
+                TradeDataSourceJson = tradeDataSourceJson,
                 LineReference = objCheck.lineReference,
                 ProductCode = objCheck.productCode,
                 Quantity = objCheck.quantity
@@ -183,7 +185,7 @@ namespace SharedEFClasses.Models
         {
             var results = await this.Database.Connection.QueryMultipleAsync("[portal].[OrderReference_DuplicateCheck]", new
             {
-                TradeAccountCode = tradeAccountCode,
+                TradeDataSourceJson = tradeDataSourceJson,
                 OrderReference = objCheck.OrderReference
             }, null, null, System.Data.CommandType.StoredProcedure);
 

@@ -439,6 +439,8 @@
         }
     }
 
+    moment.defaultFormat = 'DD/MM/YYYY HH:mm:ss.SSS';
+
     self.resultGridColumns = [
         {
             field: 'LeadID',
@@ -491,7 +493,7 @@
             field: 'CreatedDT',
             title: 'Created',
             width: 110,
-            template: '#: OpenSince #'
+            template: '#: moment(CreatedDT).format("ddd DD/MM/YYYY") #<br/>#: OpenSince #'
         },
         {
             field: 'Status',
@@ -513,7 +515,18 @@
             field: 'OwnedBy',
             title: 'Assigned To',
             width: 70
-        }
+        },
+        {
+            field: 'TransferredToCreditControlDT',
+            title: 'Transferred to Credit Control',
+            width: 110,
+            template: (e) => {
+                if (e.TransferredToCreditControlDT)
+                    return `${moment(e.TransferredToCreditControlDT).format("ddd DD/MM/YYYY")}<br/>${e.TransferredToCCSince}`
+                else
+                    return ''
+            }
+        },
     ];
 
     self.resultGridDataSourceRead = function (options) {
@@ -718,6 +731,8 @@
             if (self.resultGridWidget()) {
                 // this misses if the grid isn't yet ready - on the first fire from dashboardSelect, for example.
                 // why is the grid not yet ready then?
+                if (self.resultGridWidget().pager.page() != 1)
+                    self.resultGridWidget().pager.page(1);
                 self.resultGridWidget().dataSource.read({
                     searchType: searchType
                 });
@@ -726,9 +741,13 @@
             if ($("#lead-search-advanced").hasClass('in')) {
                 //self.clearDashboard();
                 self.dashboardWidget(undefined);
+                if (self.resultGridWidget().pager.page() != 1)
+                    self.resultGridWidget().pager.page(1);
                 self.resultGridWidget().dataSource.read();
             } else {
                 //self.clearDashboard();
+                if (self.resultGridWidget().pager.page() != 1)
+                    self.resultGridWidget().pager.page(1);
                 self.resultGridWidget().dataSource.read({
                     searchType: 'pureSearchTerm'
                 });
