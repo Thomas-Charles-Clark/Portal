@@ -1238,4 +1238,28 @@
     function getAvailablePaymentOptions() {
         return @Html.Raw(JsonConvert.SerializeObject(Model.PaymentOptions))
     }
+    function getAvailableTradeAccountClasses() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.TradeAccountClasses))
+    }
+    function getAvailableCreditControllers() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.CreditControllers))
+    }
+    function getCreditControllerSalesMarketMap() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.CreditControllerSalesMarketMap))
+    }
+    function getAvailableBanks() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.Banks.OrderBy(b => Convert.ToInt32(b.Code))))
+    }
+    function getAvailableTradeAccountGroups() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.TradeAccountGroups))
+    }
+    function getCreditControllerSalesMarketMap() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.CreditControllerSalesMarketMap))
+    }
+    function getAvailableSalesDivisions() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.SalesDivisions))
+    }
+    function getAvailableDeliveryTerms() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.DeliveryTerms))
+    }
 </script>

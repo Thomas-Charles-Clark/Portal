@@ -60,6 +60,30 @@ var leadEnquiryViewModel = function () {
 
     self.availablePaymentOptions = getAvailablePaymentOptions();
 
+    self.availableTradeAccountClasses = getAvailableTradeAccountClasses();
+
+    self.availablePurchaseOrderRequiredOptions = getYesNoOptions();
+
+    self.availableCreditControllerCodes = getAvailableCreditControllers();
+
+    self.creditControllerSalesMarketMap = getCreditControllerSalesMarketMap();
+
+    self.availableBanks = getAvailableBanks();
+
+    self.availableTradeAccountGroups = getAvailableTradeAccountGroups();
+
+    //self.availableHauliers = getAvailableHauliers();
+
+    //self.availableCarriages = getAvailableCarriages();
+
+    //self.availableSampleHauliers = getAvailableSampleHauliers();
+
+    //self.availableSampleCarriages = getAvailableSampleCarriages();
+
+    self.availableSalesDivisions = getAvailableSalesDivisions();
+
+    self.availableDeliveryTerms = getAvailableDeliveryTerms();
+
     self.miscSearch = new miscCustomerSearch(self);
 
     self.customerSearch = new customerSearch(self);
@@ -498,14 +522,23 @@ var leadEdit = function (parent) {
         currencyFormatted: {
             digits: 0,
             currency: self.companyCurrency,
-            maxValue: 900000000000000,
-            minValue: -900000000000000
+            maxValue: 5000000,
+            minValue: 0
+        },
+        required: {
+            params: true,
+            onlyIf: () => {
+                return self.requestedPaymentOption() && self.requestedPaymentOption().PaymentOptionID === 1;
+            },
+            message: 'You must specify a credit limit request'
+        },
+        notEqual: {
+            params: 0,
+            onlyIf: () => {
+                return self.requestedPaymentOption() && self.requestedPaymentOption().PaymentOptionID === 1;
+            },
+            message: 'You must provide a positive number. This is the spending limit for the account.'
         }
-        //,
-        //required: {
-        //    params: true,
-        //    message: 'You must specify a credit limit request'
-        //}
     });
 
     self.bankCountry = ko.pureComputed({
@@ -769,6 +802,67 @@ var leadEdit = function (parent) {
         charsRemaining: {
             maxLength: 500,
             elementId: '#payment-terms-notes'
+        }
+    });
+
+    self.tradeAccountClass = ko.observable().extend({
+        required: {
+            params: true,
+            message: 'You must specify a Trade Account Class'
+        }
+    });
+
+    self.creditController = ko.observable().extend({
+        required: {
+            params: true,
+            message: 'You must specify a Credit Controller'
+        }
+    });
+
+    self.bankCode = ko.observable().extend({
+        required: {
+            params: true,
+            message: 'You must specify a Bank'
+        }
+    });
+
+    self.insuredCreditLimit = ko.observable().extend({
+
+    });
+
+    self.purchaseOrderRequired = ko.observable(undefined).extend({
+        required: {
+            params: true,
+            message: 'You must answer this question'
+        }
+    });
+
+    self.tradeAccountGroup = ko.observable("MI").extend({
+        required: {
+            params: true,
+            message: 'Please provide a Trade Account Group'
+        }
+    });
+
+    //self.haulierCode = ko.observable("UPS");
+
+    //self.carriageCode = ko.observable("PO13");
+
+    //self.sampleHaulierCode = ko.observable("RM");
+    
+    //self.sampleCarriageCode = ko.observable("FC");
+
+    self.salesDivision = ko.observable("N").extend({
+        required: {
+            params: true,
+            message: 'You must answer this question'
+        }
+    }); // Does the customer require their shipments to be consolidated ? YES = T, NO = N
+
+    self.deliveryTerms = ko.observable("DDU").extend({
+        required: {
+            params: true,
+            message: 'You must provide INCO Delivery Terms'
         }
     });
 
@@ -1555,6 +1649,12 @@ var leadEdit = function (parent) {
         }
     }, self);
 
+    self.availableTradeAccountClasses = ko.pureComputed({
+        read: () => {
+
+        }
+    }, self);
+
     // #endregion
 
     // #region Components
@@ -1614,12 +1714,17 @@ var leadEdit = function (parent) {
     self.salesRepErrors = ko.validation.group([
         //self.selectedLeadStatus,
         self.salesMarket,
+        self.tradeAccountClass,
+        self.tradeAccountGroup,
         self.salesRepresentative,
         self.salesAgent,
         self.salesArea,
         self.tradePriceList,
         self.companyCurrencyId,
         self.customerTypeId,
+        self.purchaseOrderRequired,
+        self.salesDivision,
+        self.deliveryTerms,
         self.requestedPaymentOption,
         self.requestedCreditLimit,
         self.hasPatternBookLibrary,
@@ -3067,6 +3172,24 @@ var leadEdit = function (parent) {
         self.pricelistsEmail(data.Lead.PricelistsEmail);
         self.paymentTermsNotes(data.Lead.PaymentTermsNotes);
 
+        // new bits 14/06/2023
+
+        //let creditController = self.parent.availableCreditControllers().find(cc => cc.CreditControllerCode == data.Lead.CreditControllerCode);
+        //let bankCode = self.parent.avaialbleBanks().find(b => b.BankCode == );
+
+        self.tradeAccountClass(data.Lead.TradeAccountClassCode);
+
+        let defaultCreditController = self.parent.creditControllerSalesMarketMap.find(m => m.SalesMarketID == data.Lead.SalesMarketID);
+
+        self.creditController(data.Lead.CreditControllerCode || defaultCreditController);
+        self.bankCode(data.Lead.BankCode);
+        self.insuredCreditLimit(data.Lead.InsuredCreditLimit);
+        self.purchaseOrderRequired(data.Lead.PurchaseOrderRequired);
+        self.tradeAccountGroup(data.Lead.TradeAccountGroupCode);
+        self.salesDivision(data.Lead.SalesDivisionCode);
+        self.deliveryTerms(data.Lead.DeliveryTermsCode);
+
+
         // get appointment stuff
 
         switch (self.stageInformation().CurrentStage) {
@@ -3927,7 +4050,15 @@ var leadEdit = function (parent) {
                 JoinedPatternBookScheme: self.joinedPatternBookScheme(),
                 PaymentTermsNotes: self.paymentTermsNotes(),
                 miscSalesRepId: self.miscRepId(),
-                miscTradeAccountId: self.selectedMiscTradeAccount()
+                miscTradeAccountId: self.selectedMiscTradeAccount(),
+                tradeAccountClass: self.tradeAccountClass(),
+                creditController: self.creditController(),
+                bankCode: self.bankCode(),
+                insuredCreditLimit: self.insuredCreditLimit(),
+                purchaseOrderRequired: self.purchaseOrderRequired(),
+                tradeAccountGroup: self.tradeAccountGroup(),
+                salesDivision: self.salesDivision(),
+                deliveryTerms: self.deliveryTerms()
             }
 
             if (self.paymentTerms()) {
@@ -4131,6 +4262,18 @@ var leadEdit = function (parent) {
         self.wantToPayByDirectDebit(undefined);
         //self.stageInformation(undefined); // not necessary as this is always overwritten on load...?
 
+        // other... bits.
+
+        self.tradeAccountClass(undefined);
+        self.creditController(undefined);
+        self.bankCode(undefined);
+        self.insuredCreditLimit(undefined);
+        self.purchaseOrderRequired(undefined);
+        self.tradeAccountGroup(undefined);
+        self.salesDivision("N");
+        self.deliveryTerms("DDU");
+
+
         self.preliminaryErrors.showAllMessages(false);
         self.newLeadErrors.showAllMessages(false);
         self.companyErrors.showAllMessages(false);
@@ -4159,6 +4302,7 @@ var leadEdit = function (parent) {
         self.contactErrors.showAllMessages(false);
         self.businessPotentialErrors.showAllMessages(false);
         self.assignToMiscErrors.showAllMessages(false);
+
         self.validateMiscNow(false);
 
         self.retailAppointmentShop(undefined);
@@ -4657,6 +4801,8 @@ var leadAddress = function (address) {
         });
     };
 
+    self.googleMapsApiKey = "AIzaSyA_d3HoXoCV7M85_xduYJUze1GOscDnjUw";
+
     self.fetchGoogleStreetView = function () {
         //console.log('fetchGoogleStreetView called');
         if (!self.googlePanoLink()) { // if we don't already have a Panorama link...
@@ -4708,8 +4854,7 @@ var leadAddress = function (address) {
                         //having changed primary address, the new address did lend a marker but the old marker still existed
                         // and the old marker was centered upon
 
-                        var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + addressLine;
-                        //+ '&key=AIzaSyCWJjgaoe44VzpTMbmI87tnTrdKQItgEEs'
+                        var url = `https://maps.googleapis.com/maps/api/geocode/json?key=${self.googleMapsApiKey}&address=${addressLine}`;
 
                         $.ajax({
                             dataType: "json",
@@ -4760,11 +4905,11 @@ var leadAddress = function (address) {
 
                                     secondAttempt = encodeURIComponent(secondAttempt);
 
-                                    var url2 = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + secondAttempt;// + '&key=AIzaSyCWJjgaoe44VzpTMbmI87tnTrdKQItgEEs'
+                                    url = `https://maps.googleapis.com/maps/api/geocode/json?key=${self.googleMapsApiKey}&address=${secondAttempt}`;
 
                                     $.ajax({
                                         dataType: "json",
-                                        url: url2,
+                                        url: url,
                                         success: function (data2) {
                                             if (data2.status == "OK") {
                                                 if (data2.results.length > 0) {
@@ -4815,11 +4960,11 @@ var leadAddress = function (address) {
 
                                                 thirdAttempt = encodeURIComponent(thirdAttempt);
 
-                                                var url3 = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + thirdAttempt;// + '&key=AIzaSyCWJjgaoe44VzpTMbmI87tnTrdKQItgEEs'
+                                                url = `https://maps.googleapis.com/maps/api/geocode/json?key=${self.googleMapsApiKey}&address=${thirdAttempt}`;
 
                                                 $.ajax({
                                                     dataType: "json",
-                                                    url: url3,
+                                                    url: url,
                                                     success: function (data3) {
                                                         if (data3.status == "OK") {
                                                             if (data3.results.length > 0) {

@@ -50,6 +50,7 @@
     "mdb-ui-kit": "~3.10.2",
     "merge-stream": "~2.0.0",
     "rollup": "~2.79.1",
+    "react-icons": "4.9.0",
     "sass": "~1.49.9"
   },
   "devDependencies": {

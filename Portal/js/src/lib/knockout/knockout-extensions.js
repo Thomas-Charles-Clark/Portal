@@ -526,11 +526,10 @@ ko.extenders.currencyFormatted = function (target, options) {
         }
     }).extend({
         rateLimit: {
-            timeout: 100,
+            timeout: 0,
             method: 'notifyWhenChangesStop'
-        }
-        //,
-        //notify: 'always'
+        },
+        notify: 'always'
     });
     return target;
 };

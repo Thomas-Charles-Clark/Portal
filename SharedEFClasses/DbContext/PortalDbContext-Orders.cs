@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 using NLog.Internal;
 using PassAutocompleteTerm = SharedEFClasses.Models.TradeAccounts.PassAutocompleteTerm;
 using SharedEFClasses.Models.Mertexer;
+using DeliveryTerm = SharedEFClasses.Models.Mertexer.DeliveryTerm;
 
 namespace SharedEFClasses.Models
 {
@@ -2210,7 +2211,7 @@ namespace SharedEFClasses.Models
 
                 result.DeliveryTerms = ((IObjectContextAdapter)this)
                     .ObjectContext
-                    .Translate<DeliveryTerm>(reader).ToList();
+                    .Translate<SharedEFClasses.Models.Orders.DeliveryTerm>(reader).ToList();
 
                 reader.NextResult();
 

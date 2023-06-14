@@ -13,6 +13,8 @@ using System.Data.Entity;
 using System.ComponentModel.DataAnnotations.Schema;
 using SharedEFClasses.ReturnModels;
 using Unity.Injection;
+using SharedEFClasses.Models.Mertexer;
+using DeliveryTerm = SharedEFClasses.Models.Mertexer.DeliveryTerm;
 
 namespace SharedEFClasses.Models
 {
@@ -191,6 +193,9 @@ namespace SharedEFClasses.Models
         public DbSet<TradeCarriage> TradeCarriages { get; set; }
         public DbSet<TradeCarriage_Country> TradeCarriageCountryRestrictions { get; set; }
         public DbSet<TradeCarriage_Price> TradeCarriagePrices { get; set; }
+        public DbSet<DeliveryTerm> DeliveryTerms { get; set; }
+        public DbSet<SalesDivision> SalesDivisions { get; set; }
+        public DbSet<TradeAccountClass> TradeAccountClasses { get; set; }
         public DbSet<MertexOperator> MertexOperators { get; set; }
         public DbSet<TradePriceList> TradePriceLists { get; set; }
         public DbSet<TradePriceListType> TradePriceListTypes { get; set; }
@@ -211,6 +216,9 @@ namespace SharedEFClasses.Models
         public DbSet<TradeAccount_TradeHaulier_Override> TradeAccountTradeHaulierOverrides { get; set; }
 
         public DbSet<TradeAccount_InvoiceAddress_LoqateSuggestion> TradeAccountInvoiceAddressLoqateSuggestions { get; set; }
+
+        public DbSet<Models.Mertexer.CreditController> CreditControllers { get; set; }
+        public DbSet<Models.Mertexer.CreditController_SalesMarket> CreditControllerSalesMarketMap { get; set; }
 
         #endregion
 
@@ -302,7 +310,7 @@ namespace SharedEFClasses.Models
 
 #region Lead
 
-public DbSet<Lead> Leads { get; set; }
+        public DbSet<Lead> Leads  { get; set; }
 
         public DbSet<LeadAddress> LeadAddresses { get; set; }
 

@@ -312,6 +312,7 @@
     <Compile Include="App_Start\UnityMvcActivator.cs" />
     <Compile Include="BaseController.cs" />
     <Compile Include="BaseViewModel.cs" />
+    <Compile Include="DbContext\Dapper\PortalDbContext-Leads.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-General.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-Retail.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-Paint.cs" />
@@ -328,13 +329,19 @@
     <Compile Include="Models\DocumentModels.cs" />
     <Compile Include="Models\FurnitureModels.cs" />
     <Compile Include="Models\MarketingBudgetModels.cs" />
+    <Compile Include="Models\Mertexer\Bank.cs" />
+    <Compile Include="Models\Mertexer\CreditController.cs" />
+    <Compile Include="Models\Mertexer\CreditController_SalesMarket.cs" />
     <Compile Include="Models\Mertexer\DeliveryAddress.cs" />
+    <Compile Include="Models\Mertexer\DeliveryTerm.cs" />
     <Compile Include="Models\Mertexer\DuplicateLineCheckResult.cs" />
     <Compile Include="Models\Mertexer\InvoiceAddress.cs" />
     <Compile Include="Models\Mertexer\Reason.cs" />
     <Compile Include="Models\Mertexer\RetailTill.cs" />
     <Compile Include="Models\Mertexer\RetailTillSession.cs" />
+    <Compile Include="Models\Mertexer\SalesDivision.cs" />
     <Compile Include="Models\Mertexer\TrackingModels.cs" />
+    <Compile Include="Models\Mertexer\TradeAccountClass.cs" />
     <Compile Include="Models\Mertexer\TradeAccountDataSourceInfo.cs" />
     <Compile Include="Models\Mertexer\UniVerse\UniVerseFieldName.cs" />
     <Compile Include="Models\Mertexer\UniVerse\UniVerseFileName.cs" />

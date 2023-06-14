@@ -1,10 +1,13 @@
 ﻿using Newtonsoft.Json;
+
+using SharedEFClasses.Models.General;
+using SharedEFClasses.Models.TradeAccounts;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using SharedEFClasses.Models.General;
-using SharedEFClasses.Models.TradeAccounts;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.IO;
 using System.Linq;
 
 namespace SharedEFClasses.Models.Leads
@@ -158,6 +161,20 @@ namespace SharedEFClasses.Models.Leads
         public string RetailAppointmentActualTime { get; set; }
         public DateTime? RetailAppointmentActualDate { get; set; }
         public string RetailAppointmentActualAssistant { get; set; }
+
+        //public string MertexCurrencyCode { get; set; }
+        public string TradeAccountClassCode { get; set; }
+        public string BankCode { get; set; }
+        public int? InsuredCreditLimit { get; set; }
+        public bool PurchaseOrderRequired { get; set; }
+        public string TradeAccountGroupCode { get; set; }
+        public string HaulierCode { get; set; }
+        public string CarriageCode { get; set; }
+        public string SampleHaulierCode { get; set; }
+        public string SampleCarriageCode { get; set; }
+        public string SalesDivisionCode { get; set; }
+        public string CreditControllerCode { get; set; }
+        public string DeliveryTermsCode { get; set; }
 
         [ForeignKey("RetailAppointmentAgendaID")]
         public virtual RetailAppointmentAgenda RetailAppointmentAgenda { get; set; }
@@ -836,6 +853,15 @@ namespace SharedEFClasses.Models.Leads
 
         public short? miscSalesRepId { get; set; }
         public int? miscTradeAccountId { get; set; }
+
+        public string TradeAccountClass { get; set; }
+        public string CreditController { get; set; }
+        public string BankCode { get; set; }
+        public int? InsuredCreditLimit { get; set; }
+        public bool PurchaseOrderRequired { get; set; }
+        public string TradeAccountGroup { get; set; }
+        public string SalesDivision { get; set; }
+        public string DeliveryTerms { get; set; }
 
         //public long? leadContactId { get; set; }
         //public byte? editContactTitleId { get; set; } //

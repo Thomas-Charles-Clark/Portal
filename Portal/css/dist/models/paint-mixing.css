@@ -86,6 +86,18 @@ body > .blocker {
   cursor: default;
   background-color: #e9ecef;
 }
+#outstanding-orders-tab .k-grid tr.express td:not(.k-group-cell),
+#completed-orders-tab .k-grid tr.express td:not(.k-group-cell),
+#paint-order-lines-modal .k-grid tr.express td:not(.k-group-cell) {
+  cursor: pointer;
+  background-color: #d43b36;
+  color: #fff;
+}
+#outstanding-orders-tab .k-grid tr.express td:not(.k-group-cell) span > span,
+#completed-orders-tab .k-grid tr.express td:not(.k-group-cell) span > span,
+#paint-order-lines-modal .k-grid tr.express td:not(.k-group-cell) span > span {
+  color: #fff !important;
+}
 #outstanding-orders-tab .k-grid tr.k-state-selected td:not(.k-group-cell),
 #completed-orders-tab .k-grid tr.k-state-selected td:not(.k-group-cell),
 #paint-order-lines-modal .k-grid tr.k-state-selected td:not(.k-group-cell) {
@@ -184,6 +196,13 @@ body > .blocker {
 }
 .delivery-cell .material-icons {
   display: block;
+}
+
+.fa-truck-fast {
+  transform: skewX(-15deg);
+}
+.fa-truck-fast:before {
+  font-size: 19px;
 }
 
 #paint-order-lines-modal .modal-dialog {

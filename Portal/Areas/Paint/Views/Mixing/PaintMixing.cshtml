@@ -45,19 +45,26 @@
     </div>
 }
 <script id="outstanding-orders-row-template" type="text/html">
-    <tr data-bind="css: { 'locked': Locked }, attr: { 'data-order-id': OrderID }">
+    <tr data-bind="css: { 'locked': Locked, 'express': DispatchPriority < 6 }, attr: { 'data-order-id': OrderID }">
         <td class="text-center">
             <span data-bind="text: Priority"></span>
         </td>
         <td class="delivery-cell">
+            <!-- ko if: Deliver -->
+            <!-- ko if: DispatchPriority <= 5 -->
+            <i class="fa-solid fa-truck-fast"></i>
+            <!-- /ko -->
+            <!-- ko if: DispatchPriority >= 6 -->
             <i class="material-icons">
-                <!-- ko if: Deliver -->
                 local_shipping
-                <!-- /ko -->
-                <!-- ko ifnot: Deliver -->
-                directions_walk
-                <!-- /ko -->
             </i>
+            <!-- /ko -->
+            <!-- ko ifnot: Deliver -->
+            <i class="material-icons">
+                directions_walk
+            </i>
+            <!-- /ko -->
+            <!-- /ko -->
         </td>
         <td>
             <span data-bind="text: OrderID"></span>

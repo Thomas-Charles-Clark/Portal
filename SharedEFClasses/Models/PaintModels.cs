@@ -230,6 +230,7 @@ namespace SharedEFClasses.Models
         public bool Locked { get; set; }
         public string Status { get; set; }
         public int Priority { get; set; }
+        public int DispatchPriority { get; set; }
         public string DeliveryCountryCode { get; set; }
         public string DeliveryDescription { get; set; }
     }

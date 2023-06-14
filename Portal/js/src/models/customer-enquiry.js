@@ -692,6 +692,8 @@ var address = function (address) {
     self.longitude = ko.observable(address.Longitude);
     self.latLngFailure = ko.observable(false);
 
+    self.googleMapsApiKey = "AIzaSyA_d3HoXoCV7M85_xduYJUze1GOscDnjUw";
+
     self.fetchGoogleStreetView = function () {
 
         //if (!self.latitude() || !self.longitude()) {
@@ -739,7 +741,7 @@ var address = function (address) {
                 //having changed primary address, the new address did lend a marker but the old marker still existed
                 // and the old marker was centered upon
 
-                var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + addressLine + '&key=AIzaSyCWJjgaoe44VzpTMbmI87tnTrdKQItgEEs'
+                var url = `https://maps.googleapis.com/maps/api/geocode/json?key=${self.googleMapsApiKey}&address=${addressLine}`;
 
                 $.ajax({
                     dataType: "json",
@@ -790,7 +792,7 @@ var address = function (address) {
 
                             secondAttempt = encodeURIComponent(secondAttempt);
 
-                            var url2 = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + secondAttempt + '&key=AIzaSyCWJjgaoe44VzpTMbmI87tnTrdKQItgEEs'
+                            url = `https://maps.googleapis.com/maps/api/geocode/json?key=${self.googleMapsApiKey}&address=${secondAttempt}`;
 
                             $.ajax({
                                 dataType: "json",

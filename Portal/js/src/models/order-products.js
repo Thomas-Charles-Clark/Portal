@@ -2118,6 +2118,9 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
             validator: function (val, parms, callback) {
                 if (val && self.vatCountryCode()) {
 
+                    if (val.indexOf('PL') > -1 && self.vatCountryCode() == 'PL')
+                        val = val.replace('PL', '');
+
                     var data = {
                         vatNumber: val,
                         countryCode: self.vatCountryCode()

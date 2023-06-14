@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using DocumentFormat.OpenXml.Vml.Spreadsheet;
+
+using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
 using Portal.Areas.Sales.ViewModels;
 using Portal.Models;
@@ -31,7 +33,7 @@ namespace Portal.Areas.Sales.Controllers
         }
 
         [ActionName("index")]
-        public ActionResult Index(long? leadId) 
+        public async System.Threading.Tasks.Task<ActionResult> Index(long? leadId) 
         {
             var application = PortalDb.Applications.Where(p => p.ControllerName == "leads" && p.AreaName == "sales" && p.ActionName == "index").Single();
 
@@ -49,6 +51,23 @@ namespace Portal.Areas.Sales.Controllers
             var powerRoles = new List<int> { 1, 12, 26, 29, 31, 32, 30, 34 };
 
             var lockedToRep = !user.Roles.Where(p => powerRoles.Contains(p.RoleId)).Any();
+            var tradeAccountClasses = PortalDb.TradeAccountClasses.ToList();
+            var creditControllers = PortalDb.CreditControllers.Where(cc => cc.Deleted == false).ToList();
+            var creditControllerSalesMarketMap = PortalDb.CreditControllerSalesMarketMap.ToList();
+            var banks = await PortalDb.FetchBanks();
+            var tradeAccountGroups = PortalDb.TradeAccountGroups.ToList();
+            //PortalDb.TradeHauliers.ToList(),
+            //PortalDb.TradeCarriages.ToList(),
+            //PortalDb.TradeHauliers.ToList(),
+            //PortalDb.TradeCarriages.ToList();
+            var salesDivisions = PortalDb.SalesDivisions.Where(sd => sd.SalesDivisionCode == "N" || sd.SalesDivisionCode == "T").ToList();
+
+            salesDivisions.ForEach(sd =>
+            {
+                sd.Name = new System.Globalization.CultureInfo("en-GB").TextInfo.ToTitleCase(sd.Name);
+            });
+
+            var deliveryTerms = PortalDb.DeliveryTerms.Where(dt => dt.Name != null).ToList();
 
             var model = new LeadEnquiryViewModel(
                 leadId,
@@ -78,6 +97,13 @@ namespace Portal.Areas.Sales.Controllers
                 PortalDb.RetailAppointmentType.OrderBy(p => p.SortOrder).ToList(),
                 lockedToRep,
                 PortalDb.Launches.Where(p => p.TradeLaunchDate != null).Select(p => p.LaunchID).OrderByDescending(p => p).First(),
+                tradeAccountClasses,
+                creditControllers,
+                creditControllerSalesMarketMap,
+                banks.ToList(),
+                tradeAccountGroups,
+                salesDivisions,
+                deliveryTerms,
                 user.GetActiveRoleProperties(),
                 application.Heading,
                 application.SubHeading);

@@ -135,6 +135,12 @@
         self.outstandingOrdersGrid.widget().dataSource.read();
     });
 
+    // every minute refresh the outstanding grid
+    window.setTimeout(() => {
+        self.outstandingOrdersGrid.widget().dataSource.read();
+        console.log('outstandingOrdersGrid.widget().dataSource.read() called');
+    }, 60000);
+
     document.querySelector('#completed-orders-tab-btn').addEventListener('click', () => {
         self.orderHistoryGrid.widget().dataSource.read();
     });
@@ -147,7 +153,8 @@
         self.ordersToInvoiceExceptionsGrid.widget().dataSource.read();
     });
 
-    document.querySelector('#transfers-tab-btn').addEventListener('click', () => {
+    document.querySelector('#transfers-tab-btn') &&
+        document.querySelector('#transfers-tab-btn').addEventListener('click', () => {
         self.transfersGrid.widget().one('dataBound', (ev) => {
             window.setTimeout(() => {
                 self.transferOrdersSelectAll.observable(false);
@@ -246,6 +253,9 @@
                             type: 'string'
                         },
                         Priority: {
+                            type: 'number'
+                        },
+                        DispatchPriority: {
                             type: 'number'
                         },
                         DeliveryDescription: {

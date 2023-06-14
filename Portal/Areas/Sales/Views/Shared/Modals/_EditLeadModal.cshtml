@@ -965,7 +965,7 @@
                                                                     Decline Account
                                                                 </button>
                                                             </div>
-                                                            <span class="alert alert-danger pull-left" data-bind="visible: salesRepErrors.isAnyMessageShown()">
+                                                            <span class="alert alert-danger pull-left alert-sm" data-bind="visible: salesRepErrors.isAnyMessageShown()">
                                                                 Please, correct all errors.
                                                             </span>
                                                         </div>
@@ -984,6 +984,22 @@
                                                                                 </div>
                                                                                 <div class="col-xs-12">
                                                                                     <select class="form-control" data-bind="highlightNullField: salesMarket, options: $parent.availableSalesMarkets, value: salesMarket, optionsText: 'Name', optionsValue: $data, optionsCaption: 'Please Select...'"></select>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="form-group row">
+                                                                                <div class="col-xs-12">
+                                                                                    <label class="col-form-label">Sales Reporting Classification</label>
+                                                                                </div>
+                                                                                <div class="col-xs-12">
+                                                                                    <select class="form-control" data-bind="highlightNullField: tradeAccountClass, options: $parent.availableTradeAccountClasses, value: tradeAccountClass, optionsText: (item) => `${item.TradeAccountClassCode} - ${item.Name}`, optionsValue: 'TradeAccountClassCode', optionsCaption: 'Please Select...'"></select>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="form-group row">
+                                                                                <div class="col-xs-12">
+                                                                                    <label class="col-form-label">Trade Account Group</label>
+                                                                                </div>
+                                                                                <div class="col-xs-12">
+                                                                                    <select class="form-control" data-bind="highlightNullField: tradeAccountGroup, options: $parent.availableTradeAccountGroups, value: tradeAccountGroup, optionsText: (item) => `${item.Code} - ${item.Name}`, optionsValue: 'Code', optionsCaption: 'Please Select...'"></select>
                                                                                 </div>
                                                                             </div>
                                                                             <div class="row">
@@ -1243,13 +1259,43 @@
                                                                     <div class="col-sm-6 col-xs-12">
                                                                         <div class="alert alert-info bg-info well-sm" style="margin-bottom: 15px">
                                                                             @*<div class="form-group row">
-                                                                                    <div class="col-xs-12">
-                                                                                        <label class="col-form-label">Currency</label>
-                                                                                    </div>
-                                                                                    <div class="col-xs-12">
-                                                                                        <select class="form-control" data-bind="highlightNullField: companyCurrencyId, value: companyCurrencyId, options: $parent.availableCurrencies, optionsText: 'Name', optionsValue: 'CurrencyID', optionsCaption: 'Please select...'"></select>
-                                                                                    </div>
-                                                                                </div>*@
+            <div class="col-xs-12">
+                <label class="col-form-label">Currency</label>
+            </div>
+            <div class="col-xs-12">
+                <select class="form-control" data-bind="highlightNullField: companyCurrencyId, value: companyCurrencyId, options: $parent.availableCurrencies, optionsText: 'Name', optionsValue: 'CurrencyID', optionsCaption: 'Please select...'"></select>
+            </div>
+        </div>*@
+                                                                            <div class="form-group row">
+                                                                                <div class="col-xs-12">
+                                                                                    <label class="col-form-label">
+                                                                                        Do they require a purchase order of theirs to be shown on our invoices to them?
+                                                                                    </label>
+                                                                                </div>
+                                                                                <div class="col-xs-12">
+                                                                                    <select class="form-control" data-bind="highlightNullField: purchaseOrderRequired, options: $parent.availablePurchaseOrderRequiredOptions, value: purchaseOrderRequired, optionsText: 'Name', optionsValue: 'Value', optionsCaption: 'Please Select...'"></select>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="form-group row">
+                                                                                <div class="col-xs-12">
+                                                                                    <label class="col-form-label">
+                                                                                        Do they require their deliveries to be consolidated into a regular shipment?
+                                                                                    </label>
+                                                                                </div>
+                                                                                <div class="col-xs-12">
+                                                                                    <select class="form-control" data-bind="highlightNullField: salesDivision, options: $parent.availableSalesDivisions, value: salesDivision, optionsText: (item) => `${item.SalesDivisionCode} - ${item.Name}`, optionsValue: 'SalesDivisionCode', optionsCaption: 'Please Select...'"></select>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="form-group row">
+                                                                                <div class="col-xs-12">
+                                                                                    <label class="col-form-label">
+                                                                                        Delivery Terms
+                                                                                    </label>
+                                                                                </div>
+                                                                                <div class="col-xs-12">
+                                                                                    <select class="form-control" data-bind="highlightNullField: deliveryTerms, options: $parent.availableDeliveryTerms, value: deliveryTerms, optionsText: (item) => `${item.DeliveryTermCode} - ${item.Name}`, optionsValue: 'DeliveryTermCode', optionsCaption: 'Please Select...'"></select>
+                                                                                </div>
+                                                                            </div>
                                                                             <div class="form-group row" style="margin-bottom: 0;">
                                                                                 <div class="col-xs-12">
                                                                                     <label class="col-form-label">
@@ -1267,7 +1313,7 @@
                                                                                             <label class="col-form-label">Credit Limit Requested</label>
                                                                                         </div>
                                                                                         <div class="col-xs-12">
-                                                                                            <input type="text" class="form-control numeric" data-bind="highlightNullField: $parent.requestedCreditLimit, numeric, forceNullOnEmpty: $parent.requestedCreditLimit, textInput: $parent.requestedCreditLimit.formatted, validationCore: $parent.requestedCreditLimit" />
+                                                                                            <input type="text" class="form-control numeric" data-bind="highlightNullField: $parent.requestedCreditLimit, numeric, forceNullOnEmpty: $parent.requestedCreditLimit, value: $parent.requestedCreditLimit.formatted, validationCore: $parent.requestedCreditLimit" />
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
@@ -1916,13 +1962,29 @@
                                                                                 </div>
                                                                             </div>
                                                                             @*<div class="row">
-                                                                                    <div class="col-xs-12">
-                                                                                        <label id="letterhead-verified-label" class="col-form-label">
-                                                                                            Company Letterhead Verified
-                                                                                            <input type="checkbox" class="checkbox" data-bind="highlightNullField: companyLetterHeadChecked, checked: companyLetterHeadChecked" />
-                                                                                        </label>
-                                                                                    </div>
-                                                                                </div>*@
+            <div class="col-xs-12">
+                <label id="letterhead-verified-label" class="col-form-label">
+                    Company Letterhead Verified
+                    <input type="checkbox" class="checkbox" data-bind="highlightNullField: companyLetterHeadChecked, checked: companyLetterHeadChecked" />
+                </label>
+            </div>
+        </div>*@
+                                                                            <div class="form-group row">
+                                                                                <div class="col-xs-12">
+                                                                                    <label class="col-form-label">Mertex Banking Destination</label>
+                                                                                </div>
+                                                                                <div class="col-xs-12">
+                                                                                    <select class="form-control" data-bind="highlightNullField: bankCode, options: $parent.availableBanks, value: bankCode, optionsText: 'Name', optionsValue: 'Code', optionsCaption: 'Please Select...'"></select>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="form-group row">
+                                                                                <div class="col-xs-12">
+                                                                                    <label class="col-form-label">Credit Controller</label>
+                                                                                </div>
+                                                                                <div class="col-xs-12">
+                                                                                    <select class="form-control" data-bind="highlightNullField: creditController, options: $parent.availableCreditControllers, value: creditController, optionsText: 'Name', optionsValue: 'CreditControllerCode', optionsCaption: 'Please Select...'"></select>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-sm-6 col-xs-12">

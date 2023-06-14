@@ -90,6 +90,20 @@ body {
             }
         }
 
+        tr.express {
+            td:not(.k-group-cell) {
+                cursor: pointer;
+                background-color: #d43b36;
+                color: $white;
+
+                span {
+                    > span {
+                        color: $white !important;
+                    }
+                }
+            }
+        }
+
         tr.k-state-selected {
             td:not(.k-group-cell) {
                 background-color: $blue-700;
@@ -144,6 +158,13 @@ body {
 
     .material-icons {
         display: block;    
+    }
+}
+
+.fa-truck-fast {
+    transform: skewX(-15deg);
+    &:before {
+        font-size: 19px;
     }
 }
 

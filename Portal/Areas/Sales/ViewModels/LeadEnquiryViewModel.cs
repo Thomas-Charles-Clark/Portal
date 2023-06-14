@@ -3,9 +3,14 @@ using SharedEFClasses;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Leads;
+using SharedEFClasses.Models.Mertexer;
+using SharedEFClasses.Models.Orders;
+using SharedEFClasses.Models.Samples;
 using SharedEFClasses.Models.TradeAccounts;
 using SharedEFClasses.Utilities;
 using System.Collections.Generic;
+
+using DeliveryTerm = SharedEFClasses.Models.Mertexer.DeliveryTerm;
 
 namespace Portal.Areas.Sales.ViewModels
 {
@@ -39,6 +44,13 @@ namespace Portal.Areas.Sales.ViewModels
         public List<TradeAccountContactType> TradeAccountContactTypes { get; set; }
         public List<Tag> AvailableTags { get; set; }
         public List<RetailAppointmentType> RetailAppointmentTypes { get; set; }
+        public List<TradeAccountClass> TradeAccountClasses { get; set; }
+        public List<SharedEFClasses.Models.Mertexer.CreditController> CreditControllers { get; set; }
+        public List<CreditController_SalesMarket> CreditControllerSalesMarketMap { get; set; }
+        public List<Bank> Banks { get; set; }
+        public List<TradeAccountGroup> TradeAccountGroups { get; set; }
+        public List<SalesDivision> SalesDivisions { get; set; }
+        public List<DeliveryTerm> DeliveryTerms { get; set; }
 
         public LeadEnquiryViewModel(
             long? leadId,
@@ -68,9 +80,20 @@ namespace Portal.Areas.Sales.ViewModels
             List<RetailAppointmentType> retailAppointmentTypes,
             bool lockedToRep,
             short preselectedLaunchId,
+            List<TradeAccountClass> tradeAccountClasses,
+            List<SharedEFClasses.Models.Mertexer.CreditController> creditControllers,
+            List<SharedEFClasses.Models.Mertexer.CreditController_SalesMarket> creditControllerSalesMarketMap,
+            List<Bank> banks,
+            List<TradeAccountGroup> tradeAccountGroups,
+            //List<TradeHaulier> hauliers,
+            //List<TradeCarriage> carriages,
+            //List<TradeHaulier> sampleHauliers,
+            //List<TradeCarriage> sampleCarriages,
+            List<SalesDivision> salesDivisions,
+            List<DeliveryTerm> deliveryTerms,
             RoleProperties properties,
             string applicationHeading,
-            string applicationSubHeading) 
+            string applicationSubHeading)
             : base(properties,
                    applicationHeading,
                    applicationSubHeading)
@@ -102,6 +125,18 @@ namespace Portal.Areas.Sales.ViewModels
             PreselectedLaunchID = preselectedLaunchId;
             TradeAccountContactTypes = tradeAccountContactTypes;
             RetailAppointmentTypes = retailAppointmentTypes;
+            TradeAccountClasses = tradeAccountClasses;
+            CreditControllers = creditControllers;
+            CreditControllerSalesMarketMap = creditControllerSalesMarketMap;
+            Banks = banks;
+            TradeAccountGroups = tradeAccountGroups;
+            
+            //Hauliers = hauliers;
+            //Carriages = carriages;
+            //SampleHauliers = sampleHauliers;
+            //SampleCarriages = sampleCarriages;
+            SalesDivisions = salesDivisions;
+            DeliveryTerms = deliveryTerms;
         }
     }
 }
