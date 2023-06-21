@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 
 using SharedEFClasses.Models.General;
+using SharedEFClasses.Models.Mertexer;
 using SharedEFClasses.Models.TradeAccounts;
 
 using System;
@@ -166,7 +167,7 @@ namespace SharedEFClasses.Models.Leads
         public string TradeAccountClassCode { get; set; }
         public string BankCode { get; set; }
         public int? InsuredCreditLimit { get; set; }
-        public bool PurchaseOrderRequired { get; set; }
+        public bool? PurchaseOrderRequired { get; set; }
         public string TradeAccountGroupCode { get; set; }
         public string HaulierCode { get; set; }
         public string CarriageCode { get; set; }
@@ -175,6 +176,8 @@ namespace SharedEFClasses.Models.Leads
         public string SalesDivisionCode { get; set; }
         public string CreditControllerCode { get; set; }
         public string DeliveryTermsCode { get; set; }
+        public short? VATCountryID { get; set; }
+        public string TaxID { get; set; } // Swiss only
 
         [ForeignKey("RetailAppointmentAgendaID")]
         public virtual RetailAppointmentAgenda RetailAppointmentAgenda { get; set; }
@@ -262,6 +265,10 @@ namespace SharedEFClasses.Models.Leads
         public string Name { get; set; }
         public short? CountryID { get; set; }
         public byte? LanguageID { get; set; }
+        public byte CurrencyID { get; set; }
+
+        [ForeignKey("CurrencyID")]
+        public virtual Currency Currency { get; set; }
 
         [JsonIgnore]
         [InverseProperty("SalesMarket")]
@@ -291,7 +298,11 @@ namespace SharedEFClasses.Models.Leads
         [JsonIgnore]
         [InverseProperty("SalesMarket")]
         public virtual ICollection<AlternateDeliveryService> AlternateDeliveryServices { get; set; }
-    }
+
+        [JsonIgnore]
+        [InverseProperty("SalesMarket")]
+        public virtual ICollection<Bank_SalesMarket> MertexBanks { get; set; }
+  }
 
     public class LeadType
     {
@@ -639,6 +650,7 @@ namespace SharedEFClasses.Models.Leads
         public DateTime? RetailAppointmentActualDate { get; set; }
         public DateTime? TransferredToCreditControlDT { get; set; }
         public string TransferredToCCSince { get; set; }
+        public string TradeAccountCode { get; set; }
     }
     
     public class CustomerSearchViewResult
@@ -809,6 +821,8 @@ namespace SharedEFClasses.Models.Leads
         public byte? LanguageID { get; set; }
         public string CompanyRegistration { get; set; }
         public string CompanyVATNumber { get; set; }
+        public short? VATCountryID { get; set; }
+        public string VATNumberDisplay { get; set; }
         public string EORINumber { get; set; }
         public byte? CompanyTypeID { get; set; }
         public byte? TradingSinceID { get; set; }
@@ -858,10 +872,11 @@ namespace SharedEFClasses.Models.Leads
         public string CreditController { get; set; }
         public string BankCode { get; set; }
         public int? InsuredCreditLimit { get; set; }
-        public bool PurchaseOrderRequired { get; set; }
+        public bool? PurchaseOrderRequired { get; set; }
         public string TradeAccountGroup { get; set; }
         public string SalesDivision { get; set; }
         public string DeliveryTerms { get; set; }
+        public string TaxID { get; set; }
 
         //public long? leadContactId { get; set; }
         //public byte? editContactTitleId { get; set; } //

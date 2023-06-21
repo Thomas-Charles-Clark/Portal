@@ -499,7 +499,10 @@
             field: 'Status',
             title: 'Status',
             width: 80,
-            filterable: false
+          filterable: false,
+          template: (item) => {
+            return (item.TradeAccountCode ? `${item.Status}<br/><b>${item.TradeAccountCode}</b>` : item.Status);
+          }
         },
         {
             field: 'SourcedBy',

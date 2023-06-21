@@ -48,6 +48,7 @@ namespace Portal.Areas.Sales.ViewModels
         public List<SharedEFClasses.Models.Mertexer.CreditController> CreditControllers { get; set; }
         public List<CreditController_SalesMarket> CreditControllerSalesMarketMap { get; set; }
         public List<Bank> Banks { get; set; }
+        public List<Bank_SalesMarket> BankSalesMarketMap { get; set; }
         public List<TradeAccountGroup> TradeAccountGroups { get; set; }
         public List<SalesDivision> SalesDivisions { get; set; }
         public List<DeliveryTerm> DeliveryTerms { get; set; }
@@ -84,6 +85,7 @@ namespace Portal.Areas.Sales.ViewModels
             List<SharedEFClasses.Models.Mertexer.CreditController> creditControllers,
             List<SharedEFClasses.Models.Mertexer.CreditController_SalesMarket> creditControllerSalesMarketMap,
             List<Bank> banks,
+            List<Bank_SalesMarket> bankSalesMarketMap,
             List<TradeAccountGroup> tradeAccountGroups,
             //List<TradeHaulier> hauliers,
             //List<TradeCarriage> carriages,
@@ -129,6 +131,7 @@ namespace Portal.Areas.Sales.ViewModels
             CreditControllers = creditControllers;
             CreditControllerSalesMarketMap = creditControllerSalesMarketMap;
             Banks = banks;
+            BankSalesMarketMap = bankSalesMarketMap;
             TradeAccountGroups = tradeAccountGroups;
             
             //Hauliers = hauliers;

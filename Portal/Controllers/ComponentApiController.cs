@@ -4,9 +4,12 @@ using Kendo.Mvc.UI;
 
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.SignalR;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
 using Portal.UPS_Rate_Service;
+
 using SharedEFClasses;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Applications;
@@ -19,6 +22,7 @@ using SharedEFClasses.Models.Samples;
 using SharedEFClasses.Models.TradeAccounts;
 using SharedEFClasses.SignalR.Hubs;
 using SharedEFClasses.Utilities;
+
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -29,6 +33,7 @@ using System.ServiceModel;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
+using System.Web.Http.Results;
 
 namespace Portal.Controllers
 {
@@ -45,7 +50,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult AccountNumberAutocomplete([FromBody]PassAutocompleteTerm objAutocomplete)
+        public IHttpActionResult AccountNumberAutocomplete([FromBody] PassAutocompleteTerm objAutocomplete)
         {
             if (objAutocomplete.marketId == -1)
                 objAutocomplete.marketId = null;
@@ -57,8 +62,8 @@ namespace Portal.Controllers
 
         [HttpPost]
         public DataSourceResult VisitSearch(
-            [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))]DataSourceRequest request,
-            [FromBody]PassVisitSearch objVisitSearch)
+            [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+            [FromBody] PassVisitSearch objVisitSearch)
         {
             var result = PortalDb.CustomerVisitSearch(objVisitSearch);
 
@@ -66,7 +71,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult CreditTermsAutocomplete([FromBody]PassPaymentTermsSearch objSearch)
+        public IHttpActionResult CreditTermsAutocomplete([FromBody] PassPaymentTermsSearch objSearch)
         {
             var result = PortalDb.FetchPaymentTerms(objSearch);
 
@@ -74,7 +79,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult SalesRepresentativeAutocomplete([FromBody]PassSalesMarketDependentAutocomplete objAutocomplete)
+        public IHttpActionResult SalesRepresentativeAutocomplete([FromBody] PassSalesMarketDependentAutocomplete objAutocomplete)
         {
             var results = PortalDb.SalesRepresentatives.Where(p => ((p.SalesRepresentative_SalesMarkets.Select(q => q.SalesMarketID).Contains(objAutocomplete.salesMarket.SalesMarketID))) &&
                                                                     (String.IsNullOrEmpty(objAutocomplete.term) ||
@@ -87,7 +92,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult SalesAgentAutocomplete([FromBody]PassSalesMarketDependentAutocomplete objAutocomplete)
+        public IHttpActionResult SalesAgentAutocomplete([FromBody] PassSalesMarketDependentAutocomplete objAutocomplete)
         {
             var results = PortalDb.SalesAgents.Where(p => ((p.SalesMarketID == objAutocomplete.salesMarket.SalesMarketID)) &&
                                                            (String.IsNullOrEmpty(objAutocomplete.term) ||
@@ -100,7 +105,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult SalesAreaAutocomplete([FromBody]PassSalesMarketDependentAutocomplete objAutocomplete)
+        public IHttpActionResult SalesAreaAutocomplete([FromBody] PassSalesMarketDependentAutocomplete objAutocomplete)
         {
             var results = PortalDb.SalesAreas.Where(p => ((p.SalesMarketID == objAutocomplete.salesMarket.SalesMarketID)) &&
                                                           (String.IsNullOrEmpty(objAutocomplete.term) ||
@@ -113,7 +118,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult TradePriceListAutocomplete([FromBody]PassSalesMarketDependentAutocomplete objAutocomplete)
+        public IHttpActionResult TradePriceListAutocomplete([FromBody] PassSalesMarketDependentAutocomplete objAutocomplete)
         {
             var results = PortalDb.TradePriceLists.Where(p => (
                                                                 (p.Deleted == false) &&
@@ -133,7 +138,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult OperatorAutocomplete([FromBody]PassAutocompleteTerm objAutocomplete)
+        public IHttpActionResult OperatorAutocomplete([FromBody] PassAutocompleteTerm objAutocomplete)
         {
             var results = PortalDb.MertexOperators.Where(p => p.Name.StartsWith(objAutocomplete.term) || p.Code.StartsWith(objAutocomplete.term)).Distinct().ToList();
 
@@ -146,7 +151,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult ProductCodeAutocompleteSamples([FromBody]PassProductCodeAutoComplete objAutocomplete)
+        public IHttpActionResult ProductCodeAutocompleteSamples([FromBody] PassProductCodeAutoComplete objAutocomplete)
         {
             var results = PortalDb.ProductCode_Autocomplete_Samples(objAutocomplete).ToList();
 
@@ -154,7 +159,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult ProductCodeAutocompleteAlternatives([FromBody]PassProductCodeAutoComplete objAutocomplete)
+        public IHttpActionResult ProductCodeAutocompleteAlternatives([FromBody] PassProductCodeAutoComplete objAutocomplete)
         {
             var results = PortalDb.ProductCode_Autocomplete_Alternatives(objAutocomplete.term, objAutocomplete.tradePriceListId);
 
@@ -221,9 +226,9 @@ namespace Portal.Controllers
                 return Ok(new { c.TagID, objName.Name });
             }
         }
-        
+
         [HttpGet]
-        public DataSourceResult GetCountries([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))]DataSourceRequest request, bool includeEU = true)
+        public DataSourceResult GetCountries([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request, bool includeEU = true)
         {
             var results = PortalDb.Countries.Where(p => p.IsCountry == true && p.DeletedDT == null &&
                 ((includeEU == true ? true : p.EU == false))).OrderBy(p => p.Name).ToList();
@@ -232,7 +237,7 @@ namespace Portal.Controllers
         }
 
         [HttpGet]
-        public DataSourceResult GetDeliveryGroups([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))]DataSourceRequest request)
+        public DataSourceResult GetDeliveryGroups([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
         {
             var results = PortalDb.DeliveryGroups.OrderBy(p => p.Name).ToList();
 
@@ -240,7 +245,7 @@ namespace Portal.Controllers
         }
 
         [HttpGet]
-        public DataSourceResult GetProductFilterGroups([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))]DataSourceRequest request)
+        public DataSourceResult GetProductFilterGroups([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
         {
             var results = PortalDb.ProductFilterGroups.OrderBy(p => p.Name).ToList();
 
@@ -248,7 +253,7 @@ namespace Portal.Controllers
         }
 
         [HttpGet]
-        public DataSourceResult GetTreatmentProducts([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))]DataSourceRequest request)
+        public DataSourceResult GetTreatmentProducts([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
         {
             var results = PortalDb.Products.Where(p => p.Status != "D" && p.Deleted == false && p.Code.StartsWith("BAC")).OrderBy(p => p.Name).ToList();
 
@@ -256,7 +261,7 @@ namespace Portal.Controllers
         }
 
         [HttpGet]
-        public DataSourceResult GetLanguages([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))]DataSourceRequest request)
+        public DataSourceResult GetLanguages([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
         {
             // This processing is all in order to cascade from a selected country's ProxyCountryID.
             // This needs taking to dbo.Country, where it will give you a CountryID, which you can then take to dbo.Country_Language 
@@ -323,7 +328,7 @@ namespace Portal.Controllers
         //}
 
         [HttpPost]
-        public IHttpActionResult FetchTechInfo([FromBody]PassProductID objProductId)
+        public IHttpActionResult FetchTechInfo([FromBody] PassProductID objProductId)
         {
             var results = PortalDb.FetchTechInfo(objProductId);
 
@@ -331,7 +336,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchCollectionImages([FromBody]PassProductID objProductId)
+        public IHttpActionResult FetchCollectionImages([FromBody] PassProductID objProductId)
         {
             var results = PortalDb.FetchCollectionImages(objProductId);
 
@@ -339,7 +344,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchProductPageImages([FromBody]PassStockViewerLoad objLoad)
+        public IHttpActionResult FetchProductPageImages([FromBody] PassStockViewerLoad objLoad)
         {
             var results = PortalDb.FetchProductPageImages(objLoad);
 
@@ -347,7 +352,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult ProductSearchFilters([FromBody]PassProductSearchFilter objFilter)
+        public IHttpActionResult ProductSearchFilters([FromBody] PassProductSearchFilter objFilter)
         {
             var results = PortalDb.FetchProductSearchFilters(objFilter);
 
@@ -355,7 +360,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult ProductSearch([FromBody]PassProductSearch objSearch)
+        public IHttpActionResult ProductSearch([FromBody] PassProductSearch objSearch)
         {
             var result = PortalDb.ProductSearch(objSearch);
 
@@ -363,7 +368,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult ProductSearch_QuickDisplay([FromBody]PassProductSearchFilter objFilter)
+        public IHttpActionResult ProductSearch_QuickDisplay([FromBody] PassProductSearchFilter objFilter)
         {
             var results = PortalDb.ProductSearchQuickDisplay(objFilter);
 
@@ -371,7 +376,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult ProductSearch_QuickDisplay_Select([FromBody]PassQuickDisplayProductSelect objFilter)
+        public IHttpActionResult ProductSearch_QuickDisplay_Select([FromBody] PassQuickDisplayProductSelect objFilter)
         {
             var results = PortalDb.QuickDisplay_Select(objFilter);
 
@@ -379,7 +384,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult ProductSearchKeywordAutocomplete([FromBody]PassProductSearch objSearch)
+        public IHttpActionResult ProductSearchKeywordAutocomplete([FromBody] PassProductSearch objSearch)
         {
             var results = PortalDb.ProductSearchKeywordAutocomplete(objSearch);
 
@@ -387,7 +392,8 @@ namespace Portal.Controllers
 
             var adjustedResults = new List<SharedEFClasses.Models.Products.ProductSearchKeyword>();
 
-            results.ForEach(c => {
+            results.ForEach(c =>
+            {
                 var b = c;
                 b.Suggestion = ti.ToTitleCase(b.Suggestion);
                 adjustedResults.Add(b);
@@ -397,7 +403,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchItemTypes([FromBody]PassProductSearch objSearch)
+        public IHttpActionResult FetchItemTypes([FromBody] PassProductSearch objSearch)
         {
             var results = PortalDb.ItemTypeSelect(objSearch);
 
@@ -405,7 +411,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> FetchProductsByQuality([FromBody]PassProductFetchByQuality objQuality)
+        public async Task<IHttpActionResult> FetchProductsByQuality([FromBody] PassProductFetchByQuality objQuality)
         {
             objQuality.qualityId = PortalDb.QualitySelectByCode(objQuality);
 
@@ -445,7 +451,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchBasketParameters([FromBody]PassBasketID objBasket)
+        public IHttpActionResult FetchBasketParameters([FromBody] PassBasketID objBasket)
         {
             var result = PortalDb.FetchBasketParameters(objBasket);
 
@@ -453,7 +459,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchFulfilmentOptions([FromBody]PassFulfilmentOptionsSelect objTradeAccount)
+        public IHttpActionResult FetchFulfilmentOptions([FromBody] PassFulfilmentOptionsSelect objTradeAccount)
         {
             var result = PortalDb.FetchFulfilmentOptions(objTradeAccount);
 
@@ -461,13 +467,13 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> FetchSupplierDetails([FromBody]SharedEFClasses.Models.Orders.PassProductCode objProductCode)
+        public async Task<IHttpActionResult> FetchSupplierDetails([FromBody] SharedEFClasses.Models.Orders.PassProductCode objProductCode)
         {
             return Ok(await PortalDb.SupplierList(objProductCode));
         }
 
         [HttpPost]
-        public IHttpActionResult BasketShippingRestrictionCheck([FromBody]PassBasketID objBasketId)
+        public IHttpActionResult BasketShippingRestrictionCheck([FromBody] PassBasketID objBasketId)
         {
             var results = PortalDb.BasketShippingRestrictionCheck(objBasketId);
 
@@ -475,7 +481,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult BasketStatusCheck([FromBody]PassBasketPhaseChange objBasketId)
+        public IHttpActionResult BasketStatusCheck([FromBody] PassBasketPhaseChange objBasketId)
         {
             var userId = User.Identity.GetUserId<int>();
 
@@ -485,7 +491,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchBespokeOptions([FromBody]PassStockViewerLoad objLoad)
+        public IHttpActionResult FetchBespokeOptions([FromBody] PassStockViewerLoad objLoad)
         {
             var result = PortalDb.FetchBespokeOptions(objLoad);
 
@@ -493,7 +499,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult SaveBasket([FromBody]PassBasket objBasket)
+        public IHttpActionResult SaveBasket([FromBody] PassBasket objBasket)
         {
             var result = PortalDb.UpdateBasket(objBasket);
 
@@ -501,7 +507,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult DeleteBasket([FromBody]PassBasket objBasket)
+        public IHttpActionResult DeleteBasket([FromBody] PassBasket objBasket)
         {
             var userId = User.Identity.GetUserId<int>();
 
@@ -511,7 +517,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult EditTransaction([FromBody]PassTransactionID objTransactionId)
+        public IHttpActionResult EditTransaction([FromBody] PassTransactionID objTransactionId)
         {
             var userId = User.Identity.GetUserId<int>();
 
@@ -521,7 +527,7 @@ namespace Portal.Controllers
         }
 
         [HttpGet]
-        public IHttpActionResult FetchMemberBaskets([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))]DataSourceRequest request, int? memberId)
+        public IHttpActionResult FetchMemberBaskets([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request, int? memberId)
         {
             var mid = memberId ?? User.Identity.GetUserId<int>();
 
@@ -546,7 +552,7 @@ namespace Portal.Controllers
         }
 
         [HttpGet]
-        public IHttpActionResult FetchImportedBaskets([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))]DataSourceRequest request, int? memberId)
+        public IHttpActionResult FetchImportedBaskets([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request, int? memberId)
         {
             var mid = memberId ?? User.Identity.GetUserId<int>();
 
@@ -571,7 +577,7 @@ namespace Portal.Controllers
         }
 
         [HttpGet]
-        public IHttpActionResult FetchFoCDeliveryBaskets([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))]DataSourceRequest request, int? memberId)
+        public IHttpActionResult FetchFoCDeliveryBaskets([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request, int? memberId)
         {
             var mid = memberId ?? User.Identity.GetUserId<int>();
 
@@ -596,7 +602,7 @@ namespace Portal.Controllers
         }
 
         [HttpGet]
-        public IHttpActionResult FetchHeldOrdersManagement([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))]DataSourceRequest request)
+        public IHttpActionResult FetchHeldOrdersManagement([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
         {
             var memberId = User.Identity.GetUserId<int>();
 
@@ -623,7 +629,7 @@ namespace Portal.Controllers
         }
 
         [HttpGet]
-        public IHttpActionResult FetchHeldOrdersOperator([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))]DataSourceRequest request)
+        public IHttpActionResult FetchHeldOrdersOperator([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
         {
             var memberId = User.Identity.GetUserId<int>();
 
@@ -651,7 +657,7 @@ namespace Portal.Controllers
 
 
         [HttpPost]
-        public IHttpActionResult ReleaseBasket([FromBody]PassBasketID objBasketId)
+        public IHttpActionResult ReleaseBasket([FromBody] PassBasketID objBasketId)
         {
             var memberId = User.Identity.GetUserId<int>();
 
@@ -659,7 +665,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult ReleaseTransaction([FromBody]PassTransactionID objTransactionId)
+        public IHttpActionResult ReleaseTransaction([FromBody] PassTransactionID objTransactionId)
         {
             var memberId = User.Identity.GetUserId<int>();
 
@@ -667,11 +673,11 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchDispatchInfo([FromBody]PassBasketSplit objBasket)
+        public IHttpActionResult FetchDispatchInfo([FromBody] PassBasketSplit objBasket)
         {
             var results = PortalDb.Basket_DeliveryService_Select(objBasket, User.Identity.GetUserId<int>());
 
-            results.DeliveryServices.ForEach(c => 
+            results.DeliveryServices.ForEach(c =>
             {
                 c.DemandMobilePhoneNumber = PortalDb.TradeHauliers.Where(p => p.HAULCODE == c.HaulierCode).Select(p => p.DemandMobilePhoneNumber).FirstOrDefault();
             });
@@ -680,7 +686,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult SubmitBasket([FromBody]PassBasketID objBasketId)
+        public IHttpActionResult SubmitBasket([FromBody] PassBasketID objBasketId)
         {
             var b = PortalDb.Baskets.Where(p => p.BasketID == objBasketId.BasketID).Single();
             var memberId = User.Identity.GetUserId<int>();
@@ -705,7 +711,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult GetPieceLevelStockInfo([FromBody]PassFetchProductStockInfo objProductIds)
+        public IHttpActionResult GetPieceLevelStockInfo([FromBody] PassFetchProductStockInfo objProductIds)
         {
             var result = PortalDb.FetchStockInfo(objProductIds);
 
@@ -713,7 +719,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchCoordinatingProducts([FromBody]PassStockViewerLoad objProduct)
+        public IHttpActionResult FetchCoordinatingProducts([FromBody] PassStockViewerLoad objProduct)
         {
             var result = PortalDb.FetchCoordinatingProducts(objProduct);
 
@@ -722,7 +728,7 @@ namespace Portal.Controllers
 
 
         [HttpPost]
-        public IHttpActionResult FetchAlsoLookAts([FromBody]PassStockViewerLoad objProduct)
+        public IHttpActionResult FetchAlsoLookAts([FromBody] PassStockViewerLoad objProduct)
         {
             var result = PortalDb.FetchAlsoLookAts(objProduct);
 
@@ -731,7 +737,7 @@ namespace Portal.Controllers
 
 
         [HttpPost]
-        public IHttpActionResult FetchAlternateProducts([FromBody]PassStockViewerLoad objProduct)
+        public IHttpActionResult FetchAlternateProducts([FromBody] PassStockViewerLoad objProduct)
         {
             var result = PortalDb.FetchAlternateProducts(objProduct);
 
@@ -739,7 +745,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchAlternateColourways([FromBody]PassStockViewerLoad objProduct)
+        public IHttpActionResult FetchAlternateColourways([FromBody] PassStockViewerLoad objProduct)
         {
             var result = PortalDb.FetchAlternateColourways(objProduct);
 
@@ -747,7 +753,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchUSPs([FromBody]PassStockViewerLoad objProduct)
+        public IHttpActionResult FetchUSPs([FromBody] PassStockViewerLoad objProduct)
         {
             var result = PortalDb.FetchUSPs(objProduct);
 
@@ -755,7 +761,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchTreatmentOptions([FromBody]PassProductID objProduct)
+        public IHttpActionResult FetchTreatmentOptions([FromBody] PassProductID objProduct)
         {
             var results = PortalDb.FetchTreatmentOptions(objProduct);
 
@@ -763,7 +769,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchBasketItemTreatments([FromBody]PassBasketItemID objBasketItemId)
+        public IHttpActionResult FetchBasketItemTreatments([FromBody] PassBasketItemID objBasketItemId)
         {
             var results = PortalDb.FetchBasketItemTreatments(objBasketItemId);
 
@@ -771,7 +777,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> SendProductInfoEmail([FromBody]PassSendProductInfo objSend)
+        public async Task<IHttpActionResult> SendProductInfoEmail([FromBody] PassSendProductInfo objSend)
         {
             var member = UserManager.FindById(User.Identity.GetUserId<int>());
 
@@ -782,8 +788,8 @@ namespace Portal.Controllers
             });
 
             //var stockInfo = await PortalDb.StockEnquiry(objSend.product.Code);
-                
-                //MertexerV2SQL.Stock.StockFunctions.PerformStockEnquiry(objSend.product.Code);
+
+            //MertexerV2SQL.Stock.StockFunctions.PerformStockEnquiry(objSend.product.Code);
 
             //if ((String.IsNullOrEmpty(stockInfo.TotalStock) || stockInfo.TotalStock == "0") && (
             //        String.IsNullOrEmpty(stockInfo.TotalPurchaseOrderLength) ||
@@ -924,7 +930,7 @@ namespace Portal.Controllers
                 foreach (var batch in stockInfo.stockResults.Where(s => s.AvailableNowQuantity > 0).GroupBy(s => s.Batch))
                 {
                     foreach (var piece in batch)
-                    { 
+                    {
                         if (piece == batch.First())
                         {
                             batchInky += $@"
@@ -1134,7 +1140,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult SendPatternBookDiscoEmail([FromBody]PassSendPatternBookDiscoInfo objSend)
+        public IHttpActionResult SendPatternBookDiscoEmail([FromBody] PassSendPatternBookDiscoInfo objSend)
         {
             var member = UserManager.FindById(User.Identity.GetUserId<int>());
 
@@ -1316,7 +1322,7 @@ namespace Portal.Controllers
 
 
         [HttpPost]
-        public IHttpActionResult SendPatternBookCurrentEmail([FromBody]PassSendPatternBookCurrentInfo objSend)
+        public IHttpActionResult SendPatternBookCurrentEmail([FromBody] PassSendPatternBookCurrentInfo objSend)
         {
             var member = UserManager.FindById(User.Identity.GetUserId<int>());
 
@@ -1456,7 +1462,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchSamplingOptions([FromBody]PassStockViewerLoad objProduct)
+        public IHttpActionResult FetchSamplingOptions([FromBody] PassStockViewerLoad objProduct)
         {
             var results = PortalDb.FetchSamplingOptions(objProduct);
 
@@ -1464,7 +1470,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchPatternBookContents([FromBody]PassStockViewerLoad objProduct)
+        public IHttpActionResult FetchPatternBookContents([FromBody] PassStockViewerLoad objProduct)
         {
             var results = PortalDb.FetchPatternBookContents(objProduct);
 
@@ -1472,7 +1478,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchBespokeStockedHanger([FromBody]PassStockViewerLoad objProduct)
+        public IHttpActionResult FetchBespokeStockedHanger([FromBody] PassStockViewerLoad objProduct)
         {
             var results = PortalDb.FetchBesokeStockedHanger(objProduct);
 
@@ -1480,7 +1486,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchRugShape([FromBody]PassStockViewerLoad objProduct)
+        public IHttpActionResult FetchRugShape([FromBody] PassStockViewerLoad objProduct)
         {
             var result = PortalDb.FetchRugShape(objProduct);
 
@@ -1653,7 +1659,7 @@ namespace Portal.Controllers
              */
 
         [HttpPost]
-        public IHttpActionResult FetchBespokeProductPrice([FromBody]PassBespokeProductSize objBespoke)
+        public IHttpActionResult FetchBespokeProductPrice([FromBody] PassBespokeProductSize objBespoke)
         {
             var result = PortalDb.FetchBespokeProductPrice(objBespoke);
 
@@ -1661,7 +1667,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchTreatments([FromBody]PassProductFilter objFilter)
+        public IHttpActionResult FetchTreatments([FromBody] PassProductFilter objFilter)
         {
             var results = PortalDb.FetchTreatments(objFilter);
 
@@ -1669,7 +1675,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult SaveTreatments([FromBody]PassBasketItemTreatmentSave objSave)
+        public IHttpActionResult SaveTreatments([FromBody] PassBasketItemTreatmentSave objSave)
         {
             var results = PortalDb.SaveTreatments(objSave);
 
@@ -1677,7 +1683,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchBasketItemMemos([FromBody]PassBasketItemID objBasketItemId)
+        public IHttpActionResult FetchBasketItemMemos([FromBody] PassBasketItemID objBasketItemId)
         {
             var results = PortalDb.FetchBasketItemMemos(objBasketItemId);
 
@@ -1685,7 +1691,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult SaveBasketItemMemos([FromBody]PassBasketItemMemoSave objSave)
+        public IHttpActionResult SaveBasketItemMemos([FromBody] PassBasketItemMemoSave objSave)
         {
             var result = PortalDb.SaveBasketItemMemos(objSave);
 
@@ -1693,7 +1699,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchSizes([FromBody]PassProductFilter objFilter)
+        public IHttpActionResult FetchSizes([FromBody] PassProductFilter objFilter)
         {
             var results = PortalDb.FetchSizeOptions(objFilter);
 
@@ -1701,7 +1707,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchVisitOrders([FromBody]PassTradeAccountVisit objVisit)
+        public IHttpActionResult FetchVisitOrders([FromBody] PassTradeAccountVisit objVisit)
         {
             var results = PortalDb.FetchTradeAccountVisitOrders(objVisit);
 
@@ -1709,7 +1715,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult CreateBasket([FromBody]PassBasketCreation objCreate)
+        public IHttpActionResult CreateBasket([FromBody] PassBasketCreation objCreate)
         {
             objCreate.MemberID = User.Identity.GetUserId<int>();
 
@@ -1723,7 +1729,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult AddBasketItem([FromBody]PassBasketItemAdd objAdd)
+        public IHttpActionResult AddBasketItem([FromBody] PassBasketItemAdd objAdd)
         {
             objAdd.MemberID = User.Identity.GetUserId<int>();
 
@@ -1740,7 +1746,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchBasketItemForEdit([FromBody]PassBasketItemEditFetch objBasketItem)
+        public IHttpActionResult FetchBasketItemForEdit([FromBody] PassBasketItemEditFetch objBasketItem)
         {
             var searchResults = PortalDb.FetchBasketItemForEdit(objBasketItem);
 
@@ -1750,7 +1756,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchBasketItemAllocation([FromBody]PassBasketItemAllocationFetch objFetch)
+        public IHttpActionResult FetchBasketItemAllocation([FromBody] PassBasketItemAllocationFetch objFetch)
         {
             var result = PortalDb.FetchBasketItemAllocation(objFetch);
 
@@ -1758,7 +1764,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult SaveBasketItemAllocationDetails([FromBody]PassBasketItemAllocationSave objSave)
+        public IHttpActionResult SaveBasketItemAllocationDetails([FromBody] PassBasketItemAllocationSave objSave)
         {
             var result = PortalDb.SaveBasketItemAllocationDetails(objSave);
 
@@ -1766,7 +1772,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchBasketItemAllocationStock([FromBody]PassBasketItemAllocationFetch objFetch)
+        public IHttpActionResult FetchBasketItemAllocationStock([FromBody] PassBasketItemAllocationFetch objFetch)
         {
             var results = PortalDb.FetchBasketItemAllocationStock(objFetch);
 
@@ -1774,7 +1780,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult TestBasketValidity([FromBody]PassBasketID objBasket)
+        public IHttpActionResult TestBasketValidity([FromBody] PassBasketID objBasket)
         {
             var b = PortalDb.Baskets.Where(p => p.BasketID == objBasket.BasketID).SingleOrDefault();
 
@@ -1811,7 +1817,7 @@ namespace Portal.Controllers
                 b.LockedByMemberID = user.Id;
 
                 b.OrderTaker = user.DefaultMertexOperatorCode;
-                
+
                 PortalDb.SaveChanges(); // This basket is now locked by the member requesting access to it.
 
                 PortalDb.BasketReload(user.Id, objBasket.BasketID);
@@ -1828,7 +1834,7 @@ namespace Portal.Controllers
 
         //Defunct? 15/02/2021
         [HttpPost]
-        public IHttpActionResult TakeoverBasket([FromBody]PassBasketID objBasket)
+        public IHttpActionResult TakeoverBasket([FromBody] PassBasketID objBasket)
         {
             var b = PortalDb.Baskets.Where(p => p.BasketID == objBasket.BasketID).Single();
 
@@ -1843,7 +1849,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult UnlockBasket([FromBody]PassBasketUnlock objBasket)
+        public IHttpActionResult UnlockBasket([FromBody] PassBasketUnlock objBasket)
         {
             var b = PortalDb.Baskets.Where(p => p.BasketID == objBasket.BasketID).Single();
 
@@ -1855,7 +1861,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult CreateBasketItemAllocation([FromBody]PassBasketItemAllocation objAlloc)
+        public IHttpActionResult CreateBasketItemAllocation([FromBody] PassBasketItemAllocation objAlloc)
         {
             objAlloc.MemberID = User.Identity.GetUserId<int>();
 
@@ -1865,7 +1871,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult UpdateBasketItemAllocation([FromBody]PassBasketItemAllocation objAlloc)
+        public IHttpActionResult UpdateBasketItemAllocation([FromBody] PassBasketItemAllocation objAlloc)
         {
             objAlloc.MemberID = User.Identity.GetUserId<int>();
 
@@ -1875,7 +1881,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult DeleteBasketItemAllocation([FromBody]PassBasketItemAllocation objAlloc)
+        public IHttpActionResult DeleteBasketItemAllocation([FromBody] PassBasketItemAllocation objAlloc)
         {
             objAlloc.MemberID = User.Identity.GetUserId<int>();
 
@@ -1885,7 +1891,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult ChangeBasketItemStockLocation([FromBody]PassBasketItem objBasketItem)
+        public IHttpActionResult ChangeBasketItemStockLocation([FromBody] PassBasketItem objBasketItem)
         {
             objBasketItem.MemberID = User.Identity.GetUserId<int>();
 
@@ -1911,7 +1917,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult BasketItemReviewPrices([FromBody]PassBasketItemReviewPricesSelect objBasketItem)
+        public IHttpActionResult BasketItemReviewPrices([FromBody] PassBasketItemReviewPricesSelect objBasketItem)
         {
             var result = PortalDb.BasketItemReviewPrices(objBasketItem);
 
@@ -1919,7 +1925,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult BasketItemReviewPricesCalculateFinalPrice([FromBody]PassBasketItemReviewPricesSave objSave)
+        public IHttpActionResult BasketItemReviewPricesCalculateFinalPrice([FromBody] PassBasketItemReviewPricesSave objSave)
         {
             if (objSave.Discounts == null)
             {
@@ -1932,11 +1938,11 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult SaveBasketItemReviewPrices([FromBody]PassBasketItemReviewPricesSave objPrices)
+        public IHttpActionResult SaveBasketItemReviewPrices([FromBody] PassBasketItemReviewPricesSave objPrices)
         {
             if (objPrices.Discounts == null)
             {
-                objPrices.Discounts = new List<PassBasketItemDiscount>(); 
+                objPrices.Discounts = new List<PassBasketItemDiscount>();
             }
 
             var result = PortalDb.BasketItemReviewPricesSave(objPrices);
@@ -1945,7 +1951,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult CancelBasketItem([FromBody]PassBasketItemID objBasketItem)
+        public IHttpActionResult CancelBasketItem([FromBody] PassBasketItemID objBasketItem)
         {
             _ = PortalDb.CancelBasketItem(new PassBasketItemAllocation()
             {
@@ -1957,7 +1963,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult UpdateBasketItem([FromBody]PassBasketItem objBasketItem)
+        public IHttpActionResult UpdateBasketItem([FromBody] PassBasketItem objBasketItem)
         {
             objBasketItem.MemberID = User.Identity.GetUserId<int>();
 
@@ -1967,7 +1973,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchBasket([FromBody]PassBasketFetch objBasket)
+        public IHttpActionResult FetchBasket([FromBody] PassBasketFetch objBasket)
         {
             var results = PortalDb.FetchBasket(objBasket);
 
@@ -1981,7 +1987,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult PartBackOrderBasketLine([FromBody]PassBasketItem objBasketItem)
+        public IHttpActionResult PartBackOrderBasketLine([FromBody] PassBasketItem objBasketItem)
         {
             // "I just think 'Program it however the hell you want'" - M. Romanski
 
@@ -1994,7 +2000,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult BackOrderEntireBasketLine([FromBody]PassBasketItem objBasketItem)
+        public IHttpActionResult BackOrderEntireBasketLine([FromBody] PassBasketItem objBasketItem)
         {
             var result = PortalDb.ClearBasketItemPreAllocations(new PassBasketItemAllocation()
             {
@@ -2020,13 +2026,13 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult ToggleBatchCuttingExpress([FromBody]PassBatchCuttingExpressIndicator objIndicator)
+        public IHttpActionResult ToggleBatchCuttingExpress([FromBody] PassBatchCuttingExpressIndicator objIndicator)
         {
             return Ok(PortalDb.ToggleBatchCuttingExpress(objIndicator, User.Identity.GetUserId<int>()));
         }
 
         [HttpPost]
-        public IHttpActionResult CancelBackOrdering([FromBody]PassBasketItem objBasketItem)
+        public IHttpActionResult CancelBackOrdering([FromBody] PassBasketItem objBasketItem)
         {
             objBasketItem.BackOrder = false;
 
@@ -2079,14 +2085,15 @@ namespace Portal.Controllers
                 {
                     if (tradeAccountAddressResult.DefaultDeliveryAddress.Key == "C")
                     {
-                        tradeAccountAddressResult.DefaultDeliveryAddress  = new DeliveryAddress(
+                        tradeAccountAddressResult.DefaultDeliveryAddress = new DeliveryAddress(
                             ba.EndCustomerTradeAccountCode, tradeAccountAddressResult.DefaultDeliveryAddress
                         );
                     }
                 }
             }
 
-            return Ok(new {
+            return Ok(new
+            {
                 basketAddress = basketAddressResult.DeliveryAddress,
                 miscInvoiceAddress = basketAddressResult.MiscInvoiceAddress,
                 DefaultDeliveryAddress = tradeAccountAddressResult.DefaultDeliveryAddress,
@@ -2474,7 +2481,7 @@ namespace Portal.Controllers
             {
                 b.UserRefusedAddressRecommendation = true;
             }
-            
+
             if (objAddress.loqateLookupPerformed && objAddress.status == "Accepted")
             {
                 b.UserRefusedAddressRecommendation = false;
@@ -2504,7 +2511,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchOrderClauses([FromBody]PassBasketID objBasketId)
+        public IHttpActionResult FetchOrderClauses([FromBody] PassBasketID objBasketId)
         {
             var results = PortalDb.FetchOrderClauses(objBasketId);
 
@@ -2512,7 +2519,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult SaveOrderClauses([FromBody]PassOrderClauses objSave)
+        public IHttpActionResult SaveOrderClauses([FromBody] PassOrderClauses objSave)
         {
             var result = PortalDb.SaveOrderClauses(objSave);
 
@@ -2520,7 +2527,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchAdditionalProducts([FromBody]PassAdditionalProductsFetch objAdditional)
+        public IHttpActionResult FetchAdditionalProducts([FromBody] PassAdditionalProductsFetch objAdditional)
         {
             var results = PortalDb.FetchAdditionalProducts(objAdditional);
 
@@ -2528,7 +2535,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchBasketComments([FromBody]PassBasketID objBasket)
+        public IHttpActionResult FetchBasketComments([FromBody] PassBasketID objBasket)
         {
             var results = PortalDb.FetchBasketComments(objBasket);
 
@@ -2536,7 +2543,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchBasketNotes([FromBody]PassBasketID objBasket)
+        public IHttpActionResult FetchBasketNotes([FromBody] PassBasketID objBasket)
         {
             var results = PortalDb.FetchBasketNotes(objBasket);
 
@@ -2544,7 +2551,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult SaveBasketComments([FromBody]PassBasketCommentSave objSave)
+        public IHttpActionResult SaveBasketComments([FromBody] PassBasketCommentSave objSave)
         {
             var result = PortalDb.SaveBasketComments(objSave);
 
@@ -2552,7 +2559,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult SaveBasketNotes([FromBody]PassBasketNoteSave objSave)
+        public IHttpActionResult SaveBasketNotes([FromBody] PassBasketNoteSave objSave)
         {
             var result = PortalDb.SaveBasketNotes(objSave);
 
@@ -2560,7 +2567,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult SaveBasketDetails([FromBody]PassBasketParameters objParams)
+        public IHttpActionResult SaveBasketDetails([FromBody] PassBasketParameters objParams)
         {
             var results = PortalDb.SaveBasketDetails(objParams);
 
@@ -2568,7 +2575,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult SaveBasketEUExitDetails([FromBody]PassBasketEUExitParameters objParams)
+        public IHttpActionResult SaveBasketEUExitDetails([FromBody] PassBasketEUExitParameters objParams)
         {
             var results = PortalDb.SaveBasketEUExitDetails(objParams);
 
@@ -2576,7 +2583,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult CustomerCareRecordAutocomplete([FromBody]PassAutocompleteTerm objTerm)
+        public IHttpActionResult CustomerCareRecordAutocomplete([FromBody] PassAutocompleteTerm objTerm)
         {
             var tradeDataSourceJson = PortalDb.TradeAccounts.Where(p => p.Code == objTerm.tradeAccountCode).Select(p => p.UniVerseDataSources).Single();
 
@@ -2596,7 +2603,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult HeldForSalesAutocomplete([FromBody]PassAutocompleteTerm objTerm)
+        public IHttpActionResult HeldForSalesAutocomplete([FromBody] PassAutocompleteTerm objTerm)
         {
             var results = PortalDb.HeldForSalesReasonAutocomplete(objTerm);
 
@@ -2604,7 +2611,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> LineDuplicateCheck([FromBody]PassDuplicateLineCheck objCheck)
+        public async Task<IHttpActionResult> LineDuplicateCheck([FromBody] PassDuplicateLineCheck objCheck)
         {
             var tradeDataSourceJson = PortalDb.TradeAccounts.Where(p => p.Code == objCheck.tradeAccountCode).Select(p => p.UniVerseDataSources).Single();
 
@@ -2612,11 +2619,11 @@ namespace Portal.Controllers
 
             var result = await PortalDb.OrderLineDuplicateCheck(tradeDataSourceJson, objCheck);
 
-            var basketItemResult = PortalDb.BasketItems.Where(p => p.BasketID == objCheck.basketId && 
-                                                                   p.ProductID == objCheck.productId && 
+            var basketItemResult = PortalDb.BasketItems.Where(p => p.BasketID == objCheck.basketId &&
+                                                                   p.ProductID == objCheck.productId &&
                                                                    p.Quantity == objCheck.quantity &&
                                                                    p.Deleted == false
-                                                                   //p.LineReference == objCheck.lineReference
+                                                            //p.LineReference == objCheck.lineReference
                                                             ).ToList();
 
             if (basketItemResult.Count > 0)
@@ -2628,7 +2635,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> UniqueOrderReferenceCheck([FromBody]PassOrderReference objOrderReference)
+        public async Task<IHttpActionResult> UniqueOrderReferenceCheck([FromBody] PassOrderReference objOrderReference)
         {
             var tradeDataSourceJson = PortalDb.TradeAccounts.Where(p => p.Code == objOrderReference.tradeAccountCode).Select(p => p.UniVerseDataSources).Single();
 
@@ -2638,7 +2645,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult ProductCodeAutocompleteBespoke([FromBody]PassBespokeAutocomplete objFetch)
+        public IHttpActionResult ProductCodeAutocompleteBespoke([FromBody] PassBespokeAutocomplete objFetch)
         {
             var data = PortalDb.ProductCodeAutocompleteBespoke(objFetch);
 
@@ -2658,7 +2665,7 @@ namespace Portal.Controllers
 
 
         [HttpPost]
-        public async Task<IHttpActionResult> RefreshTradeAccountInvoiceTerms([FromBody]PassTradeAccountNumber objTradeAccount)
+        public async Task<IHttpActionResult> RefreshTradeAccountInvoiceTerms([FromBody] PassTradeAccountNumber objTradeAccount)
         {
             var tradeDataSourceJson = PortalDb.TradeAccounts.Where(p => p.Code == objTradeAccount.accountNumber).Select(p => p.UniVerseDataSources).Single();
 
@@ -2675,7 +2682,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult RefreshTradeAccountVATNumbers([FromBody]PassBasketID objBasketId)
+        public IHttpActionResult RefreshTradeAccountVATNumbers([FromBody] PassBasketID objBasketId)
         {
             var data = PortalDb.VATNumberLookup(objBasketId);
 
@@ -2699,27 +2706,48 @@ namespace Portal.Controllers
 
         [HttpPost]
         // This can fail for various reasons - the service may be unavailable.
-        public async Task<IHttpActionResult> ValidateVATNumber([FromBody]PassVATNumber objVATNumber)
+        public async Task<IHttpActionResult> ValidateVATNumber([FromBody] PassVATNumber objVATNumber)
         {
             try
             {
                 var country = PortalDb.Countries.Where(p => p.Code == objVATNumber.countryCode).Single();
 
-                if (country.Code == "GR")
-                    country.Code = "EL";
-
-                var response = new VAT_Lookup.checkVatApproxResponse();
-
-                using (var client = new VAT_Lookup.checkVatPortTypeClient())
+                if (objVATNumber.countryCode == "GB")
                 {
-                    response = await client.checkVatApproxAsync(
-                        country.Code, 
-                        objVATNumber.vatNumber, 
-                        null, null, null, null, null, 
-                        objVATNumber.requesterCountryCode ?? "NL", 
-                        objVATNumber.requesterVATNumber ?? "801821654B01");
+                    using (var client = new HttpClient())
+                    {
+                        var gbResponse = await client.GetAsync($"https://api.service.hmrc.gov.uk/organisations/vat/check-vat-number/lookup/{objVATNumber.vatNumber}");
 
-                    return Ok(new { response.Body, countryName = country.Name });
+                        if (gbResponse.IsSuccessStatusCode)
+                        {
+                            var response = JsonConvert.DeserializeObject<hmrcVatResponse>(await gbResponse.Content.ReadAsStringAsync());
+
+                            return Ok(new { Body = new { valid = true, traderName = response.target.name }, countryName = country.Name });
+                        }
+                        else
+                        {
+                            return Ok(new { Body = new { valid = false }, countryName = country.Name });
+                        }
+                    }
+                }
+                else
+                {
+                    if (country.Code == "GR")
+                        country.Code = "EL";
+
+                    var response = new VAT_Lookup.checkVatApproxResponse();
+
+                    using (var client = new VAT_Lookup.checkVatPortTypeClient())
+                    {
+                        response = await client.checkVatApproxAsync(
+                            country.Code,
+                            objVATNumber.vatNumber,
+                            null, null, null, null, null,
+                            objVATNumber.requesterCountryCode ?? "NL",
+                            objVATNumber.requesterVATNumber ?? "801821654B01");
+
+                        return Ok(new { response.Body, countryName = country.Name });
+                    }
                 }
             }
             catch (Exception ex)
@@ -2737,7 +2765,7 @@ namespace Portal.Controllers
 
         [HttpPost]
         // This can fail for various reasons - the service may be unavailable.
-        public IHttpActionResult ValidateEORINumberEU([FromBody]PassEORINumber objEORINumber)
+        public IHttpActionResult ValidateEORINumberEU([FromBody] PassEORINumber objEORINumber)
         {
             try
             {
@@ -2761,7 +2789,7 @@ namespace Portal.Controllers
                 return ResponseMessage(exceptionResult);
             }
         }
-         
+
 
         [HttpPost]
         // This can fail for various reasons - the service may be unavailable.
@@ -2778,7 +2806,8 @@ namespace Portal.Controllers
                     client.Headers.Add(HttpRequestHeader.ContentType, "application/json");
 
                     var response = client.UploadString(new Uri("https://api.service.hmrc.gov.uk/customs/eori/lookup/check-multiple-eori"), JsonConvert.SerializeObject(
-                        new { 
+                        new
+                        {
                             eoris = new List<string>() { objEORINumber.eoriNumber }
                         }
                     ));
@@ -2790,7 +2819,7 @@ namespace Portal.Controllers
                         throw new Exception($"No result from UK EORI Checker for {objEORINumber.eoriNumber}");
                     }
 
-                    return Ok(new 
+                    return Ok(new
                     {
                         valid = result.valid,
                         name = result.companyDetails?.name
@@ -2808,7 +2837,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult RefreshDeliveryServicesList ([FromBody]PassDeliveryServiceOptions objOptions)
+        public IHttpActionResult RefreshDeliveryServicesList([FromBody] PassDeliveryServiceOptions objOptions)
         {
             var results = PortalDb.RefreshDeliveryServicesList(objOptions);
 
@@ -2816,7 +2845,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult SaveCustomerTransportAccountNumber([FromBody]PassCustomerTransportAccountNumber objAccount)
+        public IHttpActionResult SaveCustomerTransportAccountNumber([FromBody] PassCustomerTransportAccountNumber objAccount)
         {
             var result = PortalDb.SaveCustomerTransportAccountNumber(objAccount);
 
@@ -2824,7 +2853,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult SaveBasketReason([FromBody]PassSaveBasketReason objReason)
+        public IHttpActionResult SaveBasketReason([FromBody] PassSaveBasketReason objReason)
         {
             var result = PortalDb.SaveBasketReason(objReason);
 
@@ -2832,7 +2861,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult MertexAddressSearch([FromBody]PassPCAPredictFind objSearch)
+        public IHttpActionResult MertexAddressSearch([FromBody] PassPCAPredictFind objSearch)
         {
             var tradeDataSourceJson = PortalDb.TradeAccounts.Where(p => p.Code == objSearch.tradeAccountCode).Select(p => p.UniVerseDataSources).Single();
 
@@ -2841,7 +2870,7 @@ namespace Portal.Controllers
 
             var mertexResults = PortalDb.DeliveryAddressSearch(objSearch.tradeAccountCode, objSearch.text).ToList();
 
-            mertexResults.ForEach(mr => 
+            mertexResults.ForEach(mr =>
             {
                 var country = PortalDb.Countries.Where(p => p.Code == mr.CountryCode).SingleOrDefault();
 
@@ -2855,7 +2884,7 @@ namespace Portal.Controllers
 
             var removeMarkedAsDeleted = new List<DeliveryAddress>();
 
-            mertexResults.ForEach(c => 
+            mertexResults.ForEach(c =>
             {
                 var extantCleanse = PortalDb.TradeAccountAddressCleanses.Where(p =>
                     p.TradeAccountCode == c.TradeAccountCode &&
@@ -2996,7 +3025,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchBasketReview([FromBody]PassBasketID objBasketId)
+        public IHttpActionResult FetchBasketReview([FromBody] PassBasketID objBasketId)
         {
             var result = PortalDb.FetchBasketReview(objBasketId);
 
@@ -3004,7 +3033,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult SaveBasketReview([FromBody]PassBasketReviewSave objSave)
+        public IHttpActionResult SaveBasketReview([FromBody] PassBasketReviewSave objSave)
         {
             var results = PortalDb.SaveBasketReview(objSave);
 
@@ -3012,7 +3041,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchBasketItemPreAllocations([FromBody]PassBasketItemID objBasketItem)
+        public IHttpActionResult FetchBasketItemPreAllocations([FromBody] PassBasketItemID objBasketItem)
         {
             var results = PortalDb.FetchBasketItemPreAllocations(objBasketItem);
 
@@ -3020,7 +3049,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult UpdateBasketPhase([FromBody]PassBasketPhase objPhase)
+        public IHttpActionResult UpdateBasketPhase([FromBody] PassBasketPhase objPhase)
         {
             var basket = PortalDb.Baskets.Where(p => p.BasketID == objPhase.BasketID).Single();
 
@@ -3034,7 +3063,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> FetchLinkedDocuments([FromBody]SharedEFClasses.Models.Orders.PassProductCode objProductCode)
+        public async Task<IHttpActionResult> FetchLinkedDocuments([FromBody] SharedEFClasses.Models.Orders.PassProductCode objProductCode)
         {
             var results = await PortalDb.FetchLinkedDocuments(objProductCode);
 
@@ -3042,7 +3071,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchDeliveryGroup_BulkDiscount([FromBody]PassBasketDeliveryGroup objDeliveryGroup)
+        public IHttpActionResult FetchDeliveryGroup_BulkDiscount([FromBody] PassBasketDeliveryGroup objDeliveryGroup)
         {
             var results = PortalDb.FetchDeliveryGroup_BulkDiscount(objDeliveryGroup);
 
@@ -3050,7 +3079,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> CleanseAddress([FromBody]PassBasketAddressCleanse objAddress)
+        public async Task<IHttpActionResult> CleanseAddress([FromBody] PassBasketAddressCleanse objAddress)
         {
             /*
                 What are we going to be doing here.
@@ -3119,7 +3148,7 @@ namespace Portal.Controllers
                     {
                         Key = "KC24-PX69-WK55-CF88",
                         Geocode = false,
-                        Addresses = new List<AddressCleanseInput>() 
+                        Addresses = new List<AddressCleanseInput>()
                         {
                             new AddressCleanseInput {
                                 Address1 = objAddress.deliveryAddressLine1,
@@ -3203,7 +3232,7 @@ namespace Portal.Controllers
                             var epoch = DateTime.Parse("2021/07/02");
                             var age = DateTime.Now.AddDays(-14);
 
-                            var extantSuggestion = PortalDb.TradeAccountInvoiceAddressLoqateSuggestions.Where(p => 
+                            var extantSuggestion = PortalDb.TradeAccountInvoiceAddressLoqateSuggestions.Where(p =>
                                 p.TradeAccountID == objAddress.tradeAccountId &&
                                 p.InvoiceAddressJSON == invoiceAddressJson &&
                                 p.SuggestedAddressJSON == suggestedAddressJson &&
@@ -3389,79 +3418,79 @@ namespace Portal.Controllers
             }
         }
 
-//        [HttpPost]
-//        public IHttpActionResult RecordUserInteractionAddressCleanseResult([FromBody]PassBasketAddressCleanse objAddress)
-//        {
-//            var basket = PortalDb.Baskets.Where(p => p.BasketID == objAddress.basketId).SingleOrDefault();
+        //        [HttpPost]
+        //        public IHttpActionResult RecordUserInteractionAddressCleanseResult([FromBody]PassBasketAddressCleanse objAddress)
+        //        {
+        //            var basket = PortalDb.Baskets.Where(p => p.BasketID == objAddress.basketId).SingleOrDefault();
 
-//            basket.UserRefusedAddressRecommendation = objAddress.isLoqateAddress ? objAddress.status == "Declined" : false;
+        //            basket.UserRefusedAddressRecommendation = objAddress.isLoqateAddress ? objAddress.status == "Declined" : false;
 
-//            var b = PortalDb.TradeAccountAddressCleanses.Where(p => p.TradeAccountCode == (objAddress.endCustomerCode ?? objAddress.tradeAccountCode) && p.DeliveryReference == objAddress.deliveryReference).SingleOrDefault();
+        //            var b = PortalDb.TradeAccountAddressCleanses.Where(p => p.TradeAccountCode == (objAddress.endCustomerCode ?? objAddress.tradeAccountCode) && p.DeliveryReference == objAddress.deliveryReference).SingleOrDefault();
 
-//            if (b != null && b.DeliveryReference != "C")
-//            {
-//                b.Status = objAddress.status;
-//                b.LookupDT = objAddress.isLoqateAddress ? DateTime.Now : (DateTime?)null;
+        //            if (b != null && b.DeliveryReference != "C")
+        //            {
+        //                b.Status = objAddress.status;
+        //                b.LookupDT = objAddress.isLoqateAddress ? DateTime.Now : (DateTime?)null;
 
-//                // Do the stupid freaking name / companyName switcheroo
-//                if (String.IsNullOrWhiteSpace(objAddress.deliveryCompanyName) && !String.IsNullOrWhiteSpace(objAddress.deliveryName))
-//                {
-//                    objAddress.deliveryCompanyName = objAddress.deliveryName;
-//                }
-//                if (!String.IsNullOrWhiteSpace(objAddress.deliveryCompanyName) && String.IsNullOrWhiteSpace(objAddress.deliveryName))
-//                {
-//                    objAddress.deliveryName = objAddress.deliveryCompanyName;
-//                }
+        //                // Do the stupid freaking name / companyName switcheroo
+        //                if (String.IsNullOrWhiteSpace(objAddress.deliveryCompanyName) && !String.IsNullOrWhiteSpace(objAddress.deliveryName))
+        //                {
+        //                    objAddress.deliveryCompanyName = objAddress.deliveryName;
+        //                }
+        //                if (!String.IsNullOrWhiteSpace(objAddress.deliveryCompanyName) && String.IsNullOrWhiteSpace(objAddress.deliveryName))
+        //                {
+        //                    objAddress.deliveryName = objAddress.deliveryCompanyName;
+        //                }
 
-//                b.SourceAddressHash = objAddress.md5Hash;
+        //                b.SourceAddressHash = objAddress.md5Hash;
 
-//                b.SourceAddress = JsonConvert.SerializeObject(new
-//                {
-//                    Type = objAddress.manual ? "Manual" : "Loqate",
-//                    DeliveryReferenceID = objAddress.deliveryReference,
-//                    DeliveryReference = objAddress.deliveryReference,
-//                    TradeAccountCode = objAddress.endCustomerCode ?? objAddress.tradeAccountCode,
-//                    Label = objAddress.label,
-//                    Name = objAddress.deliveryName,
-//                    Company = objAddress.deliveryCompanyName,
-//                    Line1 = objAddress.deliveryAddressLine1,
-//                    Line2 = objAddress.deliveryAddressLine2,
-//                    City = objAddress.deliveryTown,
-//                    Province = objAddress.deliveryCounty,
-//                    PostalCode = objAddress.deliveryPostcode,
-//                    Email = objAddress.email,
-//                    Phone = objAddress.deliveryPhoneNumber,
-//                    Country = objAddress.deliveryCountryCode,
-//                    MD5Hash = objAddress.md5Hash
-//                });
+        //                b.SourceAddress = JsonConvert.SerializeObject(new
+        //                {
+        //                    Type = objAddress.manual ? "Manual" : "Loqate",
+        //                    DeliveryReferenceID = objAddress.deliveryReference,
+        //                    DeliveryReference = objAddress.deliveryReference,
+        //                    TradeAccountCode = objAddress.endCustomerCode ?? objAddress.tradeAccountCode,
+        //                    Label = objAddress.label,
+        //                    Name = objAddress.deliveryName,
+        //                    Company = objAddress.deliveryCompanyName,
+        //                    Line1 = objAddress.deliveryAddressLine1,
+        //                    Line2 = objAddress.deliveryAddressLine2,
+        //                    City = objAddress.deliveryTown,
+        //                    Province = objAddress.deliveryCounty,
+        //                    PostalCode = objAddress.deliveryPostcode,
+        //                    Email = objAddress.email,
+        //                    Phone = objAddress.deliveryPhoneNumber,
+        //                    Country = objAddress.deliveryCountryCode,
+        //                    MD5Hash = objAddress.md5Hash
+        //                });
 
-//                PortalDb.SaveChanges();
-//            }
-//            else
-//            {
-//#pragma warning disable 4014
-//                System.Threading.Tasks.Task.Factory.StartNew(async () =>
-//                {
-//                    var body = "";
-//                    var subject = "RecordUserInteractionAddressCleanseResult - ComponentAPIController - Line 2950";
+        //                PortalDb.SaveChanges();
+        //            }
+        //            else
+        //            {
+        //#pragma warning disable 4014
+        //                System.Threading.Tasks.Task.Factory.StartNew(async () =>
+        //                {
+        //                    var body = "";
+        //                    var subject = "RecordUserInteractionAddressCleanseResult - ComponentAPIController - Line 2950";
 
-//                    body = $"Uh oh! TradeAccount {objAddress.tradeAccountCode}, DeliveryReference {objAddress.deliveryReference} - could not find a [portal].[TradeAccountAddressCleanse] record to update. This shouldn't be possible at this stage.";
+        //                    body = $"Uh oh! TradeAccount {objAddress.tradeAccountCode}, DeliveryReference {objAddress.deliveryReference} - could not find a [portal].[TradeAccountAddressCleanse] record to update. This shouldn't be possible at this stage.";
 
-//                    ((EmailService)UserManager.EmailService).SendFoundationEmailAsync(new IdentityMessage()
-//                    {
-//                        Body = body,
-//                        Subject = subject,
-//                        Destination = "tclark@designersguild.com"
-//                    });
-//                });
-//#pragma warning restore 4014
-//            }
+        //                    ((EmailService)UserManager.EmailService).SendFoundationEmailAsync(new IdentityMessage()
+        //                    {
+        //                        Body = body,
+        //                        Subject = subject,
+        //                        Destination = "tclark@designersguild.com"
+        //                    });
+        //                });
+        //#pragma warning restore 4014
+        //            }
 
-//            return Ok(new { });
-//        }
+        //            return Ok(new { });
+        //        }
 
         [HttpPost]
-        public IHttpActionResult DeleteTradeAccountAddressCleanseRecord([FromBody]PassTradeAccountCodeDeliveryReference objRecord)
+        public IHttpActionResult DeleteTradeAccountAddressCleanseRecord([FromBody] PassTradeAccountCodeDeliveryReference objRecord)
         {
             var b = PortalDb.TradeAccountAddressCleanses.Where(p => p.TradeAccountCode == (objRecord.tradeAccountCode) &&
                                                                     p.DeliveryReference == objRecord.deliveryReference).Single();
@@ -3474,7 +3503,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchSupplierInfo([FromBody]PassProductID objProductId)
+        public IHttpActionResult FetchSupplierInfo([FromBody] PassProductID objProductId)
         {
             var result = PortalDb.FetchSupplierInfo(objProductId);
 
@@ -3482,7 +3511,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchFurnitureDesigns([FromBody]PassFurnitureThing objFurniture)
+        public IHttpActionResult FetchFurnitureDesigns([FromBody] PassFurnitureThing objFurniture)
         {
             var results = PortalDb.FetchFurnitureDesigns(objFurniture);
 
@@ -3490,7 +3519,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchFurnitureModels([FromBody]PassFurnitureDesign objDesign)
+        public IHttpActionResult FetchFurnitureModels([FromBody] PassFurnitureDesign objDesign)
         {
             var results = PortalDb.FetchFurnitureModels(objDesign);
 
@@ -3498,7 +3527,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchFurnitureSuppliers([FromBody]PassFurnitureModel objModel)
+        public IHttpActionResult FetchFurnitureSuppliers([FromBody] PassFurnitureModel objModel)
         {
             var results = PortalDb.FetchFurnitureSuppliers(objModel);
 
@@ -3506,7 +3535,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchFurnitureModelOptions([FromBody]PassFurnitureSupplier objSupplier)
+        public IHttpActionResult FetchFurnitureModelOptions([FromBody] PassFurnitureSupplier objSupplier)
         {
             var results = PortalDb.FetchFurnitureModelOptions(objSupplier);
 
@@ -3514,7 +3543,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchFurnitureMaterialBreakdown([FromBody]PassFurnitureSupplier objSupplier)
+        public IHttpActionResult FetchFurnitureMaterialBreakdown([FromBody] PassFurnitureSupplier objSupplier)
         {
             var results = PortalDb.FetchFurnitureMaterialBreakdown(objSupplier);
 
@@ -3522,7 +3551,7 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult SaveBespokeFurnitureJson([FromBody]PassFurnitureJSON objJson)
+        public IHttpActionResult SaveBespokeFurnitureJson([FromBody] PassFurnitureJSON objJson)
         {
             var results = PortalDb.SaveFurnitureJSON(objJson);
 
@@ -3530,15 +3559,15 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult BespokeFurnitureMaterialSearch([FromBody]PassFurnitureSearch objSearch)
+        public IHttpActionResult BespokeFurnitureMaterialSearch([FromBody] PassFurnitureSearch objSearch)
         {
             var results = PortalDb.BespokeFurnitureMaterialSearch(objSearch);
 
             return Ok(results);
-       }
+        }
 
         [HttpPost]
-        public IHttpActionResult BespokeFurnitureBasketItemSelect([FromBody]PassBasketItemID objBasketItemId)
+        public IHttpActionResult BespokeFurnitureBasketItemSelect([FromBody] PassBasketItemID objBasketItemId)
         {
             var results = PortalDb.BespokeFurnitureBasketItemSelect(objBasketItemId);
 
@@ -3546,25 +3575,25 @@ namespace Portal.Controllers
         }
 
         [HttpGet]
-        public IHttpActionResult GetDefaultImages([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))]DataSourceRequest request)
+        public IHttpActionResult GetDefaultImages([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
         {
             return Ok(PortalDb.Images.Where(p => ((p.PerspectiveID == 1 && p.Deleted == false) || (p.PerspectiveID == 0 && p.ImageID == 117989))).AsQueryable().ToDataSourceResult(request));
         }
 
         [HttpPost]
-        public IHttpActionResult DefaultImageModelValueMapper([FromBody]PassImageID objImageId)
+        public IHttpActionResult DefaultImageModelValueMapper([FromBody] PassImageID objImageId)
         {
             return Ok(PortalDb.Images.Where(p => p.ImageID == objImageId.imageId).AsQueryable());
         }
 
         [HttpPost]
-        public IHttpActionResult CountryValueMapper([FromBody]PassCountryID objCountryId)
+        public IHttpActionResult CountryValueMapper([FromBody] PassCountryID objCountryId)
         {
             return Ok(PortalDb.Countries.Where(p => p.CountryID == objCountryId.CountryID).AsQueryable());
         }
 
         [HttpPost]
-        public IHttpActionResult SaveBasketLastChanceModal([FromBody]PassLastChanceModalSave objSave)
+        public IHttpActionResult SaveBasketLastChanceModal([FromBody] PassLastChanceModalSave objSave)
         {
             var b = PortalDb.Baskets.Where(p => p.BasketID == objSave.basketId).Single();
 
@@ -3590,9 +3619,29 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult TradeAccountPreBasketNotifications([FromBody]PassTradeAccountID objTradeAccountId)
+        public IHttpActionResult TradeAccountPreBasketNotifications([FromBody] PassTradeAccountID objTradeAccountId)
         {
             return Ok(PortalDb.BasketTradeAccountCheck(objTradeAccountId));
         }
+    }
+
+    public class hmrcVatResponse
+    {
+        public hmrcVatResponseTarget target { get; set; }
+        public DateTime processingDate { get; set; }
+    }
+
+    public class hmrcVatResponseTarget
+    {
+        public string name { get; set; }
+        public string vatNumber { get; set; }
+        public hmrcVatResponseAddress address { get; set; }
+    }
+
+    public class hmrcVatResponseAddress
+    {
+        public string line1 { get; set; }
+        public string postcode { get; set; }
+        public string countryCode { get; set; }
     }
 }

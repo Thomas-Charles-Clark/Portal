@@ -217,6 +217,8 @@ namespace SharedEFClasses.Models
 
         public DbSet<TradeAccount_InvoiceAddress_LoqateSuggestion> TradeAccountInvoiceAddressLoqateSuggestions { get; set; }
 
+        public DbSet<Models.Mertexer.Bank> Banks { get; set; }
+        public DbSet<Models.Mertexer.Bank_SalesMarket> BankSalesMarketMap { get; set; }
         public DbSet<Models.Mertexer.CreditController> CreditControllers { get; set; }
         public DbSet<Models.Mertexer.CreditController_SalesMarket> CreditControllerSalesMarketMap { get; set; }
 

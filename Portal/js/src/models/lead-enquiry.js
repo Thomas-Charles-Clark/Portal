@@ -64,11 +64,13 @@ var leadEnquiryViewModel = function () {
 
     self.availablePurchaseOrderRequiredOptions = getYesNoOptions();
 
-    self.availableCreditControllerCodes = getAvailableCreditControllers();
+    self.availableCreditControllers = getAvailableCreditControllers();
 
     self.creditControllerSalesMarketMap = getCreditControllerSalesMarketMap();
 
     self.availableBanks = getAvailableBanks();
+
+    self.bankSalesMarketMap = getBankSalesMarketMap();
 
     self.availableTradeAccountGroups = getAvailableTradeAccountGroups();
 
@@ -80,7 +82,7 @@ var leadEnquiryViewModel = function () {
 
     //self.availableSampleCarriages = getAvailableSampleCarriages();
 
-    self.availableSalesDivisions = getAvailableSalesDivisions();
+    self.availableSalesDivisions = getYesNoOptions();
 
     self.availableDeliveryTerms = getAvailableDeliveryTerms();
 
@@ -186,13 +188,6 @@ var leadEdit = function (parent) {
         required: {
             params: true,
             message: 'You must specify a price list'
-        }
-    });
-    self.tradePriceList.subscribe(function (newValue) {
-        if (newValue) {
-            self.companyCurrencyId(newValue.Currency.CurrencyID);
-        } else {
-            self.companyCurrencyId(undefined);
         }
     });
     self.paymentTerms = ko.observable().extend({
@@ -381,8 +376,14 @@ var leadEdit = function (parent) {
             elementId: '.lead-company-reg'
         }
     });
-    self.companyVATNumber = ko.observable().extend({
-        maxLength: 20,
+  self.vatRegistered = ko.observable(false);
+  self.companyVATNumber = ko.observable().extend({
+    maxLength: 20,
+    required: {
+      params: true,
+      onlyIf: self.vatRegistered,
+      message: 'If they\'re registered for VAT, you must provide a VAT Number'
+    },
         charsRemaining: {
             maxLength: 20,
             elementId: '.lead-company-vat-no'
@@ -392,7 +393,7 @@ var leadEdit = function (parent) {
         maxLength: 20,
         charsRemaining: {
             maxLength: 20,
-            elementId: '.lead-company-vat-no'
+            elementId: '.eori-number'
         }
     });
     self.newNote = ko.observable().extend({
@@ -515,6 +516,15 @@ var leadEdit = function (parent) {
         required: {
             params: true,
             message: 'You must specify a credit limit'
+        }
+    });
+
+    self.insuredCreditLimit = ko.observable().extend({
+        currencyFormatted: {
+            digits: 0,
+            currency: self.gbpCurrency,
+            maxValue: 900000000000000,
+            minValue: -900000000000000
         }
     });
 
@@ -819,6 +829,8 @@ var leadEdit = function (parent) {
         }
     });
 
+    self.creditController.subscribe(nv => console.log(`creditController ${nv}`));
+
     self.bankCode = ko.observable().extend({
         required: {
             params: true,
@@ -826,8 +838,22 @@ var leadEdit = function (parent) {
         }
     });
 
-    self.insuredCreditLimit = ko.observable().extend({
-
+    self.bankCode.subscribe(function (newValue) {
+      if (newValue) {
+        try {
+          let salesMarketId = self.salesMarket()?.SalesMarketID;
+          let currency = self.parent.bankSalesMarketMap.find(b =>
+            b.BankCode === newValue &&
+            b.SalesMarketID == salesMarketId)
+            .SalesMarket.Currency;
+          self.companyCurrencyId(currency.CurrencyID);
+        }
+        catch (e) {
+          $.showError('Sorry', `Error determining currency. Please contact <a href="mailto:itsupport@designersguild.com">itsupport@designersguild.com</a> providing error description and Lead ID ${self.leadId()}.`);
+        }
+      } else {
+        self.companyCurrencyId(undefined);
+      }
     });
 
     self.purchaseOrderRequired = ko.observable(undefined).extend({
@@ -837,11 +863,14 @@ var leadEdit = function (parent) {
         }
     });
 
+    // This pertains to accounts doing the whole statement / child account dance
+    // not something we handle in the Portal at this stage
+    // important that this is set to "MI" for misc. for [all] accounts though
     self.tradeAccountGroup = ko.observable("MI").extend({
-        required: {
-            params: true,
-            message: 'Please provide a Trade Account Group'
-        }
+        //required: {
+        //    params: true,
+        //    message: 'Please provide a Trade Account Group'
+        //}
     });
 
     //self.haulierCode = ko.observable("UPS");
@@ -852,22 +881,148 @@ var leadEdit = function (parent) {
     
     //self.sampleCarriageCode = ko.observable("FC");
 
-    self.salesDivision = ko.observable("N").extend({
+    self.salesDivision = ko.observable(undefined).extend({
         required: {
             params: true,
             message: 'You must answer this question'
         }
     }); // Does the customer require their shipments to be consolidated ? YES = T, NO = N
 
-    self.deliveryTerms = ko.observable("DDU").extend({
-        required: {
-            params: true,
-            message: 'You must provide INCO Delivery Terms'
+    self.deliveryTerms = ko.observable(undefined).extend({ // 21/06/2023 Sarah wants to default this NULL to find out if it causes a throw in the Portal eventually
+        //required: {
+        //    params: true,
+        //    message: 'You must provide INCO Delivery Terms'
+        //}
+    });
+
+    self.vatCountry = ko.observable().extend({
+      required: {
+        params: true,
+        onlyIf: self.vatRegistered,
+        message: ' '
+      }
+    });
+
+    self.vatNumberDisplay = ko.observable().extend({
+      charsRemaining: {
+        maxLength: 20,
+        elementId: '.vat-number-display'
+      }
+    });
+
+    self.vatCountry.subscribe(nv => {
+        let vn = self.companyVATNumber() || '';
+        if (nv && vn) {
+          self.vatNumberDisplay(`${nv.Code}${vn}`);
         }
+    });
+
+    self.vatNumberValid = ko.observable(false);
+
+    self.vatNumberError = ko.observable(false);
+
+    self.vatNumberMessage = ko.observable(undefined);
+
+    self.vatCheckBusy = ko.observable(false);
+
+    self.vatNumberCheckPerformed = ko.observable(false);
+
+    self.companyVATNumber.subscribe(nv => {
+        if (self.vatCountry() && nv) {
+            self.vatNumberDisplay(`${self.vatCountry().Code}${nv}`);
+        }
+
+        if (nv && self.vatCountry()) {
+
+        }
+    });
+
+    // lifted here because we don't get hoisting with this factory function approach
+  self.currentStage = ko.pureComputed(function () {
+    if (self.stageInformation()) {
+      return self.stageInformation().CurrentStage;
+    } else {
+      return 0;
+    }
+  }, self);
+
+    self.validateVATNumnber = ko.computed(() => {
+        let vatNumber = self.companyVATNumber();
+        let vatCountry = self.vatCountry();
+        let currentStage = self.currentStage();
+
+        if (currentStage == 4 && (vatNumber && vatCountry)) {
+            let data = {
+                vatNumber: self.companyVATNumber(),
+                countryCode: self.vatCountry()?.Code
+            }
+            console.log('leadEdit calling validateVATNumber with', data);
+            self.vatCheckBusy(true);
+            $.ajax({
+                url: '/api/componentapi/ValidateVATNumber',
+                type: 'POST',
+                data: data,
+                success: function (data) {
+                    if (data.Body.valid) {
+                        self.vatNumberValid(true);
+                        self.vatNumberError(false);
+                        self.vatNumberMessage('Confirmed valid VAT Number for: ' + data.Body.traderName);
+
+                        //callback(true);
+                    } else {
+                        self.vatNumberValid(false);
+                        self.vatNumberError(true);
+                        if (self.vatCountry()?.Code?.indexOf('GB') === 0) {
+                            self.vatNumberMessage(data.countryName + ': Incorrect or expired VAT number. Please refer to <a href="https://www.gov.uk/government/publications/check-a-uk-vat-number-service-availability-and-issues/check-a-uk-vat-number-service-availability-and-issues" target="_blank">The GOV.UK VAT Service Status Page</a> for information.');
+                        } else {
+                            self.vatNumberMessage(data.countryName + ': Incorrect or expired VAT number. Please refer to <a href="http://ec.europa.eu/taxation_customs/vies/faq.html#item_7" target="_blank">The European Union\'s V.I.E.S. FAQ</a> for assistance.<br/>You will not be able to submit this order until Credit Control have corrected the VAT number.');
+                        }
+                        //callback(false);
+                    }
+
+                    if (data.Body && data.Body.requestIdentifier) {
+                        self.vatNumberRequestIdentifier(data.Body.requestIdentifier);
+                    }
+
+                    self.vatNumberCheckPerformed(true);
+                    self.vatCheckBusy(false);
+                },
+                error: function (xhr, s, a) {
+                    self.vatNumberValid(undefined);
+                    self.vatNumberError(false);
+                    self.vatNumberMessage('The EU VAT Number checking service cannot currently validate this VAT number.')
+
+                    self.vatNumberCheckPerformed(true);
+                    self.vatCheckBusy(false);
+                    //callback(false);
+                }
+            });
+        }
+
+    }, self).extend({
+        rateLimit: {
+            timeout: 500,
+            method: 'notifyWhenChangesStop'
+        }
+    });
+
+  self.taxId = ko.observable().extend({
+    required: {
+      params: true,
+      onlyIf: () => {
+        return self.countryId() == 46;
+      },
+      message: 'You must provide a Tax ID for Swiss accounts'
+    },
+      charsRemaining: {
+        maxLength: 20,
+        elementId: '.tax-id'
+      }
     });
 
     self.creditControllerErrors = ko.validation.group([
         self.creditControllerFromList,
+        self.creditControllerCode,
         //self.numberOfPatternBooksPurchased,
         //self.firstOrderValue,
         //self.joinedPatternScheme
@@ -876,16 +1031,23 @@ var leadEdit = function (parent) {
     self.creditControlErrors = ko.validation.group([
         self.paymentTerms,
         self.creditLimit,
-        self.bankName,
-        self.bankCountryId,
-        self.bankAddressLine1,
-        self.bankAddressLine2,
-        self.bankTown,
-        self.bankCounty,
-        self.bankPostcode,
-        self.bankAccountNumber,
-        self.bankSortCode,
-        self.bankIBAN
+      self.insuredCreditLimit,
+      self.companyVATNumber,
+    self.vatCountry,
+
+        //self.bankName,
+        //self.bankCountryId,
+        //self.bankAddressLine1,
+        //self.bankAddressLine2,
+        //self.bankTown,
+        //self.bankCounty,
+        //self.bankPostcode,
+        //self.bankAccountNumber,
+        //self.bankSortCode,
+        //self.bankIBAN,
+        self.bankCode,
+      self.creditController,
+        self.taxId
     ]);
 
     self.payByDirectDebitOptions = [{ Name: 'Yes', Value: true }, { Name: 'No', Value: false }];
@@ -989,14 +1151,6 @@ var leadEdit = function (parent) {
 
     // #region Pure Computeds
 
-    self.currentStage = ko.pureComputed(function () {
-        if (self.stageInformation()) {
-            return self.stageInformation().CurrentStage;
-        } else {
-            return 0;
-        }
-    }, self);
-
     self.availablePaymentTerms = ko.pureComputed({
         read: function () {
             if (self.salesMarket()) {
@@ -1007,6 +1161,19 @@ var leadEdit = function (parent) {
         }
     }, self);
 
+  self.availableBanks = ko.pureComputed({
+    read: function () {
+      let salesMarketId = self.salesMarket()?.SalesMarketID;
+      if (salesMarketId) {
+        const map = self.parent.bankSalesMarketMap.filter(m => m.SalesMarketID == salesMarketId).map(m => m.BankCode);
+        return self.parent.availableBanks.filter(b => map.indexOf(b.BankCode) > -1);
+      } else {
+        return self.parent.availableBanks;
+      }
+    }
+  }, self);
+
+  self.availableSalesRep
     self.availableSalesRepresentatives = ko.pureComputed({
         read: function () {
             var result = [];
@@ -1711,7 +1878,7 @@ var leadEdit = function (parent) {
         self.editContactEmail
     ]);
 
-    self.salesRepErrors = ko.validation.group([
+    self.salesRepErrors = new ko.validation.group([
         //self.selectedLeadStatus,
         self.salesMarket,
         self.tradeAccountClass,
@@ -1751,6 +1918,10 @@ var leadEdit = function (parent) {
     // #endregion
 
     // #region Subscriptions
+
+    self.salesRepresentative.subscribe(nv => {
+      self.salesAgent(nv);
+    });
 
     self.paymentTerms.subscribe(function (newValue) {
         window.setTimeout(function () {
@@ -1878,7 +2049,7 @@ var leadEdit = function (parent) {
             self.assignedToMemberSearch.searchTerm(newValue.FullName);
         }
     });
-
+    
     self.companyAnnualRevenue.subscribe(function (newValue) {
         if (newValue) {
             self.businessPotentialErrors.showAllMessages(true);
@@ -2957,14 +3128,15 @@ var leadEdit = function (parent) {
             self.salesRepresentative(undefined);
         }
 
-        if (data.Lead.SalesAgent) {
-            self.salesAgent({
-                SalesRepresentativeID: data.Lead.SalesAgent.SalesRepresentativeID,
-                Name: data.Lead.SalesAgent.Name
-            });
-        } else {
-            self.salesAgent(undefined);
-        }
+        // salesAgent now always defaults based on salesRep
+        //if (data.Lead.SalesAgent) {
+        //    self.salesAgent({
+        //        SalesRepresentativeID: data.Lead.SalesAgent.SalesRepresentativeID,
+        //        Name: data.Lead.SalesAgent.Name
+        //    });
+        //} else {
+        //    self.salesAgent(undefined);
+        //}
 
         if (data.Lead.SalesArea) {
             self.salesArea({
@@ -3037,7 +3209,8 @@ var leadEdit = function (parent) {
         else
             self.companyName(undefined);
         self.companyRegistration(data.Lead.CompanyNumber);
-        self.companyVATNumber(data.Lead.VATNumber);
+      self.companyVATNumber(data.Lead.VATNumber);
+      self.vatRegistered(self.companyVATNumber() != null);
         self.eoriNumber(data.Lead.EORI);
         self.starRating(data.Lead.StarRating);
         //self.description(data.Lead.Description);
@@ -3098,13 +3271,6 @@ var leadEdit = function (parent) {
             self.placedAnOrder(undefined);
             self.firstOrderValue(null);
         }
-
-        self.companyErrors.showAllMessages(false);
-        self.businessPotentialErrors.showAllMessages(false);
-        self.contactErrors.showAllMessages(false);
-        self.editContactErrors.showAllMessages(false);
-        self.salesRepErrors.showAllMessages(false);
-        self.creditControlErrors.showAllMessages(false);
 
         self.leadPotential.load(data.Lead.Potentials, data.ProductTypeGroups);
 
@@ -3174,50 +3340,79 @@ var leadEdit = function (parent) {
 
         // new bits 14/06/2023
 
-        //let creditController = self.parent.availableCreditControllers().find(cc => cc.CreditControllerCode == data.Lead.CreditControllerCode);
-        //let bankCode = self.parent.avaialbleBanks().find(b => b.BankCode == );
-
         self.tradeAccountClass(data.Lead.TradeAccountClassCode);
 
         let defaultCreditController = self.parent.creditControllerSalesMarketMap.find(m => m.SalesMarketID == data.Lead.SalesMarketID);
 
-        self.creditController(data.Lead.CreditControllerCode || defaultCreditController);
-        self.bankCode(data.Lead.BankCode);
+        self.creditController(data.Lead.CreditControllerCode || defaultCreditController.CreditControllerCode);
+
+        let defaultBanks = self.parent.bankSalesMarketMap.flatMap(b => b.SalesMarketID == data.Lead.SalesMarketID ? [b] : []);
+
+        let defaultBank = null;
+
+        if (defaultBanks.length == 1)
+            defaultBank = defaultBanks[0];
+
+        if (defaultBanks.length > 1) {
+            defaultBank = defaultBanks.find(b => b.MertexLanguageCode == data.Lead.MertexLanguageCode);
+        }
+
+        self.bankCode(data.Lead.BankCode || defaultBank?.BankCode);
+
+
         self.insuredCreditLimit(data.Lead.InsuredCreditLimit);
         self.purchaseOrderRequired(data.Lead.PurchaseOrderRequired);
-        self.tradeAccountGroup(data.Lead.TradeAccountGroupCode);
-        self.salesDivision(data.Lead.SalesDivisionCode);
+        //self.tradeAccountGroup(data.Lead.TradeAccountGroupCode);
+        self.salesDivision(data.Lead.SalesDivisionCode ? data.Lead.SalesDivisionCode == "T" ? true : false : undefined);
         self.deliveryTerms(data.Lead.DeliveryTermsCode);
+        self.taxId(data.Lead.TaxID);
 
+        let vatCountry = self.parent.availableCountries.find(c => c.CountryID == data.Lead.VATCountryID);
+
+        self.vatCountry(vatCountry);
+        self.vatNumberDisplay(data.Lead.VATNumberDisplay || (vatCountry?.Code && data.Lead.VATNumber ? `${vatCountry?.Code}${data.Lead.VATNumber}` : undefined));
 
         // get appointment stuff
 
-        switch (self.stageInformation().CurrentStage) {
-            case null:
-            case 0:
-            case 1:
-            case 2:
-            case 5:
-                $('a[href="#tab-one"]').tab('show');
-                $("#prepare-lead-collapse").collapse('show');
-                break;
-            case 3:
-                $('a[href="#tab-sales-rep"]').tab('show');
-                $("#complete-application-collapse").collapse('show');
-                break;
-            case 4:
-                if (self.ownerMemberId() == getUserId()) {
-                    $('a[href="#tab-credit-control"]').tab('show');
-                    $("#specify-payment-terms-collapse").collapse('show');
-                } else {
-                    $('a[href="#tab-one"]').tab('show');
-                    $("#prepare-lead-collapse").collapse('show');
-                }
-                break;
-            default:
-                $.error('Error', 'Could not ascertain Lead Stage, please contact system administrator.', function () { }, function () { self.reset(); });
-                break;
-        }
+        switch (self.stageInformation().CurrentStage)
+        {
+              case null:
+              case 0:
+              case 1:
+              case 2:
+              case 5:
+                  $('a[href="#tab-one"]').tab('show');
+                  $("#prepare-lead-collapse").collapse('show');
+                  break;
+              case 3:
+                  $('a[href="#tab-sales-rep"]').tab('show');
+                  $("#complete-application-collapse").collapse('show');
+                  setTimeout(() => {
+                    self.salesRepErrors.showAllMessages(false);
+                  }, 100)
+                  break;
+              case 4:
+                  if (self.ownerMemberId() == getUserId()) {
+                      $('a[href="#tab-credit-control"]').tab('show');
+                      $("#specify-payment-terms-collapse").collapse('show');
+                  } else {
+                      $('a[href="#tab-one"]').tab('show');
+                      $("#prepare-lead-collapse").collapse('show');
+                  }
+                  break;
+              default:
+                  $.error('Error', 'Could not ascertain Lead Stage, please contact system administrator.', function () { }, function () { self.reset(); });
+                  break;
+          }
+
+
+        self.companyErrors.showAllMessages(false);
+        self.businessPotentialErrors.showAllMessages(false);
+        self.contactErrors.showAllMessages(false);
+        self.editContactErrors.showAllMessages(false);
+        self.salesRepErrors.showAllMessages(false);
+        self.creditControlErrors.showAllMessages(false);
+
     }
 
     self.interestedInAllProductTypesForBrand = function (brandId) {
@@ -3815,19 +4010,26 @@ var leadEdit = function (parent) {
         }
 
         if (action == 'open') {
-            var previousLeadStage = Enumerable.From(self.stageInformation().LeadStages).Where("$.LeadStageID == 3").Single();
+            $.confirm('Are you absolutely sure?', 'Please ensure you have double checked everything before opening this account.', () => {
+                var previousLeadStage = Enumerable.From(self.stageInformation().LeadStages).Where("$.LeadStageID == 3").Single();
 
-            // must assign to previous stage's owner 
-            self.ownerMember({
-                MemberID: previousLeadStage.MemberID,
-                FullName: previousLeadStage.FullName
+                // must assign to previous stage's owner 
+                self.ownerMember({
+                    MemberID: previousLeadStage.MemberID,
+                    FullName: previousLeadStage.FullName
+                });
+                console.log('assigning lead to', self.ownerMember());
+
+                self.selectedLeadStatus(nextStatus);
+
+                self.submit(action);
             });
-            console.log('assigning lead to', self.ownerMember());
+        } else {
+
+            self.selectedLeadStatus(nextStatus);
+
+            self.submit(action);
         }
-
-        self.selectedLeadStatus(nextStatus);
-
-        self.submit(action);
     }
 
     self.cancelDecline = function () {
@@ -4002,6 +4204,8 @@ var leadEdit = function (parent) {
                 LanguageID: self.languageId(),
                 CompanyRegistration: self.companyRegistration(),
                 CompanyVATNumber: self.companyVATNumber(),
+                VATCountryID: self.vatCountry() ? self.vatCountry().CountryID : null,
+                VATNumberDisplay: this.vatNumberDisplay(),
                 EORINumber: self.eoriNumber(),
                 CompanyTypeID: self.companyTypeId(),
                 TradingSinceID: self.tradingSinceId(),
@@ -4057,8 +4261,9 @@ var leadEdit = function (parent) {
                 insuredCreditLimit: self.insuredCreditLimit(),
                 purchaseOrderRequired: self.purchaseOrderRequired(),
                 tradeAccountGroup: self.tradeAccountGroup(),
-                salesDivision: self.salesDivision(),
-                deliveryTerms: self.deliveryTerms()
+                salesDivision: self.salesDivision() ? "T" : "N",
+                deliveryTerms: self.deliveryTerms(),
+                taxId: self.taxId(),
             }
 
             if (self.paymentTerms()) {
@@ -4086,8 +4291,6 @@ var leadEdit = function (parent) {
                 data: data,
                 success: function (data) {
 
-                    self.leadSaveBusy(false);
-
                     self.parent.leadSearch.dashboardSelect(true);
                     var idToHighlight = $(".dash-panel.panel-primary").attr('id');
                     if (idToHighlight)
@@ -4095,14 +4298,38 @@ var leadEdit = function (parent) {
                     self.parent.leadSearch.performSearch(self.parent.leadSearch.lastSearchType());
 
                     switch (actionToTake) {
-                        case 'new':
+                      case 'new':
+                        self.leadSaveBusy(false);
                             self.reset(actionToTake);
                             self.showStage(1);
                             break;
-                        case 'close':
+                      case 'close':
+                        self.leadSaveBusy(false);
                             $("#edit-lead-modal").modal('hide');
-                            break;
-                        default:
+                        break;
+                      case 'open':
+                        $.ajax({
+                          url: '/api/leadsapi/OpenTradeAccount',
+                          type: 'post',
+                          dataType: 'json',
+                          cache: false,
+                          data: {
+                            leadId: self.leadId(),
+                          },
+                          success: (result) => {
+                            $.info('Success', `Trade Account <b>${result.tradeAccountCode}</b> has been opened in Mertex.`, null, () => {
+                              self.leadSaveBusy(false);
+                              $("#edit-lead-modal").modal('hide');
+                            });
+                          },
+                          error: function (xhr, e, s) {
+                            self.resetLeadToCreditControl();
+                            $.showError(xhr, e, s);
+                          }
+                        });
+                        break;
+                      default:
+                            self.leadSaveBusy(false);
                             self.leadId(data.LeadID);
                             self.leadContactId(data.LeadContactID);
                             self.loadLeadForEdit(data.LeadID, null, false);
@@ -4111,11 +4338,34 @@ var leadEdit = function (parent) {
                 },
                 error: function (xhr, e, s) {
                     self.leadSaveBusy(false);
-                    //$.showError(xhr, e, s);
+                    $.showError(xhr, e, s);
                 }
             });
         }
     }
+
+  self.resetLeadToCreditControl = () => {
+    $.ajax({
+      url: '/api/leadsapi/ResetLeadToCreditControl',
+      type: 'post',
+      dataType: 'json',
+      cache: false,
+      data: {
+        leadId: self.leadId()
+      },
+      success: () => {
+        //self.loadLeadForEdit(self.leadId(), null, false);
+        window.setTimeout(() => {
+          self.parent.leadSearch.dashboardSelect();
+          self.leadSaveBusy(false);
+        }, 0);
+      },
+      error: (xhr, s, a) => {
+        self.leadSaveBusy(false);
+        $.showError(xhr, s, a);
+      }
+    });
+  }
 
     self.reset = function (stayOpen) {
 
@@ -4191,7 +4441,8 @@ var leadEdit = function (parent) {
         self.leadSourceId(undefined);
         self.companyName(undefined);
         self.companyRegistration(undefined);
-        self.companyVATNumber(undefined);
+      self.companyVATNumber(undefined);
+      self.vatRegistered(false);
         self.eoriNumber(undefined);
         self.newNote(undefined);
         if (self.ownMarker) {
@@ -4269,10 +4520,18 @@ var leadEdit = function (parent) {
         self.bankCode(undefined);
         self.insuredCreditLimit(undefined);
         self.purchaseOrderRequired(undefined);
-        self.tradeAccountGroup(undefined);
-        self.salesDivision("N");
-        self.deliveryTerms("DDU");
+        self.tradeAccountGroup("MI");
+        self.salesDivision(undefined);
+        self.deliveryTerms(undefined);
+        self.taxId(undefined);
 
+        self.vatCountry(undefined);
+        self.vatNumberDisplay(undefined);
+        self.vatNumberValid(false);
+        self.vatNumberError(false);
+        self.vatNumberMessage(undefined);
+        self.vatCheckBusy(false);
+        self.vatNumberCheckPerformed(false);
 
         self.preliminaryErrors.showAllMessages(false);
         self.newLeadErrors.showAllMessages(false);

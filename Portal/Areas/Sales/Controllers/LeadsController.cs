@@ -10,6 +10,7 @@ using SharedEFClasses;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Leads;
+using SharedEFClasses.Models.Samples;
 using SharedEFClasses.Models.TradeAccounts;
 using SharedEFClasses.Utilities;
 using System;
@@ -54,7 +55,8 @@ namespace Portal.Areas.Sales.Controllers
             var tradeAccountClasses = PortalDb.TradeAccountClasses.ToList();
             var creditControllers = PortalDb.CreditControllers.Where(cc => cc.Deleted == false).ToList();
             var creditControllerSalesMarketMap = PortalDb.CreditControllerSalesMarketMap.ToList();
-            var banks = await PortalDb.FetchBanks();
+            var banks = PortalDb.Banks.Where(b => b.CreditControlVisible == true).OrderBy(b => b.BankCode).ToList();
+            var bankSalesMarketMap = PortalDb.BankSalesMarketMap.Include("SalesMarket.Currency").ToList();
             var tradeAccountGroups = PortalDb.TradeAccountGroups.ToList();
             //PortalDb.TradeHauliers.ToList(),
             //PortalDb.TradeCarriages.ToList(),
@@ -100,7 +102,8 @@ namespace Portal.Areas.Sales.Controllers
                 tradeAccountClasses,
                 creditControllers,
                 creditControllerSalesMarketMap,
-                banks.ToList(),
+                banks,
+                bankSalesMarketMap,
                 tradeAccountGroups,
                 salesDivisions,
                 deliveryTerms,

@@ -172,4 +172,9 @@ namespace SharedEFClasses.Models
         public decimal? SupplierInvoiceCharge { get; set; }
         public string SupplierInvoiceComments { get; set; }
     }
+
+  public class TradeAccountCreationResponse 
+  { 
+    public string TradeAccountCode { get; set; }
+  }
 }

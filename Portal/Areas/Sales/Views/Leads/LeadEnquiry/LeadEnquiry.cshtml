@@ -1224,7 +1224,7 @@
         return @Html.Raw(JsonConvert.SerializeObject(Model.AccountTypes))
     }
     function getAvailableCustomerTypes() {
-        return @Html.Raw(JsonConvert.SerializeObject(Model.CustomerTypes))
+        return @Html.Raw(JsonConvert.SerializeObject(Model.CustomerTypes.OrderBy(ct => ct.Name)))
     }
     function getYesNoOptions() {
         return @Html.Raw(Json.Encode(Model.YesNoOptions));
@@ -1248,7 +1248,10 @@
         return @Html.Raw(JsonConvert.SerializeObject(Model.CreditControllerSalesMarketMap))
     }
     function getAvailableBanks() {
-        return @Html.Raw(JsonConvert.SerializeObject(Model.Banks.OrderBy(b => Convert.ToInt32(b.Code))))
+        return @Html.Raw(JsonConvert.SerializeObject(Model.Banks))
+    }
+    function getBankSalesMarketMap() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.BankSalesMarketMap))
     }
     function getAvailableTradeAccountGroups() {
         return @Html.Raw(JsonConvert.SerializeObject(Model.TradeAccountGroups))

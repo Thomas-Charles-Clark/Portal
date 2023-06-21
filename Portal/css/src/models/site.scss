@@ -2517,6 +2517,8 @@ span.address-span {
 
 .tag-container {
     display: flex;
+    gap: 0.25rem;
+    padding: 0.25rem;
 
     span.remove {
         cursor: pointer;

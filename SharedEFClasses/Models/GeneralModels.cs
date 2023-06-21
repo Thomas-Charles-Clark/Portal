@@ -276,6 +276,10 @@ namespace SharedEFClasses.Models.General
 
         [JsonIgnore]
         [InverseProperty("Currency")]
+        public virtual ICollection<SalesMarket> SalesMarkets { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("Currency")]
         public virtual ICollection<Project_CompetitorQuote> Project_CompetitorQuotes { get; set; }
 
         [JsonIgnore]

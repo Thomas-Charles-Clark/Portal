@@ -4,6 +4,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.General;
+using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Mertexer;
 
 using System;
@@ -17,16 +18,27 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models
 {
-    public partial class PortalDbContext : IdentityDbContext<Member, Role, int, Member_Login, Member_Role, Member_Claim>
+  public partial class PortalDbContext : IdentityDbContext<Member, Role, int, Member_Login, Member_Role, Member_Claim>
+  {
+    public async Task<TradeAccountCreationResponse> OpenTradeAccount(PassLeadID objLeadId)
     {
-        public async Task<IEnumerable<Bank>> FetchBanks()
-        {
-            var results = await this.Database.Connection.QueryMultipleAsync("[portal].[Bank_SelectList]", new
-            {
-                
-            }, null, null, System.Data.CommandType.StoredProcedure);
+      var result = await this.Database.Connection.QueryMultipleAsync("[portal].[Lead_TradeAccount_Open]", new { 
+        LeadID = objLeadId.leadId
+      }, null, 60, CommandType.StoredProcedure);
 
-            return results.Read<Bank>().ToList();
-        }
+      return new TradeAccountCreationResponse()
+      {
+        TradeAccountCode = result.ReadSingle<string>()
+      };
     }
+    public async Task<object> ResetLeadToCreditControl(PassLeadID objLeadId)
+    {
+      var result = await this.Database.Connection.QueryMultipleAsync("[portal].[Lead_ResetToCreditControl]", new
+      {
+        LeadID = objLeadId.leadId
+      }, null, 60, CommandType.StoredProcedure);
+
+      return new { };
+    }
+  }
 }

@@ -309,6 +309,22 @@ namespace Portal.Areas.Sales.Controllers
             return Ok(result);
         }
 
+    [HttpPost]
+    public async Task<IHttpActionResult> OpenTradeAccount([FromBody]PassLeadID objLeadId)
+    {
+      var result = await portalDb.OpenTradeAccount(objLeadId);
+
+      return Ok(new { tradeAccountCode = result.TradeAccountCode });
+    }
+
+    [HttpPost]
+    public async Task<IHttpActionResult> ResetLeadToCreditControl([FromBody]PassLeadID objLeadId)
+    {
+      _ = await portalDb.ResetLeadToCreditControl(objLeadId);
+
+      return Ok(new { });
+    }
+
         [HttpPost]
         public IHttpActionResult UpsertLeadPotential([FromBody]PassLeadPotential objLeadPotential)
         {
