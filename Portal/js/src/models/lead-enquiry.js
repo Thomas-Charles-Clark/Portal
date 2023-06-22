@@ -951,7 +951,7 @@ var leadEdit = function (parent) {
         let vatCountry = self.vatCountry();
         let currentStage = self.currentStage();
 
-        if (currentStage == 4 && (vatNumber && vatCountry)) {
+        if (currentStage == 4 && (vatNumber && vatCountry && vatCountry.CountryID != 238)) {
             let data = {
                 vatNumber: self.companyVATNumber(),
                 countryCode: self.vatCountry()?.Code
@@ -4187,6 +4187,16 @@ var leadEdit = function (parent) {
                 self.saveNewNote();
             }
 
+            let salesDivision = null;
+
+            if (self.salesDivision() === true) {
+              salesDivision = "T";
+            }
+
+            if (self.salesDivision() === false) {
+              salesDivision = "N";
+            }
+
             var actionToTake = action;
 
             var data = {
@@ -4261,7 +4271,7 @@ var leadEdit = function (parent) {
                 insuredCreditLimit: self.insuredCreditLimit(),
                 purchaseOrderRequired: self.purchaseOrderRequired(),
                 tradeAccountGroup: self.tradeAccountGroup(),
-                salesDivision: self.salesDivision() ? "T" : "N",
+                salesDivision: salesDivision,
                 deliveryTerms: self.deliveryTerms(),
                 taxId: self.taxId(),
             }

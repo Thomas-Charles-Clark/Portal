@@ -1886,9 +1886,7 @@
                                                                         <div class="form-group row">
                                                                           <div class="col-xs-12">
                                                                             <label class="eori-number col-form-label">
-                                                                              <!-- ko ifnot: companyCurrency().Code == 'USD' -->
                                                                               Company EORI Number
-                                                                              <!-- /ko -->
                                                                             </label>
                                                                           </div>
                                                                           <div class="col-xs-12">
@@ -1942,6 +1940,7 @@
                                                                                 <!-- /ko -->
                                                                               </label>
                                                                             </div>
+                                                                            <!-- ko ifnot: companyCurrency().Code === 'USD' -->
                                                                             <div class="col-xs-12" style="position: relative">
                                                                               <div style="display: flex; align-items: center;" data-bind="visible: vatRegistered">
                                                                                 <div class="input-group" style="width: 100%" data-bind="validationOptions: { insertMessages: false }">
@@ -1962,6 +1961,12 @@
                                                                               <!-- /ko -->
                                                                               <span class="validation-message text-danger" data-bind="validationMessage: companyVATNumber"></span>
                                                                             </div>
+                                                                            <!-- /ko -->
+                                                                            <!-- ko if: companyCurrency().Code === 'USD' -->
+                                                                            <div class="col-xs-12">
+                                                                              <input autocapitalize="none" class="lead-company-vat-no form-control" data-bind="highlightNullField: companyVATNumber, forceNullOnEmpty: companyVATNumber, textInput: companyVATNumber" />
+                                                                            </div>
+                                                                            <!-- /ko -->
                                                                           </div>
                                                                           <!-- /ko -->
                                                                           <!-- ko if: vatRegistered() && companyCurrency().Code != 'USD' -->
