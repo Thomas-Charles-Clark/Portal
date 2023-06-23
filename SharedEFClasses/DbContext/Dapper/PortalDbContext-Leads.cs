@@ -18,27 +18,29 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models
 {
-  public partial class PortalDbContext : IdentityDbContext<Member, Role, int, Member_Login, Member_Role, Member_Claim>
-  {
-    public async Task<TradeAccountCreationResponse> OpenTradeAccount(PassLeadID objLeadId)
+    public partial class PortalDbContext : IdentityDbContext<Member, Role, int, Member_Login, Member_Role, Member_Claim>
     {
-      var result = await this.Database.Connection.QueryMultipleAsync("[portal].[Lead_TradeAccount_Open]", new { 
-        LeadID = objLeadId.leadId
-      }, null, 60, CommandType.StoredProcedure);
+        public async Task<TradeAccountCreationResponse> OpenTradeAccount(PassLeadID objLeadId)
+        {
+            var result = await this.Database.Connection.QueryMultipleAsync("[portal].[Lead_TradeAccount_Open]", new
+            {
+                LeadID = objLeadId.leadId
+            }, null, 60, CommandType.StoredProcedure);
 
-      return new TradeAccountCreationResponse()
-      {
-        TradeAccountCode = result.ReadSingle<string>()
-      };
-    }
-    public async Task<object> ResetLeadToCreditControl(PassLeadID objLeadId)
-    {
-      var result = await this.Database.Connection.QueryMultipleAsync("[portal].[Lead_ResetToCreditControl]", new
-      {
-        LeadID = objLeadId.leadId
-      }, null, 60, CommandType.StoredProcedure);
+            return new TradeAccountCreationResponse()
+            {
+                TradeAccountCode = result.ReadSingle<string>()
+            };
+        }
 
-      return new { };
+        public async Task<object> ResetLeadToCreditControl(PassLeadID objLeadId)
+        {
+            var result = await this.Database.Connection.QueryMultipleAsync("[portal].[Lead_ResetToCreditControl]", new
+            {
+                LeadID = objLeadId.leadId
+            }, null, 60, CommandType.StoredProcedure);
+
+            return new { };
+        }
     }
-  }
 }

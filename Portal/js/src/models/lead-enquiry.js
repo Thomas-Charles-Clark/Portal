@@ -1018,7 +1018,9 @@ var leadEdit = function (parent) {
         maxLength: 20,
         elementId: '.tax-id'
       }
-    });
+  });
+
+    self.usSalesTaxExemptionCertificateBase64 = ko.observable();
 
     self.creditControllerErrors = ko.validation.group([
         self.creditControllerFromList,
@@ -2066,6 +2068,37 @@ var leadEdit = function (parent) {
     // #endregion
 
     // #region Functions
+
+    self.openExemptionCertificate = () => {
+        let base64 = self.usSalesTaxExemptionCertificateBase64();
+       
+        var x = window.open();
+
+        x.document.open();
+
+        let iframe = x.document.createElement("iframe");// ""<iframe width='100%' height='100%'></iframe>"
+
+        iframe.src = base64;
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.border = 0;
+
+        let wrapper = x.document.createElement('div');
+
+        wrapper.style.width = '100vh';
+        wrapper.style.height = '100vh';
+        wrapper.style.display = 'flex';
+        wrapper.style.padding = '1em';
+        wrapper.style['align-items'] = 'center';
+        wrapper.style['justify-content'] = 'center';
+
+        wrapper.appendChild(iframe);
+
+        x.document.appendChild(wrapper);
+
+        x.document.close();
+
+    }
 
     self.saveActualRetailAppointmentDetails = function () {
         $.ajax({
@@ -3344,7 +3377,7 @@ var leadEdit = function (parent) {
 
         let defaultCreditController = self.parent.creditControllerSalesMarketMap.find(m => m.SalesMarketID == data.Lead.SalesMarketID);
 
-        self.creditController(data.Lead.CreditControllerCode || defaultCreditController.CreditControllerCode);
+        self.creditController(data.Lead.CreditControllerCode || defaultCreditController?.CreditControllerCode);
 
         let defaultBanks = self.parent.bankSalesMarketMap.flatMap(b => b.SalesMarketID == data.Lead.SalesMarketID ? [b] : []);
 
@@ -3366,6 +3399,7 @@ var leadEdit = function (parent) {
         self.salesDivision(data.Lead.SalesDivisionCode ? data.Lead.SalesDivisionCode == "T" ? true : false : undefined);
         self.deliveryTerms(data.Lead.DeliveryTermsCode);
         self.taxId(data.Lead.TaxID);
+        self.usSalesTaxExemptionCertificateBase64(data.Lead.USSalesTaxExemptionCertificateBase64);
 
         let vatCountry = self.parent.availableCountries.find(c => c.CountryID == data.Lead.VATCountryID);
 
@@ -4534,6 +4568,7 @@ var leadEdit = function (parent) {
         self.salesDivision(undefined);
         self.deliveryTerms(undefined);
         self.taxId(undefined);
+        self.usSalesTaxExemptionCertificateBase64(undefined);
 
         self.vatCountry(undefined);
         self.vatNumberDisplay(undefined);

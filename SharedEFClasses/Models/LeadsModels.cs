@@ -179,6 +179,44 @@ namespace SharedEFClasses.Models.Leads
         public short? VATCountryID { get; set; }
         public string TaxID { get; set; } // Swiss only
 
+        [JsonIgnore]
+        public byte[] USSalesTaxExemptionCertificate { get; set; }
+        public string USSalesTaxExemptionCertificateFileType { get; set; }
+
+        [NotMapped]
+        public string USSalesTaxExemptionCertificateMimeType
+        {
+            get
+            {
+                switch (USSalesTaxExemptionCertificateFileType) {
+                    case "jpg":
+                    case "jpeg":
+                        return "image/jpeg";
+                    case "pdf":
+                        return "application/pdf";
+                    default:
+                        return "text/plain";
+                }
+            }
+        }
+
+        [NotMapped]
+        public string USSalesTaxExemptionCertificateBase64
+        {
+            get
+            {
+                if (USSalesTaxExemptionCertificate == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return $"data:{USSalesTaxExemptionCertificateMimeType};base64,{Convert.ToBase64String(USSalesTaxExemptionCertificate)}";
+                }
+            }
+        }
+
+
         [ForeignKey("RetailAppointmentAgendaID")]
         public virtual RetailAppointmentAgenda RetailAppointmentAgenda { get; set; }
 
