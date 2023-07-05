@@ -32,6 +32,8 @@ var leadEnquiryViewModel = function () {
 
     self.availableLanguages = getAvailableLanguages();
 
+    self.availableMertexLanguages = getAvailableMertexLanguages();
+
     self.availableLeadContactTypes = getAvailableLeadContactTypes();
 
     self.availableLeadMagnitudes = getAvailableLeadMagnitudes();
@@ -85,6 +87,8 @@ var leadEnquiryViewModel = function () {
     self.availableSalesDivisions = getYesNoOptions();
 
     self.availableDeliveryTerms = getAvailableDeliveryTerms();
+
+    self.exchangeRates = getAvailableExchangeRates();
 
     self.miscSearch = new miscCustomerSearch(self);
 
@@ -551,6 +555,23 @@ var leadEdit = function (parent) {
         }
     });
 
+    self.requestedCreditLimitSterling = ko.computed(() => {
+        let companyCurrency = self.companyCurrency();
+        if (self.requestedCreditLimit() &&
+            companyCurrency &&
+            companyCurrency.Code != 'GBP') {
+            let exchangeRate = self.parent.exchangeRates.find(er => er.MertexCurrencyCode == companyCurrency.MertexCurrencyCode);
+            return self.requestedCreditLimit() / exchangeRate.SterlingExchangeRate;
+        }
+    }).extend({
+        currencyFormatted: {
+            digits: 0,
+            currency: ko.observable({ FormattingCulture: "en-GB", Code: "GBP" }),
+            maxValue: 10000000,
+            minValue: 0
+        },
+    });
+
     self.bankCountry = ko.pureComputed({
         read: function () {
             return Enumerable.From(self.parent.availableCountries).Where(function (x) {
@@ -806,8 +827,8 @@ var leadEdit = function (parent) {
     });
     self.orderConfirmationsEmail = ko.observable();
     self.invoiceStatementsEmail = ko.observable();
-    self.productNewsEventsEmail = ko.observable();
-    self.pricelistsEmail = ko.observable();
+    self.pricelistsProductsNewsEventsEmail = ko.observable();
+    self.deliveryNotificationsEmails = ko.observable();
     self.paymentTermsNotes = ko.observable().extend({
         charsRemaining: {
             maxLength: 500,
@@ -898,7 +919,9 @@ var leadEdit = function (parent) {
     self.vatCountry = ko.observable().extend({
       required: {
         params: true,
-        onlyIf: self.vatRegistered,
+        onlyIf: () => {
+            return self.vatRegistered() && (self.countryId() != 238)
+        },
         message: ' '
       }
     });
@@ -934,6 +957,13 @@ var leadEdit = function (parent) {
 
         if (nv && self.vatCountry()) {
 
+        }
+    });
+
+    self.mertexLanguageCode = ko.observable().extend({
+        required: {
+            params: true,
+            message: 'You must specify a Mertex Language'
         }
     });
 
@@ -980,9 +1010,9 @@ var leadEdit = function (parent) {
                         //callback(false);
                     }
 
-                    if (data.Body && data.Body.requestIdentifier) {
-                        self.vatNumberRequestIdentifier(data.Body.requestIdentifier);
-                    }
+                    //if (data.Body && data.Body.requestIdentifier) {
+                    //    self.vatNumberRequestIdentifier(data.Body.requestIdentifier);
+                    //}
 
                     self.vatNumberCheckPerformed(true);
                     self.vatCheckBusy(false);
@@ -1033,9 +1063,9 @@ var leadEdit = function (parent) {
     self.creditControlErrors = ko.validation.group([
         self.paymentTerms,
         self.creditLimit,
-      self.insuredCreditLimit,
-      self.companyVATNumber,
-    self.vatCountry,
+        self.insuredCreditLimit,
+        self.companyVATNumber,
+        self.vatCountry,
 
         //self.bankName,
         //self.bankCountryId,
@@ -1048,8 +1078,9 @@ var leadEdit = function (parent) {
         //self.bankSortCode,
         //self.bankIBAN,
         self.bankCode,
-      self.creditController,
-        self.taxId
+        self.creditController,
+        self.taxId,
+        self.mertexLanguageCode
     ]);
 
     self.payByDirectDebitOptions = [{ Name: 'Yes', Value: true }, { Name: 'No', Value: false }];
@@ -1403,9 +1434,9 @@ var leadEdit = function (parent) {
                 return true;
             if (self.invoiceStatementsEmail())
                 return true;
-            if (self.productNewsEventsEmail())
+            if (self.pricelistsProductsNewsEventsEmail())
                 return true;
-            if (self.pricelistsEmail())
+            if (self.deliveryNotificationsEmails())
                 return true;
             return false;
         }
@@ -3128,7 +3159,7 @@ var leadEdit = function (parent) {
         self.creditLimit(data.Lead.CreditLimit);
 
         if (data.Lead.RequestedCreditLimit)
-            self.requestedCreditLimit(data.Lead.RequestedCreditLimit);
+            self.requestedCreditLimit(Math.round(+data.Lead.RequestedCreditLimit * 100) / 100);
         else
             self.requestedCreditLimit(undefined);
 
@@ -3367,8 +3398,8 @@ var leadEdit = function (parent) {
 
         self.orderConfirmationsEmail(data.Lead.OrderConfirmationsEmail);
         self.invoiceStatementsEmail(data.Lead.InvoiceStatementsEmail);
-        self.productNewsEventsEmail(data.Lead.ProductNewsEventsEmail);
-        self.pricelistsEmail(data.Lead.PricelistsEmail);
+        self.pricelistsProductsNewsEventsEmail(data.Lead.ProductNewsEventsEmail);
+        self.deliveryNotificationsEmails(data.Lead.PricelistsEmail);
         self.paymentTermsNotes(data.Lead.PaymentTermsNotes);
 
         // new bits 14/06/2023
@@ -3392,6 +3423,7 @@ var leadEdit = function (parent) {
 
         self.bankCode(data.Lead.BankCode || defaultBank?.BankCode);
 
+        self.mertexLanguageCode(data.Lead.MertexLanguageCode);
 
         self.insuredCreditLimit(data.Lead.InsuredCreditLimit);
         self.purchaseOrderRequired(data.Lead.PurchaseOrderRequired);
@@ -3404,8 +3436,11 @@ var leadEdit = function (parent) {
         let vatCountry = self.parent.availableCountries.find(c => c.CountryID == data.Lead.VATCountryID);
 
         self.vatCountry(vatCountry);
-        self.vatNumberDisplay(data.Lead.VATNumberDisplay || (vatCountry?.Code && data.Lead.VATNumber ? `${vatCountry?.Code}${data.Lead.VATNumber}` : undefined));
 
+        window.setTimeout(() => {
+            self.vatNumberDisplay(data.Lead.VATNumberDisplay || (vatCountry?.Code && data.Lead.VATNumber ? `${vatCountry?.Code}${data.Lead.VATNumber}` : undefined));
+        }, 0)
+        
         // get appointment stuff
 
         switch (self.stageInformation().CurrentStage)
@@ -4302,6 +4337,7 @@ var leadEdit = function (parent) {
                 tradeAccountClass: self.tradeAccountClass(),
                 creditController: self.creditController(),
                 bankCode: self.bankCode(),
+                mertexLanguageCode: self.mertexLanguageCode(),
                 insuredCreditLimit: self.insuredCreditLimit(),
                 purchaseOrderRequired: self.purchaseOrderRequired(),
                 tradeAccountGroup: self.tradeAccountGroup(),
@@ -4551,8 +4587,8 @@ var leadEdit = function (parent) {
         self.creditControllerFromList(undefined);
         self.orderConfirmationsEmail(undefined);
         self.invoiceStatementsEmail(undefined);
-        self.productNewsEventsEmail(undefined);
-        self.pricelistsEmail(undefined);
+        self.pricelistsProductsNewsEventsEmail(undefined);
+        self.deliveryNotificationsEmails(undefined);
         self.paymentTermsNotes(undefined);
         self.wantToPayByDirectDebit(undefined);
         //self.stageInformation(undefined); // not necessary as this is always overwritten on load...?
@@ -4562,6 +4598,7 @@ var leadEdit = function (parent) {
         self.tradeAccountClass(undefined);
         self.creditController(undefined);
         self.bankCode(undefined);
+        self.mertexLanguageCode(undefined);
         self.insuredCreditLimit(undefined);
         self.purchaseOrderRequired(undefined);
         self.tradeAccountGroup("MI");

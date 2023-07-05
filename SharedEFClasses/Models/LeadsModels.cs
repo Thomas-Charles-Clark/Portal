@@ -104,6 +104,7 @@ namespace SharedEFClasses.Models.Leads
         public byte? CompanyTypeID { get; set; }
         public bool? WillBuyPatternBooks { get; set; }
         public string VATNumber { get; set; }
+        public string VATNumberDisplay { get; set; }
         public string EORI { get; set; }
         public string CompanyNumber { get; set; }
         public long? DefaultInvoiceLeadAddressID { get; set; }
@@ -163,7 +164,7 @@ namespace SharedEFClasses.Models.Leads
         public DateTime? RetailAppointmentActualDate { get; set; }
         public string RetailAppointmentActualAssistant { get; set; }
 
-        //public string MertexCurrencyCode { get; set; }
+        public string MertexLanguageCode { get; set; }
         public string TradeAccountClassCode { get; set; }
         public string BankCode { get; set; }
         public int? InsuredCreditLimit { get; set; }
@@ -340,7 +341,15 @@ namespace SharedEFClasses.Models.Leads
         [JsonIgnore]
         [InverseProperty("SalesMarket")]
         public virtual ICollection<Bank_SalesMarket> MertexBanks { get; set; }
-  }
+
+        [JsonIgnore]
+        [InverseProperty("SalesMarket")]
+        public virtual ICollection<TradeAccountCreationEmail> TradeAccountCreationEmails { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("SalesMarket")]
+        public virtual ICollection<CreditControlRegion_SalesMarket> CreditControlRegions { get; set; }
+    }
 
     public class LeadType
     {
@@ -915,6 +924,7 @@ namespace SharedEFClasses.Models.Leads
         public string SalesDivision { get; set; }
         public string DeliveryTerms { get; set; }
         public string TaxID { get; set; }
+        public string MertexLanguageCode { get; set; }
 
         //public long? leadContactId { get; set; }
         //public byte? editContactTitleId { get; set; } //

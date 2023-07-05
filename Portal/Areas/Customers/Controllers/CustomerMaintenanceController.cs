@@ -53,5 +53,35 @@ namespace Portal.Areas.Customers.Controllers
 
             return View("CustomerMaintenance", model);
         }
+
+        // GET: customers/maintenance/creation-email
+        [Route("creation-email")]
+        public ActionResult CreationEmail(string a)
+        {
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "maintenance" && p.AreaName == "customers" && p.ActionName == "creation-email").Single();
+
+            var user = UserManager.FindById(User.Identity.GetUserId<int>());
+
+            if (Session["selectedTradeAccountId"] == null)
+            {
+                Session["selectedTradeAccountId"] = user.TradeAccountID;
+            }
+
+            TradeAccountNumber_AutocompleteResult preselected = null;
+
+            if (!String.IsNullOrEmpty(a))
+            {
+                preselected = PortalDb.TradeAccountNumber_Autocomplete(a, user.Id, null).FirstOrDefault();
+            }
+
+            var model = new TradeAccountCreationEmailMaintenanceViewModel(
+                preselected,
+                PortalDb.SalesMarkets.Where(p => p.Code != "I" && p.Code != "M" && p.Code != "R").OrderBy(p => p.Name).ToList(),
+                user.GetActiveRoleProperties(),
+                application.Heading,
+                application.SubHeading);
+
+            return View("CreationEmail/TradeAccountCreationEmail", model);
+        }
     }
 }

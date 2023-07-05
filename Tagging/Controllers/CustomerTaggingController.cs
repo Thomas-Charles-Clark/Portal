@@ -28,7 +28,7 @@ namespace Tagging.Controllers
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
             
             var preselectedSalesRep = PortalDb.SalesRepresentatives
-                                            .Where(p => p.Visible == true && p.MemberID == user.Id)
+                                            .Where(p => p.DeletedDT == null &&  p.Visible == true && p.MemberID == user.Id)
                                             .SingleOrDefault();
 
             //if (preselectedSalesRep == null)

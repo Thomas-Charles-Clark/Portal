@@ -367,6 +367,7 @@ namespace SharedEFClasses.Models
                 new SqlParameter("@SalesDivisionCode", objLeadUpsert.SalesDivision ?? (object)DBNull.Value),
                 new SqlParameter("@DeliveryTermCode", objLeadUpsert.DeliveryTerms ?? (object)DBNull.Value),
                 new SqlParameter("@TaxID", objLeadUpsert.TaxID ?? (object)DBNull.Value),
+                new SqlParameter("@MertexLanguageCode", objLeadUpsert.MertexLanguageCode ?? (object)DBNull.Value),
 
             };
 

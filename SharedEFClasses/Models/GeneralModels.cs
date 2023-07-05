@@ -311,6 +311,10 @@ namespace SharedEFClasses.Models.General
         [JsonIgnore]
         [InverseProperty("Language")]
         public virtual ICollection<Resource_Language> Resources { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("Language")]
+        public virtual ICollection<TradeAccountCreationEmail> TradeAccountCreationEmails { get; set; }
     }
 
     [Table("Country_Language", Schema = "dbo")]
@@ -696,9 +700,6 @@ namespace SharedEFClasses.Models.General
         public string MobileNumber { get; set; }
         //public byte? SalesMarketID { get; set; }
         public DateTime? DeletedDT { get; set; }
-
-        //[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        //public bool Deleted { get; set; }
 
         public int? MemberID { get; set; }
         public bool Visible { get; set; }

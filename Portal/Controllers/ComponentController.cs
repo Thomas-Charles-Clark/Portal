@@ -762,9 +762,9 @@ namespace Portal.Controllers
                     }
                 );
 
-                var url = PortalDb.CountryLanguages.Where(p => p.CountryID == objEmail.countryId &&
+                var url = PortalDb.CountryLanguages.FirstOrDefault(p => p.CountryID == objEmail.countryId &&
                                                                            p.LanguageID == objEmail.languageId)
-                                                                .Select(p => p.URL).Single();
+                    ?.URL ?? "dynamic";
 
                 System.Threading.Tasks.Task.Factory.StartNew(() =>
                 {

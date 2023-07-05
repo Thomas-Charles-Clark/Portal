@@ -28,7 +28,7 @@ namespace SalesStatistics.Controllers
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
             
             var preselectedSalesRep = PortalDb.SalesRepresentatives
-                                            .Where(p => p.Visible == true && p.MemberID == user.Id)
+                                            .Where(p => p.DeletedDT == null && p.Visible == true && p.MemberID == user.Id)
                                             .SingleOrDefault();
 
             //(1,26,29,31,32,30)
@@ -82,7 +82,7 @@ namespace SalesStatistics.Controllers
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
             
             var preselectedSalesRep = PortalDb.SalesRepresentatives
-                                            .Where(p => p.Visible == true && p.MemberID == user.Id)
+                                            .Where(p => p.DeletedDT == null && p.Visible == true && p.MemberID == user.Id)
                                             .SingleOrDefault();
 
             //if (preselectedSalesRep == null)

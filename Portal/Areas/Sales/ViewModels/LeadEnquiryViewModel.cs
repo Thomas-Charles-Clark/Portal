@@ -4,6 +4,7 @@ using SharedEFClasses.Models;
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Mertexer;
+using SharedEFClasses.Models.MertexLive;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Samples;
 using SharedEFClasses.Models.TradeAccounts;
@@ -52,6 +53,8 @@ namespace Portal.Areas.Sales.ViewModels
         public List<TradeAccountGroup> TradeAccountGroups { get; set; }
         public List<SalesDivision> SalesDivisions { get; set; }
         public List<DeliveryTerm> DeliveryTerms { get; set; }
+        public List<ExchangeRate> ExchangeRates { get; set; }
+        public List<MertexLanguage> MertexLanguages { get; set; }
 
         public LeadEnquiryViewModel(
             long? leadId,
@@ -93,6 +96,8 @@ namespace Portal.Areas.Sales.ViewModels
             //List<TradeCarriage> sampleCarriages,
             List<SalesDivision> salesDivisions,
             List<DeliveryTerm> deliveryTerms,
+            List<ExchangeRate> exchangeRates,
+            List<MertexLanguage> mertexLanguages,
             RoleProperties properties,
             string applicationHeading,
             string applicationSubHeading)
@@ -140,6 +145,8 @@ namespace Portal.Areas.Sales.ViewModels
             //SampleCarriages = sampleCarriages;
             SalesDivisions = salesDivisions;
             DeliveryTerms = deliveryTerms;
+            ExchangeRates = exchangeRates;
+            MertexLanguages = mertexLanguages;
         }
     }
 }

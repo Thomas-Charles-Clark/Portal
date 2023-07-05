@@ -53,6 +53,7 @@ namespace SharedEFClasses.Models
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<Language> Languages { get; set; }
+        public DbSet<MertexLanguage> MertexLanguages { get; set; }
         public DbSet<CountryLanguage> CountryLanguages { get; set; }
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<Channel> Channels { get; set; }
@@ -221,6 +222,12 @@ namespace SharedEFClasses.Models
         public DbSet<Models.Mertexer.Bank_SalesMarket> BankSalesMarketMap { get; set; }
         public DbSet<Models.Mertexer.CreditController> CreditControllers { get; set; }
         public DbSet<Models.Mertexer.CreditController_SalesMarket> CreditControllerSalesMarketMap { get; set; }
+
+        public DbSet<TradeAccountCreationEmail> TradeAccountCreationEmails { get; set; }
+        public DbSet<TradeAccountCreationEmailAttachment> TradeAccountCreationEmailAttachments { get; set; }
+        public DbSet<CreditControlRegion> CreditControlRegions { get; set; }
+        public DbSet<CreditControlRegion_SalesMarket> CreditControlRegions_SalesMarkets { get; set; }
+        public DbSet<TradeAccountCreationEmail_TradeAccountCreationEmailAttachment> TradeAccountCreationEmails_TradeAccountCreationEmailAttachments { get; set; }
 
         #endregion
 

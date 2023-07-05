@@ -279,6 +279,10 @@ namespace Portal
                         $"{cssPrefix}/models/paint-mixing{cssSuffix}"
                 ));
 
+            bundles.Add(new StyleBundle("~/bundles/css/trade-account-creation-email-maintenance").Include(
+                        $"{cssPrefix}/models/trade-account-creation-email-maintenance{cssSuffix}"
+                ));
+
             //  
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             //
@@ -647,6 +651,11 @@ namespace Portal
 
             bundles.Add(new ScriptBundle("~/bundles/js/notifications").Include(
                         $"{jsPrefix}/models/notifications{jsSuffix}"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/trade-account-creation-email-maintenance").Include(
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/trade-account-creation-email-maintenance{jsSuffix}"
                 ));
 
             foreach (var b in BundleTable.Bundles)

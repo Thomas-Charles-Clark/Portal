@@ -432,7 +432,7 @@
                                             <div id="complete-application-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideCompleteApplication(); }">
                                                 <div class="panel-heading">
                                                     <h4 class="panel-title">
-                                                        Application to be Completed by Rep
+                                                        Application to be completed by Rep / Sales office
                                                     </h4>
                                                 </div>
                                                 <div class="panel-body text-center">
@@ -1242,7 +1242,7 @@
         return @Html.Raw(JsonConvert.SerializeObject(Model.TradeAccountClasses))
     }
     function getAvailableCreditControllers() {
-        return @Html.Raw(JsonConvert.SerializeObject(Model.CreditControllers))
+        return @Html.Raw(JsonConvert.SerializeObject(Model.CreditControllers.OrderBy(cc => cc.Name)))
     }
     function getCreditControllerSalesMarketMap() {
         return @Html.Raw(JsonConvert.SerializeObject(Model.CreditControllerSalesMarketMap))
@@ -1264,5 +1264,11 @@
     }
     function getAvailableDeliveryTerms() {
         return @Html.Raw(JsonConvert.SerializeObject(Model.DeliveryTerms))
-  }
+    }
+    function getAvailableExchangeRates() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.ExchangeRates))
+    }
+    function getAvailableMertexLanguages() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.MertexLanguages.OrderBy(ml => ml.Name)))
+    }
 </script>

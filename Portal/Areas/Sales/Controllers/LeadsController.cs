@@ -41,7 +41,7 @@ namespace Portal.Areas.Sales.Controllers
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
             
             var preselectedSalesRep = PortalDb.SalesRepresentatives
-                                            .Where(p => p.Visible == true && p.MemberID == user.Id)
+                                            .Where(p => p.DeletedDT == null && p.Visible == true && p.MemberID == user.Id)
                                             .SingleOrDefault();
             
             if (preselectedSalesRep != null)
@@ -70,6 +70,8 @@ namespace Portal.Areas.Sales.Controllers
             });
 
             var deliveryTerms = PortalDb.DeliveryTerms.Where(dt => dt.Name != null).ToList();
+
+            var exchangeRates = PortalDb.ExchangeRates.ToList();
 
             var model = new LeadEnquiryViewModel(
                 leadId,
@@ -107,6 +109,8 @@ namespace Portal.Areas.Sales.Controllers
                 tradeAccountGroups,
                 salesDivisions,
                 deliveryTerms,
+                exchangeRates,
+                PortalDb.MertexLanguages.Where(ml => ml.Name != null).OrderBy(ml => ml.LanguageCode).ToList(),
                 user.GetActiveRoleProperties(),
                 application.Heading,
                 application.SubHeading);

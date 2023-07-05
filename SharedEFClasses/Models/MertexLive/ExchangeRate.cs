@@ -9,7 +9,7 @@ namespace SharedEFClasses.Models.MertexLive
     {
         [Key]
         public string MertexCurrencyCode { get; set; }
-        public float SterlingExchangeRate { get; set; }
+        public decimal SterlingExchangeRate { get; set; }
         public DateTime CreatedDT { get; set; }
         public DateTime ModifiedDT { get; set; }
     }

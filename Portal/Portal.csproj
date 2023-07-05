@@ -551,6 +551,7 @@
     <Compile Include="Areas\Customers\Controllers\CustomerEnquiryODataController.cs" />
     <Compile Include="Areas\Customers\Controllers\CustomerInviteController.cs" />
     <Compile Include="Areas\Customers\CustomersAreaRegistration.cs" />
+    <Compile Include="Areas\Customers\ViewModels\TradeAccountCreationEmailMaintenanceViewModel.cs" />
     <Compile Include="Areas\Customers\ViewModels\CustomerMaintenanceViewModel.cs" />
     <Compile Include="Areas\Marketing\Controllers\MarketingBudgetController.cs" />
     <Compile Include="Areas\Marketing\Controllers\MarketingBudgetAPIController.cs" />
@@ -1766,6 +1767,7 @@
     <Content Include="Areas\Products\Views\Maintenance\ProductTypeMaintenance.cshtml" />
     <Content Include="Areas\Products\Views\Maintenance\TreatmentMaintenance.cshtml" />
     <Content Include="Areas\Products\Views\BasketStatus\BasketStatus.cshtml" />
+    <Content Include="Areas\Customers\Views\Maintenance\CreationEmail\TradeAccountCreationEmail.cshtml" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
@@ -1780,6 +1782,7 @@
     <Content Include="Content\mdc\css\mdc-custom.min.css.map" />
     <Content Include="css\src\models\new-test.scss" />
     <Content Include="css\src\models\generic-forms.scss" />
+    <Content Include="css\src\models\trade-account-creation-email-maintenance.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

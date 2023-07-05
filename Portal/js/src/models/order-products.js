@@ -2140,7 +2140,7 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                             } else {
                                 self.vatNumberValid(false);
                                 self.vatNumberError(true);
-                                if (self.vatCountry()?.Code?.indexOf('GB') === 0) {
+                                if (self.vatCountryCode()?.indexOf('GB') === 0) {
                                     self.vatNumberMessage(data.countryName + ': Incorrect or expired VAT number. Please refer to <a href="https://www.gov.uk/government/publications/check-a-uk-vat-number-service-availability-and-issues/check-a-uk-vat-number-service-availability-and-issues" target="_blank">The HMRC VAT Service Status Page</a> for assistance.');
                                 } else {
                                     self.vatNumberMessage(data.countryName + ': Incorrect or expired VAT number. Please refer to <a href="http://ec.europa.eu/taxation_customs/vies/faq.html#item_7" target="_blank">The European Union\'s V.I.E.S. FAQ</a> for assistance.<br/>You will not be able to submit this order until Credit Control have corrected the VAT number.');
@@ -13819,7 +13819,7 @@ var bespokeFurnitureFactory = function (parent) {
         useNativeValidation: false,
         disabled: false
     }
-
+    
     self.materialRequirementParams = kendoMDCDropDownList({
         label: 'Material Group',
         textField: 'name',

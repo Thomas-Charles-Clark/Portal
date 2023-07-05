@@ -18,6 +18,8 @@ namespace SharedEFClasses.Models.Mertexer
 
         public string Email { get; set; }
 
+        public string Region { get; set; }
+
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool Deleted { get; set; }
     }

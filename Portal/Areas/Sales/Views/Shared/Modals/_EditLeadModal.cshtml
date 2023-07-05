@@ -183,8 +183,8 @@
                     <span data-bind="with: companyName">
                         <span data-bind="text: $data, attr: { title: $parent.leadId }"></span>
                     </span>
-                    <span class="text-transparent">
-                        LeadID: <span data-bind="text: leadId"></span>
+                    <span>
+                        - Lead ID: <span data-bind="text: leadId"></span>
                     </span>
                     @*<span data-bind="with: selectedLeadStatus">
                             - <span data-bind="text: Name"></span>
@@ -667,14 +667,6 @@
                                                         </div>
                                                         <div class="col-xs-12">
                                                             <select class="form-control" data-bind="highlightNullField: channelId, options: $parent.availableChannels, value: channelId, optionsText: 'Name', optionsValue: 'ChannelID', optionsCaption: 'Please Select...'"></select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group row">
-                                                        <div class="col-xs-12">
-                                                            <label class="col-form-label">Language</label>
-                                                        </div>
-                                                        <div class="col-xs-12">
-                                                            <select class="lead-country form-control" data-bind="highlightNullField: languageId, options: $parent.availableLanguages, value: languageId, optionsText: 'Name', optionsValue: 'LanguageID', optionsCaption: 'Please Select...'"></select>
                                                         </div>
                                                     </div>
                                                     <div class="form-group row">
@@ -1874,6 +1866,26 @@
                                                             <div class="panel-body" style="padding: 0;">
                                                                 <div class="form-group row">
                                                                     <div class="col-sm-6 col-xs-12">
+                                                                        <div class="form-group row">
+                                                                            <div class="col-xs-12">
+                                                                                <div class="contact alert alert-info bg-info well-sm" data-bind="with: Enumerable.From(leadAddresses()).Where('$.leadAddressId() == ' + defaultInvoicingAddressId()).FirstOrDefault()">
+                                                                                    <div class="row">
+                                                                                        <div class="col-xs-12">
+                                                                                            <label class="col-form-label">Invoice Address</label>
+                                                                                        </div>
+                                                                                        <div class="col-xs-12">
+                                                                                            <span class="address-span" data-bind="html: label || '', attr: { title: label || '' }"></span>
+                                                                                            <span class="address-span" data-bind="html: line1 || '', attr: { title: line1 || '' }"></span>
+                                                                                            <span class="address-span" data-bind="html: line2 || '', attr: { title: line2 || '' }"></span>
+                                                                                            <span class="address-span" data-bind="html: town || '', attr: { title: town || '' }"></span>
+                                                                                            <span class="address-span" data-bind="html: county || ''"></span>
+                                                                                            <span class="address-span" data-bind="html: postcode || ''"></span>
+                                                                                            <span class="address-span" data-bind="html: country().Name"></span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
                                                                         <div class="alert alert-info bg-info well-sm form-group">
                                                                             <div class="form-group row">
                                                                                 <div class="col-xs-12">
@@ -1992,6 +2004,26 @@
                                                                             </button>
                                                                         </div>
                                                                         <!-- /ko -->
+                                                                        <!-- ko if: notes().length -->
+                                                                        <div class="row form-group">
+                                                                            <div class="col-xs-12 form-group">
+                                                                                <h4>
+                                                                                    Customer &amp; Rep Notes
+                                                                                </h4>
+                                                                            </div>
+                                                                            <!-- ko foreach: notes() -->
+                                                                            <div class="col-xs-12">
+                                                                                <div class="well well-sm margin-bottom-15">
+                                                                                    <p data-bind="text: Note"></p>
+                                                                                    <label class="col-form-label" style="float: none;">
+                                                                                        <span data-bind="text: CreatedBy.FullName"></span> -
+                                                                                        <span data-bind="text: moment(CreatedDT).format('ddd DD/MM/YYYY HH:mm')"></span>
+                                                                                    </label>
+                                                                                </div>
+                                                                            </div>
+                                                                            <!-- /ko -->
+                                                                        </div>
+                                                                        <!-- /ko -->
                                                                     </div>
                                                                     <div class="col-sm-6 col-xs-12">
                                                                         <div class="alert alert-info bg-info well-sm form-group ">
@@ -2028,7 +2060,13 @@
                                                                                         </div>
                                                                                         <div class="col-xs-12">
                                                                                             <!-- ko if: requestedCreditLimit -->
-                                                                                            <span class="form-group-span" data-bind="text: requestedCreditLimit.formatted"></span>
+                                                                                            <span class="form-group-span display-block" data-bind="text: requestedCreditLimit.formatted"></span>
+                                                                                            <!-- ko if: requestedCreditLimitSterling -->
+                                                                                            <span class="form-group-span display-block">
+                                                                                                <span data-bind="text: requestedCreditLimitSterling.formatted"></span>
+                                                                                                <span>Sterling</span>
+                                                                                            </span>
+                                                                                            <!-- /ko -->
                                                                                             <!-- /ko -->
                                                                                             <!-- ko ifnot: requestedCreditLimit -->
                                                                                             <span class="form-group-span">[Not Set]</span>
@@ -2049,7 +2087,7 @@
                                                                             </div>
                                                                             <div class="form-group row">
                                                                                 <div class="col-xs-12">
-                                                                                    <label class="col-form-label">Credit Limit Granted</label>
+                                                                                    <label class="col-form-label">Credit Limit Granted (Must be entered in Sterling)</label>
                                                                                 </div>
                                                                                 <div class="col-xs-12">
                                                                                     <input type="text" class="form-control numeric" data-bind="highlightNullField: creditLimit, numeric, forceNullOnEmpty: creditLimit, textInput: creditLimit.formatted, validationElement: creditLimit" />
@@ -2093,10 +2131,18 @@
                                                                             </div>
                                                                             <div class="form-group row">
                                                                                 <div class="col-xs-12">
-                                                                                    <label class="col-form-label">Credit Control Region</label>
+                                                                                    <label class="col-form-label">Credit Controller</label>
                                                                                 </div>
                                                                                 <div class="col-xs-12">
-                                                                                    <select class="form-control" data-bind="highlightNullField: creditController, options: $parent.availableCreditControllers, value: creditController, optionsText: 'Name', optionsValue: 'CreditControllerCode', optionsCaption: 'Please Select...'"></select>
+                                                                                    <select class="form-control" data-bind="highlightNullField: creditController, options: $parent.availableCreditControllers, value: creditController, optionsText: (item) => `${item.Name} - ${item.Region}`, optionsValue: 'CreditControllerCode', optionsCaption: 'Please Select...'"></select>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="form-group row">
+                                                                                <div class="col-xs-12">
+                                                                                    <label class="col-form-label">Language</label>
+                                                                                </div>
+                                                                                <div class="col-xs-12">
+                                                                                    <select class="lead-country form-control" data-bind="highlightNullField: mertexLanguageCode, options: $parent.availableMertexLanguages, value: mertexLanguageCode, optionsText: 'Name', optionsValue: 'LanguageCode', optionsCaption: 'Please Select...'"></select>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -2154,26 +2200,6 @@
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="form-group row">
-                                                                            <div class="col-xs-12">
-                                                                                <div class="contact alert alert-info bg-info well-sm" data-bind="with: Enumerable.From(leadAddresses()).Where('$.leadAddressId() == ' + defaultInvoicingAddressId()).FirstOrDefault()">
-                                                                                    <div class="row">
-                                                                                        <div class="col-xs-12">
-                                                                                            <label class="col-form-label">Invoice Address</label>
-                                                                                        </div>
-                                                                                        <div class="col-xs-12">
-                                                                                            <span class="address-span" data-bind="html: label || '', attr: { title: label || '' }"></span>
-                                                                                            <span class="address-span" data-bind="html: line1 || '', attr: { title: line1 || '' }"></span>
-                                                                                            <span class="address-span" data-bind="html: line2 || '', attr: { title: line2 || '' }"></span>
-                                                                                            <span class="address-span" data-bind="html: town || '', attr: { title: town || '' }"></span>
-                                                                                            <span class="address-span" data-bind="html: county || ''"></span>
-                                                                                            <span class="address-span" data-bind="html: postcode || ''"></span>
-                                                                                            <span class="address-span" data-bind="html: country().Name"></span>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
                                                                         <div class="row">
                                                                             <div class="col-xs-12">
                                                                                 <div class="alert alert-info bg-info well-sm">
@@ -2202,9 +2228,9 @@
                                                                                             </span>
                                                                                         </div>
                                                                                     </div>
-                                                                                    <div class="form-group row" data-bind="with: productNewsEventsEmail">
+                                                                                    <div class="form-group row" data-bind="with: pricelistsProductsNewsEventsEmail">
                                                                                         <div class="col-xs-12">
-                                                                                            <label class="col-form-label">Products, News &amp; Events</label>
+                                                                                            <label class="col-form-label">PriceLists, Products, News &amp; Events</label>
                                                                                         </div>
                                                                                         <div class="col-xs-12">
                                                                                             <span class="address-span">
@@ -2212,9 +2238,9 @@
                                                                                             </span>
                                                                                         </div>
                                                                                     </div>
-                                                                                    <div class="row" data-bind="with: pricelistsEmail">
+                                                                                    <div class="row" data-bind="with: deliveryNotificationsEmails">
                                                                                         <div class="col-xs-12">
-                                                                                            <label class="col-form-label">Pricelists</label>
+                                                                                            <label class="col-form-label">Delivery Notifications</label>
                                                                                         </div>
                                                                                         <div class="col-xs-12">
                                                                                             <span class="address-span">
@@ -2226,85 +2252,85 @@
                                                                             </div>
                                                                         </div>
                                                                         @*<div class="form-group row">
-                                                                                <div class="col-xs-12">
-                                                                                    <label class="col-form-label">Bank Name</label>
-                                                                                </div>
-                                                                                <div class="col-xs-12">
-                                                                                    <input type="text" class="bank-name form-control" data-bind="highlightNullField: bankName, forceNullOnEmpty: bankName, textInput: bankName" />
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="form-group row">
-                                                                                <div class="col-xs-12">
-                                                                                    <label class="col-form-label">Country</label>
-                                                                                </div>
-                                                                                <div class="col-xs-12">
-                                                                                    <select class="form-control" data-bind="highlightNullField: bankCountryId, options: $parent.availableCountries, value: bankCountryId, optionsText: 'Name', optionsValue: 'CountryID', optionsCaption: 'Please Select...'"></select>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="form-group row">
-                                                                                <div class="col-xs-12">
-                                                                                    <label class="col-form-label">Bank Address Line 1</label>
-                                                                                </div>
-                                                                                <div class="col-xs-12">
-                                                                                    <input type="text" class="pca-predict bank-address-1 form-control" data-bind="highlightNullField: bankAddressLine1, forceNullOnEmpty: bankAddressLine1, textInput: bankAddressLine1, attr: { placeholder: 'Type to Search...' }" />
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="form-group row">
-                                                                                <div class="col-xs-12">
-                                                                                    <label class="col-form-label">Bank Address Line 2</label>
-                                                                                </div>
-                                                                                <div class="col-xs-12">
-                                                                                    <input type="text" class="bank-address-2 form-control" data-bind="highlightNullField: bankAddressLine2, forceNullOnEmpty: bankAddressLine2, textInput: bankAddressLine2" />
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="form-group row">
-                                                                                <div class="col-xs-12">
-                                                                                    <label class="col-form-label">Town</label>
-                                                                                </div>
-                                                                                <div class="col-xs-12">
-                                                                                    <input type="text" class="bank-town form-control" data-bind="highlightNullField: bankTown, forceNullOnEmpty: bankTown, textInput: bankTown" />
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="form-group row">
-                                                                                <div class="col-xs-12">
-                                                                                    <label class="col-form-label">County</label>
-                                                                                </div>
-                                                                                <div class="col-xs-12">
-                                                                                    <input type="text" class="bank-county form-control" data-bind="highlightNullField: bankCounty, forceNullOnEmpty: bankCounty, textInput: bankCounty" />
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="form-group row">
-                                                                                <div class="col-xs-12">
-                                                                                    <label class="col-form-label">Postcode</label>
-                                                                                </div>
-                                                                                <div class="col-xs-12">
-                                                                                    <input type="text" autocapitalize="none" class="bank-postcode form-control" data-bind="highlightNullField: bankPostcode, forceNullOnEmpty: bankPostcode, textInput: bankPostcode" />
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="form-group row">
-                                                                                <div class="col-xs-12">
-                                                                                    <label class="col-form-label">Bank Account Number</label>
-                                                                                </div>
-                                                                                <div class="col-xs-12">
-                                                                                    <input type="text" class="bank-account-number form-control" data-bind="highlightNullField: bankAccountNumber, forceNullOnEmpty: bankAccountNumber, textInput: bankAccountNumber" />
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="form-group row">
-                                                                                <div class="col-xs-12">
-                                                                                    <label class="col-form-label">Bank Sort Code</label>
-                                                                                </div>
-                                                                                <div class="col-xs-12">
-                                                                                    <input type="text" class="bank-sort-code form-control" data-bind="highlightNullField: bankSortCode, forceNullOnEmpty: bankSortCode, textInput: bankSortCode" />
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="form-group row">
-                                                                                <div class="col-xs-12">
-                                                                                    <label class="col-form-label">IBAN</label>
-                                                                                </div>
-                                                                                <div class="col-xs-12">
-                                                                                    <input type="text" class="bank-iban form-control" data-bind="highlightNullField: bankIBAN, forceNullOnEmpty: bankIBAN, textInput: bankIBAN" />
-                                                                                </div>
-                                                                            </div>*@
+                    <div class="col-xs-12">
+                        <label class="col-form-label">Bank Name</label>
+                    </div>
+                    <div class="col-xs-12">
+                        <input type="text" class="bank-name form-control" data-bind="highlightNullField: bankName, forceNullOnEmpty: bankName, textInput: bankName" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">Country</label>
+                    </div>
+                    <div class="col-xs-12">
+                        <select class="form-control" data-bind="highlightNullField: bankCountryId, options: $parent.availableCountries, value: bankCountryId, optionsText: 'Name', optionsValue: 'CountryID', optionsCaption: 'Please Select...'"></select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">Bank Address Line 1</label>
+                    </div>
+                    <div class="col-xs-12">
+                        <input type="text" class="pca-predict bank-address-1 form-control" data-bind="highlightNullField: bankAddressLine1, forceNullOnEmpty: bankAddressLine1, textInput: bankAddressLine1, attr: { placeholder: 'Type to Search...' }" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">Bank Address Line 2</label>
+                    </div>
+                    <div class="col-xs-12">
+                        <input type="text" class="bank-address-2 form-control" data-bind="highlightNullField: bankAddressLine2, forceNullOnEmpty: bankAddressLine2, textInput: bankAddressLine2" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">Town</label>
+                    </div>
+                    <div class="col-xs-12">
+                        <input type="text" class="bank-town form-control" data-bind="highlightNullField: bankTown, forceNullOnEmpty: bankTown, textInput: bankTown" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">County</label>
+                    </div>
+                    <div class="col-xs-12">
+                        <input type="text" class="bank-county form-control" data-bind="highlightNullField: bankCounty, forceNullOnEmpty: bankCounty, textInput: bankCounty" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">Postcode</label>
+                    </div>
+                    <div class="col-xs-12">
+                        <input type="text" autocapitalize="none" class="bank-postcode form-control" data-bind="highlightNullField: bankPostcode, forceNullOnEmpty: bankPostcode, textInput: bankPostcode" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">Bank Account Number</label>
+                    </div>
+                    <div class="col-xs-12">
+                        <input type="text" class="bank-account-number form-control" data-bind="highlightNullField: bankAccountNumber, forceNullOnEmpty: bankAccountNumber, textInput: bankAccountNumber" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">Bank Sort Code</label>
+                    </div>
+                    <div class="col-xs-12">
+                        <input type="text" class="bank-sort-code form-control" data-bind="highlightNullField: bankSortCode, forceNullOnEmpty: bankSortCode, textInput: bankSortCode" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-xs-12">
+                        <label class="col-form-label">IBAN</label>
+                    </div>
+                    <div class="col-xs-12">
+                        <input type="text" class="bank-iban form-control" data-bind="highlightNullField: bankIBAN, forceNullOnEmpty: bankIBAN, textInput: bankIBAN" />
+                    </div>
+                </div>*@
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -2691,9 +2717,9 @@
                                                                                                 </span>
                                                                                             </div>
                                                                                         </div>
-                                                                                        <div class="form-group row" data-bind="with: productNewsEventsEmail">
+                                                                                        <div class="form-group row" data-bind="with: pricelistsProductsNewsEventsEmail">
                                                                                             <div class="col-xs-12">
-                                                                                                <label class="col-form-label">Products, News &amp; Events</label>
+                                                                                                <label class="col-form-label">PriceLists, Products, News &amp; Events</label>
                                                                                             </div>
                                                                                             <div class="col-xs-12">
                                                                                                 <span class="form-group-span">
@@ -2701,9 +2727,9 @@
                                                                                                 </span>
                                                                                             </div>
                                                                                         </div>
-                                                                                        <div class="row" data-bind="with: pricelistsEmail">
+                                                                                        <div class="row" data-bind="with: deliveryNotificationsEmails">
                                                                                             <div class="col-xs-12">
-                                                                                                <label class="col-form-label">Pricelists</label>
+                                                                                                <label class="col-form-label">Delivery Notifications</label>
                                                                                             </div>
                                                                                             <div class="col-xs-12">
                                                                                                 <span class="form-group-span">
@@ -2868,7 +2894,7 @@
                                                                                                 <label class="col-form-label">Trade Price List</label>
                                                                                             </div>
                                                                                             <div class="col-xs-12">
-                                                                                                <span class="form-group-span" data-bind="text: $data.Name"></span>
+                                                                                                <span class="form-group-span" data-bind="text: `${Code} - ${Name}`"></span>
                                                                                             </div>
                                                                                         </div>
                                                                                         <div class="form-group row" data-bind="visible: companyCurrency, with: companyCurrency">
@@ -3090,16 +3116,26 @@
                                                                                                 <span class="form-group-span" data-bind="text: $data"></span>
                                                                                             </div>
                                                                                         </div>
+                                                                                        <div class="form-group row" data-bind="visible: mertexLanguageCode">
+                                                                                            <div class="col-xs-12">
+                                                                                                <label class="col-form-label">
+                                                                                                    Mertex Language
+                                                                                                </label>
+                                                                                            </div>
+                                                                                            <div class="col-xs-12" data-bind="with: $parent.availableMertexLanguages.find(m => m.LanguageCode === mertexLanguageCode())">
+                                                                                                <span class="form-group-span" data-bind="text: `${LanguageCode} - ${Name}`"></span>
+                                                                                            </div>
+                                                                                        </div>
                                                                                         @*<div class="form-group row" data-bind="visible: companyLetterHeadChecked">
-                        <div class="col-xs-12">
-                            <label class="col-form-label">
-                                Company Letter Head Verified
-                            </label>
-                        </div>
-                        <div class="col-xs-12">
-                            <span class="form-group-span" data-bind="text: companyLetterHeadChecked() ? 'Yes' : 'No'"></span>
-                        </div>
-                    </div>*@
+            <div class="col-xs-12">
+                <label class="col-form-label">
+                    Company Letter Head Verified
+                </label>
+            </div>
+            <div class="col-xs-12">
+                <span class="form-group-span" data-bind="text: companyLetterHeadChecked() ? 'Yes' : 'No'"></span>
+            </div>
+        </div>*@
                                                                                         <div class="form-group row" data-bind="visible: displayBankingAddressSummary">
                                                                                             <div class="col-xs-12">
                                                                                                 <label class="col-form-label">Bank</label>

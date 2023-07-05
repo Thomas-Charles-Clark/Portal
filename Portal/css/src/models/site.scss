@@ -2517,8 +2517,8 @@ span.address-span {
 
 .tag-container {
     display: flex;
-    gap: 0.25rem;
     padding: 0.25rem;
+    flex-wrap: wrap;
 
     span.remove {
         cursor: pointer;
@@ -3144,7 +3144,7 @@ button.close.clear-field {
 
 tr.k-state-selected {
     > td {
-        > a {
+        > a:not(.k-button) {
             color: white;
         }
 
