@@ -54,7 +54,12 @@
             },
             charsRemainingOptions: {
                 maxLength: 254
-            }
+            },
+            enable: ko.observable(true),
+            disable: ko.observable(false),
+            busy: ko.observable(false),
+            clearable: ko.observable(true),
+            revertable: ko.observable(true)
         }
 
         self.subject = ko.observable().extend({
@@ -64,7 +69,7 @@
                     return self.validateSendNow();
                 },
                 message: 'Subject Required'
-            },
+            }
         });
 
         self.originalSubject = ko.observable();
@@ -89,7 +94,12 @@
             },
             charsRemainingOptions: {
                 maxLength: 1000
-            }
+            },
+            enable: ko.observable(true),
+            disable: ko.observable(false),
+            busy: ko.observable(false),
+            clearable: ko.observable(true),
+            revertable: ko.observable(true)
         };
 
         self.originalReplyTo = ko.observable(getUserEmail());
@@ -131,7 +141,12 @@
             },
             charsRemainingOptions: {
                 maxLength: 254
-            }
+            },
+            enable: ko.observable(true),
+            disable: ko.observable(false),
+            busy: ko.observable(false),
+            clearable: ko.observable(true),
+            revertable: ko.observable(true)
         }
 
         self.body = ko.observable().extend({
@@ -167,7 +182,13 @@
             },
             charsRemainingOptions: {
                 maxLength: 4000
-            }
+            },
+            enable: ko.observable(true),
+            disable: ko.observable(false),
+            busy: ko.observable(false),
+            clearable: ko.observable(true),
+            revertable: ko.observable(true),
+            visible: ko.observable(true)
         };
 
         self.emailErrors = ko.validation.group([

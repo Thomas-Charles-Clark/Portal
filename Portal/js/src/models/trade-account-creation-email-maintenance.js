@@ -1,6 +1,8 @@
 ﻿const tradeAccountCreationEmailMaintenanceViewModel = () => {
     let self = {};
 
+    self.editingRecord = ko.observable();
+
     self.busy = ko.observable(false);
 
     self.resultGridWidget = ko.observable();
@@ -45,9 +47,6 @@
             },
             headerAttributes: {
                 'class': 'text-center'
-            },
-            template: function (r) {
-                return r.DisplayContactDetails_AccountManager ? '✔' : '✖';
             }
         }, {
             field: 'DisplayContactDetails_CustomerService',
@@ -57,9 +56,6 @@
             },
             headerAttributes: {
                 'class': 'text-center'
-            },
-            template: function (r) {
-                return r.DisplayContactDetails_CustomerService ? '✔' : '✖';
             }
         }, {
             field: 'DisplayContactDetails_CreditControl',
@@ -69,15 +65,19 @@
             },
             headerAttributes: {
                 'class': 'text-center'
-            },
-            template: function (r) {
-                return r.DisplayContactDetails_CreditControl ? '✔' : '✖';
             }
-        },
-        {
-            command: "edit",
-            width: '100px'
+        }, {
+            field: 'DisplayB2BRegistrationRequest',
+            title: 'B2B Registration Request',
+            attributes: {
+                'class': 'text-center'
+            },
+            headerAttributes: {
+                'class': 'text-center'
+            }
         }]
+    }, {
+        field: ''
     }];
 
     self.resultGridDataSource =
@@ -153,8 +153,8 @@
         widget: self.resultGridWidget,
         columns: self.resultGridColumns,
         data: self.resultGridDataSource,
-        //useKOTemplates: true,
-        //rowTemplate: 'basket-row-template',
+        useKOTemplates: true,
+        rowTemplate: 'creation-email-row-template',
         scrollable: false,
         sortable: true,
         filterable: false,
@@ -165,9 +165,7 @@
             pageSize: 30,
             pageSizes: [30, 50, 100, 250, 500, 'all']
         },
-        editable: {
-            mode: 'popup',
-        },
+        editable: false,
         selectable: "single",
         change: function (e) {
             if (!e.sender.editable) {
@@ -328,6 +326,317 @@
             self.salesMarketId(null);
         }
     };
+
+    self.editRecord = (r) => {
+        console.log(r);
+        let record = editModel(r);
+        self.editingRecord(record);
+        let element = document.getElementById('creation-email-edit-modal');
+        let modal = bootstrap.Modal.getOrCreateInstance(element);
+        modal.show();
+    }
+
+    return self;
+}
+
+const editModel = (props) => {
+    let self = { ...props };
+
+    self.busy = ko.observable(false);
+
+    self.validateNow = ko.observable(false);
+
+    self.emailer = emailer({ parent: self, sendLabel: 'Send <span class="bi bi-send ms-2"></span>' });
+
+    self.emailer.body('[This body purposefully left empty!]');
+    self.emailer.bodyParams.visible(false);
+
+    self.emailer.to(getUserEmail());
+    self.emailer.subject(`Trade Account Creation Test - ${props.SalesMarket.Name}`);
+
+    self.emailer.send = () => {
+        self.validateNow(true);
+        self.emailer.validateSendNow(true);
+
+        var errors = self.emailer.emailErrors().concat(self.errors());
+
+        if (errors.length) {
+            self.emailer.emailErrors.showAllMessages(true);
+            self.emailer.emailErrors.filter(function (x) {
+                x.isValid.notifySubscribers(x.isValid());
+            });
+            self.errors.showAllMessages(true);
+            self.errors.filter(function (x) {
+                x.isValid.notifySubscribers(x.isValid());
+            });
+        } else {
+            self.busy(true);
+            fetch('/api/customermaintenance/SendTestCreationEmail', {
+                method: 'POST',
+                dataType: 'json',
+                headers: window.fetchHeaders,
+                body: JSON.stringify({
+                    to: self.emailer.to(),
+                    subject: self.emailer.subject(),
+                    displayAccountManager: self.displayAccountManager(),
+                    displayCustomerService: self.displayCustomerService(),
+                    displayCreditControl: self.displayCreditControl(),
+                    displayB2BRegistration: self.displayB2BRegistration(),
+                    attachments: self.attachmentsManager.attachments().map(a => {
+                        return {
+                            name: a.name(),
+                            path: a.path()
+                        }
+                    })
+                })
+            }).then(resp => resp.json())
+                .then(data => {
+                    self.busy(false);
+                    self.emailer.sentTo(self.emailer.to());
+                    self.emailer.showLastSentTo(true);
+                    window.setTimeout(function () {
+                        self.emailer.showLastSentTo(false);
+                    }, 5000);
+                })
+                .catch(err => {
+                    self.busy(false);
+                    window.catchFetchError(err);
+                });
+        }
+    }
+
+    self.displayAccountManager = ko.observable(props.DisplayContactDetails_AccountManager);
+
+    self.displayAccountManagerProps = {
+        label: 'Display Account Manager Section?',
+        checkboxId: `display-account-manager`,
+        observable: self.displayAccountManager,
+        originalValue: props.DisplayContactDetails_AccountManager,
+        useNativeValidation: false,
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        busy: ko.observable(false)
+    }
+
+    self.displayCustomerService = ko.observable(props.DisplayContactDetails_CustomerService);
+
+    self.displayCustomerServiceProps = {
+        label: 'Display Customer Service Section?',
+        checkboxId: `display-customer-service`,
+        observable: self.displayCustomerService,
+        originalValue: props.DisplayContactDetails_CustomerService,
+        useNativeValidation: false,
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        busy: ko.observable(false)
+    }
+
+    self.displayCreditControl = ko.observable(props.DisplayContactDetails_CreditControl);
+
+    self.displayCreditControlProps = {
+        label: 'Display Credit Control Section?',
+        checkboxId: `display-credit-control`,
+        observable: self.displayCreditControl,
+        originalValue: props.DisplayContactDetails_CreditControl,
+        useNativeValidation: false,
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        busy: ko.observable(false)
+    }
+
+    self.displayB2BRegistration = ko.observable(props.DisplayB2BRegistrationRequest);
+
+    self.displayB2BRegistrationProps = {
+        label: 'Display B2B Registration Request?',
+        checkboxId: `display-b2b-registration`,
+        observable: self.displayB2BRegistration,
+        originalValue: props.DisplayB2BRegistrationRequest,
+        useNativeValidation: false,
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        busy: ko.observable(false)
+    }
+
+    self.attachmentsManager = {
+        attachments: ko.observableArray(props.EmailAttachments.map(e => emailAttachment(e))),
+        addAttachment: function () {
+            let a = emailAttachment({
+                TradeAccountCreationEmailAttachmentID: [...Math.random(32).toString()].splice(2).join('')
+            }, self);
+            self.attachmentsManager.attachments.push(a);
+            setTimeout(() => {
+                a.name.DOMElement.focus();
+            }, 0);
+
+            self.errors = new ko.validation.group([
+                self.name,
+                self.attachmentsManager.attachments()
+            ], {
+                deep: true
+            });
+        },
+        removeAttachment: (a) => {
+            window.showConfirm('Are you sure?', `This will remove the attachment from the list.`, () => {
+                self.attachmentsManager.attachments(self.attachmentsManager.attachments().filter(b => b.TradeAccountCreationEmailAttachmentID != a.TradeAccountCreationEmailAttachmentID))
+
+                self.errors = new ko.validation.group([
+                    self.name,
+                    self.attachmentsManager.attachments()
+                ], {
+                    deep: true
+                });
+            }, null)
+        },
+        checkAttachment: (a) => {
+            return fetch('/api/customermaintenance/checkCreationEmailAttachment', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                dataType: 'json',
+                body: JSON.stringify({
+                    path: a.path()
+                })
+            }).then(resp => resp.json())
+        }
+    }
+
+    self.errors = new ko.validation.group([
+        self.name,
+        self.attachmentsManager.attachments()
+    ], {
+        deep: true
+    });
+
+    self.save = () => {
+        self.validateNow(true);
+
+        if (self.errors().length) {
+            self.errors.showAllMessages(true);
+        } else {
+            self.busy(true);
+            setTimeout(() => {
+                self.busy(false);
+            }, 3000);
+        }
+    }
+
+    return self;
+};
+
+const emailAttachment = (props, parent) => {
+    let self = {
+        ...props,
+        validateNow: parent.validateNow,
+        removeAttachment: parent.attachmentsManager.removeAttachment,
+        checkAttachment: parent.attachmentsManager.checkAttachment
+    };
+
+    self.fileCheckPerformed = ko.observable(false).extend({
+        equals: {
+            params: true,
+            onlyIf: self.validateNow(),
+            message: 'File check not performed'
+        }
+    });
+
+    self.fileFound = ko.observable(false).extend({
+        equals: {
+            params: true,
+            onlyIf: self.validateNow(),
+            message: 'File not found'
+        }
+    });
+
+    self.busy = ko.observable(false);
+
+    self.name = ko.observable(props.Name).extend({
+        required: {
+            params: true,
+            onlyIf: function () {
+                return self.validateNow();
+            },
+            message: 'Provide a name'
+        },
+        rateLimit: {
+            timeout: 500,
+            method: 'notifyWhenChangesStop'
+        }
+    });
+
+    self.pathParams = {
+        label: '',
+        observable: self.path,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        showClear: true,
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            $(self.observable.DOMElement).focus();
+        },
+        charsRemainingOptions: {
+            maxLength: 280
+        }
+    }
+
+    self.path = ko.observable(props.FilePathUNC).extend({
+        required: {
+            params: true,
+            onlyIf: function () {
+                return self.validateNow();
+            },
+            message: 'Provide a file path'
+        },
+        //pattern: {
+        //    params: /^\\\\(?:files|vm-web1)/,
+        //    message: 'Provide a path to a file either on the Files server or on VM-WEB1.'
+        //},
+        rateLimit: {
+            timeout: 500,
+            method: 'notifyWhenChangesStop'
+        }
+    });
+
+    self.pathParams = {
+        label: '',
+        observable: self.path,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        showClear: true,
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            $(self.observable.DOMElement).focus();
+        },
+        charsRemainingOptions: {
+            maxLength: 280
+        }
+    }
+
+    self.path.subscribe(nv => {
+        if (self.path.isValid()) {
+            self.busy(true);
+            self.checkAttachment(self)
+                .then(data => {
+                    console.log('filecheck', data.success);
+                    self.busy(false);
+                    self.fileCheckPerformed(true);
+                    self.fileFound(data.success);
+                })
+                .catch(err => window.catchFetchError(err));
+        }
+    });
+
+    self.path.valueHasMutated();
+
+    self.isValid = ko.computed(() => {
+        return self.name.isValid() && self.path.isValid() && self.fileCheckPerformed() && self.fileFound();
+    }, self)
+
+    self.isInvalid = ko.computed(() => {
+        return !self.isValid();
+    }, self)
 
     return self;
 }

@@ -655,6 +655,7 @@ namespace Portal
 
             bundles.Add(new ScriptBundle("~/bundles/js/trade-account-creation-email-maintenance").Include(
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/emailer{jsSuffix}",
                         $"{jsPrefix}/models/trade-account-creation-email-maintenance{jsSuffix}"
                 ));
 

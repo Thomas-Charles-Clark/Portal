@@ -12,6 +12,24 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models
 {
+    public class TradeAccountAttachmentDto
+    {
+        public string name { get; set; }
+        public string path { get; set; }
+    }
+
+    public class SendTestCreationEmailDto
+    {
+        public string to { get; set; }
+        public string subject { get; set; }
+
+        public bool displayAccountManager { get; set; }
+        public bool displayCustomerService { get; set; }
+        public bool displayCreditControl { get; set; }
+        public bool displayB2BRegistration { get; set; }
+        public IEnumerable<TradeAccountAttachmentDto> attachments { get; set; }
+    }
+
     [Table("TradeAccountCreationEmail", Schema = "portal")]
     public class TradeAccountCreationEmail
     {
@@ -23,6 +41,7 @@ namespace SharedEFClasses.Models
         public bool DisplayContactDetails_AccountManager { get; set; }
         public bool DisplayContactDetails_CustomerService { get; set; }
         public bool DisplayContactDetails_CreditControl { get; set; }
+        public bool DisplayB2BRegistrationRequest { get; set; }
         public DateTime CreatedDT { get; set; }
         public DateTime? DeletedDT { get; set; }
 

@@ -66,9 +66,106 @@
     </div>
 </div>
 
+<script id="creation-email-row-template" type="text/html">
+    <tr>
+        <td>
+            <span data-bind="text: SalesMarket.Name"></span>
+        </td>
+        <td class="text-center">
+            <span data-bind="html: DisplayContactDetails_AccountManager ? '✔' : '✖'"></span>
+        </td>
+        <td class="text-center">
+            <span data-bind="html: DisplayContactDetails_CustomerService ? '✔' : '✖'"></span>
+        </td>
+        <td class="text-center">
+            <span data-bind="html: DisplayContactDetails_CreditControl ? '✔' : '✖'"></span>
+        </td>
+        <td class="text-center">
+            <span data-bind="html: DisplayB2BRegistrationRequest ? '✔' : '✖'"></span>
+        </td>
+        <td>
+            <button type="button" class="btn btn-secondary d-block border-box w-100" data-bind="click: $parent.editRecord">
+                Edit
+            </button>
+        </td>
+    </tr>
+</script>
+
 <div class="grid gap-3 mt-5">
     <div class="g-col-12">
         <div id="sales-market-wrapper" class="mb-3" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesMarketParams }"></div>
         <div data-bind="kendoGrid: resultGridSettings"></div>
+    </div>
+</div>
+
+<div id="creation-email-edit-modal" class="modal" tabindex="-1" data-bind="with: editingRecord">
+    <div class="modal-dialog modal-lg modal-xl">
+        <div class="modal-content">
+            <div class="blocker" data-bind="flexVisible: busy, toggleOpacity: busy">
+                <div class="loading-spinner"></div>
+                <h4 class="mt-3">
+                    Please wait...
+                </h4>
+            </div>
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    Editing:
+                    <span data-bind="text: SalesMarket.Name"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pe-5">
+                <div class="d-flex gap-3">
+                    <div id="attachment-manager" class="flex-grow-1" data-bind="with: attachmentsManager">
+                        <ul class="list-group">
+                            <!-- ko foreach: attachments -->
+                            <li class="list-group-item d-flex" data-bind="css: { 'barber-busy': busy, 'invalid': isInvalid }, validationOptions: { insertMessages: false }">
+                                <button class="btn btn-outline no-ripple" data-bind="click: removeAttachment">
+                                    <span class="bi bi-x-lg d-inline-block"></span>
+                                </button>
+                                <input type="text" class="attachment-name form-control flex-grow-0" data-bind="keepElement: name, textInput: name" placeholder="Attachment Name" />
+                                <input type="text" class="attachment-path form-control pe-5" data-bind="keepElement: path, textInput: path" placeholder="\\files\00 - Everyone\Your File.pdf" />
+                                <!-- ko if: fileCheckPerformed -->
+                                <!-- ko ifnot: fileFound -->
+                                <span class="bi bi-hand-thumbs-down"></span>
+                                <!-- /ko -->
+                                <!-- ko if: fileFound -->
+                                <span class="bi bi-check-lg"></span>
+                                <!-- /ko -->
+                                <!-- /ko -->
+                                <span class="validation-message text-danger" data-bind="validationMessage: name"></span>
+                                <span class="validation-message text-danger" data-bind="validationMessage: path"></span>
+                            </li>
+                            <!-- /ko -->
+                            <li class="list-group-item d-flex justify-content-center btn btn-secondary py-2" data-bind="click: addAttachment">
+                                <span class="bi bi-plus-lg"></span>
+                                Add Attachment
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div data-bind="component: { name: 'mdc-checkbox-component', params: displayAccountManagerProps }"></div>
+                        <div data-bind="component: { name: 'mdc-checkbox-component', params: displayCustomerServiceProps }"></div>
+                        <div data-bind="component: { name: 'mdc-checkbox-component', params: displayCreditControlProps }"></div>
+                        <div data-bind="component: { name: 'mdc-checkbox-component', params: displayB2BRegistrationProps }"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="me-auto d-inline-flex justify-content-center align-items-center gap-3">
+                    <button type="button" class="btn btn-warning me-auto" data-bs-toggle="collapse" data-bs-target="#emailer-collapse">
+                        Send Test Email
+                    </button>
+                    <i>you don't need to save your changes before sending a test</i>
+                </div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bind="click: save">Save Changes</button>
+            </div>
+            <div id="emailer-collapse" class="collapse">
+                <div class="p-3">
+                    <!-- ko component: { name: 'emailer-component', params: emailer } --><!-- /ko -->
+                </div>
+            </div>
+        </div>
     </div>
 </div>

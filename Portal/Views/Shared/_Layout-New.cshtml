@@ -1761,8 +1761,8 @@
             <button class="btn btn-success" data-bind="html: sendLabel, click: send"></button>
         </div>
         <div class="margin-bottom-15" data-bind="component: { name: 'mdc-text-field-component', params: subjectParams }"></div>
-        <div class="margin-bottom-15" data-bind="component: { name: 'mdc-text-field-component', params: replyToParams }"></div>
-        <div class="margin-bottom-15" data-bind="component: { name: 'mdc-text-area-component', params: bodyParams }"></div>
+        <div class="margin-bottom-15" data-bind="css: { 'margin-bottom-15': bodyParams.visible }, component: { name: 'mdc-text-field-component', params: replyToParams }"></div>
+        <div class="margin-bottom-15" data-bind="visible: bodyParams.visible, component: { name: 'mdc-text-area-component', params: bodyParams }"></div>
         <div class="send-success text-success margin-bottom-15" style="display: none; font-size: 14px;" data-bind="fadeVisible: showLastSentTo, fadeSpeed: 'slow', html: 'Sent successfully to: ' + sentTo() + ' &#x2714;'"></div>
     </script>
 
