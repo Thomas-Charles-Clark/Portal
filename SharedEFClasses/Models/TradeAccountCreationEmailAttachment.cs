@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -13,15 +15,17 @@ namespace SharedEFClasses.Models
     {
         [Key]
         public int TradeAccountCreationEmailAttachmentID { get; set; }
-        public string FileName { get;set; }
+        public string Name { get;set; }
         public string FilePath { get; set; }
+        public int FileSizeBytes { get; set; }
         public DateTime CreatedDT { get; set; }
         public DateTime? DeletedDT { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool Deleted { get; set; }
 
-        [InverseProperty("TradeAccountCreationEmailAttachment")]
+        [JsonIgnore]
+        [InverseProperty("Attachment")]
         public virtual ICollection<TradeAccountCreationEmail_TradeAccountCreationEmailAttachment> EmailAttachments { get; set; }
     }
 }

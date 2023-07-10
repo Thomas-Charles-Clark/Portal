@@ -1263,7 +1263,7 @@
                     </div>
                     <div class="mdc-notched-outline__trailing"></div>
                 </div>
-                <diov class="controls">
+                <div class="controls">
                     <!-- ko if: revertable -->
                     <div class="close revert" data-bind="click: revertFunction">
                         <i class="material-icons">
@@ -1276,7 +1276,7 @@
                         ×
                     </div>
                     <!-- /ko -->
-                </diov>
+                </div>
             </div>
             @*<span class="validation-message text-danger" data-bind="validationMessage: observable"></span>*@
         </div>
@@ -1285,27 +1285,38 @@
     <script id="mdc-kendo-dropdown-component-no-outline" type="text/html">
         <div class="mdc-validating-field">
             <div class="mdc-select mdc-select--outlined" data-bind="
-                    mdcSelectComponentNoOutline: {
-                        boundTo: observable,
-                        disabled: disabled,
-                        useNativeValidation: useNativeValidation,
-                        optionsValue: dropDownListSettings.dataValueField,
-                        disabled:  disable() || !enable()
-                    },
-                    validationOptions: {
-                        insertMessages: insertValidationMessages,
-                        decorateInputElement: decorateInputElement
-                    }, css: {
-                        'busy': typeof busy === 'undefined' ? false : busy,
-                        'clearable': (typeof showClear === 'undefined' ? false : showClear )
-                    }">
+                 mdcSelectComponentNoOutline: {
+                    boundTo: observable,
+                    useNativeValidation: useNativeValidation,
+                    optionsValue: dropDownListSettings.dataValueField,
+                    disabled: disable() || !enable()
+                 },
+                 validationOptions: {
+                    insertMessages: insertValidationMessages,
+                    decorateInputElement: decorateInputElement
+                 },
+                 css: {
+                    'clearable': clearable,
+                    'revertable': revertable,
+                    'busy': typeof busy === 'undefined' ? false : busy,
+                    'mdc-select--disabled': disable() || !enable()
+                }">
                 <select class="mdc-select__native-control" style="display: none;"></select>
                 <div data-bind="kendoDropDownList: dropDownListSettings, css: controlClass"></div>
-                <!-- ko if: typeof showClear != 'undefined' && showClear && typeof clearFunction === 'function' -->
-                <div class="close pull-right" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
-                    ×
+                <div class="controls">
+                    <!-- ko if: revertable -->
+                    <div class="close revert" data-bind="click: revertFunction">
+                        <i class="material-icons">
+                            replay
+                        </i>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: clearable -->
+                    <div class="close clear" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
+                        ×
+                    </div>
+                    <!-- /ko -->
                 </div>
-                <!-- /ko -->
             </div>
             @*<span class="validation-message text-danger" data-bind="validationMessage: observable"></span>*@
         </div>

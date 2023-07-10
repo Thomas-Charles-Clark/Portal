@@ -4,12 +4,9 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 using SharedEFClasses.Models;
 
-using SimpleImpersonation;
-
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
 using System.Linq;
 using System.Reflection;
 using System.Security.Principal;
@@ -20,10 +17,8 @@ namespace SharedEFClasses.Models
 {
     public partial class PortalDbContext : IdentityDbContext<Member, Role, int, Member_Login, Member_Role, Member_Claim>
     {
-        public async Task<int> SendTradeAccountCreationEmailTest(SendTestCreationEmailDto dto)
+        public async Task<int> SendTradeAccountCreationEmailTest(SendTradeAccountCreationEmailTestDto dto)
         {
-            int result = -1;
-
             var attachments = new DataTable();
 
             attachments.Columns.Add("Name", typeof (string));
@@ -31,37 +26,110 @@ namespace SharedEFClasses.Models
 
             foreach (var a in dto.attachments)
             {
-                attachments.Rows.Add(a.name, a.path);
+                //attachments.Rows.Add(a.name, System.Web.HttpUtility.UrlEncode(a.path));
+                attachments.Rows.Add(a.name, $"{a.FinalFilePath}");
             }
 
-            var credentials = new UserCredentials("DESIGNERSGUILD\\tclark", "Theta9Trio");
-
-            var token = credentials.LogonUser(LogonType.Interactive);
-
-            WindowsIdentity.RunImpersonated(token, () => 
+            var results = await this.Database.Connection.QueryMultipleAsync("[portal].[TradeAccountCreationEmail_Send]", new
             {
-                using (var db = new DbContext("Data Source=vm-sql1;Initial Catalog=Flock;Integrated Security=true;MultipleActiveResultSets=true"))
-                {
-                    var results = this.Database.Connection.QueryMultiple("[portal].[TradeAccountCreationEmail_Send]", new
-                    {
-                        To = dto.to,
-                        Subject = dto.subject,
-                        TradeAccountCode = "AB123456",
-                        TradeAccountName = "Test Account",
-                        DisplayContactDetails_AccountManager = dto.displayAccountManager,
-                        DisplayContactDetails_CustomerService = dto.displayCustomerService,
-                        DisplayContactDetails_CreditControl = dto.displayCreditControl,
-                        DisplayB2BRegistrationRequest = dto.displayB2BRegistration,
-                        FileAttachments = attachments
-                    }, null, null, System.Data.CommandType.StoredProcedure);
+                To = dto.to,
+                Subject = dto.subject,
+                TradeAccountCode = "AB123456",
+                TradeAccountName = "Test Account",
+                DisplayContactDetails_AccountManager = dto.displayAccountManager,
+                DisplayContactDetails_CustomerService = dto.displayCustomerService,
+                DisplayContactDetails_CreditControl = dto.displayCreditControl,
+                DisplayB2BRegistrationRequest = dto.displayB2BRegistration,
+                FileAttachments = attachments
+            }, null, null, System.Data.CommandType.StoredProcedure);
 
-                    var user = results.ReadSingle<string>();
+            var user = results.ReadSingle<string>();
 
-                    result = results.ReadSingle<int>();
-                }
-            });
+            var result = results.ReadSingle<int>();
 
             return result;
+        }
+
+        public async Task<int> SaveTradeAccountCreationEmailTest(SaveTradeAccountCreationEmailDto dto)
+        {
+            var r = this.TradeAccountCreationEmails.SingleOrDefault(p => p.TradeAccountCreationEmailID == dto.tradeAccountCreationEmailId);
+
+            if (r == null)
+            {
+                r = new TradeAccountCreationEmail();
+                this.TradeAccountCreationEmails.Add(r);
+                this.SaveChanges();
+            }
+
+            r.DisplayB2BRegistrationRequest = dto.displayB2BRegistration;
+            r.DisplayContactDetails_AccountManager = dto.displayAccountManager;
+            r.DisplayContactDetails_CustomerService = dto.displayCustomerService;
+            r.DisplayContactDetails_CreditControl = dto.displayCreditControl;
+
+            var attachmentLinker = new List<TradeAccountCreationEmail_TradeAccountCreationEmailAttachment>();
+
+            byte nextSortOrder = 1;
+
+            if (r.EmailAttachments.Any())
+            {
+                var toRemove = new List<TradeAccountCreationEmail_TradeAccountCreationEmailAttachment>();
+
+                foreach(var ea in r.EmailAttachments)
+                {
+                    if (dto.attachments.SingleOrDefault(a => a.TradeAccountCreationEmailAttachmentID == ea.TradeAccountCreationEmailAttachmentID) == null)
+                    {
+                        toRemove.Add(ea);
+                    }
+                }
+
+                foreach (var removal in toRemove)
+                {
+                    r.EmailAttachments.Remove(removal);
+                }
+
+                this.SaveChanges();
+
+                nextSortOrder = (byte)(r.EmailAttachments.Max(p => p.SortOrder) + 1);
+            }
+
+            foreach (var a in dto.attachments)
+            {
+                var attachment = this.TradeAccountCreationEmailAttachments.SingleOrDefault(p => p.TradeAccountCreationEmailAttachmentID == a.TradeAccountCreationEmailAttachmentID);
+
+                if (attachment == null)
+                {
+                    attachment = new TradeAccountCreationEmailAttachment()
+                    {
+                        Name = a.name,
+                        FilePath = a.FinalFilePath,
+                        FileSizeBytes = a.fileSizeBytes,
+                        CreatedDT = DateTime.Now
+                    };
+
+                    this.TradeAccountCreationEmailAttachments.Add(attachment);
+
+                    this.SaveChanges();
+
+                    a.TradeAccountCreationEmailAttachmentID = attachment.TradeAccountCreationEmailAttachmentID;
+                }
+                else
+                {
+                    // we only permit creation, not editing, of attachment records...?
+                }
+
+                attachmentLinker.Add(new TradeAccountCreationEmail_TradeAccountCreationEmailAttachment()
+                {
+                    TradeAccountCreationEmailID = r.TradeAccountCreationEmailID,
+                    TradeAccountCreationEmailAttachmentID = a.TradeAccountCreationEmailAttachmentID,
+                    SortOrder = nextSortOrder++
+                });
+            }
+
+            r.EmailAttachments = attachmentLinker;
+
+            this.SaveChanges();
+
+            return 0;
         }
     }
 }

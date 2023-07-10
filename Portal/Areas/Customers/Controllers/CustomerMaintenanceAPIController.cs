@@ -14,17 +14,14 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
+using System.IO;
 
 namespace Portal.Areas.Customers.Controllers
 {
     public class CreationEmailsGridViewDto
     {
         public byte? salesMarketId { get; set; }
-    }
-
-    public class CheckEmailAttachmentDto
-    {
-        public string path { get; set; }
     }
 
     public class CustomerMaintenanceController : ApiController
@@ -53,17 +50,52 @@ namespace Portal.Areas.Customers.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult CheckCreationEmailAttachment([FromBody] CheckEmailAttachmentDto dto)
+        public IHttpActionResult CheckCreationEmailAttachment([FromBody] TradeAccountCreationEmailAttachmentDto dto)
         {
-            return Ok(new { success = System.IO.File.Exists(dto.path) });
+            var success = true;
+
+            try
+            {
+                if (!System.IO.Directory.Exists($"{dto.PathRoot}\\{dto.SalesMarketFolderName}\\"))
+                {
+                    System.IO.Directory.CreateDirectory($"{dto.PathRoot}\\{dto.SalesMarketFolderName}\\");
+                }
+
+                if (!System.IO.File.Exists(dto.FinalFilePath))
+                {
+                    System.IO.File.Copy(dto.path, dto.FinalFilePath);
+                }
+
+                var fi = new FileInfo(dto.FinalFilePath);
+
+                return Ok(new { success = true, fileSizeBytes = fi.Length });
+            }
+            catch (Exception e)
+            {
+                return InternalServerError(e);
+            }
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> SendTestCreationEmail([FromBody] SendTestCreationEmailDto dto) 
+        public async Task<IHttpActionResult> SendTestCreationEmail([FromBody] SendTradeAccountCreationEmailTestDto dto) 
         {
             var result = await PortalDb.SendTradeAccountCreationEmailTest(dto);
 
             return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> SaveTradeAccountCreationEmail([FromBody] SaveTradeAccountCreationEmailDto dto)
+        {
+            var result = await PortalDb.SaveTradeAccountCreationEmailTest(dto);
+
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public IHttpActionResult GetTradeAccountCreationEmailAttachments([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
+        {
+            return Ok(PortalDb.TradeAccountCreationEmailAttachments.Where(p => p.Deleted == false).OrderBy(p => p.Name).AsQueryable().ToDataSourceResult(request));
         }
     }
 }

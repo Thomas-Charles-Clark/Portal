@@ -12,13 +12,48 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models
 {
-    public class TradeAccountAttachmentDto
+    public class TradeAccountCreationEmailAttachmentDto
     {
+        public int TradeAccountCreationEmailAttachmentID { get; set; }
         public string name { get; set; }
         public string path { get; set; }
+        public string salesMarket { get; set; }
+        public int fileSizeBytes { get; set; }
+
+        public string PathRoot
+        {
+            get
+            {
+                return "\\\\vm-web1\\brochures\\trade-account-creation-email";
+            }
+        }
+
+        public string SalesMarketFolderName
+        {
+            get
+            {
+                return $"{salesMarket.ToLowerInvariant().Replace(" ", "-")}";
+            }
+        }
+
+        public string DestinationFileName
+        {
+            get
+            {
+                return System.Text.RegularExpressions.Regex.Replace(System.IO.Path.GetFileName(path).ToLowerInvariant(), "[^\\w\\d.]+", "-");
+            }
+        }
+
+        public string FinalFilePath
+        {
+            get
+            {
+                return $"{PathRoot}\\{SalesMarketFolderName}\\{DestinationFileName}";
+            }
+        }
     }
 
-    public class SendTestCreationEmailDto
+    public class SendTradeAccountCreationEmailTestDto
     {
         public string to { get; set; }
         public string subject { get; set; }
@@ -27,7 +62,7 @@ namespace SharedEFClasses.Models
         public bool displayCustomerService { get; set; }
         public bool displayCreditControl { get; set; }
         public bool displayB2BRegistration { get; set; }
-        public IEnumerable<TradeAccountAttachmentDto> attachments { get; set; }
+        public IEnumerable<TradeAccountCreationEmailAttachmentDto> attachments { get; set; }
     }
 
     [Table("TradeAccountCreationEmail", Schema = "portal")]
@@ -57,7 +92,18 @@ namespace SharedEFClasses.Models
         [ForeignKey("LanguageID")]
         public virtual Language Language { get; set; }
 
-        [InverseProperty("TradeAccountCreationEmail")]
+        [InverseProperty("Email")]
         public virtual ICollection<TradeAccountCreationEmail_TradeAccountCreationEmailAttachment> EmailAttachments { get; set; }
+    }
+
+    public class SaveTradeAccountCreationEmailDto
+    {
+        public int tradeAccountCreationEmailId { get; set; }
+
+        public bool displayAccountManager { get; set; }
+        public bool displayCustomerService { get; set; }
+        public bool displayCreditControl { get; set; }
+        public bool displayB2BRegistration { get; set; }
+        public IEnumerable<TradeAccountCreationEmailAttachmentDto> attachments { get; set; }
     }
 }
