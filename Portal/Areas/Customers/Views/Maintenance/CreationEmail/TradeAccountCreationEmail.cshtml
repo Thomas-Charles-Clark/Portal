@@ -136,8 +136,10 @@
                                 <button class="btn btn-outline no-ripple" data-bind="click: removeAttachment">
                                     <span class="bi bi-x-lg d-inline-block"></span>
                                 </button>
-                                <input type="text" class="attachment-name form-control flex-grow-0" data-bind="keepElement: name, textInput: name, css: { 'invalid': !name.isValid() }" placeholder="Attachment Name" />
-                                <input type="text" class="attachment-path form-control" data-bind="keepElement: path, textInput: path" placeholder="\\files\00 - Everyone\Your File.pdf" />
+                                <div class="d-flex flex-column gap-2 flex-grow-1" data-bind=" validationOptions: { insertMessages: true }">
+                                    <input type="text" class="attachment-name form-control flex-grow-0" data-bind="keepElement: name, textInput: name" placeholder="Attachment Name" />
+                                    <input type="text" class="attachment-path form-control" data-bind="keepElement: path, textInput: path" placeholder="\\files\00 - Everyone\Your File.pdf" />
+                                </div>
                                 <!-- ko if: fileSizeBytes -->
                                 <label class="file-size">
                                     <span data-bind="html: `${Math.round((fileSizeBytes() / 1024 / 1024) * 100) / 100}mb`"></span>
@@ -151,8 +153,8 @@
                                 <span class="bi bi-check-lg"></span>
                                 <!-- /ko -->
                                 <!-- /ko -->
-                                <span class="validation-message text-danger" data-bind="validationMessage: name"></span>
-                                <span class="validation-message text-danger" data-bind="validationMessage: path"></span>
+                                @*<span class="validation-message text-danger" data-bind="validationMessage: name"></span>
+                                <span class="validation-message text-danger" data-bind="validationMessage: path"></span>*@
                             </li>
                             <!-- /ko -->
                             <li class="list-group-item d-flex justify-content-center btn btn-secondary py-2" data-bind="click: addNewAttachment">

@@ -352,6 +352,7 @@ namespace SharedEFClasses.Models
 
         public DbSet<RetailAppointmentType> RetailAppointmentType { get; set; }
         public DbSet<RetailAppointmentAgenda> RetailAppointmentAgenda { get; set; }
+        public DbSet<Lead_TradeAccountCreationEmailAttachment> CreationEmailAttachments { get; set; }
 
         #endregion
 

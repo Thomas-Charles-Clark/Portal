@@ -725,7 +725,7 @@
                         &times;
                     </div>
                     <!-- /ko -->
-                    <button class="btn btn-secondary-blue autocomplete-search-btn pull-right"  data-bind="click: function() { $(observable.DOMElement).autocomplete('search'); }">
+                    <button class="btn btn-secondary-blue autocomplete-search-btn pull-right" data-bind="click: function() { $(observable.DOMElement).autocomplete('search'); }">
                         Search
                     </button>
                 </div>
@@ -2505,5 +2505,59 @@
             }
         }
     </script>
+    <div class="modal fade" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" id="modern-confirm-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-dark" onclick="window.confirmModalInstance.confirmFn()">
+                        Yes
+                    </button>
+                    <button class="btn btn-light" onclick="window.confirmModalInstance.rejectFn()">
+                        No
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" tabindex="-1" id="modern-info-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="window.infoModalInstance.closeFn()">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" tabindex="-1" id="modern-error-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        Error
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">
+                        Sorry, that was a major error. Please try again and if the issue persists contact <a href="mailto: itsupport@designersguild.com">itsupport@designersguild.com</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    @Scripts.Render("~/bundles/js/common-modals-old")
 </body>
 </html>

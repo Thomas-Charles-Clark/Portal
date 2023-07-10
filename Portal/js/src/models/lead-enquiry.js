@@ -968,13 +968,13 @@ var leadEdit = function (parent) {
     });
 
     // lifted here because we don't get hoisting with this factory function approach
-  self.currentStage = ko.pureComputed(function () {
+    self.currentStage = ko.pureComputed(function () {
     if (self.stageInformation()) {
-      return self.stageInformation().CurrentStage;
+        return self.stageInformation().CurrentStage;
     } else {
-      return 0;
+        return 0;
     }
-  }, self);
+    }, self);
 
     self.validateVATNumnber = ko.computed(() => {
         let vatNumber = self.companyVATNumber();
@@ -1051,6 +1051,271 @@ var leadEdit = function (parent) {
   });
 
     self.usSalesTaxExemptionCertificateBase64 = ko.observable();
+
+    self.tradeAccountCreationEmail_displayAccountManager = ko.observable();
+
+    self.tradeAccountCreationEmail_displayAccountManagerProps = {
+        label: 'Display Account Manager Section?',
+        checkboxId: `display-account-manager`,
+        observable: self.tradeAccountCreationEmail_displayAccountManager,
+        originalValue: undefined,
+        useNativeValidation: false,
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        busy: ko.observable(false)
+    }
+
+    self.tradeAccountCreationEmail_displayCustomerService = ko.observable();
+
+    self.tradeAccountCreationEmail_displayCustomerServiceProps = {
+        label: 'Display Customer Service Section?',
+        checkboxId: `display-customer-service`,
+        observable: self.tradeAccountCreationEmail_displayCustomerService,
+        originalValue: undefined,
+        useNativeValidation: false,
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        busy: ko.observable(false)
+    }
+
+    self.tradeAccountCreationEmail_displayCreditControl = ko.observable();
+
+    self.tradeAccountCreationEmail_displayCreditControlProps = {
+        label: 'Display Credit Control Section?',
+        checkboxId: `display-credit-control`,
+        observable: self.tradeAccountCreationEmail_displayCreditControl,
+        originalValue: undefined,
+        useNativeValidation: false,
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        busy: ko.observable(false)
+    }
+
+    self.tradeAccountCreationEmail_displayB2BRegistration = ko.observable();
+
+    self.tradeAccountCreationEmail_displayB2BRegistrationProps = {
+        label: 'Display B2B Registration Request?',
+        checkboxId: `display-b2b-registration`,
+        observable: self.tradeAccountCreationEmail_displayB2BRegistration,
+        originalValue: undefined,
+        useNativeValidation: false,
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        busy: ko.observable(false)
+    }
+
+    self.selectedEmailAttachmentId = ko.observable();
+
+    self.selectedEmailAttachment = ko.observable();
+
+    self.attachmentsManager = {
+        attachments: ko.observableArray([]),
+        attachmentsSizeSum: ko.observable().extend({
+            max: {
+                params: 20,
+                message: 'You may not exceed 20mb of attachments total'
+            }
+        }),
+        addNewAttachment: function () {
+            let a = emailAttachment({
+                TradeAccountCreationEmailAttachmentID: [...Math.random(32).toString()].splice(2).join('')
+            }, self);
+            self.attachmentsManager.attachments.push(a);
+            setTimeout(() => {
+                a.name.DOMElement.focus();
+            }, 0);
+
+            self.errors = new ko.validation.group([
+                self.name,
+                self.attachmentsManager.attachmentsSizeSum,
+                self.attachmentsManager.attachments()
+            ], {
+                deep: true
+            });
+        },
+        removeAttachment: (a) => {
+            window.showConfirm('Are you sure?', `This will remove the attachment from the list.`, () => {
+                self.attachmentsManager.attachments(self.attachmentsManager.attachments().filter(b => b.TradeAccountCreationEmailAttachmentID != a.TradeAccountCreationEmailAttachmentID))
+
+                self.errors = new ko.validation.group([
+                    self.name,
+                    self.attachmentsManager.attachmentsSizeSum,
+                    self.attachmentsManager.attachments()
+                ], {
+                    deep: true
+                });
+            }, null)
+        },
+        checkAttachment: (a) => {
+            return fetch('/api/customermaintenance/checkCreationEmailAttachment', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                dataType: 'json',
+                body: JSON.stringify({
+                    path: a.path(),
+                    salesMarket: self.salesMarket().Name
+                })
+            }).then(async resp => {
+                if (resp.ok)
+                    return resp.json();
+                else {
+                    let t = await resp.json();
+                    console.error(t);
+                    throw new error(t.Message);
+                }
+            });
+        }
+    }
+
+    self.attachmentsManager.attachmentsSizeComputer = ko.computed(() => {
+        var result = Math.round((self.attachmentsManager.attachments().reduce((acc, x) => acc + x.fileSizeBytes() ?? 0, 0) / 1024 / 1024) * 100) / 100;
+        if (!isNaN(result))
+            return self.attachmentsManager.attachmentsSizeSum(result);
+        else
+            return null;
+    }, self);
+
+    self.emailAttachmentErrors = new ko.validation.group([
+        self.attachmentsManager.attachmentsSizeSum,
+        self.attachmentsManager.attachments
+    ], {
+        deep: true,
+        live: true
+    });
+
+    self.attachmentsManager.attachmentsListParams = {
+        label: 'Attachments',
+        observable: self.selectedEmailAttachmentId,
+        busy: self.busy,
+        revertable: false,
+        clearable: true,
+        useNativeValidation: false, // this feeds through to mdc objects and affects them
+        decorateInputElement: true,
+        insertValidationMessages: false,
+        controlClass: 'form-control',
+        disabled: ko.observable(false),
+        enable: ko.observable(true),
+        dropDownListSettings: {
+            popup: {
+                appendTo: $('#lead-edit-modal')
+            },
+            optionLabel: 'Add Attachment From List',
+            value: self.selectedEmailAttachmentId,
+            dataItem: self.selectedEmailAttachment,
+            dataValueField: 'TradeAccountCreationEmailAttachmentID',
+            dataTextField: 'Name',
+            height: 420,
+            widget: ko.observable(),
+            enabled: true,
+            open: (e) => {
+                $(self.selectedEmailAttachmentId.mdcSelect.root_).toggleClass('mdc-select--focused');
+            },
+            close: (e) => {
+                $(self.selectedEmailAttachmentId.mdcSelect.root_).toggleClass('mdc-select--focused');
+            },
+            data: new kendo.data.DataSource({
+                serverFiltering: false,
+                serverSorting: false,
+                serverGrouping: false,
+                serverPaging: false,
+                transport: {
+                    read: function (options) {
+                        var webapi = new kendo.data.transports.webapi({ prefix: "" });
+                        var mapped = webapi.parameterMap(options.data);
+                        var data = {};
+                        for (var propertyName in mapped) {
+                            data[propertyName] = mapped[propertyName];
+                        }
+                        $.ajax({
+                            url: "/api/customermaintenance/GetTradeAccountCreationEmailAttachments",
+                            type: "GET",
+                            data: data,
+                            success: function (data) {
+                                //console.log(valueField + ' returned', data);
+                                options.success(data);
+                            },
+                            error: function (data) {
+                                options.error();
+                            }
+                        });
+                    }
+                },
+                schema: $.extend({}, kendo.data.schemas.webapi, {
+                    data: "Data",
+                    total: "Total",
+                    filters: "Filters",
+                    aggregates: "Aggregates",
+                    errors: "Errors",
+                    model: {
+                        id: 'GetTradeAccountCreationEmailAttachments',
+                        fields: {
+                            GetTradeAccountCreationEmailAttachments: {
+                                editable: false,
+                                nullable: false
+                            },
+                            Name: {
+                                type: 'string',
+                                validation: {
+                                    required: true,
+                                    nullable: false
+                                }
+                            },
+                            FilePath: {
+                                type: 'string',
+                                validation: {
+                                    required: true,
+                                    nullable: false
+                                }
+                            },
+                        }
+                    }
+                }),
+            }),
+            valuePrimitive: false,
+            autoWidth: false,
+            autoBind: true,
+            filter: 'startswith',
+            select: (e) => {
+                console.log('select', e);
+                self.attachmentsManager.attachments.push(emailAttachment({
+                    Attachment: {
+                        Name: e.dataItem.Name, FilePath: e.dataItem.FilePath
+                    },
+                    ...e.dataItem, // spread to grab the other properties such as, and most importantly, TradeAccountCreationEmailAttachmentID
+                }, self));
+                window.setTimeout(() => {
+                    self.attachmentsManager.attachmentsListParams.clearFunction();
+                }, 0);
+            }
+        },
+        clearFunction: function () {
+            self.attachmentsManager.attachmentsListParams.dropDownListSettings.widget().value(null);
+            self.selectedEmailAttachmentId(null);
+        }
+    }
+
+    self.fetchTradeAccountCreationEmailDefaults = () => {
+        console.log('getTradeAccountCreationEmailDefaults calling with salesMarketId', self.salesMarket().SalesMarketID);
+        self.leadSaveBusy(true);
+        fetch(`/api/customermaintenance/getTradeAccountCreationEmailDefaults?salesMarketId=${self.salesMarket().SalesMarketID}`, {
+            method: 'GET',
+            headers: window.fetchHeaders
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                self.leadSaveBusy(false);
+                console.log('getTradeAccountCreationEmailDefaults returned', data);
+                self.tradeAccountCreationEmail_displayAccountManager(data.DisplayContactDetails_AccountManager);
+                self.tradeAccountCreationEmail_displayCustomerService(data.DisplayContactDetails_CustomerService);
+                self.tradeAccountCreationEmail_displayCreditControl(data.DisplayContactDetails_CreditControl);
+                self.tradeAccountCreationEmail_displayB2BRegistration(data.DisplayB2BRegistrationRequest);
+                self.attachmentsManager.attachments(data.EmailAttachments.map(e => emailAttachment(e, self)));
+            })
+            .catch(err => {
+                self.leadSaveBusy(false);
+            });
+    }
+
 
     self.creditControllerErrors = ko.validation.group([
         self.creditControllerFromList,
@@ -2075,7 +2340,22 @@ var leadEdit = function (parent) {
         self.bankAccountNumber(undefined);
         self.bankSortCode(undefined);
         self.bankIBAN(undefined);
-    });
+
+
+        if (newValue) {
+            // this should only ever be true for a lead that hasn't saved the rep page before
+            if (self.tradeAccountCreationEmail_displayAccountManager() == null) {
+
+                self.tradeAccountCreationEmail_displayAccountManager(undefined);
+                self.tradeAccountCreationEmail_displayCustomerService(undefined);
+                self.tradeAccountCreationEmail_displayCreditControl(undefined);
+                self.tradeAccountCreationEmail_displayB2BRegistration(undefined);
+                self.attachmentsManager.attachments([]);
+
+                self.fetchTradeAccountCreationEmailDefaults();
+            }
+        }
+;    });
 
     self.ownerMember.subscribe(function (newValue) {
         if (newValue) {
@@ -2157,6 +2437,10 @@ var leadEdit = function (parent) {
     }
 
     self.processApplicationSave = function () {
+        if (self.emailAttachmentErrors().length > 0) {
+            self.emailAttachmentErrors.showAllMessages(true);
+            return;
+        }
         if (self.salesRepErrors().length > 0) {
             self.salesRepErrors.showAllMessages(true);
         } else {
@@ -3148,10 +3432,20 @@ var leadEdit = function (parent) {
             self.requestedPaymentOption(undefined);
         }
 
+        self.tradeAccountCreationEmail_displayAccountManager(data.Lead.TradeAccountCreationEmail_DisplayAccountManager);
+        self.tradeAccountCreationEmail_displayCustomerService(data.Lead.TradeAccountCreationEmail_DisplayCustomerService);
+        self.tradeAccountCreationEmail_displayCreditControl(data.Lead.TradeAccountCreationEmail_DisplayCreditControl);
+        self.tradeAccountCreationEmail_displayB2BRegistration(data.Lead.TradeAccountCreationEmail_DisplayB2BRegistration);
+
+        let attachments = data.Lead.TradeAccountCreationEmailAttachments.map(e => emailAttachment(e, self));
+
+        self.attachmentsManager.attachments(attachments);
+
         if (data.Lead.SalesMarket != null) {
             var rec = Enumerable.From(self.parent.availableSalesMarkets).Where("$.SalesMarketID == " + data.Lead.SalesMarket.SalesMarketID).SingleOrDefault();
-            if (rec)
+            if (rec) {
                 self.salesMarket(rec);
+            }
         } else {
             self.salesMarket(undefined);
         }
@@ -3457,7 +3751,8 @@ var leadEdit = function (parent) {
                   $('a[href="#tab-sales-rep"]').tab('show');
                   $("#complete-application-collapse").collapse('show');
                   setTimeout(() => {
-                    self.salesRepErrors.showAllMessages(false);
+                      self.salesRepErrors.showAllMessages(false);
+                      self.emailAttachmentErrors.showAllMessages(false);
                   }, 100)
                   break;
               case 4:
@@ -4061,8 +4356,11 @@ var leadEdit = function (parent) {
                 nextStatus = { LeadStatusID: 11, Name: 'Account Approved' };
                 if (self.salesRepErrors().length > 0) {
                     self.salesRepErrors.showAllMessages(true);
-                    return;
                 }
+                if (self.emailAttachmentErrors().length > 0) {
+                    self.emailAttachmentErrors.showAllMessages(true);
+                }
+                return;
                 break;
             case 4:
                 nextStatus = { LeadStatusID: 7, Name: 'Open Account' };
@@ -4236,6 +4534,10 @@ var leadEdit = function (parent) {
                     //$("#complete-application-collapse").parent().addClass('alert-danger');
                     //return;
                 }
+                if (self.emailAttachmentErrors().length > 0) {
+                    self.emailAttachmentErrors.showAllMessages(true);
+                    return;
+                }
             }
             if (self.selectedLeadStatus().LeadStatusID == 6) {
                 if (self.creditControlErrors().length > 0) {
@@ -4344,6 +4646,21 @@ var leadEdit = function (parent) {
                 salesDivision: salesDivision,
                 deliveryTerms: self.deliveryTerms(),
                 taxId: self.taxId(),
+                tradeAccountCreationEmail_displayAccountManager: self.tradeAccountCreationEmail_displayAccountManager(),
+                tradeAccountCreationEmail_displayCustomerService: self.tradeAccountCreationEmail_displayCustomerService(),
+                tradeAccountCreationEmail_displayCreditControl: self.tradeAccountCreationEmail_displayCreditControl(),
+                tradeAccountCreationEmail_displayB2BRegistration: self.tradeAccountCreationEmail_displayB2BRegistration(),
+                TradeAccountCreationEmail_attachments: self.salesMarket()
+                    ? self.attachmentsManager.attachments().map(a => {
+                            return {
+                                tradeAccountCreationEmailAttachmentId: a.TradeAccountCreationEmailAttachmentID,
+                                name: a.name(),
+                                path: a.path(),
+                                salesMarket: self.salesMarket().Name,
+                                fileSizeBytes: a.fileSizeBytes()
+                            }
+                        })
+                    : []
             }
 
             if (self.paymentTerms()) {
@@ -4658,6 +4975,12 @@ var leadEdit = function (parent) {
         self.retailAppointmentActualType(undefined);
         self.retailAppointmentActualAssistant(undefined);
 
+        self.tradeAccountCreationEmail_displayAccountManager(false);
+        self.tradeAccountCreationEmail_displayCustomerService(false);
+        self.tradeAccountCreationEmail_displayCreditControl(false);
+        self.tradeAccountCreationEmail_displayB2BRegistration(false);
+
+        self.attachmentsManager.attachments([]);
 
         $("#lead-form-potential-heading").parent().removeClass('alert-danger');
         $("#lead-form-company-heading").parent().removeClass('alert-danger');

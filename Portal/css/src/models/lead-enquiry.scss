@@ -1,4 +1,6 @@
-﻿.dash-panel > .panel-heading {
+﻿@import "common.scss";
+
+.dash-panel > .panel-heading {
     height: 75px;
 }
 
@@ -1742,4 +1744,70 @@ tr.k-state-selected td.view-button {
 
 .us-sales-tax-btn {
   width: 100%;
+}
+
+#attachment-manager {
+
+    ul.list-group {
+        .list-group-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: $l-gutter;
+
+            input {
+                position: relative;
+                border: 0;
+            }
+
+            input:not(:focus) {
+                box-shadow: none;
+            }
+
+            .btn {
+                display: inline-block;
+                padding: $btn-padding-y $btn-padding-x;
+                font-family: $btn-font-family;
+                font-size: $btn-font-size;
+                font-weight: $btn-font-weight;
+                line-height: $btn-line-height;
+                /*color: $;*/
+                text-align: center;
+                text-decoration: none;
+                vertical-align: middle;
+                cursor: pointer;
+                user-select: none;
+                border: $btn-border-width solid $border-color;
+                border-radius: $border-radius;
+                background-color: none;
+                transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            }
+        }
+
+        label {
+            margin-bottom: 0;
+        }
+
+        li.btn {
+            padding: 6px 12px;
+        }
+
+        li:last-of-type {
+            padding: 0;
+        }
+    }
+}
+
+#attachments-total-size {
+    display: flex;
+    justify-content: flex-end;
+    gap: $l-gutter;
+    align-items: center;
+    label {
+        margin: 0;
+    }
+}
+
+#attachment-from-list {
+    min-width: 222px;
 }

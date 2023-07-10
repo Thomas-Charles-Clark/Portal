@@ -217,6 +217,11 @@ namespace SharedEFClasses.Models.Leads
             }
         }
 
+        public bool? TradeAccountCreationEmail_DisplayAccountManager { get; set; }
+        public bool? TradeAccountCreationEmail_DisplayCustomerService { get; set; }
+        public bool? TradeAccountCreationEmail_DisplayCreditControl { get; set; }
+        public bool? TradeAccountCreationEmail_DisplayB2BRegistration { get; set; }
+
 
         [ForeignKey("RetailAppointmentAgendaID")]
         public virtual RetailAppointmentAgenda RetailAppointmentAgenda { get; set; }
@@ -265,6 +270,9 @@ namespace SharedEFClasses.Models.Leads
         [JsonIgnore]
         [InverseProperty("Lead")]
         public virtual ICollection<ProjectStakeholder> ProjectStakeholdings { get; set; }
+
+        [InverseProperty("Lead")]
+        public virtual ICollection<Lead_TradeAccountCreationEmailAttachment> TradeAccountCreationEmailAttachments { get; set; }
     }
 
     [Table("RetailAppointmentAgenda", Schema = "dbo")]
@@ -925,6 +933,13 @@ namespace SharedEFClasses.Models.Leads
         public string DeliveryTerms { get; set; }
         public string TaxID { get; set; }
         public string MertexLanguageCode { get; set; }
+
+        public bool TradeAccountCreationEmail_DisplayAccountManager { get; set; }
+        public bool TradeAccountCreationEmail_DisplayCustomerService { get; set; }
+        public bool TradeAccountCreationEmail_DisplayCreditControl { get; set; }
+        public bool TradeAccountCreationEmail_DisplayB2BRegistration { get; set; }
+
+        public List<TradeAccountCreationEmailAttachmentDto> TradeAccountCreationEmail_Attachments { get; set; }
 
         //public long? leadContactId { get; set; }
         //public byte? editContactTitleId { get; set; } //

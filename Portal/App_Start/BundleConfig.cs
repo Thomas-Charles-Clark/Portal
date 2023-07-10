@@ -146,7 +146,8 @@ namespace Portal
                         $"{cssPrefix}/models/member-search{cssSuffix}",
                         $"{cssPrefix}/models/lead-search{cssSuffix}",
                         $"{cssPrefix}/models/care-search{cssSuffix}",
-                        $"{cssPrefix}/models/lead-enquiry{cssSuffix}"
+                        $"{cssPrefix}/models/lead-enquiry{cssSuffix}",
+                        $"{cssPrefix}/models/trade-account-creation-email-maintenance{cssSuffix}"
                 ).Include($"{cssPrefix}/lib/intl-tel-input/intl-tel-input{cssSuffix}", new CssRewriteUrlTransform()));
 
             bundles.Add(new StyleBundle("~/bundles/css/order-products").Include(
@@ -207,7 +208,7 @@ namespace Portal
                         $"{cssPrefix}/lib/bootstrap-switch/bootstrap-switch{cssSuffix}",
                         $"{cssPrefix}/models/site{cssSuffix}",
                         $"{cssPrefix}/models/css-shake{cssSuffix}"
-                ));
+                ).Include($"{cssPrefix}/lib/bootstrap-icons/bootstrap-icons{cssSuffix}", new CssRewriteUrlTransform()));
 
             bundles.Add(new StyleBundle("~/bundles/css/master-5.3.1").Include(
                         $"{cssPrefix}/lib/jquery-ui/jquery-ui{cssSuffix}",
@@ -505,7 +506,8 @@ namespace Portal
                     $"{jsPrefix}/models/visit-search{jsSuffix}",
                     $"{jsPrefix}/models/visit-booker{jsSuffix}",
                     $"{jsPrefix}/models/member-search{jsSuffix}",
-                    $"{jsPrefix}/models/care-search{jsSuffix}"
+                    $"{jsPrefix}/models/care-search{jsSuffix}",
+                    $"{jsPrefix}/models/trade-account-creation-email-maintenance{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-products-base").Include(
@@ -643,6 +645,10 @@ namespace Portal
 
             bundles.Add(new ScriptBundle("~/bundles/js/common-modals").Include(
                         $"{jsPrefix}/models/common-modals{jsSuffix}"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/common-modals-old").Include(
+                        $"{jsPrefix}/models/common-modals-old{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/paint-mixing").Include(

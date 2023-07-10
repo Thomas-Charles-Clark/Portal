@@ -27,5 +27,9 @@ namespace SharedEFClasses.Models
         [JsonIgnore]
         [InverseProperty("Attachment")]
         public virtual ICollection<TradeAccountCreationEmail_TradeAccountCreationEmailAttachment> EmailAttachments { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("Attachment")]
+        public virtual ICollection<Lead_TradeAccountCreationEmailAttachment> SentToLeads { get; set; }
     }
 }

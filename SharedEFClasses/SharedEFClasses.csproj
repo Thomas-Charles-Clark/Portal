@@ -337,6 +337,7 @@
     <Compile Include="Models\InvoiceModels.cs" />
     <Compile Include="Models\DocumentModels.cs" />
     <Compile Include="Models\FurnitureModels.cs" />
+    <Compile Include="Models\Lead_TradeAccountCreationEmailAttachment.cs" />
     <Compile Include="Models\MarketingBudgetModels.cs" />
     <Compile Include="Models\Mertexer\Bank_SalesMarket.cs" />
     <Compile Include="Models\Mertexer\Bank.cs" />

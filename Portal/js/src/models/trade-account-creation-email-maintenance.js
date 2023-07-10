@@ -319,7 +319,7 @@ const editModel = (props) => {
 
     self.busy = ko.observable(false);
 
-    self.validateNow = ko.observable(false);
+    self.validateNow = ko.observable(true);
 
     self.emailer = emailer({ parent: self, sendLabel: 'Send <span class="bi bi-send ms-2"></span>' });
 
@@ -652,7 +652,7 @@ const editModel = (props) => {
 const emailAttachment = (props, parent) => {
     let self = {
         ...props,
-        validateNow: parent.validateNow,
+        validateNow: parent.validateNow ?? ko.observable(false),
         removeAttachment: parent.attachmentsManager.removeAttachment,
         checkAttachment: parent.attachmentsManager.checkAttachment
     };
@@ -778,6 +778,7 @@ const emailAttachment = (props, parent) => {
 
     self.isValid = ko.computed(() => {
         return (self.busy() === false) &&
+            (self.name.isValid() === true) &&
             (self.path.isValid() === true) &&
             (self.fileCheckPerformed() === true) &&
             (self.fileFound() === true);

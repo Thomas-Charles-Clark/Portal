@@ -66,7 +66,7 @@
   color: #adb5bd;
 }
 #attachment-manager ul li input.attachment-name {
-  width: 180px;
+  padding-right: 8em;
 }
 #attachment-manager ul li input.attachment-path {
   flex: 1;
@@ -83,7 +83,7 @@
 #attachment-manager ul li .validation-message {
   width: 100%;
   margin: 0;
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
 }
 #attachment-manager ul li + li {
   border-top-left-radius: 0;

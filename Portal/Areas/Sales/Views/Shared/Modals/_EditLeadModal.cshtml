@@ -987,13 +987,13 @@
                                                                                 </div>
                                                                             </div>
                                                                             @*<div class="form-group row">
-                                                                                    <div class="col-xs-12">
-                                                                                        <label class="col-form-label">Trade Account Group</label>
-                                                                                    </div>
-                                                                                    <div class="col-xs-12">
-                                                                                        <select class="form-control" data-bind="highlightNullField: tradeAccountGroup, options: $parent.availableTradeAccountGroups, value: tradeAccountGroup, optionsText: (item) => `${item.Code} - ${item.Name}`, optionsValue: 'Code', optionsCaption: 'Please Select...'"></select>
-                                                                                    </div>
-                                                                                </div>*@
+                        <div class="col-xs-12">
+                            <label class="col-form-label">Trade Account Group</label>
+                        </div>
+                        <div class="col-xs-12">
+                            <select class="form-control" data-bind="highlightNullField: tradeAccountGroup, options: $parent.availableTradeAccountGroups, value: tradeAccountGroup, optionsText: (item) => `${item.Code} - ${item.Name}`, optionsValue: 'Code', optionsCaption: 'Please Select...'"></select>
+                        </div>
+                    </div>*@
                                                                             <div class="row">
                                                                                 <div class="col-xs-12">
                                                                                     <label class="col-form-label">Sales Area</label>
@@ -1052,44 +1052,44 @@
                                                                             </div>
                                                                             @* Defunct 21/06/2023 - Sales Agent (Regional Manager) is now always defaulted to match Sales Representative.  *@
                                                                             @*<div class="row">
-                                                                                    <div class="col-xs-12">
-                                                                                        <label class="col-form-label">Select Regional Manager (if applicable)</label>
-                                                                                    </div>
-                                                                                    <div class="col-xs-12">
-                                                                                        <div class="input-group" data-bind="validationOptions: { insertMessages: false }">
-                                                                                            <input type="text" class="form-control" maxlength="100" data-bind="highlightNullField: salesAgent, keepElement: salesAgent, value: salesAgentComputed, enable: salesMarket, attr: { placeholder: selectMarketPlaceholder }, validationCore: salesAgent" autocomplete="off" />
-                                                                                            <span class="input-group-addon" data-bind="visible: initAutocomplete(salesAgent.DOMElement, '/api/ComponentApi/SalesRepresentativeAutocomplete', salesAgent, [{ name: 'salesMarket', value: salesMarket }])">
-                                                                                                <button class="clear-btn btn btn-default" type="button" data-bind="click: function(data, event) { salesAgent(undefined); }, enable: salesMarket">×</button>
-                                                                                            </span>
-                                                                                            <div class="input-group-btn">
-                                                                                                <button class="search-btn btn btn-default" data-bind="click: function(data, event) { fireAutocomplete(event); }, enable: salesMarket"><span class="glyphicon glyphicon-search"></span></button>
-                                                                                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-bind="enable: salesMarket">
-                                                                                                    List <span class="caret"></span>
-                                                                                                </button>
-                                                                                                <ul class="sales-dropdown dropdown-menu" data-bind="foreach: availableSalesAgents">
-                                                                                                    <li>
-                                                                                                        <a href="javascript:;" data-bind="click: function() { if ($data.SalesRepresentativeID) { $parent.salesAgent($data); } }">
-                                                                                                            <span data-bind="text: Name"></span>
-                                                                                                        </a>
-                                                                                                    </li>
-                                                                                                </ul>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <span class="validation-message text-danger" data-bind="validationMessage: salesAgent"></span>
-                                                                                    </div>
-                                                                                </div>*@
+                        <div class="col-xs-12">
+                            <label class="col-form-label">Select Regional Manager (if applicable)</label>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="input-group" data-bind="validationOptions: { insertMessages: false }">
+                                <input type="text" class="form-control" maxlength="100" data-bind="highlightNullField: salesAgent, keepElement: salesAgent, value: salesAgentComputed, enable: salesMarket, attr: { placeholder: selectMarketPlaceholder }, validationCore: salesAgent" autocomplete="off" />
+                                <span class="input-group-addon" data-bind="visible: initAutocomplete(salesAgent.DOMElement, '/api/ComponentApi/SalesRepresentativeAutocomplete', salesAgent, [{ name: 'salesMarket', value: salesMarket }])">
+                                    <button class="clear-btn btn btn-default" type="button" data-bind="click: function(data, event) { salesAgent(undefined); }, enable: salesMarket">×</button>
+                                </span>
+                                <div class="input-group-btn">
+                                    <button class="search-btn btn btn-default" data-bind="click: function(data, event) { fireAutocomplete(event); }, enable: salesMarket"><span class="glyphicon glyphicon-search"></span></button>
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-bind="enable: salesMarket">
+                                        List <span class="caret"></span>
+                                    </button>
+                                    <ul class="sales-dropdown dropdown-menu" data-bind="foreach: availableSalesAgents">
+                                        <li>
+                                            <a href="javascript:;" data-bind="click: function() { if ($data.SalesRepresentativeID) { $parent.salesAgent($data); } }">
+                                                <span data-bind="text: Name"></span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <span class="validation-message text-danger" data-bind="validationMessage: salesAgent"></span>
+                        </div>
+                    </div>*@
                                                                         </div>
                                                                         <div class="alert alert-info bg-info well-sm form-group">
                                                                             @*<div class="form-group row">
-                                                                                    <div class="col-xs-12">
-                                                                                        <label class="col-form-label">
-                                                                                            Please select Account Type
-                                                                                        </label>
-                                                                                    </div>
-                                                                                    <div class="col-xs-12">
-                                                                                        <select class="form-control" data-bind="highlightNullField: accountTypeId, options: $parent.availableAccountTypes, value: accountTypeId, optionsText: 'Name', optionsValue: 'AccountTypeID', optionsCaption: 'Please Select...'"></select>
-                                                                                    </div>
-                                                                                </div>*@
+                        <div class="col-xs-12">
+                            <label class="col-form-label">
+                                Please select Account Type
+                            </label>
+                        </div>
+                        <div class="col-xs-12">
+                            <select class="form-control" data-bind="highlightNullField: accountTypeId, options: $parent.availableAccountTypes, value: accountTypeId, optionsText: 'Name', optionsValue: 'AccountTypeID', optionsCaption: 'Please Select...'"></select>
+                        </div>
+                    </div>*@
                                                                             <div class="row">
                                                                                 <div class="col-xs-12">
                                                                                     <label class="col-form-label">
@@ -1164,6 +1164,8 @@
                                                                                 </div>
                                                                             </div>
                                                                         </div>
+                                                                    </div>
+                                                                    <div class="col-sm-6 col-xs-12">
                                                                         <div class="alert alert-info bg-info well-sm form-group">
                                                                             <div class="form-group row">
                                                                                 <div class="col-xs-12">
@@ -1238,17 +1240,15 @@
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
-                                                                    <div class="col-sm-6 col-xs-12">
-                                                                        <div class="alert alert-info bg-info well-sm" style="margin-bottom: 15px">
+                                                                        <div class="alert alert-info bg-info well-sm form-group">
                                                                             @*<div class="form-group row">
-                                                                                    <div class="col-xs-12">
-                                                                                        <label class="col-form-label">Currency</label>
-                                                                                    </div>
-                                                                                    <div class="col-xs-12">
-                                                                                        <select class="form-control" data-bind="highlightNullField: companyCurrencyId, value: companyCurrencyId, options: $parent.availableCurrencies, optionsText: 'Name', optionsValue: 'CurrencyID', optionsCaption: 'Please select...'"></select>
-                                                                                    </div>
-                                                                                </div>*@
+                        <div class="col-xs-12">
+                            <label class="col-form-label">Currency</label>
+                        </div>
+                        <div class="col-xs-12">
+                            <select class="form-control" data-bind="highlightNullField: companyCurrencyId, value: companyCurrencyId, options: $parent.availableCurrencies, optionsText: 'Name', optionsValue: 'CurrencyID', optionsCaption: 'Please select...'"></select>
+                        </div>
+                    </div>*@
                                                                             <div class="form-group row">
                                                                                 <div class="col-xs-12">
                                                                                     <label class="col-form-label">
@@ -1271,15 +1271,15 @@
                                                                             </div>
                                                                             @* 21/06/2023 - removed, Reps have no idea what this is about and it doesn't belong on the Customer anyway *@
                                                                             @*<div class="form-group row">
-                                                                                    <div class="col-xs-12">
-                                                                                        <label class="col-form-label">
-                                                                                            Delivery Terms
-                                                                                        </label>
-                                                                                    </div>
-                                                                                    <div class="col-xs-12">
-                                                                                        <select class="form-control" data-bind="highlightNullField: deliveryTerms, options: $parent.availableDeliveryTerms, value: deliveryTerms, optionsText: (item) => `${item.DeliveryTermCode} - ${item.Name}`, optionsValue: 'DeliveryTermCode', optionsCaption: 'Please Select...'"></select>
-                                                                                    </div>
-                                                                                </div>*@
+                        <div class="col-xs-12">
+                            <label class="col-form-label">
+                                Delivery Terms
+                            </label>
+                        </div>
+                        <div class="col-xs-12">
+                            <select class="form-control" data-bind="highlightNullField: deliveryTerms, options: $parent.availableDeliveryTerms, value: deliveryTerms, optionsText: (item) => `${item.DeliveryTermCode} - ${item.Name}`, optionsValue: 'DeliveryTermCode', optionsCaption: 'Please Select...'"></select>
+                        </div>
+                    </div>*@
                                                                             <div class="form-group row" style="margin-bottom: 0;">
                                                                                 <div class="col-xs-12">
                                                                                     <label class="col-form-label">
@@ -1409,52 +1409,123 @@
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="form-group row">
-                                                                            <div class="col-xs-12">
-                                                                                <div class="btn-toolbar pull-right">
-                                                                                    <div class="btn-group btn-group-sm">
-                                                                                        <button class="btn btn-primary" data-bind="click: function() { submit('close'); }">Save &amp; Close</button>
-                                                                                    </div>
-                                                                                    <div id="contacted-2" class="btn-group btn-group-sm" data-bind="visible: currentStage() == 1">
-                                                                                        <button class="btn btn-warning" data-bind="click: leadContacted">
-                                                                                            Contacted
-                                                                                        </button>
-                                                                                    </div>
-                                                                                    <div id="approve-2" class="btn-group btn-group-sm" data-bind="visible: currentStage() == 1 || currentStage() == 2">
-                                                                                        <button class="btn btn-success" data-bind="click: approveForTradeAccount">
-                                                                                            Approve for Trade Account
-                                                                                        </button>
-                                                                                    </div>
-                                                                                    <div id="misc-2" class="btn-group btn-group-sm" data-bind="visible: currentStage() == 1 || currentStage() == 2">
-                                                                                        <button class="btn btn-success" data-bind="click: showMiscConfirm">
-                                                                                            Approve for Miscellaneous Account
-                                                                                        </button>
-                                                                                    </div>
-                                                                                    <div id="cc-2" class="btn-group btn-group-sm" data-bind="visible: currentStage() == 3">
-                                                                                        <button class="btn btn-success" data-bind="click: passToCreditControl">
-                                                                                            Pass to Credit Control to Open Account
-                                                                                        </button>
-                                                                                    </div>
-                                                                                    <div id="lost-2" class="btn-group btn-group-sm" data-bind="visible: currentStage() < 5">
-                                                                                        <button class="btn btn-danger" data-bind="click: function() { $('#lost-lead-modal').modal('show'); }">
-                                                                                            Lead Lost
-                                                                                        </button>
-                                                                                    </div>
-                                                                                    <div id="decline-2" class="btn-group btn-group-sm" data-bind="visible: currentStage() >= 1 && currentStage() < 5 && currentStage() != 3">
-                                                                                        <button class="btn btn-danger" data-bind="click: function() { $('#decline-lead-modal').modal('show'); }">
-                                                                                            Decline Account
-                                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <!-- ko if: salesMarket -->
+                                                                <div class="form-group row">
+                                                                    <div class="col-xs-12">
+                                                                        <div class="alert alert-info bg-info well-sm form-group">
+                                                                            <div class="form-group row">
+                                                                                <div class="col-xs-12">
+                                                                                    <h4>
+                                                                                        Trade Account Creation Email
+                                                                                    </h4>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="form-group row">
+                                                                                <div class="col-xs-12">
+                                                                                    <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayAccountManagerProps }"></div>
+                                                                                    <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayCustomerServiceProps }"></div>
+                                                                                    <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayCreditControlProps }"></div>
+                                                                                    <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayB2BRegistrationProps }"></div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12">
+                                                                                    <div id="attachment-manager" class="flex-grow-1" data-bind="with: attachmentsManager">
+                                                                                        <ul class="list-group">
+                                                                                            <!-- ko foreach: attachments -->
+                                                                                            <li class="list-group-item d-flex" data-bind="css: { 'barber-busy': busy, 'invalid': isInvalid }, validationOptions: { insertMessages: false }">
+                                                                                                <button class="btn btn-outline no-ripple" data-bind="click: removeAttachment">
+                                                                                                    <span class="bi bi-x-lg d-inline-block"></span>
+                                                                                                </button>
+                                                                                                <input type="text" class="attachment-name form-control flex-grow-0" data-bind="keepElement: name, textInput: name, css: { 'invalid': !name.isValid() }" placeholder="Attachment Name" />
+                                                                                                <input type="text" class="attachment-path form-control" data-bind="keepElement: path, textInput: path" placeholder="\\files\00 - Everyone\Your File.pdf" />
+                                                                                                <!-- ko if: fileSizeBytes -->
+                                                                                                <label class="file-size">
+                                                                                                    <span data-bind="html: `${Math.round((fileSizeBytes() / 1024 / 1024) * 100) / 100}mb`"></span>
+                                                                                                </label>
+                                                                                                <!-- /ko -->
+                                                                                                <!-- ko if: fileCheckPerformed -->
+                                                                                                <!-- ko ifnot: fileFound -->
+                                                                                                <span class="bi bi-hand-thumbs-down"></span>
+                                                                                                <!-- /ko -->
+                                                                                                <!-- ko if: fileFound -->
+                                                                                                <span class="bi bi-check-lg"></span>
+                                                                                                <!-- /ko -->
+                                                                                                <!-- /ko -->
+                                                                                                <span class="validation-message text-danger" data-bind="validationMessage: name"></span>
+                                                                                                <span class="validation-message text-danger" data-bind="validationMessage: path"></span>
+                                                                                            </li>
+                                                                                            <!-- /ko -->
+                                                                                            <li class="list-group-item d-flex justify-content-center btn btn-secondary py-2" data-bind="click: addNewAttachment">
+                                                                                                <span class="bi bi-plus-lg"></span>
+                                                                                                Add New Attachment
+                                                                                            </li>
+                                                                                            <li class="list-group-item d-flex justify-content-center align-items-center gap-3">
+                                                                                                <span class="bi bi-plus-lg"></span>
+                                                                                                <div id="attachment-from-list" data-bind="component: { name: 'mdc-kendo-dropdown-component-no-outline', params: attachmentsListParams }"></div>
+                                                                                            </li>
+                                                                                        </ul>
+                                                                                        <!-- ko if: attachmentsSizeSum -->
+                                                                                        <div id="attachments-total-size" class="d-flex justify-content-end gap-3">
+                                                                                            <label class="validation-message text-danger mt-0" data-bind="validationMessage: attachmentsSizeSum"></label>
+                                                                                            <label>
+                                                                                                Total Attachments Size: <span data-bind="text: `${attachmentsSizeSum()}mb`"></span>
+                                                                                            </label>
+                                                                                        </div>
+                                                                                        <!-- /ko -->
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="row">
-                                                                            <div class="col-xs-12">
-                                                                                <span class="alert alert-danger pull-right" data-bind="visible: salesRepErrors.isAnyMessageShown()">
-                                                                                    Please, correct all errors.
-                                                                                </span>
+                                                                    </div>
+                                                                </div>
+                                                                <!-- /ko -->
+                                                                <div class="form-group row">
+                                                                    <div class="col-xs-12">
+                                                                        <div class="btn-toolbar pull-right">
+                                                                            <div class="btn-group btn-group-sm">
+                                                                                <button class="btn btn-primary" data-bind="click: function() { submit('close'); }">Save &amp; Close</button>
+                                                                            </div>
+                                                                            <div id="contacted-2" class="btn-group btn-group-sm" data-bind="visible: currentStage() == 1">
+                                                                                <button class="btn btn-warning" data-bind="click: leadContacted">
+                                                                                    Contacted
+                                                                                </button>
+                                                                            </div>
+                                                                            <div id="approve-2" class="btn-group btn-group-sm" data-bind="visible: currentStage() == 1 || currentStage() == 2">
+                                                                                <button class="btn btn-success" data-bind="click: approveForTradeAccount">
+                                                                                    Approve for Trade Account
+                                                                                </button>
+                                                                            </div>
+                                                                            <div id="misc-2" class="btn-group btn-group-sm" data-bind="visible: currentStage() == 1 || currentStage() == 2">
+                                                                                <button class="btn btn-success" data-bind="click: showMiscConfirm">
+                                                                                    Approve for Miscellaneous Account
+                                                                                </button>
+                                                                            </div>
+                                                                            <div id="cc-2" class="btn-group btn-group-sm" data-bind="visible: currentStage() == 3">
+                                                                                <button class="btn btn-success" data-bind="click: passToCreditControl">
+                                                                                    Pass to Credit Control to Open Account
+                                                                                </button>
+                                                                            </div>
+                                                                            <div id="lost-2" class="btn-group btn-group-sm" data-bind="visible: currentStage() < 5">
+                                                                                <button class="btn btn-danger" data-bind="click: function() { $('#lost-lead-modal').modal('show'); }">
+                                                                                    Lead Lost
+                                                                                </button>
+                                                                            </div>
+                                                                            <div id="decline-2" class="btn-group btn-group-sm" data-bind="visible: currentStage() >= 1 && currentStage() < 5 && currentStage() != 3">
+                                                                                <button class="btn btn-danger" data-bind="click: function() { $('#decline-lead-modal').modal('show'); }">
+                                                                                    Decline Account
+                                                                                </button>
                                                                             </div>
                                                                         </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-xs-12">
+                                                                        <span class="alert alert-danger pull-right" data-bind="visible: salesRepErrors.isAnyMessageShown()">
+                                                                            Please, correct all errors.
+                                                                        </span>
                                                                     </div>
                                                                 </div>
                                                             </div>

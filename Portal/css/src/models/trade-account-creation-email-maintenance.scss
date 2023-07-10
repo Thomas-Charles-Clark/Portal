@@ -63,7 +63,7 @@
             }
 
             input.attachment-name {
-                width: 180px;
+                padding-right: 8em;
             }
 
             input.attachment-path {
@@ -83,7 +83,7 @@
             .validation-message {
                 width: 100%;
                 margin: 0;
-                padding: $sm-gutter;
+                padding: $sm-gutter $l-gutter;
             }
         }
 

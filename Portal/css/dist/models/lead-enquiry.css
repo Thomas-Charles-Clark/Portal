@@ -1,3 +1,20 @@
+:root {
+  --vsm-gutter: 0.25rem;
+  --sm-gutter: 0.5rem;
+  --m-gutter: 0.75rem;
+  --l-gutter: 1rem;
+  --mxl-gutter: 1.5rem;
+  --xl-gutter: 2rem;
+  --xxl-gutter: 3rem;
+  --disco-color: #e51f7c;
+  --letter-spacing-slight: 0.05rem;
+  --page-heading-colour: #44546b;
+}
+
+.input-group-lg .btn {
+  font-size: 1rem;
+}
+
 .dash-panel > .panel-heading {
   height: 75px;
 }
@@ -1718,5 +1735,59 @@ tr.k-state-selected td.view-button {
 
 .us-sales-tax-btn {
   width: 100%;
+}
+
+#attachment-manager ul.list-group .list-group-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+#attachment-manager ul.list-group .list-group-item input {
+  position: relative;
+  border: 0;
+}
+#attachment-manager ul.list-group .list-group-item input:not(:focus) {
+  box-shadow: none;
+}
+#attachment-manager ul.list-group .list-group-item .btn {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  /*color: $;*/
+  text-align: center;
+  text-decoration: none;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  border: var(--bs-border-width) solid #dee2e6;
+  border-radius: 0.375rem;
+  background-color: none;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+#attachment-manager ul.list-group label {
+  margin-bottom: 0;
+}
+#attachment-manager ul.list-group li.btn {
+  padding: 6px 12px;
+}
+#attachment-manager ul.list-group li:last-of-type {
+  padding: 0;
+}
+
+#attachments-total-size {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  align-items: center;
+}
+#attachments-total-size label {
+  margin: 0;
+}
+
+#attachment-from-list {
+  min-width: 222px;
 }
 /*# sourceMappingURL=lead-enquiry.css.map */

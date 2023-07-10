@@ -97,5 +97,11 @@ namespace Portal.Areas.Customers.Controllers
         {
             return Ok(PortalDb.TradeAccountCreationEmailAttachments.Where(p => p.Deleted == false).OrderBy(p => p.Name).AsQueryable().ToDataSourceResult(request));
         }
+
+        [HttpGet]
+        public IHttpActionResult GetTradeAccountCreationEmailDefaults([FromUri]byte SalesMarketID)
+        {
+            return Ok(PortalDb.TradeAccountCreationEmails.Single(tace => tace.Deleted == false && tace.SalesMarketID == SalesMarketID));
+        }
     }
 }
