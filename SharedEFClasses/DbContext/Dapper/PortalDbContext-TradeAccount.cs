@@ -40,6 +40,7 @@ namespace SharedEFClasses.Models
                 DisplayContactDetails_CustomerService = dto.displayCustomerService,
                 DisplayContactDetails_CreditControl = dto.displayCreditControl,
                 DisplayB2BRegistrationRequest = dto.displayB2BRegistration,
+                DisplayLookbook = dto.displayLookbook,
                 FileAttachments = attachments
             }, null, null, System.Data.CommandType.StoredProcedure);
 
@@ -62,6 +63,7 @@ namespace SharedEFClasses.Models
             }
 
             r.DisplayB2BRegistrationRequest = dto.displayB2BRegistration;
+            r.DisplayLookbook = dto.displayLookbook;
             r.DisplayContactDetails_AccountManager = dto.displayAccountManager;
             r.DisplayContactDetails_CustomerService = dto.displayCustomerService;
             r.DisplayContactDetails_CreditControl = dto.displayCreditControl;

@@ -1751,8 +1751,6 @@ tr.k-state-selected td.view-button {
     ul.list-group {
         .list-group-item {
             display: flex;
-            justify-content: center;
-            align-items: center;
             gap: $l-gutter;
 
             input {
@@ -1779,8 +1777,11 @@ tr.k-state-selected td.view-button {
                 user-select: none;
                 border: $btn-border-width solid $border-color;
                 border-radius: $border-radius;
-                background-color: none;
+                background-color: transparent;
                 transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            }
+
+            .btn-outline {
             }
         }
 
@@ -1794,6 +1795,26 @@ tr.k-state-selected td.view-button {
 
         li:last-of-type {
             padding: 0;
+            justify-content: center;
+            gap: $xs-gutter;
+
+            .bi {
+                font-size: 20px;
+                padding: $btn-padding-y $btn-padding-x;
+            }
+        }
+
+        div.text-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: $xs-gutter;
+            flex-grow: 1;
+        }
+
+        .validation-message {
+            width: 100%;
+            margin: 0;
+            padding: $sm-gutter $l-gutter;
         }
     }
 }
@@ -1809,5 +1830,20 @@ tr.k-state-selected td.view-button {
 }
 
 #attachment-from-list {
-    min-width: 222px;
+    flex-grow: 1;
+    position: relative;
+
+    label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding: $btn-padding-y $btn-padding-x;
+        z-index: 1;
+        font-weight: normal;
+    }
+}
+
+#trade-account-creation-display-options {
+    display: flex;
+    gap: $l-gutter;
 }

@@ -404,6 +404,7 @@ namespace SharedEFClasses.Models
                 new SqlParameter("@TradeAccountCreationEmail_DisplayCustomerService", objLeadUpsert.TradeAccountCreationEmail_DisplayCustomerService),
                 new SqlParameter("@TradeAccountCreationEmail_DisplayCreditControl", objLeadUpsert.TradeAccountCreationEmail_DisplayCreditControl),
                 new SqlParameter("@TradeAccountCreationEmail_DisplayB2BRegistration", objLeadUpsert.TradeAccountCreationEmail_DisplayB2BRegistration),
+                new SqlParameter("@TradeAccountCreationEmail_DisplayLookbook", objLeadUpsert.TradeAccountCreationEmail_DisplayLookbook),
             };
 
             /*

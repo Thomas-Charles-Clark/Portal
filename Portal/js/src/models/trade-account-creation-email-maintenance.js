@@ -69,9 +69,20 @@
                 headerAttributes: {
                     'class': 'text-center'
                 }
-            }, {
-                field: 'DisplayB2BRegistrationRequest',
-                title: 'B2B Registration Request',
+            },
+                //{
+                //field: 'DisplayB2BRegistrationRequest',
+                //title: 'B2B Registration Request',
+                //attributes: {
+                //    'class': 'text-center'
+                //},
+                //headerAttributes: {
+                //    'class': 'text-center'
+                //}
+                //},
+            {
+                field: 'DisplayLookbook',
+                title: 'Lookbook',
                 attributes: {
                     'class': 'text-center'
                 },
@@ -279,7 +290,8 @@
                     displayAccountManager: record.displayAccountManager(),
                     displayCustomerService: record.displayCustomerService(),
                     displayCreditControl: record.displayCreditControl(),
-                    displayB2BRegistration: record.displayB2BRegistration(),
+                    displayB2BRegistration: true,
+                    displayLookbook: record.displayLookbook(),
                     attachments: record.attachmentsManager.attachments().map(a => {
                         return {
                             tradeAccountCreationEmailAttachmentId: a.TradeAccountCreationEmailAttachmentID,
@@ -356,7 +368,7 @@ const editModel = (props) => {
                     displayAccountManager: self.displayAccountManager(),
                     displayCustomerService: self.displayCustomerService(),
                     displayCreditControl: self.displayCreditControl(),
-                    displayB2BRegistration: self.displayB2BRegistration(),
+                    displayB2BRegistration: true,
                     attachments: self.attachmentsManager.attachments().map(a => {
                         return {
                             name: a.name(),
@@ -429,13 +441,27 @@ const editModel = (props) => {
         busy: ko.observable(false)
     }
 
-    self.displayB2BRegistration = ko.observable(props.DisplayB2BRegistrationRequest);
+    //self.displayB2BRegistration = ko.observable(props.DisplayB2BRegistrationRequest);
+    self.displayB2BRegistration = ko.observable(true);
 
     self.displayB2BRegistrationProps = {
         label: 'Display B2B Registration Request?',
         checkboxId: `display-b2b-registration`,
         observable: self.displayB2BRegistration,
         originalValue: props.DisplayB2BRegistrationRequest,
+        useNativeValidation: false,
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        busy: ko.observable(false)
+    }
+
+    self.displayLookbook = ko.observable(props.DisplayLookbook);
+
+    self.displayLookbookProps = {
+        label: 'Display Lookbook?',
+        checkboxId: `display-lookbook`,
+        observable: self.displayLookbook,
+        originalValue: props.DisplayLookbook,
         useNativeValidation: false,
         disable: ko.observable(false),
         enable: ko.observable(true),
@@ -659,7 +685,7 @@ const emailAttachment = (props, parent) => {
 
     let path = props.Attachment?.FilePath ?? undefined;
 
-    self.fileCheckPerformed = ko.observable(false).extend({
+    self.fileCheckPerformed = ko.observable(path ? true : false).extend({
         equals: {
             params: true,
             onlyIf: self.validateNow(),
@@ -667,7 +693,7 @@ const emailAttachment = (props, parent) => {
         }
     });
 
-    self.fileFound = ko.observable(false).extend({
+    self.fileFound = ko.observable(path ? true : false).extend({
         equals: {
             params: true,
             onlyIf: self.validateNow(),
@@ -675,7 +701,7 @@ const emailAttachment = (props, parent) => {
         }
     });
 
-    self.busy = ko.observable(path ? true : false);
+    self.busy = ko.observable(false);
 
     self.name = ko.observable(props.Attachment?.Name ?? undefined).extend({
         required: {
@@ -752,9 +778,9 @@ const emailAttachment = (props, parent) => {
         }
     }
 
-    self.fileSizeBytes = ko.observable(props.FileSizeBytes);
+    self.fileSizeBytes = ko.observable(props.Attachment?.FileSizeBytes);
 
-    self.path.subscribe(nv => {
+    self.checkPath = () => {
         if (self.path.isValid()) {
             self.busy(true);
             self.checkAttachment(self)
@@ -772,7 +798,9 @@ const emailAttachment = (props, parent) => {
                     self.fileFound(false);
                 })
         }
-    });
+    }
+
+    self.path.subscribe(nv => self.checkPath);
 
     self.path.valueHasMutated();
 

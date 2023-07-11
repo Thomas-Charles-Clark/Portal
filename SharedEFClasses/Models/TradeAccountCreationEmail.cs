@@ -62,6 +62,7 @@ namespace SharedEFClasses.Models
         public bool displayCustomerService { get; set; }
         public bool displayCreditControl { get; set; }
         public bool displayB2BRegistration { get; set; }
+        public bool displayLookbook { get; set; }
         public IEnumerable<TradeAccountCreationEmailAttachmentDto> attachments { get; set; }
     }
 
@@ -77,6 +78,7 @@ namespace SharedEFClasses.Models
         public bool DisplayContactDetails_CustomerService { get; set; }
         public bool DisplayContactDetails_CreditControl { get; set; }
         public bool DisplayB2BRegistrationRequest { get; set; }
+        public bool DisplayLookbook { get; set; }
         public DateTime CreatedDT { get; set; }
         public DateTime? DeletedDT { get; set; }
 
@@ -104,6 +106,7 @@ namespace SharedEFClasses.Models
         public bool displayCustomerService { get; set; }
         public bool displayCreditControl { get; set; }
         public bool displayB2BRegistration { get; set; }
+        public bool displayLookbook { get; set; }
         public IEnumerable<TradeAccountCreationEmailAttachmentDto> attachments { get; set; }
     }
 }

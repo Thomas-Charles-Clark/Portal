@@ -221,6 +221,7 @@ namespace SharedEFClasses.Models.Leads
         public bool? TradeAccountCreationEmail_DisplayCustomerService { get; set; }
         public bool? TradeAccountCreationEmail_DisplayCreditControl { get; set; }
         public bool? TradeAccountCreationEmail_DisplayB2BRegistration { get; set; }
+        public bool? TradeAccountCreationEmail_DisplayLookbook { get; set; }
 
 
         [ForeignKey("RetailAppointmentAgendaID")]
@@ -938,6 +939,7 @@ namespace SharedEFClasses.Models.Leads
         public bool TradeAccountCreationEmail_DisplayCustomerService { get; set; }
         public bool TradeAccountCreationEmail_DisplayCreditControl { get; set; }
         public bool TradeAccountCreationEmail_DisplayB2BRegistration { get; set; }
+        public bool TradeAccountCreationEmail_DisplayLookbook { get; set; }
 
         public List<TradeAccountCreationEmailAttachmentDto> TradeAccountCreationEmail_Attachments { get; set; }
 

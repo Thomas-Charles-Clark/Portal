@@ -1739,8 +1739,6 @@ tr.k-state-selected td.view-button {
 
 #attachment-manager ul.list-group .list-group-item {
   display: flex;
-  justify-content: center;
-  align-items: center;
   gap: 1rem;
 }
 #attachment-manager ul.list-group .list-group-item input {
@@ -1764,7 +1762,7 @@ tr.k-state-selected td.view-button {
   user-select: none;
   border: var(--bs-border-width) solid #dee2e6;
   border-radius: 0.375rem;
-  background-color: none;
+  background-color: transparent;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 #attachment-manager ul.list-group label {
@@ -1775,6 +1773,23 @@ tr.k-state-selected td.view-button {
 }
 #attachment-manager ul.list-group li:last-of-type {
   padding: 0;
+  justify-content: center;
+  gap: 0.1rem;
+}
+#attachment-manager ul.list-group li:last-of-type .bi {
+  font-size: 20px;
+  padding: 0.375rem 0.75rem;
+}
+#attachment-manager ul.list-group div.text-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  flex-grow: 1;
+}
+#attachment-manager ul.list-group .validation-message {
+  width: 100%;
+  margin: 0;
+  padding: 0.5rem 1rem;
 }
 
 #attachments-total-size {
@@ -1788,6 +1803,20 @@ tr.k-state-selected td.view-button {
 }
 
 #attachment-from-list {
-  min-width: 222px;
+  flex-grow: 1;
+  position: relative;
+}
+#attachment-from-list label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.375rem 0.75rem;
+  z-index: 1;
+  font-weight: normal;
+}
+
+#trade-account-creation-display-options {
+  display: flex;
+  gap: 1rem;
 }
 /*# sourceMappingURL=lead-enquiry.css.map */

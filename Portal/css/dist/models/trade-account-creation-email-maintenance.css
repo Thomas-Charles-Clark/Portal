@@ -21,7 +21,10 @@
 
 #attachment-manager ul li {
   padding: 0;
+  display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
   gap: 0 1rem;
 }
 #attachment-manager ul li.valid {
@@ -88,6 +91,10 @@
 #attachment-manager ul li + li {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+}
+#attachment-manager ul li:nth-last-of-type(n+2) {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
 }
 #attachment-manager #attachments-total-size {
   padding: 0.75rem 1rem;

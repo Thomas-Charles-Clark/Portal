@@ -4737,3 +4737,17 @@ span.glyphicon.glyphicon-send {
 .d-flex {
     display: flex;
 }
+
+.barber-busy {
+    pointer-events: none;
+    background-image: repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 1rem, transparent 1rem, transparent 2rem);
+    transition: background-color 300ms ease-in-out;
+    background-size: 200% 200%;
+    animation: barberpole 10s linear reverse infinite;
+}
+
+@keyframes barberpole {
+    100% {
+        background-position: 100% 100%;
+    }
+}

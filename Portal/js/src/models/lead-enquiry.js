@@ -864,16 +864,14 @@ var leadEdit = function (parent) {
         try {
           let salesMarketId = self.salesMarket()?.SalesMarketID;
           let currency = self.parent.bankSalesMarketMap.find(b =>
-            b.BankCode === newValue &&
-            b.SalesMarketID == salesMarketId)
-            .SalesMarket.Currency;
+                b.BankCode === newValue &&
+                b.SalesMarketID == salesMarketId)
+                .SalesMarket.Currency;
           self.companyCurrencyId(currency.CurrencyID);
         }
         catch (e) {
-          $.showError('Sorry', `Error determining currency. Please contact <a href="mailto:itsupport@designersguild.com">itsupport@designersguild.com</a> providing error description and Lead ID ${self.leadId()}.`);
+          window.showError('Sorry', `Error determining currency. Please contact <a href="mailto:itsupport@designersguild.com">itsupport@designersguild.com</a> providing error description and Lead ID ${self.leadId()}.`);
         }
-      } else {
-        self.companyCurrencyId(undefined);
       }
     });
 
@@ -1036,23 +1034,25 @@ var leadEdit = function (parent) {
         }
     });
 
-  self.taxId = ko.observable().extend({
-    required: {
-      params: true,
-      onlyIf: () => {
-        return self.countryId() == 46;
-      },
-      message: 'You must provide a Tax ID for Swiss accounts'
-    },
-      charsRemaining: {
-        maxLength: 20,
-        elementId: '.tax-id'
-      }
-  });
+      self.taxId = ko.observable().extend({
+        required: {
+          params: true,
+          onlyIf: () => {
+            return self.countryId() == 46;
+          },
+          message: 'You must provide a Tax ID for Swiss accounts'
+        },
+          charsRemaining: {
+            maxLength: 20,
+            elementId: '.tax-id'
+          }
+      });
 
     self.usSalesTaxExemptionCertificateBase64 = ko.observable();
 
     self.tradeAccountCreationEmail_displayAccountManager = ko.observable();
+
+    self.tradeAccountCreationEmail_displayAccountManagerSubscription = null;
 
     self.tradeAccountCreationEmail_displayAccountManagerProps = {
         label: 'Display Account Manager Section?',
@@ -1067,6 +1067,8 @@ var leadEdit = function (parent) {
 
     self.tradeAccountCreationEmail_displayCustomerService = ko.observable();
 
+    self.tradeAccountCreationEmail_displayCustomerServiceSubscription = null;
+
     self.tradeAccountCreationEmail_displayCustomerServiceProps = {
         label: 'Display Customer Service Section?',
         checkboxId: `display-customer-service`,
@@ -1080,6 +1082,8 @@ var leadEdit = function (parent) {
 
     self.tradeAccountCreationEmail_displayCreditControl = ko.observable();
 
+    self.tradeAccountCreationEmail_displayCreditControlSubscription = null;
+
     self.tradeAccountCreationEmail_displayCreditControlProps = {
         label: 'Display Credit Control Section?',
         checkboxId: `display-credit-control`,
@@ -1091,7 +1095,9 @@ var leadEdit = function (parent) {
         busy: ko.observable(false)
     }
 
-    self.tradeAccountCreationEmail_displayB2BRegistration = ko.observable();
+    self.tradeAccountCreationEmail_displayB2BRegistration = ko.observable(true);
+
+    self.tradeAccountCreationEmail_displayB2BRegistrationSubscription = null;
 
     self.tradeAccountCreationEmail_displayB2BRegistrationProps = {
         label: 'Display B2B Registration Request?',
@@ -1104,9 +1110,29 @@ var leadEdit = function (parent) {
         busy: ko.observable(false)
     }
 
+    self.tradeAccountCreationEmail_displayLookbook = ko.observable();
+
+    self.tradeAccountCreationEmail_displayLookbookSubscription = null;
+
+    self.tradeAccountCreationEmail_displayLookbookProps = {
+        label: 'Display Lookbook?',
+        checkboxId: `display-lookbook`,
+        observable: self.tradeAccountCreationEmail_displayLookbook,
+        originalValue: undefined,
+        useNativeValidation: false,
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        busy: ko.observable(false)
+    }
+
     self.selectedEmailAttachmentId = ko.observable();
 
     self.selectedEmailAttachment = ko.observable();
+
+     // this is only here because const emailAttachment(..., parent) -- parent requires validateNow
+    self.validateEmailAttachmentsNow = ko.observable(true);
+
+    self.haveChangedCreationEmailSettings = ko.observable(false);
 
     self.attachmentsManager = {
         attachments: ko.observableArray([]),
@@ -1116,26 +1142,11 @@ var leadEdit = function (parent) {
                 message: 'You may not exceed 20mb of attachments total'
             }
         }),
-        addNewAttachment: function () {
-            let a = emailAttachment({
-                TradeAccountCreationEmailAttachmentID: [...Math.random(32).toString()].splice(2).join('')
-            }, self);
-            self.attachmentsManager.attachments.push(a);
-            setTimeout(() => {
-                a.name.DOMElement.focus();
-            }, 0);
-
-            self.errors = new ko.validation.group([
-                self.name,
-                self.attachmentsManager.attachmentsSizeSum,
-                self.attachmentsManager.attachments()
-            ], {
-                deep: true
-            });
-        },
         removeAttachment: (a) => {
             window.showConfirm('Are you sure?', `This will remove the attachment from the list.`, () => {
                 self.attachmentsManager.attachments(self.attachmentsManager.attachments().filter(b => b.TradeAccountCreationEmailAttachmentID != a.TradeAccountCreationEmailAttachmentID))
+
+                self.haveChangedCreationEmailSettings(true);
 
                 self.errors = new ko.validation.group([
                     self.name,
@@ -1199,7 +1210,7 @@ var leadEdit = function (parent) {
             popup: {
                 appendTo: $('#lead-edit-modal')
             },
-            optionLabel: 'Add Attachment From List',
+            optionLabel: ' ',
             value: self.selectedEmailAttachmentId,
             dataItem: self.selectedEmailAttachment,
             dataValueField: 'TradeAccountCreationEmailAttachmentID',
@@ -1231,7 +1242,7 @@ var leadEdit = function (parent) {
                             type: "GET",
                             data: data,
                             success: function (data) {
-                                //console.log(valueField + ' returned', data);
+                                console.log('GetTradeAccountCreationEmailAttachments returned', data);
                                 options.success(data);
                             },
                             error: function (data) {
@@ -1266,7 +1277,7 @@ var leadEdit = function (parent) {
                                     required: true,
                                     nullable: false
                                 }
-                            },
+                            }
                         }
                     }
                 }),
@@ -1277,12 +1288,22 @@ var leadEdit = function (parent) {
             filter: 'startswith',
             select: (e) => {
                 console.log('select', e);
-                self.attachmentsManager.attachments.push(emailAttachment({
-                    Attachment: {
-                        Name: e.dataItem.Name, FilePath: e.dataItem.FilePath
-                    },
-                    ...e.dataItem, // spread to grab the other properties such as, and most importantly, TradeAccountCreationEmailAttachmentID
-                }, self));
+                if (e.dataItem.TradeAccountCreationEmailAttachmentID) {
+                    if (self.attachmentsManager.attachments().find(a => a.TradeAccountCreationEmailAttachmentID === e.dataItem.TradeAccountCreationEmailAttachmentID)) {
+                        $.info('Notice', 'That attachment is already present in the list of selected attachments.');
+                    } else {
+                        self.attachmentsManager.attachments.push(emailAttachment({
+                            Attachment: {
+                                Name: e.dataItem.Name,
+                                FilePath: e.dataItem.FilePath,
+                                FileSizeBytes: e.dataItem.FileSizeBytes
+                            },
+                            ...e.dataItem, // spread to grab the other properties such as, and most importantly, TradeAccountCreationEmailAttachmentID
+                        }, self));
+
+                        self.haveChangedCreationEmailSettings(true);
+                    }
+                }
                 window.setTimeout(() => {
                     self.attachmentsManager.attachmentsListParams.clearFunction();
                 }, 0);
@@ -1292,6 +1313,54 @@ var leadEdit = function (parent) {
             self.attachmentsManager.attachmentsListParams.dropDownListSettings.widget().value(null);
             self.selectedEmailAttachmentId(null);
         }
+    }
+
+    self.attachmentsManager.openAttachmentsList = () => {
+        self.attachmentsManager.attachmentsListParams.dropDownListSettings.widget().open();
+    }
+
+    self.createTradeAccountCreationEmailSubscriptions = () => {
+        self.tradeAccountCreationEmail_displayAccountManagerSubscription =
+            self.tradeAccountCreationEmail_displayAccountManager.subscribe(nv => {
+                self.haveChangedCreationEmailSettings(true);
+            });
+
+        self.tradeAccountCreationEmail_displayAccountManagerSubscription =
+            self.tradeAccountCreationEmail_displayAccountManager.subscribe(nv => {
+                self.haveChangedCreationEmailSettings(true);
+            });
+
+        self.tradeAccountCreationEmail_displayCreditControlSubscription =
+            self.tradeAccountCreationEmail_displayCreditControl.subscribe(nv => {
+                self.haveChangedCreationEmailSettings(true);
+            });
+
+        self.tradeAccountCreationEmail_displayB2BRegistrationSubscription =
+            self.tradeAccountCreationEmail_displayB2BRegistration.subscribe(nv => {
+                self.haveChangedCreationEmailSettings(true);
+            });
+
+        self.tradeAccountCreationEmail_displayLookbookSubscription =
+            self.tradeAccountCreationEmail_displayLookbook.subscribe(nv => {
+                self.haveChangedCreationEmailSettings(true);
+            });
+    }
+
+    self.disposeTradeAccountCreationEmailSubscriptions = () => {
+        if (self.tradeAccountCreationEmail_displayAccountManagerSubscription)
+            self.tradeAccountCreationEmail_displayAccountManagerSubscription.dispose();
+
+        if (self.tradeAccountCreationEmail_displayAccountManagerSubscription)
+            self.tradeAccountCreationEmail_displayAccountManagerSubscription.dispose();
+
+        if (self.tradeAccountCreationEmail_displayCreditControlSubscription)
+            self.tradeAccountCreationEmail_displayCreditControlSubscription.dispose();
+
+        if (self.tradeAccountCreationEmail_displayB2BRegistrationSubscription)
+            self.tradeAccountCreationEmail_displayB2BRegistrationSubscription.dispose();
+
+        if (self.tradeAccountCreationEmail_displayLookbookSubscription)
+            self.tradeAccountCreationEmail_displayLookbookSubscription.dispose();
     }
 
     self.fetchTradeAccountCreationEmailDefaults = () => {
@@ -1305,11 +1374,24 @@ var leadEdit = function (parent) {
             .then(data => {
                 self.leadSaveBusy(false);
                 console.log('getTradeAccountCreationEmailDefaults returned', data);
+
+                self.disposeTradeAccountCreationEmailSubscriptions();
+
                 self.tradeAccountCreationEmail_displayAccountManager(data.DisplayContactDetails_AccountManager);
+
                 self.tradeAccountCreationEmail_displayCustomerService(data.DisplayContactDetails_CustomerService);
+
                 self.tradeAccountCreationEmail_displayCreditControl(data.DisplayContactDetails_CreditControl);
-                self.tradeAccountCreationEmail_displayB2BRegistration(data.DisplayB2BRegistrationRequest);
+
+                //self.tradeAccountCreationEmail_displayB2BRegistration(data.DisplayB2BRegistrationRequest);
+
+                self.tradeAccountCreationEmail_displayLookbook(data.DisplayLookbook);
+
                 self.attachmentsManager.attachments(data.EmailAttachments.map(e => emailAttachment(e, self)));
+
+                self.haveChangedCreationEmailSettings(false);
+
+                self.createTradeAccountCreationEmailSubscriptions();
             })
             .catch(err => {
                 self.leadSaveBusy(false);
@@ -2344,12 +2426,15 @@ var leadEdit = function (parent) {
 
         if (newValue) {
             // this should only ever be true for a lead that hasn't saved the rep page before
-            if (self.tradeAccountCreationEmail_displayAccountManager() == null) {
-
+            if (self.tradeAccountCreationEmail_skipLoadingDefault) {
+                self.tradeAccountCreationEmail_skipLoadingDefault = false;
+            } else {
                 self.tradeAccountCreationEmail_displayAccountManager(undefined);
                 self.tradeAccountCreationEmail_displayCustomerService(undefined);
                 self.tradeAccountCreationEmail_displayCreditControl(undefined);
-                self.tradeAccountCreationEmail_displayB2BRegistration(undefined);
+                //self.tradeAccountCreationEmail_displayB2BRegistration(true);
+                self.tradeAccountCreationEmail_displayLookbook(undefined);
+
                 self.attachmentsManager.attachments([]);
 
                 self.fetchTradeAccountCreationEmailDefaults();
@@ -2444,6 +2529,69 @@ var leadEdit = function (parent) {
         if (self.salesRepErrors().length > 0) {
             self.salesRepErrors.showAllMessages(true);
         } else {
+            // if you haven't interacted with the creation email stuff
+            if (self.haveChangedCreationEmailSettings() === false) {
+                let displayProps = [];
+                if (self.tradeAccountCreationEmail_displayAccountManager())
+                    displayProps.push("Account Manager");
+                if (self.tradeAccountCreationEmail_displayCustomerService())
+                    displayProps.push("Customer Service");
+                if (self.tradeAccountCreationEmail_displayCreditControl())
+                    displayProps.push("Credit Control");
+                if (self.tradeAccountCreationEmail_displayLookbook())
+                    displayProps.push("Lookbook");
+
+                if (displayProps.length === 0)
+                    displayProps.push("(none)");
+
+                let lastProp = displayProps.pop();
+
+                let displayPropString = displayProps.length ? `${displayProps.join(", ")} and ${lastProp}`.trim() : lastProp;
+
+                let attachmentsString = self.attachmentsManager.attachments().length
+                    ? `<p>
+                        The following attachments will be sent:
+                    </p>
+                    <ul class="list-group margin-bottom-15">
+                        ${self.attachmentsManager.attachments().map(a => `<li class="list-group-item bold">${a.name()}</li>`).join("")}
+                    </ul>`
+                    : `<p class="bold margin-bottom-15">
+                        No attachments will be sent!
+                    </p>`;
+
+                window.showConfirm('Are you sure?',
+                    `<p>You have left the Trade Account Creation Email settings at their default for Sales Market: ${self.salesMarket().Name}</p>
+                    ${attachmentsString}
+                    <p>
+                    The following sections of the email will be included:
+                    </p>
+                    <p class="bold margin-bottom-15">
+                    ${displayPropString}
+                    </p>
+                    <p>
+                    If you're absolutely sure you can click Yes to proceed. If not, please click No and make any changes you deem necessary.
+                    </p>
+                `, () => {
+                    if (self.salesMarket().Code == 'T') { // Italy
+                        if (getUserId() != 548350) { // not Conchita or myself
+                            $("#market-manager-modal").modal('show');
+                        } else {
+                            $('#credit-controller-modal').modal('show');
+                        }
+                    }
+                    else if (self.salesMarket().Code == 'P') { // Spain
+                        if (getUserId() != 5471) { // not Fatima or myself
+                            $("#market-manager-modal").modal('show');
+                        } else {
+                            $('#credit-controller-modal').modal('show');
+                        }
+                    }
+                    else {
+                        $('#credit-controller-modal').modal('show');
+                    }
+                }, null);
+                return;
+            }
             // now we need to do some magic to prevent Italy and Spain
             // from going to Credit Control
             // if the current user is NOT Fatima or Conchita, 
@@ -3432,14 +3580,23 @@ var leadEdit = function (parent) {
             self.requestedPaymentOption(undefined);
         }
 
-        self.tradeAccountCreationEmail_displayAccountManager(data.Lead.TradeAccountCreationEmail_DisplayAccountManager);
-        self.tradeAccountCreationEmail_displayCustomerService(data.Lead.TradeAccountCreationEmail_DisplayCustomerService);
-        self.tradeAccountCreationEmail_displayCreditControl(data.Lead.TradeAccountCreationEmail_DisplayCreditControl);
-        self.tradeAccountCreationEmail_displayB2BRegistration(data.Lead.TradeAccountCreationEmail_DisplayB2BRegistration);
+        if (data.Lead.TradeAccountCreationEmail_DisplayAccountManager == null) {
+            self.tradeAccountCreationEmail_skipLoadingDefault = false;
+        } else {
+            self.tradeAccountCreationEmail_skipLoadingDefault = true;
 
-        let attachments = data.Lead.TradeAccountCreationEmailAttachments.map(e => emailAttachment(e, self));
+            self.tradeAccountCreationEmail_displayAccountManager(data.Lead.TradeAccountCreationEmail_DisplayAccountManager);
+            self.tradeAccountCreationEmail_displayCustomerService(data.Lead.TradeAccountCreationEmail_DisplayCustomerService);
+            self.tradeAccountCreationEmail_displayCreditControl(data.Lead.TradeAccountCreationEmail_DisplayCreditControl);
+            //self.tradeAccountCreationEmail_displayB2BRegistration(true);
+            self.tradeAccountCreationEmail_displayLookbook(data.Lead.TradeAccountCreationEmail_DisplayLookbook);
 
-        self.attachmentsManager.attachments(attachments);
+            let attachments = data.Lead.TradeAccountCreationEmailAttachments.map(e => emailAttachment(e, { ...self, validateNow: self.validateEmailAttachmentsNow }));
+
+            self.attachmentsManager.attachments(attachments);
+
+            self.haveChangedCreationEmailSettings(true);
+        }
 
         if (data.Lead.SalesMarket != null) {
             var rec = Enumerable.From(self.parent.availableSalesMarkets).Where("$.SalesMarketID == " + data.Lead.SalesMarket.SalesMarketID).SingleOrDefault();
@@ -4649,7 +4806,8 @@ var leadEdit = function (parent) {
                 tradeAccountCreationEmail_displayAccountManager: self.tradeAccountCreationEmail_displayAccountManager(),
                 tradeAccountCreationEmail_displayCustomerService: self.tradeAccountCreationEmail_displayCustomerService(),
                 tradeAccountCreationEmail_displayCreditControl: self.tradeAccountCreationEmail_displayCreditControl(),
-                tradeAccountCreationEmail_displayB2BRegistration: self.tradeAccountCreationEmail_displayB2BRegistration(),
+                tradeAccountCreationEmail_displayB2BRegistration: true,
+                tradeAccountCreationEmail_displayLookbook: self.tradeAccountCreationEmail_displayLookbook(),
                 TradeAccountCreationEmail_attachments: self.salesMarket()
                     ? self.attachmentsManager.attachments().map(a => {
                             return {
@@ -4975,10 +5133,11 @@ var leadEdit = function (parent) {
         self.retailAppointmentActualType(undefined);
         self.retailAppointmentActualAssistant(undefined);
 
-        self.tradeAccountCreationEmail_displayAccountManager(false);
-        self.tradeAccountCreationEmail_displayCustomerService(false);
-        self.tradeAccountCreationEmail_displayCreditControl(false);
-        self.tradeAccountCreationEmail_displayB2BRegistration(false);
+        self.tradeAccountCreationEmail_displayAccountManager(undefined);
+        self.tradeAccountCreationEmail_displayCustomerService(undefined);
+        self.tradeAccountCreationEmail_displayCreditControl(undefined);
+        self.tradeAccountCreationEmail_displayB2BRegistration(true);
+        self.tradeAccountCreationEmail_displayLookbook(undefined);
 
         self.attachmentsManager.attachments([]);
 

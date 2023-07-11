@@ -85,8 +85,11 @@
         <td class="text-center">
             <span data-bind="html: DisplayContactDetails_CreditControl ? '✔' : '✖'"></span>
         </td>
-        <td class="text-center">
+        @*<td class="text-center">
             <span data-bind="html: DisplayB2BRegistrationRequest ? '✔' : '✖'"></span>
+        </td>*@
+        <td class="text-center">
+            <span data-bind="html: DisplayLookbook ? '✔' : '✖'"></span>
         </td>
         <td>
             <button type="button" class="btn btn-secondary d-block border-box w-100" data-bind="click: $parent.editRecord">
@@ -124,9 +127,8 @@
                     <div data-bind="component: { name: 'mdc-checkbox-component', params: displayAccountManagerProps }"></div>
                     <div data-bind="component: { name: 'mdc-checkbox-component', params: displayCustomerServiceProps }"></div>
                     <div data-bind="component: { name: 'mdc-checkbox-component', params: displayCreditControlProps }"></div>
-                </div>
-                <div class="d-flex flex-row gap-3 mb-3">
-                    <div data-bind="component: { name: 'mdc-checkbox-component', params: displayB2BRegistrationProps }"></div>
+                    @*<div data-bind="component: { name: 'mdc-checkbox-component', params: displayB2BRegistrationProps }"></div>*@
+                    <div data-bind="component: { name: 'mdc-checkbox-component', params: displayLookbookProps }"></div>
                 </div>
                 <div class="d-flex gap-3">
                     <div id="attachment-manager" class="flex-grow-1" data-bind="with: attachmentsManager">
@@ -138,7 +140,7 @@
                                 </button>
                                 <div class="d-flex flex-column gap-2 flex-grow-1" data-bind=" validationOptions: { insertMessages: true }">
                                     <input type="text" class="attachment-name form-control flex-grow-0" data-bind="keepElement: name, textInput: name" placeholder="Attachment Name" />
-                                    <input type="text" class="attachment-path form-control" data-bind="keepElement: path, textInput: path" placeholder="\\files\00 - Everyone\Your File.pdf" />
+                                    <input type="text" class="attachment-path form-control" data-bind="keepElement: path, textInput: path, event: { 'blur': checkPath }" placeholder="\\files\00 - Everyone\Your File.pdf" />
                                 </div>
                                 <!-- ko if: fileSizeBytes -->
                                 <label class="file-size">

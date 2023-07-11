@@ -1420,27 +1420,24 @@
                                                                                     <h4>
                                                                                         Trade Account Creation Email
                                                                                     </h4>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="form-group row">
-                                                                                <div class="col-xs-12">
-                                                                                    <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayAccountManagerProps }"></div>
-                                                                                    <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayCustomerServiceProps }"></div>
-                                                                                    <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayCreditControlProps }"></div>
-                                                                                    <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayB2BRegistrationProps }"></div>
+                                                                                    <p>
+                                                                                        Here you can configure the welcome pack email which will be sent to this customer when Credit Control have opened the account.
+                                                                                    </p>
                                                                                 </div>
                                                                             </div>
                                                                             <div class="row">
                                                                                 <div class="col-xs-12">
-                                                                                    <div id="attachment-manager" class="flex-grow-1" data-bind="with: attachmentsManager">
-                                                                                        <ul class="list-group">
+                                                                                    @*<div id="attachment-manager" class="flex-grow-1" data-bind="with: attachmentsManager">
+                                                                                        <ul class="list-group margin-bottom-0">
                                                                                             <!-- ko foreach: attachments -->
                                                                                             <li class="list-group-item d-flex" data-bind="css: { 'barber-busy': busy, 'invalid': isInvalid }, validationOptions: { insertMessages: false }">
                                                                                                 <button class="btn btn-outline no-ripple" data-bind="click: removeAttachment">
                                                                                                     <span class="bi bi-x-lg d-inline-block"></span>
                                                                                                 </button>
-                                                                                                <input type="text" class="attachment-name form-control flex-grow-0" data-bind="keepElement: name, textInput: name, css: { 'invalid': !name.isValid() }" placeholder="Attachment Name" />
-                                                                                                <input type="text" class="attachment-path form-control" data-bind="keepElement: path, textInput: path" placeholder="\\files\00 - Everyone\Your File.pdf" />
+                                                                                                <div class="text-inputs" data-bind=" validationOptions: { insertMessages: true }">
+                                                                                                    <input type="text" class="attachment-name form-control flex-grow-0" data-bind="keepElement: name, textInput: name" placeholder="Attachment Name" />
+                                                                                                    <input type="text" class="attachment-path form-control" data-bind="keepElement: path, textInput: path, event: { 'blur': checkPath }" placeholder="\\files\00 - Everyone\Your File.pdf" />
+                                                                                                </div>
                                                                                                 <!-- ko if: fileSizeBytes -->
                                                                                                 <label class="file-size">
                                                                                                     <span data-bind="html: `${Math.round((fileSizeBytes() / 1024 / 1024) * 100) / 100}mb`"></span>
@@ -1454,8 +1451,6 @@
                                                                                                 <span class="bi bi-check-lg"></span>
                                                                                                 <!-- /ko -->
                                                                                                 <!-- /ko -->
-                                                                                                <span class="validation-message text-danger" data-bind="validationMessage: name"></span>
-                                                                                                <span class="validation-message text-danger" data-bind="validationMessage: path"></span>
                                                                                             </li>
                                                                                             <!-- /ko -->
                                                                                             <li class="list-group-item d-flex justify-content-center btn btn-secondary py-2" data-bind="click: addNewAttachment">
@@ -1475,6 +1470,48 @@
                                                                                             </label>
                                                                                         </div>
                                                                                         <!-- /ko -->
+                                                                                    </div>*@
+                                                                                    <div id="attachment-manager" class="flex-grow-1" data-bind="with: attachmentsManager">
+                                                                                        <ul class="list-group margin-bottom-0">
+                                                                                            <!-- ko foreach: attachments -->
+                                                                                            <li class="list-group-item d-flex" data-bind="css: { 'barber-busy': busy, 'invalid': isInvalid }, validationOptions: { insertMessages: false }">
+                                                                                                <button class="btn btn-outline no-ripple" data-bind="click: removeAttachment">
+                                                                                                    <span class="bi bi-x-lg d-inline-block"></span>
+                                                                                                </button>
+                                                                                                <div class="text-inputs" data-bind=" validationOptions: { insertMessages: true }">
+                                                                                                    <span class="attachment-name" data-bind="text: name" placeholder="Attachment Name"></span>
+                                                                                                </div>
+                                                                                            </li>
+                                                                                            <!-- /ko -->
+                                                                                            <li class="list-group-item d-flex justify-content-center align-items-center gap-3">
+                                                                                                <span class="bi bi-plus-lg pointer" data-bind="click: openAttachmentsList"></span>
+                                                                                                <div id="attachment-from-list">
+                                                                                                    <label class="pointer" data-bind="click: openAttachmentsList">
+                                                                                                        Add Attachment
+                                                                                                    </label>
+                                                                                                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component-no-outline', params: attachmentsListParams }"></div>
+                                                                                                </div>
+                                                                                            </li>
+                                                                                        </ul>
+                                                                                        <!-- ko if: attachmentsSizeSum -->
+                                                                                        <div id="attachments-total-size" class="d-flex justify-content-end gap-3">
+                                                                                            <label class="validation-message text-danger mt-0" data-bind="validationMessage: attachmentsSizeSum"></label>
+                                                                                            <label>
+                                                                                                Total Attachments Size: <span data-bind="text: `${attachmentsSizeSum()}mb`"></span>
+                                                                                            </label>
+                                                                                        </div>
+                                                                                        <!-- /ko -->
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12">
+                                                                                    <div id="trade-account-creation-display-options">
+                                                                                        <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayAccountManagerProps }"></div>
+                                                                                        <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayCustomerServiceProps }"></div>
+                                                                                        <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayCreditControlProps }"></div>
+                                                                                        @*<div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayB2BRegistrationProps }"></div>*@
+                                                                                        <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayLookbookProps }"></div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -3997,9 +4034,12 @@
                         <p>
                             Please press the save button below to pass this application on to Credit Control.
                         </p>
-                        <p style="margin-bottom: 0">
+                        <p>
                             Once the lead has been credit checked and the account is open, the lead will be assigned back to you and will appear in your dashboard under the "Trade Accounts Opened" pod for your reference only.
                         </p>
+                        <h4 class="margin-bottom-0 bold" style="line-height: 1.5rem">
+                            Please be sure that you have double checked your Trade Account Creation Email settings
+                        </h4>
                     </div>
                 </div>
                 @*<div class="form-group row">
@@ -4014,7 +4054,7 @@
                     </div>*@
             </div>
             <div class="modal-footer">
-                <button class="btn btn-default pull-left" data-dismiss="modal" data-target="#credit-controller-modal" data-bind="click: function() { submit(); }">Cancel</button>
+                <button class="btn btn-default pull-left" data-dismiss="modal" data-target="#credit-controller-modal">Cancel</button>
                 <div class="text-right">
                     <button class="btn btn-success @(Model.Properties?.Application_ButtonClass)" aria-label="Close" data-bind="click: function() { saveCreditControllerDetails(); }">
                         Save
