@@ -19,6 +19,7 @@ namespace SharedEFClasses.Models
         public string path { get; set; }
         public string salesMarket { get; set; }
         public int fileSizeBytes { get; set; }
+        public byte sortOrder { get; set; }
 
         public string PathRoot
         {

@@ -24,7 +24,8 @@ namespace SharedEFClasses.Models
         {
             var result = await this.Database.Connection.QueryMultipleAsync("[portal].[Lead_TradeAccount_Open]", new
             {
-                LeadID = objLeadId.leadId
+                LeadID = objLeadId.leadId,
+                DevMode = true
             }, null, 60, CommandType.StoredProcedure);
 
             return new TradeAccountCreationResponse()

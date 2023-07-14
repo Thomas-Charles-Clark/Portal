@@ -115,6 +115,9 @@ var leadEdit = function (parent) {
     // of any given lead loaded.
     self.stage = ko.observable(1);
 
+    // if you've loaded and there's a modified greater than when you loaded when you save, guess what?
+    self.loadedDt = null;
+
     self.busy = ko.observable(false);
     self.leadLoadBusy = ko.observable(false);
     self.leadSaveBusy = ko.observable(false);
@@ -862,15 +865,17 @@ var leadEdit = function (parent) {
     self.bankCode.subscribe(function (newValue) {
       if (newValue) {
         try {
-          let salesMarketId = self.salesMarket()?.SalesMarketID;
-          let currency = self.parent.bankSalesMarketMap.find(b =>
-                b.BankCode === newValue &&
-                b.SalesMarketID == salesMarketId)
-                .SalesMarket.Currency;
-          self.companyCurrencyId(currency.CurrencyID);
+            let salesMarketId = self.salesMarket()?.SalesMarketID;
+            if (salesMarketId) {
+                let currency = self.parent.bankSalesMarketMap.find(b =>
+                    b.BankCode === newValue &&
+                    b.SalesMarketID == salesMarketId)
+                    .SalesMarket.Currency;
+                self.companyCurrencyId(currency.CurrencyID);
+            }
         }
         catch (e) {
-          window.showError('Sorry', `Error determining currency. Please contact <a href="mailto:itsupport@designersguild.com">itsupport@designersguild.com</a> providing error description and Lead ID ${self.leadId()}.`);
+            $.showError({ responseText: `Error determining currency. Please contact <a href="mailto:itsupport@designersguild.com">itsupport@designersguild.com</a> providing error description and Lead ID ${self.leadId()}.` });
         }
       }
     });
@@ -1387,7 +1392,7 @@ var leadEdit = function (parent) {
 
                 self.tradeAccountCreationEmail_displayLookbook(data.DisplayLookbook);
 
-                self.attachmentsManager.attachments(data.EmailAttachments.map(e => emailAttachment(e, self)));
+                self.attachmentsManager.attachments(data.EmailAttachments.sort((a, b) => a.SortOrder > b.SortOrder ? 1 : -1).map(e => emailAttachment(e, self)));
 
                 self.haveChangedCreationEmailSettings(false);
 
@@ -2437,7 +2442,7 @@ var leadEdit = function (parent) {
 
                 self.attachmentsManager.attachments([]);
 
-                self.fetchTradeAccountCreationEmailDefaults();
+                //self.fetchTradeAccountCreationEmailDefaults();
             }
         }
 ;    });
@@ -2573,14 +2578,14 @@ var leadEdit = function (parent) {
                     </p>
                 `, () => {
                     if (self.salesMarket().Code == 'T') { // Italy
-                        if (getUserId() != 548350) { // not Conchita or myself
+                        if (getUserId() != 548350 && getUserId() != 8) { // not Conchita or myself
                             $("#market-manager-modal").modal('show');
                         } else {
                             $('#credit-controller-modal').modal('show');
                         }
                     }
                     else if (self.salesMarket().Code == 'P') { // Spain
-                        if (getUserId() != 5471) { // not Fatima or myself
+                        if (getUserId() != 5471 && getUserId() != 8) { // not Fatima or myself
                             $("#market-manager-modal").modal('show');
                         } else {
                             $('#credit-controller-modal').modal('show');
@@ -2599,14 +2604,14 @@ var leadEdit = function (parent) {
             // that the lead has been assigned to the market manager for approval.
 
             if (self.salesMarket().Code == 'T') { // Italy
-                if (getUserId() != 548350) { // not Conchita or myself
+                if (getUserId() != 548350 && getUserId() != 8) { // not Conchita or myself
                     $("#market-manager-modal").modal('show');
                 } else {
                     $('#credit-controller-modal').modal('show');
                 }
             }
             else if (self.salesMarket().Code == 'P') { // Spain
-                if (getUserId() != 5471) { // not Fatima or myself
+                if (getUserId() != 5471 && getUserId() != 8) { // not Fatima or myself
                     $("#market-manager-modal").modal('show');
                 } else {
                     $('#credit-controller-modal').modal('show');
@@ -3506,6 +3511,8 @@ var leadEdit = function (parent) {
 
         //console.log(data);
 
+        self.loadedDt = data.Lead.LoadedDT;
+
         self.leadId(data.Lead.LeadID);
         self.leadContactId(data.Lead.LeadContactID);
         self.leadAddressId(data.Lead.LeadAddressID);
@@ -3591,7 +3598,8 @@ var leadEdit = function (parent) {
             //self.tradeAccountCreationEmail_displayB2BRegistration(true);
             self.tradeAccountCreationEmail_displayLookbook(data.Lead.TradeAccountCreationEmail_DisplayLookbook);
 
-            let attachments = data.Lead.TradeAccountCreationEmailAttachments.map(e => emailAttachment(e, { ...self, validateNow: self.validateEmailAttachmentsNow }));
+            let attachments = data.Lead.TradeAccountCreationEmailAttachments.sort((a, b) => a.SortOrder > b.SortOrder ? 1 : -1)
+                .map(e => emailAttachment(e, { ...self, validateNow: self.validateEmailAttachmentsNow }));
 
             self.attachmentsManager.attachments(attachments);
 
@@ -4511,13 +4519,18 @@ var leadEdit = function (parent) {
                 break;
             case 3:
                 nextStatus = { LeadStatusID: 11, Name: 'Account Approved' };
+                let earlyReturn = false;
                 if (self.salesRepErrors().length > 0) {
                     self.salesRepErrors.showAllMessages(true);
+                    earlyReturn = true;
                 }
                 if (self.emailAttachmentErrors().length > 0) {
                     self.emailAttachmentErrors.showAllMessages(true);
+                    earlyReturn = true;
                 }
-                return;
+                if (earlyReturn)
+                    return;
+
                 break;
             case 4:
                 nextStatus = { LeadStatusID: 7, Name: 'Open Account' };
@@ -4729,6 +4742,7 @@ var leadEdit = function (parent) {
 
             var data = {
                 LeadID: self.leadId(),
+                LoadedDT: self.loadedDt,
                 LeadStatusReason: self.leadStatusReason(),
                 LeadSourceID: self.leadSourceId(),
                 StarRating: self.starRating(),
@@ -4815,7 +4829,8 @@ var leadEdit = function (parent) {
                                 name: a.name(),
                                 path: a.path(),
                                 salesMarket: self.salesMarket().Name,
-                                fileSizeBytes: a.fileSizeBytes()
+                                fileSizeBytes: a.fileSizeBytes(),
+                                sortOrder: a.SortOrder
                             }
                         })
                     : []
@@ -4893,7 +4908,8 @@ var leadEdit = function (parent) {
                 },
                 error: function (xhr, e, s) {
                     self.leadSaveBusy(false);
-                    $.showError(xhr, e, s);
+                    $.showError({ responseText: xhr.responseJSON.ExceptionMessage }, e, s);
+                    self.parent.leadSearch.resultGridWidget().dataSource.read();
                 }
             });
         }

@@ -292,13 +292,15 @@
                     displayCreditControl: record.displayCreditControl(),
                     displayB2BRegistration: true,
                     displayLookbook: record.displayLookbook(),
-                    attachments: record.attachmentsManager.attachments().map(a => {
+                    attachments: [...document.querySelectorAll("#attachment-manager .sort-item")].map((e, i) => {
+                        let a = ko.dataFor(e);
                         return {
                             tradeAccountCreationEmailAttachmentId: a.TradeAccountCreationEmailAttachmentID,
                             name: a.name(),
                             path: a.path(),
                             salesMarket: record.SalesMarket.Name,
-                            fileSizeBytes: a.fileSizeBytes()
+                            fileSizeBytes: a.fileSizeBytes(),
+                            sortOrder: i + 1
                         }
                     })
                 })
@@ -369,13 +371,16 @@ const editModel = (props) => {
                     displayCustomerService: self.displayCustomerService(),
                     displayCreditControl: self.displayCreditControl(),
                     displayB2BRegistration: true,
-                    attachments: self.attachmentsManager.attachments().map(a => {
+                    attachments: [...document.querySelectorAll("#attachment-manager .sort-item")].map((e, i) => {
+                        let a = ko.dataFor(e);
                         return {
                             name: a.name(),
                             path: a.path(),
-                            salesMarket: self.SalesMarket.Name
+                            salesMarket: self.SalesMarket.Name,
+                            sortOrder: i + 1
                         }
                     })
+
                 })
             }).then(async resp => {
                 if (resp.ok)
@@ -527,8 +532,24 @@ const editModel = (props) => {
         }
     }
 
+    self.attachmentsManager.attachments.subscribe(nv => {
+        window.setTimeout(() => {
+            $('#attachment-manager .list-group').sortable({
+                handle: '.sort-handle',
+                items: '.sort-item',
+                beforeStop: (e) => {
+                    console.log(e);
+                }
+            });
+        }, 0);
+    });
+
+    self.attachmentsManager.sortedAttachments = ko.computed(() => {
+        return self.attachmentsManager.attachments().sort((a, b) => a.SortOrder > b.SortOrder ? 1 : -1);
+    }, self);
+
     if (props.EmailAttachments.length) {
-        self.attachmentsManager.attachments(props.EmailAttachments.map(e => emailAttachment(e, self)));
+        self.attachmentsManager.attachments(props.EmailAttachments.sort((a, b) => a.SortOrder > b.SortOrder ? 1 : -1).map(e => emailAttachment(e, self)));
     }
 
     self.attachmentsManager.attachmentsSizeComputer = ko.computed(() => {

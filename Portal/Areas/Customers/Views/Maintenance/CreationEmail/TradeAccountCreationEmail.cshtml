@@ -72,7 +72,7 @@
             <span data-bind="text: SalesMarket.Name"></span>
         </td>
         <td>
-            <!-- ko foreach: EmailAttachments -->
+            <!-- ko foreach: EmailAttachments.sort((a, b) => a.SortOrder > b.SortOrder ? 1 : -1) -->
             <span class="d-block" data-bind="text: Attachment.Name"></span>
             <!-- /ko -->
         </td>
@@ -133,8 +133,9 @@
                 <div class="d-flex gap-3">
                     <div id="attachment-manager" class="flex-grow-1" data-bind="with: attachmentsManager">
                         <ul class="list-group">
-                            <!-- ko foreach: attachments -->
-                            <li class="list-group-item d-flex" data-bind="css: { 'barber-busy': busy, 'invalid': isInvalid }, validationOptions: { insertMessages: false }">
+                            <!-- ko foreach: sortedAttachments -->
+                            <li class="list-group-item d-flex sort-item" data-bind="css: { 'barber-busy': busy, 'invalid': isInvalid }, validationOptions: { insertMessages: false }">
+                                <span class="bi bi-arrows-move sort-handle"></span>
                                 <button class="btn btn-outline no-ripple" data-bind="click: removeAttachment">
                                     <span class="bi bi-x-lg d-inline-block"></span>
                                 </button>
@@ -156,14 +157,14 @@
                                 <!-- /ko -->
                                 <!-- /ko -->
                                 @*<span class="validation-message text-danger" data-bind="validationMessage: name"></span>
-                                <span class="validation-message text-danger" data-bind="validationMessage: path"></span>*@
+            <span class="validation-message text-danger" data-bind="validationMessage: path"></span>*@
                             </li>
                             <!-- /ko -->
-                            <li class="list-group-item d-flex justify-content-center btn btn-secondary py-2" data-bind="click: addNewAttachment">
+                            <li id="add-new-attachment" class="list-group-item d-flex justify-content-center btn btn-secondary py-2" data-bind="click: addNewAttachment">
                                 <span class="bi bi-plus-lg"></span>
                                 Add New Attachment
                             </li>
-                            <li class="list-group-item d-flex justify-content-center align-items-center gap-3">
+                            <li id="add-attachment-from-list" class="list-group-item d-flex justify-content-center align-items-center gap-3">
                                 <span class="bi bi-plus-lg"></span>
                                 <div id="attachment-from-list" data-bind="component: { name: 'mdc-kendo-dropdown-component-no-outline', params: attachmentsListParams }"></div>
                             </li>

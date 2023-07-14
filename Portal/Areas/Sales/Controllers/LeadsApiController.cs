@@ -203,6 +203,15 @@ namespace Portal.Areas.Sales.Controllers
         [HttpPost]
         public IHttpActionResult LeadUpsert([FromBody]PassLeadUpsert objLeadUpsert)
         {
+            var precursor = portalDb.Leads.Single(l => l.LeadID == objLeadUpsert.LeadID);
+
+            if (precursor.ModifiedDT > objLeadUpsert.LoadedDT)
+            {
+                return InternalServerError(new Exception("Sorry, this Lead has been modified since you loaded it.<br/><br/>" +
+                    "You must reload the Lead before you can make any changes.<br/><br/>" +
+                    "Please use the X button in the top-right to close the Lead.<br/>This Lead may have changed status, so you may need to use the Dashboard to search for it again."));
+            }
+
             var result = portalDb.LeadUpsert(objLeadUpsert, User.Identity.GetUserId<int>());
 
             if (objLeadUpsert.LeadStatusID == 13)

@@ -351,7 +351,7 @@ namespace SharedEFClasses.Models
 
         public LeadUpsertResult LeadUpsert(PassLeadUpsert objLeadUpsert, int _sourceMemberId, bool shouldNotify = true)
         {
-            if (objLeadUpsert.TradeAccountCreationEmail_Attachments.Any())
+            if (objLeadUpsert.TradeAccountCreationEmail_Attachments?.Any() == true)
             {
                 this.CreationEmailAttachments.RemoveRange(this.CreationEmailAttachments.Where(cea => cea.LeadID == objLeadUpsert.LeadID));
 
@@ -379,7 +379,8 @@ namespace SharedEFClasses.Models
                     this.CreationEmailAttachments.Add(new Lead_TradeAccountCreationEmailAttachment()
                     {
                         LeadID = objLeadUpsert.LeadID.Value,
-                        TradeAccountCreationEmailAttachmentID = tacea.TradeAccountCreationEmailAttachmentID
+                        TradeAccountCreationEmailAttachmentID = tacea.TradeAccountCreationEmailAttachmentID,
+                        SortOrder = tacea.sortOrder
                     });
                 }
 
@@ -400,11 +401,11 @@ namespace SharedEFClasses.Models
                 new SqlParameter("@TaxID", objLeadUpsert.TaxID ?? (object)DBNull.Value),
                 new SqlParameter("@MertexLanguageCode", objLeadUpsert.MertexLanguageCode ?? (object)DBNull.Value),
                 
-                new SqlParameter("@TradeAccountCreationEmail_DisplayAccountManager", objLeadUpsert.TradeAccountCreationEmail_DisplayAccountManager),
-                new SqlParameter("@TradeAccountCreationEmail_DisplayCustomerService", objLeadUpsert.TradeAccountCreationEmail_DisplayCustomerService),
-                new SqlParameter("@TradeAccountCreationEmail_DisplayCreditControl", objLeadUpsert.TradeAccountCreationEmail_DisplayCreditControl),
-                new SqlParameter("@TradeAccountCreationEmail_DisplayB2BRegistration", objLeadUpsert.TradeAccountCreationEmail_DisplayB2BRegistration),
-                new SqlParameter("@TradeAccountCreationEmail_DisplayLookbook", objLeadUpsert.TradeAccountCreationEmail_DisplayLookbook),
+                new SqlParameter("@TradeAccountCreationEmail_DisplayAccountManager", objLeadUpsert.TradeAccountCreationEmail_DisplayAccountManager ?? (object)DBNull.Value),
+                new SqlParameter("@TradeAccountCreationEmail_DisplayCustomerService", objLeadUpsert.TradeAccountCreationEmail_DisplayCustomerService ?? (object)DBNull.Value),
+                new SqlParameter("@TradeAccountCreationEmail_DisplayCreditControl", objLeadUpsert.TradeAccountCreationEmail_DisplayCreditControl ?? (object)DBNull.Value),
+                new SqlParameter("@TradeAccountCreationEmail_DisplayB2BRegistration", objLeadUpsert.TradeAccountCreationEmail_DisplayB2BRegistration ?? (object)DBNull.Value),
+                new SqlParameter("@TradeAccountCreationEmail_DisplayLookbook", objLeadUpsert.TradeAccountCreationEmail_DisplayLookbook ?? (object) DBNull.Value),
             };
 
             /*

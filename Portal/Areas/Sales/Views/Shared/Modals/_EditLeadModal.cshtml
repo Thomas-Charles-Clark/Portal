@@ -1400,7 +1400,7 @@
                                                                                 <div class="col-xs-12">
                                                                                     <div class="form-group row" style="margin-bottom: 0;">
                                                                                         <div class="col-xs-12">
-                                                                                            <label class="col-form-label">Payment Terms Notes</label>
+                                                                                            <label class="col-form-label">Notes for Credit Control</label>
                                                                                         </div>
                                                                                         <div class="col-xs-12">
                                                                                             <textarea id="payment-terms-notes" class="form-control numeric" data-bind="highlightNullField: paymentTermsNotes, forceNullOnEmpty: paymentTermsNotes, textInput: paymentTermsNotes"></textarea>
@@ -1473,7 +1473,7 @@
                                                                                     </div>*@
                                                                                     <div id="attachment-manager" class="flex-grow-1" data-bind="with: attachmentsManager">
                                                                                         <ul class="list-group margin-bottom-0">
-                                                                                            <!-- ko foreach: attachments -->
+                                                                                            <!-- ko foreach: attachments().sort((a, b) => a.SortOrder > b.SortOrder ? 1 : -1) -->
                                                                                             <li class="list-group-item d-flex" data-bind="css: { 'barber-busy': busy, 'invalid': isInvalid }, validationOptions: { insertMessages: false }">
                                                                                                 <button class="btn btn-outline no-ripple" data-bind="click: removeAttachment">
                                                                                                     <span class="bi bi-x-lg d-inline-block"></span>
@@ -2112,26 +2112,18 @@
                                                                             </button>
                                                                         </div>
                                                                         <!-- /ko -->
-                                                                        <!-- ko if: notes().length -->
-                                                                        <div class="row form-group">
+                                                                        <div class="row form-group" data-bind="visible: paymentTermsNotes, with: paymentTermsNotes">
                                                                             <div class="col-xs-12 form-group">
                                                                                 <h4>
-                                                                                    Customer &amp; Rep Notes
+                                                                                    Notes from Sales Representative
                                                                                 </h4>
                                                                             </div>
-                                                                            <!-- ko foreach: notes() -->
                                                                             <div class="col-xs-12">
                                                                                 <div class="well well-sm margin-bottom-15">
-                                                                                    <p data-bind="text: Note"></p>
-                                                                                    <label class="col-form-label" style="float: none;">
-                                                                                        <span data-bind="text: CreatedBy.FullName"></span> -
-                                                                                        <span data-bind="text: moment(CreatedDT).format('ddd DD/MM/YYYY HH:mm')"></span>
-                                                                                    </label>
+                                                                                    <p class="form-group-span h4 margin-top-0" style="margin-bottom: 0;" data-bind="text: $data"></p>
                                                                                 </div>
                                                                             </div>
-                                                                            <!-- /ko -->
                                                                         </div>
-                                                                        <!-- /ko -->
                                                                     </div>
                                                                     <div class="col-sm-6 col-xs-12">
                                                                         <div class="alert alert-info bg-info well-sm form-group ">
@@ -2181,16 +2173,6 @@
                                                                                             <!-- /ko -->
                                                                                         </div>
                                                                                     </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="form-group row" data-bind="visible: paymentTermsNotes, with: paymentTermsNotes">
-                                                                                <div class="col-xs-12">
-                                                                                    <label class="col-form-label">
-                                                                                        Payment Terms Notes
-                                                                                    </label>
-                                                                                </div>
-                                                                                <div class="col-xs-12">
-                                                                                    <p class="form-group-span" style="margin-bottom: 0;" data-bind="text: $data"></p>
                                                                                 </div>
                                                                             </div>
                                                                             <div class="form-group row">
@@ -3079,7 +3061,7 @@
                                                                                         <div class="form-group row" data-bind="visible: paymentTermsNotes, with: paymentTermsNotes">
                                                                                             <div class="col-xs-12">
                                                                                                 <label class="col-form-label">
-                                                                                                    Payment Terms Notes
+                                                                                                    Notes for Credit Control
                                                                                                 </label>
                                                                                             </div>
                                                                                             <div class="col-xs-12">

@@ -223,6 +223,14 @@ namespace SharedEFClasses.Models.Leads
         public bool? TradeAccountCreationEmail_DisplayB2BRegistration { get; set; }
         public bool? TradeAccountCreationEmail_DisplayLookbook { get; set; }
 
+        [NotMapped]
+        public DateTime LoadedDT
+        {
+            get
+            {
+                return DateTime.Now;
+            }
+        }
 
         [ForeignKey("RetailAppointmentAgendaID")]
         public virtual RetailAppointmentAgenda RetailAppointmentAgenda { get; set; }
@@ -862,6 +870,7 @@ namespace SharedEFClasses.Models.Leads
     {
         public long? LeadID { get; set; }
         public byte? LeadStatusID { get; set; }
+        public DateTime LoadedDT { get; set; }
         public string LeadStatusReason { get; set; }
         public byte? LeadSourceID { get; set; }
         public byte? LeadTypeID { get; set; }
@@ -935,11 +944,11 @@ namespace SharedEFClasses.Models.Leads
         public string TaxID { get; set; }
         public string MertexLanguageCode { get; set; }
 
-        public bool TradeAccountCreationEmail_DisplayAccountManager { get; set; }
-        public bool TradeAccountCreationEmail_DisplayCustomerService { get; set; }
-        public bool TradeAccountCreationEmail_DisplayCreditControl { get; set; }
-        public bool TradeAccountCreationEmail_DisplayB2BRegistration { get; set; }
-        public bool TradeAccountCreationEmail_DisplayLookbook { get; set; }
+        public bool? TradeAccountCreationEmail_DisplayAccountManager { get; set; }
+        public bool? TradeAccountCreationEmail_DisplayCustomerService { get; set; }
+        public bool? TradeAccountCreationEmail_DisplayCreditControl { get; set; }
+        public bool? TradeAccountCreationEmail_DisplayB2BRegistration { get; set; }
+        public bool? TradeAccountCreationEmail_DisplayLookbook { get; set; }
 
         public List<TradeAccountCreationEmailAttachmentDto> TradeAccountCreationEmail_Attachments { get; set; }
 

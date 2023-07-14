@@ -70,8 +70,6 @@ namespace SharedEFClasses.Models
 
             var attachmentLinker = new List<TradeAccountCreationEmail_TradeAccountCreationEmailAttachment>();
 
-            byte nextSortOrder = 1;
-
             if (r.EmailAttachments.Any())
             {
                 var toRemove = new List<TradeAccountCreationEmail_TradeAccountCreationEmailAttachment>();
@@ -90,8 +88,6 @@ namespace SharedEFClasses.Models
                 }
 
                 this.SaveChanges();
-
-                nextSortOrder = (byte)(r.EmailAttachments.Max(p => p.SortOrder) + 1);
             }
 
             foreach (var a in dto.attachments)
@@ -117,13 +113,16 @@ namespace SharedEFClasses.Models
                 else
                 {
                     // we only permit creation, not editing, of attachment records...?
+                    attachment.Name = a.name;
+                    attachment.FilePath = a.FinalFilePath;
+                    attachment.FileSizeBytes = a.fileSizeBytes;
                 }
 
                 attachmentLinker.Add(new TradeAccountCreationEmail_TradeAccountCreationEmailAttachment()
                 {
                     TradeAccountCreationEmailID = r.TradeAccountCreationEmailID,
                     TradeAccountCreationEmailAttachmentID = a.TradeAccountCreationEmailAttachmentID,
-                    SortOrder = nextSortOrder++
+                    SortOrder = a.sortOrder
                 });
             }
 
