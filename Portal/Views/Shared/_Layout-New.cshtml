@@ -882,6 +882,40 @@
         </div>
     </script>
 
+    <script id="mdc-file-field-component" type="text/html">
+        <div class="mdc-validating-field" data-bind="visible: $data.hasOwnProperty('visible') ? $data.visible : true">
+            <button type="button" class="btn btn-outline-secondary w-25" style="border-right: 0" data-bind="click: () => { document.getElementById('file-input').click() }">
+                Choose File
+            </button>
+            <div class="mdc-text-field mdc-text-field--outlined w-75" data-bind="mdcTextFieldComponent: { boundTo: observable, useNativeValidation: useNativeValidation, disabled: typeof disabled === 'undefined' ? null : disabled },
+                validationOptions: { insertMessages: insertValidationMessages, decorateInputElement: decorateInputElement },
+                css: { 'mdc-text-field--disabled': typeof readOnly == 'undefined' ? false : ko.unwrap(readOnly) },
+             enterKey: typeof enterKey === 'undefined' ? null : enterKey">
+                <input type="text" class="mdc-text-field__input" readonly data-bind="keepElement: observable, forceNullOnEmpty: observable, value: observable, enable: typeof readOnly == 'undefined' ? true : !ko.unwrap(readOnly), hasFocus: (typeof focusObservable === 'undefined' ? ko.observable() : focusObservable)" />
+                <input id="file-input" name="file-input" type="file" style="display: none" class="mdc-text-field__input" data-bind="forceNullOnEmpty: observable, value: observable, attr: { accept: accept }" />
+                <div class="mdc-notched-outline">
+                    <div class="mdc-notched-outline__leading"></div>
+                    <div class="mdc-notched-outline__notch">
+                        <label for="file-input" class="mdc-floating-label">
+                            <span data-bind="text: label"></span>
+                        </label>
+                    </div>
+                    <div class="mdc-notched-outline__trailing"></div>
+                </div>
+            </div>
+            <!-- ko if: typeof permitRevert != 'undefined' && permitRevert && typeof revertFunction === 'function' && typeof originalValue != 'undefined' -->
+            <div class="close revert" data-bind="click: revertFunction">
+                <i class="material-icons">
+                    replay
+                </i>
+            </div>
+            <!-- /ko -->
+            <!-- ko if: typeof showClear != 'undefined' && showClear && typeof clearFunction === 'function' -->
+            <div class="btn-close" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }"></div>
+            <!-- /ko -->
+        </div>
+    </script>
+
     <script id="mdc-text-field-autocomplete-component" type="text/html">
         <div class="mdc-validating-field">
             <div class="mdc-text-field mdc-text-field--outlined" data-bind="
@@ -1498,7 +1532,7 @@
         <div class="mdc-form-field">
             <img width="90" height="90" class="thumb" data-bind="css: {  }, attr: {
                     id: elementId,
-                    src: `https://www.designersguild.com/image/239/${ko.unwrap(observable)}` 
+                    src: `https://www.designersguild.com/image/239/${ko.unwrap(observable)}`
                 }" />
         </div>
     </script>
@@ -2780,6 +2814,10 @@
         ko.components.register('file-upload-component', {
             template: { element: document.getElementById('file-upload-template') }
         })
+
+        ko.components.register('mdc-file-field-component', {
+            template: { element: document.getElementById('mdc-file-field-component') }
+        });
 
     </script>
 

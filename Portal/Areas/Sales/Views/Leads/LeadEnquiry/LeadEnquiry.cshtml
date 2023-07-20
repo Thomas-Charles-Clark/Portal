@@ -431,7 +431,7 @@
                                             <div id="complete-application-panel" class="panel dash-panel" data-bind="click: function() { dashboardOverrideCompleteApplication(); }">
                                                 <div class="panel-heading">
                                                     <h4 class="panel-title">
-                                                        Application to be completed by Rep / Sales office
+                                                        Application to be completed by Rep / Sales Office / Sales Manager
                                                     </h4>
                                                 </div>
                                                 <div class="panel-body text-center">
@@ -1227,6 +1227,9 @@
     }
     function getYesNoOptions() {
         return @Html.Raw(Json.Encode(Model.YesNoOptions));
+    }
+    function getYesNoDontKnowOptions() {
+        return @Html.Raw(Json.Encode(Model.YesNoDontKnowOptions));
     }
     function getAvailableLeadTags() {
         return @Html.Raw(JsonConvert.SerializeObject(Model.Tags))

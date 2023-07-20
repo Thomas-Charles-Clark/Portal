@@ -30,6 +30,7 @@ namespace Portal.Areas.Sales.ViewModels
         public List<StringSelectOption> NextFiveFinancialYears { get; set; }
         public List<ByteSelectOption> TradingSinceOptions { get; set; }
         public List<BoolSelectOption> YesNoOptions { get; set; }
+        public List<ByteSelectOption> YesNoDontKnowOptions { get; set; }
         public List<CompanyType> CompanyTypeOptions { get; set; } 
         public List<Competitor> Competitors { get; set; }
         public List<PaymentTerms> PaymentTerms { get; set; }
@@ -70,6 +71,7 @@ namespace Portal.Areas.Sales.ViewModels
             List<StringSelectOption> nextFiveFinancialYears,
             List<ByteSelectOption> tradingSinceOptions,
             List<BoolSelectOption> yesNoOptions,
+            List<ByteSelectOption> yesNoDontKnowOptions,
             List<CompanyType> companyTypes,
             List<Competitor> competitors,
             List<PaymentTerms> paymentTerms,
@@ -118,6 +120,7 @@ namespace Portal.Areas.Sales.ViewModels
             NextFiveFinancialYears = nextFiveFinancialYears;
             TradingSinceOptions = tradingSinceOptions;
             YesNoOptions = yesNoOptions;
+            YesNoDontKnowOptions = yesNoDontKnowOptions;
             CompanyTypeOptions = companyTypes;
             Competitors = competitors;
             PaymentTerms = paymentTerms;

@@ -61,12 +61,16 @@
   margin-bottom: 0;
 }
 
-#edit-lead-modal textarea,
 #new-lead-contact-modal textarea,
 #trade-account-contact-modal textarea {
   resize: none;
   padding: 4px 12px;
   height: 113px;
+}
+
+#edit-lead-modal textarea {
+  resize: vertical;
+  padding: 4px 12px;
 }
 
 #edit-lead-modal .alert:not(.form-group) {

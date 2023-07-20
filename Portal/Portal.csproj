@@ -580,6 +580,11 @@
     <Compile Include="Areas\Products\ViewModels\BasketStatusViewModel.cs" />
     <Compile Include="Areas\Products\ViewModels\TreatmentMaintenanceViewModel.cs" />
     <Compile Include="Areas\Products\ViewModels\ProductTypeMaintenanceViewModel.cs" />
+    <Compile Include="Areas\Retail\Controllers\StoreMembersAPIController.cs" />
+    <Compile Include="Areas\Retail\Controllers\StoreMembersController.cs" />
+    <Compile Include="Areas\Retail\Models\PassRetailStoreMembersBatchDto.cs" />
+    <Compile Include="Areas\Retail\RetailAreaRegistration.cs" />
+    <Compile Include="Areas\Retail\ViewModels\RetailStoreMembersViewModel.cs" />
     <Compile Include="Controllers\GeneralAPIController.cs" />
     <Compile Include="Controllers\MarketingBudgetsController.cs" />
     <Compile Include="Controllers\NotificationController.cs" />
@@ -1774,6 +1779,9 @@
     <Content Include="Areas\Products\Views\Maintenance\TreatmentMaintenance.cshtml" />
     <Content Include="Areas\Products\Views\BasketStatus\BasketStatus.cshtml" />
     <Content Include="Areas\Customers\Views\Maintenance\CreationEmail\TradeAccountCreationEmail.cshtml" />
+    <Content Include="Areas\Retail\Views\web.config" />
+    <Content Include="Areas\Retail\Views\StoreMembers\RetailStoreMembers.cshtml" />
+    <Content Include="Areas\Retail\Views\_ViewStart.cshtml" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
@@ -1789,6 +1797,7 @@
     <Content Include="css\src\models\new-test.scss" />
     <Content Include="css\src\models\generic-forms.scss" />
     <Content Include="css\src\models\trade-account-creation-email-maintenance.scss" />
+    <Content Include="css\src\models\retail-store-members.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -2829,12 +2838,15 @@
     <Folder Include="Areas\Pricing\Views\PricingWebApi\" />
     <Folder Include="Areas\Pricing\Views\Shared\" />
     <Folder Include="Areas\Products\Models\" />
+    <Folder Include="Areas\Retail\Views\Shared\" />
     <Folder Include="edge\x64\" />
     <Folder Include="edge\x86\" />
     <Folder Include="FileUploads\" />
     <Folder Include="FurnitureDownloads\projects\temp\" />
+    <Folder Include="Uploads\" />
     <Folder Include="Views\ForceAuth\" />
     <Folder Include="Views\HeldOrderAPI\" />
+    <Folder Include="Views\Members\" />
     <Folder Include="Views\PaintMixing\" />
     <Folder Include="Views\PricingOData\" />
   </ItemGroup>

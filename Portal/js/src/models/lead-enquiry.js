@@ -28,7 +28,7 @@ var leadEnquiryViewModel = function () {
 
     self.availableCustomerTypes = getAvailableCustomerTypes();
 
-    self.availableHasShowroomOptions = getYesNoOptions();
+    self.availableHasShowroomOptions = getYesNoDontKnowOptions();
 
     self.availableLanguages = getAvailableLanguages();
 
@@ -42,13 +42,13 @@ var leadEnquiryViewModel = function () {
 
     self.allPaymentTerms = getPaymentTerms();
 
-    self.availablePatternBookCommitmentOptions = getYesNoOptions();
+    self.availablePatternBookCommitmentOptions = getYesNoDontKnowOptions();
 
-    self.availablePatternBookLibraryOptions = getYesNoOptions();
+    self.availablePatternBookLibraryOptions = getYesNoDontKnowOptions();
 
     self.availableSalesMarkets = getAvailableSalesMarkets();
 
-    self.availableShowroomByAppointmentOnlyOptions = getYesNoOptions();
+    self.availableShowroomByAppointmentOnlyOptions = getYesNoDontKnowOptions();
 
     self.availableJoinPatternBookSchemeOptions = getYesNoOptions();
 
@@ -64,7 +64,7 @@ var leadEnquiryViewModel = function () {
 
     self.availableTradeAccountClasses = getAvailableTradeAccountClasses();
 
-    self.availablePurchaseOrderRequiredOptions = getYesNoOptions();
+    self.availablePurchaseOrderRequiredOptions = getYesNoDontKnowOptions();
 
     self.availableCreditControllers = getAvailableCreditControllers();
 
@@ -121,6 +121,11 @@ var leadEdit = function (parent) {
     self.busy = ko.observable(false);
     self.leadLoadBusy = ko.observable(false);
     self.leadSaveBusy = ko.observable(false);
+
+    self.leadSaveBusy.subscribe(nv => {
+        console.log('leadEdit leadSaveBusy', nv);
+    });
+
     self.leadContactsBusy = ko.observable(false);
     self.viewLeadBusy = ko.observable(false);
     self.confirmNewLead = ko.observable(false);
@@ -285,7 +290,9 @@ var leadEdit = function (parent) {
     self.showroomByAppointmentOnly = ko.observable().extend({
         required: {
             params: true,
-            onlyIf: self.hasShowroom,
+            onlyIf: () => {
+                return self.hasShowroom() == 1;
+            },
             message: 'You must answer this question'
         }
     });
@@ -787,7 +794,9 @@ var leadEdit = function (parent) {
         },
         required: {
             params: true,
-            onlyIf: self.willBuyPatternBooks,
+            onlyIf: () => {
+                return self.willBuyPatternBooks() == 1
+            },
             message: 'Please provide a value'
         }
     });
@@ -808,16 +817,86 @@ var leadEdit = function (parent) {
             digits: 0,
             currency: self.companyCurrency
         },
-        required: {
-            params: true,
-            onlyIf: self.placedAnOrder,
-            message: 'Please provide a value'
-        }
+        //required: {
+        //    params: true,
+        //    onlyIf: self.placedAnOrder,
+        //    message: 'Please provide a value'
+        //}
     });
+
+    self.orderDocument = ko.observable().extend({
+        //required: {
+        //    params: true,
+        //    onlyIf: self.placedAnOrder,
+        //    message: "Please provide an order document"
+        //}
+    });
+
+    self.orderDocument.subscribe(nv => console.log('orderdocument', nv));
+
+    self.orderDocumentBase64 = ko.observable();
+
+    self.openOrderDocument = () => {
+        let base64 = self.orderDocumentBase64();
+
+        if (self.orderDocumentBase64()?.indexOf('application/pdf') > -1 ||
+            self.orderDocumentBase64()?.indexOf('image/') > -1) {
+            var x = window.open();
+
+            x.document.open();
+
+            let iframe = x.document.createElement("iframe");// ""<iframe width='100%' height='100%'></iframe>"
+
+            iframe.src = base64;
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
+            iframe.style.border = 0;
+
+            let wrapper = x.document.createElement('div');
+
+            wrapper.style.width = '100vh';
+            wrapper.style.height = '100vh';
+            wrapper.style.display = 'flex';
+            wrapper.style.padding = '1em';
+            wrapper.style['align-items'] = 'center';
+            wrapper.style['justify-content'] = 'center';
+
+            wrapper.appendChild(iframe);
+
+            x.document.appendChild(wrapper);
+
+            x.document.close();
+
+        } else {
+            window.open(self.orderDocumentBase64(), '_self');
+        }
+    }
+
+    self.orderDocumentParams = {
+        accept: ".pdf, .doc, .docx, .xls, .xlsx, .jpg, .jpeg",
+        label: ".pdf, .doc, .docx, .xls, .xlsx, .jpg, .jpeg",
+        observable: self.orderDocument,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        showClear: true,
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            $(self.observable.DOMElement).focus();
+        },
+        permitRevert: false,
+        charsRemainingOptions: {
+            maxLength: 50
+        }
+    }
+
     self.joinedPatternBookScheme = ko.observable().extend({
         required: {
             params: true,
-            onlyIf: self.willBuyPatternBooks,
+            onlyIf: () => {
+                return self.willBuyPatternBooks() == 1
+            },
             message: 'You must answer this question'
         }
     });
@@ -834,7 +913,7 @@ var leadEdit = function (parent) {
     self.deliveryNotificationsEmails = ko.observable();
     self.paymentTermsNotes = ko.observable().extend({
         charsRemaining: {
-            maxLength: 500,
+            maxLength: 2000,
             elementId: '#payment-terms-notes'
         }
     });
@@ -905,12 +984,28 @@ var leadEdit = function (parent) {
     
     //self.sampleCarriageCode = ko.observable("FC");
 
-    self.salesDivision = ko.observable(undefined).extend({
+    self.salesDivision = ko.observable(false).extend({
         required: {
             params: true,
             message: 'You must answer this question'
         }
     }); // Does the customer require their shipments to be consolidated ? YES = T, NO = N
+
+    self.salesDivision.subscribe(nv => {
+        if (nv) {
+            let current = self.paymentTermsNotes();
+
+            if (current?.indexOf('This customer apparently wishes their deliveries to be consolidated'))
+
+            if (current) {
+                self.paymentTermsNotes(`${current}
+
+This customer apparently wishes their deliveries to be consolidated. Please double check this point with the appropriate sales manager before opening the account.`)
+            } else {
+                self.paymentTermsNotes(`This customer apparently wishes their deliveries to be consolidated. Please double check this point with the appropriate sales manager before opening the account.`)
+            }
+        }
+    });
 
     self.deliveryTerms = ko.observable(undefined).extend({ // 21/06/2023 Sarah wants to default this NULL to find out if it causes a throw in the Portal eventually
         //required: {
@@ -1239,6 +1334,10 @@ var leadEdit = function (parent) {
                         var webapi = new kendo.data.transports.webapi({ prefix: "" });
                         var mapped = webapi.parameterMap(options.data);
                         var data = {};
+
+                        var salesMarket = self.salesMarket();
+
+                        data.salesMarketId = salesMarket?.SalesMarketID;
                         for (var propertyName in mapped) {
                             data[propertyName] = mapped[propertyName];
                         }
@@ -1370,14 +1469,12 @@ var leadEdit = function (parent) {
 
     self.fetchTradeAccountCreationEmailDefaults = () => {
         console.log('getTradeAccountCreationEmailDefaults calling with salesMarketId', self.salesMarket().SalesMarketID);
-        self.leadSaveBusy(true);
         fetch(`/api/customermaintenance/getTradeAccountCreationEmailDefaults?salesMarketId=${self.salesMarket().SalesMarketID}`, {
             method: 'GET',
             headers: window.fetchHeaders
         })
             .then(window.handleFetchResponse)
             .then(data => {
-                self.leadSaveBusy(false);
                 console.log('getTradeAccountCreationEmailDefaults returned', data);
 
                 self.disposeTradeAccountCreationEmailSubscriptions();
@@ -1392,11 +1489,13 @@ var leadEdit = function (parent) {
 
                 self.tradeAccountCreationEmail_displayLookbook(data.DisplayLookbook);
 
-                self.attachmentsManager.attachments(data.EmailAttachments.sort((a, b) => a.SortOrder > b.SortOrder ? 1 : -1).map(e => emailAttachment(e, self)));
+                //self.attachmentsManager.attachments(data.EmailAttachments.sort((a, b) => a.SortOrder > b.SortOrder ? 1 : -1).map(e => emailAttachment(e, self)));
 
                 self.haveChangedCreationEmailSettings(false);
 
                 self.createTradeAccountCreationEmailSubscriptions();
+
+                self.leadSaveBusy(false);
             })
             .catch(err => {
                 self.leadSaveBusy(false);
@@ -1534,7 +1633,32 @@ var leadEdit = function (parent) {
 
     // #endregion
 
-    // #region Pure Computeds
+    // #region Computeds
+
+    self.mustPassToSalesManager = ko.computed(() => {
+        if (
+            (
+                self.hasPatternBookLibrary() == 2 ||
+                self.willBuyPatternBooks() == 2 ||
+                self.hasShowroom() == 2 ||
+                self.showroomByAppointmentOnly() == 2 ||
+                (self.requestedPaymentOption() && self.requestedPaymentOption().PaymentOptionID == 3) ||
+                self.purchaseOrderRequired() == 2
+            )
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }, self);
+
+    self.passToCreditControlLabel = ko.computed(() => {
+        if (self.mustPassToSalesManager() && (self.salesMarket() && (self.ownerMemberId() != self.salesMarket().MarketManagerMemberID))) {
+            return "Pass to Sales Manager for Authorisation";
+        } else {
+            return "Pass to Credit Control to Open Account";
+        }
+    }, self);
 
     self.availablePaymentTerms = ko.pureComputed({
         read: function () {
@@ -2283,6 +2407,7 @@ var leadEdit = function (parent) {
         self.willBuyPatternBooks,
         self.numberOfPatternBooksPurchased,
         self.firstOrderValue,
+        self.orderDocument,
         self.hasShowroom,
         self.showroomByAppointmentOnly,
         self.joinedPatternBookScheme,
@@ -2411,6 +2536,8 @@ var leadEdit = function (parent) {
     });
     self.salesMarket.subscribe(function (newValue) {
         //console.log('salesMarket subscribe hit');
+        //self.leadSaveBusy(true);
+
         self.salesRepresentative(undefined);
         self.salesAgent(undefined);
         self.salesArea(undefined);
@@ -2442,7 +2569,11 @@ var leadEdit = function (parent) {
 
                 self.attachmentsManager.attachments([]);
 
-                //self.fetchTradeAccountCreationEmailDefaults();
+                self.fetchTradeAccountCreationEmailDefaults();
+            }
+
+            if (self.attachmentsManager.attachmentsListParams.dropDownListSettings.widget()) {
+                self.attachmentsManager.attachmentsListParams.dropDownListSettings.widget().dataSource.read();
             }
         }
 ;    });
@@ -2628,8 +2759,15 @@ var leadEdit = function (parent) {
             self.creditControllerErrors.showAllMessages(true);
         } else {
             $("#credit-controller-modal").modal('hide');
-            self.ownerMember(self.creditControllerFromList());
-            self.changeStatusAndSubmit('close');
+            if (self.mustPassToSalesManager()) {
+                self.ownerMember({
+                    ...self.salesMarket().MarketManager
+                });
+                self.submit('close');
+            } else {
+                self.ownerMember(self.creditControllerFromList());
+                self.changeStatusAndSubmit('close');
+            }
         }
     }
 
@@ -3787,12 +3925,11 @@ var leadEdit = function (parent) {
             self.leadAddresses.push(new leadAddress(addr));
         }
 
-        if (data.Lead.FirstOrderValue) {
+        if (data.Lead.OrderDocumentFileType) {
             self.placedAnOrder(true);
-            self.firstOrderValue(data.Lead.FirstOrderValue);
+            self.orderDocumentBase64(data.Lead.OrderDocumentBase64);
         } else {
-            self.placedAnOrder(undefined);
-            self.firstOrderValue(null);
+            self.orderDocument(undefined);
         }
 
         self.leadPotential.load(data.Lead.Potentials, data.ProductTypeGroups);
@@ -3887,7 +4024,7 @@ var leadEdit = function (parent) {
         self.insuredCreditLimit(data.Lead.InsuredCreditLimit);
         self.purchaseOrderRequired(data.Lead.PurchaseOrderRequired);
         //self.tradeAccountGroup(data.Lead.TradeAccountGroupCode);
-        self.salesDivision(data.Lead.SalesDivisionCode ? data.Lead.SalesDivisionCode == "T" ? true : false : undefined);
+        self.salesDivision(data.Lead.SalesDivisionCode ? data.Lead.SalesDivisionCode == "T" ? true : false : false);
         self.deliveryTerms(data.Lead.DeliveryTermsCode);
         self.taxId(data.Lead.TaxID);
         self.usSalesTaxExemptionCertificateBase64(data.Lead.USSalesTaxExemptionCertificateBase64);
@@ -4853,12 +4990,23 @@ var leadEdit = function (parent) {
                 data.PaymentOptionID = self.requestedPaymentOption().PaymentOptionID;
             }
 
+            let fd = new FormData(document.getElementById('lead-form'));
+
+            var params = {
+                obj: JSON.stringify(data)
+            }
+
+            for (const key in params) {
+                fd.append(key, params[key]);
+            }
+
             $.ajax({
                 url: '/api/LeadsAPI/LeadUpsert',
                 type: 'POST',
-                dataType: 'json',
-                cache: false,
-                data: data,
+                type: 'POST',
+                data: fd,
+                processData: false,
+                contentType: false,
                 success: function (data) {
 
                     self.parent.leadSearch.dashboardSelect(true);
@@ -5093,7 +5241,7 @@ var leadEdit = function (parent) {
         self.insuredCreditLimit(undefined);
         self.purchaseOrderRequired(undefined);
         self.tradeAccountGroup("MI");
-        self.salesDivision(undefined);
+        self.salesDivision(false);
         self.deliveryTerms(undefined);
         self.taxId(undefined);
         self.usSalesTaxExemptionCertificateBase64(undefined);

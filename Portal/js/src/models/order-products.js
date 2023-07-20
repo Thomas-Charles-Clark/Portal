@@ -22480,6 +22480,18 @@ const retailPaymentEntry = ({
         name: 'Online Retail Payment',
         value: 'IF',
         referenceRequired: true
+    }, {
+        name: 'Gift Voucher',
+        value: 'GV',
+        referenceRequired: true
+    }, {
+        name: 'Gift Voucher Deposit',
+        value: 'GV-DEP',
+        referenceRequired: true
+    }, {
+        name: 'Internet Deposit',
+        value: 'IN-DEP',
+        referenceRequired: false
     }];
 
     self.retailPaymentType = ko.observable(loadedValue.paymentTypeId).extend({

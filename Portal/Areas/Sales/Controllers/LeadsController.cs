@@ -87,6 +87,7 @@ namespace Portal.Areas.Sales.Controllers
                 PortalFramework.GetNextFiveFinancialYears(),
                 PortalFramework.GetTradingSinceOptions(),
                 PortalFramework.GetYesNo(),
+                PortalFramework.GetYesNoDontKnow(),
                 PortalDb.CompanyTypes.Where(p => p.Deleted == false).OrderBy(p => p.CompanyTypeID).ToList(),
                 PortalDb.Competitors.Where(p => p.Deleted == false).OrderBy(p => p.Name).ToList(),
                 PortalDb.PaymentTerms.Where(p => p.Visible == true).ToList(),

@@ -2974,7 +2974,7 @@ dl.dl-horizontal {
     > div {
         &:not(.clearfix) {
             width: 19%;
-            height: 56px;
+            height: 80px;
             position: relative;
             float: left;
             z-index: 0;
@@ -3028,11 +3028,11 @@ dl.dl-horizontal {
             border: 2px solid white;
             border-left: 0;
             border-top: 0;
-            width: 42px;
-            height: 42px;
+            width: 60px;
+            height: 60px;
             position: absolute;
-            right: -21px;
-            top: 7px;
+            right: -27px;
+            top: 10px;
             z-index: 2;
             transform: rotate(-45deg);
             box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.1);
@@ -4749,5 +4749,11 @@ span.glyphicon.glyphicon-send {
 @keyframes barberpole {
     100% {
         background-position: 100% 100%;
+    }
+}
+
+.file-input-wrapper {
+    input {
+        pointer-events: none;
     }
 }

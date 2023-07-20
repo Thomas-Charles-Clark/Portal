@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using DocumentFormat.OpenXml.Bibliography;
+
+using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
 using Portal.Models;
 using Portal.ViewModels.ComponentModels;
@@ -762,7 +764,11 @@ namespace Portal.Controllers
                     }
                 );
 
-                var url = PortalDb.CountryLanguages.FirstOrDefault(p => p.CountryID == objEmail.countryId &&
+                var selectedCountry = PortalDb.Countries.Single(p => p.CountryID == objEmail.countryId);
+
+                var useCountry = selectedCountry.ProxyCountryID.HasValue ? PortalDb.Countries.Single(c => c.CountryID == selectedCountry.ProxyCountryID.Value) : selectedCountry;
+
+                var url = PortalDb.CountryLanguages.FirstOrDefault(p => p.CountryID == useCountry.CountryID &&
                                                                            p.LanguageID == objEmail.languageId)
                     ?.URL ?? "dynamic";
 
@@ -925,9 +931,9 @@ namespace Portal.Controllers
                         </p>";
                             break;
                         default:
-                            subject = "Thank you for requesting a trade account with Designers Guild";
+                            subject = "Thank you for requesting a Trade Account with Designers Guild";
                             body = $@"<p class='hello'>
-                            Thank you for requesting a trade account with Designers Guild.
+                            Thank you for requesting a Trade Account with Designers Guild.
                         </p>
                         <p>
                             Designers Guild was established in 1970 by Tricia Guild and designs and wholesales; furnishing fabrics, wallcoverings, 
@@ -1140,9 +1146,9 @@ namespace Portal.Controllers
                     </p>";
                         break;
                     default:
-                        subject = "Thank you for requesting a trade account with Designers Guild";
+                        subject = "Thank you for requesting a Trade Account with Designers Guild";
                         body = $@"<p class='hello'>
-                        Thank you for requesting a trade account with Designers Guild.
+                        Thank you for requesting a Trade Account with Designers Guild.
                     </p>
                     <p>
                         Designers Guild was established in 1970 by Tricia Guild and designs and wholesales; furnishing fabrics, wallcoverings, 

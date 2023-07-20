@@ -284,6 +284,10 @@ namespace Portal
                         $"{cssPrefix}/models/trade-account-creation-email-maintenance{cssSuffix}"
                 ));
 
+            bundles.Add(new StyleBundle("~/bundles/css/retail-store-members").Include(
+                        $"{cssPrefix}/models/retail-store-members{cssSuffix}"
+                ));
+
             //  
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             //
@@ -663,6 +667,12 @@ namespace Portal
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/emailer{jsSuffix}",
                         $"{jsPrefix}/models/trade-account-creation-email-maintenance{jsSuffix}"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/retail-store-members").Include(
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/retail-store-members{jsSuffix}"
                 ));
 
             foreach (var b in BundleTable.Bundles)

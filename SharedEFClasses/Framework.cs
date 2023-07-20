@@ -311,6 +311,18 @@ namespace SharedEFClasses.Utilities
             return result;
         }
 
+        public static List<ByteSelectOption> GetYesNoDontKnow()
+        {
+            var result = new List<ByteSelectOption>()
+            {
+                new ByteSelectOption() { Value = 0, Name = "No" },
+                new ByteSelectOption() { Value = 1, Name = "Yes" },
+                new ByteSelectOption() { Value = 2, Name = "Don't Know" }
+            };
+
+            return result;
+        }
+
         public static List<ByteSelectOption> GetTradingSinceOptions()
         {
             var result = new List<ByteSelectOption>();

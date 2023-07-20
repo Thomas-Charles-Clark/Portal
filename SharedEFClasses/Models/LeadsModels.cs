@@ -102,7 +102,7 @@ namespace SharedEFClasses.Models.Leads
         public long? LeadAddressID { get; set; }
         public DateTime? TradingSince { get; set; }
         public byte? CompanyTypeID { get; set; }
-        public bool? WillBuyPatternBooks { get; set; }
+        public byte? WillBuyPatternBooks { get; set; }
         public string VATNumber { get; set; }
         public string VATNumberDisplay { get; set; }
         public string EORI { get; set; }
@@ -133,9 +133,9 @@ namespace SharedEFClasses.Models.Leads
         public bool ImmediateOrderRequested { get; set; }
         public byte? AccountTypeID { get; set; }
         public byte? CustomerTypeID { get; set; }
-        public bool? HasPatternBookLibrary { get; set; }
-        public bool? HasShowroom { get; set; }
-        public bool? ShowroomByAppointmentOnly { get; set; }
+        public byte? HasPatternBookLibrary { get; set; }
+        public byte? HasShowroom { get; set; }
+        public byte? ShowroomByAppointmentOnly { get; set; }
         public bool SellOnline { get; set; }
         public short? NumberOfPatternBooksPurchased { get; set; }
         public decimal? FirstOrderValue { get; set; }
@@ -168,7 +168,7 @@ namespace SharedEFClasses.Models.Leads
         public string TradeAccountClassCode { get; set; }
         public string BankCode { get; set; }
         public int? InsuredCreditLimit { get; set; }
-        public bool? PurchaseOrderRequired { get; set; }
+        public byte? PurchaseOrderRequired { get; set; }
         public string TradeAccountGroupCode { get; set; }
         public string HaulierCode { get; set; }
         public string CarriageCode { get; set; }
@@ -184,19 +184,48 @@ namespace SharedEFClasses.Models.Leads
         public byte[] USSalesTaxExemptionCertificate { get; set; }
         public string USSalesTaxExemptionCertificateFileType { get; set; }
 
+        [JsonIgnore]
+        public byte[] OrderDocument { get; set; }
+        public string OrderDocumentFileType { get; set; }
+
         [NotMapped]
-        public string USSalesTaxExemptionCertificateMimeType
+        public string OrderDocumentMimeType
         {
             get
             {
-                switch (USSalesTaxExemptionCertificateFileType) {
+                switch (OrderDocumentFileType)
+                {
                     case "jpg":
                     case "jpeg":
                         return "image/jpeg";
                     case "pdf":
                         return "application/pdf";
+                    case "xls":
+                        return "application/vnd.ms-excel";
+                    case "xlsx":
+                        return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    case "doc":
+                        return "application/msword";
+                    case "docx":
+                        return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
                     default:
                         return "text/plain";
+                }
+            }
+        }
+
+        [NotMapped]
+        public string OrderDocumentBase64
+        {
+            get
+            {
+                if (OrderDocument == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return $"data:{OrderDocumentMimeType};base64,{Convert.ToBase64String(OrderDocument)}";
                 }
             }
         }
@@ -213,6 +242,23 @@ namespace SharedEFClasses.Models.Leads
                 else
                 {
                     return $"data:{USSalesTaxExemptionCertificateMimeType};base64,{Convert.ToBase64String(USSalesTaxExemptionCertificate)}";
+                }
+            }
+        }
+
+        [NotMapped]
+        public string USSalesTaxExemptionCertificateMimeType
+        {
+            get
+            {
+                switch (USSalesTaxExemptionCertificateFileType) {
+                    case "jpg":
+                    case "jpeg":
+                        return "image/jpeg";
+                    case "pdf":
+                        return "application/pdf";
+                    default:
+                        return "text/plain";
                 }
             }
         }
@@ -323,6 +369,8 @@ namespace SharedEFClasses.Models.Leads
         public byte? LanguageID { get; set; }
         public byte CurrencyID { get; set; }
 
+        public int? MarketManagerMemberID { get; set; }
+
         [ForeignKey("CurrencyID")]
         public virtual Currency Currency { get; set; }
 
@@ -366,6 +414,9 @@ namespace SharedEFClasses.Models.Leads
         [JsonIgnore]
         [InverseProperty("SalesMarket")]
         public virtual ICollection<CreditControlRegion_SalesMarket> CreditControlRegions { get; set; }
+
+        [ForeignKey("MarketManagerMemberID")]
+        public virtual Member MarketManager { get; set; }
     }
 
     public class LeadType
@@ -891,7 +942,7 @@ namespace SharedEFClasses.Models.Leads
         public string EORINumber { get; set; }
         public byte? CompanyTypeID { get; set; }
         public byte? TradingSinceID { get; set; }
-        public bool? WillBuyPatternBooks { get; set; }
+        public byte? WillBuyPatternBooks { get; set; }
         public string BankName { get; set; }
         public string BankAddressLine1 { get; set; }
         public string BankAddressLine2 { get; set; }
@@ -921,9 +972,9 @@ namespace SharedEFClasses.Models.Leads
         public PassLeadAddress LeadAddress { get; set; }
         public byte? AccountTypeID { get; set; }
         public byte? CustomerTypeID { get; set; }
-        public bool? HasPatternBookLibrary { get; set; }
-        public bool? HasShowroom { get; set; }
-        public bool? ShowroomByAppointmentOnly { get; set; }
+        public byte? HasPatternBookLibrary { get; set; }
+        public byte? HasShowroom { get; set; }
+        public byte? ShowroomByAppointmentOnly { get; set; }
         public bool SellOnline { get; set; }
         public short? NumberOfPatternBooksPurchased { get; set; }
         public decimal? FirstOrderValue { get; set; }
@@ -937,7 +988,7 @@ namespace SharedEFClasses.Models.Leads
         public string CreditController { get; set; }
         public string BankCode { get; set; }
         public int? InsuredCreditLimit { get; set; }
-        public bool? PurchaseOrderRequired { get; set; }
+        public byte? PurchaseOrderRequired { get; set; }
         public string TradeAccountGroup { get; set; }
         public string SalesDivision { get; set; }
         public string DeliveryTerms { get; set; }
@@ -951,6 +1002,10 @@ namespace SharedEFClasses.Models.Leads
         public bool? TradeAccountCreationEmail_DisplayLookbook { get; set; }
 
         public List<TradeAccountCreationEmailAttachmentDto> TradeAccountCreationEmail_Attachments { get; set; }
+
+        public byte[] OrderDocument { get; set; }
+
+        public string OrderDocumentFileType { get; set; }
 
         //public long? leadContactId { get; set; }
         //public byte? editContactTitleId { get; set; } //

@@ -14,6 +14,7 @@ using SharedEFClasses.Models.Applications;
 using System.ComponentModel.DataAnnotations.Schema;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.Orders;
+using SharedEFClasses.Models.Retail;
 
 namespace SharedEFClasses.Models
 {
@@ -220,6 +221,14 @@ namespace SharedEFClasses.Models
         [JsonIgnore]
         [InverseProperty("LockedBy")]
         public virtual ICollection<PaintOrderHead> LockingPaintOrders { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("LastModifiedBy")]
+        public virtual ICollection<RetailStoreMember> RetailStoreMembersEdited { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("MarketManager")]
+        public virtual ICollection<SalesMarket> SalesMarketsManaged { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
         {

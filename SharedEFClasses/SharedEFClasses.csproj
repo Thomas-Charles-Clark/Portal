@@ -333,6 +333,7 @@
     <Compile Include="Models\BasketStatusModels.cs" />
     <Compile Include="Models\CreditControlRegion.cs" />
     <Compile Include="Models\CreditControlRegion_SalesMarket.cs" />
+    <Compile Include="Models\DotDigital\SyncAction.cs" />
     <Compile Include="Models\GenericFormModels.cs" />
     <Compile Include="Models\InvoiceModels.cs" />
     <Compile Include="Models\DocumentModels.cs" />
@@ -391,6 +392,7 @@
     <Compile Include="Models\DeliveryModels.cs" />
     <Compile Include="Models\GenericKendoDataTransferModels.cs" />
     <Compile Include="Models\MaintenanceModels.cs" />
+    <Compile Include="Models\Retail\RetailStoreMember.cs" />
     <Compile Include="Models\ReturnModels.cs" />
     <Compile Include="Models\TradeAccountCreationEmail.cs" />
     <Compile Include="Models\TradeAccountCreationEmailAttachment.cs" />

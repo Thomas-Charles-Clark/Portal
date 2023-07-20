@@ -133,4 +133,7 @@
 #attachment-from-list {
   min-width: 260px;
 }
+#attachment-from-list .mdc-select .k-dropdown-wrap {
+  border-bottom: none;
+}
 /*# sourceMappingURL=trade-account-creation-email-maintenance.css.map */

@@ -143,4 +143,10 @@
 
 #attachment-from-list {
     min-width: 260px;
+
+    .mdc-select {
+        .k-dropdown-wrap {
+            border-bottom: none;
+        }
+    }
 }

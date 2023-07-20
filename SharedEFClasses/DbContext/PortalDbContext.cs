@@ -15,6 +15,8 @@ using SharedEFClasses.ReturnModels;
 using Unity.Injection;
 using SharedEFClasses.Models.Mertexer;
 using DeliveryTerm = SharedEFClasses.Models.Mertexer.DeliveryTerm;
+using SharedEFClasses.Models.DotDigital;
+using SharedEFClasses.Models.Retail;
 
 namespace SharedEFClasses.Models
 {
@@ -409,6 +411,14 @@ namespace SharedEFClasses.Models
         public DbSet<PaintOrderLine> PaintOrderLines { get; set; }
 
         public DbSet<PaintProduct> PaintProducts { get; set; }
+
+        #endregion
+
+        #region DotDigital
+
+        public DbSet<SyncAction> SyncActions { get; set; }
+
+        public DbSet<RetailStoreMember> RetailStoreMembers { get; set; }
 
         #endregion
 

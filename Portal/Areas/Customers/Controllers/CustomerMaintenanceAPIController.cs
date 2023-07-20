@@ -93,9 +93,27 @@ namespace Portal.Areas.Customers.Controllers
         }
 
         [HttpGet]
-        public IHttpActionResult GetTradeAccountCreationEmailAttachments([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
+        public IHttpActionResult GetTradeAccountCreationEmailAttachments([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request, byte? salesMarketId)
         {
-            return Ok(PortalDb.TradeAccountCreationEmailAttachments.Where(p => p.Deleted == false).OrderBy(p => p.Name).AsQueryable().ToDataSourceResult(request));
+            if (salesMarketId == null)
+            {
+                return Ok(PortalDb.TradeAccountCreationEmailAttachments
+                            .Where(p => p.Deleted == false)
+                            .OrderBy(p => p.Name)
+                            .AsQueryable()
+                            .ToDataSourceResult(request));
+            }
+            else
+            {
+                return Ok(PortalDb.TradeAccountCreationEmails_TradeAccountCreationEmailAttachments
+                            .Where(p => p.Attachment.Deleted == false &&
+                                        p.Email.SalesMarketID == salesMarketId)
+                            .Select(p => p.Attachment)
+                            .OrderBy(p => p.Name)
+                            .AsQueryable()
+                            .ToDataSourceResult(request));
+            }
+
         }
 
         [HttpGet]

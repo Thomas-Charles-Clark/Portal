@@ -201,93 +201,160 @@ namespace Portal.Areas.Sales.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult LeadUpsert([FromBody]PassLeadUpsert objLeadUpsert)
+        public async Task<object> LeadUpsert()// [FromBody]PassLeadUpsert objLeadUpsert)
         {
-            var precursor = portalDb.Leads.Single(l => l.LeadID == objLeadUpsert.LeadID);
-
-            if (precursor.ModifiedDT > objLeadUpsert.LoadedDT)
+            // Check if the request contains multipart/form-data.
+            if (!Request.Content.IsMimeMultipartContent())
             {
-                return InternalServerError(new Exception("Sorry, this Lead has been modified since you loaded it.<br/><br/>" +
-                    "You must reload the Lead before you can make any changes.<br/><br/>" +
-                    "Please use the X button in the top-right to close the Lead.<br/>This Lead may have changed status, so you may need to use the Dashboard to search for it again."));
+                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
             }
 
-            var result = portalDb.LeadUpsert(objLeadUpsert, User.Identity.GetUserId<int>());
+            var root = HttpContext.Current.Server.MapPath("~/Uploads");
 
-            if (objLeadUpsert.LeadStatusID == 13)
+            var provider = new MultipartFormDataStreamProvider(root);
+
+            PassLeadUpsert objLeadUpsert = null;
+
+            var result = await Request.Content.ReadAsMultipartAsync(provider);
+
+            byte[] bytes = null;
+
+            string fileExtension = null;
+
+            if (provider.FileData.Any())
             {
-                // sending to Misc
-                if (result.LeadID != null)
+                bytes = File.ReadAllBytes(result.FileData[0].LocalFileName);
+
+                if (bytes.Count() > 2097152)
                 {
-                    var lead = portalDb.Leads.Where(p => p.LeadID == result.LeadID).Single();
-                    
-                    lead.TradeAccountID = objLeadUpsert.miscTradeAccountId;
+                    return Request.CreateResponse(HttpStatusCode.ExpectationFailed, "File too large");
+                }
 
-                    portalDb.SaveChanges();
+                switch (provider.FileData[0].Headers.ContentType.MediaType)
+                {
+                    case "application/pdf":
+                        fileExtension = "pdf";
+                        break;
+                    case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                        fileExtension = "xlsx";
+                        break;
+                    case "application/vnd.ms-excel":
+                        fileExtension = "xls";
+                        break;
+                    case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+                        fileExtension = "docx";
+                        break;
+                    case "application/msword":
+                        fileExtension = "doc";
+                        break;
+                    case "image/jpg":
+                    case "image/jpeg":
+                    case "image/jfif":
+                        fileExtension = "jpg";
+                        break;
+                }
 
-                    var rep = portalDb.SalesRepresentatives.Where(p => p.SalesRepresentativeID == objLeadUpsert.miscSalesRepId).Single();
+                File.Delete(result.FileData[0].LocalFileName);
+            }
 
-                    var ta = portalDb.TradeAccounts.Where(p => p.TradeAccountID == objLeadUpsert.miscTradeAccountId).Single();
 
-                    System.Threading.Tasks.Task.Factory.StartNew(() =>
+            // Show all the key-value pairs.
+            foreach (var key in provider.FormData.AllKeys)
+            {
+                if (key == "obj")
+                {
+                    objLeadUpsert = JsonConvert.DeserializeObject<PassLeadUpsert>(provider.FormData.GetValues(key)[0]);
+
+                    objLeadUpsert.OrderDocument = bytes;
+
+                    objLeadUpsert.OrderDocumentFileType = fileExtension;
+
+                    var precursor = portalDb.Leads.Single(l => l.LeadID == objLeadUpsert.LeadID);
+
+                    if (precursor.ModifiedDT > objLeadUpsert.LoadedDT)
                     {
-                        var body = "";
-                        var subject = "";
+                        return InternalServerError(new Exception("Sorry, this Lead has been modified since you loaded it.<br/><br/>" +
+                            "You must reload the Lead before you can make any changes.<br/><br/>" +
+                            "Please use the X button in the top-right to close the Lead.<br/>This Lead may have changed status, so you may need to use the Dashboard to search for it again."));
+                    }
 
-                        var miscAccountNumber = ta.Code;
-                        var salesRepName = rep.Name;
-                        var salesRepEmail = rep.Email;
-                        var salesRepPhone = rep.PhoneNumber;
+                    var upsertResult = portalDb.LeadUpsert(objLeadUpsert, User.Identity.GetUserId<int>());
 
-                        switch (objLeadUpsert.LanguageID) {
-                            //case 3:
-                            //    subject = "Merci d'avoir demandé l'ouverture d'un compte professionnel auprès de Designers Guild";
-                            //    body = $@"<p class='hello'>
-                            //    Merci d'avoir demandé l'ouverture d'un compte professionnel auprès de Designers Guild.
-                            //</p>
-                            //<p class='footer'>
-                            //    Merci de votre intérêt pour nos produits et nos marques.
-                            //</p>";
-                            //    break;
-                            //case 4:
-                            //    subject = "Vielen Dank für Ihr Interesse an einem Designers Guild Händler Konto";
-                            //    body = $@"<p class='hello'>
-                            //    Vielen Dank für Ihr Interesse an einem Designers Guild Händler Konto.
-                            //</p>
-                            //<p class='footer'>
-                            //    Vielen Dank für Ihr Interesse an Designers Guild.
-                            //</p>";
-                            //    break;
-                            //case 5:
-                            //    subject = "Gracias por solicitar una apertura de cuenta cliente con Designers Guild";
-                            //    body = $@"<p class='hello'>
-                            //    Gracias por solicitar una apertura de cuenta cliente con Designers Guild.
-                            //</p>
-                            //<p class='footer'>
-                            //    Gracias por su interés en Designers Guild.
-                            //</p>";
-                            //    break;
-                            //case 6:
-                            //    subject = "Grazie per aver richiesto un account commerciale con Designers Guild";
-                            //    body = $@"<p class='hello'>
-                            //    Grazie per aver richiesto un account commerciale con Designers Guild.
-                            //</p>
-                            //<p class='footer'>
-                            //    Grazie per il vostro interesse in Designers Guild.
-                            //</p>";
-                            //    break;
-                            //case 10:
-                            //    subject = "Благодарим вас за запрос на открытие бизнес аккаунта в Designers Guild";
-                            //    body = $@"<p class='hello'>
-                            //    Благодарим вас за запрос на открытие бизнес аккаунта в Designers Guild.
-                            //</p>
-                            //<p class='footer'>
-                            //    Спасибо вам за интерес к Designers Guild.
-                            //</p>";
-                            //    break;
-                            default:
-                                subject = "Your Designers Guild Trade Account Application";
-                                body = $@"<p class='hello'>
+                    if (objLeadUpsert.LeadStatusID == 13)
+                    {
+                        // sending to Misc
+                        if (upsertResult.LeadID != null)
+                        {
+                            var lead = portalDb.Leads.Where(p => p.LeadID == upsertResult.LeadID).Single();
+
+                            lead.TradeAccountID = objLeadUpsert.miscTradeAccountId;
+
+                            portalDb.SaveChanges();
+
+                            var rep = portalDb.SalesRepresentatives.Where(p => p.SalesRepresentativeID == objLeadUpsert.miscSalesRepId).Single();
+
+                            var ta = portalDb.TradeAccounts.Where(p => p.TradeAccountID == objLeadUpsert.miscTradeAccountId).Single();
+
+                            await System.Threading.Tasks.Task.Factory.StartNew(() =>
+                            {
+                                var body = "";
+                                var subject = "";
+
+                                var miscAccountNumber = ta.Code;
+                                var salesRepName = rep.Name;
+                                var salesRepEmail = rep.Email;
+                                var salesRepPhone = rep.PhoneNumber;
+
+                                switch (objLeadUpsert.LanguageID)
+                                {
+                                    //case 3:
+                                    //    subject = "Merci d'avoir demandé l'ouverture d'un compte professionnel auprès de Designers Guild";
+                                    //    body = $@"<p class='hello'>
+                                    //    Merci d'avoir demandé l'ouverture d'un compte professionnel auprès de Designers Guild.
+                                    //</p>
+                                    //<p class='footer'>
+                                    //    Merci de votre intérêt pour nos produits et nos marques.
+                                    //</p>";
+                                    //    break;
+                                    //case 4:
+                                    //    subject = "Vielen Dank für Ihr Interesse an einem Designers Guild Händler Konto";
+                                    //    body = $@"<p class='hello'>
+                                    //    Vielen Dank für Ihr Interesse an einem Designers Guild Händler Konto.
+                                    //</p>
+                                    //<p class='footer'>
+                                    //    Vielen Dank für Ihr Interesse an Designers Guild.
+                                    //</p>";
+                                    //    break;
+                                    //case 5:
+                                    //    subject = "Gracias por solicitar una apertura de cuenta cliente con Designers Guild";
+                                    //    body = $@"<p class='hello'>
+                                    //    Gracias por solicitar una apertura de cuenta cliente con Designers Guild.
+                                    //</p>
+                                    //<p class='footer'>
+                                    //    Gracias por su interés en Designers Guild.
+                                    //</p>";
+                                    //    break;
+                                    //case 6:
+                                    //    subject = "Grazie per aver richiesto un account commerciale con Designers Guild";
+                                    //    body = $@"<p class='hello'>
+                                    //    Grazie per aver richiesto un account commerciale con Designers Guild.
+                                    //</p>
+                                    //<p class='footer'>
+                                    //    Grazie per il vostro interesse in Designers Guild.
+                                    //</p>";
+                                    //    break;
+                                    //case 10:
+                                    //    subject = "Благодарим вас за запрос на открытие бизнес аккаунта в Designers Guild";
+                                    //    body = $@"<p class='hello'>
+                                    //    Благодарим вас за запрос на открытие бизнес аккаунта в Designers Guild.
+                                    //</p>
+                                    //<p class='footer'>
+                                    //    Спасибо вам за интерес к Designers Guild.
+                                    //</p>";
+                                    //    break;
+                                    default:
+                                        subject = "Your Designers Guild Trade Account Application";
+                                        body = $@"<p class='hello'>
                                     Thank you for requesting a trade account with Designers Guild.
                                 </p>
                                 <p>
@@ -302,20 +369,24 @@ namespace Portal.Areas.Sales.Controllers
                                 <p class='footer'>
                                     Thank you for your interest in Designers Guild.
                                 </p>";
-                            break;
-                        }
+                                        break;
+                                }
 
-                        userManager.EmailService.SendAsync(new IdentityMessage()
-                        {
-                            Body = body,
-                            Subject = subject,
-                            Destination = lead.InvoiceStatementsEmail
-                        });
-                    });
+                                userManager.EmailService.SendAsync(new IdentityMessage()
+                                {
+                                    Body = body,
+                                    Subject = subject,
+                                    Destination = lead.InvoiceStatementsEmail
+                                });
+                            });
+                        }
+                    }
+
+                    return Ok(result);
                 }
             }
 
-            return Ok(result);
+            throw new HttpResponseException(HttpStatusCode.ExpectationFailed);
         }
 
     [HttpPost]

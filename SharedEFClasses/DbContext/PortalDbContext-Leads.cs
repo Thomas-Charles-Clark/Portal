@@ -387,9 +387,61 @@ namespace SharedEFClasses.Models
                 this.SaveChanges();
             }
 
-            var objParams = new SqlParameter[]
+            var objParams = new List<SqlParameter>()
             {
-                new SqlParameter("@LeadStatusID", objLeadUpsert.LeadStatusID ?? (object)DBNull.Value),                new SqlParameter("@LeadStatusReason", objLeadUpsert.LeadStatusReason ?? (object)DBNull.Value),                new SqlParameter("@LeadSourceID", objLeadUpsert.LeadSourceID ?? (object)DBNull.Value),                new SqlParameter("@StarRating", objLeadUpsert.StarRating ?? (object)DBNull.Value),                new SqlParameter("@LeadMagnitudeID", objLeadUpsert.LeadMagnitudeID ?? (object)DBNull.Value),                new SqlParameter("@LeadTypeID", objLeadUpsert.LeadTypeID ?? (object)DBNull.Value),                new SqlParameter("@SourceMemberID", _sourceMemberId),                new SqlParameter("@OwnerMemberID", objLeadUpsert.OwnerMemberID ?? (object)DBNull.Value),                new SqlParameter("@ChannelID", objLeadUpsert.ChannelID),                new SqlParameter("@Description", objLeadUpsert.Description ?? (object)DBNull.Value),                new SqlParameter("@AnnualRevenue", objLeadUpsert.AnnualRevenue ?? (object)DBNull.Value),                new SqlParameter("@CurrencyID", objLeadUpsert.CompanyCurrency?.CurrencyID ?? (object)DBNull.Value),                new SqlParameter("@CompanyName", objLeadUpsert.CompanyName ?? (object)DBNull.Value),                new SqlParameter("@CountryID", objLeadUpsert.CountryID),                new SqlParameter("@LanguageID", objLeadUpsert.LanguageID),                new SqlParameter("@VATNumber", objLeadUpsert.CompanyVATNumber ?? (object)DBNull.Value),                new SqlParameter("@VATCountryID", objLeadUpsert.VATCountryID ?? (object)DBNull.Value),                new SqlParameter("@VATNumberDisplay", objLeadUpsert.VATNumberDisplay ?? (object)DBNull.Value),                new SqlParameter("@EORINumber", objLeadUpsert.EORINumber ?? (object)DBNull.Value),                new SqlParameter("@CompanyNumber", objLeadUpsert.CompanyRegistration ?? (object)DBNull.Value),                new SqlParameter("@CompanyTypeID", objLeadUpsert.CompanyTypeID ?? (object)DBNull.Value),                new SqlParameter("@WillBuyPatternBooks", objLeadUpsert.WillBuyPatternBooks ?? (object)DBNull.Value),                new SqlParameter("@BankName", objLeadUpsert.BankName ?? (object)DBNull.Value),                new SqlParameter("@BankAddressLine1", objLeadUpsert.BankAddressLine1 ?? (object)DBNull.Value),                new SqlParameter("@BankAddressLine2", objLeadUpsert.BankAddressLine2 ?? (object)DBNull.Value),                new SqlParameter("@BankTown", objLeadUpsert.BankTown ?? (object)DBNull.Value),                new SqlParameter("@BankCounty", objLeadUpsert.BankCounty ?? (object)DBNull.Value),                new SqlParameter("@BankPostcode", objLeadUpsert.BankPostcode ?? (object)DBNull.Value),                new SqlParameter("@BankCountryID", objLeadUpsert.BankCountryID ?? (object)DBNull.Value),                new SqlParameter("@BankAccountNumber", objLeadUpsert.BankAccountNumber ?? (object)DBNull.Value),                new SqlParameter("@BankSortCode", objLeadUpsert.BankSortCode ?? (object)DBNull.Value),                new SqlParameter("@BankIBAN", objLeadUpsert.BankIBAN ?? (object)DBNull.Value),                new SqlParameter("@PaymentTermsID", objLeadUpsert.PaymentTermsID ?? (object)DBNull.Value),                new SqlParameter("@PaymentOptionID", objLeadUpsert.PaymentOptionID ?? (object)DBNull.Value),                new SqlParameter("@CreditLimit", objLeadUpsert.CreditLimit ?? (object)DBNull.Value),                new SqlParameter("@RequestedCreditLimit", objLeadUpsert.RequestedCreditLimit ?? (object)DBNull.Value),                new SqlParameter("@CompanyLetterHeadChecked", objLeadUpsert.CompanyLetterHeadChecked),                new SqlParameter("@SalesMarketID", objLeadUpsert.SalesMarketID ?? (object)DBNull.Value),                new SqlParameter("@SalesRepresentativeID", objLeadUpsert.SalesRepresentativeID ?? (object)DBNull.Value),                new SqlParameter("@SaleAgentID", objLeadUpsert.SalesAgentID ?? (object)DBNull.Value),                new SqlParameter("@SalesAreaID", objLeadUpsert.SalesAreaID ?? (object)DBNull.Value),                new SqlParameter("@TradePriceListID", objLeadUpsert.TradePriceListID ?? (object)DBNull.Value),                new SqlParameter("@AccountTypeID", objLeadUpsert.AccountTypeID ?? (object)DBNull.Value),                new SqlParameter("@CustomerTypeID", objLeadUpsert.CustomerTypeID ?? (object)DBNull.Value),                new SqlParameter("@HasPatternBookLibrary", objLeadUpsert.HasPatternBookLibrary ?? (object)DBNull.Value),                new SqlParameter("@HasShowroom", objLeadUpsert.HasShowroom ?? (object)DBNull.Value),                new SqlParameter("@ShowroomByAppointmentOnly", objLeadUpsert.ShowroomByAppointmentOnly ?? (object)DBNull.Value),                new SqlParameter("@SellOnline", objLeadUpsert.SellOnline),                new SqlParameter("@NumberOfPatternBooksPurchased", objLeadUpsert.NumberOfPatternBooksPurchased ?? (object)DBNull.Value),                new SqlParameter("@FirstOrderValue", objLeadUpsert.FirstOrderValue ?? (object)DBNull.Value),                new SqlParameter("@JoinedPatternBookScheme", objLeadUpsert.JoinedPatternBookScheme ?? (object)DBNull.Value),                new SqlParameter("@PaymentTermsNotes", objLeadUpsert.paymentTermsNotes ?? (object)DBNull.Value),                new SqlParameter("@Notify", shouldNotify),
+                new SqlParameter("@LeadStatusID", objLeadUpsert.LeadStatusID ?? (object)DBNull.Value),
+                new SqlParameter("@LeadStatusReason", objLeadUpsert.LeadStatusReason ?? (object)DBNull.Value),
+                new SqlParameter("@LeadSourceID", objLeadUpsert.LeadSourceID ?? (object)DBNull.Value),
+                new SqlParameter("@StarRating", objLeadUpsert.StarRating ?? (object)DBNull.Value),
+                new SqlParameter("@LeadMagnitudeID", objLeadUpsert.LeadMagnitudeID ?? (object)DBNull.Value),
+                new SqlParameter("@LeadTypeID", objLeadUpsert.LeadTypeID ?? (object)DBNull.Value),
+                new SqlParameter("@SourceMemberID", _sourceMemberId),
+                new SqlParameter("@OwnerMemberID", objLeadUpsert.OwnerMemberID ?? (object)DBNull.Value),
+                new SqlParameter("@ChannelID", objLeadUpsert.ChannelID),
+                new SqlParameter("@Description", objLeadUpsert.Description ?? (object)DBNull.Value),
+                new SqlParameter("@AnnualRevenue", objLeadUpsert.AnnualRevenue ?? (object)DBNull.Value),
+                new SqlParameter("@CurrencyID", objLeadUpsert.CompanyCurrency?.CurrencyID ?? (object)DBNull.Value),
+                new SqlParameter("@CompanyName", objLeadUpsert.CompanyName ?? (object)DBNull.Value),
+                new SqlParameter("@CountryID", objLeadUpsert.CountryID),
+                new SqlParameter("@LanguageID", objLeadUpsert.LanguageID),
+                new SqlParameter("@VATNumber", objLeadUpsert.CompanyVATNumber ?? (object)DBNull.Value),
+                new SqlParameter("@VATCountryID", objLeadUpsert.VATCountryID ?? (object)DBNull.Value),
+                new SqlParameter("@VATNumberDisplay", objLeadUpsert.VATNumberDisplay ?? (object)DBNull.Value),
+                new SqlParameter("@EORINumber", objLeadUpsert.EORINumber ?? (object)DBNull.Value),
+                new SqlParameter("@CompanyNumber", objLeadUpsert.CompanyRegistration ?? (object)DBNull.Value),
+                new SqlParameter("@CompanyTypeID", objLeadUpsert.CompanyTypeID ?? (object)DBNull.Value),
+                new SqlParameter("@WillBuyPatternBooks", objLeadUpsert.WillBuyPatternBooks ?? (object)DBNull.Value),
+                new SqlParameter("@BankName", objLeadUpsert.BankName ?? (object)DBNull.Value),
+                new SqlParameter("@BankAddressLine1", objLeadUpsert.BankAddressLine1 ?? (object)DBNull.Value),
+                new SqlParameter("@BankAddressLine2", objLeadUpsert.BankAddressLine2 ?? (object)DBNull.Value),
+                new SqlParameter("@BankTown", objLeadUpsert.BankTown ?? (object)DBNull.Value),
+                new SqlParameter("@BankCounty", objLeadUpsert.BankCounty ?? (object)DBNull.Value),
+                new SqlParameter("@BankPostcode", objLeadUpsert.BankPostcode ?? (object)DBNull.Value),
+                new SqlParameter("@BankCountryID", objLeadUpsert.BankCountryID ?? (object)DBNull.Value),
+                new SqlParameter("@BankAccountNumber", objLeadUpsert.BankAccountNumber ?? (object)DBNull.Value),
+                new SqlParameter("@BankSortCode", objLeadUpsert.BankSortCode ?? (object)DBNull.Value),
+                new SqlParameter("@BankIBAN", objLeadUpsert.BankIBAN ?? (object)DBNull.Value),
+                new SqlParameter("@PaymentTermsID", objLeadUpsert.PaymentTermsID ?? (object)DBNull.Value),
+                new SqlParameter("@PaymentOptionID", objLeadUpsert.PaymentOptionID ?? (object)DBNull.Value),
+                new SqlParameter("@CreditLimit", objLeadUpsert.CreditLimit ?? (object)DBNull.Value),
+                new SqlParameter("@RequestedCreditLimit", objLeadUpsert.RequestedCreditLimit ?? (object)DBNull.Value),
+                new SqlParameter("@CompanyLetterHeadChecked", objLeadUpsert.CompanyLetterHeadChecked),
+                new SqlParameter("@SalesMarketID", objLeadUpsert.SalesMarketID ?? (object)DBNull.Value),
+                new SqlParameter("@SalesRepresentativeID", objLeadUpsert.SalesRepresentativeID ?? (object)DBNull.Value),
+                new SqlParameter("@SaleAgentID", objLeadUpsert.SalesAgentID ?? (object)DBNull.Value),
+                new SqlParameter("@SalesAreaID", objLeadUpsert.SalesAreaID ?? (object)DBNull.Value),
+                new SqlParameter("@TradePriceListID", objLeadUpsert.TradePriceListID ?? (object)DBNull.Value),
+                new SqlParameter("@AccountTypeID", objLeadUpsert.AccountTypeID ?? (object)DBNull.Value),
+                new SqlParameter("@CustomerTypeID", objLeadUpsert.CustomerTypeID ?? (object)DBNull.Value),
+                new SqlParameter("@HasPatternBookLibrary", objLeadUpsert.HasPatternBookLibrary ?? (object)DBNull.Value),
+                new SqlParameter("@HasShowroom", objLeadUpsert.HasShowroom ?? (object)DBNull.Value),
+                new SqlParameter("@ShowroomByAppointmentOnly", objLeadUpsert.ShowroomByAppointmentOnly ?? (object)DBNull.Value),
+                new SqlParameter("@SellOnline", objLeadUpsert.SellOnline),
+                new SqlParameter("@NumberOfPatternBooksPurchased", objLeadUpsert.NumberOfPatternBooksPurchased ?? (object)DBNull.Value),
+                new SqlParameter("@FirstOrderValue", objLeadUpsert.FirstOrderValue ?? (object)DBNull.Value),
+                new SqlParameter("@JoinedPatternBookScheme", objLeadUpsert.JoinedPatternBookScheme ?? (object)DBNull.Value),
+                new SqlParameter("@PaymentTermsNotes", objLeadUpsert.paymentTermsNotes ?? (object)DBNull.Value),
+                new SqlParameter("@Notify", shouldNotify),
                 new SqlParameter("@TradeAccountClassCode", objLeadUpsert.TradeAccountClass ?? (object)DBNull.Value),
                 new SqlParameter("@CreditControllerCode", objLeadUpsert.CreditController ?? (object)DBNull.Value),
                 new SqlParameter("@BankCode", objLeadUpsert.BankCode ?? (object)DBNull.Value),
@@ -407,6 +459,16 @@ namespace SharedEFClasses.Models
                 new SqlParameter("@TradeAccountCreationEmail_DisplayB2BRegistration", objLeadUpsert.TradeAccountCreationEmail_DisplayB2BRegistration ?? (object)DBNull.Value),
                 new SqlParameter("@TradeAccountCreationEmail_DisplayLookbook", objLeadUpsert.TradeAccountCreationEmail_DisplayLookbook ?? (object) DBNull.Value),
             };
+
+            if (objLeadUpsert.OrderDocument != null &&
+                objLeadUpsert.OrderDocument.Length > 0)
+            {
+                var orderDocParam = new SqlParameter("@OrderDocument", SqlDbType.VarBinary, objLeadUpsert.OrderDocument.Length);
+                orderDocParam.Value = objLeadUpsert.OrderDocument;
+
+                objParams.Add(orderDocParam);
+                objParams.Add(new SqlParameter("@OrderDocumentFileType", objLeadUpsert.OrderDocumentFileType ?? (object)DBNull.Value));
+            }
 
             /*
              cmd.Parameters.Add(tradeAccountClass);
@@ -496,7 +558,7 @@ namespace SharedEFClasses.Models
 
             cmd.Parameters.Add(leadId);
             cmd.Parameters.Add(tradingSince);
-            cmd.Parameters.AddRange(objParams);
+            cmd.Parameters.AddRange(objParams.ToArray());
 
             try
             {

@@ -476,10 +476,10 @@ const editModel = (props) => {
     self.attachmentsManager = {
         attachments: ko.observableArray([]),
         attachmentsSizeSum: ko.observable(props.EmailAttachments.reduce((a, e) => a + e.FileSizeBytes, 0)).extend({
-            max: {
-                params: 20,
-                message: 'You may not exceed 20mb of attachments total'
-            }
+            //max: {
+            //    params: 20,
+            //    message: 'You may not exceed 20mb of attachments total'
+            //}
         }),
         addNewAttachment: function () {
             let a = emailAttachment({
