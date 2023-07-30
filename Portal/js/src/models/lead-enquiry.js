@@ -76,6 +76,10 @@ var leadEnquiryViewModel = function () {
 
     self.availableTradeAccountGroups = getAvailableTradeAccountGroups();
 
+    self.availableSendPricelistsOptions = getYesNoDontKnowOptions();
+
+    self.availableBelongToGroupAccountOptions = getYesNoDontKnowOptions();
+
     //self.availableHauliers = getAvailableHauliers();
 
     //self.availableCarriages = getAvailableCarriages();
@@ -966,6 +970,41 @@ var leadEdit = function (parent) {
         }
     });
 
+    self.shouldSendPricelists = ko.observable(undefined).extend({
+        required: {
+            params: true,
+            message: 'You must answer this question'
+        }
+    });
+
+    self.belongToGroupAccount = ko.observable(undefined).extend({
+        required: {
+            params: true,
+            message: 'You must answer this question'
+        }
+    });
+
+    self.belongToGroupAccount.subscribe(nv => {
+        if (nv) {
+            let current = self.paymentTermsNotes();
+
+            if (current == null || current?.indexOf('Please double check with the market manager which group account') == -1) {
+                if (current) {
+                    self.paymentTermsNotes(`${current}
+
+Please double check with the market manager which group account this new customer belongs to. Once the account is opened in Mertex please manually add the appropriate group account.`)
+                } else {
+                    self.paymentTermsNotes(`Please double check with the market manager which group account this new customer belongs to. Once the account is opened in Mertex please manually add the appropriate group account.`)
+                }
+            }
+        } else {
+
+            if (self.paymentTermsNotes()) {
+                self.paymentTermsNotes(self.paymentTermsNotes().replace('Please double check with the market manager which group account this new customer belongs to. Once the account is opened in Mertex please manually add the appropriate group account.', ''))
+            }
+        }
+    });
+
     // This pertains to accounts doing the whole statement / child account dance
     // not something we handle in the Portal at this stage
     // important that this is set to "MI" for misc. for [all] accounts though
@@ -987,6 +1026,9 @@ var leadEdit = function (parent) {
     self.salesDivision = ko.observable(false).extend({
         required: {
             params: true,
+            onlyIf: () => {
+                return (self.salesMarket() && ['E', 'Y'].indexOf(self.salesMarket().Code) > -1);
+            },
             message: 'You must answer this question'
         }
     }); // Does the customer require their shipments to be consolidated ? YES = T, NO = N
@@ -995,17 +1037,21 @@ var leadEdit = function (parent) {
         if (nv) {
             let current = self.paymentTermsNotes();
 
-            if (current?.indexOf('This customer apparently wishes their deliveries to be consolidated'))
+            if (current == null || current?.indexOf('This customer wishes their deliveries to be consolidated') == -1) {
+                if (current) {
+                    self.paymentTermsNotes(`${current}
 
-            if (current) {
-                self.paymentTermsNotes(`${current}
-
-This customer apparently wishes their deliveries to be consolidated. Please double check this point with the appropriate sales manager before opening the account.`)
-            } else {
-                self.paymentTermsNotes(`This customer apparently wishes their deliveries to be consolidated. Please double check this point with the appropriate sales manager before opening the account.`)
+This customer wishes their deliveries to be consolidated. Please double check this with the market manager before opening the account.`)
+                } else {
+                    self.paymentTermsNotes(`This customer wishes their deliveries to be consolidated. Please double check this with the market manager before opening the account.`)
+                }
             }
         }
     });
+
+    self.salesDivisionVisible = ko.computed(() => {
+        return self.salesMarket() && (['E', 'Y'].indexOf(self.salesMarket().Code) > -1);
+    }, self);
 
     self.deliveryTerms = ko.observable(undefined).extend({ // 21/06/2023 Sarah wants to default this NULL to find out if it causes a throw in the Portal eventually
         //required: {
@@ -1643,7 +1689,9 @@ This customer apparently wishes their deliveries to be consolidated. Please doub
                 self.hasShowroom() == 2 ||
                 self.showroomByAppointmentOnly() == 2 ||
                 (self.requestedPaymentOption() && self.requestedPaymentOption().PaymentOptionID == 3) ||
-                self.purchaseOrderRequired() == 2
+                self.purchaseOrderRequired() == 2 ||
+                self.shouldSendPricelists() == 2 ||
+                self.belongToGroupAccount() == 2
             )
         ) {
             return true;
@@ -2399,6 +2447,8 @@ This customer apparently wishes their deliveries to be consolidated. Please doub
         self.companyCurrencyId,
         self.customerTypeId,
         self.purchaseOrderRequired,
+        self.shouldSendPricelists,
+        self.belongToGroupAccount,
         self.salesDivision,
         self.deliveryTerms,
         self.requestedPaymentOption,
@@ -2555,6 +2605,11 @@ This customer apparently wishes their deliveries to be consolidated. Please doub
         self.bankSortCode(undefined);
         self.bankIBAN(undefined);
 
+        self.salesDivision(false); // this is actually "groupage" question
+
+        if (self.paymentTermsNotes()) {
+            self.paymentTermsNotes(self.paymentTermsNotes().replace('Please double check with the market manager which group account this new customer belongs to. Once the account is opened in Mertex please manually add the appropriate group account.', ''))
+        }
 
         if (newValue) {
             // this should only ever be true for a lead that hasn't saved the rep page before
@@ -2576,7 +2631,7 @@ This customer apparently wishes their deliveries to be consolidated. Please doub
                 self.attachmentsManager.attachmentsListParams.dropDownListSettings.widget().dataSource.read();
             }
         }
-;    });
+    });
 
     self.ownerMember.subscribe(function (newValue) {
         if (newValue) {
@@ -4023,6 +4078,8 @@ This customer apparently wishes their deliveries to be consolidated. Please doub
 
         self.insuredCreditLimit(data.Lead.InsuredCreditLimit);
         self.purchaseOrderRequired(data.Lead.PurchaseOrderRequired);
+        self.shouldSendPricelists(data.Lead.ShouldSendPricelists);
+        self.belongToGroupAccount(data.Lead.BelongToGroupAccount);
         //self.tradeAccountGroup(data.Lead.TradeAccountGroupCode);
         self.salesDivision(data.Lead.SalesDivisionCode ? data.Lead.SalesDivisionCode == "T" ? true : false : false);
         self.deliveryTerms(data.Lead.DeliveryTermsCode);
@@ -4950,6 +5007,8 @@ This customer apparently wishes their deliveries to be consolidated. Please doub
                 mertexLanguageCode: self.mertexLanguageCode(),
                 insuredCreditLimit: self.insuredCreditLimit(),
                 purchaseOrderRequired: self.purchaseOrderRequired(),
+                shouldSendPricelists: self.shouldSendPricelists(),
+                belongToGroupAccount: self.belongToGroupAccount(),
                 tradeAccountGroup: self.tradeAccountGroup(),
                 salesDivision: salesDivision,
                 deliveryTerms: self.deliveryTerms(),
@@ -5240,6 +5299,8 @@ This customer apparently wishes their deliveries to be consolidated. Please doub
         self.mertexLanguageCode(undefined);
         self.insuredCreditLimit(undefined);
         self.purchaseOrderRequired(undefined);
+        self.shouldSendPricelists(undefined);
+        self.belongToGroupAccount(undefined);
         self.tradeAccountGroup("MI");
         self.salesDivision(false);
         self.deliveryTerms(undefined);

@@ -180,6 +180,10 @@ namespace SharedEFClasses.Models.Leads
         public short? VATCountryID { get; set; }
         public string TaxID { get; set; } // Swiss only
 
+        public byte? ShouldSendPricelists { get; set; }
+        public byte? BelongToGroupAccount { get; set; }
+
+
         [JsonIgnore]
         public byte[] USSalesTaxExemptionCertificate { get; set; }
         public string USSalesTaxExemptionCertificateFileType { get; set; }
@@ -1006,6 +1010,9 @@ namespace SharedEFClasses.Models.Leads
         public byte[] OrderDocument { get; set; }
 
         public string OrderDocumentFileType { get; set; }
+
+        public byte? ShouldSendPricelists { get; set; }
+        public byte? BelongToGroupAccount { get; set; }
 
         //public long? leadContactId { get; set; }
         //public byte? editContactTitleId { get; set; } //

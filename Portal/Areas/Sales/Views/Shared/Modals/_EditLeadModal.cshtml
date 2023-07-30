@@ -1086,7 +1086,7 @@
 
                                                                         </div>*@
                                                                             <div class="alert alert-info bg-info well-sm form-group">
-                                                                                <div class="row">
+                                                                                <div class="form-group row">
                                                                                     <div class="col-xs-12">
                                                                                         <label class="col-form-label">
                                                                                             Please select Customer Type
@@ -1094,6 +1094,40 @@
                                                                                     </div>
                                                                                     <div class="col-xs-12">
                                                                                         <select class="form-control" data-bind="highlightNullField: customerTypeId, options: $parent.availableCustomerTypes, value: customerTypeId, optionsText: 'Name', optionsValue: 'CustomerTypeID', optionsCaption: 'Please Select...'"></select>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="alert alert-info bg-info well-sm form-group">
+                                                                                <div class="form-group row">
+                                                                                    <div class="col-xs-12">
+                                                                                        <label class="col-form-label">
+                                                                                            Do they have an order to place?
+                                                                                        </label>
+                                                                                    </div>
+                                                                                    <div class="col-xs-12">
+                                                                                        <select class="form-control" data-bind="highlightNullField: placedAnOrder, options: $parent.availablePlacedOrderOptions, value: placedAnOrder, optionsText: 'Name', optionsValue: 'Value', optionsCaption: 'Please Select...'"></select>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="row" data-bind="visible: placedAnOrder()">
+                                                                                    <div class="col-xs-12">
+                                                                                        <label class="col-form-label">
+                                                                                            If you have an order document, please attach it now
+                                                                                            <!-- ko if: orderDocumentBase64() -->
+                                                                                            <span class="bi bi-check-lg"></span>
+                                                                                            <!-- /ko -->
+                                                                                        </label>
+                                                                                    </div>
+                                                                                    <div class="col-xs-12">
+                                                                                        <!-- ko if: orderDocumentBase64() -->
+                                                                                        <button type="button" class="btn btn-secondary-blue margin-bottom-15 us-sales-tax-btn" data-bind="click: openOrderDocument">
+                                                                                            <span data-bind="text: (orderDocumentBase64()?.indexOf('application/pdf') > -1 || orderDocumentBase64()?.indexOf('image/') > -1) ? 'View' : 'Download'"></span> Order Document
+                                                                                        </button>
+                                                                                        <!-- /ko -->
+                                                                                        <div class="form-group" data-bind="component: { name: 'mdc-file-field-component', params: orderDocumentParams }"></div>
+                                                                                        <!-- ko if: orderDocumentBase64()?.indexOf('application/pdf') > -1 || orderDocumentBase64()?.indexOf('image/') > -1 -->
+                                                                                        <iframe class="us-sales-tax-exemption margin-bottom-15" data-bind="attr: { src: orderDocumentBase64 }"></iframe>
+                                                                                        <!-- /ko -->
+                                                                                        @*<input type="text" class="form-control numeric" data-bind="highlightNullField: firstOrderValue, numeric, forceNullOnEmpty: firstOrderValue, textInput: firstOrderValue.formatted, validationCore: firstOrderValue" />*@
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -1189,38 +1223,6 @@
                                                                                         <select class="form-control" data-bind="highlightNullField: showroomByAppointmentOnly, options: $parent.availableShowroomByAppointmentOnlyOptions, value: showroomByAppointmentOnly, optionsText: 'Name', optionsValue: 'Value', optionsCaption: 'Please Select...'"></select>
                                                                                     </div>
                                                                                 </div>
-                                                                                <div class="form-group row">
-                                                                                    <div class="col-xs-12">
-                                                                                        <label class="col-form-label">
-                                                                                            Do they have an order to place?
-                                                                                        </label>
-                                                                                    </div>
-                                                                                    <div class="col-xs-12">
-                                                                                        <select class="form-control" data-bind="highlightNullField: placedAnOrder, options: $parent.availablePlacedOrderOptions, value: placedAnOrder, optionsText: 'Name', optionsValue: 'Value', optionsCaption: 'Please Select...'"></select>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="row" data-bind="visible: placedAnOrder()">
-                                                                                    <div class="col-xs-12">
-                                                                                        <label class="col-form-label">
-                                                                                            Upload Order Document
-                                                                                            <!-- ko if: orderDocumentBase64() -->
-                                                                                            <span class="bi bi-check-lg"></span>
-                                                                                            <!-- /ko -->
-                                                                                        </label>
-                                                                                    </div>
-                                                                                    <div class="col-xs-12">
-                                                                                        <!-- ko if: orderDocumentBase64() -->
-                                                                                        <button type="button" class="btn btn-secondary-blue margin-bottom-15 us-sales-tax-btn" data-bind="click: openOrderDocument">
-                                                                                             <span data-bind="text: (orderDocumentBase64()?.indexOf('application/pdf') > -1 || orderDocumentBase64()?.indexOf('image/') > -1) ? 'View' : 'Download'"></span> Order Document
-                                                                                        </button>
-                                                                                        <!-- /ko -->
-                                                                                        <div class="form-group" data-bind="component: { name: 'mdc-file-field-component', params: orderDocumentParams }"></div>
-                                                                                        <!-- ko if: orderDocumentBase64()?.indexOf('application/pdf') > -1 || orderDocumentBase64()?.indexOf('image/') > -1 -->
-                                                                                        <iframe class="us-sales-tax-exemption margin-bottom-15" data-bind="attr: { src: orderDocumentBase64 }"></iframe>
-                                                                                        <!-- /ko -->
-                                                                                        @*<input type="text" class="form-control numeric" data-bind="highlightNullField: firstOrderValue, numeric, forceNullOnEmpty: firstOrderValue, textInput: firstOrderValue.formatted, validationCore: firstOrderValue" />*@
-                                                                                    </div>
-                                                                                </div>
                                                                                 <div class="row">
                                                                                     <div class="col-xs-12">
                                                                                         <label class="col-form-label">Tags</label>
@@ -1256,13 +1258,13 @@
                                                                             </div>
                                                                             <div class="alert alert-info bg-info well-sm form-group">
                                                                                 @*<div class="form-group row">
-                            <div class="col-xs-12">
-                                <label class="col-form-label">Currency</label>
-                            </div>
-                            <div class="col-xs-12">
-                                <select class="form-control" data-bind="highlightNullField: companyCurrencyId, value: companyCurrencyId, options: $parent.availableCurrencies, optionsText: 'Name', optionsValue: 'CurrencyID', optionsCaption: 'Please select...'"></select>
-                            </div>
-                        </div>*@
+            <div class="col-xs-12">
+                <label class="col-form-label">Currency</label>
+            </div>
+            <div class="col-xs-12">
+                <select class="form-control" data-bind="highlightNullField: companyCurrencyId, value: companyCurrencyId, options: $parent.availableCurrencies, optionsText: 'Name', optionsValue: 'CurrencyID', optionsCaption: 'Please select...'"></select>
+            </div>
+        </div>*@
                                                                                 <div class="form-group row">
                                                                                     <div class="col-xs-12">
                                                                                         <label class="col-form-label">
@@ -1273,7 +1275,7 @@
                                                                                         <select class="form-control" data-bind="highlightNullField: purchaseOrderRequired, options: $parent.availablePurchaseOrderRequiredOptions, value: purchaseOrderRequired, optionsText: 'Name', optionsValue: 'Value', optionsCaption: 'Please Select...'"></select>
                                                                                     </div>
                                                                                 </div>
-                                                                                <div class="form-group row" data-bind="visible: salesMarket() && ['E', 'Y'].indexOf(salesMarket().Code) > -1">
+                                                                                <div class="form-group row" data-bind="visible: salesDivisionVisible">
                                                                                     <div class="col-xs-12">
                                                                                         <label class="col-form-label">
                                                                                             Does this customer require their deliveries to be consolidated into a regular shipment?
@@ -1283,17 +1285,37 @@
                                                                                         <select class="form-control" data-bind="highlightNullField: salesDivision, options: $parent.availableSalesDivisions, value: salesDivision, optionsText: 'Name', optionsValue: 'Value', optionsCaption: 'Please Select...'"></select>
                                                                                     </div>
                                                                                 </div>
+                                                                                <div class="form-group row">
+                                                                                    <div class="col-xs-12">
+                                                                                        <label class="col-form-label">
+                                                                                            Should we send the customer Pricelists and Marketing emails?
+                                                                                        </label>
+                                                                                    </div>
+                                                                                    <div class="col-xs-12">
+                                                                                        <select class="form-control" data-bind="highlightNullField: shouldSendPricelists, options: $parent.availableSendPricelistsOptions, value: shouldSendPricelists, optionsText: 'Name', optionsValue: 'Value', optionsCaption: 'Please Select...'"></select>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="form-group row">
+                                                                                    <div class="col-xs-12">
+                                                                                        <label class="col-form-label">
+                                                                                            Does this customer belong to a Group Account?
+                                                                                        </label>
+                                                                                    </div>
+                                                                                    <div class="col-xs-12">
+                                                                                        <select class="form-control" data-bind="highlightNullField: belongToGroupAccount, options: $parent.availableBelongToGroupAccountOptions, value: belongToGroupAccount, optionsText: 'Name', optionsValue: 'Value', optionsCaption: 'Please Select...'"></select>
+                                                                                    </div>
+                                                                                </div>
                                                                                 @* 21/06/2023 - removed, Reps have no idea what this is about and it doesn't belong on the Customer anyway *@
                                                                                 @*<div class="form-group row">
-                            <div class="col-xs-12">
-                                <label class="col-form-label">
-                                    Delivery Terms
-                                </label>
-                            </div>
-                            <div class="col-xs-12">
-                                <select class="form-control" data-bind="highlightNullField: deliveryTerms, options: $parent.availableDeliveryTerms, value: deliveryTerms, optionsText: (item) => `${item.DeliveryTermCode} - ${item.Name}`, optionsValue: 'DeliveryTermCode', optionsCaption: 'Please Select...'"></select>
-                            </div>
-                        </div>*@
+            <div class="col-xs-12">
+                <label class="col-form-label">
+                    Delivery Terms
+                </label>
+            </div>
+            <div class="col-xs-12">
+                <select class="form-control" data-bind="highlightNullField: deliveryTerms, options: $parent.availableDeliveryTerms, value: deliveryTerms, optionsText: (item) => `${item.DeliveryTermCode} - ${item.Name}`, optionsValue: 'DeliveryTermCode', optionsCaption: 'Please Select...'"></select>
+            </div>
+        </div>*@
                                                                                 <div class="form-group row" style="margin-bottom: 0;">
                                                                                     <div class="col-xs-12">
                                                                                         <label class="col-form-label">
@@ -1432,7 +1454,7 @@
                                                                                 <div class="form-group row">
                                                                                     <div class="col-xs-12">
                                                                                         <h4>
-                                                                                            Trade Account Creation Email
+                                                                                            Trade Account Welcome Email
                                                                                         </h4>
                                                                                         <p>
                                                                                             Here you can configure the welcome pack email which will be sent to this customer when Credit Control have opened the account.

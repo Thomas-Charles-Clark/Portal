@@ -458,6 +458,9 @@ namespace SharedEFClasses.Models
                 new SqlParameter("@TradeAccountCreationEmail_DisplayCreditControl", objLeadUpsert.TradeAccountCreationEmail_DisplayCreditControl ?? (object)DBNull.Value),
                 new SqlParameter("@TradeAccountCreationEmail_DisplayB2BRegistration", objLeadUpsert.TradeAccountCreationEmail_DisplayB2BRegistration ?? (object)DBNull.Value),
                 new SqlParameter("@TradeAccountCreationEmail_DisplayLookbook", objLeadUpsert.TradeAccountCreationEmail_DisplayLookbook ?? (object) DBNull.Value),
+
+                new SqlParameter("@ShouldSendPricelists", objLeadUpsert.ShouldSendPricelists ?? (object)DBNull.Value),
+                new SqlParameter("@BelongToGroupAccount", objLeadUpsert.BelongToGroupAccount ?? (object)DBNull.Value),
             };
 
             if (objLeadUpsert.OrderDocument != null &&
