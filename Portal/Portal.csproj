@@ -585,9 +585,23 @@
     <Compile Include="Areas\Retail\Models\PassRetailStoreMembersBatchDto.cs" />
     <Compile Include="Areas\Retail\RetailAreaRegistration.cs" />
     <Compile Include="Areas\Retail\ViewModels\RetailStoreMembersViewModel.cs" />
+    <Compile Include="Areas\Stock\Controllers\StockManagementAPIController.cs" />
+    <Compile Include="Areas\Stock\Controllers\StockManagementController.cs" />
+    <Compile Include="Areas\Stock\Models\StockManagementProductFetchDto.cs" />
+    <Compile Include="Areas\Stock\ViewModels\StockManagementViewModel.cs" />
+    <Compile Include="Controllers\ODataControllers\AttributesController.cs" />
+    <Compile Include="Controllers\ODataControllers\AttributeGroupsController.cs" />
+    <Compile Include="Controllers\ODataControllers\Mertex_ProductTypesController.cs" />
+    <Compile Include="Controllers\ODataControllers\ProductTypesController.cs" />
+    <Compile Include="Controllers\ODataControllers\StockManagement\RangesController.cs" />
+    <Compile Include="Controllers\ODataControllers\StockManagement\BranchGroupsController.cs" />
     <Compile Include="Controllers\GeneralAPIController.cs" />
-    <Compile Include="Controllers\MarketingBudgetsController.cs" />
+    <Compile Include="Controllers\ODataControllers\BrandsController.cs" />
+    <Compile Include="Controllers\ODataControllers\ColoursController.cs" />
+    <Compile Include="Controllers\ODataControllers\LaunchesController.cs" />
+    <Compile Include="Controllers\ODataControllers\MarketingBudgetsController.cs" />
     <Compile Include="Controllers\NotificationController.cs" />
+    <Compile Include="Controllers\ODataControllers\StockManagement\BranchesController.cs" />
     <Compile Include="Service References\PCAFind_v1_10\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -715,30 +729,30 @@
     <Compile Include="Areas\Translations\Controllers\TranslateResourcesController.cs" />
     <Compile Include="Areas\Translations\TranslationsAreaRegistration.cs" />
     <Compile Include="Areas\Translations\ViewModels\TranslateResourcesViewModel.cs" />
-    <Compile Include="Controllers\ApplicationsController.cs" />
+    <Compile Include="Controllers\ODataControllers\ApplicationsController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
-    <Compile Include="Controllers\LanguagesController.cs" />
-    <Compile Include="Controllers\ResourcesController.cs" />
-    <Compile Include="Controllers\Resource_LanguagesController.cs" />
-    <Compile Include="Controllers\ApplicationGroupsController.cs" />
-    <Compile Include="Controllers\DeliveryThresholdTypesController.cs" />
-    <Compile Include="Controllers\DeliveryChargingLogicsController.cs" />
-    <Compile Include="Controllers\DeliveryGroupsController.cs" />
-    <Compile Include="Controllers\CurrenciesController.cs" />
+    <Compile Include="Controllers\ODataControllers\LanguagesController.cs" />
+    <Compile Include="Controllers\ODataControllers\ResourcesController.cs" />
+    <Compile Include="Controllers\ODataControllers\Resource_LanguagesController.cs" />
+    <Compile Include="Controllers\ODataControllers\ApplicationGroupsController.cs" />
+    <Compile Include="Controllers\ODataControllers\DeliveryThresholdTypesController.cs" />
+    <Compile Include="Controllers\ODataControllers\DeliveryChargingLogicsController.cs" />
+    <Compile Include="Controllers\ODataControllers\DeliveryGroupsController.cs" />
+    <Compile Include="Controllers\ODataControllers\CurrenciesController.cs" />
     <Compile Include="Controllers\FilesAPIController.cs" />
     <Compile Include="Controllers\FilesController.cs" />
     <Compile Include="Controllers\HeldOrderAPIController.cs" />
-    <Compile Include="Controllers\CountriesController.cs" />
-    <Compile Include="Controllers\ProductsController.cs" />
-    <Compile Include="Controllers\DocumentsController.cs" />
-    <Compile Include="Controllers\StockLocationsController.cs" />
-    <Compile Include="Controllers\MembersController.cs" />
-    <Compile Include="Controllers\TreatmentsController.cs" />
-    <Compile Include="Controllers\TradeAccountGroupsController.cs" />
-    <Compile Include="Controllers\RingFencePreAllocationsController.cs" />
-    <Compile Include="Controllers\TradeAccount_TradeHaulier_OverridesController.cs" />
-    <Compile Include="Controllers\TradeDeliveryContractPricesController.cs" />
-    <Compile Include="Controllers\TradeAccountsController.cs" />
+    <Compile Include="Controllers\ODataControllers\CountriesController.cs" />
+    <Compile Include="Controllers\ODataControllers\ProductsController.cs" />
+    <Compile Include="Controllers\ODataControllers\DocumentsController.cs" />
+    <Compile Include="Controllers\ODataControllers\StockLocationsController.cs" />
+    <Compile Include="Controllers\ODataControllers\MembersController.cs" />
+    <Compile Include="Controllers\ODataControllers\TreatmentsController.cs" />
+    <Compile Include="Controllers\ODataControllers\TradeAccountGroupsController.cs" />
+    <Compile Include="Controllers\ODataControllers\RingFencePreAllocationsController.cs" />
+    <Compile Include="Controllers\ODataControllers\TradeAccount_TradeHaulier_OverridesController.cs" />
+    <Compile Include="Controllers\ODataControllers\TradeDeliveryContractPricesController.cs" />
+    <Compile Include="Controllers\ODataControllers\TradeAccountsController.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -1782,6 +1796,7 @@
     <Content Include="Areas\Retail\Views\web.config" />
     <Content Include="Areas\Retail\Views\StoreMembers\RetailStoreMembers.cshtml" />
     <Content Include="Areas\Retail\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Stock\Views\Management\StockManagement.cshtml" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
@@ -2844,6 +2859,7 @@
     <Folder Include="FileUploads\" />
     <Folder Include="FurnitureDownloads\projects\temp\" />
     <Folder Include="Uploads\" />
+    <Folder Include="Views\BaseOData\" />
     <Folder Include="Views\ForceAuth\" />
     <Folder Include="Views\HeldOrderAPI\" />
     <Folder Include="Views\Members\" />

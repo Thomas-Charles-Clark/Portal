@@ -17,6 +17,9 @@ using System.Globalization;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Builder;
 using Microsoft.AspNet.OData.Batch;
+using SharedEFClasses.Models.StockManagement;
+using SharedEFClasses.Models.Attributes;
+using Attribute = SharedEFClasses.Models.Attributes.Attribute;
 
 namespace Portal
 {
@@ -45,8 +48,19 @@ namespace Portal
 
             odataBuilder.EntitySet<Country>("Countries");
             odataBuilder.EntitySet<Application>("Applications");
+            odataBuilder.EntitySet<Attribute>("Attributes");
+            odataBuilder.EntitySet<AttributeGroup>("AttributeGroups");
             odataBuilder.EntitySet<Language>("Languages");
+            odataBuilder.EntitySet<Colour>("Colours");
+            odataBuilder.EntitySet<Brand>("Brands");
+            odataBuilder.EntitySet<Launch>("Launches");
+            odataBuilder.EntitySet<ProductType>("ProductTypes");
+            odataBuilder.EntitySet<Mertex_ProductType>("Mertex_ProductTypes");
             odataBuilder.EntitySet<Product>("Products");
+            odataBuilder.EntitySet<Branch>("Branches");
+            odataBuilder.EntitySet<BranchGroup>("BranchGroups");
+            odataBuilder.EntitySet<Range>("Ranges");
+            odataBuilder.EntitySet<BranchStockLocation>("BranchStockLocations");
             odataBuilder.EntitySet<TradeAccount>("TradeAccounts");
             odataBuilder.EntitySet<TradeAccountGroup>("TradeAccountGroups");
             odataBuilder.EntitySet<StockLocation>("StockLocations");
@@ -64,6 +78,9 @@ namespace Portal
             odataBuilder.EntitySet<Treatment>("Treatments");
             odataBuilder.EntitySet<Member>("Members");
             odataBuilder.EntitySet<MarketingBudget>("MarketingBudgets");
+
+            // This because it's not mapped to SQL and has the [NotMapped] attribute
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_ProductType)).AddProperty(typeof(Mertex_ProductType).GetProperty("Label"));
 
             odataBuilder.EntityType<Resource_Language>().HasKey(p => new { p.ResourceID, p.LanguageID });
 
@@ -88,7 +105,6 @@ namespace Portal
                 .ReturnsCollectionFromEntitySet<TradeAccount>("TradeAccounts");
 
             tradeAccountValueMapperFunction.Parameter<int?>("tradeAccountId");
-
 
             var tradeAccountGroupFilterFunction = odataBuilder.EntityType<TradeAccount>()
                 .Collection
@@ -118,6 +134,31 @@ namespace Portal
                 .ReturnsCollectionFromEntitySet<Member>("Members");
 
             memberValueMapperFunction.Parameter<int?>("id");
+
+
+
+            var brandValueMapperFunction = odataBuilder.EntityType<Brand>()
+                .Collection
+                .Function("BrandValueMapper")
+                .ReturnsCollectionFromEntitySet<Brand>("Brands");
+
+            brandValueMapperFunction.Parameter<byte?>("brandId");
+
+
+            var colourValueMapperFunction = odataBuilder.EntityType<Colour>()
+                .Collection
+                .Function("ColourValueMapper")
+                .ReturnsCollectionFromEntitySet<Colour>("Colours");
+
+            colourValueMapperFunction.Parameter<byte?>("colourId");
+
+
+            var launchValueMapperFunction = odataBuilder.EntityType<Launch>()
+                .Collection
+                .Function("LaunchValueMapper")
+                .ReturnsCollectionFromEntitySet<Launch>("Launches");
+
+            launchValueMapperFunction.Parameter<short?>("launchId");
 
 
 
@@ -166,6 +207,65 @@ namespace Portal
                 .ReturnsCollectionFromEntitySet<Language>("Languages");
 
             languageGetExceptFunction.Parameter<byte>("exceptLanguageId");
+
+
+
+            var branchValueMapperFunction = odataBuilder.EntityType<Branch>()
+                .Collection
+                .Function("BranchValueMapper")
+                .ReturnsCollectionFromEntitySet<Branch>("Branch");
+
+            branchValueMapperFunction.Parameter<int?>("branchId");
+
+
+            var branchGroupValueMapperFunction = odataBuilder.EntityType<BranchGroup>()
+                .Collection
+                .Function("BranchGroupValueMapper")
+                .ReturnsCollectionFromEntitySet<BranchGroup>("BranchGroup");
+
+            branchGroupValueMapperFunction.Parameter<int?>("branchGroupId");
+
+
+            var branchGroupFilterFunction = odataBuilder.EntityType<Branch>()
+                .Collection
+                .Function("BranchGroupFilter")
+                .ReturnsCollectionFromEntitySet<Branch>("Branches");
+
+            branchGroupFilterFunction.Parameter<int?>("branchGroupId");
+
+
+            var attributeGroupValueMapperFunction = odataBuilder.EntityType<AttributeGroup>()
+                .Collection
+                .Function("AttributeGroupValueMapper")
+                .ReturnsCollectionFromEntitySet<AttributeGroup>("AttributeGroup");
+
+            attributeGroupValueMapperFunction.Parameter<byte?>("attributeGroupId");
+
+
+            var attributeValueMapperFunction = odataBuilder.EntityType<Attribute>()
+                .Collection
+                .Function("AttributeValueMapper")
+                .ReturnsCollectionFromEntitySet<Attribute>("Attribute");
+
+            attributeValueMapperFunction.Parameter<short?>("attributeId");
+
+
+            var productTypeValueMapperFunction = odataBuilder.EntityType<ProductType>()
+                .Collection
+                .Function("ProductTypeValueMapper")
+                .ReturnsCollectionFromEntitySet<ProductType>("ProductType");
+
+            productTypeValueMapperFunction.Parameter<byte?>("productTypeId");
+
+
+            var mertexProductTypeValueMapperFunction = odataBuilder.EntityType<Mertex_ProductType>()
+                .Collection
+                .Function("Mertex_ProductTypeValueMapper")
+                .ReturnsCollectionFromEntitySet<Mertex_ProductType>("Mertex_ProductType");
+
+            mertexProductTypeValueMapperFunction.Parameter<byte?>("productTypeId");
+
+
 
             var odataBatchHandler = new DefaultODataBatchHandler(GlobalConfiguration.DefaultServer);
             
@@ -249,6 +349,8 @@ namespace Portal
             builder.EntitySet<Country>("Countries");
             builder.EntitySet<Currency>("Currencies");
             builder.EntitySet<Language>("Languages");
+            builder.EntitySet<Launch>("Launches");
+            builder.EntitySet<Colour>("Colours");
             builder.EntitySet<LeadContact>("LeadContacts");
             builder.EntitySet<LeadSource>("LeadSources");
             builder.EntitySet<LeadMagnitude>("LeadMagnitudes");

@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Kendo.Mvc.Extensions;
-using Kendo.Mvc.UI;
 
 using System.Data.Entity;
 using System.Net.Http;
@@ -85,9 +84,9 @@ namespace Portal.Areas.Customers.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> SaveTradeAccountCreationEmail([FromBody] SaveTradeAccountCreationEmailDto dto)
+        public IHttpActionResult SaveTradeAccountCreationEmail([FromBody] SaveTradeAccountCreationEmailDto dto)
         {
-            var result = await PortalDb.SaveTradeAccountCreationEmailTest(dto);
+            var result = PortalDb.SaveTradeAccountCreationEmailTest(dto);
 
             return Ok(result);
         }

@@ -15,6 +15,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Retail;
+using SharedEFClasses.Models.Fenwicks;
+using SharedEFClasses.Models.StockManagement;
 
 namespace SharedEFClasses.Models
 {
@@ -229,6 +231,26 @@ namespace SharedEFClasses.Models
         [JsonIgnore]
         [InverseProperty("MarketManager")]
         public virtual ICollection<SalesMarket> SalesMarketsManaged { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("LastModifiedBy")]
+        public virtual ICollection<Branch> BranchesModified { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("LastModifiedBy")]
+        public virtual ICollection<BranchGroup> BranchGroupsModified { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("LastModifiedBy")]
+        public virtual ICollection<Branch_BranchGroup> BranchGroupsAssignmentsModified { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("LastModifiedBy")]
+        public virtual ICollection<Range> RetailBranchRangesModified { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("LastModifiedBy")]
+        public virtual ICollection<BranchStockLocation> BranchStockLocationsModified { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
         {

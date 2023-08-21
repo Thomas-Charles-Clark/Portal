@@ -9,32 +9,6 @@ using System.Linq;
 
 namespace SharedEFClasses.Models.Samples
 {
-    public class Attribute
-    {
-        [Key]
-        public short AttributeID { get; set; }
-        public byte AttributeGroupID { get; set; }
-        public string Name { get; set; }
-
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public bool Deleted { get; set; }
-
-        public virtual AttributeGroup AttributeGroup { get; set; }
-    }
-
-    public class AttributeGroup
-    {
-        [Key]
-        public byte AttributeGroupID { get; set; }
-        public string Name { get; set; }
-
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public bool Deleted { get; set; }
-
-        [JsonIgnore]
-        public virtual ICollection<Attribute> Attributes { get; set; }
-    }
-
     public class PassSampleRequestSlicerFilters
     {
         public byte? StockStatusID { get; set; }

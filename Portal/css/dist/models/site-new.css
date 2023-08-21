@@ -437,6 +437,7 @@ input[type=search]::-webkit-search-results-decoration {
 }
 #alerting-target > div .panel .panel-heading.rounded {
   border-radius: 0 0 12px 0;
+  border: 0;
 }
 #alerting-target > div .panel .panel-body {
   padding: 1rem;

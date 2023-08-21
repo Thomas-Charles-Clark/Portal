@@ -26,7 +26,7 @@ namespace Portal.Areas.Sales.ViewModels
         public List<ClientSideCountry> Countries { get; set; }
         public List<ClientSideLanguage> Languages { get; set; }
         public List<FormalTitle> Titles { get; set; }
-        public List<Currency> Currencies { get; set; }
+        public List<SharedEFClasses.Models.General.Currency> Currencies { get; set; }
         public List<StringSelectOption> NextFiveFinancialYears { get; set; }
         public List<ByteSelectOption> TradingSinceOptions { get; set; }
         public List<BoolSelectOption> YesNoOptions { get; set; }
@@ -43,7 +43,7 @@ namespace Portal.Areas.Sales.ViewModels
         public SalesRepresentative PreselectedSalesRep { get; set; }
         public bool LockedToRep { get; set; }
         public short PreselectedLaunchID { get; set; }
-        public List<TradeAccountContactType> TradeAccountContactTypes { get; set; }
+        public List<SharedEFClasses.Models.TradeAccounts.TradeAccountContactType> TradeAccountContactTypes { get; set; }
         public List<Tag> AvailableTags { get; set; }
         public List<RetailAppointmentType> RetailAppointmentTypes { get; set; }
         public List<TradeAccountClass> TradeAccountClasses { get; set; }
@@ -67,7 +67,7 @@ namespace Portal.Areas.Sales.ViewModels
             List<ClientSideCountry> countries,
             List<ClientSideLanguage> languages,
             List<FormalTitle> titles,
-            List<Currency> currencies,
+            List<SharedEFClasses.Models.General.Currency> currencies,
             List<StringSelectOption> nextFiveFinancialYears,
             List<ByteSelectOption> tradingSinceOptions,
             List<BoolSelectOption> yesNoOptions,
@@ -82,7 +82,7 @@ namespace Portal.Areas.Sales.ViewModels
             List<Tag> tags,
             List<PaymentOption> paymentOptions,
             SalesRepresentative preselectedSalesRep,
-            List<TradeAccountContactType> tradeAccountContactTypes,
+            List<SharedEFClasses.Models.TradeAccounts.TradeAccountContactType> tradeAccountContactTypes,
             List<RetailAppointmentType> retailAppointmentTypes,
             bool lockedToRep,
             short preselectedLaunchId,

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
+using SharedEFClasses.Models.Attributes;
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Products;
@@ -17,6 +18,9 @@ using SharedEFClasses.Models.Mertexer;
 using DeliveryTerm = SharedEFClasses.Models.Mertexer.DeliveryTerm;
 using SharedEFClasses.Models.DotDigital;
 using SharedEFClasses.Models.Retail;
+using SharedEFClasses.Models.Fenwicks;
+using SharedEFClasses.Models.StockManagement;
+using System.Data.Entity.Migrations;
 
 namespace SharedEFClasses.Models
 {
@@ -291,35 +295,108 @@ namespace SharedEFClasses.Models
 
         #region Mertex live
 
-        public DbSet<MertexLive.Carriage> Carriages { get; set; }
-        public DbSet<MertexLive.ClaimHead> ClaimHeads { get; set; }
-        public DbSet<MertexLive.ClaimLine> ClaimLines { get; set; }
-        public DbSet<MertexLive.CommodityCodeObj> CommodityCodes { get; set; }
-        public DbSet<MertexLive.CommodityGroupCodeObj> CommodityGroupCodes { get; set; }
-        public DbSet<MertexLive.Composition> Compositions { get; set; }
-        public DbSet<MertexLive.CurrencyLive> Currencies_Live { get; set; }
-        public DbSet<MertexLive.DespatchHead> DespatchHeads { get; set; }
-        public DbSet<MertexLive.DespatchLine> DespatchLines { get; set; }
-        public DbSet<MertexLive.ExchangeRate> ExchangeRates { get; set; }
-        public DbSet<MertexLive.FlamCode> FlamCodes { get; set; }
-        public DbSet<MertexLive.Haulier> Hauliers { get; set; }
-        public DbSet<MertexLive.OrderHeadLive> OrderHeads_Live { get; set; }
-        public DbSet<MertexLive.OrderLineLive> OrderLines_Live { get; set; }
-        public DbSet<MertexLive.ParcelHead> ParcelHeads { get; set; }
-        public DbSet<MertexLive.ParcelLine> ParcelLines { get; set; }
-        public DbSet<MertexLive.ProductLive> Products_Live  { get; set; }
-        public DbSet<MertexLive.Product_Aftercare> Product_Aftercares_Live { get; set; }
-        public DbSet<MertexLive.PurchaseOrderHead> PurchaseOrderHeads { get; set; }
-        public DbSet<MertexLive.PurchaseOrderLine> PurchaseOrderLines { get; set; }
-        public DbSet<MertexLive.PurchaseOrderStatus> PurchaseOrderStatuses { get; set; }
-        public DbSet<MertexLive.PurchasePriceObj> PurchasePrices { get; set; }
-        public DbSet<MertexLive.QualityLive> Qualities_Live { get; set; }
-        public DbSet<MertexLive.Sundry> Sundries { get; set; }
-        public DbSet<MertexLive.Supplier> Suppliers { get; set; }
+        //public DbSet<MertexLive.Carriage> Carriages { get; set; }
+        //public DbSet<MertexLive.ClaimHead> ClaimHeads { get; set; }
+        //public DbSet<MertexLive.ClaimLine> ClaimLines { get; set; }
+        //public DbSet<MertexLive.CommodityCodeObj> CommodityCodes { get; set; }
+        //public DbSet<MertexLive.CommodityGroupCodeObj> CommodityGroupCodes { get; set; }
+        //public DbSet<MertexLive.Composition> Compositions { get; set; }
+        //public DbSet<MertexLive.CurrencyLive> Currencies_Live { get; set; }
+        //public DbSet<MertexLive.DespatchHead> DespatchHeads { get; set; }
+        //public DbSet<MertexLive.DespatchLine> DespatchLines { get; set; }
+        //public DbSet<MertexLive.ExchangeRate> ExchangeRates { get; set; }
+        //public DbSet<MertexLive.FlamCode> FlamCodes { get; set; }
+        //public DbSet<MertexLive.Haulier> Hauliers { get; set; }
+        //public DbSet<MertexLive.OrderHeadLive> OrderHeads_Live { get; set; }
+        //public DbSet<MertexLive.OrderLineLive> OrderLines_Live { get; set; }
+        //public DbSet<MertexLive.ParcelHead> ParcelHeads { get; set; }
+        //public DbSet<MertexLive.ParcelLine> ParcelLines { get; set; }
+        //public DbSet<MertexLive.ProductLive> Products_Live  { get; set; }
+        //public DbSet<MertexLive.Product_Aftercare> Product_Aftercares_Live { get; set; }
+        //public DbSet<MertexLive.PurchaseOrderHead> PurchaseOrderHeads { get; set; }
+        //public DbSet<MertexLive.PurchaseOrderLine> PurchaseOrderLines { get; set; }
+        //public DbSet<MertexLive.PurchaseOrderStatus> PurchaseOrderStatuses { get; set; }
+        //public DbSet<MertexLive.PurchasePriceObj> PurchasePrices { get; set; }
+        //public DbSet<MertexLive.QualityLive> Qualities_Live { get; set; }
+        //public DbSet<MertexLive.Sundry> Sundries { get; set; }
+        //public DbSet<MertexLive.Supplier> Suppliers { get; set; }
 
-#endregion
 
-#region Lead
+
+
+
+        public virtual DbSet<MertexLive.Carriage> Carriages { get; set; }
+
+        public virtual DbSet<MertexLive.ClaimHead> ClaimHeads { get; set; }
+
+        public virtual DbSet<MertexLive.ClaimLine> ClaimLines { get; set; }
+
+        public virtual DbSet<MertexLive.CommodityCode> CommodityCodes { get; set; }
+
+        public virtual DbSet<MertexLive.CommodityGroupCode> CommodityGroupCodes { get; set; }
+
+        public virtual DbSet<MertexLive.Composition> Compositions { get; set; }
+
+        public virtual DbSet<MertexLive.CurrencyLive> Currencies_Live { get; set; }
+
+        public virtual DbSet<MertexLive.DespatchHead> DespatchHeads { get; set; }
+
+        public virtual DbSet<MertexLive.DespatchLine> DespatchLines { get; set; }
+
+        public virtual DbSet<MertexLive.ExchangeRate> ExchangeRates { get; set; }
+
+        public virtual DbSet<MertexLive.FlamCode> FlamCodes { get; set; }
+
+        public virtual DbSet<MertexLive.Haulier> Hauliers { get; set; }
+
+        public virtual DbSet<MertexLive.HeldForSalesReason> HeldForSalesReasons { get; set; }
+
+        public virtual DbSet<MertexLive.InvoiceHead> InvoiceHeads { get; set; }
+
+        public virtual DbSet<MertexLive.InvoiceLine> InvoiceLines { get; set; }
+
+        public virtual DbSet<MertexLive.OrderHeadLive> OrderHeads_Live { get; set; }
+
+        public virtual DbSet<MertexLive.OrderLineLive> OrderLines_Live { get; set; }
+
+        public virtual DbSet<MertexLive.OrderSyncReport> OrderSyncReports { get; set; }
+
+        public virtual DbSet<MertexLive.ParcelHead> ParcelHeads { get; set; }
+
+        public virtual DbSet<MertexLive.ParcelLine> ParcelLines { get; set; }
+
+        public virtual DbSet<MertexLive.PriceListMap> PriceListMaps { get; set; }
+
+        public virtual DbSet<MertexLive.ProductLive> Products_Live { get; set; }
+
+        public virtual DbSet<MertexLive.ProductAftercare> ProductAftercares_Live { get; set; }
+
+        public virtual DbSet<MertexLive.PurchaseOrderHead> PurchaseOrderHeads { get; set; }
+
+        public virtual DbSet<MertexLive.PurchaseOrderLine> PurchaseOrderLines { get; set; }
+
+        public virtual DbSet<MertexLive.PurchaseOrderStatus> PurchaseOrderStatuses { get; set; }
+
+        public virtual DbSet<MertexLive.PurchasePrice> PurchasePrices { get; set; }
+
+        public virtual DbSet<MertexLive.QualityLive> Qualities_Live { get; set; }
+
+        public virtual DbSet<MertexLive.Sundry> Sundries { get; set; }
+
+        public virtual DbSet<MertexLive.Supplier> Suppliers { get; set; }
+
+        public virtual DbSet<MertexLive.TradeAccountLive> TradeAccounts_Live { get; set; }
+
+        public virtual DbSet<MertexLive.TradeAccountContactLive> TradeAccountContacts_Live { get; set; }
+
+        public virtual DbSet<MertexLive.TradeAccountContactType> TradeAccountContactTypes { get; set; }
+
+        public virtual DbSet<MertexLive.TradeAccountInvoiceAccount> TradeAccountInvoiceAccounts { get; set; }
+
+        #endregion
+
+
+        #region Lead
 
         public DbSet<Lead> Leads  { get; set; }
 
@@ -419,6 +496,25 @@ namespace SharedEFClasses.Models
         public DbSet<SyncAction> SyncActions { get; set; }
 
         public DbSet<RetailStoreMember> RetailStoreMembers { get; set; }
+
+        #endregion
+
+        #region Stock Management 
+
+        public DbSet<Branch> Branches { get; set; }
+        public DbSet<BranchGroup> BranchGroups { get; set; }
+        public DbSet<Branch_BranchGroup> BranchGroupAssignments { get; set; }
+        public DbSet<BranchStockLocation> BranchStockLocations { get; set; }
+
+        #endregion
+
+        #region Fenwicks Related Stuff
+
+        public DbSet<Invoice> Invoices { get; set; }
+        
+        public DbSet<InvoiceFile> InvoiceFiles { get; set; }
+
+        public DbSet<Range> Ranges { get; set; }
 
         #endregion
 

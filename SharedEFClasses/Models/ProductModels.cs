@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNet.OData.Builder;
 using Newtonsoft.Json;
+
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Maintenance;
 using SharedEFClasses.Models.Orders;
-using SharedEFClasses.Models.Samples;
+using SharedEFClasses.Models.StockManagement;
 using SharedEFClasses.Models.TradeAccounts;
 using System;
 using System.Collections.Generic;
@@ -44,6 +45,13 @@ namespace SharedEFClasses.Models.Products
         public byte ProductTypeID { get; set; }
         public byte ProductTypeGroupID { get; set; }
         public string Name { get; set; }
+
+        public bool IsActualProductType { get; set; }
+
+        public DateTime? DeletedDT { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public bool Deleted { get; set; }
 
         public virtual ProductTypeGroup ProductTypeGroup { get; set; }
 
@@ -127,6 +135,10 @@ namespace SharedEFClasses.Models.Products
         [JsonIgnore]
         [InverseProperty("Product")]
         public virtual ICollection<FurnitureFabricRestriction> FurnitureDesignRestrictions { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("Product")]
+        public virtual ICollection<Range> RetailBranchRanges { get; set; }
 
 
         [AutoExpand]
@@ -1713,6 +1725,14 @@ namespace SharedEFClasses.Models.Products
 
         [JsonIgnore]
         public virtual ICollection<RingFencePreAllocation> RingFencePreAllocations { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("StockLocation")]
+        public virtual ICollection<BranchStockLocation> BranchStockLocations { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("WarehouseStockLocation")]
+        public virtual ICollection<BranchStockLocation> WarehouseStockLocations { get; set; }
     }
 
     [Table("RingFencePreAllocation", Schema = "portal")]
@@ -2020,6 +2040,15 @@ namespace SharedEFClasses.Models.Products
 
         [NotMapped]
         public List<CodeDescriptionCount> Counts { get; set; }
+
+        [NotMapped]
+        public string Label
+        {
+            get
+            {
+                return $"{ProductType?.Name} ({ProductGroup?.Name} - {ItemType?.Name})";
+            }
+        }
     }
 
     [Table("ProductType", Schema = "Maintenance")]

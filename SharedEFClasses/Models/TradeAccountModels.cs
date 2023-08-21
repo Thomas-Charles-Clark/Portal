@@ -5,6 +5,7 @@ using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Mertexer;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Products;
+using SharedEFClasses.Models.StockManagement;
 using SharedEFClasses.ReturnModels;
 using System;
 using System.Collections.Generic;
@@ -291,6 +292,18 @@ namespace SharedEFClasses.Models.TradeAccounts
         [JsonIgnore]
         [InverseProperty("TradeAccount")]
         public virtual ICollection<Tuffnells.TuffnellsConsignment> TuffnellsConsignments { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("TradeAccount")]
+        public virtual ICollection<Branch> RetailBranches { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("WarehouseToBranchTransferTradeAccount")]
+        public virtual ICollection<BranchStockLocation> BranchStockLocationsWarehouseToBranch { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("BranchToWarehouseTransferTradeAccount")]
+        public virtual ICollection<BranchStockLocation> BranchStockLocationsBranchToWarehouse { get; set; }
     }
     
     [Table("TradeAccountAddress_Tag", Schema = "dbo")]

@@ -20,6 +20,10 @@
     filtering,
     showClear,
     disabled,
+    disable,
+    enable,
+    clearable,
+    revertable,
     readOnly,
     virtual,
     virtualOptions,
@@ -36,7 +40,8 @@
     autoBind,
     pageSize,
     method,
-    cascade
+    cascade,
+    parameterMap
 } = {
         widget: ko.observable(),
         endPoint: null,
@@ -78,7 +83,8 @@
         afterClear: null,
         autoBind: true,
         pageSize: null,
-        method: "GET"
+        method: "GET",
+        parameterMap: null
     }) {
 
     if (endPoint == null && data == null) {
@@ -121,6 +127,7 @@
                 read: {
                     url: endPoint
                 },
+                parameterMap: parameterMap,
                 data: additionalParams
             },
             sort: sort,
@@ -258,6 +265,22 @@
 
     if (typeof popupSettings === 'object') {
         result.dropDownListSettings.popupSettings = popupSettings;
+    }
+
+    if (typeof enable === 'function') {
+        result.enable = enable;
+    }
+
+    if (typeof disable === 'function') {
+        result.disable = disable;
+    }
+
+    if (typeof clearable === 'function') {
+        result.clearable = clearable;
+    }
+
+    if (typeof revertable === 'function') {
+        result.revertable = revertable;
     }
 
     return result;

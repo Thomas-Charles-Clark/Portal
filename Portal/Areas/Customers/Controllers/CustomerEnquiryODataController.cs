@@ -68,18 +68,18 @@ namespace Portal.Areas.Customers.Controllers
     //    }
     //}
 
-    [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
-    public class BrandsController : BaseODataController
-    {
-        public BrandsController(PortalDbContext portalDb) : base(portalDb){ }
+    //[EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
+    //public class BrandsController : BaseODataController
+    //{
+    //    public BrandsController(PortalDbContext portalDb) : base(portalDb){ }
 
-        // GET: odata/BrandsOData
-        [EnableQuery(MaxNodeCount = 200)]
-        public IQueryable<Brand> GetBrands()
-        {
-            return PortalDb.Brands;
-        }
-    }
+    //    // GET: odata/BrandsOData
+    //    [EnableQuery(MaxNodeCount = 200)]
+    //    public IQueryable<Brand> GetBrands()
+    //    {
+    //        return PortalDb.Brands;
+    //    }
+    //}
 
     [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
     public class ProductTypeGroupsController : BaseODataController
@@ -91,28 +91,6 @@ namespace Portal.Areas.Customers.Controllers
         public IQueryable<ProductTypeGroup> GetProductTypeGroups(ODataQueryOptions options)
         {
             return PortalDb.ProductTypeGroups;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                PortalDb.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-    }
-
-    [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
-    public class ProductTypesController : BaseODataController
-    {
-        public ProductTypesController(PortalDbContext portalDb) : base(portalDb) { }
-
-        // GET: odata/ProductTypesOData
-        [EnableQuery(MaxNodeCount = 200)]
-        public IQueryable<ProductType> GetProductTypes()
-        {
-            return PortalDb.ProductTypes;
         }
 
         protected override void Dispose(bool disposing)
@@ -147,27 +125,27 @@ namespace Portal.Areas.Customers.Controllers
         }
     }
 
-    [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
-    public class LaunchesController : BaseODataController
-    {
-        public LaunchesController(PortalDbContext portalDb) : base(portalDb) { }
+    //[EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
+    //public class LaunchesController : BaseODataController
+    //{
+    //    public LaunchesController(PortalDbContext portalDb) : base(portalDb) { }
 
-        // GET: odata/ItemTypesOData
-        [EnableQuery(MaxNodeCount = 200)]
-        public IQueryable<Launch> GetLaunches()
-        {
-            return PortalDb.Launches;
-        }
+    //    // GET: odata/ItemTypesOData
+    //    [EnableQuery(MaxNodeCount = 200)]
+    //    public IQueryable<Launch> GetLaunches()
+    //    {
+    //        return PortalDb.Launches;
+    //    }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                PortalDb.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-    }
+    //    protected override void Dispose(bool disposing)
+    //    {
+    //        if (disposing)
+    //        {
+    //            PortalDb.Dispose();
+    //        }
+    //        base.Dispose(disposing);
+    //    }
+    //}
 
     [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
     public class SeasonsController : BaseODataController

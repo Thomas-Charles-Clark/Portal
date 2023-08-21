@@ -553,13 +553,6 @@ var leadEdit = function (parent) {
             maxValue: 5000000,
             minValue: 0
         },
-        required: {
-            params: true,
-            onlyIf: () => {
-                return self.requestedPaymentOption() && self.requestedPaymentOption().PaymentOptionID === 1;
-            },
-            message: 'You must specify a credit limit request'
-        },
         notEqual: {
             params: 0,
             onlyIf: () => {

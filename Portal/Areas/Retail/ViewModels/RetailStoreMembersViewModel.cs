@@ -37,14 +37,7 @@ namespace Portal.Areas.Products.ViewModels
         {
             var result = new RetailStoreMembersViewModel(properties, applicationHeading, applicationSubHeading);
 
-            await result.Initialise();
-
             return result;
-        }
-
-        protected async System.Threading.Tasks.Task Initialise()
-        {
-            var db = new SharedEFClasses.Models.PortalDbContext();
         }
     }
 }

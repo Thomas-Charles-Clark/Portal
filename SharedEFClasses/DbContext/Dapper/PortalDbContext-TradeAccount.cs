@@ -51,7 +51,7 @@ namespace SharedEFClasses.Models
             return result;
         }
 
-        public async Task<int> SaveTradeAccountCreationEmailTest(SaveTradeAccountCreationEmailDto dto)
+        public int SaveTradeAccountCreationEmailTest(SaveTradeAccountCreationEmailDto dto)
         {
             var r = this.TradeAccountCreationEmails.SingleOrDefault(p => p.TradeAccountCreationEmailID == dto.tradeAccountCreationEmailId);
 

@@ -1,0 +1,57 @@
+﻿@import "common.scss";
+
+.body-content {
+    max-width: unset !important;
+    width: 100% !important;
+    padding-left: 5em;
+    padding-right: 5em;
+}
+
+.prefilters {
+    display: flex;
+    gap: $l-gutter;
+    flex-wrap: wrap;
+    align-items: center;
+
+    > div {
+        flex: 0 1 auto;
+        min-width: 240px;
+    }
+
+    > div#product-type-prefilter {
+        flex: 1;
+    } 
+    
+    .k-animation-container {
+        li.k-item {
+            line-height: 33px;
+        }
+    }
+
+    > div {
+        position: relative;
+    }
+
+    + .prefilters {
+        margin-top: $l-gutter;
+        padding-top: $l-gutter;
+        border-top: 1px solid $gray-300;
+    }
+
+    .k-dropdown-wrap.k-input {
+        padding: 9px 0 6px 0;
+    }
+}
+
+#stock-management-tab-container {
+    background-color: white;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-top: 0;
+    border-radius: 0 0 4px 4px;
+}
+
+#add-new {
+    width: 140px;
+    justify-self: end;
+}

@@ -280,13 +280,13 @@ namespace Portal.Areas.Sales.Controllers
 
                     var upsertResult = portalDb.LeadUpsert(objLeadUpsert, User.Identity.GetUserId<int>());
 
+                    var lead = portalDb.Leads.Where(p => p.LeadID == upsertResult.LeadID).Single();
+
                     if (objLeadUpsert.LeadStatusID == 13)
                     {
                         // sending to Misc
                         if (upsertResult.LeadID != null)
                         {
-                            var lead = portalDb.Leads.Where(p => p.LeadID == upsertResult.LeadID).Single();
-
                             lead.TradeAccountID = objLeadUpsert.miscTradeAccountId;
 
                             portalDb.SaveChanges();
@@ -381,8 +381,8 @@ namespace Portal.Areas.Sales.Controllers
                             });
                         }
                     }
-
-                    return Ok(result);
+                    
+                    return Ok(new { objLeadUpsert.LeadID, lead.LeadContactID });
                 }
             }
 

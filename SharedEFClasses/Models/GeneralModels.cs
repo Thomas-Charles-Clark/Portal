@@ -170,6 +170,7 @@ namespace SharedEFClasses.Models.General
         public byte ColourID { get; set; }
         public string Name { get; set; }
         public byte SortOrder { get; set; }
+        public DateTime? DeletedDT { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool Deleted { get; set; }
@@ -558,6 +559,10 @@ namespace SharedEFClasses.Models.General
         public string Name { get; set; }
         public byte SortOrder { get; set; }
         public string Code { get; set; }
+        public DateTime? DeletedDT { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public bool Deleted { get; set; }
 
         [JsonIgnore]
         public virtual ICollection<Product> Products { get; set; }

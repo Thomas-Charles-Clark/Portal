@@ -377,7 +377,7 @@ namespace Portal.Areas.Orders.Controllers
         /// <summary>
         /// Max: 100
         /// </summary>
-        public List<ProductLive> Products { get; set; }
+        public List<SharedEFClasses.Models.Products.Product> Products { get; set; }
 
         /// <summary>
         /// Max: 5
@@ -386,7 +386,7 @@ namespace Portal.Areas.Orders.Controllers
 
         public PassReturnParcel()
         {
-            Products = new List<ProductLive>();
+            Products = new List<SharedEFClasses.Models.Products.Product>();
 
             References = new List<string>();
         }
