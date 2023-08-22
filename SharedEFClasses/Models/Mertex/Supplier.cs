@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -51,9 +53,11 @@ namespace SharedEFClasses.Models.MertexLive
         [InverseProperty("Suppliers")]
         public virtual ExchangeRate MertexCurrencyCodeNavigation { get; set; }
 
+        [JsonIgnore]
         [InverseProperty("DefaultSupplierCodeNavigation")]
         public virtual ICollection<ProductLive> Products { get; set; } = new List<ProductLive>();
 
+        [JsonIgnore]
         [InverseProperty("SupplierCodeNavigation")]
         public virtual ICollection<PurchasePrice> PurchasePrices { get; set; } = new List<PurchasePrice>();
     }

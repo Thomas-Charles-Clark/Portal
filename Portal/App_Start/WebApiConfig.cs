@@ -20,6 +20,7 @@ using Microsoft.AspNet.OData.Batch;
 using SharedEFClasses.Models.StockManagement;
 using SharedEFClasses.Models.Attributes;
 using Attribute = SharedEFClasses.Models.Attributes.Attribute;
+using SharedEFClasses.Models.MertexLive;
 
 namespace Portal
 {
@@ -52,11 +53,13 @@ namespace Portal
             odataBuilder.EntitySet<AttributeGroup>("AttributeGroups");
             odataBuilder.EntitySet<Language>("Languages");
             odataBuilder.EntitySet<Colour>("Colours");
+            odataBuilder.EntitySet<ProductColour>("ProductColours");
             odataBuilder.EntitySet<Brand>("Brands");
             odataBuilder.EntitySet<Launch>("Launches");
             odataBuilder.EntitySet<ProductType>("ProductTypes");
             odataBuilder.EntitySet<Mertex_ProductType>("Mertex_ProductTypes");
             odataBuilder.EntitySet<Product>("Products");
+            odataBuilder.EntitySet<ProductPage>("ProductPages");
             odataBuilder.EntitySet<Branch>("Branches");
             odataBuilder.EntitySet<BranchGroup>("BranchGroups");
             odataBuilder.EntitySet<Range>("Ranges");
@@ -151,6 +154,14 @@ namespace Portal
                 .ReturnsCollectionFromEntitySet<Colour>("Colours");
 
             colourValueMapperFunction.Parameter<byte?>("colourId");
+
+
+            var productColourValueMapperFunction = odataBuilder.EntityType<ProductColour>()
+                .Collection
+                .Function("ProductColourValueMapper")
+                .ReturnsCollectionFromEntitySet<ProductColour>("ProductColours");
+
+            productColourValueMapperFunction.Parameter<string>("name");
 
 
             var launchValueMapperFunction = odataBuilder.EntityType<Launch>()

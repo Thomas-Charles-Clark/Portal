@@ -131,7 +131,6 @@ namespace SharedEFClasses.Models.MertexLive
         [StringLength(1)]
         public string ReserveFlag { get; set; }
 
-        [Column(TypeName = "date")]
         public DateTime? SuggestedDeliveryDate { get; set; }
 
         [ForeignKey("OrderID")]

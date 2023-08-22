@@ -119,6 +119,7 @@ namespace SharedEFClasses.Models
         public DbSet<TreatmentProvider> TreatmentProviders { get; set; }
         public DbSet<StockLocation> StockLocations { get; set; }
         public DbSet<Mertex_ProductType> Mertex_ProductTypes { get; set; }
+        public DbSet<ProductPage> ProductPages { get; set; }
 
         #endregion
 
@@ -392,6 +393,8 @@ namespace SharedEFClasses.Models
         public virtual DbSet<MertexLive.TradeAccountContactType> TradeAccountContactTypes { get; set; }
 
         public virtual DbSet<MertexLive.TradeAccountInvoiceAccount> TradeAccountInvoiceAccounts { get; set; }
+
+        public virtual DbSet<MertexLive.ProductColour> ProductColours { get; set; }
 
         #endregion
 

@@ -318,6 +318,7 @@
     <Compile Include="App_Start\UnityMvcActivator.cs" />
     <Compile Include="BaseController.cs" />
     <Compile Include="BaseViewModel.cs" />
+    <Compile Include="DbContext\Dapper\PortalDbContext-StockManagement.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-TradeAccount.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-Leads.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-General.cs" />
@@ -387,6 +388,7 @@
     <Compile Include="Models\Mertex\ParcelHead.cs" />
     <Compile Include="Models\Mertex\ParcelLine.cs" />
     <Compile Include="Models\Mertex\PriceListMap.cs" />
+    <Compile Include="Models\Mertex\ProductColour.cs" />
     <Compile Include="Models\Mertex\ProductLive.cs" />
     <Compile Include="Models\Mertex\ProductAftercare.cs" />
     <Compile Include="Models\Mertex\PurchaseOrderHead.cs" />
@@ -401,6 +403,8 @@
     <Compile Include="Models\Mertex\TradeAccountContactType.cs" />
     <Compile Include="Models\Mertex\TradeAccountInvoiceAccount.cs" />
     <Compile Include="Models\PaintModels.cs" />
+    <Compile Include="Models\ProductPage\ProductPage.cs" />
+    <Compile Include="Models\ProductPage\ProductPage_Attribute.cs" />
     <Compile Include="Models\ResourceModels.cs" />
     <Compile Include="Models\DeliveryModels.cs" />
     <Compile Include="Models\GenericKendoDataTransferModels.cs" />
@@ -412,6 +416,8 @@
     <Compile Include="Models\StockManagement\BranchStockLocation.cs" />
     <Compile Include="Models\StockManagement\Branch_BranchGroup.cs" />
     <Compile Include="Models\StockManagement\Range.cs" />
+    <Compile Include="Models\StockManagement\StockManagementProductFetchDto.cs" />
+    <Compile Include="Models\StockManagement\StockManagementProductSearchResponse.cs" />
     <Compile Include="Models\TradeAccountCreationEmail.cs" />
     <Compile Include="Models\TradeAccountCreationEmailAttachment.cs" />
     <Compile Include="Models\TradeAccountCreationEmail_TradeAccountCreationEmailAttachment.cs" />

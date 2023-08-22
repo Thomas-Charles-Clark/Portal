@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace SharedEFClasses.Models.Attributes
 {
@@ -19,5 +20,9 @@ namespace SharedEFClasses.Models.Attributes
         public bool Deleted { get; set; }
 
         public virtual AttributeGroup AttributeGroup { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("Attribute")]
+        public virtual ICollection<ProductPage_Attribute> ProductPages { get; set; }
     }
 }

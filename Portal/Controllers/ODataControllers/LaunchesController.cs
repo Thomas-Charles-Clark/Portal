@@ -28,25 +28,23 @@ namespace Portal.Controllers
     [System.Web.Http.Authorize]
     public class LaunchesController : ODataController
     {
-        private static PortalDbContext PortalDb { get; set; }
-
-        public LaunchesController(PortalDbContext portalDb)
+        public LaunchesController()
         {
-            PortalDb = portalDb;
+
         }
 
         // GET: odata/Launches
         [EnableQuery]
         public IQueryable<Launch> GetLaunches()
         {
-            return PortalDb.Launches.Where(p => p.TradeLaunchDate != null).AsQueryable();
+            return new PortalDbContext().Launches.Where(p => p.TradeLaunchDate != null).AsQueryable();
         }
 
         [EnableQuery(MaxNodeCount = 200)]
         [HttpGet]
         public IQueryable<Launch> LaunchValueMapper(short? launchId)
         {
-            return PortalDb.Launches.Where(p => p.LaunchID == launchId).AsQueryable();
+            return new PortalDbContext().Launches.Where(p => p.LaunchID == launchId).AsQueryable();
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -21,6 +23,7 @@ namespace SharedEFClasses.Models.MertexLive
         [Column("ModifiedDT")]
         public DateTime ModifiedDT { get; set; }
 
+        [JsonIgnore]
         [InverseProperty("MertexCurrencyCodeNavigation")]
         public virtual ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
     }

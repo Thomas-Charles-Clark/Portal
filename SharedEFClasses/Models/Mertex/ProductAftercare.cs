@@ -19,5 +19,8 @@ namespace SharedEFClasses.Models.MertexLive
         public string AftercareCode { get; set; }
 
         public byte SortOrder { get; set; }
+
+        [ForeignKey("ProductCode")]
+        public virtual ProductLive Product { get; set; }
     }
 }

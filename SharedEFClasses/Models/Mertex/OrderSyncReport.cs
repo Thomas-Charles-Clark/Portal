@@ -12,7 +12,6 @@ namespace SharedEFClasses.Models.MertexLive
         [Column("OrderSyncReportID")]
         public long OrderSyncReportID { get; set; }
 
-        [Column(TypeName = "date")]
         public DateTime Sent { get; set; }
     }
 }

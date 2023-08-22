@@ -7,26 +7,35 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using Portal.Areas.Stock.Models;
+using SharedEFClasses.Models.General;
+using SharedEFClasses.Models.StockManagement;
+using System.Threading.Tasks;
 
 namespace Portal.Areas.Stock.Controllers
 {
     [System.Web.Http.Authorize]
-    public class StockManagementAPIController : ApiController
+    public class StockManagementController : ApiController
     {
         private PortalDbContext PortalDb { get; set; }
         private readonly ApplicationUserManager UserManager;
 
-        public StockManagementAPIController(PortalDbContext portalDbContext, ApplicationUserManager userManager)
+        public StockManagementController(PortalDbContext portalDbContext, ApplicationUserManager userManager)
         {
             this.UserManager = userManager;
             this.PortalDb = portalDbContext;
         }
 
-        [HttpGet]
-        public IHttpActionResult FetchProducts([FromUri]StockManagementProductFetchDto objDto)
+        /// <summary>
+        /// The Launch check is BS
+        /// </summary>
+        /// <param name="objDto"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IHttpActionResult> FetchProducts([FromBody]StockManagementProductFetchDto objDto)
         {
-            return Ok(new { });
+            var results = await PortalDb.StockManagementProductSearch(objDto);
+
+            return Ok(results);
         }
     }
 }

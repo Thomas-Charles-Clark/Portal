@@ -135,15 +135,14 @@
     <div class="prefilters" style="display: none;" data-bind="visible: secondaryFiltersVisible">
         <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: launchParams }"></div>
         <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: brandParams }"></div>
-        <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: colourParams }"></div>
-        <label class="flex-grow-0">
-            &nbsp;
-        </label>
+        <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productColourParams }"></div>
+    </div>
+    <div class="prefilters" style="display: none;" data-bind="visible: secondaryFiltersVisible">
         <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: attributeGroupParams }"></div>
         <label style="display: none;" class="flex-grow-0" data-bind="visible: attributeGroup">
-            equals
+            equals/contains
         </label>
-        <div data-bind="visible: attributeGroup, component: { name: 'mdc-kendo-dropdown-component', params: attributeParams }"></div>
+        <div data-bind="visible: attributeGroup, component: { name: 'mdc-kendo-multiselect-component', params: attributesParams }"></div>
     </div>
     <div id="stock-management-overview-tab" class="tab-pane active">
         <div class="blocker" data-bind="flexVisible: overviewTabBusy, toggleOpacity: overviewTabBusy">
@@ -152,8 +151,15 @@
                 Please wait...
             </h4>
         </div>
-        <div style="display: none" data-bind="visible: ready">
-
+        <div style="display: none" data-bind="visible: productSearchResults().length">
+            <div class="product-search-results">
+                <!-- ko foreach: productSearchResults -->
+                <div class="product-result">
+                    <span data-bind="text: Code"></span>
+                    <span data-bind="text: Name"></span>
+                </div>
+                <!-- /ko -->
+            </div>
         </div>
     </div>
     <div id="stock-management-range-tab" class="tab-pane">
@@ -163,7 +169,7 @@
                 Please wait...
             </h4>
         </div>
-        <div style="display: none" data-bind="visible: ready">
+        <div style="display: none" data-bind="visible: productSearchResults().length">
 
         </div>
     </div>
@@ -174,7 +180,7 @@
                 Please wait...
             </h4>
         </div>
-        <div style="display: none" data-bind="visible: ready">
+        <div style="display: none" data-bind="visible: productSearchResults().length">
 
         </div>
     </div>

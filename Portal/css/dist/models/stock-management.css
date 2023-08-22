@@ -33,7 +33,8 @@
   min-width: 240px;
 }
 .prefilters > div#product-type-prefilter {
-  flex: 1;
+  flex: 1 1 auto;
+  max-width: 540px;
 }
 .prefilters .k-animation-container li.k-item {
   line-height: 33px;
@@ -61,5 +62,16 @@
 #add-new {
   width: 140px;
   justify-self: end;
+}
+
+.product-search-results {
+  margin-top: 1rem;
+}
+.product-search-results .product-result {
+  display: flex;
+  gap: 1rem;
+}
+.product-search-results .product-result > span:first-of-type {
+  flex: 0 1 180px;
 }
 /*# sourceMappingURL=stock-management.css.map */

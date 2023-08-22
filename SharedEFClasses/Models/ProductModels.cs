@@ -6,6 +6,8 @@ using SharedEFClasses.Models.Maintenance;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.StockManagement;
 using SharedEFClasses.Models.TradeAccounts;
+using SharedEFClasses.Models;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -60,6 +62,10 @@ namespace SharedEFClasses.Models.Products
 
         [JsonIgnore]
         public virtual ICollection<Mertex_ProductType> Mertex_ProductTypes { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("ProductType")]
+        public virtual ICollection<ProductPage> ProductPages { get; set; }
     }
 
     public class Product
@@ -87,6 +93,8 @@ namespace SharedEFClasses.Models.Products
         public string WideWidthFabricDefaultPoleWidth { get; set; }
         public byte StockUnitID { get; set; }
         public byte? DeliveryGroupID { get; set; }
+
+        public int? ProductPageID { get; set; }
 
         public virtual ProductType ProductType { get; set; }
         public virtual ItemType ItemType { get; set; }
@@ -171,6 +179,9 @@ namespace SharedEFClasses.Models.Products
                 return DeliveryGroupID == 13 || DeliveryGroupID == 14 || DeliveryGroupID == 15;
             }
         }
+
+        [ForeignKey("ProductPageID")]
+        public virtual ProductPage ProductPage { get; set; }
     }
 
     [Table("Product_Image", Schema = "dbo")]
@@ -268,6 +279,10 @@ namespace SharedEFClasses.Models.Products
                 return $"{Season.Code}{TradeLaunchDate?.ToString("yy")}";
             }
         }
+
+        [JsonIgnore]
+        [InverseProperty("Launch")]
+        public virtual ICollection<ProductPage> ProductPages { get; set; }
     }
 
     public class Season
@@ -289,6 +304,10 @@ namespace SharedEFClasses.Models.Products
 
         [JsonIgnore]
         public virtual ICollection<Product_Collection> Products { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("CanonicalCollection")]
+        public virtual ICollection<ProductPage> CanonForProductPages { get; set; }
     }
 
     public class Design
@@ -2046,7 +2065,7 @@ namespace SharedEFClasses.Models.Products
         {
             get
             {
-                return $"{ProductType?.Name} ({ProductGroup?.Name} - {ItemType?.Name})";
+                return $"{ProductType?.Name} (({ProductGroup?.Code}) {ProductGroup?.Name} - ({ItemType?.Code}) {ItemType?.Name})";
             }
         }
     }

@@ -17,7 +17,6 @@
 
     self.modal = bootstrap.Modal.getOrCreateInstance(self.modalElement);
 
-
     self.ready = ko.observable(true);
 
 
@@ -43,9 +42,9 @@
 
     self.brand = ko.observable();
 
-    self.colourId = ko.observable();
+    self.productColourId = ko.observable();
 
-    self.colour = ko.observable();
+    self.productColour = ko.observable();
 
     self.attributeGroupId = ko.observable();
 
@@ -55,7 +54,13 @@
 
     self.attribute = ko.observable();
 
+    self.attributeIds = ko.observableArray([]);
+
+    self.attributes = ko.observableArray([]);
+
     //#endregion
+
+    self.productSearchResults = ko.observableArray([]);
 
     //#endregion
 
@@ -88,18 +93,77 @@
         },
         idObservable: self.productTypeId,
         objObservable: self.productType,
+        filter: 'contains',
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
         revertable: ko.observable(false),
         readOnly: false,
-        filter: 'contains',
         autoBind: true,
         height: 340,
         showClear: false,
         sort: {
             dir: 'asc',
             field: 'productTypeId'
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+
+            //if (data.filter &&
+            //    data.filter.filters.length &&
+            //    data.filter.filters[0].value != '') {
+
+            //    let filterValue = data.filter.filters[0].value;
+
+            //    data.filter.filters = [{
+            //        field: 'ProductType.Name',
+            //        ignoreCase: true,
+            //        operator: 'startswith',
+            //        value: filterValue
+            //    }, {
+            //        field: 'ProductGroup.Name',
+            //        ignoreCase: true,
+            //        operator: 'startswith',
+            //        value: filterValue
+            //    }, {
+            //        field: 'ProductGroup.Code',
+            //        ignoreCase: true,
+            //        operator: 'eq',
+            //        value: filterValue
+            //    }, {
+            //        field: 'ItemType.Name',
+            //        ignoreCase: true,
+            //        operator: 'startswith',
+            //        value: filterValue
+            //    }, {
+            //        field: 'ItemType.Code',
+            //        ignoreCase: true,
+            //        operator: 'eq',
+            //        value: filterValue
+            //    }]
+
+            //    data.filter.logic = "or";
+            //}
+
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+            delete d.$top;
+
+            d.$count = true;
+
+            if (data.filter &&
+                data.filter.filters.length &&
+                data.filter.filters[0].value != '') {
+
+                let filterValue = data.filter.filters[0].value;
+
+                d.$filter = `StartsWith(ToLower(ProductType/Name), '${filterValue}') OR StartsWith(ToLower(ProductGroup/Name), '${filterValue}') OR ToLower(ProductGroup/Code) EQ '${filterValue}' OR StartsWith(ToLower(ItemType/Name), '${filterValue}') OR ToLower(ItemType/Code) EQ '${filterValue}'`;
+            }
+            
+            return d;
         }
     });
 
@@ -282,12 +346,12 @@
         showClear: false
     });
 
-    self.colourParams = kendoMDCDropDownList({
+    self.productColourParams = kendoMDCDropDownList({
         label: 'Colour',
         odata: true,
-        endPoint: '/odata/Colours',
+        endPoint: '/odata/ProductColours',
         textField: 'Name',
-        valueField: 'ColourID',
+        valueField: 'ProductColourID',
         virtual: true,
         pageSize: 20,
         virtualOptions: {
@@ -295,19 +359,19 @@
             mapValueTo: 'dataItem',
             valueMapper: function (options) {
                 $.ajax({
-                    url: `/odata/Colours/Default.ColourValueMapper(colourId=${options.value || "null"})`,
+                    url: `/odata/ProductColours/Default.ProductColourValueMapper(name=${options.value || "null"})`,
                     type: 'GET',
                     success: function (data) {
                         options.success(data.value);
                         if (data.value.length == 1) {
-                            self.colour(data.value[0]);
+                            self.productColour(data.value[0]);
                         }
                     }
                 });
             }
         },
-        idObservable: self.colourId,
-        objObservable: self.colour,
+        idObservable: self.productColourId,
+        objObservable: self.productColour,
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -410,6 +474,51 @@
             return d;
         }
     });
+
+    self.attributesParams = {
+        observable: self.attributes,
+        validate: self.attributeIds,
+        showClear: true,
+        width: 'auto',
+        label: 'Attributes',
+        valuePrimitive: false,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        controlClass: 'form-control',
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertable: ko.observable(false),
+        multiSelectSettings: {
+            value: self.attributeIds,
+            dataItems: self.attributes,
+            dataValueField: 'AttributeID',
+            dataTextField: 'Name',
+            height: 300,
+            widget: ko.observable(),
+            open: function (e) {
+                var self = this;
+                $(e.sender._widgetOptions.dataItems.mdcSelect.root_).toggleClass('mdc-select--focused');
+            },
+            close: function (e) {
+                $(e.sender._widgetOptions.dataItems.mdcSelect.root_).toggleClass('mdc-select--focused');
+            },
+            data: self.attributeParams.dropDownListSettings.data,
+            valuePrimitive: true,
+            autoWidth: false,
+            autoBind: true,
+            autoClose: false,
+            optionLabel: ' ',
+            filter: 'startswith'
+        },
+        clearFunction: function () {
+            var self = this
+            self.multiSelectSettings.value([]);
+            self.multiSelectSettings.widget().value([]);
+            self.multiSelectSettings.widget().trigger('change');
+        }
+    };
 
     //self.primaryGridDataSource = new kendo.data.DataSource({
     //    serverFiltering: true,
@@ -661,6 +770,7 @@
 
     self.attributeGroupId.subscribe(nv => {
         self.attributeParams.clearFunction();
+        self.attributesParams.clearFunction();
     });
 
     //#endregion
@@ -672,44 +782,76 @@
         return self.productTypeId() && (self.branchGroupId() || self.branchId());
     }, self);
 
-    self.productsComputer = ko.computed(() => {
+    self.productGroupCode = ko.computed(() => { return self.productType()?.ProductGroupCode }, self);
+
+    self.itemTypeCode = ko.computed(() => { return self.productType()?.ItemTypeCode }, self);
+
+    self.parametersComputer = ko.computed(() => {
         let params = {
+            branchGroupId: self.branchGroupId(),
+            branchId: self.branchId(),
             productTypeId: self.productTypeId(),
+            productGroupCode: self.productGroupCode(),
+            itemTypeCode: self.itemTypeCode(),
             launchId: self.launchId(),
             brandId: self.brandId(),
-            colourId: self.colourId(),
+            productColourId: self.productColourId(),
             attributeGroupId: self.attributeGroupId(),
-            attributeId: self.attributeId()
+            attributeIds: self.attributeIds()
         }
 
-        if (Object.keys(params).find(k => {
-            params[k] != null && params[k] != ''
-        })) {
-            console.log(params);
+        Object.keys(params).forEach(k => {
+            if (params[k] === '') {
+                params[k] = undefined;
+            }
+        });
 
-            self.busy(true);
+        if (params.productTypeId) {
+            return JSON.stringify(params);
+        } else {
+            return null;
+        }
+    });
 
-            fetch('/api/stockManagement/fetchProducts', {
-                method: 'GET',
-                headers: window.fetchHeaders,
-                body: JSON.stringify(params)
-            })
-                .then(window.handleFetchResponse)
-                .then(data => {
-                    console.log(data);
+    self.productsComputerSkipInitial = true;
 
-                    self.busy(false);
+    self.productFetchComputer = ko.computed(() => {
+        let params = self.parametersComputer();
+
+        if (self.productsComputerSkipInitial) {
+            self.productsComputerSkipInitial = false;
+        } else {
+
+            if (params) {
+                console.log('productFetchComputer', params);
+
+                self.busy(true);
+
+                fetch('/api/stockManagement/fetchProducts', {
+                    method: 'POST',
+                    headers: window.fetchHeaders,
+                    body: params
                 })
-                .catch(err => {
-                    self.busy(false);
-                    window.catchFetchError(err);
-                });
+                    .then(window.handleFetchResponse)
+                    .then(data => {
+                        console.log(data);
+                        self.productSearchResults(data.Results);
+                        self.busy(false);
+                    })
+                    .catch(err => {
+                        self.busy(false);
+                        window.catchFetchError(err);
+                    });
+            } else {
+                self.productSearchResults([]);
+            }
         }
-    }).extend({
-        //rateLimit: {
-        //    timeout: 0,
-        //    method: 'notifyWhenChangesStop'
-        //}
+    }, self)
+    .extend({
+        rateLimit: {
+            timeout: 50,
+            method: 'notifyWhenChangesStop'
+        }
     });
 
     //#endregion

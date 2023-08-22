@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace SharedEFClasses.Models.MertexLive
 {
@@ -121,8 +122,8 @@ namespace SharedEFClasses.Models.MertexLive
         [StringLength(5)]
         public string BrandCode { get; set; }
 
-        [StringLength(50)]
-        public string ColourName { get; set; }
+        //[StringLength(50)]
+        //public string ColourName { get; set; }
 
         [StringLength(50)]
         public string DesignName { get; set; }
@@ -131,10 +132,8 @@ namespace SharedEFClasses.Models.MertexLive
         [StringLength(20)]
         public string Ean { get; set; }
 
-        [Column(TypeName = "date")]
         public DateTime? LaunchDate { get; set; }
 
-        [Column(TypeName = "date")]
         public DateTime? CarryForwardDate { get; set; }
 
         [StringLength(50)]
@@ -145,13 +144,10 @@ namespace SharedEFClasses.Models.MertexLive
 
         public string AdditionalProducts { get; set; }
 
-        [Column(TypeName = "date")]
         public DateTime? LimitedDate { get; set; }
 
-        [Column(TypeName = "date")]
         public DateTime? DiscontinuedDate { get; set; }
 
-        [Column(TypeName = "date")]
         public DateTime? CurrentDate { get; set; }
 
         [Column("ProductID")]
@@ -170,5 +166,23 @@ namespace SharedEFClasses.Models.MertexLive
         [ForeignKey("DefaultSupplierCode")]
         [InverseProperty("Products")]
         public virtual Supplier DefaultSupplierCodeNavigation { get; set; }
+
+        [ForeignKey("FlamCode")]
+        public virtual FlamCode FlamCodeObj { get; set; }
+
+        [InverseProperty("Product")]
+        public virtual ICollection<ProductAftercare> AftercareCodes { get; set; }
+
+        //[ForeignKey("ColourName")]
+        //public virtual ProductColour ProductColour { get; set; }
+
+        [NotMapped]
+        public virtual Products.Product Product
+        {
+            get
+            {
+                return new PortalDbContext().Products.FirstOrDefault(p => p.Code == this.Code);
+            }
+        }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace SharedEFClasses.Models.MertexLive;
+namespace SharedEFClasses.Models.ProductPage;
 
 public partial class PortalDbContext : DbContext
 {
@@ -11,446 +11,127 @@ public partial class PortalDbContext : DbContext
     {
     }
 
-    public virtual DbSet<Carriage> Carriages { get; set; }
+    public virtual DbSet<Brand> Brands { get; set; }
 
-    public virtual DbSet<ClaimHead> ClaimHeads { get; set; }
+    public virtual DbSet<Collection> Collections { get; set; }
 
-    public virtual DbSet<ClaimLine> ClaimLines { get; set; }
+    public virtual DbSet<Colour> Colours { get; set; }
 
-    public virtual DbSet<CommodityCode> CommodityCodes { get; set; }
+    public virtual DbSet<Launch> Launches { get; set; }
 
-    public virtual DbSet<CommodityGroupCode> CommodityGroupCodes { get; set; }
+    public virtual DbSet<Pattern> Patterns { get; set; }
 
-    public virtual DbSet<Composition> Compositions { get; set; }
+    public virtual DbSet<ProductPage> ProductPages { get; set; }
 
-    public virtual DbSet<CompositionBackup180420230> CompositionBackup180420230s { get; set; }
-
-    public virtual DbSet<Currency> Currencies { get; set; }
-
-    public virtual DbSet<DespatchHead> DespatchHeads { get; set; }
-
-    public virtual DbSet<DespatchLine> DespatchLines { get; set; }
-
-    public virtual DbSet<EuexportCommodityGroupCodeMap> EuexportCommodityGroupCodeMaps { get; set; }
-
-    public virtual DbSet<ExchangeRate> ExchangeRates { get; set; }
-
-    public virtual DbSet<FlamCode> FlamCodes { get; set; }
-
-    public virtual DbSet<Haulier> Hauliers { get; set; }
-
-    public virtual DbSet<HeldForSalesReason> HeldForSalesReasons { get; set; }
-
-    public virtual DbSet<InvoiceHead> InvoiceHeads { get; set; }
-
-    public virtual DbSet<InvoiceLine> InvoiceLines { get; set; }
-
-    public virtual DbSet<OrderHead> OrderHeads { get; set; }
-
-    public virtual DbSet<OrderLine> OrderLines { get; set; }
-
-    public virtual DbSet<OrderSyncReport> OrderSyncReports { get; set; }
-
-    public virtual DbSet<ParcelHead> ParcelHeads { get; set; }
-
-    public virtual DbSet<ParcelLine> ParcelLines { get; set; }
-
-    public virtual DbSet<PriceListMap> PriceListMaps { get; set; }
-
-    public virtual DbSet<Product> Products { get; set; }
-
-    public virtual DbSet<ProductAftercare> ProductAftercares { get; set; }
-
-    public virtual DbSet<PurchaseOrderHead> PurchaseOrderHeads { get; set; }
-
-    public virtual DbSet<PurchaseOrderLine> PurchaseOrderLines { get; set; }
-
-    public virtual DbSet<PurchaseOrderStatus> PurchaseOrderStatuses { get; set; }
-
-    public virtual DbSet<PurchasePrice> PurchasePrices { get; set; }
-
-    public virtual DbSet<Quality> Qualities { get; set; }
-
-    public virtual DbSet<Sundry> Sundries { get; set; }
-
-    public virtual DbSet<Supplier> Suppliers { get; set; }
-
-    public virtual DbSet<SyncReport> SyncReports { get; set; }
-
-    public virtual DbSet<SyncReportSent> SyncReportSents { get; set; }
-
-    public virtual DbSet<TradeAccount> TradeAccounts { get; set; }
-
-    public virtual DbSet<TradeAccountContact> TradeAccountContacts { get; set; }
-
-    public virtual DbSet<TradeAccountContactType> TradeAccountContactTypes { get; set; }
-
-    public virtual DbSet<TradeAccountInvoiceAccount> TradeAccountInvoiceAccounts { get; set; }
-
-    public virtual DbSet<UserComputer> UserComputers { get; set; }
+    public virtual DbSet<ProductType> ProductTypes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Carriage>(entity =>
+        modelBuilder.Entity<Brand>(entity =>
         {
-            entity.HasKey(e => e.Key).HasName("PK__Carriage__C41E028811A53DC0");
+            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end,(0)))", true);
+            entity.Property(e => e.SortOrder).HasDefaultValueSql("((1))");
+            entity.Property(e => e.SubmitToMertex).HasDefaultValueSql("((1))");
+
+            entity.HasOne(d => d.Parent).WithMany(p => p.InverseParent).HasConstraintName("FK_Brand_Brand");
         });
 
-        modelBuilder.Entity<ClaimHead>(entity =>
+        modelBuilder.Entity<Collection>(entity =>
         {
-            entity.Property(e => e.Completed).HasComputedColumnSql("(CONVERT([bit],case when [CompletedDT] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.CreatedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.Error).HasComputedColumnSql("(CONVERT([bit],case when [ErrorDetails] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.ModifiedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.OrderId).UseCollation("Latin1_General_CS_AS");
-        });
-
-        modelBuilder.Entity<ClaimLine>(entity =>
-        {
-            entity.HasKey(e => e.ClaimLineId).HasName("PK_Mertex_ClaimLine");
-
-            entity.Property(e => e.Completed).HasComputedColumnSql("(CONVERT([bit],case when [CompletedDT] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.CreatedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.Error).HasComputedColumnSql("(CONVERT([bit],case when [ErrorDetails] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.ModifiedDt).HasDefaultValueSql("(sysdatetime())");
-        });
-
-        modelBuilder.Entity<CommodityCode>(entity =>
-        {
-            entity.HasKey(e => e.CommodityCode1).HasName("PK__Commodit__70CCB0F32CC75631");
-
-            entity.Property(e => e.CommodityCode1).ValueGeneratedNever();
-
-            entity.HasOne(d => d.CommodityGroupCodeNavigation).WithMany(p => p.CommodityCodes).HasConstraintName("FK_Mertex_CommodityCode_CommodityGroupCode");
-        });
-
-        modelBuilder.Entity<CommodityGroupCode>(entity =>
-        {
-            entity.HasKey(e => e.CommodityGroupCode1).HasName("PK__Commodit__4CB7839ECE0FD9AF");
-
-            entity.Property(e => e.CommodityGroupCode1).ValueGeneratedNever();
-        });
-
-        modelBuilder.Entity<Composition>(entity =>
-        {
-            entity.HasKey(e => e.Code).HasName("PK_Mertex_Composition");
-
-            entity.Property(e => e.Code).UseCollation("Latin1_General_CS_AS");
-        });
-
-        modelBuilder.Entity<CompositionBackup180420230>(entity =>
-        {
-            entity.Property(e => e.Code).UseCollation("Latin1_General_CS_AS");
-        });
-
-        modelBuilder.Entity<Currency>(entity =>
-        {
-            entity.HasKey(e => e.MertexCurrencyCode).HasName("PK__Currency__3A84C383B106DAA7");
-
-            entity.Property(e => e.MertexCurrencyCode).UseCollation("Latin1_General_CS_AS");
-        });
-
-        modelBuilder.Entity<DespatchHead>(entity =>
-        {
-            entity.HasKey(e => e.DespatchHeadId).HasName("PK_Mertex_Despatch");
-
-            entity.Property(e => e.Completed).HasComputedColumnSql("(CONVERT([bit],case when [Source]='OEDNHHIST' then (1) else (0) end))", true);
-            entity.Property(e => e.CreatedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.Error).HasComputedColumnSql("(CONVERT([bit],case when [ErrorDetails] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.ModifiedDt).HasDefaultValueSql("(sysdatetime())");
-        });
-
-        modelBuilder.Entity<DespatchLine>(entity =>
-        {
-            entity.HasKey(e => e.DespatchLineId).HasName("PK_Mertex_DespatchLine_DespatchLineID");
-
-            entity.Property(e => e.Completed).HasComputedColumnSql("(CONVERT([bit],case when [Source]='OEDNLHIST' then (1) else (0) end))", true);
-            entity.Property(e => e.CreatedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.Error).HasComputedColumnSql("(CONVERT([bit],case when [ErrorDetails] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.ModifiedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.ProductCode).UseCollation("Latin1_General_CS_AS");
-
-            entity.HasOne(d => d.DespatchHead).WithMany(p => p.DespatchLines).HasConstraintName("FK_Mertex_DespatchLine_DespatchHeadID");
-        });
-
-        modelBuilder.Entity<ExchangeRate>(entity =>
-        {
-            entity.HasKey(e => e.MertexCurrencyCode).HasName("PK_Mertex_ExchangeRate");
-
-            entity.Property(e => e.MertexCurrencyCode).UseCollation("Latin1_General_CS_AS");
-            entity.Property(e => e.CreatedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.ModifiedDt).HasDefaultValueSql("(sysdatetime())");
-        });
-
-        modelBuilder.Entity<FlamCode>(entity =>
-        {
-            entity.HasKey(e => e.Code).HasName("PK_Mertex_FlamCode");
-
-            entity.Property(e => e.Code).UseCollation("Latin1_General_CS_AS");
-        });
-
-        modelBuilder.Entity<Haulier>(entity =>
-        {
-            entity.HasKey(e => e.Code).HasName("PK_Mertex_Haulier_Code");
-
-            entity.Property(e => e.CreatedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.ModifiedDt).HasDefaultValueSql("(sysdatetime())");
-        });
-
-        modelBuilder.Entity<HeldForSalesReason>(entity =>
-        {
-            entity.HasKey(e => e.Code).HasName("PK__HeldForS__A25C5AA696278E9F");
-        });
-
-        modelBuilder.Entity<InvoiceHead>(entity =>
-        {
-            entity.HasKey(e => e.InvoiceId).HasName("PK__InvoiceH__D796AAD525D7AD6A");
-
-            entity.Property(e => e.Completed).HasComputedColumnSql("(CONVERT([bit],case when [CompletedDT] IS NULL then (0) else (1) end))", true);
             entity.Property(e => e.CreatedDt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.Error).HasComputedColumnSql("(CONVERT([bit],case when [ErrorDetails] IS NULL then (0) else (1) end))", true);
             entity.Property(e => e.ModifiedDt).HasDefaultValueSql("(getdate())");
-        });
+            entity.Property(e => e.Urlkeywords).HasDefaultValueSql("('TBC')");
 
-        modelBuilder.Entity<InvoiceLine>(entity =>
-        {
-            entity.HasKey(e => e.InvoiceLineId).HasName("PK__InvoiceL__0D760AF92EE6E2C7");
-
-            entity.Property(e => e.Completed).HasComputedColumnSql("(CONVERT([bit],case when [CompletedDT] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.Error).HasComputedColumnSql("(CONVERT([bit],case when [ErrorDetails] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.ProductCode).UseCollation("Latin1_General_CS_AS");
-
-            entity.HasOne(d => d.Invoice).WithMany(p => p.InvoiceLines).HasConstraintName("FK__InvoiceLi__Invoi__7BE87672");
-        });
-
-        modelBuilder.Entity<OrderHead>(entity =>
-        {
-            entity.HasKey(e => e.OrderId).HasName("PK_Mertex_OrderHead_OrderID");
-
-            entity.HasIndex(e => e.OrderHeadId, "UQ_Mertex_OrderHead_OrderID")
-                .IsUnique()
-                .HasFilter("([OrderHeadID] IS NOT NULL)");
-
-            entity.Property(e => e.Completed).HasComputedColumnSql("(CONVERT([bit],case when [CompletedDT] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.CreatedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.Error).HasComputedColumnSql("(CONVERT([bit],case when [ErrorDetails] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.MertexCurrencyCode).UseCollation("Latin1_General_CS_AS");
-            entity.Property(e => e.ModifiedDt).HasDefaultValueSql("(sysdatetime())");
-        });
-
-        modelBuilder.Entity<OrderLine>(entity =>
-        {
-            entity.HasKey(e => e.OrderLineId).HasName("PK_Mertex_OrderLine_OrderLineID");
-
-            entity.Property(e => e.Cancelled).HasComputedColumnSql("(CONVERT([bit],case when [QuantityOrdered]=isnull([QuantityCancelled],(0)) then (1) else (0) end))", true);
-            entity.Property(e => e.Completed).HasComputedColumnSql("(CONVERT([bit],case when [LineStatusID]=(5) OR [QuantityOrdered]=isnull([QuantityCancelled],(0)) OR [DeletedDT] IS NOT NULL then (1) else (0) end))", true);
-            entity.Property(e => e.CreatedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.Error).HasComputedColumnSql("(CONVERT([bit],case when [ErrorDetails] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.ModifiedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.ProductCode).UseCollation("Latin1_General_CS_AS");
-
-            entity.HasOne(d => d.Order).WithMany(p => p.OrderLines)
+            entity.HasOne(d => d.Brand).WithMany(p => p.Collections)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Mertex_OrderLine_OrderID");
-        });
+                .HasConstraintName("FK_Collection_Brand");
 
-        modelBuilder.Entity<OrderSyncReport>(entity =>
-        {
-            entity.HasKey(e => e.OrderSyncReportId).HasName("PK_Mertex_OrderSyncReport_OrderSyncReportID");
-        });
-
-        modelBuilder.Entity<ParcelHead>(entity =>
-        {
-            entity.Property(e => e.Completed).HasComputedColumnSql("(CONVERT([bit],case when [CompletedDT] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.CreatedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.Error).HasComputedColumnSql("(CONVERT([bit],case when [ErrorDetails] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.ModifiedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.VolumetricWeight).HasComputedColumnSql("(CONVERT([decimal](18,2),(([Width]*[Height])*[Depth])/(5000)))", true);
-
-            entity.HasOne(d => d.DespatchHead).WithMany(p => p.ParcelHeads)
+            entity.HasOne(d => d.Launch).WithMany(p => p.Collections)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Mertex_ParcelHead_DespatchID");
-        });
+                .HasConstraintName("FK_Collection_Launch");
 
-        modelBuilder.Entity<ParcelLine>(entity =>
-        {
-            entity.Property(e => e.Completed).HasComputedColumnSql("(CONVERT([bit],case when [CompletedDT] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.CreatedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.Error).HasComputedColumnSql("(CONVERT([bit],case when [ErrorDetails] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.ModifiedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.ProductCode).UseCollation("Latin1_General_CS_AS");
-
-            entity.HasOne(d => d.DespatchLine).WithMany(p => p.ParcelLines)
+            entity.HasOne(d => d.ProductType).WithMany(p => p.Collections)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Mertex_ParcelLine_DespatchLineID");
+                .HasConstraintName("FK_Collection_ProductType");
+        });
 
-            entity.HasOne(d => d.ParcelHead).WithMany(p => p.ParcelLines)
+        modelBuilder.Entity<Colour>(entity =>
+        {
+            entity.HasKey(e => e.ColourId).HasName("PK_A_Colour");
+
+            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end,0))", true);
+            entity.Property(e => e.Hex).IsFixedLength();
+            entity.Property(e => e.RecognisedColour).HasDefaultValueSql("((1))");
+            entity.Property(e => e.SortOrder).HasDefaultValueSql("((1))");
+        });
+
+        modelBuilder.Entity<Launch>(entity =>
+        {
+            entity.Property(e => e.Year).HasComputedColumnSql("(CONVERT([smallint],datepart(year,[LaunchDate])))", true);
+        });
+
+        modelBuilder.Entity<Pattern>(entity =>
+        {
+            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end,0))", true);
+        });
+
+        modelBuilder.Entity<ProductPage>(entity =>
+        {
+            entity.Property(e => e.BrandId).HasDefaultValueSql("((2))");
+            entity.Property(e => e.CanonicalContentType).HasComputedColumnSql("(CONVERT([nvarchar](1),case when [CanonicalProductPageID] IS NOT NULL then 'P' else case when [CanonicalCollectionID] IS NOT NULL then 'C'  end end))", true);
+            entity.Property(e => e.CreatedDt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end,0))", true);
+            entity.Property(e => e.Heading).HasDefaultValueSql("('')");
+            entity.Property(e => e.LaunchId).HasDefaultValueSql("([adm].[NextLaunchID](getdate()))");
+            entity.Property(e => e.ProductTypeId).HasDefaultValueSql("((255))");
+            entity.Property(e => e.TradeDiscountOperator).IsFixedLength();
+            entity.Property(e => e.TradeSwitch).HasComment("NULL = Both; 0 = Retail Only; 1 = Trade Only");
+
+            entity.HasOne(d => d.Brand).WithMany(p => p.ProductPages)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Mertex_ParcelLine_ParcelHeadID");
-        });
+                .HasConstraintName("FK_ProductPage_Brand");
 
-        modelBuilder.Entity<PriceListMap>(entity =>
-        {
-            entity.HasKey(e => e.TradePriceListCode).HasName("PK_Mertex_PriceListMap");
-        });
+            entity.HasOne(d => d.CanonicalCollection).WithMany(p => p.ProductPages).HasConstraintName("FK_dbo_ProductPage_CanonicalCollectionID");
 
-        modelBuilder.Entity<Product>(entity =>
-        {
-            entity.HasKey(e => e.Code).HasName("PK_Mertex_Product_Code");
+            entity.HasOne(d => d.Colour).WithMany(p => p.ProductPages).HasConstraintName("FK_ProductPage_Colour");
 
-            entity.Property(e => e.Code).UseCollation("Latin1_General_CS_AS");
-            entity.Property(e => e.CreatedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.DefaultSupplierCode).UseCollation("Latin1_General_CS_AS");
-            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.Error).HasComputedColumnSql("(CONVERT([bit],case when [ErrorDetails] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.FlamCode).UseCollation("Latin1_General_CS_AS");
-            entity.Property(e => e.ModifiedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.QualityCode).UseCollation("Latin1_General_CS_AS");
-            entity.Property(e => e.RugSampleProductCode).UseCollation("Latin1_General_CS_AS");
-            entity.Property(e => e.StockCode).UseCollation("Latin1_General_CS_AS");
-
-            entity.HasOne(d => d.DefaultSupplierCodeNavigation).WithMany(p => p.Products).HasConstraintName("FK_Mertex_Product_DefaultSupplierCode");
-        });
-
-        modelBuilder.Entity<ProductAftercare>(entity =>
-        {
-            entity.HasKey(e => new { e.ProductCode, e.AftercareCode }).HasName("PK_Product_Aftercare_1");
-
-            entity.Property(e => e.ProductCode).UseCollation("Latin1_General_CS_AS");
-            entity.Property(e => e.AftercareCode).UseCollation("Latin1_General_CS_AS");
-        });
-
-        modelBuilder.Entity<PurchaseOrderHead>(entity =>
-        {
-            entity.HasKey(e => e.PurchaseOrderHeadId).HasName("PK_Mertex_PurchaseOrderHead");
-
-            entity.Property(e => e.PurchaseOrderHeadId).UseCollation("Latin1_General_CS_AS");
-            entity.Property(e => e.Completed).HasComputedColumnSql("(CONVERT([bit],case when [CompletedDT] IS NULL then (0) else (1) end))", false);
-            entity.Property(e => e.CreatedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end))", false);
-            entity.Property(e => e.Error).HasComputedColumnSql("(CONVERT([bit],case when [ErrorDetails] IS NULL then (0) else (1) end))", false);
-            entity.Property(e => e.ModifiedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.OrderId).UseCollation("Latin1_General_CS_AS");
-            entity.Property(e => e.SupplierCode).UseCollation("Latin1_General_CS_AS");
-        });
-
-        modelBuilder.Entity<PurchaseOrderLine>(entity =>
-        {
-            entity.HasKey(e => e.PurchaseOrderLineId).HasName("PK_Mertex_PurchaseOrderLine");
-
-            entity.Property(e => e.PurchaseOrderLineId).UseCollation("Latin1_General_CS_AS");
-            entity.Property(e => e.Completed).HasComputedColumnSql("(CONVERT([bit],case when [CompletedDT] IS NULL then (0) else (1) end))", false);
-            entity.Property(e => e.CreatedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end))", false);
-            entity.Property(e => e.Error).HasComputedColumnSql("(CONVERT([bit],case when [ErrorDetails] IS NULL then (0) else (1) end))", false);
-            entity.Property(e => e.ModifiedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.OrderId).UseCollation("Latin1_General_CS_AS");
-            entity.Property(e => e.ProductCode).UseCollation("Latin1_General_CS_AS");
-            entity.Property(e => e.PurchaseOrderHeadId).UseCollation("Latin1_General_CS_AS");
-        });
-
-        modelBuilder.Entity<PurchaseOrderStatus>(entity =>
-        {
-            entity.HasKey(e => e.PurchaseOrderStatusId).HasName("PK_Mertex_PurchaseOrderStatus");
-        });
-
-        modelBuilder.Entity<PurchasePrice>(entity =>
-        {
-            entity.Property(e => e.SupplierCode).UseCollation("Latin1_General_CS_AS");
-            entity.Property(e => e.ProductCode).UseCollation("Latin1_General_CS_AS");
-            entity.Property(e => e.CreatedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.MertexCurrencyCode).UseCollation("Latin1_General_CS_AS");
-            entity.Property(e => e.ModifiedDt).HasDefaultValueSql("(sysdatetime())");
-
-            entity.HasOne(d => d.SupplierCodeNavigation).WithMany(p => p.PurchasePrices)
+            entity.HasOne(d => d.Launch).WithMany(p => p.ProductPages)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Mertex_PurchasePrice_SupplierCode");
-        });
+                .HasConstraintName("FK_ProductPage_Launch");
 
-        modelBuilder.Entity<Quality>(entity =>
-        {
-            entity.HasKey(e => e.Code).HasName("PK_Mertex_Quality");
+            entity.HasOne(d => d.Pattern).WithMany(p => p.ProductPages).HasConstraintName("FK_ProductPage_Pattern");
 
-            entity.Property(e => e.Code).UseCollation("Latin1_General_CS_AS");
-            entity.Property(e => e.CompositionCode).UseCollation("Latin1_General_CS_AS");
-        });
-
-        modelBuilder.Entity<Sundry>(entity =>
-        {
-            entity.HasKey(e => e.Code).HasName("PK__Sundry__A25C5AA6B83FD9B7");
-
-            entity.Property(e => e.Code).UseCollation("Latin1_General_CS_AS");
-        });
-
-        modelBuilder.Entity<Supplier>(entity =>
-        {
-            entity.HasKey(e => e.Code).HasName("PK_Mertex_Supplier");
-
-            entity.Property(e => e.Code).UseCollation("Latin1_General_CS_AS");
-            entity.Property(e => e.CreatedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.MertexCurrencyCode).UseCollation("Latin1_General_CS_AS");
-            entity.Property(e => e.ModifiedDt).HasDefaultValueSql("(sysdatetime())");
-
-            entity.HasOne(d => d.MertexCurrencyCodeNavigation).WithMany(p => p.Suppliers).HasConstraintName("FK_Mertex_Supplier_MertexCurrencyCode");
-        });
-
-        modelBuilder.Entity<SyncReport>(entity =>
-        {
-            entity.HasKey(e => e.SyncReportId).HasName("PK_Mertex_SyncReport");
-
-            entity.Property(e => e.SyncReportId).ValueGeneratedNever();
-        });
-
-        modelBuilder.Entity<SyncReportSent>(entity =>
-        {
-            entity.HasOne(d => d.SyncReport).WithMany()
+            entity.HasOne(d => d.ProductType).WithMany(p => p.ProductPages)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Mertex_SyncReportSent_SyncReportID");
+                .HasConstraintName("FK_ProductPage_ProductType");
         });
 
-        modelBuilder.Entity<TradeAccount>(entity =>
+        modelBuilder.Entity<ProductType>(entity =>
         {
-            entity.HasKey(e => e.Code).HasName("PK__TradeAcc__CA404DC53653615F");
-
-            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end))", true);
-            entity.Property(e => e.TradeAccountCodeNumerical).HasComputedColumnSql("(CONVERT([int],[adm].[RegexReplace]([Code],N'[^\\d]',N' ')))", true);
-        });
-
-        modelBuilder.Entity<TradeAccountContact>(entity =>
-        {
-            entity.HasKey(e => e.TradeAccountContactId).HasName("PK__TradeAcc__0E125F392215424C");
-
-            entity.Property(e => e.CreatedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end))", true);
-
-            entity.HasOne(d => d.TradeAccountContactTypeCodeNavigation).WithMany(p => p.TradeAccountContacts)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__TradeAcco__Trade__002F9F50");
-        });
-
-        modelBuilder.Entity<TradeAccountContactType>(entity =>
-        {
-            entity.HasKey(e => e.TradeAccountContactTypeCode).HasName("PK__TradeAcc__AE1BD0BA321220A8");
-
-            entity.Property(e => e.CreatedDt).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end))", true);
-        });
-
-        modelBuilder.Entity<TradeAccountInvoiceAccount>(entity =>
-        {
-            entity.HasKey(e => new { e.ParentTradeAccountCode, e.TradeAccountCode }).HasName("PK__TradeAcc__E213B2414F3B33FB");
+            entity.Property(e => e.AllowReserves).HasDefaultValueSql("((1))");
+            entity.Property(e => e.AllowReturns).HasDefaultValueSql("((1))");
+            entity.Property(e => e.AlternateColourwayIncludeSize).HasDefaultValueSql("((1))");
+            entity.Property(e => e.AlternateColourways).HasDefaultValueSql("((1))");
+            entity.Property(e => e.CreatedDt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Deleted).HasComputedColumnSql("(CONVERT([bit],case when [DeletedDT] IS NULL then (0) else (1) end,(0)))", true);
+            entity.Property(e => e.DeliveryGroupId).HasDefaultValueSql("((1))");
+            entity.Property(e => e.DispatchGroup).HasDefaultValueSql("((1))");
+            entity.Property(e => e.GiftWrappable).HasDefaultValueSql("((1))");
+            entity.Property(e => e.GrossMarginTarget).HasDefaultValueSql("((0.5))");
+            entity.Property(e => e.IsActualProductType).HasDefaultValueSql("((1))");
+            entity.Property(e => e.MaxSkuOrderQuantity).HasDefaultValueSql("((99))");
+            entity.Property(e => e.MinimumOrderQuantity).HasDefaultValueSql("((1))");
+            entity.Property(e => e.RetailQuantityIncrement).HasDefaultValueSql("((1))");
+            entity.Property(e => e.RetailQuantityMaximum).HasDefaultValueSql("((99))");
+            entity.Property(e => e.RetailQuantityMinimum).HasDefaultValueSql("((1))");
+            entity.Property(e => e.SaleGrossMarginTarget).HasDefaultValueSql("((0.25))");
+            entity.Property(e => e.ShowInSearchDropDown).HasDefaultValueSql("((1))");
+            entity.Property(e => e.StockLocationId).HasDefaultValueSql("((1))");
+            entity.Property(e => e.TargetGm).HasDefaultValueSql("((0.5))");
+            entity.Property(e => e.TradeQuantityIncrement).HasDefaultValueSql("((1))");
+            entity.Property(e => e.TradeQuantityMaximum).HasDefaultValueSql("((99999))");
+            entity.Property(e => e.TradeQuantityMinimum).HasDefaultValueSql("((1))");
         });
 
         OnModelCreatingPartial(modelBuilder);

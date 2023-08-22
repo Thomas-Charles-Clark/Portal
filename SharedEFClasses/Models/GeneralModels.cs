@@ -177,6 +177,10 @@ namespace SharedEFClasses.Models.General
 
         [JsonIgnore]
         public virtual ICollection<Product> Products { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("Colour")]
+        public virtual ICollection<ProductPage> ProductPages { get; set; }
     }
 
     public class Pattern
@@ -188,6 +192,10 @@ namespace SharedEFClasses.Models.General
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool Deleted { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("Pattern")]
+        public virtual ICollection<ProductPage> ProductPages { get; set; }
     }
 
     [Table("Martindale", Schema = "dbo")]
@@ -572,6 +580,10 @@ namespace SharedEFClasses.Models.General
 
         [JsonIgnore]
         public virtual ICollection<TradeAccountPotential> TradeAccountPotential { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("Brand")]
+        public virtual ICollection<ProductPage> ProductPages { get; set; }
     }
 
     /// <summary>

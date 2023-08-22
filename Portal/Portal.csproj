@@ -587,10 +587,10 @@
     <Compile Include="Areas\Retail\ViewModels\RetailStoreMembersViewModel.cs" />
     <Compile Include="Areas\Stock\Controllers\StockManagementAPIController.cs" />
     <Compile Include="Areas\Stock\Controllers\StockManagementController.cs" />
-    <Compile Include="Areas\Stock\Models\StockManagementProductFetchDto.cs" />
     <Compile Include="Areas\Stock\ViewModels\StockManagementViewModel.cs" />
     <Compile Include="Controllers\ODataControllers\AttributesController.cs" />
     <Compile Include="Controllers\ODataControllers\AttributeGroupsController.cs" />
+    <Compile Include="Controllers\ODataControllers\ProductColoursController.cs" />
     <Compile Include="Controllers\ODataControllers\Mertex_ProductTypesController.cs" />
     <Compile Include="Controllers\ODataControllers\ProductTypesController.cs" />
     <Compile Include="Controllers\ODataControllers\StockManagement\RangesController.cs" />
@@ -2854,6 +2854,7 @@
     <Folder Include="Areas\Pricing\Views\Shared\" />
     <Folder Include="Areas\Products\Models\" />
     <Folder Include="Areas\Retail\Views\Shared\" />
+    <Folder Include="Areas\Stock\Models\" />
     <Folder Include="edge\x64\" />
     <Folder Include="edge\x86\" />
     <Folder Include="FileUploads\" />

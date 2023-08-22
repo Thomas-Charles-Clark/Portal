@@ -221,9 +221,17 @@
         },
         clearFunction: function () {
             var self = this;
-            self.observable(undefined);
+            if (ko.isObservableArray(self.observable)) {
+                self.observable([]);
+            } else {
+                self.observable(undefined);
+            }
             if (self.dropDownListSettings.widget()) {
-                self.dropDownListSettings.widget().value('');
+                if (ko.isObservableArray(self.observable)) {
+                    self.dropDownListSettings.widget().value([]);
+                } else {
+                    self.dropDownListSettings.widget().value('');
+                }
                 self.dropDownListSettings.widget()._widgetOptions.value.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
                 if (self.dropDownListSettings.widget()._widgetOptions.value.mdcSelect.label_ != null)
                     self.dropDownListSettings.widget()._widgetOptions.value.mdcSelect.label_.float(false);
