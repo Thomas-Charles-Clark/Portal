@@ -372,6 +372,7 @@
     <Compile Include="Models\Mertex\ClaimLine.cs" />
     <Compile Include="Models\Mertex\CommodityCode.cs" />
     <Compile Include="Models\Mertex\CommodityGroupCode.cs" />
+    <Compile Include="Models\Mertex\CollectionLive.cs" />
     <Compile Include="Models\Mertex\Composition.cs" />
     <Compile Include="Models\Mertex\CurrencyLive.cs" />
     <Compile Include="Models\Mertex\DespatchHead.cs" />

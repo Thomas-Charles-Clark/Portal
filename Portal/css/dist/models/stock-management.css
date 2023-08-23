@@ -32,9 +32,10 @@
   flex: 0 1 auto;
   min-width: 240px;
 }
-.prefilters > div#product-type-prefilter {
+.prefilters #product-type-prefilter,
+.prefilters #collection-prefilter {
   flex: 1 1 auto;
-  max-width: 540px;
+  max-width: calc(480px + 1rem);
 }
 .prefilters .k-animation-container li.k-item {
   line-height: 33px;
@@ -65,13 +66,45 @@
 }
 
 .product-search-results {
+  display: inline-table;
+  width: auto;
   margin-top: 1rem;
+  background-color: #f8fbff;
 }
-.product-search-results .product-result {
-  display: flex;
+.product-search-results thead {
+  background-color: white;
+}
+.product-search-results tbody .product-result {
+  /*display: flex;*/
   gap: 1rem;
+  padding: 0.5rem 0.75rem;
+  /*
+  > span:first-of-type {
+      flex: 0 1 80px;
+  }
+
+  > span:nth-of-type(2) {
+      flex: 1 0 280px;
+  }
+
+  > span:nth-of-type(3) {
+
+  }*/
 }
-.product-search-results .product-result > span:first-of-type {
-  flex: 0 1 180px;
+.product-search-results tbody .product-result td {
+  vertical-align: middle;
+  height: 50px;
+}
+.product-search-results tbody .product-result + .product-result {
+  /*border-top: 1px solid $blue-300;*/
+}
+
+.totals-table tbody td {
+  text-align: center;
+}
+
+.result-count-display {
+  font-weight: normal;
+  float: right;
 }
 /*# sourceMappingURL=stock-management.css.map */

@@ -28,25 +28,23 @@ namespace Portal.Controllers
     [System.Web.Http.Authorize]
     public class BrandsController : ODataController
     {
-        private static PortalDbContext PortalDb { get; set; }
-
         public BrandsController(PortalDbContext portalDb)
         {
-            PortalDb = portalDb;
+
         }
 
         // GET: odata/Brands
         [EnableQuery]
         public IQueryable<Brand> GetBrands()
         {
-            return PortalDb.Brands.Where(p => p.Deleted == false).AsQueryable();
+            return new PortalDbContext().Brands.Where(p => p.Deleted == false).AsQueryable();
         }
 
         [EnableQuery(MaxNodeCount = 200)]
         [HttpGet]
         public IQueryable<Brand> BrandValueMapper(byte? brandId)
         {
-            return PortalDb.Brands.Where(p => p.BrandID == brandId).AsQueryable();
+            return new PortalDbContext().Brands.Where(p => p.BrandID == brandId).AsQueryable();
         }
     }
 }

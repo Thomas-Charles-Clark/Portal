@@ -15,6 +15,7 @@ namespace SharedEFClasses.Models.Attributes
         public short AttributeID { get; set; }
         public byte AttributeGroupID { get; set; }
         public string Name { get; set; }
+        public byte SortOrder { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool Deleted { get; set; }

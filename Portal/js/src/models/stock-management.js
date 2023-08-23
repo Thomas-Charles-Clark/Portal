@@ -46,6 +46,14 @@
 
     self.productColour = ko.observable();
 
+    self.stockLevelId = ko.observable();
+
+    self.stockLevel = ko.observable();
+
+    self.collectionCode = ko.observable();
+
+    self.collection = ko.observable();
+
     self.attributeGroupId = ko.observable();
 
     self.attributeGroup = ko.observable();
@@ -61,6 +69,10 @@
     //#endregion
 
     self.productSearchResults = ko.observableArray([]);
+
+    self.branchGroupTotals = ko.observableArray([]);
+
+    self.rangeRecords = ko.observableArray([]);
 
     //#endregion
 
@@ -101,7 +113,6 @@
         readOnly: false,
         autoBind: true,
         height: 340,
-        showClear: false,
         sort: {
             dir: 'asc',
             field: 'productTypeId'
@@ -201,7 +212,6 @@
         filter: 'contains',
         autoBind: true,
         height: 340,
-        showClear: false,
         sort: {
             dir: 'asc',
             field: 'branchGroupId'
@@ -242,7 +252,6 @@
         filter: 'contains',
         autoBind: true,
         height: 340,
-        showClear: false,
         sort: {
             dir: 'asc',
             field: 'branchId'
@@ -302,7 +311,6 @@
         filter: 'contains',
         autoBind: true,
         height: 340,
-        showClear: false,
         sort: {
             dir: 'desc',
             field: 'launchId'
@@ -342,8 +350,7 @@
         readOnly: false,
         filter: 'contains',
         autoBind: true,
-        height: 340,
-        showClear: false
+        height: 340
     });
 
     self.productColourParams = kendoMDCDropDownList({
@@ -380,7 +387,76 @@
         filter: 'contains',
         autoBind: true,
         height: 340,
-        showClear: false
+        sort: {
+            dir: 'asc',
+            field: 'Name'
+        }
+    });
+
+    self.stockLevelParams = kendoMDCDropDownList({
+        label: 'Stock Level',
+        textField: 'Name',
+        valueField: 'StockLevelID',
+        data: [{
+            StockLevelID: 0,
+            Name: 'In Stock'
+        }, {
+            StockLevelID: 1,
+            Name: 'Low Stock'
+        }, {
+            StockLevelID: 2,
+            Name: 'Out of Stock'
+        }],
+        idObservable: self.stockLevelId,
+        objObservable: self.stockLevel,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertable: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 102
+    });
+
+    self.collectionParams = kendoMDCDropDownList({
+        label: 'Collection',
+        odata: true,
+        endPoint: '/odata/Collections',
+        textField: 'Name',
+        valueField: 'Code',
+        virtual: true,
+        pageSize: 20,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                $.ajax({
+                    url: `/odata/Collections/Default.CollectionValueMapper(code=${options.value || "null"})`,
+                    type: 'GET',
+                    success: function (data) {
+                        options.success(data.value);
+                        if (data.value.length == 1) {
+                            self.collection(data.value[0]);
+                        }
+                    }
+                });
+            }
+        },
+        idObservable: self.collectionCode,
+        objObservable: self.collection,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertable: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'Name'
+        }
     });
 
     self.attributeGroupParams = kendoMDCDropDownList({
@@ -416,8 +492,7 @@
         readOnly: false,
         filter: 'contains',
         autoBind: true,
-        height: 340,
-        showClear: false
+        height: 340
     });
 
     self.attributeParams = kendoMDCDropDownList({
@@ -454,7 +529,6 @@
         filter: 'contains',
         autoBind: true,
         height: 340,
-        showClear: false,
         parameterMap: (data) => {
             //Generate parameters in odata v4 format
             let d = kendo.data.transports['odata-v4'].parameterMap(data);
@@ -472,13 +546,16 @@
             }
 
             return d;
+        },
+        sort: {
+            dir: 'asc',
+            field: 'SortOrder'
         }
     });
 
     self.attributesParams = {
         observable: self.attributes,
         validate: self.attributeIds,
-        showClear: true,
         width: 'auto',
         label: 'Attributes',
         valuePrimitive: false,
@@ -796,6 +873,8 @@
             launchId: self.launchId(),
             brandId: self.brandId(),
             productColourId: self.productColourId(),
+            stockLevelId: self.stockLevelId(),
+            collectionCode: self.collectionCode(),
             attributeGroupId: self.attributeGroupId(),
             attributeIds: self.attributeIds()
         }
@@ -806,45 +885,45 @@
             }
         });
 
-        if (params.productTypeId) {
-            return JSON.stringify(params);
-        } else {
-            return null;
-        }
-    });
+        return JSON.stringify(params);
 
-    self.productsComputerSkipInitial = true;
+        //if (params.productTypeId) {
+        //    return JSON.stringify(params);
+        //} else {
+        //    return null;
+        //}
+    });
 
     self.productFetchComputer = ko.computed(() => {
         let params = self.parametersComputer();
 
-        if (self.productsComputerSkipInitial) {
-            self.productsComputerSkipInitial = false;
-        } else {
+        if (params) {
+            console.log('productFetchComputer', params);
 
-            if (params) {
-                console.log('productFetchComputer', params);
+            self.busy(true);
 
-                self.busy(true);
-
-                fetch('/api/stockManagement/fetchProducts', {
-                    method: 'POST',
-                    headers: window.fetchHeaders,
-                    body: params
+            fetch('/api/stockManagement/fetchProducts', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                body: params
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    console.log(data);
+                    self.productSearchResults(data.Results.map(r => resultRecord(
+                        r,
+                        data.BranchGroupTotals,
+                        self.branchId() ? data.RangeRecords : [],
+                        data.ContrastRecords
+                    )));
+                    self.busy(false);
                 })
-                    .then(window.handleFetchResponse)
-                    .then(data => {
-                        console.log(data);
-                        self.productSearchResults(data.Results);
-                        self.busy(false);
-                    })
-                    .catch(err => {
-                        self.busy(false);
-                        window.catchFetchError(err);
-                    });
-            } else {
-                self.productSearchResults([]);
-            }
+                .catch(err => {
+                    self.busy(false);
+                    window.catchFetchError(err);
+                });
+        } else {
+            self.productSearchResults([]);
         }
     }, self)
     .extend({
@@ -880,3 +959,18 @@
 
     return self;
 };
+
+const resultRecord = ((rec, branchGroupRecords, rangeRecords, contrastRecords) => {
+    let self = Object.assign({}, rec);
+
+    self.BranchGroup = branchGroupRecords.find(bg => bg.ProductID === self.ProductID);
+
+    self.Range = rangeRecords.find(b => b.ProductID === self.ProductID);
+
+    self.Contrast = contrastRecords.find(c => c.ProductID === self.ProductID) ?? {
+        ContrastBranchA_Quantity: 0,
+        ContrastBranchB_Quantity: 0
+    };
+
+    return self;
+});

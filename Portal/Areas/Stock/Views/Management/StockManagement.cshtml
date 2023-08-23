@@ -109,6 +109,11 @@
     </div>
 </div>
 
+<p>
+    Select e.g. Kingston, Contrast A Total should not read 1 all the way down.
+    Only BEDDG3267 has 1 in.
+</p>
+
 <ul class="nav nav-tabs mt-3">
     <li class="nav-item">
         <a href="#stock-management-overview-tab" data-bs-toggle="tab" class="nav-link active">
@@ -128,21 +133,23 @@
 </ul>
 <div id="stock-management-tab-container" class="tab-content">
     <div class="prefilters">
-        <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: branchGroupParams }"></div>
-        <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: branchParams }"></div>
+        <div id="branch-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: branchGroupParams }"></div>
+        <div id="branch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: branchParams }"></div>
         <div id="product-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productTypeParams }"></div>
     </div>
     <div class="prefilters" style="display: none;" data-bind="visible: secondaryFiltersVisible">
-        <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: launchParams }"></div>
-        <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: brandParams }"></div>
-        <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productColourParams }"></div>
+        <div id="launch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: launchParams }"></div>
+        <div id="brand-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: brandParams }"></div>
+        <div id="product-colour-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productColourParams }"></div>
+        <div id="stock-level-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: stockLevelParams }"></div>
+        <div id="collection-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: collectionParams }"></div>
     </div>
     <div class="prefilters" style="display: none;" data-bind="visible: secondaryFiltersVisible">
-        <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: attributeGroupParams }"></div>
+        <div id="attribute-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: attributeGroupParams }"></div>
         <label style="display: none;" class="flex-grow-0" data-bind="visible: attributeGroup">
             equals/contains
         </label>
-        <div data-bind="visible: attributeGroup, component: { name: 'mdc-kendo-multiselect-component', params: attributesParams }"></div>
+        <div id="attribute-prefilter" data-bind="visible: attributeGroup, component: { name: 'mdc-kendo-multiselect-component', params: attributesParams }"></div>
     </div>
     <div id="stock-management-overview-tab" class="tab-pane active">
         <div class="blocker" data-bind="flexVisible: overviewTabBusy, toggleOpacity: overviewTabBusy">
@@ -152,14 +159,113 @@
             </h4>
         </div>
         <div style="display: none" data-bind="visible: productSearchResults().length">
-            <div class="product-search-results">
+            <table class="table table-condensed product-search-results">
+                <colgroup>
+                    <col />
+                    @*<col />*@
+                    <col />
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>
+                            Code
+                        </th>
+                        @*<th>
+                            Classification
+                        </th>*@
+                        <th>
+                            Name
+                            <i class="result-count-display">
+                                <span data-bind="text: productSearchResults().length"></span>
+                                Results
+                            </i>
+                        </th>
+                    </tr>
+                </thead>
+                @*<tbody>
+                    <tr>
+                        <td>
+                            <span class="bold">
+                                Total
+                            </span>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <span class="bold" data-bind="text: productSearchResults().reduce((acc, curr) => acc + curr, 0)"></span>
+                        </td>
+                    </tr>
+                </tbody>*@
                 <!-- ko foreach: productSearchResults -->
-                <div class="product-result">
-                    <span data-bind="text: Code"></span>
-                    <span data-bind="text: Name"></span>
-                </div>
+                <tbody>
+                    <tr class="product-result">
+                        <td>
+                            <span data-bind="text: Code"></span>
+                        </td>
+                        @*<td>
+                            <div class="d-flex align-items-center gap-3">
+                                <!-- <span data-bind="text: ProductTypeName"></span> -->
+                                <span class="d-flex flex-column smaller">
+                                    <span data-bind="text: `${ProductGroupCode} - ${ProductGroupName}`"></span>
+                                    <span data-bind="text: `${ItemTypeCode} - ${ItemTypeName}`"></span>
+                                </span>
+                            </div>
+                        </td>*@
+                        <td>
+                            <span data-bind="text: Name"></span>
+                        </td>
+                    </tr>
+                </tbody>
                 <!-- /ko -->
-            </div>
+            </table>
+            <table class="table table-condensed product-search-results totals-table">
+                <colgroup>
+                    <col />
+                    <!-- ko if: branchId -->
+                    <col />
+                    <!-- /ko -->
+                    <col />
+                    <col />
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>
+                            Branch Group Total
+                        </th>
+                        <!-- ko if: productSearchResults().length && productSearchResults()[0].Range -->
+                        <th>
+                            Branch Total
+                        </th>
+                        <!-- /ko -->
+                        <th>
+                            Contrast A Total
+                        </th>
+                        <th>
+                            Contrast B Total
+                        </th>
+                    </tr>
+                </thead>
+                <!-- ko foreach: productSearchResults -->
+                <tbody>
+                    <tr class="product-result">
+                        <td>
+                            <span data-bind="text: BranchGroup.Quantity"></span>
+                        </td>
+                        <!-- ko if: Range -->
+                        <td>
+                            <span data-bind="text: Range?.Quantity"></span>
+                        </td>
+                        <!-- /ko -->
+                        <td>
+                            <span data-bind="text: Contrast?.ContrastBranchA_Quantity"></span>
+                        </td>
+                        <td>
+                            <span data-bind="text: Contrast?.ContrastBranchB_Quantity"></span>
+                        </td>
+                    </tr>
+                </tbody>
+                <!-- /ko -->
+            </table>
         </div>
     </div>
     <div id="stock-management-range-tab" class="tab-pane">

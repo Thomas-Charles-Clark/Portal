@@ -396,6 +396,8 @@ namespace SharedEFClasses.Models
 
         public virtual DbSet<MertexLive.ProductColour> ProductColours { get; set; }
 
+        public virtual DbSet<MertexLive.CollectionLive> Collections_Live { get; set; }
+
         #endregion
 
 

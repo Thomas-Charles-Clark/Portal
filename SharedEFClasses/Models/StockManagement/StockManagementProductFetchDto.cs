@@ -15,6 +15,8 @@ namespace SharedEFClasses.Models.StockManagement
         public short? LaunchID { get; set; }
         public byte? BrandID { get; set; }
         public int? ProductColourID { get; set; }
+        public byte? StockLevelID { get; set; }
+        public string CollectionCode { get; set; }
         public IEnumerable<short> AttributeIDs { get; set; }
     }
 }

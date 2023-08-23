@@ -37,12 +37,17 @@ namespace SharedEFClasses.Models
                 objDto.LaunchID,
                 objDto.BrandID,
                 objDto.ProductColourID,
+                objDto.StockLevelID,
+                objDto.CollectionCode,
                 AttributeIDs = attributeIds.AsTableValuedParameter("AttributeIDsTableType")
             }, null, null, CommandType.StoredProcedure);
 
             return new StockManagementProductSearchResponse()
             {
-                Results = reply.Read<StockManagementProductSearchRecord>()
+                Results = reply.Read<StockManagementProductSearchRecord>(),
+                BranchGroupTotals = reply.Read<StockManagementBranchGroupTotalRecord>(),
+                RangeRecords = reply.Read<StockManagementRangeRecord>(),
+                ContrastRecords = reply.Read<StockManagementContrastRecord>()
             };
         }
     }
