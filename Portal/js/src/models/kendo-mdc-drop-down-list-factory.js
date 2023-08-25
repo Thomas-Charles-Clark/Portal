@@ -36,12 +36,14 @@
     popupSettings,
     grouping,
     autoWidth,
+    clearFunction,
     afterClear,
     autoBind,
     pageSize,
     method,
     cascade,
-    parameterMap
+    parameterMap,
+    select
 } = {
         widget: ko.observable(),
         endPoint: null,
@@ -80,11 +82,13 @@
         },
         grouping: [],
         autoWidth: false,
+        clearFunction: null,
         afterClear: null,
         autoBind: true,
         pageSize: null,
         method: "GET",
-        parameterMap: null
+        parameterMap: null,
+        select: null,
     }) {
 
     if (endPoint == null && data == null) {
@@ -206,6 +210,7 @@
             close: function (e) {
                 $(e.sender._widgetOptions.value.mdcSelect.root_).toggleClass('mdc-select--focused');
             },
+            select: select,
             data: dataSource,
             dataBound: dataBound,
             valuePrimitive: false,
@@ -219,7 +224,7 @@
                 valueMapper: valueMapper
             } : false
         },
-        clearFunction: function () {
+        clearFunction: clearFunction ? function () { clearFunction(this) } : function () {
             var self = this;
             if (ko.isObservableArray(self.observable)) {
                 self.observable([]);
@@ -236,10 +241,11 @@
                 if (self.dropDownListSettings.widget()._widgetOptions.value.mdcSelect.label_ != null)
                     self.dropDownListSettings.widget()._widgetOptions.value.mdcSelect.label_.float(false);
             }
-            if (typeof afterClear === 'function') {
-                afterClear();
+            if (typeof self.afterClear === 'function') {
+                self.afterClear();
             }
         },
+        afterClear: afterClear,
         permitRevert: permitRevert,
         revertFunction: function () {
             var self = this;

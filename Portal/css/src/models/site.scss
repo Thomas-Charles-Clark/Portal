@@ -3285,6 +3285,8 @@ p.hint {
     border-radius: 50%;
     width: 32px;
     height: 32px;
+    min-height: 32px;
+    min-width: 32px;
     -webkit-animation: spin 2s linear infinite;
     animation: spin 2s linear infinite;
 }

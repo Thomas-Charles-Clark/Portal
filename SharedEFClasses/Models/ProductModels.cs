@@ -2068,6 +2068,15 @@ namespace SharedEFClasses.Models.Products
                 return $"{ProductType?.Name} (({ProductGroup?.Code}) {ProductGroup?.Name} - ({ItemType?.Code}) {ItemType?.Name})";
             }
         }
+
+        [NotMapped]
+        public string PseudoKey
+        {
+            get
+            {
+                return $"{ProductGroupID};{ItemTypeID}";
+            }
+        }
     }
 
     [Table("ProductType", Schema = "Maintenance")]

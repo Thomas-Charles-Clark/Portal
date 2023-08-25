@@ -43,11 +43,12 @@ namespace Portal.Controllers
 
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
         [HttpGet]
-        public IQueryable<Mertex_ProductType> Mertex_ProductTypeValueMapper(byte? productTypeId)
+        public IQueryable<Mertex_ProductType> Mertex_ProductTypeValueMapper(byte? productGroupId, short? itemTypeId)
         {
             return PortalDb.Mertex_ProductTypes.Where(p =>
                 p.ProductTypeID != null &&
-                p.ProductTypeID == productTypeId
+                p.ProductGroupID == productGroupId &&
+                p.ItemTypeID == itemTypeId
             ).AsQueryable();
         }
     }

@@ -1,15 +1,22 @@
-﻿const stockManagementViewModel = ({ } = {}) => {
+﻿const
+    TAB_OVERVIEW = 0,
+    TAB_RANGE = 1,
+    TAB_TRANSFER = 2
+
+const stockManagementViewModel = ({ } = {}) => {
     let self = {};
 
     //#region Properties
 
     self.busy = ko.observable(false);
 
-    self.overviewTabBusy = ko.observable(false);
+    self.viewingTab = ko.observable(0);
 
-    self.rangeTabBusy = ko.observable(false);
+    self.overviewBusy = ko.observable(false);
 
-    self.transferTabBusy = ko.observable(false);
+    self.rangeBusy = ko.observable(false);
+
+    self.transferBusy = ko.observable(false);
 
     self.modalBusy = ko.observable(false);
 
@@ -19,10 +26,15 @@
 
     self.ready = ko.observable(true);
 
+    self.displayWarehouseStock = ko.observable(false);
+
+    self.displayRingFencedStock = ko.observable(false);
+
+    self.displaySales = ko.observable(false);
 
     //#region Prefilters
 
-    self.productTypeId = ko.observable();
+    self.productTypeKey = ko.observable();
 
     self.productType = ko.observable();
 
@@ -30,7 +42,7 @@
 
     self.branchGroup = ko.observable();
 
-    self.branchId = ko.observable();
+    self.branchId = ko.observable(3);
 
     self.branch = ko.observable();
 
@@ -79,20 +91,75 @@
 
     //#region Components
 
+    self.genericUnsavedChangesSelect = (e) => {
+        e.preventDefault(); // this prevents the Kendo control from actively selecting the thing the user selected
+        self.checkUnsavedChangesThenSelect(e); // this does our check; async promise, confirm dialog, la la la...
+    }
+
+    self.genericUnsavedChangesMultiSelect = (e) => {
+        e.preventDefault(); // this prevents the Kendo control from actively selecting the thing the user selected
+        self.checkUnsavedChangesThenMultiSelect(e); // this does our check; async promise, confirm dialog, la la la...
+    }
+
+    self.genericUnsavedChangesMultiDeselect = (e) => {
+        e.preventDefault(); // this prevents the Kendo control from actively selecting the thing the user selected
+        self.checkUnsavedChangesThenMultiDeselect(e); // this does our check; async promise, confirm dialog, la la la...
+    }
+
+    self.genericUnsavedChangesClear = (e) => {
+        self.checkUnsavedChangesThenClear(e);
+    }
+
+    self.displayWarehouseStockParams = {
+        label: "Display Warehouse Stock?",
+        checkboxId: "display-warehouse-stock",
+        observable: self.displayWarehouseStock,
+        originalValue: false,
+        useNativeValidation: false,
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        busy: ko.observable(false)
+    }
+
+    self.displayRingFencedStockParams = {
+        label: "Display Ring Fenced Stock?",
+        checkboxId: "display-ring-fenced-stock",
+        observable: self.displayRingFencedStock,
+        originalValue: false,
+        useNativeValidation: false,
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        busy: ko.observable(false)
+    }
+
+    self.displaySalesParams = {
+        label: "Display Sales?",
+        checkboxId: "display-sales",
+        observable: self.displaySales,
+        originalValue: false,
+        useNativeValidation: false,
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        busy: ko.observable(false)
+    }
+
     self.productTypeParams = kendoMDCDropDownList({
         label: 'Product Type',
         odata: true,
         endPoint: '/odata/Mertex_ProductTypes?$expand=ProductType,ItemType,ProductGroup',
         textField: 'Label',
-        valueField: 'ProductTypeID',
+        valueField: 'PseudoKey',
         virtual: true,
         pageSize: 20,
         virtualOptions: {
             itemHeight: 34,
             mapValueTo: 'dataItem',
             valueMapper: function (options) {
+                let splitKey = options.value.split(';');
+                let pgid = splitKey[0];
+                let itid = splitKey[1];
                 $.ajax({
-                    url: `/odata/Mertex_ProductTypes/Default.Mertex_ProductTypeValueMapper(productTypeId=${options.value || "null"})?$expand=ProductType,ItemType,ProductGroup`,
+                    url: `/odata/Mertex_ProductTypes/Default.Mertex_ProductTypeValueMapper(productGroupId=${pgid || "null"}, itemTypeId=${itid || "null"})?$expand=ProductType,ItemType,ProductGroup`,
                     type: 'GET',
                     success: function (data) {
                         options.success(data.value);
@@ -103,59 +170,25 @@
                 });
             }
         },
-        idObservable: self.productTypeId,
+        idObservable: self.productTypeKey,
         objObservable: self.productType,
         filter: 'contains',
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
         revertable: ko.observable(false),
+        select: 'single',
         readOnly: false,
         autoBind: true,
         height: 340,
-        sort: {
+        sort: [{
             dir: 'asc',
-            field: 'productTypeId'
-        },
+            field: 'productGroupCode'
+        }, {
+            dir: 'asc',
+            field: 'itemTypeCode'
+        }],
         parameterMap: (data) => {
-            //Generate parameters in odata v4 format
-
-            //if (data.filter &&
-            //    data.filter.filters.length &&
-            //    data.filter.filters[0].value != '') {
-
-            //    let filterValue = data.filter.filters[0].value;
-
-            //    data.filter.filters = [{
-            //        field: 'ProductType.Name',
-            //        ignoreCase: true,
-            //        operator: 'startswith',
-            //        value: filterValue
-            //    }, {
-            //        field: 'ProductGroup.Name',
-            //        ignoreCase: true,
-            //        operator: 'startswith',
-            //        value: filterValue
-            //    }, {
-            //        field: 'ProductGroup.Code',
-            //        ignoreCase: true,
-            //        operator: 'eq',
-            //        value: filterValue
-            //    }, {
-            //        field: 'ItemType.Name',
-            //        ignoreCase: true,
-            //        operator: 'startswith',
-            //        value: filterValue
-            //    }, {
-            //        field: 'ItemType.Code',
-            //        ignoreCase: true,
-            //        operator: 'eq',
-            //        value: filterValue
-            //    }]
-
-            //    data.filter.logic = "or";
-            //}
-
             let d = kendo.data.transports['odata-v4'].parameterMap(data);
 
             delete d.$inlinecount; // <-- remove inlinecount
@@ -173,9 +206,11 @@
 
                 d.$filter = `StartsWith(ToLower(ProductType/Name), '${filterValue}') OR StartsWith(ToLower(ProductGroup/Name), '${filterValue}') OR ToLower(ProductGroup/Code) EQ '${filterValue}' OR StartsWith(ToLower(ItemType/Name), '${filterValue}') OR ToLower(ItemType/Code) EQ '${filterValue}'`;
             }
-            
+
             return d;
-        }
+        },
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear
     });
 
     self.branchGroupParams = kendoMDCDropDownList({
@@ -215,7 +250,9 @@
         sort: {
             dir: 'asc',
             field: 'branchGroupId'
-        }
+        },
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear
     });
 
     self.branchParams = kendoMDCDropDownList({
@@ -274,7 +311,9 @@
             }
 
             return d;
-        }
+        },
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear
     });
 
     self.launchParams = kendoMDCDropDownList({
@@ -314,7 +353,9 @@
         sort: {
             dir: 'desc',
             field: 'launchId'
-        }
+        },
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear
     });
 
     self.brandParams = kendoMDCDropDownList({
@@ -350,7 +391,9 @@
         readOnly: false,
         filter: 'contains',
         autoBind: true,
-        height: 340
+        height: 340,
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear
     });
 
     self.productColourParams = kendoMDCDropDownList({
@@ -390,7 +433,9 @@
         sort: {
             dir: 'asc',
             field: 'Name'
-        }
+        },
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear
     });
 
     self.stockLevelParams = kendoMDCDropDownList({
@@ -416,7 +461,9 @@
         readOnly: false,
         filter: 'contains',
         autoBind: true,
-        height: 102
+        height: 102,
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear
     });
 
     self.collectionParams = kendoMDCDropDownList({
@@ -456,7 +503,9 @@
         sort: {
             dir: 'asc',
             field: 'Name'
-        }
+        },
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear
     });
 
     self.attributeGroupParams = kendoMDCDropDownList({
@@ -492,7 +541,9 @@
         readOnly: false,
         filter: 'contains',
         autoBind: true,
-        height: 340
+        height: 340,
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear
     });
 
     self.attributeParams = kendoMDCDropDownList({
@@ -550,7 +601,9 @@
         sort: {
             dir: 'asc',
             field: 'SortOrder'
-        }
+        },
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear
     });
 
     self.attributesParams = {
@@ -587,257 +640,23 @@
             autoBind: true,
             autoClose: false,
             optionLabel: ' ',
-            filter: 'startswith'
+            filter: 'startswith',
+            select: self.genericUnsavedChangesMultiSelect,
+            deselect: self.genericUnsavedChangesMultiDeselect
         },
-        clearFunction: function () {
-            var self = this
-            self.multiSelectSettings.value([]);
-            self.multiSelectSettings.widget().value([]);
-            self.multiSelectSettings.widget().trigger('change');
+        clearFunction: async function () {
+            await self.unsavedChanges().then(() => {
+                var self = this;
+                self.multiSelectSettings.value([]);
+                self.multiSelectSettings.widget().value([]);
+                self.multiSelectSettings.widget().trigger('change');
+            }).catch((e) => { });
+
         }
     };
 
-    //self.primaryGridDataSource = new kendo.data.DataSource({
-    //    serverFiltering: true,
-    //    serverSorting: true,
-    //    serverGrouping: true,
-    //    serverPaging: true,
-    //    serverAggregates: true,
-    //    pageSize: 10,
-    //    type: 'odata-v4',
-    //    transport: {
-    //        read: {
-    //            url: function () {
-    //                return `/odata/RingFencePreAllocations/Default.FilterRingFencePreAllocations(tradeAccountGroupId=${(self.prefilterTradeAccountGroupId.peek() || "null")},tradeAccountId=${(self.prefilterTradeAccountId.peek() || "null")},productId=${(self.prefilterProductId.peek() || "null")})?$expand=StockLocation,Product,TradeAccount`
-    //            },
-    //            dataType: 'json'
-    //        },
-    //        parameterMap: function (options, type) {
-    //            var pmap = kendo.data.transports['odata-v4'].parameterMap(options);
-
-    //            // remove invalid parameters that web api doesn't support
-    //            // thanks, https://stackoverflow.com/questions/28995757/a-binary-operator-with-incompatible-types-was-detected-found-operand-types-edm/48919770
-    //            delete pmap.$inlinecount; // <-- remove inlinecount
-    //            delete pmap.$format; // <-- remove format
-    //            delete pmap.$callback; // <-- remove callback
-
-    //            pmap.$count = true;
-
-    //            if (pmap.$filter) {
-    //                pmap.$filter = pmap.$filter.replace(/\'/g, '')
-    //            }
-
-    //            console.log(pmap);
-
-    //            return pmap;
-    //        }
-    //    },
-    //    schema: {
-    //        model: {
-    //            id: 'RingFencePreAllocationID',
-    //            fields: {
-    //                RingFencePreAllocationID: {
-    //                    type: 'number',
-    //                    editable: false
-    //                },
-    //                StockLocation: {
-    //                    type: 'object',
-    //                },
-    //                InitialQuantity: {
-    //                    type: 'number'
-    //                },
-    //                CurrentQuantity: {
-    //                    type: 'number'
-    //                },
-    //                TradeAccount: {
-    //                    type: 'object',
-    //                    validation: {
-    //                        required: true
-    //                    },
-    //                    defaultValue: null
-    //                },
-    //                Product: {
-    //                    type: 'object',
-    //                    validation: {
-    //                        required: true
-    //                    },
-    //                    defaultValue: null
-    //                }
-    //            }
-    //        },
-    //        //aggregates: function (e) {
-    //        //    $.get(`/odata/RingFencePreAllocations/Default.FilterRingFencePreAllocations(tradeAccountGroupId=${(self.prefilterTradeAccountGroupId.peek() || "null")},tradeAccountId=${(self.prefilterTradeAccountId.peek() || "null")},productId=${(self.prefilterProductId.peek() || "null")})?$apply=aggregate(CurrentQuantity with sum as CurrentQuantitySum, InitialQuantity with sum as InitialQuantitySum)`).then(function (d) {
-    //        //        console.log(d);
-    //        //        if (d != null && d.hasOwnProperty('value')) {
-    //        //            if (Array.isArray(d.value) && d.value.length == 1) {
-    //        //                self.currentQuantitySum(d.value[0].CurrentQuantitySum);
-    //        //                self.initialQuantitySum(d.value[0].InitialQuantitySum);
-    //        //            }
-    //        //        }
-    //        //    });
-    //        //    //console.log(JSON.parse(result.responseText));
-    //        //} //"AggregateResults",
-    //    },
-    //    //aggregate: [{
-    //    //    field: 'InitialQuantity', aggregate: 'sum'
-    //    //}, {
-    //    //    field: 'CurrentQuantity', aggregate: 'sum'
-    //    //}],
-    //    requestStart: function (e) {
-    //        self.busy(true);
-    //    },
-    //    requestEnd: function (e) {
-    //        self.busy(false);
-    //    }
-    //});
-
-    //self.primaryGrid = {
-    //    autoBind: false,
-    //    widget: ko.observable(),
-    //    useKOTemplates: true,
-    //    rowTemplate: 'primary-grid-row-template',
-    //    data: self.primaryGridDataSource,
-    //    selectable: false,
-    //    columns: [{
-    //        field: 'StockLocationID',
-    //        title: 'Stock Location',
-    //        width: 140,
-    //        filterable: {
-    //            multi: true,
-    //            search: true,
-    //            dataSource: getStockLocationIDFilterOptions(),
-    //            itemTemplate: function (e) {
-    //                return '<li><label class="pointer display-block"><input type="checkbox" name="' + e.field + '" value="#: data.StockLocationID #"/><span class="margin-left-5">#: data.Name || "Select All" #</span></label></li>'
-    //            }
-    //        }
-    //    }, {
-    //        field: 'InitialQuantity',
-    //        title: 'Initial Quantity',
-    //        width: 105,
-    //        headerAttributes: {
-    //            class: 'text-right'
-    //        },
-    //        filterable: {
-    //            extra: false,
-    //            operators: {
-    //                number: {
-    //                    gte: 'Greater than or equal to',
-    //                    gt: 'Greater than',
-    //                    eq: 'Equal to',
-    //                    neq: 'Not equal to',
-    //                    lt: 'Less than',
-    //                    lte: 'Less than or equal to'
-    //                }
-    //            }
-    //        },
-    //        //aggregates: ["sum"],
-    //        //footerTemplate: function (e) {
-    //        //    return '<span class="display-block text-right">Total:<br/><span data-bind="text: formatNumber(initialQuantitySum(), 2, \'en-GB\')"></span></span>';
-    //        //}
-    //    }, {
-    //        field: 'CurrentQuantity',
-    //        title: 'Current Quantity',
-    //        width: 105,
-    //        headerAttributes: {
-    //            class: 'text-right'
-    //        },
-    //        filterable: {
-    //            extra: false,
-    //            operators: {
-    //                number: {
-    //                    gte: 'Greater than or equal to',
-    //                    gt: 'Greater than',
-    //                    eq: 'Equal to',
-    //                    neq: 'Not equal to',
-    //                    lt: 'Less than',
-    //                    lte: 'Less than or equal to'
-    //                }
-    //            }
-    //        },
-    //        //aggregates: ["sum"],
-    //        //footerTemplate: function (e) {
-    //        //    return '<span class="display-block text-right">Total:<br/><span data-bind="text: formatNumber(currentQuantitySum(), 2, \'en-GB\')"></span></span>';
-    //        //}
-    //    }, {
-    //        field: 'Code',
-    //        title: 'Product',
-    //        width: 200,
-    //        filterable: {
-    //            extra: false,
-    //            operators: {
-    //                string: {
-    //                    startswith: "Starts with",
-    //                    eq: "Is equal to",
-    //                    neq: "Is not equal to"
-    //                }
-    //            }
-    //        }
-    //    }, {
-    //        field: 'Batch',
-    //        title: 'Batch',
-    //        width: 120,
-    //        filterable: {
-    //            extra: false,
-    //            operators: {
-    //                string: {
-    //                    startswith: "Starts with",
-    //                    eq: "Is equal to",
-    //                    neq: "Is not equal to"
-    //                }
-    //            }
-    //        }
-    //    }, {
-    //        field: 'Piece',
-    //        title: 'Piece',
-    //        width: 120,
-    //        filterable: {
-    //            extra: false,
-    //            operators: {
-    //                string: {
-    //                    startswith: "Starts with",
-    //                    eq: "Is equal to",
-    //                    neq: "Is not equal to"
-    //                }
-    //            }
-    //        }
-    //    }, {
-    //        field: 'TradeAccount',
-    //        title: 'Trade Account',
-    //        filterable: false
-    //    }, {
-    //        field: 'NoField',
-    //        title: 'Controls',
-    //        width: 154,
-    //        filterable: false,
-    //        attributes: {
-    //            class: 'text-center'
-    //        },
-    //    }],
-    //    filterMenuInit: function (e) {
-    //        console.log(e);
-    //        if (e.field.indexOf('Quantity') > -1) {
-    //            $(e.container).css("width", "240px")
-    //        }
-    //    },
-    //    filterable: {
-    //        mode: 'menu'
-    //    },
-    //    filterable: true,
-    //    sortable: true,
-    //    pageable: true,
-    //    pageSize: 10,
-    //    pageable: {
-    //        pageSize: 10,
-    //        pageSizes: [10, 20, 50, 100, 250, 500, 'all']
-    //    },
-    //    dataBound: function (e) {
-    //        ko.cleanNode(document.getElementsByClassName('k-grid-footer')[0]);
-    //        ko.applyBindings(viewModel, document.getElementsByClassName('k-grid-footer')[0]);
-    //    }
-    //}
-
     //#endregion
-
+        
 
     //#region Subscriptions
 
@@ -853,15 +672,141 @@
     //#endregion
 
 
+    //#region Methods
+
+    self.setBusy = () => {
+        switch (self.viewingTab()) {
+            case TAB_OVERVIEW:
+                self.overviewBusy(true);
+                break;
+            case TAB_RANGE:
+                self.rangeBusy(true);
+                break;
+            case TAB_TRANSFER:
+                self.transferBusy(true);
+                break;
+        }
+    }
+
+    self.clearBusy = () => {
+        switch (self.viewingTab()) {
+            case TAB_OVERVIEW:
+                self.overviewBusy(false);
+                break;
+            case TAB_RANGE:
+                self.rangeBusy(false);
+                break;
+            case TAB_TRANSFER:
+                self.transferBusy(false);
+                break;
+        }
+    }
+
+    self.closeModal = () => {
+        self.modal.hide();
+    }
+
+    self.confirmModal = () => {
+        window.showConfirm("Are you sure?", "Put the lime in the coconut?", () => {
+            self.closeModal();
+        }, () => {
+
+        });
+    }
+
+    self.checkUnsavedChangesThenSelect = async (event) => {
+        await self.unsavedChanges().then((d) => {
+            //console.log('go', event.sender.options.dataValueField, event.dataItem[event.sender.options.dataValueField]);
+            event.sender._widgetOptions.value(event.dataItem[event.sender.options.dataValueField]);
+
+        }).catch((e) => { });
+    }
+
+    self.checkUnsavedChangesThenMultiSelect = async (event) => {
+        await self.unsavedChanges().then((d) => {
+            //console.log('go', event.sender.options.dataValueField, event.dataItem[event.sender.options.dataValueField]);
+            let v = event.sender._widgetOptions.value();
+
+            v.push(event.dataItem[event.sender.options.dataValueField]);
+
+            event.sender.value(v);
+
+            event.sender.trigger('change');
+
+        }).catch((e) => { });
+    }
+
+    self.checkUnsavedChangesThenMultiDeselect = async (event) => {
+        await self.unsavedChanges().then((d) => {
+            //console.log('go', event.sender.options.dataValueField, event.dataItem[event.sender.options.dataValueField]);
+            let v = event.sender._widgetOptions.value();
+
+            v = v.filter(i => i != event.dataItem[event.sender.options.dataValueField]);
+
+            event.sender.value(v);
+
+            event.sender.trigger('change');
+
+        }).catch((e) => { });
+    }
+
+    self.checkUnsavedChangesThenClear = async (options) => {
+        await self.unsavedChanges().then(() => {
+            var self = options; // self is now the params of the control the user just interacted with
+
+            if (ko.isObservableArray(self.observable)) {
+                self.observable([]);
+            } else {
+                self.observable(undefined);
+            }
+            if (self.dropDownListSettings.widget()) {
+                if (ko.isObservableArray(self.observable)) {
+                    self.dropDownListSettings.widget().value([]);
+                } else {
+                    self.dropDownListSettings.widget().value('');
+                }
+                self.dropDownListSettings.widget()._widgetOptions.value.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
+                if (self.dropDownListSettings.widget()._widgetOptions.value.mdcSelect.label_ != null)
+                    self.dropDownListSettings.widget()._widgetOptions.value.mdcSelect.label_.float(false);
+            }
+            if (typeof self.afterClear === 'function') {
+                self.afterClear();
+            }
+        }).catch((e) => { });
+    }
+
+    self.unsavedChanges = () => {
+        return new Promise((resolve, reject) => {
+            let unsaved = self.productSearchResults.peek().find(p => p.branchTargetParams.unsavedChanges());
+
+            if (unsaved) {
+                window.showConfirm('Unsaved changes', 'You have unsaved changes. If you proceed your changes will be lost. Proceed?', () => {
+                    resolve();
+                }, () => {
+                    reject();
+                });
+            } else {
+                resolve();
+            }
+        });
+    }
+
+    //#endregion
+
+
     //#region Computeds
+
+    self.productTypeId = ko.computed(() => { return self.productType()?.ProductTypeID }, self);
+
+    self.productGroupCode = ko.computed(() => { return self.productType()?.ProductGroupCode }, self);
+
+    self.itemTypeCode = ko.computed(() => { return self.productType()?.ItemTypeCode }, self);
 
     self.secondaryFiltersVisible = ko.computed(() => {
         return self.productTypeId() && (self.branchGroupId() || self.branchId());
     }, self);
 
-    self.productGroupCode = ko.computed(() => { return self.productType()?.ProductGroupCode }, self);
-
-    self.itemTypeCode = ko.computed(() => { return self.productType()?.ItemTypeCode }, self);
+    self.previousParameters = null;
 
     self.parametersComputer = ko.computed(() => {
         let params = {
@@ -885,22 +830,31 @@
             }
         });
 
-        return JSON.stringify(params);
+        let fire = Object.keys(params).find(k => params[k] != null && params[k] != '');
 
-        //if (params.productTypeId) {
-        //    return JSON.stringify(params);
-        //} else {
-        //    return null;
-        //}
+        if (fire) {
+            console.log("parametersComputer fire was true");
+            return JSON.stringify(params);
+        } else {
+            return null;
+        }
+    }, self).extend({
+        rateLimit: {
+            timeout: 50,
+            method: 'notifyWhenChangesStop'
+        }
     });
 
-    self.productFetchComputer = ko.computed(() => {
+    self.productFetch = ko.computed(() => {
+
         let params = self.parametersComputer();
 
         if (params) {
-            console.log('productFetchComputer', params);
+            console.log('productFetch', JSON.parse(params));
 
-            self.busy(true);
+            ko.ignoreDependencies(() => {
+                self.setBusy();
+            });
 
             fetch('/api/stockManagement/fetchProducts', {
                 method: 'POST',
@@ -909,6 +863,7 @@
             })
                 .then(window.handleFetchResponse)
                 .then(data => {
+                    self.previousParameters = params;
                     console.log(data);
                     self.productSearchResults(data.Results.map(r => resultRecord(
                         r,
@@ -916,44 +871,43 @@
                         self.branchId() ? data.RangeRecords : [],
                         data.ContrastRecords
                     )));
-                    self.busy(false);
+
+                    ko.ignoreDependencies(() => {
+                        self.clearBusy();
+                    });
                 })
                 .catch(err => {
-                    self.busy(false);
+                    self.clearBusy();
                     window.catchFetchError(err);
                 });
         } else {
             self.productSearchResults([]);
         }
-    }, self)
-    .extend({
-        rateLimit: {
-            timeout: 50,
-            method: 'notifyWhenChangesStop'
-        }
     });
 
-    //#endregion
-
-
-    //#region Methods
-
-    self.closeModal = () => {
-        self.modal.hide();
-    }
-
-    self.confirmModal = () => {
-        window.showConfirm('Are you sure?', 'Put the lime in the coconut?', () => {
-            self.closeModal();
-        }, null);
-    }
+    //if (params.productTypeId) {
+    //      return JSON.stringify(params);
+    //  } else {
+    //      return null;
+    //  }
+    //});
 
     //#endregion
 
 
     //#region Events
 
+    document.getElementById("overview-tab-anchor").addEventListener('show.bs.tab', () => {
+        self.viewingTab(TAB_OVERVIEW);
+    });
 
+    document.getElementById("range-tab-anchor").addEventListener('show.bs.tab', () => {
+        self.viewingTab(TAB_RANGE);
+    });
+
+    document.getElementById("transfer-tab-anchor").addEventListener('show.bs.tab', () => {
+        self.viewingTab(TAB_TRANSFER);
+    });
 
     //#endregion
 
@@ -963,14 +917,114 @@
 const resultRecord = ((rec, branchGroupRecords, rangeRecords, contrastRecords) => {
     let self = Object.assign({}, rec);
 
-    self.BranchGroup = branchGroupRecords.find(bg => bg.ProductID === self.ProductID);
+    self.BranchGroup = branchGroupRecords.find(bg => bg.ProductID === self.ProductID) ?? {
+        Quantity: 0
+    };
 
-    self.Range = rangeRecords.find(b => b.ProductID === self.ProductID);
+    self.Range = rangeRecords.find(b => b.ProductID === self.ProductID) ?? {
+        Quantity: 0
+    }
 
     self.Contrast = contrastRecords.find(c => c.ProductID === self.ProductID) ?? {
         ContrastBranchA_Quantity: 0,
         ContrastBranchB_Quantity: 0
     };
 
+    self.branchGroupTarget = ko.observable(self.BranchGroup.Quantity);
+    self.branchGroupActual = ko.observable(0);
+
+    self.branchTarget = ko.observable(self.Range.Quantity).extend({
+        numberUnformatted: {
+            minValue: 0,
+            maxValue: 999,
+            digits: 0,
+            currency: {
+                FormattingCulture: 'en-GB'
+            }
+        },
+        numeric: {
+            params: {
+                required: 1,
+                numericMin: 0,
+                numericMax: 999
+            }
+        }
+    });
+
+    self.branchTargetBusy = ko.observable(false);
+
+    self.saveBranchTarget = (event) => {
+        self.branchTargetBusy(true);
+        setTimeout(() => {
+            self.branchTargetBusy(false);
+        }, 2000);
+    }
+
+    self.branchTargetParams = {
+        observable: self.branchTarget,
+        useNativeValidation: false,
+        decorateInputElement: true,
+        insertValidationMessages: false,
+        showClear: true,
+        busy: self.branchTargetBusy,
+        buttons: false,
+        inputType: 'number',
+        minValue: 0,
+        maxValue: 999,
+        step: 1,
+        enable: ko.observable(true),
+        disable: self.branchTargetBusy,
+        clearable: ko.observable(false),
+        revertable: ko.observable(true),
+        originalValue: self.branchTarget(),
+        increment: () => { },
+        decrement: () => { },
+        revertFunction: () => {
+            self.branchTarget(self.branchTargetParams.originalValue);
+            self.branchTargetParams.unsavedChanges(false);
+        },
+        events: {
+            change: (e) => {
+                self.branchTargetParams.unsavedChanges(true);
+            }
+        },
+        unsavedChanges: ko.observable(false)
+    }
+
+    self.branchTarget.subscribe(nv => {
+        if (nv === self.branchTargetParams.originalValue) {
+            self.branchTargetParams.unsavedChanges(false);
+        }
+    });
+
+    self.branchActual = ko.observable(0);
+
+    self.contrastTarget_A = ko.observable(self.Contrast.ContrastBranchA_Quantity);
+    self.contrastActual_A = ko.observable(0);
+
+    self.contrastTarget_B = ko.observable(self.Contrast.ContrastBranchB_Quantity);
+    self.contrastActual_B = ko.observable(0);
+
+    self.currentFreeStock = ko.observable(0);
+    self.transferStockLeaving = ko.observable(0);
+    self.transferStockArriving = ko.observable(0);
+    self.onPurchaseOrder = ko.observable(0);
+    self.firstDueDate = ko.observable(0);
+    self.firstDueQuantity = ko.observable(0);
+    self.projectedStock = ko.observable(0);
+
+    self.fenwickRingFence = ko.observable(0);
+    self.kingsRoadRingFence = ko.observable(0);
+    self.maryleboneRingFence = ko.observable(0);
+    self.tradeRingFence = ko.observable(0);
+    self.eCommerceRingFence = ko.observable(0);
+    self.totalRingFence = ko.observable(0);
+
+    self.fenwickSales = ko.observable(0);
+    self.kingsRoadSales = ko.observable(0);
+    self.maryleboneSales = ko.observable(0);
+    self.eCommerceSales = ko.observable(0);
+    self.tradeSales = ko.observable(0);
+    
     return self;
 });

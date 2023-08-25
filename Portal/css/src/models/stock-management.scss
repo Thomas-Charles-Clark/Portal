@@ -1,5 +1,19 @@
 ﻿@import "common.scss";
 
+.tab-content {
+    position: relative;
+}
+
+.blocker {
+    display: none;
+    opacity: 0;
+    transition: opacity 150ms ease-in-out;
+}
+
+.blocker.opacity-100 {
+    transition: opacity 150ms ease-in-out;
+}
+
 .body-content {
     max-width: unset !important;
     width: 100% !important;
@@ -51,6 +65,10 @@
     border: 1px solid #ddd;
     border-top: 0;
     border-radius: 0 0 4px 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: 142px;
 }
 
 #add-new {
@@ -64,8 +82,17 @@
     margin-top: $l-gutter;
     background-color: tint-color($blue-100, 85%);
 
+    th.separator, td.separator {
+        background-color: white;
+        border: none;
+    }
+
     thead {
         background-color: white;
+    }
+
+    th, td {
+        text-align: center;
     }
 
     tbody {
@@ -77,33 +104,94 @@
             td {
                 vertical-align: middle;
                 height: 50px;
+
+                .mdc-validating-field {
+                    width: 74px;
+                    background-color: $white;
+
+                    .mdc-notched-outline {
+                        .mdc-notched-outline__leading {
+                            border-top-left-radius: $border-radius-sm;
+                            border-bottom-left-radius: $border-radius-sm;
+                            border-left: 1px solid rgba(0, 0, 0, 0.38);
+                        }
+
+                        .mdc-notched-outline__trailing {
+                            border-top-right-radius: $border-radius-sm;
+                            border-bottom-right-radius: $border-radius-sm;
+                            border-right: 1px solid rgba(0, 0, 0, 0.38);
+                        }
+                    }
+
+                    .mdc-text-field__input {
+                        text-align: center;
+                        font-size: $font-size-base;
+                        vertical-align: baseline;
+                        padding-top: 5px;
+
+                        &.revertable {
+                            padding-right: calc(1.15rem + 20px);
+                        }
+                    }
+
+                    &:focus,
+                    &:focus-within,
+                    .mdc-text-field.busy {
+                        .mdc-notched-outline {
+                            .mdc-notched-outline__leading {
+                                border-left: 2px solid rgba(0, 0, 0, 0.38);
+                            }
+
+                            .mdc-notched-outline__trailing {
+                                border-right: 2px solid rgba(0, 0, 0, 0.38);
+                            }
+                        }
+                    }
+
+                    .mdc-text-field.busy {
+                        pointer-events: none;
+                        cursor: not-allowed;
+                        background-size: 800% 800%;
+
+                        .mdc-notched-outline {
+                            .mdc-notched-outline__leading, .mdc-notched-outline__trailing {
+                                border-top: 2px solid rgba(0, 0, 0, 0.38);
+                                border-bottom: 2px solid rgba(0, 0, 0, 0.38);
+                            }
+                        }
+                    }
+                }
+
+                .number-control {
+
+                    .mdc-validating-field {
+                        background-color: white;
+                        transition: background 150ms ease-in-out;
+                    }
+
+                    &.unsaved-changes {
+                        .mdc-validating-field {
+                            background-color: $yellow-200;
+                        }
+                    }
+                }
             }
-            
-
             /*
-        > span:first-of-type {
-            flex: 0 1 80px;
-        }
+            > span:first-of-type {
+                flex: 0 1 80px;
+            }
 
-        > span:nth-of-type(2) {
-            flex: 1 0 280px;
-        }
+            > span:nth-of-type(2) {
+                flex: 1 0 280px;
+            }
 
-        > span:nth-of-type(3) {
+            > span:nth-of-type(3) {
 
-        }*/
+            }*/
 
             + .product-result {
                 /*border-top: 1px solid $blue-300;*/
             }
-        }
-    }
-}
-
-.totals-table {
-    tbody {
-        td {
-            text-align: center;
         }
     }
 }

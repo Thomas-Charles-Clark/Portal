@@ -85,6 +85,7 @@ namespace Portal
 
             // This because it's not mapped to SQL and has the [NotMapped] attribute
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_ProductType)).AddProperty(typeof(Mertex_ProductType).GetProperty("Label"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_ProductType)).AddProperty(typeof(Mertex_ProductType).GetProperty("PseudoKey"));
 
             odataBuilder.EntityType<Resource_Language>().HasKey(p => new { p.ResourceID, p.LanguageID });
 
@@ -284,7 +285,8 @@ namespace Portal
                 .Function("Mertex_ProductTypeValueMapper")
                 .ReturnsCollectionFromEntitySet<Mertex_ProductType>("Mertex_ProductType");
 
-            mertexProductTypeValueMapperFunction.Parameter<byte?>("productTypeId");
+            mertexProductTypeValueMapperFunction.Parameter<byte?>("productGroupId");
+            mertexProductTypeValueMapperFunction.Parameter<short?>("itemTypeId");
 
 
 

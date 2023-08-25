@@ -566,9 +566,11 @@
     <script id="mdc-text-field-numeric-component" type="text/html">
         <div class="mdc-validating-field" data-bind="visible: $data.hasOwnProperty('visible') ? $data.visible : true">
             <div class="mdc-numeric-field input-group">
+                <!-- ko if: typeof 'buttons' === undefined || buttons === true -->
                 <button type="button" class="btn btn-light border-dark-subtle" data-bind="click: decrement">
                     <i class="bi bi-dash-lg"></i>
                 </button>
+                <!-- /ko -->
                 <div class="mdc-text-field mdc-text-field--outlined" data-bind="
                      mdcTextFieldComponent: {
                         boundTo: observable,
@@ -602,7 +604,8 @@
                            min: minValue,
                            max: maxValue,
                            step: step
-                        }
+                        }, 
+                        event: typeof events === 'undefined' ? null : events
                         " />
                     <div class="mdc-notched-outline">
                         <div class="mdc-notched-outline__leading"></div>
@@ -630,9 +633,11 @@
                         <!-- /ko -->
                     </div>
                 </div>
+                <!-- ko if: typeof 'buttons' === undefined || buttons === true -->
                 <button type="button" class="btn btn-light border-dark-subtle" data-bind="click: increment">
                     <i class="bi bi-plus-lg"></i>
                 </button>
+                <!-- /ko -->
             </div>
         </div>
     </script>

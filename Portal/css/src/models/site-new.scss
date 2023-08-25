@@ -139,7 +139,8 @@ input[type="search"]::-webkit-search-results-decoration {
         cursor: pointer;
     }
 
-    > .busy {
+    > .busy,
+    > div > .busy {
         background-image: repeating-linear-gradient(-45deg, rgba(222, 229, 237, 0.75), rgba(248, 249, 250, 0.95) 1rem, transparent 1rem, transparent 2rem);
         transition: background-color 300ms ease-in-out;
         background-size: 200% 200%;
