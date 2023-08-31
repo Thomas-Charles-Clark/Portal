@@ -136,6 +136,9 @@
             <div data-bind="component: { name: 'mdc-checkbox-component', params: displayRingFencedStockParams }"></div>
             <div data-bind="component: { name: 'mdc-checkbox-component', params: displaySalesParams }"></div>
         </div>
+        <button class="btn btn-success" data-bind="click: saveChanges">
+            Save
+        </button>
     </div>
     <div class="prefilters" style="display: none;" data-bind="visible: secondaryFiltersVisible">
         <div id="launch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: launchParams }"></div>

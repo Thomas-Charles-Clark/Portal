@@ -16,29 +16,29 @@ namespace SharedEFClasses.Models
 {
     public partial class PortalDbContext : IdentityDbContext<Member, Role, int, Member_Login, Member_Role, Member_Claim>
     {
-        public async Task<StockManagementProductSearchResponse> StockManagementProductSearch(StockManagementProductFetchDto objDto)
+        public async Task<StockManagementProductSearchResponse> StockManagementProductSearch(StockManagementProductFetchDto dto)
         {
             var attributeIds = new DataTable();
 
             attributeIds.Columns.Add("AttributeID");
 
-            foreach (var a in objDto.AttributeIDs) 
+            foreach (var a in dto.AttributeIDs) 
             {
                 attributeIds.Rows.Add(a);
             }
 
             var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[StockManagement_ProductSearch]", new
             {
-                objDto.BranchGroupID,
-                objDto.BranchID,
-                objDto.ProductTypeID,
-                objDto.ProductGroupCode,
-                objDto.ItemTypeCode,
-                objDto.LaunchID,
-                objDto.BrandID,
-                objDto.ProductColourID,
-                objDto.StockLevelID,
-                objDto.CollectionCode,
+                dto.BranchGroupID,
+                dto.BranchID,
+                dto.ProductTypeID,
+                dto.ProductGroupCode,
+                dto.ItemTypeCode,
+                dto.LaunchID,
+                dto.BrandID,
+                dto.ProductColourID,
+                dto.StockLevelID,
+                dto.CollectionCode,
                 AttributeIDs = attributeIds.AsTableValuedParameter("AttributeIDsTableType")
             }, null, null, CommandType.StoredProcedure);
 
@@ -49,6 +49,27 @@ namespace SharedEFClasses.Models
                 RangeRecords = reply.Read<StockManagementRangeRecord>(),
                 ContrastRecords = reply.Read<StockManagementContrastRecord>()
             };
+        }
+
+        public async Task<bool> StockManagementBranchRangeSave(StockManagementBranchRangeSave dto)
+        {
+            var products = new DataTable();
+
+            products.Columns.Add("ProductID");
+            products.Columns.Add("Quantity");
+
+            foreach (var p in dto.Products)
+            {
+                products.Rows.Add(p.ProductID, p.Quantity);
+            }
+
+            var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[StockManagement_BranchRangeSave]", new
+            {
+                dto.BranchID,
+                RangeProducts = products.AsTableValuedParameter("StockManagement.RangeProductQuantityTableType")
+            }, null, null, CommandType.StoredProcedure);
+
+            return true;
         }
     }
 }

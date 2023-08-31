@@ -791,6 +791,49 @@ const stockManagementViewModel = ({ } = {}) => {
         });
     }
 
+    self.saveChanges = () => {
+        if (self.productSearchResults().find(p => p.branchTargetParams.unsavedChanges())) {
+            self.setBusy();
+
+            let products = self.productSearchResults().filter(p => p.branchTargetParams.unsavedChanges());
+
+            products.forEach(p => {
+                p.preSave();
+            });
+
+            let params = {
+                branchId: self.branchId(),
+                products: products.map(p => p.toJS())
+            };
+
+            fetch('/api/stockManagement/saveBranchRangeChanges', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                body: JSON.stringify(params)
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    window.showInfo("Success", "Your changes have been saved!");
+
+                    products.forEach(p => {
+                        p.postSave(true);
+                    });
+
+                    self.clearBusy();
+                })
+                .catch(err => {
+                    products.forEach(p => {
+                        p.postSave(false);
+                    });
+
+                    self.clearBusy();
+                    window.catchFetchError(err);
+                });
+        } else {
+            window.showInfo("Information", "You have no unsaved changes.");
+        }
+    }
+
     //#endregion
 
 
@@ -909,6 +952,14 @@ const stockManagementViewModel = ({ } = {}) => {
         self.viewingTab(TAB_TRANSFER);
     });
 
+    window.addEventListener("onbeforeunload", (event) => {
+        self.checkUnsavedChangesThenSelect = async (event) => {
+            await self.unsavedChanges().then((d) => {
+
+            }).catch((e) => { });
+        }
+    });
+
     //#endregion
 
     return self;
@@ -1025,6 +1076,27 @@ const resultRecord = ((rec, branchGroupRecords, rangeRecords, contrastRecords) =
     self.maryleboneSales = ko.observable(0);
     self.eCommerceSales = ko.observable(0);
     self.tradeSales = ko.observable(0);
-    
+
+    self.toJS = () => {
+        return {
+            ProductID: self.ProductID,
+            Quantity: self.branchTarget()
+        }
+    }
+
+    self.preSave = () => {
+        self.branchTargetBusy(true);
+    }
+
+    self.postSave = (success) => {
+        if (success) {
+            self.branchTargetParams.originalValue = self.branchTarget();
+            self.branchTargetParams.unsavedChanges(false);
+            self.branchTargetBusy(false);
+        } else {
+            self.branchTargetBusy(false);
+        }
+    }
+
     return self;
 });

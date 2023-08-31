@@ -37,5 +37,15 @@ namespace Portal.Areas.Stock.Controllers
 
             return Ok(results);
         }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> SaveBranchRangeChanges([FromBody]StockManagementBranchRangeSave objDto)
+        {
+            System.Threading.Thread.Sleep(3000);
+
+            var results = await PortalDb.StockManagementBranchRangeSave(objDto);
+
+            return Ok(new { });
+        }
     }
 }
