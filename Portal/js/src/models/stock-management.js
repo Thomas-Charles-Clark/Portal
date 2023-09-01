@@ -3,6 +3,12 @@
     TAB_RANGE = 1,
     TAB_TRANSFER = 2
 
+const
+    SORT_QUANTITY_ASC = 0,
+    SORT_QUANTITY_DESC = 1,
+    SORT_ORDERFORMGROUP_ASC = 2,
+    SORT_ORDERFORMGROUP_DESC = 3
+
 const stockManagementViewModel = ({ } = {}) => {
     let self = {};
 
@@ -27,10 +33,13 @@ const stockManagementViewModel = ({ } = {}) => {
     self.ready = ko.observable(true);
 
     self.displayWarehouseStock = ko.observable(false);
+    window.displayWarehouseStock = self.displayWarehouseStock;
 
     self.displayRingFencedStock = ko.observable(false);
+    window.displayRingFencedStock = self.displayRingFencedStock;
 
     self.displaySales = ko.observable(false);
+    window.displaySales = self.displaySales;
 
     //#region Prefilters
 
@@ -43,6 +52,7 @@ const stockManagementViewModel = ({ } = {}) => {
     self.branchGroup = ko.observable();
 
     self.branchId = ko.observable(3);
+    window.branchId = self.branchId;
 
     self.branch = ko.observable();
 
@@ -77,6 +87,12 @@ const stockManagementViewModel = ({ } = {}) => {
     self.attributeIds = ko.observableArray([]);
 
     self.attributes = ko.observableArray([]);
+
+    //#endregion
+
+    //#region sorting
+
+    self.productSearchResultsSort = ko.observable(SORT_QUANTITY_DESC);
 
     //#endregion
 
@@ -928,12 +944,51 @@ const stockManagementViewModel = ({ } = {}) => {
         }
     });
 
-    //if (params.productTypeId) {
-    //      return JSON.stringify(params);
-    //  } else {
-    //      return null;
-    //  }
-    //});
+    self.groupBy = (items, key, dataSetName) => {
+        const groupedMap = new Map();
+
+        for (const e of items) {
+            if (!groupedMap.has(e[key])) {
+                groupedMap.set(e[key], []);
+            }
+            groupedMap.get(e[key]).push(e);
+        }
+
+        const result = [];
+
+        groupedMap.forEach((v, k) => {
+            let obj = {
+                key: k,
+                idKey: k.toLowerCase().replace(/\s/g, '-').replace(/[^a-z0-9\-]/g, ''),
+                collapsed: ko.observable(false)
+            }
+            obj[dataSetName] = v;
+            result.push(obj)
+        });
+
+        return result;
+    }
+
+    self.groupedSortedSearchResults = ko.computed(() => {
+
+        let key = "ProductPageHeading";
+
+        let results = self.groupBy(self.productSearchResults(), key, 'orderFormGroups');
+
+        //console.log(key, results);
+
+        key = "OrderFormGroupName";
+
+        results.forEach(r => {
+            r.orderFormGroups = self.groupBy(r.orderFormGroups, key, 'products');
+        });
+
+        //console.log(key, results);
+
+        return results;
+
+        // self.productSearchResults().sort((a, b) => a.BranchGroup?.Quantity > b.BranchGroup?.Quantity ? -1 : 1);
+    }, self);
 
     //#endregion
 

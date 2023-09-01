@@ -39,7 +39,7 @@ namespace Portal.Areas.Stock.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> SaveBranchRangeChanges([FromBody]StockManagementBranchRangeSave objDto)
+        public async Task<IHttpActionResult> SaveBranchRangeChanges([FromBody]StockManagementBranchRangeSaveDto objDto)
         {
             System.Threading.Thread.Sleep(3000);
 

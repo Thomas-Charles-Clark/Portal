@@ -85,6 +85,8 @@
 }
 
 .product-search-results {
+  content-visibility: auto;
+  contain-intrinsic-size: 400px;
   display: inline-table;
   width: auto;
   margin-top: 1rem;
@@ -99,11 +101,10 @@
 }
 .product-search-results th, .product-search-results td {
   text-align: center;
+  padding: 0;
+  border-top-width: 0;
 }
 .product-search-results tbody .product-result {
-  /*display: flex;*/
-  gap: 1rem;
-  padding: 0.5rem 0.75rem;
   /*
   > span:first-of-type {
       flex: 0 1 80px;
@@ -119,7 +120,6 @@
 }
 .product-search-results tbody .product-result td {
   vertical-align: middle;
-  height: 50px;
 }
 .product-search-results tbody .product-result td .mdc-validating-field {
   width: 74px;
@@ -171,9 +171,26 @@
 .product-search-results tbody .product-result + .product-result {
   /*border-top: 1px solid $blue-300;*/
 }
+.product-search-results tbody.search-result tr th, .product-search-results tbody.search-result tr td {
+  padding: 0;
+  border-bottom-width: 0;
+}
+.product-search-results tbody.search-result tr th > .accordion-collapse, .product-search-results tbody.search-result tr td > .accordion-collapse {
+  padding: 0;
+}
+.product-search-results tbody.search-result tr th > .accordion-collapse > div, .product-search-results tbody.search-result tr td > .accordion-collapse > div {
+  padding: 0.5rem;
+}
 
 .result-count-display {
   font-weight: normal;
   float: right;
+}
+
+#result-table tbody {
+  transition: height 300ms ease-in-out;
+}
+#result-table .accordion-button {
+  font-weight: 700;
 }
 /*# sourceMappingURL=stock-management.css.map */

@@ -78,6 +78,9 @@
 }
 
 .product-search-results {
+    content-visibility: auto;
+    contain-intrinsic-size: 400px;
+
     display: inline-table;
     width: auto;
     margin-top: $l-gutter;
@@ -94,17 +97,15 @@
 
     th, td {
         text-align: center;
+        padding: 0;
+        border-top-width: 0;
     }
 
     tbody {
-        .product-result {
-            /*display: flex;*/
-            gap: $l-gutter;
-            padding: $sm-gutter $m-gutter;
 
+        .product-result {
             td {
                 vertical-align: middle;
-                height: 50px;
 
                 .mdc-validating-field {
                     width: 74px;
@@ -195,9 +196,36 @@
             }
         }
     }
+
+    tbody.search-result {
+        tr {
+            th, td {
+                padding: 0;
+                border-bottom-width: 0;
+
+                > .accordion-collapse {
+                    padding: 0;
+
+                    > div {
+                        padding: $sm-gutter;
+                    }
+                }
+            }
+        }
+    }
 }
 
 .result-count-display {
     font-weight: normal;
     float: right;
+}
+
+#result-table {
+    tbody {
+        transition: height 300ms ease-in-out;
+    }
+
+    .accordion-button {
+        font-weight: $font-weight-bold;
+    }
 }

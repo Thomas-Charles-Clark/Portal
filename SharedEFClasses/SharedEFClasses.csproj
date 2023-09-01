@@ -418,7 +418,7 @@
     <Compile Include="Models\StockManagement\Branch_BranchGroup.cs" />
     <Compile Include="Models\StockManagement\Range.cs" />
     <Compile Include="Models\StockManagement\StockManagementBranchProduct.cs" />
-    <Compile Include="Models\StockManagement\StockManagementBranchRangeSave.cs" />
+    <Compile Include="Models\StockManagement\StockManagementBranchRangeSaveDto.cs" />
     <Compile Include="Models\StockManagement\StockManagementProductFetchDto.cs" />
     <Compile Include="Models\StockManagement\StockManagementProductSearchResponse.cs" />
     <Compile Include="Models\TradeAccountCreationEmail.cs" />

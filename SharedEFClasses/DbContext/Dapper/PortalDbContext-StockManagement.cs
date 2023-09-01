@@ -51,7 +51,7 @@ namespace SharedEFClasses.Models
             };
         }
 
-        public async Task<bool> StockManagementBranchRangeSave(StockManagementBranchRangeSave dto)
+        public async Task<bool> StockManagementBranchRangeSave(StockManagementBranchRangeSaveDto dto)
         {
             var products = new DataTable();
 

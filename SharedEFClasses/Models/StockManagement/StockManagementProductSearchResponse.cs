@@ -16,6 +16,10 @@ namespace SharedEFClasses.Models.StockManagement
         public string ProductGroupCode { get; set; }
         public string ItemTypeName { get; set; }
         public string ItemTypeCode { get; set; }
+        public int ProductPageID { get; set; }
+        public string ProductPageHeading { get; set; }
+        public string OrderFormGroupName { get; set; }
+        public byte OrderFormSortOrder { get; set; }
     }
 
     public class StockManagementBranchGroupTotalRecord

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models.StockManagement
 {
-    public class StockManagementBranchRangeSave
+    public class StockManagementBranchRangeSaveDto
     {
         public int BranchID { get; set; }
         public IEnumerable<StockManagementBranchProduct> Products { get; set; }

@@ -1798,6 +1798,7 @@
     <Content Include="Areas\Retail\Views\StoreMembers\RetailStoreMembers.cshtml" />
     <Content Include="Areas\Retail\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Stock\Views\Management\StockManagement.cshtml" />
+    <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
