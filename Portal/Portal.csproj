@@ -591,6 +591,8 @@
     <Compile Include="Controllers\ODataControllers\AttributesController.cs" />
     <Compile Include="Controllers\ODataControllers\AttributeGroupsController.cs" />
     <Compile Include="Controllers\ODataControllers\CollectionsController.cs" />
+    <Compile Include="Controllers\ODataControllers\ProductFilterGroupsController.cs" />
+    <Compile Include="Controllers\ODataControllers\ProductFiltersController.cs" />
     <Compile Include="Controllers\ODataControllers\ProductColoursController.cs" />
     <Compile Include="Controllers\ODataControllers\Mertex_ProductTypesController.cs" />
     <Compile Include="Controllers\ODataControllers\ProductTypesController.cs" />

@@ -39,7 +39,9 @@ namespace SharedEFClasses.Models
                 dto.ProductColourID,
                 dto.StockLevelID,
                 dto.CollectionCode,
-                AttributeIDs = attributeIds.AsTableValuedParameter("AttributeIDsTableType")
+                AttributeIDs = attributeIds.AsTableValuedParameter("AttributeIDsTableType"),
+                dto.ProductFilterGroupID,
+                dto.ProductFilterID
             }, null, null, CommandType.StoredProcedure);
 
             return new StockManagementProductSearchResponse()

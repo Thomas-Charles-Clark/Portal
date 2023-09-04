@@ -109,8 +109,7 @@ namespace SharedEFClasses.Models
         public DbSet<SampleRequestSlicerData> SampleRequestSlicerData { get; set; }
         public DbSet<Attribute> Attributes { get; set; }
         public DbSet<AttributeGroup> AttributeGroups { get; set; }
-        public DbSet<ProductFilter> ProductFilters { get; set; }
-        public DbSet<ProductFilterGroup> ProductFilterGroups { get; set; }
+        public DbSet<Filter_Product> Filters_Products { get; set; }
         public DbSet<Martindale> Martindales { get; set; }
         public DbSet<AdvertisingImage> AdvertisingImages { get; set; }
         public DbSet<Treatment> Treatments { get; set; }
@@ -120,6 +119,8 @@ namespace SharedEFClasses.Models
         public DbSet<StockLocation> StockLocations { get; set; }
         public DbSet<Mertex_ProductType> Mertex_ProductTypes { get; set; }
         public DbSet<ProductPage> ProductPages { get; set; }
+        public DbSet<ProductFilter> ProductFilters { get; set; }
+        public DbSet<ProductFilterGroup> ProductFilterGroups { get; set; }
 
         #endregion
 

@@ -1085,7 +1085,7 @@ namespace Portal.Areas.Sales.Controllers
         [HttpPost]
         public IHttpActionResult ProductGroupSlicerEndpoint([FromBody]PassProductSearchAutocompleteFilters objFilters)
         {
-            var data = portalDb.ProductFilters.ToList();
+            var data = portalDb.Filters_Products.ToList();
 
             var productGroups = data.Where(p =>
                 //(objFilters.ProductGroupID == null || objFilters.ProductGroupID == p.ProductGroupID) &&
@@ -1098,7 +1098,7 @@ namespace Portal.Areas.Sales.Controllers
         [HttpPost]
         public IHttpActionResult ItemTypeSlicerEndpoint([FromBody]PassProductSearchAutocompleteFilters objFilters)
         {
-            var data = portalDb.ProductFilters.ToList();
+            var data = portalDb.Filters_Products.ToList();
 
             var itemTypes = data.Where(p =>
                 (objFilters.ProductGroupID == null || objFilters.ProductGroupID == p.ProductGroupID)// &&

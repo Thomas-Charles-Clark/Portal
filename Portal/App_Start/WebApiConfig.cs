@@ -54,6 +54,8 @@ namespace Portal
             odataBuilder.EntitySet<Language>("Languages");
             odataBuilder.EntitySet<Colour>("Colours");
             odataBuilder.EntitySet<ProductColour>("ProductColours");
+            odataBuilder.EntitySet<ProductFilter>("ProductFilters");
+            odataBuilder.EntitySet<ProductFilterGroup>("ProductFilterGroups");
             odataBuilder.EntitySet<CollectionLive>("Collections");
             odataBuilder.EntitySet<Brand>("Brands");
             odataBuilder.EntitySet<Launch>("Launches");
@@ -165,6 +167,22 @@ namespace Portal
 
             productColourValueMapperFunction.Parameter<string>("name");
 
+
+            var productFilterValueMapperFunction = odataBuilder.EntityType<ProductFilter>()
+                .Collection
+                .Function("ProductFilterValueMapper")
+                .ReturnsCollectionFromEntitySet<ProductFilter>("ProductFilters");
+
+            productFilterValueMapperFunction.Parameter<byte?>("productFilterId");
+
+
+
+            var productFilterGroupValueMapperFunction = odataBuilder.EntityType<ProductFilterGroup>()
+                .Collection
+                .Function("ProductFilterGroupValueMapper")
+                .ReturnsCollectionFromEntitySet<ProductFilterGroup>("ProductFilterGroups");
+
+            productFilterGroupValueMapperFunction.Parameter<byte?>("productFilterGroupId");
 
 
             var collectionValueMapperFunction = odataBuilder.EntityType<CollectionLive>()

@@ -77,18 +77,16 @@
     justify-self: end;
 }
 
-.product-search-results {
-    content-visibility: auto;
-    contain-intrinsic-size: 400px;
+.product-pages {
+    margin-top: 0;
+    margin-bottom: $xl-gutter;
+    background-color: white;
 
-    display: inline-table;
-    width: auto;
-    margin-top: $l-gutter;
-    background-color: tint-color($blue-100, 85%);
-
-    th.separator, td.separator {
+    th.separator,
+    td.separator {
         background-color: white;
         border: none;
+        padding: $sm-gutter;
     }
 
     thead {
@@ -97,13 +95,24 @@
 
     th, td {
         text-align: center;
-        padding: 0;
         border-top-width: 0;
+    }
+
+    .order-form-group {
+        th:not(.separator), td:not(.separator) {
+            padding: $sm-gutter;
+            background-color: tint-color($blue-100, 85%);
+        }
     }
 
     tbody {
 
         .product-result {
+            td:not(.separator) {
+                border: 0;
+                padding: $xs-gutter 0;
+            }
+
             td {
                 vertical-align: middle;
 
@@ -215,17 +224,40 @@
     }
 }
 
+.order-form-group-wrapper.show {
+    /*content-visibility: auto;*/
+}
+
 .result-count-display {
     font-weight: normal;
     float: right;
 }
 
 #result-table {
-    tbody {
-        transition: height 300ms ease-in-out;
-    }
-
     .accordion-button {
         font-weight: $font-weight-bold;
+
+        &.collapsed {
+            background-color: tint-color($blue-100, 85%);
+        }
+    }
+}
+
+.product-page-placeholder {
+    opacity: 0;
+    transition: opacity 300ms ease-in-out;
+
+    &.busy {
+        opacity: 1.0;
+        background-image: repeating-linear-gradient(-45deg, rgba(222, 229, 237, 0.75), rgba(248, 249, 250, 0.95) 1rem, transparent 1rem, transparent 2rem);
+        background-size: 200% 200%;
+        animation: barberpole 10s linear reverse infinite;
+        color: $blue-400;
+    }
+}
+
+@keyframes barberpole {
+    100% {
+        background-position: 100% 100%;
     }
 }

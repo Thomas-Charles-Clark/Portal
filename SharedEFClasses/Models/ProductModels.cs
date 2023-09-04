@@ -47,9 +47,7 @@ namespace SharedEFClasses.Models.Products
         public byte ProductTypeID { get; set; }
         public byte ProductTypeGroupID { get; set; }
         public string Name { get; set; }
-
         public bool IsActualProductType { get; set; }
-
         public DateTime? DeletedDT { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
@@ -66,6 +64,10 @@ namespace SharedEFClasses.Models.Products
         [JsonIgnore]
         [InverseProperty("ProductType")]
         public virtual ICollection<ProductPage> ProductPages { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("ProductType")]
+        public virtual IEnumerable<ProductFilter> ProductFilters { get; set; }
     }
 
     public class Product
@@ -375,7 +377,7 @@ namespace SharedEFClasses.Models.Products
     }
 
     [Table("Filter_Product", Schema = "Portal")]
-    public class ProductFilter
+    public class Filter_Product
     {
         [Key]
         [Column(Order = 1)]
@@ -1531,18 +1533,6 @@ namespace SharedEFClasses.Models.Products
         public decimal Quantity { get; set; }
         public string Batch { get; set; }
         public string Piece { get; set; }
-    }
-
-    [Table("ProductFilterGroup", Schema = "portal")]
-    public class ProductFilterGroup
-    {
-        [Key]
-        public byte ProductFilterGroupID { get; set; }
-        public string Name { get; set; }
-
-        [JsonIgnore]
-        [InverseProperty("ProductFilterGroup")]
-        public virtual ICollection<Treatment> Treatments { get; set; }
     }
 
     [Table("Treatment", Schema = "portal")]

@@ -48,36 +48,369 @@
         </script>
     }*@
 
-<script id="primary-grid-row-template" type="text/x-kendo-template">
-    <tr class="primary-grid-row">
-        <td>
-            @*<span data-bind="text: StockLocation.Name"></span>*@
-        </td>
-        <td class="text-right">
-            @*<span data-bind="text: InitialQuantity"></span>*@
-        </td>
-        <td class="text-right">
-            @*<span data-bind="text: CurrentQuantity"></span>*@
-        </td>
-        <td>
-            @*<span class="display-block" data-bind="text: Product.Code"></span>
-            <span class="display-block" data-bind="text: Product.BasketName"></span>*@
-        </td>
-        <td>
-            @*<span data-bind="text: Batch"></span>*@
-        </td>
-        <td>
-            @*<span data-bind="text: Piece"></span>*@
-        </td>
-        <td>
-            @*<span data-bind="text: TradeAccount.Code + ' - ' + TradeAccount.Name"></span>*@
-        </td>
-        <td class="controls">
-            @*<button class="btn btn-red" data-bind="click: $parent.confirmDeleteRingFence">
-                Delete
-            </button>*@
-        </td>
-    </tr>
+<script id="product-page-group-template" type="text/html">
+    <table class="table table-condensed product-pages">
+        <colgroup>
+            <col style="width: 1px;" /> <!-- \ -->
+            <col style="width: 1px;" /> <!--  } Code -->
+            <col /> <!-- / -->
+            <col /> <!-- Name -->
+            <col /> <!-- Separator -->
+            <!-- ko if: true -->
+            <col style="width: 80px" /> <!-- TARGET Branch Group Total -->
+            <!-- ko if: branchLoaded() -->
+            <col style="width: 80px" /> <!-- TARGET Branch Total -->
+            <!-- /ko -->
+            <col style="width: 80px" /> <!-- TARGET Contrast A -->
+            <col style="width: 80px" /> <!-- TARGET Contrast B -->
+            <!-- /ko -->
+            <col /> <!-- Separator -->
+            <!-- ko if: true -->
+            <col style="width: 80px" /> <!-- ACTUAL Branch Group Total -->
+            <!-- ko if: branchLoaded() -->
+            <col style="width: 80px" /> <!-- ACTUAL Branch Total -->
+            <!-- /ko -->
+            <col style="width: 80px" /> <!-- ACTUAL Contrast A -->
+            <col style="width: 80px" /> <!-- ACTUAL Contrast B -->
+            <!-- /ko -->
+            <!-- ko if: displayWarehouseStock -->
+            <col /> <!-- Separator -->
+            <col style="" /> <!-- WH STOCK Current Free Stock -->
+            <col style="" /> <!-- WH STOCK Transfer Stock Leaving -->
+            <col style="" /> <!-- WH STOCK Transfer Stock Arriving -->
+            <col style="" /> <!-- WH STOCK On Purhcase Order -->
+            <col style="" /> <!-- WH STOCK First Due Date -->
+            <col style="" /> <!-- WH STOCK First Due Quantity -->
+            <col style="" /> <!-- WH STOCK Projected Stock -->
+            <!-- /ko -->
+            <!-- ko if: displayRingFencedStock -->
+            <col /> <!-- Separator -->
+            <col style="" /> <!-- RINGFENCED STOCK Fenwick -->
+            <col style="" /> <!-- RINGFENCED STOCK KR -->
+            <col style="" /> <!-- RINGFENCED STOCK MHS -->
+            <col style="" /> <!-- RINGFENCED STOCK Trade -->
+            <col style="" /> <!-- RINGFENCED STOCK eCommerce -->
+            <col style="" /> <!-- RINGFENCED STOCK Trade (Total...?) -->
+            <!-- /ko -->
+            <!-- ko if: displaySales -->
+            <col /> <!-- Separator -->
+            <col style="" /> <!-- SALES Fenwick -->
+            <col style="" /> <!-- SALES KR -->
+            <col style="" /> <!-- SALES MHS -->
+            <col style="" /> <!-- SALES eCommerce -->
+            <col style="" /> <!-- SALES Trade -->
+            <!-- /ko -->
+        </colgroup>
+        <thead>
+            <tr>
+                <th colspan="4">
+                    &nbsp;
+                </th>
+                <th class="separator"></th>
+                <th data-bind="attr: { colspan: branchLoaded() ? 4 : 3 }">
+                    Target Shelf Stock
+                </th>
+                <th class="separator"></th>
+                <th data-bind="attr: { colspan: branchLoaded() ? 4 : 3 }">
+                    Actual Shelf Stock
+                </th>
+                <!-- ko if: displayWarehouseStock -->
+                <th class="warehouse-stock separator"></th>
+                <th class="warehouse-stock" colspan="7">
+                    Warehouse Stock
+                </th>
+                <!-- /ko -->
+                <!-- ko if: displayRingFencedStock -->
+                <th class="separator"></th>
+                <th colspan="6">
+                    Ring Fenced Stock
+                </th>
+                <!-- /ko -->
+                <!-- ko if: displaySales -->
+                <th class="separator"></th>
+                <th colspan="5">
+                    Sales
+                </th>
+                <!-- /ko -->
+            </tr>
+            <tr>
+                <th class="text-start" colspan="3">
+                    Code
+                </th>
+                <th class="text-start">
+                    Name
+                </th>
+                <th class="separator"></th>
+                <th>
+                    <span data-bind="text: branchGroup()?.Name"></span>
+                    <br />
+                    Total
+                </th>
+                <!-- ko if: branchLoaded() -->
+                <th>
+                    <span data-bind="text: branch()?.Name ?? 'Branch'"></span>
+                    <br />Total
+                </th>
+                <!-- /ko -->
+                <th>
+                    Contrast
+                    <br />
+                    A
+                </th>
+                <th>
+                    Contrast
+                    <br />
+                    B
+                </th>
+                <th class="separator"></th>
+                <th>
+                    <span data-bind="text: branchGroup()?.Name"></span>
+                    <br />
+                    Total
+                </th>
+                <!-- ko if: branchLoaded() -->
+                <th>
+                    <span data-bind="text: branch()?.Name ?? 'Branch'"></span>
+                    <br />Total
+                </th>
+                <!-- /ko -->
+                <th>
+                    Contrast
+                    <br />
+                    A
+                </th>
+                <th>
+                    Contrast
+                    <br />
+                    B
+                </th>
+                <!-- ko if: displayWarehouseStock -->
+                <th class="separator"></th>
+                <th class="warehouse-stock">
+                    Current Stock
+                    <br />
+                    Free
+                </th>
+                <th class="warehouse-stock">
+                    Transfer Stock
+                    <br />
+                    Leaving
+                </th>
+                <th class="warehouse-stock">
+                    Transfer Stock
+                    <br />
+                    Arriving
+                </th>
+                <th class="warehouse-stock">
+                    On Purchase
+                    <br />
+                    Order
+                </th>
+                <th class="warehouse-stock">
+                    First
+                    <br />
+                    Due Date
+                </th>
+                <th class="warehouse-stock">
+                    First
+                    <br />
+                    Due Quantity
+                </th>
+                <th class="warehouse-stock">
+                    Project
+                    <br />
+                    Stock
+                </th>
+                <!-- /ko -->
+                <!-- ko if: displayRingFencedStock -->
+                <th class="separator"></th>
+                <th>
+                    Fenwick
+                </th>
+                <th>
+                    KR
+                </th>
+                <th>
+                    MHS
+                </th>
+                <th>
+                    Trade
+                </th>
+                <th>
+                    eCommerce
+                </th>
+                <th>
+                    Total?
+                </th>
+                <!-- /ko -->
+                <!-- ko if: displaySales -->
+                <th class="separator"></th>
+                <th>
+                    Fenwick
+                </th>
+                <th>
+                    KR
+                </th>
+                <th>
+                    MHS
+                </th>
+                <th>
+                    eCommerce
+                </th>
+                <th>
+                    Trade
+                </th>
+                <!-- /ko -->
+            </tr>
+        </thead>
+        <!-- ko foreach: orderFormGroups -->
+        <tbody class="accordion-collapse collapse show" data-bind="attr: { id: `${$parent.idKey}-ofg-${idKey}` }, class: `${$parent.idKey}-child`">
+            <tr>
+                <td class="separator" colspan="200"></td>
+            </tr>
+            <tr class="order-form-group">
+                <th class="separator"></th>
+                <th class="text-start px-2" colspan="4">
+                    <span data-bind="text: key"></span>
+                </th>
+                <!-- ko if: branchGroup -->
+                <th>
+                    <span data-bind="text: branchGroupTargetTotal"></span>
+                </th>
+                <!-- /ko -->
+                <!-- ko if: branchLoaded -->
+                <th>
+                    <span data-bind="text: targetTotal"></span>
+                </th>
+                <!-- /ko -->
+                <th colspan="200"></th>
+            </tr>
+            <tr>
+                <td class="separator" colspan="200"></td>
+            </tr>
+        </tbody>
+        <tbody class="accordion-collapse collapse show" data-bind="class: `${$parent.idKey}-child`">
+            <!-- ko foreach: products -->
+            <tr class="product-result">
+                <td class="separator"></td>
+                <td class="separator"></td>
+                <td class="text-start px-2">
+                    <span data-bind="text: Code"></span>
+                </td>
+                <td class="text-start px-2">
+                    <span data-bind="text: Name"></span>
+                </td>
+                <td class="separator"></td>
+                <td>
+                    <span data-bind="text: branchGroupTarget"></span>
+                </td>
+                <!-- ko if: branchId() && Range -->
+                <td>
+                    <div class="number-control"
+                            data-bind="
+        css: { 'unsaved-changes': branchTargetParams.unsavedChanges },
+        component: { name: 'mdc-text-field-numeric-component', params: branchTargetParams }"></div>
+                    @*<input class="form-control input-sm" data-bind="numeric, textInput: branchTarget, css: { 'busy': busy } event: { focus: (data, event) => { event.target.select() }, blur: saveBranchTarget }" />*@
+                    @*<span data-bind="text: branchTarget"></span>*@
+                </td>
+                <!-- /ko -->
+                <td>
+                    <span data-bind="text: contrastTarget_A"></span>
+                </td>
+                <td>
+                    <span data-bind="text: contrastTarget_B"></span>
+                </td>
+                <td class="separator"></td>
+                <td>
+                    <span data-bind="text: branchGroupActual"></span>
+                </td>
+                <!-- ko if: branchId() && Range -->
+                <td>
+                    <span data-bind="text: branchActual"></span>
+                </td>
+                <!-- /ko -->
+                <td>
+                    <span data-bind="text: contrastActual_A"></span>
+                </td>
+                <td>
+                    <span data-bind="text: contrastActual_B"></span>
+                </td>
+                <!-- ko if: displayWarehouseStock() -->
+                <td class="separator"></td>
+                <td class="warehouse-stock">
+                    <span data-bind="text: currentFreeStock"></span>
+                </td>
+                <td class="warehouse-stock">
+                    <span data-bind="text: transferStockLeaving"></span>
+                </td>
+                <td class="warehouse-stock">
+                    <span data-bind="text: transferStockArriving"></span>
+                </td>
+                <td class="warehouse-stock">
+                    <span data-bind="text: onPurchaseOrder"></span>
+                </td>
+                <td class="warehouse-stock">
+                    <span data-bind="text: firstDueDate"></span>
+                </td>
+                <td class="warehouse-stock">
+                    <span data-bind="text: firstDueQuantity"></span>
+                </td>
+                <td class="warehouse-stock">
+                    <span data-bind="text: projectedStock"></span>
+                </td>
+                <!-- /ko -->
+                <!-- ko if: displayRingFencedStock() -->
+                <td class="separator"></td>
+                <td>
+                    <span data-bind="text: fenwickRingFence"></span>
+                </td>
+                <td>
+                    <span data-bind="text: kingsRoadRingFence"></span>
+                </td>
+                <td>
+                    <span data-bind="text: maryleboneRingFence"></span>
+                </td>
+                <td>
+                    <span data-bind="text: tradeRingFence"></span>
+                </td>
+                <td>
+                    <span data-bind="text: eCommerceRingFence"></span>
+                </td>
+                <td>
+                    <span data-bind="text: tradeRingFence"></span>
+                </td>
+                <!-- /ko -->
+                <!-- ko if: displaySales() -->
+                <td class="separator"></td>
+                <td>
+                    <span data-bind="text: fenwickSales"></span>
+                </td>
+                <td>
+                    <span data-bind="text: kingsRoadSales"></span>
+                </td>
+                <td>
+                    <span data-bind="text: maryleboneSales"></span>
+                </td>
+                <td>
+                    <span data-bind="text: eCommerceSales"></span>
+                </td>
+                <td>
+                    <span data-bind="text: tradeSales"></span>
+                </td>
+                <!-- /ko -->
+            </tr>
+            <!-- /ko -->
+        </tbody>
+        <!-- /ko -->
+    </table>
+</script>
+
+<script id="product-page-group-placeholder-template" type="text/html">
+    <div class="product-page-placeholder busy p-5">
+        <i>
+            Loading...
+        </i>
+    </div>
 </script>
 
 <div class="blocker" data-bind="flexVisible: busy, toggleOpacity: busy">
@@ -131,6 +464,10 @@
         <div id="branch-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: branchGroupParams }"></div>
         <div id="branch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: branchParams }"></div>
         <div id="product-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productTypeParams }"></div>
+        <div id="product-filter-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productFilterGroupParams }"></div>
+        <div id="product-filter-prefilter" style="display: none" data-bind="visible: productFilterGroupId, component: { name: 'mdc-kendo-dropdown-component', params: productFilterParams }"></div>
+    </div>
+    <div class="prefilters">
         <div id="display-prefilter" class="me-auto d-flex gap-3">
             <div data-bind="component: { name: 'mdc-checkbox-component', params: displayWarehouseStockParams }"></div>
             <div data-bind="component: { name: 'mdc-checkbox-component', params: displayRingFencedStockParams }"></div>
@@ -139,6 +476,10 @@
         <button class="btn btn-success" data-bind="click: saveChanges">
             Save
         </button>
+        <i class="result-count-display">
+            <span data-bind="text: productSearchResults().length"></span>
+            Results
+        </i>
     </div>
     <div class="prefilters" style="display: none;" data-bind="visible: secondaryFiltersVisible">
         <div id="launch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: launchParams }"></div>
@@ -162,375 +503,32 @@
             </h4>
         </div>
         <div style="display: none" data-bind="visible: productSearchResults().length">
-            <table id="result-table" class="table table-condensed product-search-results accordion">
-                <colgroup>
-                    <col style="width: 1px;"/> <!-- \ -->
-                    <col style="width: 1px;"/> <!--  } Code -->
-                    <col /> <!-- / -->
-                    <col /> <!-- Name -->
-                    <col /> <!-- Separator -->
-                    <!-- ko if: true -->
-                    <col style="width: 80px" /> <!-- TARGET Branch Group Total -->
-                    <!-- ko if: branchId() && productSearchResults().length && productSearchResults()[0].Range -->
-                    <col style="width: 80px" /> <!-- TARGET Branch Total -->
-                    <!-- /ko -->
-                    <col style="width: 80px" /> <!-- TARGET Contrast A -->
-                    <col style="width: 80px" /> <!-- TARGET Contrast B -->
-                    <!-- /ko -->
-                    <col /> <!-- Separator -->
-                    <!-- ko if: true -->
-                    <col style="width: 80px" /> <!-- ACTUAL Branch Group Total -->
-                    <!-- ko if: branchId() && productSearchResults().length && productSearchResults()[0].Range -->
-                    <col style="width: 80px" /> <!-- ACTUAL Branch Total -->
-                    <!-- /ko -->
-                    <col style="width: 80px" /> <!-- ACTUAL Contrast A -->
-                    <col style="width: 80px" /> <!-- ACTUAL Contrast B -->
-                    <!-- /ko -->
-                    <!-- ko if: displayWarehouseStock -->
-                    <col /> <!-- Separator -->
-                    <col style="" /> <!-- WH STOCK Current Free Stock -->
-                    <col style="" /> <!-- WH STOCK Transfer Stock Leaving -->
-                    <col style="" /> <!-- WH STOCK Transfer Stock Arriving -->
-                    <col style="" /> <!-- WH STOCK On Purhcase Order -->
-                    <col style="" /> <!-- WH STOCK First Due Date -->
-                    <col style="" /> <!-- WH STOCK First Due Quantity -->
-                    <col style="" /> <!-- WH STOCK Projected Stock -->
-                    <!-- /ko -->
-                    <!-- ko if: displayRingFencedStock -->
-                    <col /> <!-- Separator -->
-                    <col style="" /> <!-- RINGFENCED STOCK Fenwick -->
-                    <col style="" /> <!-- RINGFENCED STOCK KR -->
-                    <col style="" /> <!-- RINGFENCED STOCK MHS -->
-                    <col style="" /> <!-- RINGFENCED STOCK Trade -->
-                    <col style="" /> <!-- RINGFENCED STOCK eCommerce -->
-                    <col style="" /> <!-- RINGFENCED STOCK Trade (Total...?) -->
-                    <!-- /ko -->
-                    <!-- ko if: displaySales -->
-                    <col /> <!-- Separator -->
-                    <col style="" /> <!-- SALES Fenwick -->
-                    <col style="" /> <!-- SALES KR -->
-                    <col style="" /> <!-- SALES MHS -->
-                    <col style="" /> <!-- SALES eCommerce -->
-                    <col style="" /> <!-- SALES Trade -->
-                    <!-- /ko -->
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th colspan="4">
-                            &nbsp;
-                        </th>
-                        <th class="separator"></th>
-                        <th data-bind="attr: { colspan: branchId() && productSearchResults().length && productSearchResults()[0].Range ? 4 : 3 }">
-                            Target Shelf Stock
-                        </th>
-                        <th class="separator"></th>
-                        <th data-bind="attr: { colspan: branchId() && productSearchResults().length && productSearchResults()[0].Range ? 4 : 3 }">
-                            Actual Shelf Stock
-                        </th>
-                        <!-- ko if: displayWarehouseStock -->
-                        <th class="warehouse-stock separator"></th>
-                        <th class="warehouse-stock" colspan="7">
-                            Warehouse Stock
-                        </th>
-                        <!-- /ko -->
-                        <!-- ko if: displayRingFencedStock -->
-                        <th class="separator"></th>
-                        <th colspan="6">
-                            Ring Fenced Stock
-                        </th>
-                        <!-- /ko -->
-                        <!-- ko if: displaySales -->
-                        <th class="separator"></th>
-                        <th colspan="5">
-                            Sales
-                        </th>
-                        <!-- /ko -->
-                    </tr>
-                    <tr>
-                        <th class="text-start" colspan="3">
-                            Code
-                        </th>
-                        <th class="text-start">
-                            Name
-                            <i class="result-count-display">
-                                <span data-bind="text: productSearchResults().length"></span>
-                                Results
-                            </i>
-                        </th>
-                        <th class="separator"></th>
-                        <th>
-                            <span data-bind="text: branchGroup()?.Name"></span>
-                            <br />
-                            Total
-                        </th>
-                        <!-- ko if: branchId() && productSearchResults().length && productSearchResults()[0].Range -->
-                        <th>
-                            <span data-bind="text: branch()?.Name ?? 'Branch'"></span>
-                            <br />Total
-                        </th>
-                        <!-- /ko -->
-                        <th>
-                            Contrast
-                            <br />
-                            A
-                        </th>
-                        <th>
-                            Contrast
-                            <br />
-                            B
-                        </th>
-                        <th class="separator"></th>
-                        <th>
-                            <span data-bind="text: branchGroup()?.Name"></span>
-                            <br />
-                            Total
-                        </th>
-                        <!-- ko if: branchId() && productSearchResults().length && productSearchResults()[0].Range -->
-                        <th>
-                            <span data-bind="text: branch()?.Name ?? 'Branch'"></span>
-                            <br />Total
-                        </th>
-                        <!-- /ko -->
-                        <th>
-                            Contrast
-                            <br />
-                            A
-                        </th>
-                        <th>
-                            Contrast
-                            <br />
-                            B
-                        </th>
-                        <!-- ko if: displayWarehouseStock -->
-                        <th class="separator"></th>
-                        <th class="warehouse-stock">
-                            Current Stock
-                            <br />
-                            Free
-                        </th>
-                        <th class="warehouse-stock">
-                            Transfer Stock
-                            <br />
-                            Leaving
-                        </th>
-                        <th class="warehouse-stock">
-                            Transfer Stock
-                            <br />
-                            Arriving
-                        </th>
-                        <th class="warehouse-stock">
-                            On Purchase
-                            <br />
-                            Order
-                        </th>
-                        <th class="warehouse-stock">
-                            First
-                            <br />
-                            Due Date
-                        </th>
-                        <th class="warehouse-stock">
-                            First
-                            <br />
-                            Due Quantity
-                        </th>
-                        <th class="warehouse-stock">
-                            Project
-                            <br />
-                            Stock
-                        </th>
-                        <!-- /ko -->
-                        <!-- ko if: displayRingFencedStock -->
-                        <th class="separator"></th>
-                        <th>
-                            Fenwick
-                        </th>
-                        <th>
-                            KR
-                        </th>
-                        <th>
-                            MHS
-                        </th>
-                        <th>
-                            Trade
-                        </th>
-                        <th>
-                            eCommerce
-                        </th>
-                        <th>
-                            Total?
-                        </th>
-                        <!-- /ko -->
-                        <!-- ko if: displaySales -->
-                        <th class="separator"></th>
-                        <th>
-                            Fenwick
-                        </th>
-                        <th>
-                            KR
-                        </th>
-                        <th>
-                            MHS
-                        </th>
-                        <th>
-                            eCommerce
-                        </th>
-                        <th>
-                            Trade
-                        </th>
-                        <!-- /ko -->
-                    </tr>
-                </thead>
+            <table id="result-table" class="table table-condensed accordion mt-5">
                 <!-- ko foreach: groupedSortedSearchResults -->
                 <tbody data-bind="attr: { id: idKey }">
-                    <tr>
-                        <th class="separator" colspan="200">
-                            &nbsp;
-                        </th>
-                    </tr>
                     <tr class="product-page-group p-0">
-                        <th class="text-start p-0" colspan="4">
+                        <th class="text-start p-0">
                             <button class="accordion-button" data-bs-toggle="collapse" data-bind="attr: { 'data-bs-target': `#${idKey}-child` }">
+                                <!-- ko if: branchLoaded() -->
+                                <span data-bind="text: `${key} (${(branchGroup() ? branchGroup().Name + ': ' + branchGroupTargetTotal() + ', ': '')}${branch().Name}: ${targetTotal()})`"></span>
+                                <!-- /ko -->
+                                <!-- ko ifnot: branchLoaded() -->
                                 <span data-bind="text: key"></span>
+                                <!-- /ko -->
                             </button>
                         </th>
-                        <td class="separator" colspan="200"></td>
                     </tr>
                 </tbody>
                 <tbody>
                     <tr>
-                        <td colspan="200">
-                            <div class="accordion-collapse collapse show" data-bind="attr: { id: `${idKey}-child` }">
-                                <table class="table table-condensed product-search-results">
-                                    <!-- ko foreach: orderFormGroups -->
-                                    <tbody class="accordion-collapse collapse show" data-bind="attr: { id: `${$parent.idKey}-ofg-${idKey}` }, class: `${$parent.idKey}-child`">
-                                        <tr>
-                                            <td class="separator" colspan="200"></td>
-                                        </tr>
-                                        <tr class="order-form-group">
-                                            <th class="separator"></th>
-                                            <th class="text-start" colspan="3">
-                                                <span data-bind="text: key"></span>
-                                            </th>
-                                            <td class="separator" colspan="200"></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="separator" colspan="200"></td>
-                                        </tr>
-                                    </tbody>
-                                    <tbody class="accordion-collapse collapse show" data-bind="class: `${$parent.idKey}-child`">
-                                        <!-- ko foreach: products -->
-                                        <tr class="product-result">
-                                            <td class="separator"></td>
-                                            <td class="separator"></td>
-                                            <td class="text-start">
-                                                <span data-bind="text: Code"></span>
-                                            </td>
-                                            <td class="text-start">
-                                                <span data-bind="text: Name"></span>
-                                            </td>
-                                            <td class="separator"></td>
-                                            <td>
-                                                <span data-bind="text: branchGroupTarget"></span>
-                                            </td>
-                                            <!-- ko if: branchId() && Range -->
-                                            <td>
-                                                <div class="number-control"
-                                                     data-bind="
-                                 css: { 'unsaved-changes': branchTargetParams.unsavedChanges },
-                                 component: { name: 'mdc-text-field-numeric-component', params: branchTargetParams }"></div>
-                                                @*<input class="form-control input-sm" data-bind="numeric, textInput: branchTarget, css: { 'busy': busy } event: { focus: (data, event) => { event.target.select() }, blur: saveBranchTarget }" />*@
-                                                @*<span data-bind="text: branchTarget"></span>*@
-                                            </td>
-                                            <!-- /ko -->
-                                            <td>
-                                                <span data-bind="text: contrastTarget_A"></span>
-                                            </td>
-                                            <td>
-                                                <span data-bind="text: contrastTarget_B"></span>
-                                            </td>
-                                            <td class="separator"></td>
-                                            <td>
-                                                <span data-bind="text: branchGroupActual"></span>
-                                            </td>
-                                            <!-- ko if: branchId() && Range -->
-                                            <td>
-                                                <span data-bind="text: branchActual"></span>
-                                            </td>
-                                            <!-- /ko -->
-                                            <td>
-                                                <span data-bind="text: contrastActual_A"></span>
-                                            </td>
-                                            <td>
-                                                <span data-bind="text: contrastActual_B"></span>
-                                            </td>
-                                            <!-- ko if: displayWarehouseStock() -->
-                                            <td class="separator"></td>
-                                            <td class="warehouse-stock">
-                                                <span data-bind="text: currentFreeStock"></span>
-                                            </td>
-                                            <td class="warehouse-stock">
-                                                <span data-bind="text: transferStockLeaving"></span>
-                                            </td>
-                                            <td class="warehouse-stock">
-                                                <span data-bind="text: transferStockArriving"></span>
-                                            </td>
-                                            <td class="warehouse-stock">
-                                                <span data-bind="text: onPurchaseOrder"></span>
-                                            </td>
-                                            <td class="warehouse-stock">
-                                                <span data-bind="text: firstDueDate"></span>
-                                            </td>
-                                            <td class="warehouse-stock">
-                                                <span data-bind="text: firstDueQuantity"></span>
-                                            </td>
-                                            <td class="warehouse-stock">
-                                                <span data-bind="text: projectedStock"></span>
-                                            </td>
-                                            <!-- /ko -->
-                                            <!-- ko if: displayRingFencedStock() -->
-                                            <td class="separator"></td>
-                                            <td>
-                                                <span data-bind="text: fenwickRingFence"></span>
-                                            </td>
-                                            <td>
-                                                <span data-bind="text: kingsRoadRingFence"></span>
-                                            </td>
-                                            <td>
-                                                <span data-bind="text: maryleboneRingFence"></span>
-                                            </td>
-                                            <td>
-                                                <span data-bind="text: tradeRingFence"></span>
-                                            </td>
-                                            <td>
-                                                <span data-bind="text: eCommerceRingFence"></span>
-                                            </td>
-                                            <td>
-                                                <span data-bind="text: tradeRingFence"></span>
-                                            </td>
-                                            <!-- /ko -->
-                                            <!-- ko if: displaySales() -->
-                                            <td class="separator"></td>
-                                            <td>
-                                                <span data-bind="text: fenwickSales"></span>
-                                            </td>
-                                            <td>
-                                                <span data-bind="text: kingsRoadSales"></span>
-                                            </td>
-                                            <td>
-                                                <span data-bind="text: maryleboneSales"></span>
-                                            </td>
-                                            <td>
-                                                <span data-bind="text: eCommerceSales"></span>
-                                            </td>
-                                            <td>
-                                                <span data-bind="text: tradeSales"></span>
-                                            </td>
-                                            <!-- /ko -->
-                                        </tr>
-                                        <!-- /ko -->
-                                    </tbody>
-                                    <!-- /ko -->
-                                </table>
+                        <td colspan="200" data-bind="css: { 'p-0': templateName().indexOf('placeholder') > -1 }">
+                            <div class="order-form-group-wrapper accordion-collapse collapse show" data-bind="
+                                 attr: { 
+                                    id: `${idKey}-child` 
+                                 },
+                                 keepElement: element">
+                                <!-- ko template: { name: templateName } --><!-- /ko -->
+                                <!-- ko if: ready() --><!-- /ko -->
                             </div>
                         </td>
                     </tr>

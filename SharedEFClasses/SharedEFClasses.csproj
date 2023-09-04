@@ -404,6 +404,8 @@
     <Compile Include="Models\Mertex\TradeAccountContactType.cs" />
     <Compile Include="Models\Mertex\TradeAccountInvoiceAccount.cs" />
     <Compile Include="Models\PaintModels.cs" />
+    <Compile Include="Models\ProductFilterGroup\ProductFilterGroup.cs" />
+    <Compile Include="Models\ProductFilter\ProductFilter.cs" />
     <Compile Include="Models\ProductPage\ProductPage.cs" />
     <Compile Include="Models\ProductPage\ProductPage_Attribute.cs" />
     <Compile Include="Models\ResourceModels.cs" />

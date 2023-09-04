@@ -50,11 +50,13 @@ const stockManagementViewModel = ({ } = {}) => {
     self.branchGroupId = ko.observable(51);
 
     self.branchGroup = ko.observable();
+    window.branchGroup = self.branchGroup; // lifted to global to save buggering about with $parentContext nesting
 
     self.branchId = ko.observable(3);
-    window.branchId = self.branchId;
+    window.branchId = self.branchId; // lifted to global to save buggering about with $parentContext nesting
 
     self.branch = ko.observable();
+    window.branch = self.branch; // lifted to global to save buggering about with $parentContext nesting
 
     self.launchId = ko.observable();
 
@@ -88,6 +90,16 @@ const stockManagementViewModel = ({ } = {}) => {
 
     self.attributes = ko.observableArray([]);
 
+    self.productFilterGroup = ko.observable();
+
+    self.productFilterGroupId = ko.observable();
+
+    self.productFilters = ko.observableArray([]);
+
+    self.productFilter = ko.observable();
+
+    self.productFilterId = ko.observable();
+
     //#endregion
 
     //#region sorting
@@ -101,6 +113,28 @@ const stockManagementViewModel = ({ } = {}) => {
     self.branchGroupTotals = ko.observableArray([]);
 
     self.rangeRecords = ko.observableArray([]);
+
+    self.intersectionObserverOptions = {
+        rootMargin: "140px",
+        //threshold: 1.0
+    }
+
+    self.intersectionObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(e => {
+            //console.log(e);
+            let obj = ko.dataFor(e.target);
+            if (obj) {
+                if (e.isIntersecting) {
+                    window.setTimeout(() => {
+                        obj.templateName("product-page-group-template");
+                    }, 300);
+                }
+                //else {
+                //    obj.templateName("product-page-group-placeholder-template");
+                //}
+            }
+        });
+    }, self.intersectionObserverOptions);
 
     //#endregion
 
@@ -671,6 +705,108 @@ const stockManagementViewModel = ({ } = {}) => {
         }
     };
 
+    self.productFilterGroupParams = kendoMDCDropDownList({
+        label: 'Filter Group',
+        odata: true,
+        endPoint: '/odata/ProductFilterGroups',
+        textField: 'Name',
+        valueField: 'ProductFilterGroupID',
+        virtual: true,
+        pageSize: 20,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                $.ajax({
+                    url: `/odata/ProductFilterGroups/Default.ProductFilterGroupValueMapper(productFilterGroupId=${options.value || "null"})`,
+                    type: 'GET',
+                    success: function (data) {
+                        options.success(data.value);
+                        if (data.value.length == 1) {
+                            self.productFilterGroup(data.value[0]);
+                        }
+                    }
+                });
+            }
+        },
+        idObservable: self.productFilterGroupId,
+        objObservable: self.productFilterGroup,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertable: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'Name'
+        },
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear
+    });
+
+    self.productFilterParams = kendoMDCDropDownList({
+        label: 'Filter',
+        odata: true,
+        endPoint: '/odata/ProductFilters',
+        textField: 'Name',
+        valueField: 'ProductFilterID',
+        virtual: true,
+        pageSize: 20,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                $.ajax({
+                    url: `/odata/ProductFilters/Default.ProductFilterValueMapper(productFilterId=${options.value || "null"})`,
+                    type: 'GET',
+                    success: function (data) {
+                        options.success(data.value);
+                        if (data.value.length == 1) {
+                            self.productFilter(data.value[0]);
+                        }
+                    }
+                });
+            }
+        },
+        idObservable: self.productFilterId,
+        objObservable: self.productFilter,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertable: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'Name'
+        },
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear,
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+            delete d.$top;
+
+            d.$count = true;
+
+            if (self.productFilterGroupId()) {
+                //Add filter by matching any reference containing value
+                d.$filter = `ProductFilterGroupID eq ${self.productFilterGroupId()}`;
+            }
+
+            return d;
+        },
+    });
+
     //#endregion
         
 
@@ -855,6 +991,11 @@ const stockManagementViewModel = ({ } = {}) => {
 
     //#region Computeds
 
+    self.branchLoaded = ko.computed(() => {
+        return self.branch() && self.productSearchResults().length && self.productSearchResults()[0].Range
+    }, self);
+    window.branchLoaded = self.branchLoaded; // lifted to global to save buggering about with $parentContext nesting
+
     self.productTypeId = ko.computed(() => { return self.productType()?.ProductTypeID }, self);
 
     self.productGroupCode = ko.computed(() => { return self.productType()?.ProductGroupCode }, self);
@@ -880,7 +1021,9 @@ const stockManagementViewModel = ({ } = {}) => {
             stockLevelId: self.stockLevelId(),
             collectionCode: self.collectionCode(),
             attributeGroupId: self.attributeGroupId(),
-            attributeIds: self.attributeIds()
+            attributeIds: self.attributeIds(),
+            productFilterGroupId: self.productFilterGroupId(),
+            productFilterId: self.productFilterId()
         }
 
         Object.keys(params).forEach(k => {
@@ -960,10 +1103,26 @@ const stockManagementViewModel = ({ } = {}) => {
             let obj = {
                 key: k,
                 idKey: k.toLowerCase().replace(/\s/g, '-').replace(/[^a-z0-9\-]/g, ''),
-                collapsed: ko.observable(false)
+                element: ko.observable(false),
+                templateName: ko.observable("product-page-group-placeholder-template"),
+            }
+            obj.ready = () => {
+                self.intersectionObserver.observe(obj.element.DOMElement);
             }
             obj[dataSetName] = v;
-            result.push(obj)
+            obj.templateName.subscribe(nv => {
+                console.log(nv);
+            });
+
+            obj.targetTotal = ko.computed(() => {
+                return obj[dataSetName].reduce((a0, p0) => a0 += p0.branchTargetParams.originalValue, 0);
+            }, self);
+
+            obj.branchGroupTargetTotal = ko.computed(() => {
+                return obj[dataSetName].reduce((a0, p0) => a0 += p0.branchGroupTarget(), 0);
+            }, self);
+
+            result.push(obj);
         });
 
         return result;

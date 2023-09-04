@@ -348,7 +348,7 @@ namespace SalesStatistics.Controllers
         [HttpPost]
         public IHttpActionResult BrandSlicerEndpoint([FromBody]PassSalesStatsSlicerGroupTwoFilters objFilters)
         {
-            var data = portalDb.ProductFilters.ToList();
+            var data = portalDb.Filters_Products.ToList();
 
             var brands = data.Where(p =>
                 (objFilters.ProductGroupID == null || objFilters.ProductGroupID == p.ProductGroupID) &&
@@ -362,7 +362,7 @@ namespace SalesStatistics.Controllers
         [HttpPost]
         public IHttpActionResult ProductGroupSlicerEndpoint([FromBody]PassSalesStatsSlicerGroupTwoFilters objFilters)
         {
-            var data = portalDb.ProductFilters.ToList();
+            var data = portalDb.Filters_Products.ToList();
 
             var productGroups = data.Where(p =>
                 (objFilters.BrandID == null || objFilters.BrandID == p.BrandID) &&
@@ -376,7 +376,7 @@ namespace SalesStatistics.Controllers
         [HttpPost]
         public IHttpActionResult ItemTypeSlicerEndpoint([FromBody]PassSalesStatsSlicerGroupTwoFilters objFilters)
         {
-            var data = portalDb.ProductFilters.ToList();
+            var data = portalDb.Filters_Products.ToList();
 
             var itemTypes = data.Where(p =>
                 (objFilters.BrandID == null || objFilters.BrandID == p.BrandID) &&
@@ -390,7 +390,7 @@ namespace SalesStatistics.Controllers
         [HttpPost]
         public IHttpActionResult LaunchSlicerEndpoint([FromBody]PassSalesStatsSlicerGroupTwoFilters objFilters)
         {
-            var data = portalDb.ProductFilters.ToList();
+            var data = portalDb.Filters_Products.ToList();
 
             var launches = data.Where(p =>
                 (objFilters.BrandID == null || objFilters.BrandID == p.BrandID) &&
