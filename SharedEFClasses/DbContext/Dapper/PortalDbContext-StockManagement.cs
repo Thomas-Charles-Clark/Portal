@@ -29,11 +29,8 @@ namespace SharedEFClasses.Models
 
             var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[StockManagement_ProductSearch]", new
             {
-                dto.BranchGroupID,
-                dto.BranchID,
-                dto.ProductTypeID,
-                dto.ProductGroupCode,
-                dto.ItemTypeCode,
+                dto.BuyerCode,
+                dto.SupplierCode,
                 dto.LaunchID,
                 dto.BrandID,
                 dto.ProductColourID,

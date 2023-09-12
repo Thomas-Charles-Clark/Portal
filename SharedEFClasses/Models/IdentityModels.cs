@@ -1,22 +1,24 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+
+using Newtonsoft.Json;
+
+using SharedEFClasses.Models.Applications;
+using SharedEFClasses.Models.General;
+using SharedEFClasses.Models.Leads;
+using SharedEFClasses.Models.Orders;
+using SharedEFClasses.Models.Products;
+using SharedEFClasses.Models.Retail;
+using SharedEFClasses.Models.StockManagement;
+using SharedEFClasses.Models.TradeAccounts;
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
-using SharedEFClasses.Models.TradeAccounts;
-using SharedEFClasses.Models.Leads;
-using SharedEFClasses.Models.General;
-using SharedEFClasses.Models.Applications;
-using System.ComponentModel.DataAnnotations.Schema;
-using SharedEFClasses.Models.Products;
-using SharedEFClasses.Models.Orders;
-using SharedEFClasses.Models.Retail;
-using SharedEFClasses.Models.Fenwicks;
-using SharedEFClasses.Models.StockManagement;
 
 namespace SharedEFClasses.Models
 {
@@ -68,7 +70,7 @@ namespace SharedEFClasses.Models
         public bool InvalidEmail { get; set; }
 
         public bool TradeAuthenticationComplete { get; set; }
-        
+
         [JsonIgnore]
         public virtual ICollection<Member_Department> Departments { get; set; }
 
@@ -80,7 +82,7 @@ namespace SharedEFClasses.Models
 
         [JsonIgnore]
         public virtual ICollection<Lead> LeadsOriginated { get; set; }
-        
+
         [JsonIgnore]
         public override ICollection<Member_Role> Roles { get; }
 
@@ -123,7 +125,7 @@ namespace SharedEFClasses.Models
         [JsonIgnore]
         [InverseProperty("ChasedBy")]
         public virtual ICollection<TaskChase> TaskChases { get; set; }
-        
+
         [JsonIgnore]
         [InverseProperty("UploadedByMember")]
         public virtual ICollection<Task_Attachment> TaskAttachmentsUploaded { get; set; }
@@ -131,7 +133,7 @@ namespace SharedEFClasses.Models
         [JsonIgnore]
         [InverseProperty("Member")]
         public virtual ICollection<Member_TradeAccount> TradeAccounts { get; set; }
-        
+
         [JsonIgnore]
         [InverseProperty("Author")]
         public virtual ICollection<Project> AuthoredProjects { get; set; }
@@ -147,7 +149,7 @@ namespace SharedEFClasses.Models
         [JsonIgnore]
         [InverseProperty("Author")]
         public virtual ICollection<ProjectStakeholder> CreatedProjectStakeholders { get; set; }
-        
+
         [JsonIgnore]
         [InverseProperty("Author")]
         public virtual ICollection<TradeAccountNote> TradeAccountNotes { get; set; }
@@ -252,10 +254,26 @@ namespace SharedEFClasses.Models
         [InverseProperty("LastModifiedBy")]
         public virtual ICollection<BranchStockLocation> BranchStockLocationsModified { get; set; }
 
+        [JsonIgnore]
+        [InverseProperty("ModifiedByMember")]
+        public virtual ICollection<Fenwick.FenwickBranch> ModifiedFenwickBranches { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("SignedOffByMember")]
+        public virtual ICollection<Fenwick.SelfBillInvoice> SignedOffFenwicksInvoices { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("LastModifiedBy")]
+        public virtual ICollection<Maintenance.MaintenanceBuyer> BuyersModified { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("LastModifiedBy")]
+        public virtual ICollection<Maintenance.MaintenanceSupplier> SuppliersModified { get; set; }
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
-            var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
+            ClaimsIdentity userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
             // Add custom user claims here
             return userIdentity;
         }
@@ -263,18 +281,18 @@ namespace SharedEFClasses.Models
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager, string authenticationType)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
-            var userIdentity = await manager.CreateIdentityAsync(this, authenticationType);
+            ClaimsIdentity userIdentity = await manager.CreateIdentityAsync(this, authenticationType);
             // Add custom user claims here
             return userIdentity;
         }
 
         public RoleProperties GetActiveRoleProperties()
         {
-            var r = Roles.Select(p => p.Role).OrderBy(p => p.Precedence).ToList();
+            List<Role> r = Roles.Select(p => p.Role).OrderBy(p => p.Precedence).ToList();
 
-            var ra = r.FirstOrDefault();
+            Role ra = r.FirstOrDefault();
 
-            var rap = ra?.Properties;
+            RoleProperties rap = ra?.Properties;
 
             return Roles?.Select(p => p.Role).OrderBy(p => p.Precedence).FirstOrDefault()?.Properties;
         }
@@ -330,14 +348,7 @@ namespace SharedEFClasses.Models
         {
             get
             {
-                if (this.PortalJSON != null)
-                {
-                    return JsonConvert.DeserializeObject<RoleProperties>(this.PortalJSON);
-                }
-                else
-                {
-                    return null;
-                }
+                return this.PortalJSON != null ? JsonConvert.DeserializeObject<RoleProperties>(this.PortalJSON) : null;
             }
             set
             {
@@ -347,7 +358,7 @@ namespace SharedEFClasses.Models
 
         public virtual ICollection<Application_Role> Application_Roles { get; set; }
     }
-    
+
     public class Application_Role
     {
         [Key]

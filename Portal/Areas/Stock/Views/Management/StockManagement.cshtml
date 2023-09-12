@@ -444,42 +444,40 @@
 
 <ul class="nav nav-tabs mt-3">
     <li class="nav-item">
-        <a id="overview-tab-anchor" href="#stock-management-overview-tab" data-bs-toggle="tab" class="nav-link active">
-            Overview
+        <a id="prelaunch-tab-anchor" href="#prelaunch-tab" data-bs-toggle="tab" title="(P)relaunch" class="nav-link">
+            Prelaunch
         </a>
     </li>
     <li class="nav-item">
-        <a id="range-tab-anchor" href="#stock-management-range-tab" data-bs-toggle="tab" class="nav-link">
-            Range Management
+        <a id="current-tab-anchor" href="#current-tab" data-bs-toggle="tab" title="(C)urrent and (Y)o we need to set this to Limited" class="nav-link active">
+            Current
         </a>
     </li>
     <li class="nav-item">
-        <a id="transfer-tab-anchor" href="#stock-management-tranfers-tab" data-bs-toggle="tab" class="nav-link">
-            Transfer Management
+        <a id="limited-tab-anchor" href="#limited-tab" data-bs-toggle="tab" title="(L)imited" class="nav-link">
+            Limited
+        </a>
+    </li>
+    <li class="nav-item">
+        <a id="clearance-tab-anchor" href="#clearance-tab" data-bs-toggle="tab" title="(P,C,Y,L,D) - because anything can be set to Clearance..." class="nav-link">
+            Clearance
+        </a>
+    </li>
+    <li class="nav-item">
+        <a id="discontinued-tab-anchor" href="#discontinued-tab" data-bs-toggle="tab" title="(D)iscontinued" class="nav-link">
+            Discontinued
         </a>
     </li>
 </ul>
 <div id="stock-management-tab-container" class="tab-content">
     <div class="prefilters">
-        <div id="branch-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: branchGroupParams }"></div>
-        <div id="branch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: branchParams }"></div>
-        <div id="product-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productTypeParams }"></div>
+        @*<div id="branch-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: branchGroupParams }"></div>*@
+        @*<div id="branch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: branchParams }"></div>*@
+        @*<div id="product-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productTypeParams }"></div>*@
+        <div id="buyer-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: buyerParams }"></div>
+        <div id="supplier-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
         <div id="product-filter-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productFilterGroupParams }"></div>
-        <div id="product-filter-prefilter" style="display: none" data-bind="visible: productFilterGroupId, component: { name: 'mdc-kendo-dropdown-component', params: productFilterParams }"></div>
-    </div>
-    <div class="prefilters">
-        <div id="display-prefilter" class="me-auto d-flex gap-3">
-            <div data-bind="component: { name: 'mdc-checkbox-component', params: displayWarehouseStockParams }"></div>
-            <div data-bind="component: { name: 'mdc-checkbox-component', params: displayRingFencedStockParams }"></div>
-            <div data-bind="component: { name: 'mdc-checkbox-component', params: displaySalesParams }"></div>
-        </div>
-        <button class="btn btn-success" data-bind="click: saveChanges">
-            Save
-        </button>
-        <i class="result-count-display">
-            <span data-bind="text: productSearchResults().length"></span>
-            Results
-        </i>
+        <div id="product-filter-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productFilterParams }"></div>
     </div>
     <div class="prefilters" style="display: none;" data-bind="visible: secondaryFiltersVisible">
         <div id="launch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: launchParams }"></div>
@@ -495,8 +493,30 @@
         </label>
         <div id="attribute-prefilter" data-bind="visible: attributeGroup, component: { name: 'mdc-kendo-multiselect-component', params: attributesParams }"></div>
     </div>
-    <div id="stock-management-overview-tab" class="tab-pane active">
-        <div class="blocker" data-bind="flexFadeVisible: overviewBusy">
+    <div class="prefilters">
+        @*<div id="display-prefilter" class="me-auto d-flex gap-3">
+            <div data-bind="component: { name: 'mdc-checkbox-component', params: displayWarehouseStockParams }"></div>
+            <div data-bind="component: { name: 'mdc-checkbox-component', params: displayRingFencedStockParams }"></div>
+            <div data-bind="component: { name: 'mdc-checkbox-component', params: displaySalesParams }"></div>
+        </div>*@
+        <button class="btn btn-success" data-bind="click: saveChanges">
+            Save
+        </button>
+        <i class="result-count-display">
+            <span data-bind="text: productSearchResults().length"></span>
+            Results
+        </i>
+    </div>
+    <div id="prelaunch-tab" class="tab-pane">
+        <div class="blocker" data-bind="flexFadeVisible: prelaunchBusy">
+            <div class="loading-spinner"></div>
+            <h4 class="mt-3">
+                Please wait...
+            </h4>
+        </div>
+    </div>
+    <div id="current-tab" class="tab-pane active">
+        <div class="blocker" data-bind="flexFadeVisible: currentBusy">
             <div class="loading-spinner"></div>
             <h4 class="mt-3">
                 Please wait...
@@ -523,8 +543,8 @@
                     <tr>
                         <td colspan="200" data-bind="css: { 'p-0': templateName().indexOf('placeholder') > -1 }">
                             <div class="order-form-group-wrapper accordion-collapse collapse show" data-bind="
-                                 attr: { 
-                                    id: `${idKey}-child` 
+                                 attr: {
+                                    id: `${idKey}-child`
                                  },
                                  keepElement: element">
                                 <!-- ko template: { name: templateName } --><!-- /ko -->
@@ -537,8 +557,8 @@
             </table>
         </div>
     </div>
-    <div id="stock-management-range-tab" class="tab-pane">
-        <div class="blocker" data-bind="flexFadeVisible: rangeBusy">
+    <div id="limited-tab" class="tab-pane">
+        <div class="blocker" data-bind="flexFadeVisible: limitedBusy">
             <div class="loading-spinner"></div>
             <h4 class="mt-3">
                 Please wait...
@@ -548,8 +568,19 @@
 
         </div>
     </div>
-    <div id="stock-management-tranfers-tab" class="tab-pane">
-        <div class="blocker" data-bind="flexFadeVisible: transferBusy">
+    <div id="clearance-tab" class="tab-pane">
+        <div class="blocker" data-bind="flexFadeVisible: clearanceBusy">
+            <div class="loading-spinner"></div>
+            <h4 class="mt-3">
+                Please wait...
+            </h4>
+        </div>
+        <div style="display: none" data-bind="visible: productSearchResults().length">
+
+        </div>
+    </div>
+    <div id="discontinued-tab" class="tab-pane">
+        <div class="blocker" data-bind="flexFadeVisible: discontinuedBusy">
             <div class="loading-spinner"></div>
             <h4 class="mt-3">
                 Please wait...

@@ -140,11 +140,17 @@ input[type="search"]::-webkit-search-results-decoration {
     }
 
     > .busy,
-    > div > .busy {
+    > div > .busy,
+    input.busy {
         background-image: repeating-linear-gradient(-45deg, rgba(222, 229, 237, 0.75), rgba(248, 249, 250, 0.95) 1rem, transparent 1rem, transparent 2rem);
         transition: background-color 300ms ease-in-out;
         background-size: 200% 200%;
         animation: barberpole 10s linear reverse infinite;
+    }
+
+    
+    input.busy {
+        z-index: 0;
     }
 
     .mdc-text-field {
@@ -242,7 +248,7 @@ input[type="search"]::-webkit-search-results-decoration {
         }
     }
 
-    .mdc-numeric-field {
+    .mdc-numeric-field:not(.no-buttons) {
         flex-wrap: nowrap;
 
         .mdc-text-field {

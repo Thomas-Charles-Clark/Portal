@@ -1,26 +1,27 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
+
+using SharedEFClasses.Models.Applications;
 using SharedEFClasses.Models.Attributes;
+using SharedEFClasses.Models.DotDigital;
+using SharedEFClasses.Models.Fenwick;
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Leads;
-using SharedEFClasses.Models.Products;
-using SharedEFClasses.Models.TradeAccounts;
-using SharedEFClasses.Models.Samples;
-using SharedEFClasses.Models.Applications;
-using SharedEFClasses.Models.TradeOrders;
-using SharedEFClasses.Models.Orders;
-using SharedEFClasses.Models.Documents;
+using SharedEFClasses.Models.Maintenance;
 using SharedEFClasses.Models.Marketing;
-using System.Data.Entity;
-using System.ComponentModel.DataAnnotations.Schema;
-using SharedEFClasses.ReturnModels;
-using Unity.Injection;
 using SharedEFClasses.Models.Mertexer;
-using DeliveryTerm = SharedEFClasses.Models.Mertexer.DeliveryTerm;
-using SharedEFClasses.Models.DotDigital;
+using SharedEFClasses.Models.Orders;
+using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.Retail;
-using SharedEFClasses.Models.Fenwicks;
+using SharedEFClasses.Models.Samples;
 using SharedEFClasses.Models.StockManagement;
-using System.Data.Entity.Migrations;
+using SharedEFClasses.Models.TradeAccounts;
+using SharedEFClasses.Models.TradeOrders;
+using SharedEFClasses.ReturnModels;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
+
+using DeliveryTerm = SharedEFClasses.Models.Mertexer.DeliveryTerm;
 
 namespace SharedEFClasses.Models
 {
@@ -131,6 +132,10 @@ namespace SharedEFClasses.Models
         public DbSet<MaintenanceColour> MaintenanceColours { get; set; }
 
         public DbSet<MaintenancePattern> MaintenancePatterns { get; set; }
+
+        public DbSet<MaintenanceBuyer> MaintenanceBuyers { get; set; }
+
+        public DbSet<MaintenanceSupplier> MaintenanceSuppliers { get; set; }
 
         #endregion
 
@@ -404,7 +409,7 @@ namespace SharedEFClasses.Models
 
         #region Lead
 
-        public DbSet<Lead> Leads  { get; set; }
+        public DbSet<Lead> Leads { get; set; }
 
         public DbSet<LeadAddress> LeadAddresses { get; set; }
 
@@ -427,7 +432,7 @@ namespace SharedEFClasses.Models
         public DbSet<ProductTypeGroup_Brand_Country> ProductTypeGroup_Brand_Country { get; set; }
 
         public DbSet<LeadInterest> LeadInterests { get; set; }
-       
+
         public DbSet<LeadNote> LeadNotes { get; set; }
         public DbSet<LeadType> LeadTypes { get; set; }
         public DbSet<AccountType> AccountTypes { get; set; }
@@ -486,7 +491,7 @@ namespace SharedEFClasses.Models
         #region Paint
 
         public DbSet<MixingLocation> MixingLocations { get; set; }
-        
+
         public DbSet<MixingSession> MixingSessions { get; set; }
 
         public DbSet<PaintOrderHead> PaintOrderHeads { get; set; }
@@ -507,20 +512,23 @@ namespace SharedEFClasses.Models
 
         #region Stock Management 
 
-        public DbSet<Branch> Branches { get; set; }
+        public DbSet<StockManagement.Branch> Branches { get; set; }
         public DbSet<BranchGroup> BranchGroups { get; set; }
         public DbSet<Branch_BranchGroup> BranchGroupAssignments { get; set; }
         public DbSet<BranchStockLocation> BranchStockLocations { get; set; }
+        public DbSet<Range> Ranges { get; set; }
 
         #endregion
 
         #region Fenwicks Related Stuff
 
-        public DbSet<Invoice> Invoices { get; set; }
-        
-        public DbSet<InvoiceFile> InvoiceFiles { get; set; }
+        public DbSet<FenwickBranch> FenwickBranches { get; set; }
 
-        public DbSet<Range> Ranges { get; set; }
+        public DbSet<SelfBillInvoice> FenwickSelfBillInvoices { get; set; }
+
+        public DbSet<Invoice> FenwickInvoices { get; set; }
+
+        public DbSet<InvoiceFile> FenwickInvoiceFiles { get; set; }
 
         #endregion
 
@@ -531,11 +539,11 @@ namespace SharedEFClasses.Models
         {
             base.OnModelCreating(modelBuilder);
 
-            var portalSchema = "portal";
-            var generalSchema = "dbo";
-            var memberSchema = "mbr";
-            var appSchema = "app";
-            var adminSchema = "adm";
+            string portalSchema = "portal";
+            string generalSchema = "dbo";
+            string memberSchema = "mbr";
+            string appSchema = "app";
+            string adminSchema = "adm";
 
             #region General Models
 
@@ -552,20 +560,20 @@ namespace SharedEFClasses.Models
             modelBuilder.Entity<Brand>().HasKey(p => p.BrandID).ToTable("Brand", generalSchema);
             modelBuilder.Entity<Competitor>().HasKey(p => p.CompetitorID).ToTable("Competitor", generalSchema).Property(p => p.Deleted).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
             modelBuilder.Entity<CompanyType>().HasKey(p => p.CompanyTypeID).ToTable("CompanyType", generalSchema);
-            var paymentTerms = modelBuilder.Entity<PaymentTerms>().ToTable("PaymentTerms", generalSchema);
-            var priceList = modelBuilder.Entity<PriceList>().ToTable("PriceList", generalSchema);
-            var salesRep = modelBuilder.Entity<SalesRepresentative>().Map(p => p.Requires("Deleted").HasValue(false)).ToTable("SalesRepresentative", generalSchema);
-            var salesRepresentativeSalesMarket = modelBuilder.Entity<SalesRepresentative_SalesMarket>().ToTable("SalesRepresentative_SalesMarket", generalSchema);
-            var salesAgent = modelBuilder.Entity<SalesAgent>().ToTable("SalesAgent", generalSchema);
-            var salesArea = modelBuilder.Entity<SalesArea>().ToTable("SalesArea", generalSchema);
-            var salesMarket = modelBuilder.Entity<SalesMarket>().ToTable("SalesMarket", generalSchema);
-            var mertexExchangeRate = modelBuilder.Entity<Mertex_ExchangeRate>().ToTable("Mertex_ExchangeRate", adminSchema);
-            var colour = modelBuilder.Entity<Colour>().ToTable("Colour", generalSchema);
-            var pattern = modelBuilder.Entity<Pattern>().ToTable("Pattern", generalSchema);
-            var tag = modelBuilder.Entity<Tag>().ToTable("Tag", portalSchema);
-            var department = modelBuilder.Entity<Department>().ToTable("Department", portalSchema);
-            
-            
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<PaymentTerms> paymentTerms = modelBuilder.Entity<PaymentTerms>().ToTable("PaymentTerms", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<PriceList> priceList = modelBuilder.Entity<PriceList>().ToTable("PriceList", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<SalesRepresentative> salesRep = modelBuilder.Entity<SalesRepresentative>().Map(p => p.Requires("Deleted").HasValue(false)).ToTable("SalesRepresentative", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<SalesRepresentative_SalesMarket> salesRepresentativeSalesMarket = modelBuilder.Entity<SalesRepresentative_SalesMarket>().ToTable("SalesRepresentative_SalesMarket", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<SalesAgent> salesAgent = modelBuilder.Entity<SalesAgent>().ToTable("SalesAgent", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<SalesArea> salesArea = modelBuilder.Entity<SalesArea>().ToTable("SalesArea", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<SalesMarket> salesMarket = modelBuilder.Entity<SalesMarket>().ToTable("SalesMarket", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Mertex_ExchangeRate> mertexExchangeRate = modelBuilder.Entity<Mertex_ExchangeRate>().ToTable("Mertex_ExchangeRate", adminSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Colour> colour = modelBuilder.Entity<Colour>().ToTable("Colour", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Pattern> pattern = modelBuilder.Entity<Pattern>().ToTable("Pattern", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Tag> tag = modelBuilder.Entity<Tag>().ToTable("Tag", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Department> department = modelBuilder.Entity<Department>().ToTable("Department", portalSchema);
+
+
             // This messing about is necessary because the CurrencyCode on which the table is keyed does not conform to the ISO_4217 standard. Ugh.
             mertexExchangeRate.Property(p => p.Code).HasColumnName("CurrencyCode");
             mertexExchangeRate.HasKey(p => p.Code);
@@ -603,7 +611,7 @@ namespace SharedEFClasses.Models
 
             #region Product Models
 
-            var product = modelBuilder.Entity<Product>().ToTable("Product", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Product> product = modelBuilder.Entity<Product>().ToTable("Product", generalSchema);
 
             product.Property(p => p.Deleted).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
 
@@ -643,29 +651,29 @@ namespace SharedEFClasses.Models
                 .WithMany(p => p.Products)
                 .HasForeignKey(p => p.ColourID);
 
-            var productTypeGroup = modelBuilder.Entity<ProductTypeGroup>().ToTable("ProductTypeGroup", generalSchema);
-            
-            var productType = modelBuilder.Entity<ProductType>().ToTable("ProductType", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<ProductTypeGroup> productTypeGroup = modelBuilder.Entity<ProductTypeGroup>().ToTable("ProductTypeGroup", generalSchema);
+
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<ProductType> productType = modelBuilder.Entity<ProductType>().ToTable("ProductType", generalSchema);
 
             productType.HasRequired(p => p.ProductTypeGroup)
                 .WithMany(p => p.ProductTypes)
                 .HasForeignKey(p => p.ProductTypeGroupID);
 
-            var collection = modelBuilder.Entity<Products.Collection>().ToTable("Collection", generalSchema);
-            var design = modelBuilder.Entity<Design>().ToTable("Design", generalSchema);
-            var itemType = modelBuilder.Entity<ItemType>().ToTable("Mertex_ItemType", adminSchema);
-            var productGroup = modelBuilder.Entity<ProductGroup>().ToTable("Mertex_ProductGroup", adminSchema);
-            var launch = modelBuilder.Entity<Launch>().ToTable("Launch", generalSchema);
-            var market = modelBuilder.Entity<Market>().ToTable("Mertex_Market", adminSchema);
-            var quality = modelBuilder.Entity<Quality>().ToTable("Quality", generalSchema);
-            var attribute = modelBuilder.Entity<Attribute>().ToTable("Attribute", generalSchema);
-            var attributeGroup = modelBuilder.Entity<AttributeGroup>().ToTable("AttributeGroup", generalSchema);
-            
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Collection> collection = modelBuilder.Entity<Products.Collection>().ToTable("Collection", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Design> design = modelBuilder.Entity<Design>().ToTable("Design", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<ItemType> itemType = modelBuilder.Entity<ItemType>().ToTable("Mertex_ItemType", adminSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<ProductGroup> productGroup = modelBuilder.Entity<ProductGroup>().ToTable("Mertex_ProductGroup", adminSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Launch> launch = modelBuilder.Entity<Launch>().ToTable("Launch", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Market> market = modelBuilder.Entity<Market>().ToTable("Mertex_Market", adminSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Quality> quality = modelBuilder.Entity<Quality>().ToTable("Quality", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Attribute> attribute = modelBuilder.Entity<Attribute>().ToTable("Attribute", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<AttributeGroup> attributeGroup = modelBuilder.Entity<AttributeGroup>().ToTable("AttributeGroup", generalSchema);
+
             attribute.HasRequired(p => p.AttributeGroup)
-                     .WithMany(p=>p.Attributes)
+                     .WithMany(p => p.Attributes)
                      .HasForeignKey(p => p.AttributeGroupID);
 
-            var product_collection = modelBuilder.Entity<Product_Collection>().HasKey(p => new { ProductID = p.ProductID, CollectionID = p.CollectionID }).ToTable("Product_Collection", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Product_Collection> product_collection = modelBuilder.Entity<Product_Collection>().HasKey(p => new { p.ProductID, p.CollectionID }).ToTable("Product_Collection", generalSchema);
 
             product_collection
                 .HasRequired(p => p.Product)
@@ -681,9 +689,9 @@ namespace SharedEFClasses.Models
                 .WithMany(p => p.Launches)
                 .HasForeignKey(p => p.SeasonID);
 
-            var season = modelBuilder.Entity<Season>().ToTable("Season", generalSchema);
-            var stocks = modelBuilder.Entity<Stock>().ToTable("Stock", generalSchema);
-            var stockStatus = modelBuilder.Entity<StockStatus>().ToTable("StockStatus", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Season> season = modelBuilder.Entity<Season>().ToTable("Season", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Stock> stocks = modelBuilder.Entity<Stock>().ToTable("Stock", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<StockStatus> stockStatus = modelBuilder.Entity<StockStatus>().ToTable("StockStatus", generalSchema);
 
             stockStatus.Property(p => p.Name).HasColumnName("StockStatus");
 
@@ -691,13 +699,13 @@ namespace SharedEFClasses.Models
                 .WithMany(p => p.Stocks)
                 .HasForeignKey(p => p.StockStatusID);
 
-            var sampleRequestSlicerData = modelBuilder.Entity<SampleRequestSlicerData>().ToTable("SampleRequest_Slicer_Data", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<SampleRequestSlicerData> sampleRequestSlicerData = modelBuilder.Entity<SampleRequestSlicerData>().ToTable("SampleRequest_Slicer_Data", portalSchema);
 
             #endregion
 
             #region Member Models
 
-            var member = modelBuilder.Entity<Member>().HasKey(p => p.Id)
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Member> member = modelBuilder.Entity<Member>().HasKey(p => p.Id)
                 .ToTable("Member", memberSchema);
 
             member.Ignore(p => p.MemberID);
@@ -733,8 +741,8 @@ namespace SharedEFClasses.Models
             member.HasOptional(p => p.DefaultMertexOperator)
                   .WithMany(p => p.Members)
                   .HasForeignKey(p => p.DefaultMertexOperatorCode);
-            
-            var member_role = modelBuilder.Entity<Member_Role>().HasKey(p => new { p.UserId, p.RoleId }).ToTable("Member_Role", memberSchema);
+
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Member_Role> member_role = modelBuilder.Entity<Member_Role>().HasKey(p => new { p.UserId, p.RoleId }).ToTable("Member_Role", memberSchema);
             member_role.Property(p => p.UserId).HasColumnName("MemberID");
             member_role.Property(p => p.RoleId).HasColumnName("RoleID");
 
@@ -745,7 +753,7 @@ namespace SharedEFClasses.Models
                 .WithMany(p => p.Users)
                 .HasForeignKey(p => p.RoleId);
 
-            var member_recentlyUsedMember = modelBuilder.Entity<Member_RecentlyUsedMember>().ToTable("Member_RecentlyUsedMember", memberSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Member_RecentlyUsedMember> member_recentlyUsedMember = modelBuilder.Entity<Member_RecentlyUsedMember>().ToTable("Member_RecentlyUsedMember", memberSchema);
             member_recentlyUsedMember.Property(p => p.MemberID).HasColumnName("MemberID");
             member_recentlyUsedMember.Property(p => p.OtherMemberID).HasColumnName("OtherMemberID");
             member_recentlyUsedMember.Property(p => p.UsedDT).HasColumnName("UsedDT").HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
@@ -760,10 +768,10 @@ namespace SharedEFClasses.Models
             //    .WithMany(p => p.RecentlyUsedMembers)
             //    .HasForeignKey(p => p.OtherMemberID);
 
-            var member_login = modelBuilder.Entity<Member_Login>().ToTable("MemberLogin", memberSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Member_Login> member_login = modelBuilder.Entity<Member_Login>().ToTable("MemberLogin", memberSchema);
             member_login.Property(p => p.UserId).HasColumnName("MemberID");
 
-            var member_claim = modelBuilder.Entity<Member_Claim>().ToTable("MemberClaim", memberSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Member_Claim> member_claim = modelBuilder.Entity<Member_Claim>().ToTable("MemberClaim", memberSchema);
             member_claim.Property(p => p.UserId).HasColumnName("MemberID");
             member_claim.Property(p => p.Id).HasColumnName("ClaimID");
 
@@ -771,18 +779,18 @@ namespace SharedEFClasses.Models
 
             #region Application & Role Models
 
-            var role = modelBuilder.Entity<Role>().ToTable("Role", memberSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Role> role = modelBuilder.Entity<Role>().ToTable("Role", memberSchema);
             role.Property(p => p.Id).HasColumnName("RoleID");
             role.Property(p => p.Name).HasColumnName("Name");
             role.Property(p => p.Precedence).HasColumnName("Precedence");
             role.Property(p => p.PortalJSON).HasColumnName("PortalJSON");
             role.Ignore(p => p.Properties);
 
-            var application = modelBuilder.Entity<Application>().HasKey(p => p.ApplicationID).ToTable("Application", appSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Application> application = modelBuilder.Entity<Application>().HasKey(p => p.ApplicationID).ToTable("Application", appSchema);
             application.HasRequired(p => p.Status).WithMany().HasForeignKey(p => p.ApplicationStatusID);
             application.Property(p => p.Deleted).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
 
-            var application_Role = modelBuilder.Entity<Application_Role>().HasKey(p => new { p.ApplicationID, p.RoleID }).ToTable("Application_Role", appSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Application_Role> application_Role = modelBuilder.Entity<Application_Role>().HasKey(p => new { p.ApplicationID, p.RoleID }).ToTable("Application_Role", appSchema);
 
             application_Role.Property(p => p.ApplicationID).HasColumnName("ApplicationID");
             application_Role.Property(p => p.RoleID).HasColumnName("RoleID");
@@ -798,33 +806,33 @@ namespace SharedEFClasses.Models
                 .WithMany(p => p.Application_Roles)
                 .HasForeignKey(p => p.RoleID);
 
-            var applicationStatus = modelBuilder.Entity<ApplicationStatus>().HasKey(p => p.ApplicationStatusID).ToTable("ApplicationStatus", appSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<ApplicationStatus> applicationStatus = modelBuilder.Entity<ApplicationStatus>().HasKey(p => p.ApplicationStatusID).ToTable("ApplicationStatus", appSchema);
             applicationStatus.Property(p => p.ApplicationStatusID).HasColumnName("ApplicationStatusID");
 
             #endregion
 
             #region Trade Models
 
-            var tradeAccount = modelBuilder.Entity<TradeAccount>().HasKey(p => p.TradeAccountID).ToTable("TradeAccount", generalSchema);
-            var tradeLanguage = modelBuilder.Entity<TradeLanguage>().ToTable("TradeLanguage", generalSchema);
-            var mertexOperator = modelBuilder.Entity<MertexOperator>().HasKey(p => p.Code).ToTable("Trade_MertexOperator", generalSchema);
-            var tradeAccountGroup = modelBuilder.Entity<TradeAccountGroup>().HasKey(p => p.TradeAccountGroupID).ToTable("TradeAccountGroup", generalSchema);
-            var tradeHaulier = modelBuilder.Entity<TradeHaulier>().HasKey(p => p.HAULCODE).ToTable("TradeHaulier", generalSchema);
-            var tradeCarriage = modelBuilder.Entity<TradeCarriage>().HasKey(p => new { p.HAULCODE, p.CARRCODE }).ToTable("TradeCarriage", generalSchema);
-            var tradeCarriageCountryRestriction = modelBuilder.Entity<TradeCarriage_Country>().ToTable("TradeCarriage_Country", generalSchema);
-            var tradeCarriagePrice = modelBuilder.Entity<TradeCarriage_Price>().ToTable("TradeCarriage_Price", generalSchema);
-            var tradePriceList = modelBuilder.Entity<TradePriceList>().ToTable("TradePriceList", generalSchema);
-            var tradePriceListType = modelBuilder.Entity<TradePriceListType>().ToTable("TradePriceListType", generalSchema);
-            var tradeAccountType = modelBuilder.Entity<TradeAccountType>().ToTable("TradeAccountType", generalSchema);
-            var tradeArea = modelBuilder.Entity<TradeArea>().ToTable("TradeArea", generalSchema);
-            var tradeAccount_Competitor = modelBuilder.Entity<TradeAccount_Competitor>().ToTable("TradeAccount_Competitor", generalSchema);
-            var tradeAccount_CompetitorNote = modelBuilder.Entity<TradeAccountCompetitorNote>().ToTable("TradeAccountCompetitorNote", generalSchema);
-            var tradeAccountPotential = modelBuilder.Entity<TradeAccountPotential>().ToTable("TradeAccountPotential", generalSchema);
-            var tradeAdvertisers = modelBuilder.Entity<TradeAdvertiser>().ToTable("TradeAdvertiser", generalSchema);
-            var tradeAccount_TradeAdvertisers = modelBuilder.Entity<TradeAccount_TradeAdvertiser>().ToTable("TradeAccount_TradeAdvertiser", generalSchema);
-            var tradeAccountVisit = modelBuilder.Entity<TradeAccountVisit>().ToTable("TradeAccountVisit", generalSchema);
-            var tradeAccountContact = modelBuilder.Entity<TradeAccountContact>();
-            var tradeAccountVisit_tradeAccountContact = modelBuilder.Entity<TradeAccountVisit_TradeAccountContact>();
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TradeAccount> tradeAccount = modelBuilder.Entity<TradeAccount>().HasKey(p => p.TradeAccountID).ToTable("TradeAccount", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TradeLanguage> tradeLanguage = modelBuilder.Entity<TradeLanguage>().ToTable("TradeLanguage", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<MertexOperator> mertexOperator = modelBuilder.Entity<MertexOperator>().HasKey(p => p.Code).ToTable("Trade_MertexOperator", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TradeAccountGroup> tradeAccountGroup = modelBuilder.Entity<TradeAccountGroup>().HasKey(p => p.TradeAccountGroupID).ToTable("TradeAccountGroup", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TradeHaulier> tradeHaulier = modelBuilder.Entity<TradeHaulier>().HasKey(p => p.HAULCODE).ToTable("TradeHaulier", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TradeCarriage> tradeCarriage = modelBuilder.Entity<TradeCarriage>().HasKey(p => new { p.HAULCODE, p.CARRCODE }).ToTable("TradeCarriage", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TradeCarriage_Country> tradeCarriageCountryRestriction = modelBuilder.Entity<TradeCarriage_Country>().ToTable("TradeCarriage_Country", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TradeCarriage_Price> tradeCarriagePrice = modelBuilder.Entity<TradeCarriage_Price>().ToTable("TradeCarriage_Price", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TradePriceList> tradePriceList = modelBuilder.Entity<TradePriceList>().ToTable("TradePriceList", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TradePriceListType> tradePriceListType = modelBuilder.Entity<TradePriceListType>().ToTable("TradePriceListType", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TradeAccountType> tradeAccountType = modelBuilder.Entity<TradeAccountType>().ToTable("TradeAccountType", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TradeArea> tradeArea = modelBuilder.Entity<TradeArea>().ToTable("TradeArea", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TradeAccount_Competitor> tradeAccount_Competitor = modelBuilder.Entity<TradeAccount_Competitor>().ToTable("TradeAccount_Competitor", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TradeAccountCompetitorNote> tradeAccount_CompetitorNote = modelBuilder.Entity<TradeAccountCompetitorNote>().ToTable("TradeAccountCompetitorNote", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TradeAccountPotential> tradeAccountPotential = modelBuilder.Entity<TradeAccountPotential>().ToTable("TradeAccountPotential", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TradeAdvertiser> tradeAdvertisers = modelBuilder.Entity<TradeAdvertiser>().ToTable("TradeAdvertiser", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TradeAccount_TradeAdvertiser> tradeAccount_TradeAdvertisers = modelBuilder.Entity<TradeAccount_TradeAdvertiser>().ToTable("TradeAccount_TradeAdvertiser", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TradeAccountVisit> tradeAccountVisit = modelBuilder.Entity<TradeAccountVisit>().ToTable("TradeAccountVisit", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TradeAccountContact> tradeAccountContact = modelBuilder.Entity<TradeAccountContact>();
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TradeAccountVisit_TradeAccountContact> tradeAccountVisit_tradeAccountContact = modelBuilder.Entity<TradeAccountVisit_TradeAccountContact>();
 
             tradeCarriage.HasRequired(p => p.Haulier)
                 .WithMany(p => p.CarriageServices)
@@ -850,7 +858,7 @@ namespace SharedEFClasses.Models
                 .HasRequired(p => p.TradeAccount)
                 .WithMany(p => p.Visits)
                 .HasForeignKey(p => p.TradeAccountID);
-            
+
             tradeAccount_Competitor
                 .HasRequired(p => p.TradeAccount)
                 .WithMany(p => p.Competitors)
@@ -959,7 +967,7 @@ namespace SharedEFClasses.Models
             tradeAccountPotential.HasRequired(p => p.LastModifiedBy)
                 .WithMany(p => p.TradeAccountPotentials_Modified)
                 .HasForeignKey(p => p.ModifiedMemberID);
-            
+
             tradeAccount_TradeAdvertisers
                 .HasRequired(p => p.TradeAccount)
                 .WithMany(p => p.TradeAdvertisers)
@@ -976,32 +984,32 @@ namespace SharedEFClasses.Models
 
             modelBuilder.Entity<OrderStatus>().HasKey(p => p.OrderStatusID).ToTable("OrderStatus", memberSchema);
 
-            var productRangeButton = modelBuilder.Entity<ProductRangeButton>().ToTable("ProductRange", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<ProductRangeButton> productRangeButton = modelBuilder.Entity<ProductRangeButton>().ToTable("ProductRange", portalSchema);
             productRangeButton.Property(p => p.Deleted).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
 
             #endregion
 
             #region Lead Models
 
-            var lead = modelBuilder.Entity<Lead>().ToTable("Lead", portalSchema);
-            var leadAddress = modelBuilder.Entity<LeadAddress>().ToTable("LeadAddress", portalSchema);
-            var leadContact = modelBuilder.Entity<LeadContact>().ToTable("LeadContact", portalSchema);
-            var leadContactType = modelBuilder.Entity<LeadContactType>().ToTable("LeadContactType", portalSchema);
-            var leadMagnitude = modelBuilder.Entity<LeadMagnitude>().ToTable("LeadMagnitude", portalSchema);
-            var leadSource = modelBuilder.Entity<LeadSource>().ToTable("LeadSource", portalSchema);
-            var leadSourceGroup = modelBuilder.Entity<LeadSourceGroup>().ToTable("LeadSourceGroup", portalSchema);
-            var leadStatus = modelBuilder.Entity<LeadStatus>().ToTable("LeadStatus", portalSchema);
-            var leadStatusGroup = modelBuilder.Entity<LeadStatusGroup>().ToTable("LeadStatusGroup", portalSchema);
-            var leadPotential = modelBuilder.Entity<LeadPotential>().HasKey(p => p.LeadPotentialID).ToTable("LeadPotential", portalSchema);
-            var productTypeGroup_Brand_Country = modelBuilder.Entity<ProductTypeGroup_Brand_Country>().HasKey(p => new { ProductTypeGroupID = p.ProductTypeGroupID, BrandID = p.BrandID, CountryID = p.CountryID }).ToTable("ProductTypeGroup_Brand_Country", portalSchema);
-            var competitor_Lead = modelBuilder.Entity<Lead_Competitor>().HasKey(p => new { p.CompetitorID, p.LeadID }).ToTable("Lead_Competitor", portalSchema);
-            var leadInterest = modelBuilder.Entity<LeadInterest>().HasKey(p => new { p.LeadID, p.BrandID, p.ProductTypeGroupID }).ToTable("LeadInterest", portalSchema);
-            var leadNote = modelBuilder.Entity<LeadNote>().ToTable("LeadNote", portalSchema);
-            var leadType = modelBuilder.Entity<LeadType>().ToTable("LeadType", portalSchema);
-            var accountType = modelBuilder.Entity<AccountType>().ToTable("AccountType", portalSchema);
-            var customerType = modelBuilder.Entity<CustomerType>().ToTable("CustomerType", portalSchema);
-            var lead_tag = modelBuilder.Entity<Lead_Tag>().ToTable("Lead_Tag", portalSchema);
-            var tradeAccount_tag = modelBuilder.Entity<TradeAccount_Tag>().ToTable("TradeAccount_Tag", generalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Lead> lead = modelBuilder.Entity<Lead>().ToTable("Lead", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<LeadAddress> leadAddress = modelBuilder.Entity<LeadAddress>().ToTable("LeadAddress", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<LeadContact> leadContact = modelBuilder.Entity<LeadContact>().ToTable("LeadContact", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<LeadContactType> leadContactType = modelBuilder.Entity<LeadContactType>().ToTable("LeadContactType", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<LeadMagnitude> leadMagnitude = modelBuilder.Entity<LeadMagnitude>().ToTable("LeadMagnitude", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<LeadSource> leadSource = modelBuilder.Entity<LeadSource>().ToTable("LeadSource", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<LeadSourceGroup> leadSourceGroup = modelBuilder.Entity<LeadSourceGroup>().ToTable("LeadSourceGroup", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<LeadStatus> leadStatus = modelBuilder.Entity<LeadStatus>().ToTable("LeadStatus", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<LeadStatusGroup> leadStatusGroup = modelBuilder.Entity<LeadStatusGroup>().ToTable("LeadStatusGroup", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<LeadPotential> leadPotential = modelBuilder.Entity<LeadPotential>().HasKey(p => p.LeadPotentialID).ToTable("LeadPotential", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<ProductTypeGroup_Brand_Country> productTypeGroup_Brand_Country = modelBuilder.Entity<ProductTypeGroup_Brand_Country>().HasKey(p => new { p.ProductTypeGroupID, p.BrandID, p.CountryID }).ToTable("ProductTypeGroup_Brand_Country", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Lead_Competitor> competitor_Lead = modelBuilder.Entity<Lead_Competitor>().HasKey(p => new { p.CompetitorID, p.LeadID }).ToTable("Lead_Competitor", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<LeadInterest> leadInterest = modelBuilder.Entity<LeadInterest>().HasKey(p => new { p.LeadID, p.BrandID, p.ProductTypeGroupID }).ToTable("LeadInterest", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<LeadNote> leadNote = modelBuilder.Entity<LeadNote>().ToTable("LeadNote", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<LeadType> leadType = modelBuilder.Entity<LeadType>().ToTable("LeadType", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<AccountType> accountType = modelBuilder.Entity<AccountType>().ToTable("AccountType", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<CustomerType> customerType = modelBuilder.Entity<CustomerType>().ToTable("CustomerType", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Lead_Tag> lead_tag = modelBuilder.Entity<Lead_Tag>().ToTable("Lead_Tag", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TradeAccount_Tag> tradeAccount_tag = modelBuilder.Entity<TradeAccount_Tag>().ToTable("TradeAccount_Tag", generalSchema);
 
             lead_tag.HasRequired(p => p.Lead)
                 .WithMany(p => p.Tags)
@@ -1018,7 +1026,7 @@ namespace SharedEFClasses.Models
             tradeAccount_tag.HasRequired(p => p.Tag)
                 .WithMany(p => p.TradeAccounts)
                 .HasForeignKey(p => p.TagID);
-            
+
             competitor_Lead
                 .HasRequired(p => p.Lead)
                 .WithMany(p => p.BrandsWorkedWith)
@@ -1123,11 +1131,11 @@ namespace SharedEFClasses.Models
             lead.HasMany(p => p.LeadInterests)
                 .WithRequired(p => p.Lead)
                 .HasForeignKey(p => p.LeadID);
-            
+
             lead.HasMany(p => p.Potentials)
                 .WithRequired(p => p.Lead)
                 .HasForeignKey(p => p.LeadID);
-            
+
             leadAddress.Ignore(p => p.AppleMapsButton);
             leadAddress.Ignore(p => p.WazeButton);
             leadAddress.Ignore(p => p.GoogleStreetViewButton);
@@ -1135,12 +1143,12 @@ namespace SharedEFClasses.Models
             leadSource.HasRequired(p => p.LeadSourceGroup)
                 .WithMany(p => p.LeadSources)
                 .HasForeignKey(p => p.LeadSourceGroupID);
-            
+
             leadPotential.Ignore(p => p.CreatedSince);
             leadPotential.Ignore(p => p.NoPotentialSince);
             leadPotential.Property(p => p.CreatedDT).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
             leadPotential.Property(p => p.LeadPotentialID).HasColumnName("LeadPotentialID");
-            
+
             lead.HasMany(p => p.BrandsWorkedWith)
                 .WithRequired(p => p.Lead)
                 .HasForeignKey(p => p.LeadID);
@@ -1153,7 +1161,7 @@ namespace SharedEFClasses.Models
 
             #region Marketing Models
 
-            var marketingMessage = modelBuilder.Entity<MarketingMessage>().ToTable("MarketingMessage", portalSchema);
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<MarketingMessage> marketingMessage = modelBuilder.Entity<MarketingMessage>().ToTable("MarketingMessage", portalSchema);
 
             marketingMessage.Property(p => p.Deleted).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
 
@@ -1163,9 +1171,9 @@ namespace SharedEFClasses.Models
 
             #region Task Models
 
-            var task = modelBuilder.Entity<Task>();
-            var taskAssignmentHistory = modelBuilder.Entity<TaskAssignmentHistory>();
-            var externalStatus = modelBuilder.Entity<ExternalStatus>();
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Task> task = modelBuilder.Entity<Task>();
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TaskAssignmentHistory> taskAssignmentHistory = modelBuilder.Entity<TaskAssignmentHistory>();
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<ExternalStatus> externalStatus = modelBuilder.Entity<ExternalStatus>();
 
             externalStatus.HasRequired(p => p.Company)
                 .WithMany(p => p.Statuses)
@@ -1186,11 +1194,11 @@ namespace SharedEFClasses.Models
             task.HasOptional(p => p.ExternalStatus)
                 .WithMany(p => p.Tasks)
                 .HasForeignKey(p => p.ExternalStatusID);
-            
+
             taskAssignmentHistory.HasOptional(p => p.AssignedToMember)
                 .WithMany(p => p.TasksReceivedHistory)
                 .HasForeignKey(p => p.AssignedToMemberID);
-            
+
             taskAssignmentHistory.HasRequired(p => p.AssignedByMember)
                 .WithMany(p => p.TasksAssignedToOthersHistory)
                 .HasForeignKey(p => p.AssignedByMemberID);

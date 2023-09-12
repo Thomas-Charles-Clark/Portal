@@ -71,7 +71,7 @@
         busy: ko.observable(false),
         enable: ko.observable(true),
         disable: ko.observable(false),
-        showClear: ko.observable(true),
+        clearable: ko.observable(true),
         clearFunction: () => {
             self.customerOrderReference(undefined);
         },
@@ -575,47 +575,46 @@
                         postcode: data.OrderHead.DeliveryPostcode,
                         country: data.OrderHead.DeliveryCountryCode
                     }
-                    //dataItem.orderDetailPopover({
-                    //    title: 'Order Details',
-                    //    ,
-                    //    data: data,
-                    //    content: function () {
-                    //        return `<div class="popover-details-wrapper" data-bind="with: data">
-                    //                    <div class="grid-container">
-                    //                        <div>
-                    //                            <h4>Order</h4>
-                    //                            <div class="sub-grid-container" data-bind="with: OrderHead">
-                    //                                <span>Order ID:</span>
-                    //                                <span data-bind="text: OrderID"></span>
-                    //                                <span>Date:</span>
-                    //                                <span data-bind="text: moment(OrderDT).format('dddd Do MMM YYYY HH:mm')"></span>
-                    //                                <span>Account:</span>
-                    //                                <span data-bind="html: TradeAccountCode + ' - ' + TradeAccountName"></span>
-                    //                                <span>Currency:</span>
-                    //                                <span data-bind="text: MertexCurrencyCode"></span>
-                    //                                <span>Order Reference:</span>
-                    //                                <span data-bind="text: CustomerOrderReference"></span>
-                    //                                <span>Order Taker:</span>
-                    //                                <span data-bind="text: OrderTaker"></span>
-                    //                            </div>
-                    //                        </div>
-                    //                        <div>
-                    //                            <h4>Delivery</h5>
-                    //                            <div class="delivery-address-wrapper" data-bind="template: { name: 'popover-address-template', data: deliveryAddress }"></div>
-                    //                            <div class="sub-grid-container" data-bind="with: OrderHead">
-                    //                                <span>Haulier Code:</span>
-                    //                                <span data-bind="text: HaulierCode"></span>
-                    //                                <span>Carriage Code:</span>
-                    //                                <span data-bind="text: CarriageCode"></span>
-                    //                            </div>
-                    //                        </div>
-                    //                    </div>
-                    //                    <div data-bind="kendoGrid: $parent.orderLinesGrid"></div>
-                    //                </div>`
-                    //    },
-                    //    placement: 'auto',
-                    //    template: self.popoverTemplate()
-                    //});
+                    dataItem.orderDetailPopover({
+                        title: 'Order Details',
+                        data: data,
+                        content: function () {
+                            return `<div class="popover-details-wrapper" data-bind="with: data">
+                                        <div class="grid-container">
+                                            <div>
+                                                <h4>Order</h4>
+                                                <div class="sub-grid-container" data-bind="with: OrderHead">
+                                                    <span>Order ID:</span>
+                                                    <span data-bind="text: OrderID"></span>
+                                                    <span>Date:</span>
+                                                    <span data-bind="text: moment(OrderDT).format('dddd Do MMM YYYY HH:mm')"></span>
+                                                    <span>Account:</span>
+                                                    <span data-bind="html: TradeAccountCode + ' - ' + TradeAccountName"></span>
+                                                    <span>Currency:</span>
+                                                    <span data-bind="text: MertexCurrencyCode"></span>
+                                                    <span>Order Reference:</span>
+                                                    <span data-bind="text: CustomerOrderReference"></span>
+                                                    <span>Order Taker:</span>
+                                                    <span data-bind="text: OrderTaker"></span>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h4>Delivery</h5>
+                                                <div class="delivery-address-wrapper" data-bind="template: { name: 'popover-address-template', data: deliveryAddress }"></div>
+                                                <div class="sub-grid-container" data-bind="with: OrderHead">
+                                                    <span>Haulier Code:</span>
+                                                    <span data-bind="text: HaulierCode"></span>
+                                                    <span>Carriage Code:</span>
+                                                    <span data-bind="text: CarriageCode"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div data-bind="kendoGrid: $parent.orderLinesGrid"></div>
+                                    </div>`
+                        },
+                        placement: 'auto',
+                        template: self.popoverTemplate()
+                    });
                     data.orderLinesGrid = {
                         data: data.OrderLines,
                         useKOTemplates: true,
@@ -660,8 +659,8 @@
                     }
                
                     window.setTimeout(() => {
-                        $('#order-enquiry-modal').modal('show');
-                        //$(dataItem.orderDetailPopover().popObject).popover('show');
+                        //$('#order-enquiry-modal').modal('show');
+                        $(dataItem.orderDetailPopover().popObject).popover('show');
                     }, 0);
                     self.orderDetail(data);
                 })

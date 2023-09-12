@@ -304,6 +304,10 @@ namespace SharedEFClasses.Models.TradeAccounts
         [JsonIgnore]
         [InverseProperty("BranchToWarehouseTransferTradeAccount")]
         public virtual ICollection<BranchStockLocation> BranchStockLocationsBranchToWarehouse { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("TradeAccount")]
+        public virtual ICollection<Fenwick.Invoice> FenwickInvoices { get; set; }
     }
     
     [Table("TradeAccountAddress_Tag", Schema = "dbo")]

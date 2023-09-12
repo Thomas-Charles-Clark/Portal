@@ -11,3 +11,112 @@
 
     observer.observe(ele);
 }
+
+function renderDate(date) {
+    //  /[^0-9]/g, ''       strips anything non-numeric (this handles the outdated microsoft format /Date123453245/)
+    if (date) {
+        if (date.toString().indexOf('Date') > -1)
+            return (date ? moment(new Date(parseFloat(date.toString().replace(/[^0-9]/g, '')))).format("DD/MM/YYYY") : null);
+        else
+            return moment(date).format("DD/MM/YYYY");
+    } else {
+        return null;
+    }
+}
+
+function renderDateTime(date) {
+    if (date) {
+        if (date.toString().indexOf('Date') > -1)
+            return (date ? moment(new Date(parseFloat(date.toString().replace(/[^0-9]/g, '')))).format("HH:mm DD/MM/YYYY") : null);
+        else
+            return moment(date).format("HH:mm DD/MM/YYYY");
+    } else {
+        return null;
+    }
+}
+
+function renderMonthYear(date) {
+    if (date) {
+        if (date.toString().indexOf('Date') > -1)
+            return (date ? moment(new Date(parseFloat(date.toString().replace(/[^0-9]/g, '')))).format("MMMM YYYY") : null);
+        else
+            return moment(date).format("MMMM YYYY");
+    } else {
+        return null;
+    }
+}
+
+function renderFullDate(date) {
+    if (date) {
+        if (date.toString().indexOf('Date') > -1)
+            return (date ? moment(new Date(parseFloat(date.toString().replace(/[^0-9]/g, '')))).format("dddd Do MMMM YYYY") : null);
+        else
+            return moment(date).format("dddd Do MMMM YYYY");
+    } else {
+        return null;
+    }
+}
+
+function formatNumber(value, digits, culture) {
+    var formatter = new Intl.NumberFormat(
+        culture, {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits
+    });
+
+    return formatter.format(value);
+}
+
+function formatCurrency(value, digits, culture, currency) {
+    if (value == null)
+        return value;
+
+    var formatter = new Intl.NumberFormat(
+        culture,
+        {
+            style: 'currency',
+            currency: currency,
+            minimumFractionDigits: digits,
+            maximumFractionDigits: digits
+        });
+
+    return formatter.format(value);
+}
+
+function formatPercentage(value, digits, culture) {
+    if (value == null)
+        return value;
+
+    var formatter = new Intl.NumberFormat(culture, {
+        style: 'percent',
+        maximumFractionDigits: digits
+    });
+
+    return formatter.format(value);
+}
+
+function formatPercentageHtmlColourSpan(value, digits, culture) {
+    var formatter = new Intl.NumberFormat('en-GB', {
+        style: 'percent',
+        maximumFractionDigits: digits
+    });
+
+    if (value >= 0) {
+        return "<span>" + formatter.format(value) + "</span>";
+    } else {
+        return "<span class='red-text'>" + formatter.format(value) + "</span>";
+    }
+}
+
+function formatPercentageHtmlColourSpanReversed(value, digits, culture) {
+    var formatter = new Intl.NumberFormat('en-GB', {
+        style: 'percent',
+        maximumFractionDigits: digits
+    });
+
+    if (value <= 0) {
+        return "<span>" + formatter.format(value) + "</span>";
+    } else {
+        return "<span class='red-text'>" + formatter.format(value) + "</span>";
+    }
+}

@@ -43,7 +43,8 @@
     method,
     cascade,
     parameterMap,
-    select
+    select,
+    aggregate
 } = {
         widget: ko.observable(),
         endPoint: null,
@@ -89,6 +90,7 @@
         method: "GET",
         parameterMap: null,
         select: null,
+        aggregate: null
     }) {
 
     if (endPoint == null && data == null) {
@@ -113,6 +115,7 @@
             serverGrouping: false,
             data: data,
             group: grouping,
+            aggregate: aggregate,
             sort: sort,
             schema: schema
         });
@@ -127,6 +130,7 @@
             pageSize: virtual ? pageSize ? pageSize : Math.floor((height / 34) * 4) : undefined,
             type: 'odata-v4',
             group: grouping,
+            aggregate: aggregate,
             transport: {
                 read: {
                     url: endPoint
@@ -152,6 +156,7 @@
                 errors: "Errors"
             }),
             group: grouping,
+            aggregate: aggregate,
             sort: sort,
             transport: {
                 read: function (options) {

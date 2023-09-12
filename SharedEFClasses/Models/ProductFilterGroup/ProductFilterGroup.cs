@@ -29,5 +29,14 @@ namespace SharedEFClasses.Models
         [JsonIgnore]
         [InverseProperty("ProductFilterGroup")]
         public virtual ICollection<Treatment> Treatments { get; set; }
+
+        [NotMapped]
+        public string ProductTypeIDs
+        {
+            get
+            {
+                return String.Join(",", ProductFilters?.Select(pf => pf.ProductTypeID).Distinct() ?? new byte?[] { } );
+            }
+        }
     }
 }

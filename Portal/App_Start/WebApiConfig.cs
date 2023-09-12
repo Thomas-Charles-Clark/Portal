@@ -21,6 +21,8 @@ using SharedEFClasses.Models.StockManagement;
 using SharedEFClasses.Models.Attributes;
 using Attribute = SharedEFClasses.Models.Attributes.Attribute;
 using SharedEFClasses.Models.MertexLive;
+using SharedEFClasses.Models.Fenwick;
+using SharedEFClasses.Models.Maintenance;
 
 namespace Portal
 {
@@ -58,6 +60,8 @@ namespace Portal
             odataBuilder.EntitySet<ProductFilterGroup>("ProductFilterGroups");
             odataBuilder.EntitySet<CollectionLive>("Collections");
             odataBuilder.EntitySet<Brand>("Brands");
+            odataBuilder.EntitySet<MaintenanceBuyer>("Buyers");
+            odataBuilder.EntitySet<SharedEFClasses.Models.Maintenance.MaintenanceSupplier>("Suppliers");
             odataBuilder.EntitySet<Launch>("Launches");
             odataBuilder.EntitySet<ProductType>("ProductTypes");
             odataBuilder.EntitySet<Mertex_ProductType>("Mertex_ProductTypes");
@@ -84,10 +88,14 @@ namespace Portal
             odataBuilder.EntitySet<Treatment>("Treatments");
             odataBuilder.EntitySet<Member>("Members");
             odataBuilder.EntitySet<MarketingBudget>("MarketingBudgets");
+            odataBuilder.EntitySet<SelfBillInvoice>("SelfBillInvoices");
 
             // This because it's not mapped to SQL and has the [NotMapped] attribute
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_ProductType)).AddProperty(typeof(Mertex_ProductType).GetProperty("Label"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_ProductType)).AddProperty(typeof(Mertex_ProductType).GetProperty("PseudoKey"));
+
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(ProductFilterGroup)).AddProperty(typeof(ProductFilterGroup).GetProperty("ProductTypeIDs"));
+
 
             odataBuilder.EntityType<Resource_Language>().HasKey(p => new { p.ResourceID, p.LanguageID });
 
@@ -150,6 +158,23 @@ namespace Portal
                 .ReturnsCollectionFromEntitySet<Brand>("Brands");
 
             brandValueMapperFunction.Parameter<byte?>("brandId");
+
+
+            var buyerMapperFunction = odataBuilder.EntityType<MaintenanceBuyer>()
+                .Collection
+                .Function("BuyerValueMapper")
+                .ReturnsCollectionFromEntitySet<MaintenanceBuyer>("Buyers");
+
+            buyerMapperFunction.Parameter<string>("buyerCode");
+
+
+            var supplierMapperFunction = odataBuilder.EntityType<SharedEFClasses.Models.Maintenance.MaintenanceSupplier>()
+                .Collection
+                .Function("SupplierValueMapper")
+                .ReturnsCollectionFromEntitySet<SharedEFClasses.Models.Maintenance.MaintenanceSupplier>("Suppliers");
+
+            supplierMapperFunction.Parameter<string>("supplierCode");
+
 
 
             var colourValueMapperFunction = odataBuilder.EntityType<Colour>()
@@ -308,8 +333,16 @@ namespace Portal
 
 
 
+            var selfBillInvoiceValueMapperFunction = odataBuilder.EntityType<SelfBillInvoice>()
+                .Collection
+                .Function("SelfBillInvoiceValueMapper")
+                .ReturnsCollectionFromEntitySet<SelfBillInvoice>("SelfBillInvoice");
+
+            selfBillInvoiceValueMapperFunction.Parameter<int?>("selfBillInvoiceId");
+
+
             var odataBatchHandler = new DefaultODataBatchHandler(GlobalConfiguration.DefaultServer);
-            
+
             config.MapODataServiceRoute(routeName: "OData", routePrefix: "odata", model: odataBuilder.GetEdmModel(), odataBatchHandler);
 
             config.Select().Expand().Filter().OrderBy().MaxTop(500).Count();

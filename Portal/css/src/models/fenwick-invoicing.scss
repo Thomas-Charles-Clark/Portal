@@ -1,0 +1,209 @@
+﻿@import "common.scss";
+
+.page-heading-logo {
+    width: 44px;
+    height: 90px;
+}
+
+#invoicing {
+    padding: $l-gutter;
+    background-color: $white;
+    border: 1px solid $gray-400;
+    border-radius: $border-radius;
+}
+
+.prefilters {
+    display: flex;
+    gap: $l-gutter;
+    flex-wrap: wrap;
+    align-items: center;
+
+    > div {
+        flex: 0 1 auto;
+        min-width: 260px;
+    }
+
+    .k-animation-container {
+        li.k-item {
+            line-height: 33px;
+        }
+    }
+
+    > div {
+        position: relative;
+    }
+
+    + .prefilters {
+        margin-top: $l-gutter;
+        padding-top: $l-gutter;
+        border-top: 1px solid $gray-300;
+    }
+
+    .k-dropdown-wrap.k-input {
+        padding: 9px 0 6px 0;
+    }
+}
+
+#branches-table {
+    margin-top: $l-gutter;
+    margin-bottom: 0;
+    font-size: $font-size-base;
+
+    tr:not(.active) {
+        td {
+            cursor: pointer;
+        }
+    }
+
+    tr.table-active {
+        td, th {
+            background-color: tint-color($blue-400, 85%);
+        }
+    }
+
+    tr:focus, 
+    tr:focus-within {
+        td {
+            border: 2px solid $gray-300;
+        }
+    }
+}
+
+#sbi-result {
+    margin-top: $l-gutter;
+
+    .grid {
+        gap: $sm-gutter;
+        grid-template-columns: 0.65fr 0.35fr;
+
+        > div {
+            > .heading {
+                background-color: tint-color($battleship-blue, 15%);
+            }
+        }
+    }
+}
+
+#invoice-document-form {
+    margin-top: 14px;
+
+    &.offset-top {
+        margin-top: 35px;
+    }
+
+    .btn-outline-secondary {
+        width: 100% !important;
+    }
+
+    > div.relative {
+        margin-bottom: $l-gutter;
+        padding-bottom: 150%;
+    }
+
+    .file-input-wrapper {
+        display: none;
+    }
+
+    iframe {
+        border: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+#invoicing-wrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 36px;
+    gap: $l-gutter;
+
+    #invoicing-blurb {
+        flex: 1;
+        flex-basis: 42%;
+    }
+
+    #invoicing-values {
+        flex: 1;
+
+        > div {
+            display: flex;
+            justify-content: flex-end;
+
+            .field {
+                flex-basis: 100%;
+            }
+        }
+    }
+}
+
+.heading {
+    color: $white;
+    background: $battleship-blue;
+    padding: $m-gutter $l-gutter;
+    font-size: $font-size-lg;
+
+    a {
+        font-size: 85%;
+        color: $white;
+    }
+
+    &.prefilters {
+        font-size: $l-gutter;
+
+        .mdc-select {
+            .k-dropdown-wrap {
+                border-radius: $border-radius;
+
+                .k-input {
+                    padding: 9px 0;
+                }
+            }
+
+            .k-widget {
+                background-color: $white;
+            }
+
+            .k-state-hover,
+            .k-state-focused,
+            .k-dropdown-wrap.k-state-focused {
+                background-color: $white;
+            }
+        }
+    }
+}
+
+#daily-invoice-details {
+    th, td {
+        border: 0;
+    }
+
+    th.separator, td.separator {
+        padding: 0;
+        padding-top: 1rem;
+        border: 0;
+    }
+}
+
+#details-modal {
+    .k-grid-content {
+        table {
+            tbody {
+                tr.sale {
+                    td, th {
+                        background-color: tint-color(forestgreen, 80%);
+                    }
+                }
+
+                tr.credit {
+                    td, th {
+                        background-color: tint-color(darkred, 80%);
+                    }
+                }
+            }
+        }
+    }
+}

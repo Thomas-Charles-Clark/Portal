@@ -37,14 +37,14 @@ namespace Portal.Controllers
         [EnableQuery]
         public IQueryable<ProductFilter> GetProductFilters()
         {
-            return new PortalDbContext().ProductFilters.OrderBy(p => p.SortOrder).AsQueryable();
+            return new PortalDbContext().ProductFilters.Where(pf => pf.IsProduct).OrderBy(p => p.SortOrder).AsQueryable();
         }
 
         [EnableQuery(MaxNodeCount = 200)]
         [HttpGet]
         public IQueryable<ProductFilter> ProductFilterValueMapper(byte? productFilterId)
         {
-            return new PortalDbContext().ProductFilters.Where(p => p.ProductFilterID == productFilterId).AsQueryable();
+            return new PortalDbContext().ProductFilters.Where(pf => pf.IsProduct).Where(p => p.ProductFilterID == productFilterId).AsQueryable();
         }
     }
 }

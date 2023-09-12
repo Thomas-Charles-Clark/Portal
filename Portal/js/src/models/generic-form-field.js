@@ -30,6 +30,8 @@ const fieldViewModel = ((data, parent) => {
         }
     });
 
+    self.focusObservable = ko.observable(false);
+
     self.data = JSON.parse(self.options ?? "[]");
 
     self.dataItem = ko.observable();
@@ -120,6 +122,7 @@ const fieldViewModel = ((data, parent) => {
     self.params = {
         label: self.label,
         observable: self.value,
+        focusObservable: self.focusObservable,
         busy: self.busy,
         permitRevert: true,
         originalValue: self.originalValue,
@@ -260,6 +263,10 @@ const fieldViewModel = ((data, parent) => {
         } else {
             return [];
         }
+    }, self);
+
+    self.unsavedChanges = ko.computed(() => {
+        return self.value() != self.originalValue();
     }, self);
 
     //#endregion
@@ -630,10 +637,11 @@ const fieldViewModel = ((data, parent) => {
 
     self.buildNumericOptions = () => {
 
-        self.numericStep = self.numericScale > 0 ? 1 / Math.pow(10, self.numericScale) : self.numericStep || 1;
+        self.numericStep = self.numericStep ? self.numericStep : self.numericScale > 0 ? 1 / Math.pow(10, self.numericScale) : 1;
 
         Object.assign(self.params, {
             inputType: 'number',
+            buttons: data.buttons,
             minValue: -self.numericMax,
             maxValue: self.numericMax,
             step: self.numericStep,
@@ -667,6 +675,62 @@ const fieldViewModel = ((data, parent) => {
                 digits: self.numericScale,
                 currency: {
                     FormattingCulture: 'en-GB'
+                }
+            },
+            numeric: {
+                params: {
+                    required: self.required,
+                    numericMin: self.numericMin,
+                    numericMax: self.numericMax
+                },
+                onlyIf: () => {
+                    return self.parent.validateNow();
+                }
+            }
+        });
+    }
+
+    self.buildNumericCurrencyFormattedOptions = () => {
+
+        self.numericStep = self.numericStep ? self.numericStep : self.numericScale > 0 ? 1 / Math.pow(10, self.numericScale) : 1;
+
+        Object.assign(self.params, {
+            inputType: 'text',
+            buttons: data.buttons,
+            minValue: -self.numericMax,
+            maxValue: self.numericMax,
+            step: self.numericStep,
+            increment: () => {
+                let v = +self.value() || 0;
+
+                let factor = Math.pow(10, self.numericScale);
+
+                if (self.numericStep) {
+                    self.value(Math.round((v + self.numericStep) * factor) / factor);
+                } else {
+                    self.value(v++);
+                }
+            },
+            decrement: () => {
+                let v = +self.value() || 0;
+
+                let factor = Math.pow(10, self.numericScale);
+
+                if (self.numericStep) {
+                    self.value(Math.round((v - self.numericStep) * factor) / factor);
+                } else {
+                    self.value(v--);
+                }
+            }
+        });
+        self.value.extend({
+            currencyFormatted: {
+                minValue: -self.numericMax,
+                maxValue: self.numericMax,
+                digits: self.numericScale,
+                currency: {
+                    FormattingCulture: data.formattingCulture,
+                    Code: data.currencyCode
                 }
             },
             numeric: {
@@ -841,6 +905,10 @@ const fieldViewModel = ((data, parent) => {
             case 11:
                 self.templateName = 'mdc-text-field-numeric-component';
                 self.buildNumericOptions();
+                break;
+            case 11.1:
+                self.templateName = 'mdc-text-field-numeric-component';
+                self.buildNumericCurrencyFormattedOptions();
                 break;
             case 12:
                 self.templateName = 'tempus-dominus-date-picker-component';

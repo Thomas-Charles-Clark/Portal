@@ -45,7 +45,8 @@
         }
     }
 
-    .mdc-text-field--outlined {
+    .mdc-text-field--outlined,
+    .mdc-text-field--textarea {
         &:not(.mdc-text-field--disabled) {
             &:not(.mdc-text-field--focused) {
                 .mdc-text-field__input {

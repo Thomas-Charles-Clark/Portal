@@ -1,13 +1,22 @@
 ﻿const
-    TAB_OVERVIEW = 0,
-    TAB_RANGE = 1,
-    TAB_TRANSFER = 2
+    TAB_PRELAUNCH = 0,
+    TAB_CURRENT = 1,
+    TAB_LIMITED = 2,
+    TAB_CLEARANCE = 3,
+    TAB_DISCONTINUED = 4
 
 const
     SORT_QUANTITY_ASC = 0,
     SORT_QUANTITY_DESC = 1,
     SORT_ORDERFORMGROUP_ASC = 2,
     SORT_ORDERFORMGROUP_DESC = 3
+
+const
+    SS_PRELAUNCH = 'P',
+    SS_CURRENT = 'C',
+    SS_PRELIMITED = 'Y',
+    SS_LIMITED = 'L',
+    SS_DISCONTINUED = 'D' 
 
 const stockManagementViewModel = ({ } = {}) => {
     let self = {};
@@ -16,13 +25,17 @@ const stockManagementViewModel = ({ } = {}) => {
 
     self.busy = ko.observable(false);
 
-    self.viewingTab = ko.observable(0);
+    self.viewingTab = ko.observable(TAB_CURRENT);
 
-    self.overviewBusy = ko.observable(false);
+    self.prelaunchBusy = ko.observable(false);
 
-    self.rangeBusy = ko.observable(false);
+    self.currentBusy = ko.observable(false);
 
-    self.transferBusy = ko.observable(false);
+    self.limitedBusy = ko.observable(false);
+
+    self.clearanceBusy = ko.observable(false);
+
+    self.discontinuedBusy = ko.observable(false);
 
     self.modalBusy = ko.observable(false);
 
@@ -32,14 +45,25 @@ const stockManagementViewModel = ({ } = {}) => {
 
     self.ready = ko.observable(true);
 
-    self.displayWarehouseStock = ko.observable(false);
-    window.displayWarehouseStock = self.displayWarehouseStock;
+    self.clearance = ko.observable(false);
 
-    self.displayRingFencedStock = ko.observable(false);
-    window.displayRingFencedStock = self.displayRingFencedStock;
+    self.stockStatuses = ko.observableArray([SS_CURRENT, SS_PRELAUNCH]);
 
-    self.displaySales = ko.observable(false);
-    window.displaySales = self.displaySales;
+    self.tabStockStatusMap = {}
+    self.tabStockStatusMap[TAB_PRELAUNCH] = [SS_PRELAUNCH];
+    self.tabStockStatusMap[TAB_CURRENT] = [SS_CURRENT, SS_PRELIMITED];
+    self.tabStockStatusMap[TAB_LIMITED] = [SS_LIMITED];
+    self.tabStockStatusMap[TAB_CLEARANCE] = [SS_PRELAUNCH, SS_CURRENT, SS_PRELIMITED, SS_LIMITED, SS_DISCONTINUED];
+    self.tabStockStatusMap[TAB_DISCONTINUED] = [SS_DISCONTINUED]
+
+    //self.displayWarehouseStock = ko.observable(false);
+    //window.displayWarehouseStock = self.displayWarehouseStock;
+
+    //self.displayRingFencedStock = ko.observable(false);
+    //window.displayRingFencedStock = self.displayRingFencedStock;
+
+    //self.displaySales = ko.observable(false);
+    //window.displaySales = self.displaySales;
 
     //#region Prefilters
 
@@ -99,6 +123,14 @@ const stockManagementViewModel = ({ } = {}) => {
     self.productFilter = ko.observable();
 
     self.productFilterId = ko.observable();
+
+    self.buyer = ko.observable();
+
+    self.buyerCode = ko.observable();
+
+    self.supplier = ko.observable();
+
+    self.supplierCode = ko.observable();
 
     //#endregion
 
@@ -160,6 +192,17 @@ const stockManagementViewModel = ({ } = {}) => {
         self.checkUnsavedChangesThenClear(e);
     }
 
+    self.clearanceParams = {
+        label: "Clearance",
+        checkboxId: "clearance",
+        observable: self.clearance,
+        originalValue: false,
+        useNativeValidation: false,
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        busy: ko.observable(false)
+    }
+
     self.displayWarehouseStockParams = {
         label: "Display Warehouse Stock?",
         checkboxId: "display-warehouse-stock",
@@ -192,6 +235,72 @@ const stockManagementViewModel = ({ } = {}) => {
         enable: ko.observable(true),
         busy: ko.observable(false)
     }
+
+    self.buyerParams = kendoMDCDropDownList({
+        label: 'Buyer',
+        odata: true,
+        endPoint: '/odata/Buyers',
+        textField: 'Name',
+        valueField: 'BuyerCode',
+        idObservable: self.buyerCode,
+        objObservable: self.buyer,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertable: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'desc',
+            field: 'buyerCode'
+        },
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear
+    });
+
+    self.supplierParams = kendoMDCDropDownList({
+        label: 'Supplier',
+        odata: true,
+        endPoint: '/odata/Suppliers',
+        textField: 'Name',
+        valueField: 'SupplierCode',
+        virtual: true,
+        pageSize: 20,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                $.ajax({
+                    url: `/odata/Suppliers/Default.SupplierValueMapper(supplierCode=${options.value || "null"})`,
+                    type: 'GET',
+                    success: function (data) {
+                        options.success(data.value);
+                        if (data.value.length == 1) {
+                            self.supplier(data.value[0]);
+                        }
+                    }
+                });
+            }
+        },
+        idObservable: self.supplierCode,
+        objObservable: self.supplier,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertable: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'desc',
+            field: 'supplierCode'
+        },
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear
+    });
 
     self.productTypeParams = kendoMDCDropDownList({
         label: 'Product Type',
@@ -744,14 +853,35 @@ const stockManagementViewModel = ({ } = {}) => {
             field: 'Name'
         },
         select: self.genericUnsavedChangesSelect,
-        clearFunction: self.genericUnsavedChangesClear
+        clearFunction: self.genericUnsavedChangesClear,
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+            delete d.$top;
+
+            d.$count = true;
+
+            //if (self.productTypeId()) {
+            //    if (d.$filter) {
+            //        d.$filter = `${d.$filter} and ProductTypeIDs contains ${self.productTypeId()}`;
+            //    } else {
+            //        d.$filter = `ProductTypeIDs contains ${self.productTypeId()}`;
+            //    }
+            //}
+
+            return d;
+        },
     });
 
     self.productFilterParams = kendoMDCDropDownList({
         label: 'Filter',
         odata: true,
         endPoint: '/odata/ProductFilters',
-        textField: 'Name',
+        textField: 'Name.replace(/\<br\\/\>/g, " ")',
         valueField: 'ProductFilterID',
         virtual: true,
         pageSize: 20,
@@ -803,14 +933,31 @@ const stockManagementViewModel = ({ } = {}) => {
                 d.$filter = `ProductFilterGroupID eq ${self.productFilterGroupId()}`;
             }
 
+            if (self.productTypeId()) {
+                if (d.$filter) {
+                    d.$filter = `${d.$filter} and ProductTypeID eq ${self.productTypeId()}`;
+                } else {
+                    d.$filter = `ProductTypeID eq ${self.productTypeId()}`;
+                }
+            }
+
             return d;
         },
     });
 
     //#endregion
-        
+
 
     //#region Subscriptions
+
+    self.viewingTab.subscribe(nv => {
+        self.stockStatuses(self.tabStockStatusMap[nv]);
+        if (nv === TAB_CLEARANCE) {
+            self.clearance(true);
+        } else {
+            self.clearance(false);
+        }
+    });
 
     self.branchGroupId.subscribe(nv => {
         self.branchParams.clearFunction();
@@ -828,28 +975,44 @@ const stockManagementViewModel = ({ } = {}) => {
 
     self.setBusy = () => {
         switch (self.viewingTab()) {
-            case TAB_OVERVIEW:
-                self.overviewBusy(true);
+            case TAB_PRELAUNCH:
+                self.prelaunchBusy(true);
                 break;
-            case TAB_RANGE:
-                self.rangeBusy(true);
+            case TAB_CURRENT:
+                self.currentBusy(true);
                 break;
-            case TAB_TRANSFER:
-                self.transferBusy(true);
+            case TAB_LIMITED:
+                self.limitedBusy(true);
+                break;
+            case TAB_CLEARANCE:
+                self.clearanceBusy(true);
+                break;
+            case TAB_DISCONTINUED:
+                self.discontinuedBusy(true);
+                break;
+            default:
                 break;
         }
     }
 
     self.clearBusy = () => {
         switch (self.viewingTab()) {
-            case TAB_OVERVIEW:
-                self.overviewBusy(false);
+            case TAB_PRELAUNCH:
+                self.prelaunchBusy(false);
                 break;
-            case TAB_RANGE:
-                self.rangeBusy(false);
+            case TAB_CURRENT:
+                self.currentBusy(false);
                 break;
-            case TAB_TRANSFER:
-                self.transferBusy(false);
+            case TAB_LIMITED:
+                self.limitedBusy(false);
+                break;
+            case TAB_CLEARANCE:
+                self.clearanceBusy(false);
+                break;
+            case TAB_DISCONTINUED:
+                self.discontinuedBusy(false);
+                break;
+            default:
                 break;
         }
     }
@@ -1003,15 +1166,18 @@ const stockManagementViewModel = ({ } = {}) => {
     self.itemTypeCode = ko.computed(() => { return self.productType()?.ItemTypeCode }, self);
 
     self.secondaryFiltersVisible = ko.computed(() => {
-        return self.productTypeId() && (self.branchGroupId() || self.branchId());
+        return true;
+        //return self.productFilterGroupId() != null;
     }, self);
 
     self.previousParameters = null;
 
     self.parametersComputer = ko.computed(() => {
         let params = {
-            branchGroupId: self.branchGroupId(),
-            branchId: self.branchId(),
+            //branchGroupId: self.branchGroupId(),
+            //branchId: self.branchId(),
+            buyerCode: self.buyerCode(),
+            supplierCode: self.supplierCode(),
             productTypeId: self.productTypeId(),
             productGroupCode: self.productGroupCode(),
             itemTypeCode: self.itemTypeCode(),
@@ -1023,7 +1189,9 @@ const stockManagementViewModel = ({ } = {}) => {
             attributeGroupId: self.attributeGroupId(),
             attributeIds: self.attributeIds(),
             productFilterGroupId: self.productFilterGroupId(),
-            productFilterId: self.productFilterId()
+            productFilterId: self.productFilterId(),
+            stockStatuses: self.stockStatuses(),
+            clearance: self.clearance()
         }
 
         Object.keys(params).forEach(k => {
@@ -1154,16 +1322,24 @@ const stockManagementViewModel = ({ } = {}) => {
 
     //#region Events
 
-    document.getElementById("overview-tab-anchor").addEventListener('show.bs.tab', () => {
-        self.viewingTab(TAB_OVERVIEW);
+    document.getElementById("prelaunch-tab-anchor").addEventListener('show.bs.tab', () => {
+        self.viewingTab(TAB_PRELAUNCH);
     });
 
-    document.getElementById("range-tab-anchor").addEventListener('show.bs.tab', () => {
-        self.viewingTab(TAB_RANGE);
+    document.getElementById("current-tab-anchor").addEventListener('show.bs.tab', () => {
+        self.viewingTab(TAB_CURRENT);
     });
 
-    document.getElementById("transfer-tab-anchor").addEventListener('show.bs.tab', () => {
-        self.viewingTab(TAB_TRANSFER);
+    document.getElementById("limited-tab-anchor").addEventListener('show.bs.tab', () => {
+        self.viewingTab(TAB_LIMITED);
+    });
+
+    document.getElementById("clearance-tab-anchor").addEventListener('show.bs.tab', () => {
+        self.viewingTab(TAB_CLEARANCE);
+    });
+
+    document.getElementById("discontinued-tab-anchor").addEventListener('show.bs.tab', () => {
+        self.viewingTab(TAB_DISCONTINUED);
     });
 
     window.addEventListener("onbeforeunload", (event) => {

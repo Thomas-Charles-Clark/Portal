@@ -559,6 +559,10 @@
     <Compile Include="Areas\Customers\CustomersAreaRegistration.cs" />
     <Compile Include="Areas\Customers\ViewModels\TradeAccountCreationEmailMaintenanceViewModel.cs" />
     <Compile Include="Areas\Customers\ViewModels\CustomerMaintenanceViewModel.cs" />
+    <Compile Include="Areas\Fenwick\Controllers\FenwickInvoicingAPIController.cs" />
+    <Compile Include="Areas\Fenwick\Controllers\FenwickInvoicingController.cs" />
+    <Compile Include="Areas\Fenwick\FenwickAreaRegistration.cs" />
+    <Compile Include="Areas\Fenwick\ViewModels\FenwickInvoicingViewModel.cs" />
     <Compile Include="Areas\Marketing\Controllers\MarketingBudgetController.cs" />
     <Compile Include="Areas\Marketing\Controllers\MarketingBudgetAPIController.cs" />
     <Compile Include="Areas\Marketing\ViewModels\MarketingBudgetViewModel.cs" />
@@ -590,8 +594,11 @@
     <Compile Include="Areas\Stock\ViewModels\StockManagementViewModel.cs" />
     <Compile Include="Controllers\ODataControllers\AttributesController.cs" />
     <Compile Include="Controllers\ODataControllers\AttributeGroupsController.cs" />
+    <Compile Include="Controllers\ODataControllers\SuppliersController.cs" />
+    <Compile Include="Controllers\ODataControllers\BuyersController.cs" />
     <Compile Include="Controllers\ODataControllers\CollectionsController.cs" />
     <Compile Include="Controllers\ODataControllers\ProductFilterGroupsController.cs" />
+    <Compile Include="Controllers\ODataControllers\SelfBillInvoiceController.cs" />
     <Compile Include="Controllers\ODataControllers\ProductFiltersController.cs" />
     <Compile Include="Controllers\ODataControllers\ProductColoursController.cs" />
     <Compile Include="Controllers\ODataControllers\Mertex_ProductTypesController.cs" />
@@ -1800,6 +1807,8 @@
     <Content Include="Areas\Retail\Views\StoreMembers\RetailStoreMembers.cshtml" />
     <Content Include="Areas\Retail\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Stock\Views\Management\StockManagement.cshtml" />
+    <Content Include="Areas\Fenwick\Views\web.config" />
+    <Content Include="Areas\Fenwick\Views\Invoicing\FenwickInvoicing.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
@@ -1817,6 +1826,7 @@
     <Content Include="css\src\models\generic-forms.scss" />
     <Content Include="css\src\models\trade-account-creation-email-maintenance.scss" />
     <Content Include="css\src\models\retail-store-members.scss" />
+    <Content Include="css\src\models\fenwick-invoicing.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -2848,6 +2858,8 @@
     <Folder Include="Areas\Documents\Views\Shared\" />
     <Folder Include="Areas\Downloads\Views\Shared\" />
     <Folder Include="Areas\Downloads\WindowsDownloaderBase\Service References\" />
+    <Folder Include="Areas\Fenwick\Data\" />
+    <Folder Include="Areas\Fenwick\Views\Shared\" />
     <Folder Include="Areas\Invoices\Views\Shared\" />
     <Folder Include="Areas\Marketing\Models\" />
     <Folder Include="Areas\Marketing\Views\Messages\" />
