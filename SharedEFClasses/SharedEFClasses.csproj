@@ -429,7 +429,10 @@
     <Compile Include="Models\StockManagement\BranchGroup.cs" />
     <Compile Include="Models\StockManagement\BranchStockLocation.cs" />
     <Compile Include="Models\StockManagement\Branch_BranchGroup.cs" />
+    <Compile Include="Models\StockManagement\StockManagementSaveDto.cs" />
+    <Compile Include="Models\StockManagement\StockManagementProduct.cs" />
     <Compile Include="Models\StockManagement\Range.cs" />
+    <Compile Include="Models\StockManagement\StatusGroup.cs" />
     <Compile Include="Models\StockManagement\StockManagementBranchProduct.cs" />
     <Compile Include="Models\StockManagement\StockManagementBranchRangeSaveDto.cs" />
     <Compile Include="Models\StockManagement\StockManagementProductFetchDto.cs" />

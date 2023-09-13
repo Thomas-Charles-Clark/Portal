@@ -1,5 +1,7 @@
 ﻿using Dapper;
 
+using Kendo.Mvc;
+
 using Microsoft.AspNet.Identity.EntityFramework;
 
 using SharedEFClasses.Models;
@@ -22,19 +24,23 @@ namespace SharedEFClasses.Models
 
             attributeIds.Columns.Add("AttributeID");
 
-            foreach (var a in dto.AttributeIDs) 
+            if (dto.AttributeIDs != null)
             {
-                attributeIds.Rows.Add(a);
+                foreach (var a in dto.AttributeIDs)
+                {
+                    attributeIds.Rows.Add(a);
+                }
             }
 
             var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[StockManagement_ProductSearch]", new
             {
+                dto.StatusGroupID,
                 dto.BuyerCode,
                 dto.SupplierCode,
                 dto.LaunchID,
                 dto.BrandID,
                 dto.ProductColourID,
-                dto.StockLevelID,
+                dto.StockStatusID,
                 dto.CollectionCode,
                 AttributeIDs = attributeIds.AsTableValuedParameter("AttributeIDsTableType"),
                 dto.ProductFilterGroupID,
@@ -43,10 +49,7 @@ namespace SharedEFClasses.Models
 
             return new StockManagementProductSearchResponse()
             {
-                Results = reply.Read<StockManagementProductSearchRecord>(),
-                BranchGroupTotals = reply.Read<StockManagementBranchGroupTotalRecord>(),
-                RangeRecords = reply.Read<StockManagementRangeRecord>(),
-                ContrastRecords = reply.Read<StockManagementContrastRecord>()
+                Results = reply.Read<StockManagementProductSearchRecord>()
             };
         }
 

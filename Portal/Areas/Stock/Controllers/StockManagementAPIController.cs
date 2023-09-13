@@ -10,6 +10,9 @@ using System.Web.Http;
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.StockManagement;
 using System.Threading.Tasks;
+using Kendo.Mvc.UI;
+using Kendo.Mvc.Extensions;
+using System.Web.Http.ModelBinding;
 
 namespace Portal.Areas.Stock.Controllers
 {
@@ -30,19 +33,29 @@ namespace Portal.Areas.Stock.Controllers
         /// </summary>
         /// <param name="objDto"></param>
         /// <returns></returns>
-        [HttpPost]
-        public async Task<IHttpActionResult> FetchProducts([FromBody]StockManagementProductFetchDto objDto)
+        [HttpGet]
+        public async Task<DataSourceResult> FetchProducts(
+            [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))]DataSourceRequest request, 
+            [FromUri]StockManagementProductFetchDto objDto)
         {
             var results = await PortalDb.StockManagementProductSearch(objDto);
 
-            return Ok(results);
+            var queryableResults = results.Results.AsQueryable();
+
+            return queryableResults.ToDataSourceResult(request);
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> SaveStockManagementChanges([FromBody]StockManagementSaveDto objDto)
+        {
+            //var results = await PortalDb.StockManagementBranchRangeSave(objDto);
+
+            return Ok(new { });
         }
 
         [HttpPost]
         public async Task<IHttpActionResult> SaveBranchRangeChanges([FromBody]StockManagementBranchRangeSaveDto objDto)
         {
-            System.Threading.Thread.Sleep(3000);
-
             var results = await PortalDb.StockManagementBranchRangeSave(objDto);
 
             return Ok(new { });

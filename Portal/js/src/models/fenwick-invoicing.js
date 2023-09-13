@@ -370,7 +370,7 @@ const fenwickInvoicingViewModel = (() => {
 
         self.invoiceDocumentPdfParams.busy(true);
 
-        let headers = window.fetchHeaders;
+        let headers = Object.assign({}, window.fetchHeaders);
 
         delete headers["content-type"];// = "multipart/form-data";
 

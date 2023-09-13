@@ -69,11 +69,13 @@ namespace Portal
             odataBuilder.EntitySet<ProductPage>("ProductPages");
             odataBuilder.EntitySet<Branch>("Branches");
             odataBuilder.EntitySet<BranchGroup>("BranchGroups");
+            odataBuilder.EntitySet<StatusGroup>("StatusGroups");
             odataBuilder.EntitySet<Range>("Ranges");
             odataBuilder.EntitySet<BranchStockLocation>("BranchStockLocations");
             odataBuilder.EntitySet<TradeAccount>("TradeAccounts");
             odataBuilder.EntitySet<TradeAccountGroup>("TradeAccountGroups");
             odataBuilder.EntitySet<StockLocation>("StockLocations");
+            odataBuilder.EntitySet<StockStatus>("StockStatuses");
             odataBuilder.EntitySet<ApplicationGroup>("ApplicationGroups");
             odataBuilder.EntitySet<Resource>("Resources");
             odataBuilder.EntitySet<Resource_Language>("Resource_Languages");
@@ -235,6 +237,14 @@ namespace Portal
             stockLocationValueMapperFunction.Parameter<short?>("stockLocationId");
 
 
+            var stockStatusValueMapperFunction = odataBuilder.EntityType<StockStatus>()
+                .Collection
+                .Function("StockStatusValueMapper")
+                .ReturnsCollectionFromEntitySet<StockStatus>("StockStatuses");
+
+            stockStatusValueMapperFunction.Parameter<byte?>("stockStatusId");
+
+
             var productValueMapperFunction = odataBuilder.EntityType<Product>()
                 .Collection
                 .Function("ProductValueMapper")
@@ -297,6 +307,14 @@ namespace Portal
                 .ReturnsCollectionFromEntitySet<Branch>("Branches");
 
             branchGroupFilterFunction.Parameter<int?>("branchGroupId");
+
+
+            var statusGroupValueMapperFunction = odataBuilder.EntityType<StatusGroup>()
+                .Collection
+                .Function("StatusGroupValueMapper")
+                .ReturnsCollectionFromEntitySet<StatusGroup>("StatusGroup");
+
+            statusGroupValueMapperFunction.Parameter<byte?>("statusGroupId");
 
 
             var attributeGroupValueMapperFunction = odataBuilder.EntityType<AttributeGroup>()

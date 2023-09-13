@@ -12,11 +12,11 @@ const
     SORT_ORDERFORMGROUP_DESC = 3
 
 const
-    SS_PRELAUNCH = 'P',
-    SS_CURRENT = 'C',
-    SS_PRELIMITED = 'Y',
-    SS_LIMITED = 'L',
-    SS_DISCONTINUED = 'D' 
+    SG_PRELAUNCH = -1,
+    SG_CURRENT = 1,
+    SG_LIMITED = 2,
+    SG_CLEARANCE = 3,
+    SG_DISCONTINUED = 4 
 
 const stockManagementViewModel = ({ } = {}) => {
     let self = {};
@@ -25,7 +25,7 @@ const stockManagementViewModel = ({ } = {}) => {
 
     self.busy = ko.observable(false);
 
-    self.viewingTab = ko.observable(TAB_CURRENT);
+    self.statusGroupId = ko.observable(SG_CURRENT);
 
     self.prelaunchBusy = ko.observable(false);
 
@@ -45,17 +45,6 @@ const stockManagementViewModel = ({ } = {}) => {
 
     self.ready = ko.observable(true);
 
-    self.clearance = ko.observable(false);
-
-    self.stockStatuses = ko.observableArray([SS_CURRENT, SS_PRELAUNCH]);
-
-    self.tabStockStatusMap = {}
-    self.tabStockStatusMap[TAB_PRELAUNCH] = [SS_PRELAUNCH];
-    self.tabStockStatusMap[TAB_CURRENT] = [SS_CURRENT, SS_PRELIMITED];
-    self.tabStockStatusMap[TAB_LIMITED] = [SS_LIMITED];
-    self.tabStockStatusMap[TAB_CLEARANCE] = [SS_PRELAUNCH, SS_CURRENT, SS_PRELIMITED, SS_LIMITED, SS_DISCONTINUED];
-    self.tabStockStatusMap[TAB_DISCONTINUED] = [SS_DISCONTINUED]
-
     //self.displayWarehouseStock = ko.observable(false);
     //window.displayWarehouseStock = self.displayWarehouseStock;
 
@@ -71,66 +60,63 @@ const stockManagementViewModel = ({ } = {}) => {
 
     self.productType = ko.observable();
 
-    self.branchGroupId = ko.observable(51);
+    //self.branchId = ko.observable(3);
+    //window.branchId = self.branchId; // lifted to global to save buggering about with $parentContext nesting
 
-    self.branchGroup = ko.observable();
-    window.branchGroup = self.branchGroup; // lifted to global to save buggering about with $parentContext nesting
+    //self.branch = ko.observable();
+    //window.branch = self.branch; // lifted to global to save buggering about with $parentContext nesting
 
-    self.branchId = ko.observable(3);
-    window.branchId = self.branchId; // lifted to global to save buggering about with $parentContext nesting
-
-    self.branch = ko.observable();
-    window.branch = self.branch; // lifted to global to save buggering about with $parentContext nesting
-
-    self.launchId = ko.observable();
+    self.launchId = ko.observable(''); // '' because dropdowns were borne of selects which demand a '' for empty selection and Kendo carries this torch
 
     self.launch = ko.observable();
 
-    self.brandId = ko.observable();
+    self.brandId = ko.observable(''); // if you don't initialise to '' you'll find that opening and immediately dismissing the associated dropdown
 
     self.brand = ko.observable();
-
-    self.productColourId = ko.observable();
+    
+    self.productColourId = ko.observable(''); // causes the underlying value to be switched to '', which fires the subscription which fires the search
 
     self.productColour = ko.observable();
 
-    self.stockLevelId = ko.observable();
+    self.stockStatusId = ko.observable(''); // which probably isn't what you wanted to happen.
 
-    self.stockLevel = ko.observable();
+    self.stockStatus = ko.observable();
 
-    self.collectionCode = ko.observable();
+    self.collectionCode = ko.observable('');
 
     self.collection = ko.observable();
 
-    self.attributeGroupId = ko.observable();
+    self.attributeGroupId = ko.observable('');
 
     self.attributeGroup = ko.observable();
 
-    self.attributeId = ko.observable();
+    self.attributeId = ko.observable('');
 
     self.attribute = ko.observable();
 
     self.attributeIds = ko.observableArray([]);
 
-    self.attributes = ko.observableArray([]);
+    self.emptyArray = [];
+
+    self.attributes = ko.observableArray(self.emptyArray);
 
     self.productFilterGroup = ko.observable();
 
-    self.productFilterGroupId = ko.observable();
+    self.productFilterGroupId = ko.observable('');
 
     self.productFilters = ko.observableArray([]);
 
     self.productFilter = ko.observable();
 
-    self.productFilterId = ko.observable();
+    self.productFilterId = ko.observable('');
 
     self.buyer = ko.observable();
 
-    self.buyerCode = ko.observable();
+    self.buyerCode = ko.observable('');
 
     self.supplier = ko.observable();
 
-    self.supplierCode = ko.observable();
+    self.supplierCode = ko.observable('');
 
     //#endregion
 
@@ -141,8 +127,6 @@ const stockManagementViewModel = ({ } = {}) => {
     //#endregion
 
     self.productSearchResults = ko.observableArray([]);
-
-    self.branchGroupTotals = ko.observableArray([]);
 
     self.rangeRecords = ko.observableArray([]);
 
@@ -190,17 +174,6 @@ const stockManagementViewModel = ({ } = {}) => {
 
     self.genericUnsavedChangesClear = (e) => {
         self.checkUnsavedChangesThenClear(e);
-    }
-
-    self.clearanceParams = {
-        label: "Clearance",
-        checkboxId: "clearance",
-        observable: self.clearance,
-        originalValue: false,
-        useNativeValidation: false,
-        disable: ko.observable(false),
-        enable: ko.observable(true),
-        busy: ko.observable(false)
     }
 
     self.displayWarehouseStockParams = {
@@ -261,27 +234,32 @@ const stockManagementViewModel = ({ } = {}) => {
     });
 
     self.supplierParams = kendoMDCDropDownList({
+        autoBind: true,
         label: 'Supplier',
         odata: true,
         endPoint: '/odata/Suppliers',
         textField: 'Name',
         valueField: 'SupplierCode',
         virtual: true,
-        pageSize: 20,
+        pageSize: 40,
         virtualOptions: {
             itemHeight: 34,
             mapValueTo: 'dataItem',
             valueMapper: function (options) {
-                $.ajax({
-                    url: `/odata/Suppliers/Default.SupplierValueMapper(supplierCode=${options.value || "null"})`,
-                    type: 'GET',
-                    success: function (data) {
-                        options.success(data.value);
-                        if (data.value.length == 1) {
-                            self.supplier(data.value[0]);
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/Suppliers/Default.SupplierValueMapper(supplierCode="${options.value}")`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                            if (data.value.length == 1) {
+                                self.supplier(data.value[0]);
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    options.success();
+                }
             }
         },
         idObservable: self.supplierCode,
@@ -292,14 +270,31 @@ const stockManagementViewModel = ({ } = {}) => {
         revertable: ko.observable(false),
         readOnly: false,
         filter: 'contains',
-        autoBind: true,
         height: 340,
-        sort: {
-            dir: 'desc',
-            field: 'supplierCode'
-        },
         select: self.genericUnsavedChangesSelect,
-        clearFunction: self.genericUnsavedChangesClear
+        clearFunction: self.genericUnsavedChangesClear,
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            /// thanks, https://stackoverflow.com/questions/28995757/a-binary-operator-with-incompatible-types-was-detected-found-operand-types-edm/48919770
+            delete d.$inlinecount; // <-- remove inlinecount
+            //delete d.$format; // <-- remove format
+            //delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            if (data.filter &&
+                data.filter.filters.length &&
+                data.filter.filters[0].value != '') {
+
+                let filterValue = data.filter.filters[0].value;
+
+                d.$filter = `StartsWith(ToLower(Name), '${filterValue}') OR StartsWith(ToLower(SupplierCode), '${filterValue}')`;
+            }
+
+            return d;
+        }
     });
 
     self.productTypeParams = kendoMDCDropDownList({
@@ -309,24 +304,28 @@ const stockManagementViewModel = ({ } = {}) => {
         textField: 'Label',
         valueField: 'PseudoKey',
         virtual: true,
-        pageSize: 20,
+        pageSize: 40,
         virtualOptions: {
             itemHeight: 34,
             mapValueTo: 'dataItem',
             valueMapper: function (options) {
-                let splitKey = options.value.split(';');
-                let pgid = splitKey[0];
-                let itid = splitKey[1];
-                $.ajax({
-                    url: `/odata/Mertex_ProductTypes/Default.Mertex_ProductTypeValueMapper(productGroupId=${pgid || "null"}, itemTypeId=${itid || "null"})?$expand=ProductType,ItemType,ProductGroup`,
-                    type: 'GET',
-                    success: function (data) {
-                        options.success(data.value);
-                        if (data.value.length == 1) {
-                            self.productType(data.value[0]);
+                if (options.value) {
+                    let splitKey = options.value.split(';');
+                    let pgid = splitKey[0];
+                    let itid = splitKey[1];
+                    $.ajax({
+                        url: `/odata/Mertex_ProductTypes/Default.Mertex_ProductTypeValueMapper(productGroupId=${pgid || "null"}, itemTypeId=${itid || "null"})?$expand=ProductType,ItemType,ProductGroup`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                            if (data.value.length == 1) {
+                                self.productType(data.value[0]);
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    options.success();
+                }
             }
         },
         idObservable: self.productTypeKey,
@@ -372,108 +371,226 @@ const stockManagementViewModel = ({ } = {}) => {
         clearFunction: self.genericUnsavedChangesClear
     });
 
-    self.branchGroupParams = kendoMDCDropDownList({
-        label: 'Branch Group',
-        odata: true,
-        endPoint: '/odata/BranchGroups?$filter=PrimaryGroup eq true',
-        textField: 'Name',
-        valueField: 'BranchGroupID',
-        virtual: true,
-        pageSize: 20,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                $.ajax({
-                    url: `/odata/BranchGroups/Default.BranchGroupValueMapper(branchGroupId=${options.value || "null"})`,
-                    type: 'GET',
-                    success: function (data) {
-                        options.success(data.value);
-                        if (data.value.length == 1) {
-                            self.branchGroup(data.value[0]);
-                        }
-                    }
-                });
-            }
-        },
-        idObservable: self.branchGroupId,
-        objObservable: self.branchGroup,
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertable: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
+    self.gridSettings = {
         autoBind: true,
-        height: 340,
-        sort: {
-            dir: 'asc',
-            field: 'branchGroupId'
-        },
-        select: self.genericUnsavedChangesSelect,
-        clearFunction: self.genericUnsavedChangesClear
-    });
+        widget: ko.observable(),
+        //useKOTemplates: true,
+        //rowTemplate: "detail-row-template",
+        columns: [{
+            field: "ProductID",
+            title: "Product ID"
+        }],
+        data: new kendo.data.DataSource({
+            transport: {
+                read: (options) => {
 
-    self.branchParams = kendoMDCDropDownList({
-        label: 'Branch',
-        odata: true,
-        endPoint: '/odata/Branches',
-        textField: 'Name',
-        valueField: 'BranchID',
-        virtual: true,
-        pageSize: 20,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                $.ajax({
-                    url: `/odata/Branches/Default.BranchValueMapper(branchId=${options.value || "null"})`,
-                    type: 'GET',
-                    success: function (data) {
-                        options.success(data.value);
-                        if (data.value.length == 1) {
-                            self.branch(data.value[0]);
-                        }
+                    self.setBusy();
+
+                    var webapi = new kendo.data.transports.webapi({ prefix: "" });
+                    var params = webapi.parameterMap(options.data);
+
+                    var data = {};
+
+                    for (var propertyName in params) {
+                        data[propertyName] = params[propertyName];
                     }
-                });
-            }
+
+                    data = Object.assign(params, {
+                        statusGroupId: self.statusGroupId(),
+                        launchId: self.launchId(),
+                        brandId: self.brandId(),
+                        productColourId: self.productColourId(),
+                        stockLevelId: self.stockStatusId(),
+                        productFilterGroupId: self.productFilterGroupId(),
+                        productFilterId: self.productFilterId()
+                    });
+
+                    if (self.buyerCode()) {
+                        data.buyerCode = self.buyerCode();
+                    }
+
+                    if (self.supplierCode()) {
+                        data.supplierCode = self.supplierCode();
+                    }
+
+                    if (self.collectionCode()) {
+                        data.collectionCode = self.collectionCode();
+                    }
+
+                    if (self.attributeIds().length) {
+                        data.attributeIds = self.attributeIds();
+                    }
+
+                    let qs = new URLSearchParams(data);
+
+                    console.log(qs);
+
+                    fetch(`/api/stockManagement/fetchProducts?${qs.toString()}`, {
+                        method: 'GET',
+                        headers: window.fetchHeaders
+                    })
+                        .then(window.handleFetchResponse)
+                        .then(data => {
+                            self.previousParameters = params;
+                            console.log(data);
+                            //self.productSearchResults(data.Results.map(r => resultRecord(
+                            //    r,
+                            //    data.BranchGroupTotals,
+                            //    self.branchId() ? data.RangeRecords : [],
+                            //    data.ContrastRecords
+                            ////)));
+                            //self.productSearchResults(data.Results.map(r => resultRecord(
+                            //    r
+                            //)));
+
+                            ko.ignoreDependencies(() => {
+                                self.clearBusy();
+                            });
+
+                            options.success(data);
+                        })
+                        .catch(err => {
+                            self.clearBusy();
+                            window.catchFetchError(err);
+                        });
+                }
+            },
+            page: 1,
+            pageSize: 200,
+            serverPaging: true,
+            serverSorting: true,
+            serverFiltering: true,
+            schema: $.extend({}, kendo.data.schemas.webapi, {
+                data: "Data",
+                total: "Total",
+                ////errors: "Errors",
+                ////aggregates: "Aggregates",
+                model: {
+                    id: 'ProductID'
+                }
+            })
+        }),
+        sortable: true,
+        filterable: {
+            extra: false
         },
-        idObservable: self.branchId,
-        objObservable: self.branch,
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertable: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        autoBind: true,
-        height: 340,
-        sort: {
-            dir: 'asc',
-            field: 'branchId'
+        reorderable: true,
+        pageable: {
+            pageSize: 200,
+            pageSizes: [10, 20, 50, 100, 200]
         },
-        parameterMap: (data) => {
-            //Generate parameters in odata v4 format
-            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+        excelExport: self.exportToExcel
+    };
+    //self.branchGroupParams = kendoMDCDropDownList({
+    //    label: 'Branch Group',
+    //    odata: true,
+    //    endPoint: '/odata/BranchGroups?$filter=PrimaryGroup eq true',
+    //    textField: 'Name',
+    //    valueField: 'BranchGroupID',
+    //    virtual: true,
+    //    pageSize: 40,
+    //    virtualOptions: {
+    //        itemHeight: 34,
+    //        mapValueTo: 'dataItem',
+    //        valueMapper: function (options) {
+    //          if (options.value) {
+    //            $.ajax({
+    //                url: `/odata/BranchGroups/Default.BranchGroupValueMapper(branchGroupId=${options.value})`,
+    //                type: 'GET',
+    //                success: function (data) {
+    //                    options.success(data.value);
+    //                    if (data.value.length == 1) {
+    //                        self.branchGroup(data.value[0]);
+    //                    }
+    //                }
+    //            });
+    //          } else {
+        //    options.success();
+        //}
+    //        }
+    //    },
+    //    idObservable: self.branchGroupId,
+    //    objObservable: self.branchGroup,
+    //    enable: ko.observable(true),
+    //    disable: ko.observable(false),
+    //    clearable: ko.observable(true),
+    //    revertable: ko.observable(false),
+    //    readOnly: false,
+    //    filter: 'contains',
+    //    autoBind: true,
+    //    height: 340,
+    //    sort: {
+    //        dir: 'asc',
+    //        field: 'branchGroupId'
+    //    },
+    //    select: self.genericUnsavedChangesSelect,
+    //    clearFunction: self.genericUnsavedChangesClear
+    //});
 
-            /// thanks, https://stackoverflow.com/questions/28995757/a-binary-operator-with-incompatible-types-was-detected-found-operand-types-edm/48919770
-            delete d.$inlinecount; // <-- remove inlinecount
-            delete d.$format; // <-- remove format
-            delete d.$callback; // <-- remove callback
-            delete d.$top;
+    //self.branchParams = kendoMDCDropDownList({
+    //    label: 'Branch',
+    //    odata: true,
+    //    endPoint: '/odata/Branches',
+    //    textField: 'Name',
+    //    valueField: 'BranchID',
+    //    virtual: true,
+    //    pageSize: 40,
+    //    virtualOptions: {
+    //        itemHeight: 34,
+    //        mapValueTo: 'dataItem',
+    //        valueMapper: function (options) {
+    //          if (options.value) {
+    //            $.ajax({
+    //                url: `/odata/Branches/Default.BranchValueMapper(branchId=${options.value})`,
+    //                type: 'GET',
+    //                success: function (data) {
+    //                    options.success(data.value);
+    //                    if (data.value.length == 1) {
+    //                        self.branch(data.value[0]);
+    //                    }
+    //                }
+    //            });
+    //          } else {
+//    options.success();
+//}
+    //        }
+    //    },
+    //    idObservable: self.branchId,
+    //    objObservable: self.branch,
+    //    enable: ko.observable(true),
+    //    disable: ko.observable(false),
+    //    clearable: ko.observable(true),
+    //    revertable: ko.observable(false),
+    //    readOnly: false,
+    //    filter: 'contains',
+    //    autoBind: true,
+    //    height: 340,
+    //    sort: {
+    //        dir: 'asc',
+    //        field: 'branchId'
+    //    },
+    //    parameterMap: (data) => {
+    //        //Generate parameters in odata v4 format
+    //        let d = kendo.data.transports['odata-v4'].parameterMap(data);
 
-            d.$count = true;
+    //        /// thanks, https://stackoverflow.com/questions/28995757/a-binary-operator-with-incompatible-types-was-detected-found-operand-types-edm/48919770
+    //        delete d.$inlinecount; // <-- remove inlinecount
+    //        delete d.$format; // <-- remove format
+    //        delete d.$callback; // <-- remove callback
+    //        delete d.$top;
 
-            if (self.branchGroupId()) {
-                //Add filter by matching any reference containing value
-                d.$filter = `BranchGroups/any(BranchGroup: BranchGroup/BranchGroupID eq ${self.branchGroupId()})`;
-            }
+    //        d.$count = true;
 
-            return d;
-        },
-        select: self.genericUnsavedChangesSelect,
-        clearFunction: self.genericUnsavedChangesClear
-    });
+    //        if (self.branchGroupId()) {
+    //            //Add filter by matching any reference containing value
+    //            d.$filter = `BranchGroups/any(BranchGroup: BranchGroup/BranchGroupID eq ${self.branchGroupId()})`;
+    //        }
+
+    //        return d;
+    //    },
+    //    select: self.genericUnsavedChangesSelect,
+    //    clearFunction: self.genericUnsavedChangesClear
+    //});
 
     self.launchParams = kendoMDCDropDownList({
         label: 'Launch',
@@ -482,21 +599,25 @@ const stockManagementViewModel = ({ } = {}) => {
         textField: 'Name',
         valueField: 'LaunchID',
         virtual: true,
-        pageSize: 20,
+        pageSize: 40,
         virtualOptions: {
             itemHeight: 34,
             mapValueTo: 'dataItem',
             valueMapper: function (options) {
-                $.ajax({
-                    url: `/odata/Launches/Default.LaunchValueMapper(launchId=${options.value || "null"})`,
-                    type: 'GET',
-                    success: function (data) {
-                        options.success(data.value);
-                        if (data.value.length == 1) {
-                            self.launch(data.value[0]);
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/Launches/Default.LaunchValueMapper(launchId=${options.value})`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                            if (data.value.length == 1) {
+                                self.launch(data.value[0]);
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    options.success();
+                }
             }
         },
         idObservable: self.launchId,
@@ -523,24 +644,7 @@ const stockManagementViewModel = ({ } = {}) => {
         endPoint: '/odata/Brands',
         textField: 'Name',
         valueField: 'BrandID',
-        virtual: true,
-        pageSize: 20,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                $.ajax({
-                    url: `/odata/Brands/Default.BrandValueMapper(brandId=${options.value || "null"})`,
-                    type: 'GET',
-                    success: function (data) {
-                        options.success(data.value);
-                        if (data.value.length == 1) {
-                            self.brand(data.value[0]);
-                        }
-                    }
-                });
-            }
-        },
+        virtual: false,
         idObservable: self.brandId,
         objObservable: self.brand,
         enable: ko.observable(true),
@@ -562,21 +666,25 @@ const stockManagementViewModel = ({ } = {}) => {
         textField: 'Name',
         valueField: 'ProductColourID',
         virtual: true,
-        pageSize: 20,
+        pageSize: 40,
         virtualOptions: {
             itemHeight: 34,
             mapValueTo: 'dataItem',
             valueMapper: function (options) {
-                $.ajax({
-                    url: `/odata/ProductColours/Default.ProductColourValueMapper(name=${options.value || "null"})`,
-                    type: 'GET',
-                    success: function (data) {
-                        options.success(data.value);
-                        if (data.value.length == 1) {
-                            self.productColour(data.value[0]);
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/ProductColours/Default.ProductColourValueMapper(name="${options.value}")`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                            if (data.value.length == 1) {
+                                self.productColour(data.value[0]);
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    options.success();
+                }
             }
         },
         idObservable: self.productColourId,
@@ -598,21 +706,14 @@ const stockManagementViewModel = ({ } = {}) => {
     });
 
     self.stockLevelParams = kendoMDCDropDownList({
-        label: 'Stock Level',
+        label: 'Stock Status',
+        odata: true,
+        endPoint: '/odata/StockStatuses',
         textField: 'Name',
-        valueField: 'StockLevelID',
-        data: [{
-            StockLevelID: 0,
-            Name: 'In Stock'
-        }, {
-            StockLevelID: 1,
-            Name: 'Low Stock'
-        }, {
-            StockLevelID: 2,
-            Name: 'Out of Stock'
-        }],
-        idObservable: self.stockLevelId,
-        objObservable: self.stockLevel,
+        valueField: 'StockStatusID',
+        virtual: false,
+        idObservable: self.stockStatusId,
+        objObservable: self.stockStatus,
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -620,7 +721,11 @@ const stockManagementViewModel = ({ } = {}) => {
         readOnly: false,
         filter: 'contains',
         autoBind: true,
-        height: 102,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'StockStatusID'
+        },
         select: self.genericUnsavedChangesSelect,
         clearFunction: self.genericUnsavedChangesClear
     });
@@ -632,21 +737,25 @@ const stockManagementViewModel = ({ } = {}) => {
         textField: 'Name',
         valueField: 'Code',
         virtual: true,
-        pageSize: 20,
+        pageSize: 40,
         virtualOptions: {
             itemHeight: 34,
             mapValueTo: 'dataItem',
             valueMapper: function (options) {
-                $.ajax({
-                    url: `/odata/Collections/Default.CollectionValueMapper(code=${options.value || "null"})`,
-                    type: 'GET',
-                    success: function (data) {
-                        options.success(data.value);
-                        if (data.value.length == 1) {
-                            self.collection(data.value[0]);
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/Collections/Default.CollectionValueMapper(code="${options.value}")`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                            if (data.value.length == 1) {
+                                self.collection(data.value[0]);
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    options.success();
+                }
             }
         },
         idObservable: self.collectionCode,
@@ -673,24 +782,7 @@ const stockManagementViewModel = ({ } = {}) => {
         endPoint: '/odata/AttributeGroups',
         textField: 'Name',
         valueField: 'AttributeGroupID',
-        virtual: true,
-        pageSize: 20,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                $.ajax({
-                    url: `/odata/AttributeGroups/Default.AttributeGroupValueMapper(attributeGroupId=${options.value || "null"})`,
-                    type: 'GET',
-                    success: function (data) {
-                        options.success(data.value);
-                        if (data.value.length == 1) {
-                            self.attributeGroup(data.value[0]);
-                        }
-                    }
-                });
-            }
-        },
+        virtual: false,
         idObservable: self.attributeGroupId,
         objObservable: self.attributeGroup,
         enable: ko.observable(true),
@@ -712,21 +804,25 @@ const stockManagementViewModel = ({ } = {}) => {
         textField: 'Name',
         valueField: 'AttributeID',
         virtual: true,
-        pageSize: 20,
+        pageSize: 40,
         virtualOptions: {
             itemHeight: 34,
             mapValueTo: 'dataItem',
             valueMapper: function (options) {
-                $.ajax({
-                    url: `/odata/Attributes/Default.AttributeValueMapper(attributeId=${options.value || "null"})`,
-                    type: 'GET',
-                    success: function (data) {
-                        options.success(data.value);
-                        if (data.value.length == 1) {
-                            self.attribute(data.value[0]);
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/Attributes/Default.AttributeValueMapper(attributeId=${options.value })`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                            if (data.value.length == 1) {
+                                self.attribute(data.value[0]);
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    options.success();
+                }
             }
         },
         idObservable: self.attributeId,
@@ -768,6 +864,7 @@ const stockManagementViewModel = ({ } = {}) => {
     self.attributesParams = {
         observable: self.attributes,
         validate: self.attributeIds,
+        emptyArray: self.emptyArray,
         width: 'auto',
         label: 'Attributes',
         valuePrimitive: false,
@@ -806,9 +903,14 @@ const stockManagementViewModel = ({ } = {}) => {
         clearFunction: async function () {
             await self.unsavedChanges().then(() => {
                 var self = this;
-                self.multiSelectSettings.value([]);
-                self.multiSelectSettings.widget().value([]);
-                self.multiSelectSettings.widget().trigger('change');
+
+                let previousValue = self.multiSelectSettings.value();
+
+                if (previousValue.length > 0) {
+                    self.multiSelectSettings.value(self.emptyArray);
+                    self.multiSelectSettings.widget().value(self.emptyArray);
+                    self.multiSelectSettings.widget().trigger('change');
+                }
             }).catch((e) => { });
 
         }
@@ -820,24 +922,7 @@ const stockManagementViewModel = ({ } = {}) => {
         endPoint: '/odata/ProductFilterGroups',
         textField: 'Name',
         valueField: 'ProductFilterGroupID',
-        virtual: true,
-        pageSize: 20,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                $.ajax({
-                    url: `/odata/ProductFilterGroups/Default.ProductFilterGroupValueMapper(productFilterGroupId=${options.value || "null"})`,
-                    type: 'GET',
-                    success: function (data) {
-                        options.success(data.value);
-                        if (data.value.length == 1) {
-                            self.productFilterGroup(data.value[0]);
-                        }
-                    }
-                });
-            }
-        },
+        virtual: false,
         idObservable: self.productFilterGroupId,
         objObservable: self.productFilterGroup,
         enable: ko.observable(true),
@@ -883,24 +968,7 @@ const stockManagementViewModel = ({ } = {}) => {
         endPoint: '/odata/ProductFilters',
         textField: 'Name.replace(/\<br\\/\>/g, " ")',
         valueField: 'ProductFilterID',
-        virtual: true,
-        pageSize: 20,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                $.ajax({
-                    url: `/odata/ProductFilters/Default.ProductFilterValueMapper(productFilterId=${options.value || "null"})`,
-                    type: 'GET',
-                    success: function (data) {
-                        options.success(data.value);
-                        if (data.value.length == 1) {
-                            self.productFilter(data.value[0]);
-                        }
-                    }
-                });
-            }
-        },
+        virtual: false,
         idObservable: self.productFilterId,
         objObservable: self.productFilter,
         enable: ko.observable(true),
@@ -933,13 +1001,13 @@ const stockManagementViewModel = ({ } = {}) => {
                 d.$filter = `ProductFilterGroupID eq ${self.productFilterGroupId()}`;
             }
 
-            if (self.productTypeId()) {
-                if (d.$filter) {
-                    d.$filter = `${d.$filter} and ProductTypeID eq ${self.productTypeId()}`;
-                } else {
-                    d.$filter = `ProductTypeID eq ${self.productTypeId()}`;
-                }
-            }
+            //if (self.productTypeId()) {
+            //    if (d.$filter) {
+            //        d.$filter = `${d.$filter} and ProductTypeID eq ${self.productTypeId()}`;
+            //    } else {
+            //        d.$filter = `ProductTypeID eq ${self.productTypeId()}`;
+            //    }
+            //}
 
             return d;
         },
@@ -950,18 +1018,9 @@ const stockManagementViewModel = ({ } = {}) => {
 
     //#region Subscriptions
 
-    self.viewingTab.subscribe(nv => {
-        self.stockStatuses(self.tabStockStatusMap[nv]);
-        if (nv === TAB_CLEARANCE) {
-            self.clearance(true);
-        } else {
-            self.clearance(false);
-        }
-    });
-
-    self.branchGroupId.subscribe(nv => {
-        self.branchParams.clearFunction();
-    });
+    //self.branchGroupId.subscribe(nv => {
+    //    self.branchParams.clearFunction();
+    //});
 
     self.attributeGroupId.subscribe(nv => {
         self.attributeParams.clearFunction();
@@ -974,7 +1033,7 @@ const stockManagementViewModel = ({ } = {}) => {
     //#region Methods
 
     self.setBusy = () => {
-        switch (self.viewingTab()) {
+        switch (self.statusGroupId()) {
             case TAB_PRELAUNCH:
                 self.prelaunchBusy(true);
                 break;
@@ -996,7 +1055,7 @@ const stockManagementViewModel = ({ } = {}) => {
     }
 
     self.clearBusy = () => {
-        switch (self.viewingTab()) {
+        switch (self.statusGroupId()) {
             case TAB_PRELAUNCH:
                 self.prelaunchBusy(false);
                 break;
@@ -1092,7 +1151,7 @@ const stockManagementViewModel = ({ } = {}) => {
 
     self.unsavedChanges = () => {
         return new Promise((resolve, reject) => {
-            let unsaved = self.productSearchResults.peek().find(p => p.branchTargetParams.unsavedChanges());
+            let unsaved = self.productSearchResults.peek().find(p => p.unsavedChanges());
 
             if (unsaved) {
                 window.showConfirm('Unsaved changes', 'You have unsaved changes. If you proceed your changes will be lost. Proceed?', () => {
@@ -1107,21 +1166,20 @@ const stockManagementViewModel = ({ } = {}) => {
     }
 
     self.saveChanges = () => {
-        if (self.productSearchResults().find(p => p.branchTargetParams.unsavedChanges())) {
+        if (self.productSearchResults().find(p => p.unsavedChanges())) {
             self.setBusy();
 
-            let products = self.productSearchResults().filter(p => p.branchTargetParams.unsavedChanges());
+            let products = self.productSearchResults().filter(p => p.unsavedChanges());
 
             products.forEach(p => {
                 p.preSave();
             });
 
             let params = {
-                branchId: self.branchId(),
                 products: products.map(p => p.toJS())
             };
 
-            fetch('/api/stockManagement/saveBranchRangeChanges', {
+            fetch('/api/stockManagement/saveStockManagementChanges', {
                 method: 'POST',
                 headers: window.fetchHeaders,
                 body: JSON.stringify(params)
@@ -1154,106 +1212,102 @@ const stockManagementViewModel = ({ } = {}) => {
 
     //#region Computeds
 
-    self.branchLoaded = ko.computed(() => {
-        return self.branch() && self.productSearchResults().length && self.productSearchResults()[0].Range
-    }, self);
-    window.branchLoaded = self.branchLoaded; // lifted to global to save buggering about with $parentContext nesting
+    //self.branchLoaded = ko.computed(() => {
+    //    return self.branch() && self.productSearchResults().length && self.productSearchResults()[0].Range
+    //}, self);
+    //window.branchLoaded = self.branchLoaded; // lifted to global to save buggering about with $parentContext nesting
 
-    self.productTypeId = ko.computed(() => { return self.productType()?.ProductTypeID }, self);
+    //self.productTypeId = ko.computed(() => { return self.productType()?.ProductTypeID }, self);
 
-    self.productGroupCode = ko.computed(() => { return self.productType()?.ProductGroupCode }, self);
+    //self.productGroupCode = ko.computed(() => { return self.productType()?.ProductGroupCode }, self);
 
-    self.itemTypeCode = ko.computed(() => { return self.productType()?.ItemTypeCode }, self);
+    //self.itemTypeCode = ko.computed(() => { return self.productType()?.ItemTypeCode }, self);
 
     self.secondaryFiltersVisible = ko.computed(() => {
         return true;
         //return self.productFilterGroupId() != null;
     }, self);
 
-    self.previousParameters = null;
+    //self.previousParameters = null;
 
-    self.parametersComputer = ko.computed(() => {
-        let params = {
-            //branchGroupId: self.branchGroupId(),
-            //branchId: self.branchId(),
-            buyerCode: self.buyerCode(),
-            supplierCode: self.supplierCode(),
-            productTypeId: self.productTypeId(),
-            productGroupCode: self.productGroupCode(),
-            itemTypeCode: self.itemTypeCode(),
-            launchId: self.launchId(),
-            brandId: self.brandId(),
-            productColourId: self.productColourId(),
-            stockLevelId: self.stockLevelId(),
-            collectionCode: self.collectionCode(),
-            attributeGroupId: self.attributeGroupId(),
-            attributeIds: self.attributeIds(),
-            productFilterGroupId: self.productFilterGroupId(),
-            productFilterId: self.productFilterId(),
-            stockStatuses: self.stockStatuses(),
-            clearance: self.clearance()
-        }
+    //self.parametersComputer = ko.computed(() => {
+    //    let params = {
+    //        statusGroupId: self.statusGroupId(),
+    //        buyerCode: self.buyerCode(),
+    //        supplierCode: self.supplierCode(),
+    //        launchId: self.launchId(),
+    //        brandId: self.brandId(),
+    //        productColourId: self.productColourId(),
+    //        stockLevelId: self.stockStatusId(),
+    //        collectionCode: self.collectionCode(),
+    //        productFilterGroupId: self.productFilterGroupId(),
+    //        productFilterId: self.productFilterId(),
+    //        attributeIds: self.attributeIds(),
+    //    }
 
-        Object.keys(params).forEach(k => {
-            if (params[k] === '') {
-                params[k] = undefined;
-            }
-        });
+    //    Object.keys(params).forEach(k => {
+    //        if (params[k] === '') {
+    //            params[k] = undefined;
+    //        }
+    //    });
 
-        let fire = Object.keys(params).find(k => params[k] != null && params[k] != '');
+    //    let fire = Object.keys(params).find(k => params[k] != null && params[k] != '');
 
-        if (fire) {
-            console.log("parametersComputer fire was true");
-            return JSON.stringify(params);
-        } else {
-            return null;
-        }
-    }, self).extend({
-        rateLimit: {
-            timeout: 50,
-            method: 'notifyWhenChangesStop'
-        }
-    });
+    //    if (fire) {
+    //        console.log("parametersComputer fire was true");
+    //        return JSON.stringify(params);
+    //    } else {
+    //        return null;
+    //    }
+    //}, self).extend({
+    //    rateLimit: {
+    //        timeout: 50,
+    //        method: 'notifyWhenChangesStop'
+    //    }
+    //});
 
-    self.productFetch = ko.computed(() => {
+    //self.productFetch = ko.computed(() => {
 
-        let params = self.parametersComputer();
+    //    let params = self.parametersComputer();
 
-        if (params) {
-            console.log('productFetch', JSON.parse(params));
+    //    if (params) {
+    //        console.log('productFetch', JSON.parse(params));
 
-            ko.ignoreDependencies(() => {
-                self.setBusy();
-            });
+    //        ko.ignoreDependencies(() => {
+    //            self.setBusy();
+    //        });
 
-            fetch('/api/stockManagement/fetchProducts', {
-                method: 'POST',
-                headers: window.fetchHeaders,
-                body: params
-            })
-                .then(window.handleFetchResponse)
-                .then(data => {
-                    self.previousParameters = params;
-                    console.log(data);
-                    self.productSearchResults(data.Results.map(r => resultRecord(
-                        r,
-                        data.BranchGroupTotals,
-                        self.branchId() ? data.RangeRecords : [],
-                        data.ContrastRecords
-                    )));
+    //        fetch('/api/stockManagement/fetchProducts', {
+    //            method: 'POST',
+    //            headers: window.fetchHeaders,
+    //            body: params
+    //        })
+    //            .then(window.handleFetchResponse)
+    //            .then(data => {
+    //                self.previousParameters = params;
+    //                console.log(data);
+    //                //self.productSearchResults(data.Results.map(r => resultRecord(
+    //                //    r,
+    //                //    data.BranchGroupTotals,
+    //                //    self.branchId() ? data.RangeRecords : [],
+    //                //    data.ContrastRecords
+    //                //)));
+    //                self.productSearchResults(data.Results.map(r => resultRecord(
+    //                    r
+    //                )));
 
-                    ko.ignoreDependencies(() => {
-                        self.clearBusy();
-                    });
-                })
-                .catch(err => {
-                    self.clearBusy();
-                    window.catchFetchError(err);
-                });
-        } else {
-            self.productSearchResults([]);
-        }
-    });
+    //                ko.ignoreDependencies(() => {
+    //                    self.clearBusy();
+    //                });
+    //            })
+    //            .catch(err => {
+    //                self.clearBusy();
+    //                window.catchFetchError(err);
+    //            });
+    //    } else {
+    //        self.productSearchResults([]);
+    //    }
+    //});
 
     self.groupBy = (items, key, dataSetName) => {
         const groupedMap = new Map();
@@ -1283,11 +1337,11 @@ const stockManagementViewModel = ({ } = {}) => {
             });
 
             obj.targetTotal = ko.computed(() => {
-                return obj[dataSetName].reduce((a0, p0) => a0 += p0.branchTargetParams.originalValue, 0);
+                return 0;// obj[dataSetName].reduce((a0, p0) => a0 += p0.branchTargetParams.originalValue, 0);
             }, self);
 
             obj.branchGroupTargetTotal = ko.computed(() => {
-                return obj[dataSetName].reduce((a0, p0) => a0 += p0.branchGroupTarget(), 0);
+                return 0;// obj[dataSetName].reduce((a0, p0) => a0 += p0.branchGroupTarget(), 0);
             }, self);
 
             result.push(obj);
@@ -1322,24 +1376,24 @@ const stockManagementViewModel = ({ } = {}) => {
 
     //#region Events
 
-    document.getElementById("prelaunch-tab-anchor").addEventListener('show.bs.tab', () => {
-        self.viewingTab(TAB_PRELAUNCH);
-    });
+    //document.getElementById("prelaunch-tab-anchor").addEventListener('show.bs.tab', () => {
+    //    self.stockStatusGroupId(TAB_PRELAUNCH);
+    //});
 
     document.getElementById("current-tab-anchor").addEventListener('show.bs.tab', () => {
-        self.viewingTab(TAB_CURRENT);
+        self.statusGroupId(TAB_CURRENT);
     });
 
     document.getElementById("limited-tab-anchor").addEventListener('show.bs.tab', () => {
-        self.viewingTab(TAB_LIMITED);
+        self.statusGroupId(TAB_LIMITED);
     });
 
     document.getElementById("clearance-tab-anchor").addEventListener('show.bs.tab', () => {
-        self.viewingTab(TAB_CLEARANCE);
+        self.statusGroupId(TAB_CLEARANCE);
     });
 
     document.getElementById("discontinued-tab-anchor").addEventListener('show.bs.tab', () => {
-        self.viewingTab(TAB_DISCONTINUED);
+        self.statusGroupId(TAB_DISCONTINUED);
     });
 
     window.addEventListener("onbeforeunload", (event) => {
@@ -1355,117 +1409,67 @@ const stockManagementViewModel = ({ } = {}) => {
     return self;
 };
 
-const resultRecord = ((rec, branchGroupRecords, rangeRecords, contrastRecords) => {
+//const resultRecord = ((rec, branchGroupRecords, rangeRecords, contrastRecords) => {
+const resultRecord = ((rec) => {
     let self = Object.assign({}, rec);
 
-    self.BranchGroup = branchGroupRecords.find(bg => bg.ProductID === self.ProductID) ?? {
-        Quantity: 0
-    };
+    //self.branchActual = ko.observable(0);
 
-    self.Range = rangeRecords.find(b => b.ProductID === self.ProductID) ?? {
-        Quantity: 0
-    }
+    //self.contrastTarget_A = ko.observable(0);
+    //self.contrastActual_A = ko.observable(0);
 
-    self.Contrast = contrastRecords.find(c => c.ProductID === self.ProductID) ?? {
-        ContrastBranchA_Quantity: 0,
-        ContrastBranchB_Quantity: 0
-    };
+    //self.contrastTarget_B = ko.observable(0);
+    //self.contrastActual_B = ko.observable(0);
 
-    self.branchGroupTarget = ko.observable(self.BranchGroup.Quantity);
-    self.branchGroupActual = ko.observable(0);
+    //self.currentFreeStock = ko.observable(0);
+    //self.transferStockLeaving = ko.observable(0);
+    //self.transferStockArriving = ko.observable(0);
+    //self.onPurchaseOrder = ko.observable(0);
+    //self.firstDueDate = ko.observable(0);
+    //self.firstDueQuantity = ko.observable(0);
+    //self.projectedStock = ko.observable(0);
 
-    self.branchTarget = ko.observable(self.Range.Quantity).extend({
-        numberUnformatted: {
-            minValue: 0,
-            maxValue: 999,
-            digits: 0,
-            currency: {
-                FormattingCulture: 'en-GB'
-            }
-        },
-        numeric: {
-            params: {
-                required: 1,
-                numericMin: 0,
-                numericMax: 999
-            }
-        }
-    });
+    //self.fenwickRingFence = ko.observable(0);
+    //self.kingsRoadRingFence = ko.observable(0);
+    //self.maryleboneRingFence = ko.observable(0);
+    //self.tradeRingFence = ko.observable(0);
+    //self.eCommerceRingFence = ko.observable(0);
+    //self.totalRingFence = ko.observable(0);
 
-    self.branchTargetBusy = ko.observable(false);
+    //self.fenwickSales = ko.observable(0);
+    //self.kingsRoadSales = ko.observable(0);
+    //self.maryleboneSales = ko.observable(0);
+    //self.eCommerceSales = ko.observable(0);
+    //self.tradeSales = ko.observable(0);
 
-    self.saveBranchTarget = (event) => {
-        self.branchTargetBusy(true);
-        setTimeout(() => {
-            self.branchTargetBusy(false);
-        }, 2000);
-    }
+    self.branchActual = 0;
 
-    self.branchTargetParams = {
-        observable: self.branchTarget,
-        useNativeValidation: false,
-        decorateInputElement: true,
-        insertValidationMessages: false,
-        showClear: true,
-        busy: self.branchTargetBusy,
-        buttons: false,
-        inputType: 'number',
-        minValue: 0,
-        maxValue: 999,
-        step: 1,
-        enable: ko.observable(true),
-        disable: self.branchTargetBusy,
-        clearable: ko.observable(false),
-        revertable: ko.observable(true),
-        originalValue: self.branchTarget(),
-        increment: () => { },
-        decrement: () => { },
-        revertFunction: () => {
-            self.branchTarget(self.branchTargetParams.originalValue);
-            self.branchTargetParams.unsavedChanges(false);
-        },
-        events: {
-            change: (e) => {
-                self.branchTargetParams.unsavedChanges(true);
-            }
-        },
-        unsavedChanges: ko.observable(false)
-    }
+    self.contrastTarget_A =  0;
+    self.contrastActual_A =  0;
 
-    self.branchTarget.subscribe(nv => {
-        if (nv === self.branchTargetParams.originalValue) {
-            self.branchTargetParams.unsavedChanges(false);
-        }
-    });
+    self.contrastTarget_B =  0;
+    self.contrastActual_B =  0;
 
-    self.branchActual = ko.observable(0);
+    self.currentFreeStock =  0;
+    self.transferStockLeaving =  0;
+    self.transferStockArriving =  0;
+    self.onPurchaseOrder =  0;
+    self.firstDueDate =  0;
+    self.firstDueQuantity =  0;
+    self.projectedStock =  0;
 
-    self.contrastTarget_A = ko.observable(self.Contrast.ContrastBranchA_Quantity);
-    self.contrastActual_A = ko.observable(0);
+    self.fenwickRingFence =  0;
+    self.kingsRoadRingFence =  0;
+    self.maryleboneRingFence =  0;
+    self.tradeRingFence =  0;
+    self.eCommerceRingFence =  0;
+    self.totalRingFence =  0;
 
-    self.contrastTarget_B = ko.observable(self.Contrast.ContrastBranchB_Quantity);
-    self.contrastActual_B = ko.observable(0);
-
-    self.currentFreeStock = ko.observable(0);
-    self.transferStockLeaving = ko.observable(0);
-    self.transferStockArriving = ko.observable(0);
-    self.onPurchaseOrder = ko.observable(0);
-    self.firstDueDate = ko.observable(0);
-    self.firstDueQuantity = ko.observable(0);
-    self.projectedStock = ko.observable(0);
-
-    self.fenwickRingFence = ko.observable(0);
-    self.kingsRoadRingFence = ko.observable(0);
-    self.maryleboneRingFence = ko.observable(0);
-    self.tradeRingFence = ko.observable(0);
-    self.eCommerceRingFence = ko.observable(0);
-    self.totalRingFence = ko.observable(0);
-
-    self.fenwickSales = ko.observable(0);
-    self.kingsRoadSales = ko.observable(0);
-    self.maryleboneSales = ko.observable(0);
-    self.eCommerceSales = ko.observable(0);
-    self.tradeSales = ko.observable(0);
+    self.fenwickSales =  0;
+    self.kingsRoadSales =  0;
+    self.maryleboneSales =  0;
+    self.eCommerceSales =  0;
+    self.tradeSales =  0;
 
     self.toJS = () => {
         return {
@@ -1487,6 +1491,11 @@ const resultRecord = ((rec, branchGroupRecords, rangeRecords, contrastRecords) =
             self.branchTargetBusy(false);
         }
     }
+
+    self.unsavedChanges = ko.computed(() => {
+        //console.warn("not yet implemented");
+        return false;
+    }, self);
 
     return self;
 });

@@ -1,25 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models.StockManagement
 {
-    public class StockManagementProductSearchRecord
+    public class StockManagementProductSearchRecord : StockManagementProduct
     {
-        public int ProductID { get; set; }
         public string Code { get; set; }
-        public string Name { get; set; }
-        public string ProductTypeName { get; set; }
-        public string ProductGroupName { get; set; }
-        public string ProductGroupCode { get; set; }
-        public string ItemTypeName { get; set; }
-        public string ItemTypeCode { get; set; }
-        public int ProductPageID { get; set; }
+        public string BasketName { get; set; }
+        public int? ProductPageID { get; set; }
         public string ProductPageHeading { get; set; }
         public string OrderFormGroupName { get; set; }
-        public byte OrderFormSortOrder { get; set; }
+        public byte? OrderFormGroupSortOrder { get; set; }
     }
 
     public class StockManagementBranchGroupTotalRecord

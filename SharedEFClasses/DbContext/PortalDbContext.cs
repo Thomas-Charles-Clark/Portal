@@ -517,6 +517,8 @@ namespace SharedEFClasses.Models
         public DbSet<Branch_BranchGroup> BranchGroupAssignments { get; set; }
         public DbSet<BranchStockLocation> BranchStockLocations { get; set; }
         public DbSet<Range> Ranges { get; set; }
+        public DbSet<StockManagementProduct> StockManagementProducts { get; set; }
+        public DbSet<StatusGroup> StatusGroups { get; set; }
 
         #endregion
 

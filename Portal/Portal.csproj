@@ -594,6 +594,8 @@
     <Compile Include="Areas\Stock\ViewModels\StockManagementViewModel.cs" />
     <Compile Include="Controllers\ODataControllers\AttributesController.cs" />
     <Compile Include="Controllers\ODataControllers\AttributeGroupsController.cs" />
+    <Compile Include="Controllers\ODataControllers\StockStatusesController.cs" />
+    <Compile Include="Controllers\ODataControllers\StockManagement\StatusGroupsController.cs" />
     <Compile Include="Controllers\ODataControllers\SuppliersController.cs" />
     <Compile Include="Controllers\ODataControllers\BuyersController.cs" />
     <Compile Include="Controllers\ODataControllers\CollectionsController.cs" />
