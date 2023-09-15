@@ -48,10 +48,10 @@ namespace SharedEFClasses.Models.StockManagement
     {
         public IEnumerable<StockManagementProductSearchRecord> Results { get; set; }
 
-        public IEnumerable<StockManagementBranchGroupTotalRecord> BranchGroupTotals { get; set; }
+        //public IEnumerable<StockManagementBranchGroupTotalRecord> BranchGroupTotals { get; set; }
 
-        public IEnumerable<StockManagementRangeRecord> RangeRecords { get; set;}
+        //public IEnumerable<StockManagementRangeRecord> RangeRecords { get; set;}
 
-        public IEnumerable<StockManagementContrastRecord> ContrastRecords { get; set; }
+        //public IEnumerable<StockManagementContrastRecord> ContrastRecords { get; set; }
     }
 }

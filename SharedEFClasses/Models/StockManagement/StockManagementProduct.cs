@@ -38,8 +38,8 @@ namespace SharedEFClasses.Models.StockManagement
         [Column("91_120DaySales")]
         public decimal? _91_120DaySales { get; set; }
 
-        [Column("21_150DaySales")]
-        public decimal? _21_150DaySales { get; set; }
+        [Column("121_150DaySales")]
+        public decimal? _121_150DaySales { get; set; }
 
         [Column("151_180DaySales")]
         public decimal? _151_180DaySales { get; set; }

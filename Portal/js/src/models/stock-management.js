@@ -29,7 +29,7 @@ const stockManagementViewModel = ({ } = {}) => {
 
     self.prelaunchBusy = ko.observable(false);
 
-    self.currentBusy = ko.observable(false);
+    self.currentBusy = ko.observable(true);
 
     self.limitedBusy = ko.observable(false);
 
@@ -374,11 +374,89 @@ const stockManagementViewModel = ({ } = {}) => {
     self.gridSettings = {
         autoBind: true,
         widget: ko.observable(),
-        //useKOTemplates: true,
-        //rowTemplate: "detail-row-template",
+        useKOTemplates: true,
+        rowTemplate: "row-template",
         columns: [{
             field: "ProductID",
-            title: "Product ID"
+            title: "Product ID",
+            headerAttributes: {
+                class: "text-end"
+            }
+        }, {
+            field: "StatusGroupID",
+            title: "Status Group"
+        }, {
+            field: "Status",
+            title: "Status"
+        }, {
+            field: "ClearanceDiscountPercentage",
+            title: "Clearance Discount",
+            headerAttributes: {
+                class: "text-end"
+            }
+        }, {
+            field: "InStock",
+            title: "In Stock?"
+        }, {
+            field: "AverageDailySales",
+            title: "Avg. Daily Sales",
+            headerAttributes: {
+                class: "text-end"
+            }
+        }, {
+            field: "AverageDailySalesDurationDays",
+            title: "Avg. Daily Sales Duration Days",
+            headerAttributes: {
+                class: "text-end"
+            }
+        }, {
+            field: "_01_30DaySales",
+            title: "Days<br/>1 to 30",
+            headerAttributes: {
+                class: "text-end"
+            }
+        }, {
+            field: "_31_60DaySales",
+            title: "Days<br/>31 to 60",
+            headerAttributes: {
+                class: "text-end"
+            }
+        }, {
+            field: "_61_90DaySales",
+            title: "Days<br/>61 to 90",
+            headerAttributes: {
+                class: "text-end"
+            }
+        }, {
+            field: "_91_120DaySales",
+            title: "Days<br/>91 to 120",
+            headerAttributes: {
+                class: "text-end"
+            }
+        }, {
+            field: "_121_150DaySales",
+            title: "Days<br/>121 to 150",
+            headerAttributes: {
+                class: "text-end"
+            }
+        }, {
+            field: "_151_180DaySales",
+            title: "Days<br/>151 to 180",
+            headerAttributes: {
+                class: "text-end"
+            }
+        }, {
+            field: "LifetimeSales",
+            title: "Lifetime<br/>Sales",
+            headerAttributes: {
+                class: "text-end"
+            }
+        }, {
+            field: "FirstSaleDate",
+            title: "First Sale"
+        }, {
+            field: "LastSaleDate",
+            title: "Last Sale"
         }],
         data: new kendo.data.DataSource({
             transport: {
@@ -463,10 +541,61 @@ const stockManagementViewModel = ({ } = {}) => {
             schema: $.extend({}, kendo.data.schemas.webapi, {
                 data: "Data",
                 total: "Total",
-                ////errors: "Errors",
-                ////aggregates: "Aggregates",
                 model: {
-                    id: 'ProductID'
+                    id: 'ProductID',
+                    fields: {
+                        ProductID: {
+                            type: 'number'
+                        },
+                        StatusGroupID: {
+                            type: 'number'
+                        },
+                        StatusGroup: {
+                            type: 'object'
+                        },
+                        Status: {
+                            type: 'string'
+                        },
+                        ClearanceDiscountPercentage: {
+                            type: 'number'
+                        },
+                        InStock: {
+                            type: 'boolean'
+                        },
+                        AverageDailySales: {
+                            type: 'number'
+                        },
+                        AverageDailySalesDurationDays: {
+                            type: 'number'
+                        },
+                        _01_30DaySales: {
+                            type: 'number'
+                        },
+                        _31_60DaySales: {
+                            type: 'number'
+                        },
+                        _61_90DaySales: {
+                            type: 'number'
+                        },
+                        _91_120DaySales: {
+                            type: 'number'
+                        },
+                        _121_150DaySales: {
+                            type: 'number'
+                        },
+                        _151_180DaySales: {
+                            type: 'number'
+                        },
+                        LifetimeSales: {
+                            type: 'number'
+                        },
+                        FirstSaleDate: {
+                            type: 'date'
+                        },
+                        LastSaleDate: {
+                            type: 'date'
+                        }
+                    }
                 }
             })
         }),
@@ -474,6 +603,7 @@ const stockManagementViewModel = ({ } = {}) => {
         filterable: {
             extra: false
         },
+        selectable: 'single',
         reorderable: true,
         pageable: {
             pageSize: 200,

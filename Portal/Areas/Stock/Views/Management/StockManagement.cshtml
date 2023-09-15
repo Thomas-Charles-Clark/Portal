@@ -65,6 +65,59 @@
     </div>
 </div>
 
+<script id="row-template" type="text/html">
+    <tr>
+        <td class="text-end">
+            <span data-bind="text: ProductID"></span>
+        </td>
+        <td>
+            <span data-bind="text: StatusGroup ? StatusGroup.Name : null"></span>
+        </td>
+        <td class="text-center">
+            <span data-bind="text: Status"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: ClearanceDiscountPercentage ? formatPercentage(ClearanceDiscountPercentage / 100, 2) : null"></span>
+        </td>
+        <td class="text-center">
+            <span data-bind="text: InStock ? '✔' : null"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: AverageDailySales"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: AverageDailySalesDurationDays"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: formatCurrency(_01_30DaySales, 2, 'en-GB', 'GBP')"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: formatCurrency(_31_60DaySales, 2, 'en-GB', 'GBP')"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: formatCurrency(_61_90DaySales, 2, 'en-GB', 'GBP')"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: formatCurrency(_91_120DaySales, 2, 'en-GB', 'GBP')"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: formatCurrency(_121_150DaySales, 2, 'en-GB', 'GBP')"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: formatCurrency(_151_180DaySales, 2, 'en-GB', 'GBP')"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: formatCurrency(LifetimeSales, 2, 'en-GB', 'GBP')"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: FirstSaleDate ? renderDate(FirstSaleDate) : null"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: LastSaleDate ? renderDate(LastSaleDate) : null"></span>
+        </td>
+    </tr>
+</script>
+
 <ul class="nav nav-tabs mt-3">
     <li class="nav-item">
         <a id="current-tab-anchor" href="#current-tab" data-bs-toggle="tab" title="(C)urrent and (Y)o we need to set this to Limited" class="nav-link active">
