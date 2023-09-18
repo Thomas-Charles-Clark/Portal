@@ -7,14 +7,22 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models.StockManagement
 {
-    public class StockManagementProductSearchRecord : StockManagementProduct
+    public class StockManagementProductSearchRecord
     {
-        public string Code { get; set; }
-        public string BasketName { get; set; }
-        public int? ProductPageID { get; set; }
-        public string ProductPageHeading { get; set; }
-        public string OrderFormGroupName { get; set; }
-        public byte? OrderFormGroupSortOrder { get; set; }
+        public int ProductID { get; set; }
+        public string ProductCode { get; set; }
+        public string ProductName { get; set; }
+
+        // Stock management "Oracle" output
+        public string RowClass { get; set; }
+        public string SalesExplantion { get; set; } 
+        public string StockExplanation { get; set; }
+        public string CoverExplanation { get; set; }
+        public bool Purchasable { get; set; }
+        public string PurchaseInstruction { get; set; }
+        public byte PurchasePriority { get; set; }
+        public decimal RecommendedPurchaseQuantity { get; set; }
+        public DateTime? RecommendedPurchaseDate { get; set; }
     }
 
     public class StockManagementBranchGroupTotalRecord
@@ -53,5 +61,20 @@ namespace SharedEFClasses.Models.StockManagement
         //public IEnumerable<StockManagementRangeRecord> RangeRecords { get; set;}
 
         //public IEnumerable<StockManagementContrastRecord> ContrastRecords { get; set; }
+    }
+
+    public class StockManagementProductDetailFetchDto
+    {
+        public int ProductID { get; set; }
+    }
+
+    public class StockManagementProductDetailRecord
+    { 
+
+    }
+
+    public class StockManagementProductDetailResponse
+    {
+        public IEnumerable<StockManagementProductDetailRecord> Results { get; set; }
     }
 }

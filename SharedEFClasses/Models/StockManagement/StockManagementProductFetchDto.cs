@@ -14,7 +14,7 @@ namespace SharedEFClasses.Models.StockManagement
         public byte? BrandID { get; set; }
         public int? ProductColourID { get; set; }
         public byte? StockStatusID { get; set; }
-        public string CollectionCode { get; set; }
+        public string CollectionID { get; set; }
         public byte? ProductFilterGroupID { get; set; }
         public byte? ProductFilterID { get; set; }
         public IEnumerable<short> AttributeIDs { get; set; }

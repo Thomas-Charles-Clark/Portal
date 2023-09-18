@@ -12,6 +12,7 @@ using SharedEFClasses.Models;
 using SharedEFClasses.Models.General;
 using Microsoft.AspNet.OData;
 using SharedEFClasses.Models.MertexLive;
+using SharedEFClasses.Models.Products;
 
 namespace Portal.Controllers
 {
@@ -36,16 +37,16 @@ namespace Portal.Controllers
 
         // GET: odata/Colours
         [EnableQuery]
-        public IQueryable<CollectionLive> GetCollections()
+        public IQueryable<Collection> GetCollections()
         {
-            return new PortalDbContext().Collections_Live.AsQueryable();
+            return new PortalDbContext().Collections.AsQueryable();
         }
 
         [EnableQuery(MaxNodeCount = 200)]
         [HttpGet]
-        public IQueryable<CollectionLive> CollectionValueMapper(string code)
+        public IQueryable<Collection> CollectionValueMapper(short? collectionId)
         {
-            return new PortalDbContext().Collections_Live.Where(p => p.Code == code).AsQueryable();
+            return new PortalDbContext().Collections.Where(p => p.CollectionID == collectionId).AsQueryable();
         }
     }
 }

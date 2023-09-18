@@ -39,9 +39,9 @@ const stockManagementViewModel = ({ } = {}) => {
 
     self.modalBusy = ko.observable(false);
 
-    self.modalElement = document.getElementById('-modal');
+    self.detailModalElement = document.getElementById('detail-modal');
 
-    self.modal = bootstrap.Modal.getOrCreateInstance(self.modalElement);
+    self.detailModal = bootstrap.Modal.getOrCreateInstance(self.detailModalElement);
 
     self.ready = ko.observable(true);
 
@@ -82,7 +82,7 @@ const stockManagementViewModel = ({ } = {}) => {
 
     self.stockStatus = ko.observable();
 
-    self.collectionCode = ko.observable('');
+    self.collectionId = ko.observable('');
 
     self.collection = ko.observable();
 
@@ -117,6 +117,8 @@ const stockManagementViewModel = ({ } = {}) => {
     self.supplier = ko.observable();
 
     self.supplierCode = ko.observable('');
+
+    self.productDetail = ko.observable();
 
     //#endregion
 
@@ -383,80 +385,41 @@ const stockManagementViewModel = ({ } = {}) => {
                 class: "text-end"
             }
         }, {
-            field: "StatusGroupID",
-            title: "Status Group"
+            field: "ProductCode",
+            title: "Code"
         }, {
-            field: "Status",
-            title: "Status"
+            field: "ProductName",
+            title: "Name"
         }, {
-            field: "ClearanceDiscountPercentage",
-            title: "Clearance Discount",
-            headerAttributes: {
+            field: "SalesExplanation",
+            title: "Sales Explanation"
+        }, {
+            field: "StockExplanation",
+            title: "Stock Explanation"
+        }, {
+            field: "CoverExplanation",
+            title: "Cover Explanation"
+        }, {
+            field: "Purchasable",
+            title: "Purchasable"
+        }, {
+            field: "PurchaseInstruction",
+            title: "Purchase Instruction"
+        }, {
+            field: "PurchasePriority",
+            title: "Priority",
+            headerAttrbiutes: {
                 class: "text-end"
             }
         }, {
-            field: "InStock",
-            title: "In Stock?"
-        }, {
-            field: "AverageDailySales",
-            title: "Avg. Daily Sales",
-            headerAttributes: {
+            field: "RecommendedPurchaseQuantity",
+            title: "Recommended Purchase Quantity",
+            headerAttrbiutes: {
                 class: "text-end"
             }
         }, {
-            field: "AverageDailySalesDurationDays",
-            title: "Avg. Daily Sales Duration Days",
-            headerAttributes: {
-                class: "text-end"
-            }
-        }, {
-            field: "_01_30DaySales",
-            title: "Days<br/>1 to 30",
-            headerAttributes: {
-                class: "text-end"
-            }
-        }, {
-            field: "_31_60DaySales",
-            title: "Days<br/>31 to 60",
-            headerAttributes: {
-                class: "text-end"
-            }
-        }, {
-            field: "_61_90DaySales",
-            title: "Days<br/>61 to 90",
-            headerAttributes: {
-                class: "text-end"
-            }
-        }, {
-            field: "_91_120DaySales",
-            title: "Days<br/>91 to 120",
-            headerAttributes: {
-                class: "text-end"
-            }
-        }, {
-            field: "_121_150DaySales",
-            title: "Days<br/>121 to 150",
-            headerAttributes: {
-                class: "text-end"
-            }
-        }, {
-            field: "_151_180DaySales",
-            title: "Days<br/>151 to 180",
-            headerAttributes: {
-                class: "text-end"
-            }
-        }, {
-            field: "LifetimeSales",
-            title: "Lifetime<br/>Sales",
-            headerAttributes: {
-                class: "text-end"
-            }
-        }, {
-            field: "FirstSaleDate",
-            title: "First Sale"
-        }, {
-            field: "LastSaleDate",
-            title: "Last Sale"
+            field: "RecommendedPurchaseDate",
+            title: "Recommended Purchase Date"
         }],
         data: new kendo.data.DataSource({
             transport: {
@@ -491,8 +454,8 @@ const stockManagementViewModel = ({ } = {}) => {
                         data.supplierCode = self.supplierCode();
                     }
 
-                    if (self.collectionCode()) {
-                        data.collectionCode = self.collectionCode();
+                    if (self.collectionId()) {
+                        data.collectionId = self.collectionId();
                     }
 
                     if (self.attributeIds().length) {
@@ -547,54 +510,87 @@ const stockManagementViewModel = ({ } = {}) => {
                         ProductID: {
                             type: 'number'
                         },
-                        StatusGroupID: {
-                            type: 'number'
+                        ProductCode: {
+                            type: "string"
                         },
-                        StatusGroup: {
-                            type: 'object'
+                        ProductName: {
+                            type: "string"
                         },
-                        Status: {
-                            type: 'string'
+                        RowClass: {
+                            type: "string"
                         },
-                        ClearanceDiscountPercentage: {
-                            type: 'number'
+                        SalesExplanation: {
+                            type: "string"
                         },
-                        InStock: {
-                            type: 'boolean'
+                        StockExplanation: {
+                            type: "string"
                         },
-                        AverageDailySales: {
-                            type: 'number'
+                        CoverExplanation: {
+                            type: "string"
                         },
-                        AverageDailySalesDurationDays: {
-                            type: 'number'
+                        Purchasable: {
+                            type: "string"
                         },
-                        _01_30DaySales: {
-                            type: 'number'
+                        PurchaseInstruction: {
+                            type: "string"
                         },
-                        _31_60DaySales: {
-                            type: 'number'
+                        PurchasePriority: {
+                            type: "string"
                         },
-                        _61_90DaySales: {
-                            type: 'number'
+                        RecommendedPurchaseQuantity: {
+                            type: "number"
                         },
-                        _91_120DaySales: {
-                            type: 'number'
-                        },
-                        _121_150DaySales: {
-                            type: 'number'
-                        },
-                        _151_180DaySales: {
-                            type: 'number'
-                        },
-                        LifetimeSales: {
-                            type: 'number'
-                        },
-                        FirstSaleDate: {
-                            type: 'date'
-                        },
-                        LastSaleDate: {
-                            type: 'date'
+                        RecommendedPurchaseDate: {
+                            type: "date"
                         }
+                        //StatusGroupID: {
+                        //    type: 'number'
+                        //},
+                        //StatusGroup: {
+                        //    type: 'object'
+                        //},
+                        //Status: {
+                        //    type: 'string'
+                        //},
+                        //ClearanceDiscountPercentage: {
+                        //    type: 'number'
+                        //},
+                        //InStock: {
+                        //    type: 'boolean'
+                        //},
+                        //AverageDailySales: {
+                        //    type: 'number'
+                        //},
+                        //AverageDailySalesDurationDays: {
+                        //    type: 'number'
+                        //},
+                        //_01_30DaySales: {
+                        //    type: 'number'
+                        //},
+                        //_31_60DaySales: {
+                        //    type: 'number'
+                        //},
+                        //_61_90DaySales: {
+                        //    type: 'number'
+                        //},
+                        //_91_120DaySales: {
+                        //    type: 'number'
+                        //},
+                        //_121_150DaySales: {
+                        //    type: 'number'
+                        //},
+                        //_151_180DaySales: {
+                        //    type: 'number'
+                        //},
+                        //LifetimeSales: {
+                        //    type: 'number'
+                        //},
+                        //FirstSaleDate: {
+                        //    type: 'date'
+                        //},
+                        //LastSaleDate: {
+                        //    type: 'date'
+                        //}
                     }
                 }
             })
@@ -609,7 +605,31 @@ const stockManagementViewModel = ({ } = {}) => {
             pageSize: 200,
             pageSizes: [10, 20, 50, 100, 200]
         },
-        excelExport: self.exportToExcel
+        excelExport: self.exportToExcel,
+        change: (e) => {
+            self.modalBusy(true);
+
+            self.openModal();
+
+            self.productDetail(e.sender.dataItem(e.sender.select()));
+
+            fetch("/api/stockManagement/fetchProductDetail", {
+                method: "POST",
+                headers: window.fetchHeaders,
+                body: JSON.stringify({
+                    productId: self.productId()
+                })
+            }).then(window.handleFetchResponse)
+                .then(data => {
+                    self.modalBusy(false);
+                    console.log("fetchProductDetail returned", data);
+                    //self.productDetail(data);
+                })
+                .catch(err => {
+                    self.modalBusy(false);
+                    window.catchFetchError(err);
+                });
+        }
     };
     //self.branchGroupParams = kendoMDCDropDownList({
     //    label: 'Branch Group',
@@ -888,7 +908,7 @@ const stockManagementViewModel = ({ } = {}) => {
                 }
             }
         },
-        idObservable: self.collectionCode,
+        idObservable: self.collectionId,
         objObservable: self.collection,
         enable: ko.observable(true),
         disable: ko.observable(false),
@@ -1206,8 +1226,12 @@ const stockManagementViewModel = ({ } = {}) => {
         }
     }
 
+    self.openModal = () => {
+        self.detailModal.show();
+    }
+
     self.closeModal = () => {
-        self.modal.hide();
+        self.detailModal.hide();
     }
 
     self.confirmModal = () => {
@@ -1358,6 +1382,12 @@ const stockManagementViewModel = ({ } = {}) => {
         //return self.productFilterGroupId() != null;
     }, self);
 
+    self.productId = ko.computed(() => {
+        if (self.productDetail()) {
+            return self.productDetail().ProductID;
+        }
+    }, self);
+
     //self.previousParameters = null;
 
     //self.parametersComputer = ko.computed(() => {
@@ -1369,7 +1399,7 @@ const stockManagementViewModel = ({ } = {}) => {
     //        brandId: self.brandId(),
     //        productColourId: self.productColourId(),
     //        stockLevelId: self.stockStatusId(),
-    //        collectionCode: self.collectionCode(),
+    //        collectionId: self.collectionId(),
     //        productFilterGroupId: self.productFilterGroupId(),
     //        productFilterId: self.productFilterId(),
     //        attributeIds: self.attributeIds(),

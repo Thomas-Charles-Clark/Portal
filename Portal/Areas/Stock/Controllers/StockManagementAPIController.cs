@@ -46,6 +46,14 @@ namespace Portal.Areas.Stock.Controllers
         }
 
         [HttpPost]
+        public async Task<IHttpActionResult> FetchProductDetail([FromBody]StockManagementProductDetailFetchDto objDto)
+        {
+            var results = await PortalDb.StockManagementProductDetail(objDto);
+
+            return Ok(results);
+        }
+
+        [HttpPost]
         public async Task<IHttpActionResult> SaveStockManagementChanges([FromBody]StockManagementSaveDto objDto)
         {
             //var results = await PortalDb.StockManagementBranchRangeSave(objDto);

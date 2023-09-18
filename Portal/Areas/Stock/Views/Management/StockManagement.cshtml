@@ -71,6 +71,36 @@
             <span data-bind="text: ProductID"></span>
         </td>
         <td>
+            <span data-bind="text: ProductCode"></span>
+        </td>
+        <td>
+            <span data-bind="text: ProductName"></span>
+        </td>
+        <td>
+            <span data-bind="text: SalesExplanation"></span>
+        </td>
+        <td>
+            <span data-bind="text: StockExplanation"></span>
+        </td>
+        <td>
+            <span data-bind="text: CoverExplanation"></span>
+        </td>
+        <td class="text-center">
+            <span class="material-icons" data-bind="text: Purchasable ? 'check' : ''"></span>
+        </td>
+        <td>
+            <span data-bind="text: PurchaseInstruction"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: PurchasePriority"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: formatNumber(RecommendedPurchaseQuantity, 2, 'en-GB')"></span>
+        </td>
+        <td>
+            <span data-bind="text: renderDate(RecommendedPurchaseDate)"></span>
+        </td>
+        @*<td>
             <span data-bind="text: StatusGroup ? StatusGroup.Name : null"></span>
         </td>
         <td class="text-center">
@@ -114,7 +144,7 @@
         </td>
         <td class="text-end">
             <span data-bind="text: LastSaleDate ? renderDate(LastSaleDate) : null"></span>
-        </td>
+        </td>*@
     </tr>
 </script>
 
@@ -154,13 +184,13 @@
         <div id="stock-level-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: stockLevelParams }"></div>
         <div id="collection-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: collectionParams }"></div>
     </div>
-    <div class="prefilters" style="display: none;" data-bind="visible: secondaryFiltersVisible">
+    @*<div class="prefilters" style="display: none;" data-bind="visible: secondaryFiltersVisible">
         <div id="attribute-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: attributeGroupParams }"></div>
         <label style="display: none;" class="flex-grow-0" data-bind="visible: attributeGroup">
             equals/contains
         </label>
         <div id="attribute-prefilter" data-bind="visible: attributeGroup, component: { name: 'mdc-kendo-multiselect-component', params: attributesParams }"></div>
-    </div>
+    </div>*@
     @*<div class="prefilters">
         <button class="btn btn-success" data-bind="click: saveChanges">
             Save
@@ -213,7 +243,7 @@
     <div class="mt-3" data-bind="kendoGrid: gridSettings"></div>
 </div>
 
-<div id="-modal" class="modal fade" data-backdrop="static" data-keyboard="false" data-bind="">
+<div id="detail-modal" class="modal fade" data-backdrop="static" data-keyboard="false" data-bind="">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="blocker" data-bind="flexVisible: modalBusy, toggleOpacity: modalBusy">
@@ -223,14 +253,12 @@
                 </h4>
             </div>
             <div class="modal-header grey-blue">
-                <button type="button" class="close" aria-label="Close" data-bind="click: closeModal">
-                    <span aria-hidden="true">
-                        &times;
-                    </span>
-                </button>
                 <h4 class="modal-title">
-                    Modal
+                    <span data-bind="with: productDetail">
+                        <span data-bind="text: ProductName"></span>
+                    </span>
                 </h4>
+                <button type="button" class="btn-close btn-close-white" aria-label="Close" data-bind="click: closeModal"></button>
             </div>
             <div class="modal-body">
 

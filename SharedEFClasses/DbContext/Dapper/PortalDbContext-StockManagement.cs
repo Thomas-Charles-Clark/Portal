@@ -20,17 +20,17 @@ namespace SharedEFClasses.Models
     {
         public async Task<StockManagementProductSearchResponse> StockManagementProductSearch(StockManagementProductFetchDto dto)
         {
-            var attributeIds = new DataTable();
+            //var attributeIds = new DataTable();
 
-            attributeIds.Columns.Add("AttributeID");
+            //attributeIds.Columns.Add("AttributeID");
 
-            if (dto.AttributeIDs != null)
-            {
-                foreach (var a in dto.AttributeIDs)
-                {
-                    attributeIds.Rows.Add(a);
-                }
-            }
+            //if (dto.AttributeIDs != null)
+            //{
+            //    foreach (var a in dto.AttributeIDs)
+            //    {
+            //        attributeIds.Rows.Add(a);
+            //    }
+            //}
 
             var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[StockManagement_ProductSearch]", new
             {
@@ -41,8 +41,8 @@ namespace SharedEFClasses.Models
                 dto.BrandID,
                 dto.ProductColourID,
                 dto.StockStatusID,
-                dto.CollectionCode,
-                AttributeIDs = attributeIds.AsTableValuedParameter("AttributeIDsTableType"),
+                dto.CollectionID,
+                //AttributeIDs = attributeIds.AsTableValuedParameter("AttributeIDsTableType"),
                 dto.ProductFilterGroupID,
                 dto.ProductFilterID
             }, null, null, CommandType.StoredProcedure);
@@ -53,6 +53,18 @@ namespace SharedEFClasses.Models
             };
         }
 
+        public async Task<StockManagementProductDetailResponse> StockManagementProductDetail(StockManagementProductDetailFetchDto dto)
+        {
+            var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[StockManagement_ProductDetail]", new
+            {
+                dto.ProductID
+            }, null, null, CommandType.StoredProcedure);
+
+            return new StockManagementProductDetailResponse()
+            {
+                Results = reply.Read<StockManagementProductDetailRecord>()
+            };
+        }
         public async Task<bool> StockManagementBranchRangeSave(StockManagementBranchRangeSaveDto dto)
         {
             var products = new DataTable();
