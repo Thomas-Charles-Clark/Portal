@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 using Kendo.Mvc.UI;
 using Kendo.Mvc.Extensions;
 using System.Web.Http.ModelBinding;
+using Portal.Areas.Stock.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Portal.Areas.Stock.Controllers
 {
@@ -51,6 +54,53 @@ namespace Portal.Areas.Stock.Controllers
             var results = await PortalDb.StockManagementProductDetail(objDto);
 
             return Ok(results);
+
+            //return Ok(new { });
+        }
+
+        [HttpGet]
+        public async Task<SalesHistoryDataSourceResult> FetchSalesHistorySummaryGrid(
+            [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request, 
+            [FromUri] StockManagementProductDetailFetchDto objDto)
+        {
+            var r = await PortalDb.StockManagementProductSalesHistorySummary(objDto);
+
+            var queryableResults = JsonConvert.DeserializeObject<IEnumerable<object>>(r.Data ?? "[]").AsQueryable();
+
+            return new SalesHistoryDataSourceResult(
+                queryableResults.ToDataSourceResult(request),
+                r.Schema, 
+                r.Columns);
+        }
+
+        [HttpGet]
+        public async Task<SalesHistoryDataSourceResult> FetchSalesHistoryDetailGrid(
+            [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+            [FromUri] StockManagementProductDetailFetchDto objDto)
+        {
+            var r = await PortalDb.StockManagementProductSalesHistoryDetail(objDto);
+
+            var queryableResults = JsonConvert.DeserializeObject<IEnumerable<object>>(r.Data ?? "[]").AsQueryable();
+
+            return new SalesHistoryDataSourceResult(
+                queryableResults.ToDataSourceResult(request),
+                r.Schema,
+                r.Columns);
+        }
+
+        [HttpGet]
+        public async Task<SalesHistoryDataSourceResult> FetchOrderBook(
+            [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+            [FromUri] StockManagementProductDetailFetchDto objDto)
+        {
+            var r = await PortalDb.StockManagementProductOrderBook(objDto);
+
+            var queryableResults = JsonConvert.DeserializeObject<IEnumerable<object>>(r.Data ?? "[]").AsQueryable();
+
+            return new SalesHistoryDataSourceResult(
+                queryableResults.ToDataSourceResult(request),
+                r.Schema,
+                r.Columns);
         }
 
         [HttpPost]

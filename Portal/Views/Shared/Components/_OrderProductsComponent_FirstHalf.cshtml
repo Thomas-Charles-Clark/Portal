@@ -320,13 +320,13 @@
             <div class="fulfilment-container">
                 <div class="quantity-control input-group pull-right" style="margin-bottom: 15px;">
                     <div class="input-group-btn">
-                        <button class="btn btn-default" data-bind="click: function (data) { if ($parent.quantity() > 0) { $parent.quantity(+$parent.quantity() - 1); } }">
+                        <button class="btn btn-default" data-bind="click: function (data) { if ($parent.quantity() >= $parent.productFilterOptions().QuantityIncrement) { $parent.quantity(+$parent.quantity() - $parent.productFilterOptions().QuantityIncrement); } }">
                             &minus;
                         </button>
                     </div>
-                    <input type="number" step="1" min="0" class="form-control" data-bind="keepElement: $parent.quantity, numeric, forceZeroOnEmpty: $parent.quantity, value: $parent.quantity, hasfocus: $parent.quantityHasFocus, attr: { step: $parent.productFilterOptions().QuantityPrecision }" />
+                    <input type="number" step="1" min="0" class="form-control" data-bind="keepElement: $parent.quantity, numeric, forceZeroOnEmpty: $parent.quantity, value: $parent.quantity, hasfocus: $parent.quantityHasFocus, attr: { min: $parent.productFilterOptions().QuantityMinimum, step: $parent.productFilterOptions().QuantityIncrement }" />
                     <span class="input-group-btn">
-                        <button class="btn btn-default" data-bind="click: function(data) { $parent.quantity(+$parent.quantity() + 1); }">
+                        <button class="btn btn-default" data-bind="click: function(data) { $parent.quantity(+$parent.quantity() + $parent.productFilterOptions().QuantityIncrement); }">
                             +
                         </button>
                     </span>

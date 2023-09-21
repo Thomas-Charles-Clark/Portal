@@ -4216,13 +4216,13 @@
             <div class="modal-body">
                 <div class="quantity-control input-group pull-right" style="margin-bottom: 0; margin-left: 15px;">
                     <div class="input-group-btn">
-                        <button class="btn btn-default" data-bind="click: function (data) { if (quantity() > 0) { quantity(+quantity() - 1); } }">
+                        <button class="btn btn-default" data-bind="click: function (data) { if (quantity() >= productFilterOptions().QuantityIncrement) { quantity(+quantity() - productFilterOptions().QuantityIncrement); } }">
                             &minus;
                         </button>
                     </div>
-                    <input type="number" step="1" min="0" class="form-control" data-bind="keepElement: quantity, numeric, forceZeroOnEmpty: quantity, value: quantity, hasfocus: quantityHasFocus, attr: { step: productFilterOptions().QuantityPrecision }" />
+                    <input type="number" step="1" min="0" class="form-control" data-bind="keepElement: quantity, numeric, forceZeroOnEmpty: quantity, value: quantity, hasfocus: quantityHasFocus, attr: { min: productFilterOptions().QuantityMinimum, step: productFilterOptions().QuantityIncrement }" />
                     <span class="input-group-btn">
-                        <button class="btn btn-default" data-bind="click: function(data) { quantity(+quantity() + 1); }">
+                        <button class="btn btn-default" data-bind="click: function(data) { quantity(+quantity() + productFilterOptions().QuantityIncrement); }">
                             +
                         </button>
                     </span>

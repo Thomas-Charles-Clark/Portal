@@ -289,4 +289,27 @@
     background-position: 100% 100%;
   }
 }
+#detail-modal .owl-carousel {
+  position: relative;
+}
+#detail-modal p {
+  margin-top: 15px;
+  margin-bottom: 0;
+}
+#detail-modal .order-products-carousel .owl-item img {
+  border: 1px solid #ccc;
+}
+#detail-modal .modal-body {
+  background-color: whitesmoke;
+}
+#detail-modal .modal-body .tab-content {
+  position: static;
+  padding: 1rem;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-top: 0;
+}
+#detail-modal .modal-body .tab-content .blocker {
+  position: absolute;
+}
 /*# sourceMappingURL=stock-management.css.map */

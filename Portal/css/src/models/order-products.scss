@@ -7607,7 +7607,34 @@ a.supplier-link {
 
         .mdc-validating-field {
             background-color: white;
-            width: 400px;
+            width: 540px;
+        }
+
+        #order-search-trade-account {
+            .mdc-validating-field {
+                width: 200px;
+            }
+
+            .k-animation-container {
+                width: 400px !important;
+                .k-list-container {
+                    width: 100% !important;
+                }
+            }
+
+            .k-virtual-wrap {
+                .k-virtual-content {
+                    width: auto;
+                    min-height: 170px;
+                }
+
+                ul {
+                    li {
+                        width: 400px;
+                        line-height: 34px;
+                    }
+                }
+            }
         }
     }
 }

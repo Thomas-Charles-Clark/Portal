@@ -402,8 +402,9 @@ namespace SharedEFClasses.Models.Products
 
     public class PassFetchProductStockInfo
     {
-        public int TradeAccountID { get; set; }
+        public int? TradeAccountID { get; set; }
         public List<int> ProductIDs { get; set; }
+        public string EnquiryType { get; set; } = "P";
     }
 
     public class PassFetchProductStockInfoSingular
@@ -574,6 +575,7 @@ namespace SharedEFClasses.Models.Products
         public bool Seasonal { get; set; }
         public byte QuantityPrecision { get; set; }
         public decimal QuantityMinimum { get; set; }
+        public decimal QuantityIncrement { get; set; }
         public bool AddAll { get; set; }
 
         public bool ShowStockFilter { get; set; }

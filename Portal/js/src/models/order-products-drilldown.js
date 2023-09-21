@@ -4601,7 +4601,7 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
         });
     }
 
-    self.fetchStockInfo = function () {
+    self.fetchStockInfo = function (enquiryType = "P") {
         // hmmm... under what condition should we call outerReject here? if NO stock info is returned?
         return new Promise(function (resolve, reject) {
             self.stockInfoBusy(true);
@@ -4627,7 +4627,8 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
             if (productIds.length) {
                 var data = {
                     tradeAccountId: self.tradeAccount.TradeAccountID,
-                    productIds: productIds
+                    productIds: productIds,
+                    enquiryType: enquiryType
                 }
                 console.log('orderProductsDrilldown fetchStockInfo calling with', data);
                 $.ajax({
@@ -4817,6 +4818,24 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
                 self.stockInfoBusy(false);
                 resolve();
             }
+        });
+    }
+
+    self.fetchSalesInfo = function () {
+        return new Promise((resolve, reject) => {
+
+            console.warn("fetchSalesInfo - not yet implemented")
+            resolve();
+
+        });
+    }
+
+    self.fetchOrderBookInfo = function () {
+        return new Promise((resolve, reject) => {
+
+            console.warn("fetchOrderBookInfo - not yet implemented")
+            resolve();
+
         });
     }
 

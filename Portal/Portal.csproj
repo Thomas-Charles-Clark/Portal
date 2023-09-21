@@ -591,6 +591,7 @@
     <Compile Include="Areas\Retail\ViewModels\RetailStoreMembersViewModel.cs" />
     <Compile Include="Areas\Stock\Controllers\StockManagementAPIController.cs" />
     <Compile Include="Areas\Stock\Controllers\StockManagementController.cs" />
+    <Compile Include="Areas\Stock\Models\SalesHistoryDataSourceResult.cs" />
     <Compile Include="Areas\Stock\ViewModels\StockManagementViewModel.cs" />
     <Compile Include="Controllers\ODataControllers\AttributesController.cs" />
     <Compile Include="Controllers\ODataControllers\AttributeGroupsController.cs" />
@@ -2724,6 +2725,7 @@
     <Content Include="Views\Shared\_Layout-New.cshtml" />
     <Content Include="Views\Shared\Components\_GenericFormsTemplates.cshtml" />
     <Content Include="Views\Shared\Components\_MenuNotifications.cshtml" />
+    <Content Include="Views\Shared\Modals\_ImageModalNew.cshtml" />
     <None Include="Web References\EU_EORI_Lookup\validation.wsdl" />
     <None Include="Web References\EU_EORI_Lookup\validation.xsd">
       <SubType>Designer</SubType>
@@ -2872,7 +2874,6 @@
     <Folder Include="Areas\Pricing\Views\Shared\" />
     <Folder Include="Areas\Products\Models\" />
     <Folder Include="Areas\Retail\Views\Shared\" />
-    <Folder Include="Areas\Stock\Models\" />
     <Folder Include="edge\x64\" />
     <Folder Include="edge\x86\" />
     <Folder Include="FileUploads\" />

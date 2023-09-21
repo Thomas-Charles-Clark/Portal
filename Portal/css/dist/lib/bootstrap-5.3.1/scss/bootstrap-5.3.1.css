@@ -8292,13 +8292,70 @@ textarea.form-control-lg {
 }
 @media (min-width: 992px) {
   .modal-lg,
-.modal-xl {
+.modal-xl,
+.modal-xxl,
+.modal-xxxl,
+.modal-xxxxl,
+.modal-l,
+.modal-lx,
+.modal-lxx {
     --bs-modal-width: 800px;
   }
 }
 @media (min-width: 1200px) {
-  .modal-xl {
+  .modal-xl,
+.modal-xxl,
+.modal-xxxl,
+.modal-xxxxl,
+.modal-l,
+.modal-lx,
+.modal-lxx {
     --bs-modal-width: 1140px;
+  }
+}
+@media (min-width: 1400px) {
+  .modal-xxl,
+.modal-xxxl,
+.modal-xxxxl,
+.modal-l,
+.modal-lx,
+.modal-lxx {
+    --bs-modal-width: 1360px;
+  }
+}
+@media (min-width: 1600px) {
+  .modal-xxxl,
+.modal-xxxxl,
+.modal-l,
+.modal-lx,
+.modal-lxx {
+    --bs-modal-width: 1580px;
+  }
+}
+@media (min-width: 1800px) {
+  .modal-xxxxl,
+.modal-l,
+.modal-lx,
+.modal-lxx {
+    --bs-modal-width: 1780px;
+  }
+}
+@media (min-width: 2000px) {
+  .modal-l,
+.modal-lx,
+.modal-lxx {
+    --bs-modal-width: 1920px;
+  }
+}
+@media (min-width: 2200px) {
+  .modal-lx,
+.modal-lxx {
+    --bs-modal-width: 2120px;
+  }
+}
+@media (min-width: 2400px) {
+  .modal-lxx {
+    --bs-modal-width: 2320px;
   }
 }
 .modal-fullscreen {

@@ -641,6 +641,7 @@ namespace SharedEFClasses.Models
                 new SqlParameter("@MemberID", objSearch.memberId ?? (object)DBNull.Value),
                 new SqlParameter("@MarketCode", objSearch.marketCode ?? (object)DBNull.Value),
                 new SqlParameter("@TradeAccountCode", objSearch.tradeAccountCode ?? (object)DBNull.Value),
+                new SqlParameter("@TradeAccountID", objSearch.tradeAccountId ?? (object)DBNull.Value),
                 new SqlParameter("@SearchTerm", objSearch.searchTerm ?? (object)DBNull.Value)
             };
 

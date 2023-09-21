@@ -1,9 +1,10 @@
 ﻿const
     TAB_PRELAUNCH = 0,
     TAB_CURRENT = 1,
-    TAB_LIMITED = 2,
-    TAB_CLEARANCE = 3,
-    TAB_DISCONTINUED = 4
+    TAB_PRELIMITED = 2,
+    TAB_LIMITED = 3,
+    TAB_CLEARANCE = 4,
+    TAB_DISCONTINUED = 5
 
 const
     SORT_QUANTITY_ASC = 0,
@@ -14,9 +15,10 @@ const
 const
     SG_PRELAUNCH = -1,
     SG_CURRENT = 1,
-    SG_LIMITED = 2,
-    SG_CLEARANCE = 3,
-    SG_DISCONTINUED = 4 
+    SG_PRELIMITED = 2,
+    SG_LIMITED = 3,
+    SG_CLEARANCE = 4,
+    SG_DISCONTINUED = 5
 
 const stockManagementViewModel = ({ } = {}) => {
     let self = {};
@@ -31,6 +33,8 @@ const stockManagementViewModel = ({ } = {}) => {
 
     self.currentBusy = ko.observable(true);
 
+    self.preLimitedBusy = ko.observable(false);
+
     self.limitedBusy = ko.observable(false);
 
     self.clearanceBusy = ko.observable(false);
@@ -38,6 +42,10 @@ const stockManagementViewModel = ({ } = {}) => {
     self.discontinuedBusy = ko.observable(false);
 
     self.modalBusy = ko.observable(false);
+
+    self.salesBusy = ko.observable(false);
+
+    self.orderBookBusy = ko.observable(false);
 
     self.detailModalElement = document.getElementById('detail-modal');
 
@@ -73,7 +81,7 @@ const stockManagementViewModel = ({ } = {}) => {
     self.brandId = ko.observable(''); // if you don't initialise to '' you'll find that opening and immediately dismissing the associated dropdown
 
     self.brand = ko.observable();
-    
+
     self.productColourId = ko.observable(''); // causes the underlying value to be switched to '', which fires the subscription which fires the search
 
     self.productColour = ko.observable();
@@ -120,6 +128,12 @@ const stockManagementViewModel = ({ } = {}) => {
 
     self.productDetail = ko.observable();
 
+    self.productImages = ko.observableArray([]);
+
+    self.largeImageProduct = ko.observable();
+
+    self.largeImageId = ko.observable();
+
     //#endregion
 
     //#region sorting
@@ -154,10 +168,28 @@ const stockManagementViewModel = ({ } = {}) => {
         });
     }, self.intersectionObserverOptions);
 
+    self.completeProductFilterSet = ko.observable([]);
+
+    self.orderReference = {
+        observable: ko.observable()
+    };
+
+    self.allFulfilmentOptions = ko.observableArray([]);
+
+    self.searchWidgetValue = ko.observable();
+
+    self.tradeAccount = ko.observable({
+        TradeAccountID: null // intentional see portal.Stock_Select
+    });
+
     //#endregion
 
 
     //#region Components
+
+    self.orderProductsDrilldown = new orderProductsDrilldownViewModel(self, "");
+
+    self.orderProductsDrilldown.tradeAccount = self.tradeAccount();
 
     self.genericUnsavedChangesSelect = (e) => {
         e.preventDefault(); // this prevents the Kendo control from actively selecting the thing the user selected
@@ -383,7 +415,8 @@ const stockManagementViewModel = ({ } = {}) => {
             title: "Product ID",
             headerAttributes: {
                 class: "text-end"
-            }
+            },
+            hidden: true
         }, {
             field: "ProductCode",
             title: "Code"
@@ -401,14 +434,15 @@ const stockManagementViewModel = ({ } = {}) => {
             title: "Cover Explanation"
         }, {
             field: "Purchasable",
-            title: "Purchasable"
+            title: "Purchasable",
+            hidden: true
         }, {
             field: "PurchaseInstruction",
             title: "Purchase Instruction"
         }, {
             field: "PurchasePriority",
             title: "Priority",
-            headerAttrbiutes: {
+            headerAttributes: {
                 class: "text-end"
             }
         }, {
@@ -420,6 +454,9 @@ const stockManagementViewModel = ({ } = {}) => {
         }, {
             field: "RecommendedPurchaseDate",
             title: "Recommended Purchase Date"
+        }, {
+            field: 'ACTIONS',
+            title: ' '
         }],
         data: new kendo.data.DataSource({
             transport: {
@@ -607,28 +644,9 @@ const stockManagementViewModel = ({ } = {}) => {
         },
         excelExport: self.exportToExcel,
         change: (e) => {
-            self.modalBusy(true);
+            //self.modalBusy(true);
 
-            self.openModal();
-
-            self.productDetail(e.sender.dataItem(e.sender.select()));
-
-            fetch("/api/stockManagement/fetchProductDetail", {
-                method: "POST",
-                headers: window.fetchHeaders,
-                body: JSON.stringify({
-                    productId: self.productId()
-                })
-            }).then(window.handleFetchResponse)
-                .then(data => {
-                    self.modalBusy(false);
-                    console.log("fetchProductDetail returned", data);
-                    //self.productDetail(data);
-                })
-                .catch(err => {
-                    self.modalBusy(false);
-                    window.catchFetchError(err);
-                });
+            self.openModal(e);
         }
     };
     //self.branchGroupParams = kendoMDCDropDownList({
@@ -655,8 +673,8 @@ const stockManagementViewModel = ({ } = {}) => {
     //                }
     //            });
     //          } else {
-        //    options.success();
-        //}
+    //    options.success();
+    //}
     //        }
     //    },
     //    idObservable: self.branchGroupId,
@@ -701,8 +719,8 @@ const stockManagementViewModel = ({ } = {}) => {
     //                }
     //            });
     //          } else {
-//    options.success();
-//}
+    //    options.success();
+    //}
     //        }
     //    },
     //    idObservable: self.branchId,
@@ -961,7 +979,7 @@ const stockManagementViewModel = ({ } = {}) => {
             valueMapper: function (options) {
                 if (options.value) {
                     $.ajax({
-                        url: `/odata/Attributes/Default.AttributeValueMapper(attributeId=${options.value })`,
+                        url: `/odata/Attributes/Default.AttributeValueMapper(attributeId=${options.value})`,
                         type: 'GET',
                         success: function (data) {
                             options.success(data.value);
@@ -1163,6 +1181,361 @@ const stockManagementViewModel = ({ } = {}) => {
         },
     });
 
+    self.salesDataPageSize = 20;
+
+    self.salesDataSource = new kendo.data.DataSource({
+        transport: {
+            read: (options) => {
+
+                self.salesBusy(true);
+
+
+                var webapi = new kendo.data.transports.webapi({ prefix: "" });
+                var params = webapi.parameterMap(options.data);
+
+                var data = {};
+
+                data.productId = self.productId() || "null";
+
+                for (var propertyName in params) {
+                    data[propertyName] = params[propertyName];
+                }
+
+                let qs = new URLSearchParams(data);
+
+                console.log(qs);
+
+                fetch(`/api/stockManagement/FetchSalesHistorySummaryGrid?${qs.toString()}`, {
+                    method: 'GET',
+                    headers: window.fetchHeaders
+                })
+                    .then(window.handleFetchResponse)
+                    .then(data => {
+
+                        console.log("FetchSalesHistorySummaryGrid", data);
+
+
+                        ko.ignoreDependencies(() => {
+                            self.salesBusy(false);
+                        });
+
+                        let gridOptions = self.salesGridSettings.widget().getOptions();
+
+                        if (data.Schema != JSON.stringify(self.salesDataSourceSchema) ||
+                            data.Columns != JSON.stringify(self.salesGridColumns) ||
+                            self.salesDataPageSize != gridOptions.dataSource.pageSize) {
+
+
+                            self.salesDataSourceSchema = JSON.parse(data.Schema);
+
+                            self.salesGridColumns = JSON.parse(data.Columns);
+
+                            gridOptions.columns = self.salesGridColumns;
+
+                            gridOptions.dataSource.schema.model = self.salesDataSourceSchema;
+
+                            self.salesGridSettings.widget().setOptions(gridOptions);
+
+                            let chart = self.salesChartSettings.widget();
+
+                            chart.columns = self.salesGridColumns;
+
+                            chart.dataSource.pageSize(gridOptions.dataSource.pageSize);
+
+                            chart.dataSource.options.schema.model = self.salesDataSourceSchema;
+
+                            self.salesChartSettings.widget().setOptions({
+                                dataSource: chart.dataSource
+                            });
+
+                            self.salesDataPageSize = gridOptions.dataSource.pageSize;
+
+                        }
+
+                        let series = [];
+                        let categories = self.salesGridColumns.flatMap(c => {
+                            if (c.field.indexOf("_") === 0)
+                                return c.title;
+                            else
+                                return [];
+                        });
+
+                        console.log(categories);
+
+                        data.Data.forEach(d => {
+                            if (d.SeriesHidden === false) {
+                                let records = [];
+                                let seriesColour = null;
+                                Object.keys(d).forEach(k => {
+                                    if (k.indexOf("_") === 0) {
+                                        records.push(d[k]);
+                                    }
+                                    if (k === "SeriesColour") {
+                                        seriesColour = d[k];
+                                    }
+                                });
+                                series.push({
+                                    type: "line",
+                                    color: seriesColour,
+                                    data: records,
+                                    name: d.RowDescriptor,
+                                    tooltip: {
+                                        visible: true
+                                    }
+                                });
+                            }
+                        });
+
+                        self.salesChartSettings.widget().setOptions({
+                            series: series,
+                            categoryAxis: {
+                                min: 0,
+                                max: 19,
+                                categories: categories
+                            },
+                        });
+
+                        options.success(data);
+                    })
+                    .catch(window.catchFetchError);
+            }
+        },
+        page: 1,
+        pageSize: self.salesDataPageSize,
+        serverPaging: true,
+        serverSorting: true,
+        serverFiltering: true,
+        schema: $.extend({}, kendo.data.schemas.webapi, {
+            data: "Data",
+            total: "Total",
+            model: self.salesDataSourceSchema
+        })
+    });
+
+    self.salesGridSettings = {
+        autoBind: true,
+        widget: ko.observable(),
+        columns: self.salesGridColumns,
+        data: self.salesDataSource,
+        sortable: true,
+        filterable: {
+            extra: false
+        },
+        selectable: 'single',
+        reorderable: true,
+        pageable: {
+            pageSize: self.salesDataPageSize,
+            pageSizes: [10, 20, 50, 100, 200]
+        }
+    };
+
+    self.salesChartSettings = {
+        autoBind: false,
+        widget: ko.observable(),
+        dataSource: self.salesDataSource,
+        categoryAxis: {
+            min: 0,
+            max: 19
+        },
+        pannable: true,
+        legend: {
+            labels: {
+                background: "white",
+                color: "black"
+            }
+        }
+        //chartArea: {
+        //    width: 1080
+        //}
+    }
+
+    self.salesHistoryGridPageSize = 20;
+
+    self.salesHistoryDetailGridColumns = [];
+
+    self.salesHistoryDetailGridSchema = {}
+
+    self.salesHistoryDetailGridSettings = {
+        autoBind: true,
+        widget: ko.observable(),
+        columns: [],
+        data: new kendo.data.DataSource({
+            transport: {
+                read: (options) => {
+
+                    self.salesBusy(true);
+
+                    var webapi = new kendo.data.transports.webapi({ prefix: "" });
+                    var params = webapi.parameterMap(options.data);
+
+                    var data = {};
+
+                    data.productId = self.productId() || "null";
+
+                    for (var propertyName in params) {
+                        data[propertyName] = params[propertyName];
+                    }
+
+                    let qs = new URLSearchParams(data);
+
+                    console.log(qs);
+
+                    fetch(`/api/stockManagement/FetchSalesHistoryDetailGrid?${qs.toString()}`, {
+                        method: 'GET',
+                        headers: window.fetchHeaders
+                    })
+                        .then(window.handleFetchResponse)
+                        .then(data => {
+
+                            console.log("FetchSalesHistoryDetailGrid", data);
+
+                            ko.ignoreDependencies(() => {
+                                self.salesBusy(false);
+                            });
+
+                            let gridOptions = self.salesHistoryDetailGridSettings.widget().getOptions();
+
+                            if (data.Schema != JSON.stringify(self.salesHistoryDetailGridSchema) ||
+                                data.Columns != JSON.stringify(self.salesHistoryDetailGridColumns) ||
+                                self.salesHistoryGridPageSize != gridOptions.dataSource.pageSize) {
+
+                                self.salesHistoryDetailGridSchema = JSON.parse(data.Schema);
+
+                                self.salesHistoryDetailGridColumns = JSON.parse(data.Columns);
+
+                                gridOptions.columns = self.salesHistoryDetailGridColumns;
+
+                                self.salesHistoryGridPageSize = gridOptions.dataSource.pageSize;
+
+                                gridOptions.dataSource.schema.model = self.salesHistoryDetailGridSchema;
+
+                                self.salesHistoryDetailGridSettings.widget().setOptions(gridOptions);
+                            }
+
+                            options.success(data);
+                        })
+                        .catch(window.catchFetchError);
+                }
+            },
+            page: 1,
+            pageSize: self.salesHistoryGridPageSize,
+            serverPaging: true,
+            serverSorting: true,
+            serverFiltering: true,
+            schema: $.extend({}, kendo.data.schemas.webapi, {
+                data: "Data",
+                total: "Total",
+                model: self.salesHistoryDetailGridSchema
+            })
+            }),
+        sortable: true,
+        filterable: {
+            extra: false
+        },
+        selectable: 'single',
+        reorderable: true,
+        pageable: {
+            pageSize: self.salesHistoryGridPageSize,
+            pageSizes: [10, 20, 50, 100, 200]
+        }
+    };
+
+
+
+    self.orderBookDataPageSize = 20;
+
+    self.orderBookDataSource = new kendo.data.DataSource({
+        transport: {
+            read: (options) => {
+
+                self.salesBusy(true);
+
+
+                var webapi = new kendo.data.transports.webapi({ prefix: "" });
+                var params = webapi.parameterMap(options.data);
+
+                var data = {};
+
+                if (self.productId()) {
+                    data.productId = self.productId()
+                } 
+
+                for (var propertyName in params) {
+                    data[propertyName] = params[propertyName];
+                }
+
+                let qs = new URLSearchParams(data);
+
+                console.log(qs);
+
+                fetch(`/api/stockManagement/FetchOrderBook?${qs.toString()}`, {
+                    method: 'GET',
+                    headers: window.fetchHeaders
+                })
+                    .then(window.handleFetchResponse)
+                    .then(data => {
+
+                        console.log("FetchOrderBook", data);
+
+
+                        ko.ignoreDependencies(() => {
+                            self.orderBookBusy(false);
+                        });
+
+                        let gridOptions = self.orderBookGridSettings.widget().getOptions();
+
+                        if (data.Schema != JSON.stringify(self.orderBookDataSourceSchema) ||
+                            data.Columns != JSON.stringify(self.orderBookGridColumns) ||
+                            self.orderBookDataPageSize != gridOptions.dataSource.pageSize) {
+
+
+                            self.orderBookDataSourceSchema = JSON.parse(data.Schema);
+
+                            self.orderBookGridColumns = JSON.parse(data.Columns);
+
+                            gridOptions.columns = self.orderBookGridColumns;
+
+                            gridOptions.dataSource.schema.model = self.orderBookDataSourceSchema;
+
+                            self.orderBookGridSettings.widget().setOptions(gridOptions);
+
+                            self.orderBookDataPageSize = gridOptions.dataSource.pageSize;
+                        }
+
+                        options.success(data);
+                    })
+                    .catch(window.catchFetchError);
+            }
+        },
+        page: 1,
+        pageSize: self.orderBookDataPageSize,
+        serverPaging: true,
+        serverSorting: true,
+        serverFiltering: true,
+        schema: $.extend({}, kendo.data.schemas.webapi, {
+            data: "Data",
+            total: "Total",
+            model: self.orderBookDataSourceSchema
+        })
+    });
+
+    self.orderBookGridSettings = {
+        autoBind: true,
+        widget: ko.observable(),
+        columns: self.orderBookGridColumns,
+        data: self.orderBookDataSource,
+        sortable: true,
+        filterable: {
+            extra: false
+        },
+        selectable: 'single',
+        reorderable: true,
+        pageable: {
+            pageSize: self.orderBookDataPageSize,
+            pageSizes: [10, 20, 50, 100, 200]
+        }
+    };
+
     //#endregion
 
 
@@ -1182,6 +1555,113 @@ const stockManagementViewModel = ({ } = {}) => {
 
     //#region Methods
 
+    //self.fetchImages = () => {
+    //    return new Promise((resolve, reject) => {
+
+    //        self.productImages([]);
+
+    //        fetch("/api/componentapi/fetchProductPageImages", {
+    //            method: "POST",
+    //            headers: window.fetchHeaders,
+    //            body: JSON.stringify({
+    //                productId: self.productId()
+    //            })
+    //        }).then(window.handleFetchResponse)
+    //            .then(data => {
+    //                self.productImages(data);
+
+    //                let visibleImageCount = 4;
+
+    //                $(self.productImages.DOMElement).show();
+
+    //                if (self.productImages.tinySlider) {
+    //                    self.productImages.tinySlider.destroy();
+    //                    delete self.productImages.tinySlider;
+    //                }
+
+    //                self.productImages.tinySlider = tns({
+    //                    container: $(self.productImages.DOMElement).children('.order-products-carousel')[0], //'#large-image-carousel',
+    //                    controlsText: ['<i class="material-icons">keyboard_arrow_left</i>', '<i class="material-icons">keyboard_arrow_right</i>'],
+    //                    gutter: 10,
+    //                    loop: false,
+    //                    nav: false,
+    //                    mouseDrag: true,
+    //                    items: visibleImageCount
+    //                });
+
+    //                if (self.productImages().length > visibleImageCount) {
+    //                    $(self.productImages.DOMElement).find('.tns-outer').addClass('controls-padded');
+    //                }
+
+    //                resolve();
+    //            })
+    //            .catch(err => {
+    //                window.catchFetchError(err);
+    //                reject();
+    //            });
+
+    //    });
+    //}
+
+    self.loadLargeImage = function (result) {
+
+        self.largeImageProduct(self.productDetail());
+
+        // this needs to change when you swipe...
+        self.largeImageId(result.ImageID);
+
+        $('#large-image-container').html('');
+
+        var imagesHtml = '';
+
+        var startIndex = 0;
+
+        ko.utils.arrayForEach(self.productImages(), function (item, index) {
+            if (item.ImageID == result.ImageID) {
+                startIndex = index;
+            }
+            imagesHtml += '<img data-image-id="' + item.ImageID + '" src="https://www.designersguild.com/image/1024/' + item.ImageID + '" />';
+        });
+
+
+        $('#large-image-container').html('<div id="large-image-carousel">' + imagesHtml + '</div>');
+
+        $('#large-image-title').text(self.largeImageProduct().ProductCode + ' - ' + (self.largeImageProduct().ProductName));
+
+        $('.largeimage-nav').empty();
+
+        $('#large-image-wrapper').hide();
+
+        if ($('#large-image-carousel').data('owl.carousel')) {
+            $('#large-image-carousel').data('owl.carousel').destroy();
+            $('#large-image-carousel .owl-stage').empty();
+        }
+
+        window.setTimeout(function () {
+
+            tns({
+                container: '#large-image-carousel',
+                navContainer: '.largeimage-nav',
+                controlsText: ['<i class="material-icons">keyboard_arrow_left</i>', '<i class="material-icons">keyboard_arrow_right</i>'],
+                gutter: 10,
+                loop: false,
+                nav: false,
+                mouseDrag: true,
+                startIndex: startIndex
+            });
+
+            $('#large-image-carousel').closest('.tns-outer').addClass('controls-padded');
+
+            $("#image-modal").modal('show');
+
+            $('#large-image-wrapper').show();
+
+        }, 0);
+
+        $('#large-image-container').show();
+
+    }
+
     self.setBusy = () => {
         switch (self.statusGroupId()) {
             case TAB_PRELAUNCH:
@@ -1190,7 +1670,10 @@ const stockManagementViewModel = ({ } = {}) => {
             case TAB_CURRENT:
                 self.currentBusy(true);
                 break;
-            case TAB_LIMITED:
+            case TAB_PRELIMITED:
+                self.preLimitedBusy(true);
+                break;
+            case LIMITED:
                 self.limitedBusy(true);
                 break;
             case TAB_CLEARANCE:
@@ -1212,7 +1695,10 @@ const stockManagementViewModel = ({ } = {}) => {
             case TAB_CURRENT:
                 self.currentBusy(false);
                 break;
-            case TAB_LIMITED:
+            case TAB_PRELIMITED:
+                self.preLimitedBusy(false);
+                break;
+            case LIMITED:
                 self.limitedBusy(false);
                 break;
             case TAB_CLEARANCE:
@@ -1226,8 +1712,70 @@ const stockManagementViewModel = ({ } = {}) => {
         }
     }
 
-    self.openModal = () => {
-        self.detailModal.show();
+    self.openModal = async (e) => {
+
+        self.productImages([]);
+
+        self.productDetail(e.sender.dataItem(e.sender.select()));
+
+        self.orderProductsDrilldown.products([Object.assign(new searchResult(self.productDetail(), self, null), {
+            supplierAvailabilityMessage: ko.observable(),
+            stockInfo: ko.observable()
+        })])
+
+        //let promises = [];
+
+        //promises.push(self.fetchImages());
+
+        //await Promise.allSettled(promises);
+
+        self.orderProductsDrilldown.fetchStockInfo("S");
+
+        self.orderBookGridSettings.widget().dataSource.read();
+
+        fetch("/api/stockManagement/fetchProductDetail", {
+            method: "POST",
+            headers: window.fetchHeaders,
+            body: JSON.stringify({
+                productId: self.productId()
+            })
+        }).then(window.handleFetchResponse)
+            .then(async (data) => {
+                console.log("fetchProductDetail returned", data);
+
+                self.productImages(data.Images);
+
+                let visibleImageCount = 4;
+
+                $(self.productImages.DOMElement).show();
+
+                if (self.productImages.tinySlider) {
+                    self.productImages.tinySlider.destroy();
+                    delete self.productImages.tinySlider;
+                }
+
+                self.productImages.tinySlider = tns({
+                    container: $(self.productImages.DOMElement).children('.order-products-carousel')[0], //'#large-image-carousel',
+                    controlsText: ['<i class="material-icons">keyboard_arrow_left</i>', '<i class="material-icons">keyboard_arrow_right</i>'],
+                    gutter: 10,
+                    loop: false,
+                    nav: false,
+                    mouseDrag: true,
+                    items: visibleImageCount
+                });
+
+                if (self.productImages().length > visibleImageCount) {
+                    $(self.productImages.DOMElement).find('.tns-outer').addClass('controls-padded');
+                }
+
+                self.detailModal.show();
+
+                //await self.orderProductsDrilldown.fetchOrderBookInfo("S");
+            })
+            .catch(err => {
+                //self.modalBusy(false);
+                window.catchFetchError(err);
+            });
     }
 
     self.closeModal = () => {
@@ -1545,16 +2093,34 @@ const stockManagementViewModel = ({ } = {}) => {
     });
 
     document.getElementById("limited-tab-anchor").addEventListener('show.bs.tab', () => {
-        self.statusGroupId(TAB_LIMITED);
+        self.statusGroupId(TAB_PRELIMITED);
     });
 
     document.getElementById("clearance-tab-anchor").addEventListener('show.bs.tab', () => {
-        self.statusGroupId(TAB_CLEARANCE);
+        self.statusGroupId(TAB_LIMITED);
     });
 
     document.getElementById("discontinued-tab-anchor").addEventListener('show.bs.tab', () => {
-        self.statusGroupId(TAB_DISCONTINUED);
+        self.statusGroupId(TAB_CLEARANCE);
     });
+
+    //
+
+    document.getElementById("sales-tab-anchor").addEventListener("show.bs.tab", () => {
+        self.salesGridSettings.widget().dataSource.read();
+    });
+
+    document.getElementById("order-book-tab-anchor").addEventListener("show.bs.tab", () => {
+        self.orderBookGridSettings.widget().dataSource.read();
+    });
+
+    self.detailModalElement.addEventListener("shown.bs.modal", () => {
+        window.setTimeout(() => {
+            console.log('detail-modal shown, resizing chart...');
+            self.salesChartSettings.widget().resize();
+            self.salesChartSettings.widget().redraw();
+        }, 0);
+    })
 
     window.addEventListener("onbeforeunload", (event) => {
         self.checkUnsavedChangesThenSelect = async (event) => {
@@ -1563,6 +2129,20 @@ const stockManagementViewModel = ({ } = {}) => {
             }).catch((e) => { });
         }
     });
+
+    self.windowResizeTimeout = 100; //ms
+
+    self.windowResizedCallback = () => {
+        // Haven't resized in self.resizeTimeout ms!
+        self.salesChartSettings.widget().resize();
+    }
+
+    self.onWindowResize = function () {
+        window.clearTimeout(self.resizeCounter);
+        self.resizeCounter = window.setTimeout(self.windowResizedCallback, self.windowResizeTimeout);
+    };
+
+    window.addEventListener("resize", self.onWindowResize);
 
     //#endregion
 

@@ -2595,6 +2595,7 @@ namespace SharedEFClasses.Models.Orders
         public int? memberId { get; set; }
         public string marketCode { get; set; }
         public string tradeAccountCode { get; set; }
+        public int? tradeAccountId { get; set; }
         public string searchTerm { get; set; }
     }
 

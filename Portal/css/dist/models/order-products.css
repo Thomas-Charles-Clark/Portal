@@ -5591,7 +5591,24 @@ a.supplier-link {
 }
 #tab-submitted .flex-container .mdc-validating-field {
   background-color: white;
+  width: 540px;
+}
+#tab-submitted .flex-container #order-search-trade-account .mdc-validating-field {
+  width: 200px;
+}
+#tab-submitted .flex-container #order-search-trade-account .k-animation-container {
+  width: 400px !important;
+}
+#tab-submitted .flex-container #order-search-trade-account .k-animation-container .k-list-container {
+  width: 100% !important;
+}
+#tab-submitted .flex-container #order-search-trade-account .k-virtual-wrap .k-virtual-content {
+  width: auto;
+  min-height: 170px;
+}
+#tab-submitted .flex-container #order-search-trade-account .k-virtual-wrap ul li {
   width: 400px;
+  line-height: 34px;
 }
 
 .just-my-order {

@@ -16515,6 +16515,102 @@ var memberBasketFetcher = function (parent) {
         }
     };
 
+    self.submittedOrderTradeAccountId = ko.observable();
+
+    self.submittedOrderTradeAccountId.subscribe(nv => {
+        self.submittedOrderSearch();
+    });
+
+    self.submittedOrderTradeAccountParams = kendoMDCDropDownList({
+        optionLabelTemplate: null,
+        optionLabel: null,
+        label: 'Trade Account',
+        odata: true,
+        endPoint: '/odata/TradeAccounts',
+        textField: 'Name',
+        valueField: 'TradeAccountID',
+        template: (r) => `${r.Code} - ${r.Name}`,
+        idObservable: self.submittedOrderTradeAccountId,
+        objObservable: ko.observable(),
+        virtual: true,
+        pageSize: 40,
+        widget: ko.observable(),
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/TradeAccounts/Default.TradeAccountValueMapper(tradeAccountId=${options.value})`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                            if (data.value.length == 1) {
+                                self.submittedOrderTradeAccountParams.dropDownListSettings.dataItem(data.value[0]);
+                            }
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        showClear: true,
+        //clearFunction: function () {
+        //    self.submittedOrderTradeAccountId(undefined);
+        //},
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertable: ko.observable(false),
+        readOnly: false,
+        filter: 'startswith',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'Code'
+        },
+        popupSettings: {
+            appendTo: $('#order-search-trade-account')
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+
+            d.$count = true;
+
+            if (data.filter &&
+                data.filter.filters.length &&
+                data.filter.filters[0].value != '') {
+
+                let filterValue = data.filter.filters[0].value;
+
+                d.$filter = `StartsWith(ToLower(Name), '${filterValue}') OR StartsWith(ToLower(Code), '${filterValue}')`;
+            }
+
+            return d;
+        }
+    });
+
+    //{
+    //    label: 'Search by Order Number or Order Reference',
+    //    observable: self.submittedOrderHeadId,
+    //    useNativeValidation: false,
+    //    decorateInputElement: true,
+    //    insertValidationMessages: false,
+    //    showClear: true,
+    //    clearFunction: function () {
+    //        self.submittedOrderHeadParams.observable(undefined);
+    //        self.submittedOrderSearch();
+    //    },
+    //    enterKey: function () {
+    //        self.submittedOrderSearch();
+    //    }
+    //};
+
     self.memberId = ko.observable(typeof getMemberId === 'function' ? getMemberId() : null);
 
     self.memberId.subscribe(function (newValue) {
@@ -16529,19 +16625,28 @@ var memberBasketFetcher = function (parent) {
         var webapi = new kendo.data.transports.webapi({ prefix: "" });
         var params = webapi.parameterMap(options.data);
 
-        var data = {
-            memberId: self.justMyOrders() ? self.memberId() : null,
-            marketCode: null,
-            tradeAccountCode: null,
-            searchTerm: self.submittedOrderHeadId.peek()
+        var data = {};
+
+        if (self.justMyOrders()) {
+            data.memberId = self.memberId();
+        }
+
+        if (self.submittedOrderTradeAccountId.peek()) {
+            data.tradeAccountId = self.submittedOrderTradeAccountId.peek();
+        }
+
+        if (self.submittedOrderHeadId.peek()) {
+            data.searchTerm = self.submittedOrderHeadId.peek()
         };
 
         for (var propertyName in params) {
             data[propertyName] = params[propertyName];
         }
 
+        //let qs = new URLSearchParams(data);
+
         $.ajax({
-            url: '/api/orderproducts/TransactionSearch',
+            url: `/api/orderproducts/TransactionSearch`,
             type: "GET",
             dataType: 'json',
             data: data,

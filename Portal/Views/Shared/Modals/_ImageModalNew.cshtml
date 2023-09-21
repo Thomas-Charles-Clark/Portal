@@ -1,0 +1,23 @@
+﻿<div id="image-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <h4 id="large-image-title" class="modal-title"></h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="large-image-wrapper">
+                    <div id="large-image-container">
+
+                    </div>
+                    <div class="largeimage-nav"></div>
+                </div>
+            </div>
+            <!-- ko if: typeof emailerInstance !== "undefined" -->
+            <div class="modal-footer">
+                <div data-bind="component: { name: 'emailer-component', params: emailer }"></div>
+            </div>
+            <!-- /ko -->
+        </div>
+    </div>
+</div>

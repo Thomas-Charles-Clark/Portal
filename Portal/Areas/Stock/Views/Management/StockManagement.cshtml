@@ -35,6 +35,9 @@
         ko.applyBindings(viewModel, document.body);
     </script>
 }
+@section modals {
+    @Html.Partial("Modals/_ImageModalNew")
+}
 
 <div class="blocker" data-bind="flexVisible: busy, toggleOpacity: busy">
     <div class="loading-spinner"></div>
@@ -67,9 +70,9 @@
 
 <script id="row-template" type="text/html">
     <tr>
-        <td class="text-end">
+        @*<td class="text-end">
             <span data-bind="text: ProductID"></span>
-        </td>
+        </td>*@
         <td>
             <span data-bind="text: ProductCode"></span>
         </td>
@@ -85,9 +88,9 @@
         <td>
             <span data-bind="text: CoverExplanation"></span>
         </td>
-        <td class="text-center">
+        @*<td class="text-center">
             <span class="material-icons" data-bind="text: Purchasable ? 'check' : ''"></span>
-        </td>
+        </td>*@
         <td>
             <span data-bind="text: PurchaseInstruction"></span>
         </td>
@@ -100,63 +103,73 @@
         <td>
             <span data-bind="text: renderDate(RecommendedPurchaseDate)"></span>
         </td>
+        <td>
+            <button class="btn btn-secondary">
+                Change Status
+            </button>
+        </td>
         @*<td>
-            <span data-bind="text: StatusGroup ? StatusGroup.Name : null"></span>
-        </td>
-        <td class="text-center">
-            <span data-bind="text: Status"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: ClearanceDiscountPercentage ? formatPercentage(ClearanceDiscountPercentage / 100, 2) : null"></span>
-        </td>
-        <td class="text-center">
-            <span data-bind="text: InStock ? '✔' : null"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: AverageDailySales"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: AverageDailySalesDurationDays"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: formatCurrency(_01_30DaySales, 2, 'en-GB', 'GBP')"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: formatCurrency(_31_60DaySales, 2, 'en-GB', 'GBP')"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: formatCurrency(_61_90DaySales, 2, 'en-GB', 'GBP')"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: formatCurrency(_91_120DaySales, 2, 'en-GB', 'GBP')"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: formatCurrency(_121_150DaySales, 2, 'en-GB', 'GBP')"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: formatCurrency(_151_180DaySales, 2, 'en-GB', 'GBP')"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: formatCurrency(LifetimeSales, 2, 'en-GB', 'GBP')"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: FirstSaleDate ? renderDate(FirstSaleDate) : null"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: LastSaleDate ? renderDate(LastSaleDate) : null"></span>
-        </td>*@
+                <span data-bind="text: StatusGroup ? StatusGroup.Name : null"></span>
+            </td>
+            <td class="text-center">
+                <span data-bind="text: Status"></span>
+            </td>
+            <td class="text-end">
+                <span data-bind="text: ClearanceDiscountPercentage ? formatPercentage(ClearanceDiscountPercentage / 100, 2) : null"></span>
+            </td>
+            <td class="text-center">
+                <span data-bind="text: InStock ? '✔' : null"></span>
+            </td>
+            <td class="text-end">
+                <span data-bind="text: AverageDailySales"></span>
+            </td>
+            <td class="text-end">
+                <span data-bind="text: AverageDailySalesDurationDays"></span>
+            </td>
+            <td class="text-end">
+                <span data-bind="text: formatCurrency(_01_30DaySales, 2, 'en-GB', 'GBP')"></span>
+            </td>
+            <td class="text-end">
+                <span data-bind="text: formatCurrency(_31_60DaySales, 2, 'en-GB', 'GBP')"></span>
+            </td>
+            <td class="text-end">
+                <span data-bind="text: formatCurrency(_61_90DaySales, 2, 'en-GB', 'GBP')"></span>
+            </td>
+            <td class="text-end">
+                <span data-bind="text: formatCurrency(_91_120DaySales, 2, 'en-GB', 'GBP')"></span>
+            </td>
+            <td class="text-end">
+                <span data-bind="text: formatCurrency(_121_150DaySales, 2, 'en-GB', 'GBP')"></span>
+            </td>
+            <td class="text-end">
+                <span data-bind="text: formatCurrency(_151_180DaySales, 2, 'en-GB', 'GBP')"></span>
+            </td>
+            <td class="text-end">
+                <span data-bind="text: formatCurrency(LifetimeSales, 2, 'en-GB', 'GBP')"></span>
+            </td>
+            <td class="text-end">
+                <span data-bind="text: FirstSaleDate ? renderDate(FirstSaleDate) : null"></span>
+            </td>
+            <td class="text-end">
+                <span data-bind="text: LastSaleDate ? renderDate(LastSaleDate) : null"></span>
+            </td>*@
     </tr>
 </script>
 
 <ul class="nav nav-tabs mt-3">
     <li class="nav-item">
         <a id="current-tab-anchor" href="#current-tab" data-bs-toggle="tab" title="(C)urrent and (Y)o we need to set this to Limited" class="nav-link active">
-            Current
+            Current (C)
+        </a>
+    </li>
+    <li class="nav-item">
+        <a id="limited-tab-anchor" href="#pre-limited-tab" data-bs-toggle="tab" title="(L)imited" class="nav-link">
+            Pre-Limited (Y)
         </a>
     </li>
     <li class="nav-item">
         <a id="limited-tab-anchor" href="#limited-tab" data-bs-toggle="tab" title="(L)imited" class="nav-link">
-            Limited
+            Limited (L)
         </a>
     </li>
     <li class="nav-item">
@@ -185,21 +198,21 @@
         <div id="collection-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: collectionParams }"></div>
     </div>
     @*<div class="prefilters" style="display: none;" data-bind="visible: secondaryFiltersVisible">
-        <div id="attribute-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: attributeGroupParams }"></div>
-        <label style="display: none;" class="flex-grow-0" data-bind="visible: attributeGroup">
-            equals/contains
-        </label>
-        <div id="attribute-prefilter" data-bind="visible: attributeGroup, component: { name: 'mdc-kendo-multiselect-component', params: attributesParams }"></div>
-    </div>*@
+            <div id="attribute-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: attributeGroupParams }"></div>
+            <label style="display: none;" class="flex-grow-0" data-bind="visible: attributeGroup">
+                equals/contains
+            </label>
+            <div id="attribute-prefilter" data-bind="visible: attributeGroup, component: { name: 'mdc-kendo-multiselect-component', params: attributesParams }"></div>
+        </div>*@
     @*<div class="prefilters">
-        <button class="btn btn-success" data-bind="click: saveChanges">
-            Save
-        </button>
-        <i class="result-count-display">
-            <span data-bind="text: productSearchResults().length"></span>
-            Results
-        </i>
-    </div>*@
+            <button class="btn btn-success" data-bind="click: saveChanges">
+                Save
+            </button>
+            <i class="result-count-display">
+                <span data-bind="text: productSearchResults().length"></span>
+                Results
+            </i>
+        </div>*@
     <div id="prelaunch-tab" class="tab-pane">
         <div class="blocker" data-bind="flexFadeVisible: prelaunchBusy">
             <div class="loading-spinner"></div>
@@ -210,6 +223,14 @@
     </div>
     <div id="current-tab" class="tab-pane active">
         <div class="blocker" data-bind="flexFadeVisible: currentBusy">
+            <div class="loading-spinner"></div>
+            <h4 class="mt-3">
+                Please wait...
+            </h4>
+        </div>
+    </div>
+    <div id="pre-limited-tab" class="tab-pane">
+        <div class="blocker" data-bind="flexFadeVisible: preLimitedBusy">
             <div class="loading-spinner"></div>
             <h4 class="mt-3">
                 Please wait...
@@ -243,8 +264,8 @@
     <div class="mt-3" data-bind="kendoGrid: gridSettings"></div>
 </div>
 
-<div id="detail-modal" class="modal fade" data-backdrop="static" data-keyboard="false" data-bind="">
-    <div class="modal-dialog modal-lg">
+<div id="detail-modal" class="modal fade" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lxx">
         <div class="modal-content">
             <div class="blocker" data-bind="flexVisible: modalBusy, toggleOpacity: modalBusy">
                 <div class="loading-spinner"></div>
@@ -260,8 +281,429 @@
                 </h4>
                 <button type="button" class="btn-close btn-close-white" aria-label="Close" data-bind="click: closeModal"></button>
             </div>
-            <div class="modal-body">
-
+            <div class="modal-body relative">
+                <div data-bind="with: productDetail">
+                    <div class="owl-carousel owl-theme" data-bind="with: $parent, keepElement: $parent.productImages">
+                        <div class="order-products-carousel" data-bind="foreach: productImages">
+                            <img class="pointer" data-bind="click: function (data) { $parent.loadLargeImage($data, $parent.preferredEmail); }, attr: { src: 'https://www.designersguild.com/image/428/' + $data.ImageID, title: $data.TitleText, alt: $data.AltText }" />
+                        </div>
+                    </div>
+                </div>
+                <ul class="nav nav-tabs mt-3">
+                    <li class="nav-item">
+                        <a id="stock-tab-anchor" href="#stock-tab" data-bs-toggle="tab" title="Stock Info" class="nav-link" data-bind="event: { 'show.bs.tab': (e) => { orderProductsDrilldown.fetchStockInfo('S'); return true; } }">
+                            Stock Info
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="supplier-tab-anchor" href="#supplier-tab" data-bs-toggle="tab" title="Supplier Info" class="nav-link" data-bind="event: { 'show.bs.tab': (e) => { orderProductsDrilldown.fetchSupplierInfo(); return true;} }">
+                            Supplier Info
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="sales-tab-anchor" href="#sales-tab" data-bs-toggle="tab" title="Sales History" class="nav-link active" data-bind="event: { 'show.bs.tab': (e) => { orderProductsDrilldown.fetchSalesInfo(); return true; } }">
+                            Sales History
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="order-book-tab-anchor" href="#order-book-tab" data-bs-toggle="tab" title="Order Book" class="nav-link" data-bind="event: { 'show.bs.tab': (e) => { orderProductsDrilldown.fetchOrderBookInfo(); return true; } }">
+                            Order Book
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div id="stock-tab" class="tab-pane" data-bind="with: orderProductsDrilldown">
+                        <div class="blocker" data-bind="flexFadeVisible: stockInfoBusy">
+                            <div class="loading-spinner"></div>
+                            <h4 class="mt-3">
+                                Please wait...
+                            </h4>
+                        </div>
+                        <div data-bind="foreach: products">
+                            <div class="stock-info">
+                                <div class="row">
+                                    <table class="drilldown-stock-table">
+                                        <colgroup>
+                                            <col style="width: 300px" />
+                                            <col />
+                                        </colgroup>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <div id="product-name">
+                                                        <!-- ko if: record.ImageID != null -->
+                                                        <!-- ko if: $parentContext.$parentContext.$parent.hasOwnProperty('orderProductsDrilldown') -->
+                                                        <!--<img class="thumb" data-bind="click: function(data) { $parentContext.$parentContext.$parent.orderProductsDrilldown.loadLargeImage(record, $parentContext.$parent.preferredEmail); }, attr: { src: 'https://www.designersguild.com/image/156/' + record.ImageID, title: record.Code }" />-->
+                                                        <!-- /ko -->
+                                                        <!-- /ko -->
+                                                        <div class="product-details">
+                                                            <span>
+                                                                <span data-bind="text: record.OrderFormName + (record.Size ? ' - ' + record.Size : '')"></span>
+                                                                <span data-bind="text: record.Code"></span>
+                                                            </span>
+                                                            <span data-bind="html: '(Unit of Stock: ' + record.Units + ')'"></span>
+                                                        </div>
+                                                        <div class="clearfix"></div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <!-- ko with: supplierAvailabilityMessage -->
+                                                    <div class="alert alert-warning" data-bind="text: $data"></div>
+                                                    <!-- /ko -->
+                                                    <!-- ko if: record.WideWidthFabricDefaultPoleWidth != null -->
+                                                    <div class="alert alert-warning">
+                                                        <span>
+                                                            This is a wide width fabric,
+                                                            <!-- ko if: record.WideWidthFabricDefaultPoleWidth == 'W' -->
+                                                            stocked on a wide width pole.
+                                                            <!-- /ko -->
+                                                            <!-- ko if: record.WideWidthFabricDefaultPoleWidth == 'S' -->
+                                                            stocked on a standard width pole.
+                                                            <!-- /ko -->
+                                                        </span>
+                                                    </div>
+                                                    <!-- /ko -->
+                                                    <!-- ko if: stockInfo() -->
+                                                    <table class="stock-allocation-table allocation-table table table-condensed" data-bind="with: stockInfo, visible: !backOrder()">
+                                                        <colgroup>
+                                                            <col style="width: 25%" />
+                                                            <col style="width: 105px" />
+                                                            <col style="width: 75px" />
+                                                            <col style="width: 75px" />
+                                                            <col style="width: 75px" />
+                                                            <col style="width: 75px" />
+                                                            <col style="width: 90px" />
+                                                            <col style="width: auto" />
+                                                        </colgroup>
+                                                        <thead>
+                                                            <tr>
+                                                                <th>
+                                                                    Batch
+                                                                </th>
+                                                                <th>
+                                                                    <sup class="font-normal">1</sup> Available Now
+                                                                </th>
+                                                                <th>
+                                                                    Bulk Stock
+                                                                </th>
+                                                                <th>
+                                                                    <sup class="font-normal">2</sup> Just Arrived
+                                                                </th>
+                                                                <th>
+                                                                    <sup class="font-normal">3</sup> Ring Fenced
+                                                                </th>
+                                                                <th>
+                                                                    On Reserve
+                                                                </th>
+                                                                <th>
+                                                                    Total
+                                                                </th>
+                                                                <th>
+                                                                    Due In
+                                                                </th>
+                                                            </tr>
+                                                            <tr>
+                                                                <th>
+                                                                    Total all Locations
+                                                                </th>
+                                                                <th>
+                                                                    <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.availableNowTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
+                                                                </th>
+                                                                <th>
+                                                                    <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.bulkTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
+                                                                </th>
+                                                                <th>
+                                                                    <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.waitingTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
+                                                                </th>
+                                                                <th>
+                                                                    <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.ringFencedTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
+                                                                </th>
+                                                                <th>
+                                                                    <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.onReserveTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
+                                                                </th>
+                                                                <th>
+                                                                    <span data-bind="text: Enumerable.From($data).Select('+$.stockLocation.totalQuantity()').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
+                                                                </th>
+                                                                <th>
+                                                                    <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.dueInTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td colspan="8">
+                                                                    &nbsp;
+                                                                </td>
+                                                            </tr>
+                                                            <!-- ko foreach: $data -->
+                                                            <!-- ko if: stockLocation.totalIncludingDue() == 0 -->
+                                                            <tr class="stock-location">
+                                                                <th>
+                                                                    <span data-bind="text: `${stockLocation.stockLocationCode} - ${stockLocation.stockLocationName}`"></span>
+                                                                </th>
+                                                                <th colspan="7">
+                                                                    <span class="font-normal text-italic">
+                                                                        No stock available in this location
+                                                                    </span>
+                                                                </th>
+                                                            </tr>
+                                                            <!-- /ko -->
+                                                            <!-- ko if: stockLocation.totalIncludingDue() > 0 -->
+                                                            <tr class="stock-location">
+                                                                <th>
+                                                                    <span data-bind="text: `${stockLocation.stockLocationCode} - ${stockLocation.stockLocationName}`"></span>
+                                                                </th>
+                                                                <th>
+                                                                    <span data-bind="text: stockLocation.availableNowTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
+                                                                </th>
+                                                                <th>
+                                                                    <span data-bind="text: stockLocation.bulkTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
+                                                                </th>
+                                                                <th>
+                                                                    <span data-bind="text: stockLocation.waitingTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
+                                                                </th>
+                                                                <th>
+                                                                    <span data-bind="text: stockLocation.ringFencedTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
+                                                                </th>
+                                                                <th>
+                                                                    <span data-bind="text: stockLocation.onReserveTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
+                                                                </th>
+                                                                <th>
+                                                                    <span data-bind="text: (+stockLocation.totalQuantity()).toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
+                                                                </th>
+                                                                <th>
+                                                                    <span data-bind="text: stockLocation.dueInTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
+                                                                </th>
+                                                            </tr>
+                                                            <!-- ko foreach: batches -->
+                                                            <tr data-bind="css: { 'location-end': $index() == ($parent.batches.length - 1) }">
+                                                                <td>
+                                                                    <span data-bind="text: batch.batchNo"></span>
+                                                                </td>
+                                                                <td colspan="7" class="no-padding">
+                                                                    <table class="piece-table table table-condensed">
+                                                                        <colgroup>
+                                                                            <col style="width: 105px;" />
+                                                                            <col style="width: 75px;" />
+                                                                            <col style="width: 75px;" />
+                                                                            <col style="width: 75px;" />
+                                                                            <col style="width: 75px;" />
+                                                                            <col style="width: 90px;" />
+                                                                            <col style="width: auto" />
+                                                                        </colgroup>
+                                                                        <tbody>
+                                                                            <!-- ko foreach: pieces -->
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <span data-bind="text: AvailableNowDisplay"></span>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <span data-bind="text: BulkDisplay"></span>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <span data-bind="text: WaitingDisplay"></span>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <span data-bind="text: RingFencedDisplay"></span>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <span data-bind="text: OnReserveDisplay"></span>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <span data-bind="text: TotalDisplay"></span>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <span data-bind="text: DueInDisplay"></span>
+                                                                                    <!-- ko if: POConfirmed != null -->
+                                                                                    <span data-bind="text: POConfirmed ? '(confirmed)' : '(unconfirmed)'"></span>
+                                                                                    <!-- /ko -->
+                                                                                </td>
+                                                                            </tr>
+                                                                            <!-- /ko -->
+                                                                        </tbody>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            <!-- /ko -->
+                                                            <!-- /ko -->
+                                                            <!-- ko if: $index() != ($parent.length - 1) -->
+                                                            <tr>
+                                                                <td colspan="6">
+                                                                    &nbsp;
+                                                                </td>
+                                                            </tr>
+                                                            <!-- /ko -->
+                                                            <!-- /ko -->
+                                                        </tbody>
+                                                    </table>
+                                                    <p>
+                                                        <sup class="font-normal">1</sup> "Available Now" = Free Stock + Stock Ring Fenced for this Customer
+                                                    </p>
+                                                    <p>
+                                                        <sup class="font-normal">2</sup> "Just Arrived" = Stock waiting to be put away
+                                                    </p>
+                                                    <p>
+                                                        <sup class="font-normal">3</sup> "Ring Fenced" = Stock Ring Fenced for other Customers
+                                                    </p>
+                                                    <!-- /ko -->
+                                                    <!-- ko if: stockInfo() ? stockInfo().length == 0 : true -->
+                                                    <label data-bind="text: stockStatus">
+                                                    </label>
+                                                    <!-- /ko -->
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="supplier-tab" class="tab-pane" data-bind="with: orderProductsDrilldown">
+                        <div id="tab-drilldown-supplier" class="tab-pane">
+                            <div class="blocker" data-bind="flexFadeVisible: supplierBusy">
+                                <div class="loading-spinner"></div>
+                                <h4 class="mt-3">
+                                    Please wait...
+                                </h4>
+                            </div>
+                            <div class="tab-content">
+                                <!-- ko foreach: supplierInfo -->
+                                <div class="alert alert-warning">
+                                    <p class="margin-bottom-0">
+                                        <span data-bind="text: supplierAvailabilityMessage"></span>
+                                    </p>
+                                </div>
+                                <div class="flex-container">
+                                    <div>
+                                        <h4 class="bold text-center">
+                                            Supplier Details
+                                        </h4>
+                                        <dl class="dl-horizontal">
+                                            <dt>
+                                                Name
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: name"></span>
+                                            </dd>
+                                            <dt>
+                                                Code
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: code"></span>
+                                            </dd>
+                                            <dt>
+                                                Country
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: countryName"></span>
+                                            </dd>
+                                            <dt>
+                                                Phone
+                                            </dt>
+                                            <dd>
+                                                <a data-bind="attr: { href: 'tel:' + telephone }, text: telephone"></a>
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                    <div>
+                                        <h4 class="bold text-center">
+                                            Lead Time Parameters
+                                        </h4>
+                                        <dl class="dl-horizontal">
+                                            <dt>
+                                                Lead Time
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: leadTimeInDays"></span>
+                                                working days
+                                            </dd>
+                                            <!-- ko with: parameters -->
+                                            <dt>
+                                                Default Lead Time
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: defaultLeadTimeDays"></span>
+                                                working days
+                                            </dd>
+                                            <dt>
+                                                Shipping Lead Time
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: shippingLeadTimeDays"></span>
+                                                working days
+                                            </dd>
+                                            <dt>
+                                                Buffer Lead Time
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: bufferLeadTimeDays"></span>
+                                                working days
+                                            </dd>
+                                            <dt>
+                                                Warehouse Turn-Around
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: warehouseTurnAroundTimeDays"></span>
+                                                working days
+                                            </dd>
+                                            <dt>
+                                                Call-Off
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: callOff"></span>
+                                            </dd>
+                                            <dt>
+                                                Call-Off Lead Time
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: callOffLeadTimeDays"></span>
+                                                working days
+                                            </dd>
+                                            <!-- /ko -->
+                                        </dl>
+                                    </div>
+                                </div>
+                                <!-- /ko -->
+                            </div>
+                            <!-- ko ifnot: supplierBusy() -->
+                            <!-- ko ifnot: supplierInfo().length -->
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    Not Found
+                                </dt>
+                                <dd>
+                                    No supplier information was found for this product.
+                                </dd>
+                            </dl>
+                            <!-- /ko -->
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <div id="sales-tab" class="tab-pane active">
+                        <div class="blocker" data-bind="flexFadeVisible: salesBusy">
+                            <div class="loading-spinner"></div>
+                            <h4 class="mt-3">
+                                Please wait...
+                            </h4>
+                        </div>
+                        <div style="display: none" data-bind="fadeVisible: !salesBusy()">
+                            <div class="mb-3" data-bind="kendoGrid: salesGridSettings"></div>
+                            <div class="mb-3" data-bind="kendoChart: salesChartSettings"></div>
+                            <div data-bind="kendoGrid: salesHistoryDetailGridSettings"></div>
+                        </div>
+                    </div>
+                    <div id="order-book-tab" class="tab-pane">
+                        <div class="blocker" data-bind="flexFadeVisible: orderBookBusy">
+                            <div class="loading-spinner"></div>
+                            <h4 class="mt-3">
+                                Please wait...
+                            </h4>
+                        </div>
+                        <div style="display: none" data-bind="fadeVisible: !orderBookBusy()">
+                            <div data-bind="kendoGrid: orderBookGridSettings"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-default pull-left" data-bind="click: closeModal">

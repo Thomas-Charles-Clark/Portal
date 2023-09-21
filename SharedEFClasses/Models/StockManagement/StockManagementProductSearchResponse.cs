@@ -12,6 +12,9 @@ namespace SharedEFClasses.Models.StockManagement
         public int ProductID { get; set; }
         public string ProductCode { get; set; }
         public string ProductName { get; set; }
+        public string OrderFormName { get; set; }
+        public string Size { get; set; }
+
 
         // Stock management "Oracle" output
         public string RowClass { get; set; }
@@ -65,16 +68,35 @@ namespace SharedEFClasses.Models.StockManagement
 
     public class StockManagementProductDetailFetchDto
     {
-        public int ProductID { get; set; }
+        public int? ProductID { get; set; }
     }
 
     public class StockManagementProductDetailRecord
-    { 
+    {
 
+    }
+
+    public class StockManagementProductImageRecord
+    {
+        public long ImageID { get; set; }
+        public short SortOrder { get; set; }
     }
 
     public class StockManagementProductDetailResponse
     {
-        public IEnumerable<StockManagementProductDetailRecord> Results { get; set; }
+        public IEnumerable<StockManagementProductImageRecord> Images { get; set; }
+        //public IEnumerable<StockManagementProductDetailRecord> Results { get; set; }
+    }
+
+    public class StockManagementProductSalesHistoryRecord
+    {
+
+    }
+
+    public class StockManagementProductSalesHistoryResponse
+    {
+        public string Schema { get; set; }
+        public string Columns { get; set; }
+        public string Data { get; set; }
     }
 }

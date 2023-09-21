@@ -62,9 +62,10 @@ namespace SharedEFClasses.Models
 
             return new StockManagementProductDetailResponse()
             {
-                Results = reply.Read<StockManagementProductDetailRecord>()
+                Images = reply.Read<StockManagementProductImageRecord>()
             };
         }
+
         public async Task<bool> StockManagementBranchRangeSave(StockManagementBranchRangeSaveDto dto)
         {
             var products = new DataTable();
@@ -84,6 +85,54 @@ namespace SharedEFClasses.Models
             }, null, null, CommandType.StoredProcedure);
 
             return true;
+        }
+
+        public async Task<StockManagementProductSalesHistoryResponse> StockManagementProductSalesHistorySummary(StockManagementProductDetailFetchDto dto)
+        {
+            var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[SalesHistorySummary_Select]", new
+            {
+                dto.ProductID,
+                EnquiryType = "S"
+            }, null, null, CommandType.StoredProcedure);
+
+            return new StockManagementProductSalesHistoryResponse()
+            {
+                Schema = reply.ReadSingle<string>(),
+                Columns = reply.ReadSingle<string>(),
+                Data = reply.ReadSingle<string>()
+            };
+        }
+
+        public async Task<StockManagementProductSalesHistoryResponse> StockManagementProductSalesHistoryDetail(StockManagementProductDetailFetchDto dto)
+        {
+            var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[SalesHistoryDetail_Select]", new
+            {
+                dto.ProductID,
+                EnquiryType = "S"
+            }, null, null, CommandType.StoredProcedure);
+
+            return new StockManagementProductSalesHistoryResponse()
+            {
+                Schema = reply.ReadSingle<string>(),
+                Columns = reply.ReadSingle<string>(),
+                Data = reply.ReadSingle<string>()
+            };
+        }
+
+        public async Task<StockManagementProductSalesHistoryResponse> StockManagementProductOrderBook(StockManagementProductDetailFetchDto dto)
+        {
+            var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_Select]", new
+            {
+                dto.ProductID,
+                EnquiryType = "S"
+            }, null, null, CommandType.StoredProcedure);
+
+            return new StockManagementProductSalesHistoryResponse()
+            {
+                Schema = reply.ReadSingle<string>(),
+                Columns = reply.ReadSingle<string>(),
+                Data = reply.ReadSingleOrDefault<string>()
+            };
         }
     }
 }

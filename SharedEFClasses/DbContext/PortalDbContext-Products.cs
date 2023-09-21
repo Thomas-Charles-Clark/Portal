@@ -1391,12 +1391,13 @@ namespace SharedEFClasses.Models
 
             var parameters = new List<SqlParameter>()
             {
-                new SqlParameter("@TradeAccountID", objFetch.TradeAccountID),
+                new SqlParameter("@TradeAccountID", objFetch.TradeAccountID ?? (object)DBNull.Value),
                 new SqlParameter("@ProductIDs",  productIdTable)
                 {
                     SqlDbType = SqlDbType.Structured,
                     TypeName = "[dbo].[ProductIDsTableType]"
-                }
+                },
+                new SqlParameter("EnquiryType", objFetch.EnquiryType)
             };
 
             var cmd = this.Database.Connection.CreateCommand();

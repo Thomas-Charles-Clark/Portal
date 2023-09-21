@@ -201,7 +201,6 @@ namespace Portal.Areas.Products.Controllers
             return Ok(new { });
         }
 
-
         [HttpGet]
         public IHttpActionResult TransactionSearch([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))]
         DataSourceRequest request,

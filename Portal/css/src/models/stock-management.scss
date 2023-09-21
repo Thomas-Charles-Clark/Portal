@@ -296,3 +296,40 @@
         background-position: 100% 100%;
     }
 }
+
+
+#detail-modal {
+
+    .owl-carousel {
+        position: relative;
+    }
+
+    p {
+        margin-top: 15px;
+        margin-bottom: 0;
+    }
+
+    .order-products-carousel {
+        .owl-item {
+            img {
+                border: 1px solid #ccc;
+            }
+        }
+    }
+
+    .modal-body {
+        background-color: whitesmoke;
+
+        .tab-content {
+            position: static;
+            padding: $l-gutter;
+            background-color: $white;
+            border: 1px solid $gray-300;
+            border-top: 0;
+
+            .blocker {
+                position: absolute;
+            }
+        }
+    }
+}
