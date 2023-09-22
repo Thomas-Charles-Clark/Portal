@@ -2388,7 +2388,7 @@ const resultRecord = ((rec) => {
     self.kingsRoadSales =  0;
     self.maryleboneSales = 0;
     self.eCommerceSales =  0;
-    self.tradeSales =  0;
+    self.tradeSales = 0;
 
     self.toJS = () => {
         return {
