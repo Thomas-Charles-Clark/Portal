@@ -364,9 +364,9 @@ ko.extenders.charsRemaining = function (observable, options) {
         label = element.closest('.mdc-validating-field').find(".mdc-floating-label");
     }
 
-    if (!label.length) {
-        console.log(element, ' charsRemaining extender - input element must be inside a .form-group containing a .col-form-label, or a .mdc-validating-field containing an .mdc-floating-label');
-    }
+    //if (!label.length) {
+    //    console.log(element, ' charsRemaining extender - input element must be inside a .form-group containing a .col-form-label, or a .mdc-validating-field containing an .mdc-floating-label', options);
+    //}
 
     observable.charsRemaining = ko.pureComputed({
         read: function () {

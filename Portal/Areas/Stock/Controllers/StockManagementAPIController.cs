@@ -16,6 +16,7 @@ using System.Web.Http.ModelBinding;
 using Portal.Areas.Stock.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Microsoft.AspNet.Identity;
 
 namespace Portal.Areas.Stock.Controllers
 {
@@ -103,20 +104,30 @@ namespace Portal.Areas.Stock.Controllers
                 r.Columns);
         }
 
+        //[HttpPost]
+        //public async Task<IHttpActionResult> SaveStockManagementChanges([FromBody]StockManagementSaveDto objDto)
+        //{
+        //    //var results = await PortalDb.StockManagementBranchRangeSave(objDto);
+
+        //    return Ok(new { });
+        //}
+
+        //[HttpPost]
+        //public async Task<IHttpActionResult> SaveBranchRangeChanges([FromBody]StockManagementBranchRangeSaveDto objDto)
+        //{
+        //    var results = await PortalDb.StockManagementBranchRangeSave(objDto);
+
+        //    return Ok(new { });
+        //}
+
         [HttpPost]
-        public async Task<IHttpActionResult> SaveStockManagementChanges([FromBody]StockManagementSaveDto objDto)
+        public async Task<IHttpActionResult> RequestStatusChange([FromBody] StockManagementProductStatusChangeDto objDto)
         {
-            //var results = await PortalDb.StockManagementBranchRangeSave(objDto);
+            var memberId = User.Identity.GetUserId<int>();
 
-            return Ok(new { });
-        }
+            var results = await PortalDb.StockManagementProductStatusChange(memberId, objDto);
 
-        [HttpPost]
-        public async Task<IHttpActionResult> SaveBranchRangeChanges([FromBody]StockManagementBranchRangeSaveDto objDto)
-        {
-            var results = await PortalDb.StockManagementBranchRangeSave(objDto);
-
-            return Ok(new { });
+            return Ok(results);
         }
     }
 }

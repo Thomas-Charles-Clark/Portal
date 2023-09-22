@@ -4216,7 +4216,7 @@
             <div class="modal-body">
                 <div class="quantity-control input-group pull-right" style="margin-bottom: 0; margin-left: 15px;">
                     <div class="input-group-btn">
-                        <button class="btn btn-default" data-bind="click: function (data) { if (quantity() >= productFilterOptions().QuantityIncrement) { quantity(+quantity() - productFilterOptions().QuantityIncrement); } }">
+                        <button class="btn btn-default" data-bind="click: function (data) { if (quantity() > productFilterOptions().QuantityMinimum) { quantity(+quantity() - productFilterOptions().QuantityIncrement); } }">
                             &minus;
                         </button>
                     </div>

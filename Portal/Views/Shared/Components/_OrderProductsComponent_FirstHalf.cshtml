@@ -320,7 +320,7 @@
             <div class="fulfilment-container">
                 <div class="quantity-control input-group pull-right" style="margin-bottom: 15px;">
                     <div class="input-group-btn">
-                        <button class="btn btn-default" data-bind="click: function (data) { if ($parent.quantity() >= $parent.productFilterOptions().QuantityIncrement) { $parent.quantity(+$parent.quantity() - $parent.productFilterOptions().QuantityIncrement); } }">
+                        <button class="btn btn-default" data-bind="click: function (data) { if ($parent.quantity() > $parent.productFilterOptions().QuantityMinimum) { $parent.quantity(+$parent.quantity() - $parent.productFilterOptions().QuantityIncrement); } }">
                             &minus;
                         </button>
                     </div>

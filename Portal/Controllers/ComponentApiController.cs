@@ -3503,9 +3503,9 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchSupplierInfo([FromBody] PassProductID objProductId)
+        public async Task<IHttpActionResult> FetchSupplierInfo([FromBody] PassProductID objProductId)
         {
-            var result = PortalDb.FetchSupplierInfo(objProductId);
+            var result = await PortalDb.FetchSupplierInfo(objProductId);
 
             return Ok(result);
         }

@@ -9,16 +9,19 @@ namespace SharedEFClasses.Models.StockManagement
 {
     public class StockManagementProductSearchRecord
     {
+        public long? ImageID { get; set; }
         public int ProductID { get; set; }
         public string ProductCode { get; set; }
         public string ProductName { get; set; }
+        public string ProductStatus { get; set; }
+        public decimal? ClearanceDiscountPercentage { get; set; }
         public string OrderFormName { get; set; }
         public string Size { get; set; }
 
 
         // Stock management "Oracle" output
         public string RowClass { get; set; }
-        public string SalesExplantion { get; set; } 
+        public string SalesExplanation { get; set; }
         public string StockExplanation { get; set; }
         public string CoverExplanation { get; set; }
         public bool Purchasable { get; set; }

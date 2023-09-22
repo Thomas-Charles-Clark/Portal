@@ -2704,54 +2704,6 @@ namespace SharedEFClasses.Models
             return results;
         }
 
-        public DatabaseJSONResult FetchSupplierInfo(PassProductID objProductId)
-        {
-            var result = new DatabaseJSONResult();
-
-            var parameters = new SqlParameter[]
-            {
-                new SqlParameter("@ProductID", objProductId.ProductID)
-            };
-
-            // Create a SQL command to execute the sproc
-            var cmd = this.Database.Connection.CreateCommand();
-            cmd.CommandText = "[portal].[Product_Supplier_Select]";
-            cmd.CommandType = CommandType.StoredProcedure;
-
-            cmd.Parameters.AddRange(parameters);
-
-            try
-            {
-                this.Database.Connection.Open();
-                // Run the sproc 
-                var reader = cmd.ExecuteReader();
-
-                var sb = new StringBuilder();
-
-                while(reader.Read())
-                {
-                    sb.Append(reader.GetString(0));
-                }
-
-                reader.Close();
-
-                this.Database.Connection.Close();
-
-                result.JSON = sb.ToString();
-            }
-            catch (SqlException e)
-            {
-                PortalFramework.LogErrorToDatabase(e);
-                throw e;
-            }
-            finally
-            {
-                this.Database.Connection.Close();
-            }
-
-            return result;
-        }
-
         public FetchFurnitureDesignResult FetchFurnitureDesigns(PassFurnitureThing objThing)
         {
             var result = new FetchFurnitureDesignResult();

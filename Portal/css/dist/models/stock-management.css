@@ -15,6 +15,10 @@
   font-size: 1rem;
 }
 
+#search-term-prefilter .mdc-validating-field {
+  width: 494px;
+}
+
 .tab-content {
   position: relative;
 }
@@ -311,5 +315,20 @@
 }
 #detail-modal .modal-body .tab-content .blocker {
   position: absolute;
+}
+
+#tab-drilldown-supplier .alert p {
+  margin-top: 0;
+}
+#tab-drilldown-supplier dt {
+  padding-right: 1rem;
+}
+#tab-drilldown-supplier dd {
+  margin-bottom: 0;
+}
+
+.thumb {
+  width: 90px;
+  height: 90px;
 }
 /*# sourceMappingURL=stock-management.css.map */

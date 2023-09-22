@@ -330,6 +330,8 @@ var orderProductsDrilldownViewModel = function (parent, name) {
 
     self.supplierInfo = ko.observableArray([]);
 
+    self.supplierPurchaseHistory = ko.observableArray([]);
+
     self.treatmentOptions = ko.pureComputed(function () {
         if (self.existingQualityTreatments()) {
             return Enumerable.From(self.existingQualityTreatments().Treatments)
@@ -4104,6 +4106,7 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
         });
     }
 
+
     self.fetchSupplierInfo = function () {
         return new Promise(function (resolve, reject) {
             var data = {
@@ -4117,9 +4120,12 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
                 dataType: 'json',
                 data: data,
                 success: function (data) {
-                    console.log('orderProductsDrilldown fetchSupplierInfo returned', data.json);
+                    console.log('orderProductsDrilldown fetchSupplierInfo returned', data);
                     self.supplierBusy(false);
                     self.supplierInfo(data.json);
+
+                    self.supplierPurchaseHistory(data.PurchasePriceHistory);
+
                     resolve();
                 },
                 error: function (xhr, s, a) {

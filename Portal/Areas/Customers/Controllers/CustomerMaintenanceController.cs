@@ -58,7 +58,7 @@ namespace Portal.Areas.Customers.Controllers
         [Route("creation-email")]
         public ActionResult CreationEmail(string a)
         {
-            var application = PortalDb.Applications.Where(p => p.ControllerName == "maintenance" && p.AreaName == "customers" && p.ActionName == "creation-email").Single();
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "maintenance" && p.AreaName == "customers" && p.ActionName == "CreationEmail").Single();
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 

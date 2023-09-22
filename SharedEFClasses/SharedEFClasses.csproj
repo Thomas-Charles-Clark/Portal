@@ -429,6 +429,8 @@
     <Compile Include="Models\StockManagement\BranchGroup.cs" />
     <Compile Include="Models\StockManagement\BranchStockLocation.cs" />
     <Compile Include="Models\StockManagement\Branch_BranchGroup.cs" />
+    <Compile Include="Models\StockManagement\StockManagementProductStatusChangeDto.cs" />
+    <Compile Include="Models\StockManagement\StockManagementProductStatusChangeResponse.cs" />
     <Compile Include="Models\StockManagement\StockManagementSaveDto.cs" />
     <Compile Include="Models\StockManagement\StockManagementProduct.cs" />
     <Compile Include="Models\StockManagement\Range.cs" />
@@ -437,6 +439,7 @@
     <Compile Include="Models\StockManagement\StockManagementBranchRangeSaveDto.cs" />
     <Compile Include="Models\StockManagement\StockManagementProductFetchDto.cs" />
     <Compile Include="Models\StockManagement\StockManagementProductSearchResponse.cs" />
+    <Compile Include="Models\StockManagement\SupplierInfoResult.cs" />
     <Compile Include="Models\TradeAccountCreationEmail.cs" />
     <Compile Include="Models\TradeAccountCreationEmailAttachment.cs" />
     <Compile Include="Models\TradeAccountCreationEmail_TradeAccountCreationEmailAttachment.cs" />

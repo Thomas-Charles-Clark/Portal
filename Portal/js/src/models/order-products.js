@@ -9740,7 +9740,9 @@ var searchResult = function (data, parent, patternBookSaturation) {
                 return x.ProductFilterID == self.record.ProductFilterID;
             }).SingleOrDefault();
             if (result == null) {
-                return {};
+                return {
+                    QuantityMinimum: 1 // needed as a fallback because of what the quantity observable is doing
+                };
                 //if (!$('#info-modal').is(':visible')) {
                 //    $.info('Sorry', 'There was a problem fetching Product Filter data. Closing this box will retry the operation.', function () { }, function () {
                 //        self.parent.refreshProductFilterButtons();
@@ -9937,9 +9939,18 @@ var searchResult = function (data, parent, patternBookSaturation) {
         }
     });
 
-    self.quantity = ko.observable((data.Quantity || 1).toFixed(self.productFilterOptions() ? self.productFilterOptions().QuantityPrecision : 1)).extend({
+    self.quantity = ko.observable((data.Quantity ||
+        self.productFilterOptions() ? self.productFilterOptions().QuantityMinimum < 1 ? 1 : self.productFilterOptions().QuantityMinimum : 1).toFixed(self.productFilterOptions() ? self.productFilterOptions().QuantityPrecision : 1)).extend({
         roundedNumeric: self.productFilterOptions() ? self.productFilterOptions().QuantityPrecision : 1
-    }).extend({
+        }).extend({
+            numberFormatted: {
+                digits: self.productFilterOptions() ? self.productFilterOptions().QuantityPrecision : 1,
+                min: self.productFilterOptions() ? self.productFilterOptions().QuantityMinimum : 1,
+                max: 99999,
+                currency: {
+                    FormattingCulture: 'en-GB'
+                }
+            },    
         validation: {
             validator: function (val, params) {
                 if (self.validateNow())
