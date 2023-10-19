@@ -453,6 +453,7 @@ namespace SharedEFClasses.Models
                 new SqlParameter("@TaxID", objLeadUpsert.TaxID ?? (object)DBNull.Value),
                 new SqlParameter("@MertexLanguageCode", objLeadUpsert.MertexLanguageCode ?? (object)DBNull.Value),
                 
+                new SqlParameter("@ShouldSendTradeAccountCreationEmail", objLeadUpsert.ShouldSendTradeAccountCreationEmail ?? (object)DBNull.Value),
                 new SqlParameter("@TradeAccountCreationEmail_DisplayAccountManager", objLeadUpsert.TradeAccountCreationEmail_DisplayAccountManager ?? (object)DBNull.Value),
                 new SqlParameter("@TradeAccountCreationEmail_DisplayCustomerService", objLeadUpsert.TradeAccountCreationEmail_DisplayCustomerService ?? (object)DBNull.Value),
                 new SqlParameter("@TradeAccountCreationEmail_DisplayCreditControl", objLeadUpsert.TradeAccountCreationEmail_DisplayCreditControl ?? (object)DBNull.Value),

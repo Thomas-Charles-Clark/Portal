@@ -273,6 +273,10 @@ namespace SharedEFClasses.Models.Leads
         public bool? TradeAccountCreationEmail_DisplayB2BRegistration { get; set; }
         public bool? TradeAccountCreationEmail_DisplayLookbook { get; set; }
 
+        // Does setting computed conflict with manually setting the thing?
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public bool ShouldSendTradeAccountCreationEmail { get; set; }
+
         [NotMapped]
         public DateTime LoadedDT
         {
@@ -998,6 +1002,8 @@ namespace SharedEFClasses.Models.Leads
         public string DeliveryTerms { get; set; }
         public string TaxID { get; set; }
         public string MertexLanguageCode { get; set; }
+
+        public bool? ShouldSendTradeAccountCreationEmail { get; set; }
 
         public bool? TradeAccountCreationEmail_DisplayAccountManager { get; set; }
         public bool? TradeAccountCreationEmail_DisplayCustomerService { get; set; }

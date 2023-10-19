@@ -33,11 +33,12 @@ namespace Portal.Controllers
 
         }
 
-        // GET: odata/ProductColours
+        // GET: odata/GetProductFilters
         [EnableQuery]
         public IQueryable<ProductFilter> GetProductFilters()
         {
-            return new PortalDbContext().ProductFilters.Where(pf => pf.IsProduct).OrderBy(p => p.SortOrder).AsQueryable();
+            // exclude those associated to a particularly asinine product filter group named  
+            return new PortalDbContext().ProductFilters.Where(pf => pf.ProductFilterGroupID != 29 && pf.IsProduct).OrderBy(p => p.SortOrder).AsQueryable();
         }
 
         [EnableQuery(MaxNodeCount = 200)]

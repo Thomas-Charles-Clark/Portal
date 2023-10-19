@@ -1451,7 +1451,7 @@
                                                                     <div class="form-group row">
                                                                         <div class="col-xs-12">
                                                                             <div class="alert alert-info bg-info well-sm form-group">
-                                                                                <div class="form-group row">
+                                                                                <div class="row">
                                                                                     <div class="col-xs-12">
                                                                                         <h4>
                                                                                             Trade Account Welcome Email
@@ -1459,95 +1459,98 @@
                                                                                         <p>
                                                                                             Here you can configure the welcome pack email which will be sent to this customer when Credit Control have opened the account.
                                                                                         </p>
+                                                                                        <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_sendProps }"></div>
                                                                                     </div>
                                                                                 </div>
-                                                                                <div class="form-group row">
-                                                                                    <div class="col-xs-12">
-                                                                                        @*<div id="attachment-manager" class="flex-grow-1" data-bind="with: attachmentsManager">
-                                                                                            <ul class="list-group margin-bottom-0">
-                                                                                                <!-- ko foreach: attachments -->
-                                                                                                <li class="list-group-item d-flex" data-bind="css: { 'barber-busy': busy, 'invalid': isInvalid }, validationOptions: { insertMessages: false }">
-                                                                                                    <button class="btn btn-outline no-ripple" data-bind="click: removeAttachment">
-                                                                                                        <span class="bi bi-x-lg d-inline-block"></span>
-                                                                                                    </button>
-                                                                                                    <div class="text-inputs" data-bind=" validationOptions: { insertMessages: true }">
-                                                                                                        <input type="text" class="attachment-name form-control flex-grow-0" data-bind="keepElement: name, textInput: name" placeholder="Attachment Name" />
-                                                                                                        <input type="text" class="attachment-path form-control" data-bind="keepElement: path, textInput: path, event: { 'blur': checkPath }" placeholder="\\files\00 - Everyone\Your File.pdf" />
-                                                                                                    </div>
-                                                                                                    <!-- ko if: fileSizeBytes -->
-                                                                                                    <label class="file-size">
-                                                                                                        <span data-bind="html: `${Math.round((fileSizeBytes() / 1024 / 1024) * 100) / 100}mb`"></span>
-                                                                                                    </label>
-                                                                                                    <!-- /ko -->
-                                                                                                    <!-- ko if: fileCheckPerformed -->
-                                                                                                    <!-- ko ifnot: fileFound -->
-                                                                                                    <span class="bi bi-hand-thumbs-down"></span>
-                                                                                                    <!-- /ko -->
-                                                                                                    <!-- ko if: fileFound -->
-                                                                                                    <span class="bi bi-check-lg"></span>
-                                                                                                    <!-- /ko -->
-                                                                                                    <!-- /ko -->
-                                                                                                </li>
-                                                                                                <!-- /ko -->
-                                                                                                <li class="list-group-item d-flex justify-content-center btn btn-secondary py-2" data-bind="click: addNewAttachment">
-                                                                                                    <span class="bi bi-plus-lg"></span>
-                                                                                                    Add New Attachment
-                                                                                                </li>
-                                                                                                <li class="list-group-item d-flex justify-content-center align-items-center gap-3">
-                                                                                                    <span class="bi bi-plus-lg"></span>
-                                                                                                    <div id="attachment-from-list" data-bind="component: { name: 'mdc-kendo-dropdown-component-no-outline', params: attachmentsListParams }"></div>
-                                                                                                </li>
-                                                                                            </ul>
-                                                                                            <!-- ko if: attachmentsSizeSum -->
-                                                                                            <div id="attachments-total-size" class="d-flex justify-content-end gap-3">
-                                                                                                <label class="validation-message text-danger mt-0" data-bind="validationMessage: attachmentsSizeSum"></label>
-                                                                                                <label>
-                                                                                                    Total Attachments Size: <span data-bind="text: `${attachmentsSizeSum()}mb`"></span>
-                                                                                                </label>
+                                                                                <div id="trade-account-creation-email-reveal" data-bind="fadeSlideVisible: tradeAccountCreationEmail_send">
+                                                                                    <div class="form-group row">
+                                                                                        <div class="col-xs-12">
+                                                                                            <div id="trade-account-creation-display-options">
+                                                                                                <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayAccountManagerProps }"></div>
+                                                                                                <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayCustomerServiceProps }"></div>
+                                                                                                <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayCreditControlProps }"></div>
+                                                                                                @*<div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayB2BRegistrationProps }"></div>*@
+                                                                                                <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayLookbookProps }"></div>
                                                                                             </div>
-                                                                                            <!-- /ko -->
-                                                                                        </div>*@
-                                                                                        <div id="attachment-manager" class="flex-grow-1" data-bind="with: attachmentsManager">
-                                                                                            <ul class="list-group margin-bottom-0">
-                                                                                                <!-- ko foreach: attachments().sort((a, b) => a.SortOrder > b.SortOrder ? 1 : -1) -->
-                                                                                                <li class="list-group-item d-flex" data-bind="css: { 'barber-busy': busy, 'invalid': isInvalid }, validationOptions: { insertMessages: false }">
-                                                                                                    <button class="btn btn-outline no-ripple" data-bind="click: removeAttachment">
-                                                                                                        <span class="bi bi-x-lg d-inline-block"></span>
-                                                                                                    </button>
-                                                                                                    <div class="text-inputs" data-bind=" validationOptions: { insertMessages: true }">
-                                                                                                        <span class="attachment-name" data-bind="text: name" placeholder="Attachment Name"></span>
-                                                                                                    </div>
-                                                                                                </li>
-                                                                                                <!-- /ko -->
-                                                                                                <li class="list-group-item d-flex justify-content-center align-items-center gap-3">
-                                                                                                    <span class="bi bi-plus-lg pointer" data-bind="click: openAttachmentsList"></span>
-                                                                                                    <div id="attachment-from-list">
-                                                                                                        <label class="pointer" data-bind="click: openAttachmentsList">
-                                                                                                            Add Attachment
-                                                                                                        </label>
-                                                                                                        <div data-bind="component: { name: 'mdc-kendo-dropdown-component-no-outline', params: attachmentsListParams }"></div>
-                                                                                                    </div>
-                                                                                                </li>
-                                                                                            </ul>
-                                                                                            <!-- ko if: attachmentsSizeSum -->
-                                                                                            <div id="attachments-total-size" class="d-flex justify-content-end gap-3">
-                                                                                                <label class="validation-message text-danger mt-0" data-bind="validationMessage: attachmentsSizeSum"></label>
-                                                                                                <label>
-                                                                                                    Total Attachments Size: <span data-bind="text: `${attachmentsSizeSum()}mb`"></span>
-                                                                                                </label>
-                                                                                            </div>
-                                                                                            <!-- /ko -->
                                                                                         </div>
                                                                                     </div>
-                                                                                </div>
-                                                                                <div class="row">
-                                                                                    <div class="col-xs-12">
-                                                                                        <div id="trade-account-creation-display-options">
-                                                                                            <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayAccountManagerProps }"></div>
-                                                                                            <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayCustomerServiceProps }"></div>
-                                                                                            <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayCreditControlProps }"></div>
-                                                                                            @*<div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayB2BRegistrationProps }"></div>*@
-                                                                                            <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayLookbookProps }"></div>
+                                                                                    <div class="row">
+                                                                                        <div class="col-xs-12">
+                                                                                            @*<div id="attachment-manager" class="flex-grow-1" data-bind="with: attachmentsManager">
+                                                                                                <ul class="list-group margin-bottom-0">
+                                                                                                    <!-- ko foreach: attachments -->
+                                                                                                    <li class="list-group-item d-flex" data-bind="css: { 'barber-busy': busy, 'invalid': isInvalid }, validationOptions: { insertMessages: false }">
+                                                                                                        <button class="btn btn-outline no-ripple" data-bind="click: removeAttachment">
+                                                                                                            <span class="bi bi-x-lg d-inline-block"></span>
+                                                                                                        </button>
+                                                                                                        <div class="text-inputs" data-bind=" validationOptions: { insertMessages: true }">
+                                                                                                            <input type="text" class="attachment-name form-control flex-grow-0" data-bind="keepElement: name, textInput: name" placeholder="Attachment Name" />
+                                                                                                            <input type="text" class="attachment-path form-control" data-bind="keepElement: path, textInput: path, event: { 'blur': checkPath }" placeholder="\\files\00 - Everyone\Your File.pdf" />
+                                                                                                        </div>
+                                                                                                        <!-- ko if: fileSizeBytes -->
+                                                                                                        <label class="file-size">
+                                                                                                            <span data-bind="html: `${Math.round((fileSizeBytes() / 1024 / 1024) * 100) / 100}mb`"></span>
+                                                                                                        </label>
+                                                                                                        <!-- /ko -->
+                                                                                                        <!-- ko if: fileCheckPerformed -->
+                                                                                                        <!-- ko ifnot: fileFound -->
+                                                                                                        <span class="bi bi-hand-thumbs-down"></span>
+                                                                                                        <!-- /ko -->
+                                                                                                        <!-- ko if: fileFound -->
+                                                                                                        <span class="bi bi-check-lg"></span>
+                                                                                                        <!-- /ko -->
+                                                                                                        <!-- /ko -->
+                                                                                                    </li>
+                                                                                                    <!-- /ko -->
+                                                                                                    <li class="list-group-item d-flex justify-content-center btn btn-secondary py-2" data-bind="click: addNewAttachment">
+                                                                                                        <span class="bi bi-plus-lg"></span>
+                                                                                                        Add New Attachment
+                                                                                                    </li>
+                                                                                                    <li class="list-group-item d-flex justify-content-center align-items-center gap-3">
+                                                                                                        <span class="bi bi-plus-lg"></span>
+                                                                                                        <div id="attachment-from-list" data-bind="component: { name: 'mdc-kendo-dropdown-component-no-outline', params: attachmentsListParams }"></div>
+                                                                                                    </li>
+                                                                                                </ul>
+                                                                                                <!-- ko if: attachmentsSizeSum -->
+                                                                                                <div id="attachments-total-size" class="d-flex justify-content-end gap-3">
+                                                                                                    <label class="validation-message text-danger mt-0" data-bind="validationMessage: attachmentsSizeSum"></label>
+                                                                                                    <label>
+                                                                                                        Total Attachments Size: <span data-bind="text: `${attachmentsSizeSum()}mb`"></span>
+                                                                                                    </label>
+                                                                                                </div>
+                                                                                                <!-- /ko -->
+                                                                                            </div>*@
+                                                                                            <div id="attachment-manager" class="flex-grow-1" data-bind="with: attachmentsManager">
+                                                                                                <ul class="list-group margin-bottom-0">
+                                                                                                    <!-- ko foreach: attachments().sort((a, b) => a.SortOrder > b.SortOrder ? 1 : -1) -->
+                                                                                                    <li class="list-group-item d-flex" data-bind="css: { 'barber-busy': busy, 'invalid': isInvalid }, validationOptions: { insertMessages: false }">
+                                                                                                        <button class="btn btn-outline no-ripple" data-bind="click: removeAttachment">
+                                                                                                            <span class="bi bi-x-lg d-inline-block"></span>
+                                                                                                        </button>
+                                                                                                        <div class="text-inputs" data-bind=" validationOptions: { insertMessages: true }">
+                                                                                                            <span class="attachment-name" data-bind="text: name" placeholder="Attachment Name"></span>
+                                                                                                        </div>
+                                                                                                    </li>
+                                                                                                    <!-- /ko -->
+                                                                                                    <li class="list-group-item d-flex justify-content-center align-items-center gap-3">
+                                                                                                        <span class="bi bi-plus-lg pointer" data-bind="click: openAttachmentsList"></span>
+                                                                                                        <div id="attachment-from-list">
+                                                                                                            <label class="pointer" data-bind="click: openAttachmentsList">
+                                                                                                                Add Attachment
+                                                                                                            </label>
+                                                                                                            <div data-bind="component: { name: 'mdc-kendo-dropdown-component-no-outline', params: attachmentsListParams }"></div>
+                                                                                                        </div>
+                                                                                                    </li>
+                                                                                                </ul>
+                                                                                                <!-- ko if: attachmentsSizeSum -->
+                                                                                                <div id="attachments-total-size" class="d-flex justify-content-end gap-3">
+                                                                                                    <label class="validation-message text-danger mt-0" data-bind="validationMessage: attachmentsSizeSum"></label>
+                                                                                                    <label>
+                                                                                                        Total Attachments Size: <span data-bind="text: `${attachmentsSizeSum()}mb`"></span>
+                                                                                                    </label>
+                                                                                                </div>
+                                                                                                <!-- /ko -->
+                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
@@ -2265,7 +2268,7 @@
                                                                                 </div>
                                                                                 <div class="form-group row">
                                                                                     <div class="col-xs-12">
-                                                                                        <label class="col-form-label">Language</label>
+                                                                                        <label class="col-form-label">Mertex Language</label>
                                                                                     </div>
                                                                                     <div class="col-xs-12">
                                                                                         <select class="lead-country form-control" data-bind="highlightNullField: mertexLanguageCode, options: $parent.availableMertexLanguages, value: mertexLanguageCode, optionsText: 'Name', optionsValue: 'LanguageCode', optionsCaption: 'Please Select...'"></select>

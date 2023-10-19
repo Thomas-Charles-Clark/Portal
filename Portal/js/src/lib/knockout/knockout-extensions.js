@@ -2930,10 +2930,10 @@ bg #1ca9c9
             //return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F343), String.fromCodePoint(0x1F480), String.fromCodePoint(0x1F383), String.fromCodePoint(0x1F47B), String.fromCodePoint(0x2614), String.fromCodePoint(0x1F987), String.fromCodePoint(0x1F36C), String.fromCodePoint(0x1F578), String.fromCodePoint(0x1F577)]
 
             // Autumn
-            return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F343), String.fromCodePoint(0x2614)]
+            //return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F343), String.fromCodePoint(0x2614)]
 
             // Halloween
-            //return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F343), String.fromCodePoint(0x1F480), String.fromCodePoint(0x1F383), String.fromCodePoint(0x1F47B), String.fromCodePoint(0x2614), String.fromCodePoint(0x1F987), String.fromCodePoint(0x1F36C), String.fromCodePoint(0x1F578), String.fromCodePoint(0x1F577)]
+            return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F343), String.fromCodePoint(0x1F480), String.fromCodePoint(0x1F383), String.fromCodePoint(0x1F47B), String.fromCodePoint(0x2614), String.fromCodePoint(0x1F987), String.fromCodePoint(0x1F36C), String.fromCodePoint(0x1F578), String.fromCodePoint(0x1F577)]
 
             //return [String.fromCodePoint(0x1F337), String.fromCodePoint(0x1F33C), String.fromCodePoint(0x1F33A), String.fromCodePoint(0x1F98B)]//, String.fromCharCode(0x2734), String.fromCharCode(0x2747), String.fromCharCode(0x2734), String.fromCharCode(0x2600), String.fromCharCode(0x2B50)]
 
@@ -2957,12 +2957,12 @@ bg #1ca9c9
 
         self.reset = function () {
 
-            //self.ctx.fillStyle = "#020202"; // black
+            self.ctx.fillStyle = "#020202"; // black
             //self.ctx.fillStyle = "rgba(0,0,0,0.25)";
 
             //self.ctx.fillStyle = "#da5e04"; // autumn (bright)
-            //self.ctx.fillStyle = '##c86e2d'; // autumn (darker)
-            self.ctx.fillStyle = "#f0b447"; // autumn (golden yellow)
+            //self.ctx.fillStyle = '#c86e2d'; // autumn (darker)
+            //self.ctx.fillStyle = "#f0b447"; // autumn (golden yellow)
 
             //self.ctx.fillStyle = "#66b8ff"; //winter
             //self.ctx.fillStyle = "#ffbbd7"; //valentine's (pink)

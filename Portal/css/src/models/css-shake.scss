@@ -6,9 +6,7 @@
   http://elrumordelaluz.github.io/csshake/
   Licensed under MIT
 \* * * * * * * * * * * * * * * * * * * * */
-@keyframes
-
-"shake" {
+@keyframes shake {
     2% {
         transform: translate(1.5px, -1.5px) rotate(-.5deg);
     }
@@ -210,9 +208,7 @@
     }
 }
 
-@keyframes
-
-"shake-little" {
+@keyframes shake-little {
     2% {
         transform: translate(1px, 1px) rotate(.5deg);
     }
@@ -414,9 +410,7 @@
     }
 }
 
-@keyframes
-
-"shake-slow" {
+@keyframes shake-slow {
     2% {
         transform: translate(0px, -7px) rotate(2.5deg);
     }
@@ -618,9 +612,7 @@
     }
 }
 
-@keyframes
-
-"shake-hard" {
+@keyframes shake-hard {
     2% {
         transform: translate(7px, -4px) rotate(-.5deg);
     }
@@ -822,9 +814,7 @@
     }
 }
 
-@keyframes
-
-"shake-horizontal" {
+@keyframes shake-horizontal {
     2% {
         transform: translate(-5px, 0) rotate(0);
     }
@@ -1026,9 +1016,7 @@
     }
 }
 
-@keyframes
-
-"shake-vertical" {
+@keyframes shake-vertical {
     2% {
         transform: translate(0, -9px) rotate(0);
     }
@@ -1230,9 +1218,7 @@
     }
 }
 
-@keyframes
-
-"shake-rotate" {
+@keyframes shake-rotate {
     2% {
         transform: translate(0, 0) rotate(.5deg);
     }
@@ -1434,9 +1420,7 @@
     }
 }
 
-@keyframes
-
-"shake-opacity" {
+@keyframes shake-opacity {
     10% {
         transform: translate(1px, -2px) rotate(1.5deg);
         opacity: .95;
@@ -1487,9 +1471,7 @@
     }
 }
 
-@keyframes
-
-"shake-crazy" {
+@keyframes shake-crazy {
     10% {
         transform: translate(15px, 4px) rotate(2deg);
         opacity: .3;
@@ -1540,9 +1522,7 @@
     }
 }
 
-@keyframes
-
-"shake-chunk" {
+@keyframes shake-chunk {
     2% {
         transform: translate(-9px, 15px) rotate(5deg);
     }

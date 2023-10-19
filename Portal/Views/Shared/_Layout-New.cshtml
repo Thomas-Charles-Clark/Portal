@@ -501,7 +501,7 @@
                     </div>
                     <div class="mdc-notched-outline__trailing"></div>
                 </div>
-                <div class="controls">
+                <div class="controls" data-bind="disable: disable">
                     <!-- ko if: revertable -->
                     <div class="close revert" data-bind="click: revertFunction">
                         <i class="material-icons">
@@ -605,7 +605,8 @@
                            max: maxValue,
                            step: step
                         },
-                        event: typeof events === 'undefined' ? null : events
+                        event: typeof events === 'undefined' ? null : events,
+                        disable: disable
                         " />
                     <div class="mdc-notched-outline">
                         <div class="mdc-notched-outline__leading"></div>

@@ -26,7 +26,8 @@ namespace SharedEFClasses.Models
             return new FenwickSelfbillInvoiceResponse()
             {
                 RecSummaries = reply.Read<FenwickInvoiceReconciliationSummary>(),
-                Invoices = reply.Read<FenwickInvoiceResult>()
+                Invoices = reply.Read<FenwickInvoiceResult>(),
+                Notifications = reply.Read<FenwickInvoiceNotice>()
             };
         }
     }

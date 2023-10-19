@@ -400,7 +400,7 @@ namespace Portal.Areas.Sales.Controllers
     [HttpPost]
     public async Task<IHttpActionResult> ResetLeadToCreditControl([FromBody]PassLeadID objLeadId)
     {
-      _ = await portalDb.ResetLeadToCreditControl(objLeadId);
+      //_ = await portalDb.ResetLeadToCreditControl(objLeadId);
 
       return Ok(new { });
     }

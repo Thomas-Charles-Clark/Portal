@@ -319,6 +319,7 @@
     <Compile Include="BaseController.cs" />
     <Compile Include="BaseViewModel.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-Fenwick.cs" />
+    <Compile Include="DbContext\Dapper\PortalDbContext-RangeManagement.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-StockManagement.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-TradeAccount.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-Leads.cs" />
@@ -339,6 +340,7 @@
     <Compile Include="Models\CreditControlRegion_SalesMarket.cs" />
     <Compile Include="Models\DotDigital\SyncAction.cs" />
     <Compile Include="Models\Fenwick\FenwickBranch.cs" />
+    <Compile Include="Models\Fenwick\FenwickInvoiceNotice.cs" />
     <Compile Include="Models\Fenwick\FenwickInvoiceReconciliationSummary.cs" />
     <Compile Include="Models\Fenwick\FenwickInvoiceResult.cs" />
     <Compile Include="Models\Fenwick\FenwickSelfbillInvoiceResponse.cs" />
@@ -429,6 +431,9 @@
     <Compile Include="Models\StockManagement\BranchGroup.cs" />
     <Compile Include="Models\StockManagement\BranchStockLocation.cs" />
     <Compile Include="Models\StockManagement\Branch_BranchGroup.cs" />
+    <Compile Include="Models\RangeManagement\ProductFilterGroupResponse.cs" />
+    <Compile Include="Models\RangeManagement\RangeManagementProductFetchDto.cs" />
+    <Compile Include="Models\RangeManagement\RangeManagementProductSearchResponse.cs" />
     <Compile Include="Models\StockManagement\StockManagementProductStatusChangeDto.cs" />
     <Compile Include="Models\StockManagement\StockManagementProductStatusChangeResponse.cs" />
     <Compile Include="Models\StockManagement\StockManagementSaveDto.cs" />

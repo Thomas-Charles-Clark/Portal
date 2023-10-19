@@ -54,6 +54,11 @@ body {
     }
 }
 
+.blocker {
+    opacity: 0;
+    transition: opacity 150ms ease-in-out;
+}
+
 input {
     position: relative;
 }
@@ -177,6 +182,10 @@ input[type="search"]::-webkit-search-results-decoration {
     animation: barberpole 10s linear reverse infinite;
 }
 
+textarea.mdc-text-field__input {
+    padding-top: $xl-gutter;
+}
+
 .mdc-validating-field {
     .revert:hover,
     .revert:active,
@@ -221,7 +230,7 @@ input[type="search"]::-webkit-search-results-decoration {
         }
 
         .mdc-text-field__input.clearable.revertable {
-            padding-right: calc(calc($xl-gutter * 2) + $vsm-gutter);
+            padding-right: calc(calc($xl-gutter * 2) + $l-gutter);
         }
     }
 

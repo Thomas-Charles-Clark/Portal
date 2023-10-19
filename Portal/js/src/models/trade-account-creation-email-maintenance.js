@@ -619,6 +619,9 @@ const editModel = (props) => {
                         for (var propertyName in mapped) {
                             data[propertyName] = mapped[propertyName];
                         }
+
+                        data.salesMarketId = self.SalesMarketID;
+
                         $.ajax({
                             url: "/api/customermaintenance/GetTradeAccountCreationEmailAttachments",
                             type: "GET",

@@ -1683,18 +1683,18 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
     self.busyMessage.skipSubscription = false;
 
     // Halloween spectacular
-    //self.busyMessage.subscribe(function (newValue) {
-    //    if (newValue && self.useMatrixLoader()) {
-    //        if (self.busyMessage.skipSubscription) {
-    //            self.busyMessage.skipSubscription = false;
-    //            return;
-    //        }
-    //        if (Math.random() < 0.5) {
-    //            self.busyMessage.skipSubscription = true;
-    //            self.busyMessage('<div class="halloween-message">' + HALLOWEEN_RANDOM_MESSAGES[Math.floor(Math.random() * HALLOWEEN_RANDOM_MESSAGES.length)] + '</div>')
-    //        }
-    //    }
-    //});
+    self.busyMessage.subscribe(function (newValue) {
+        if (newValue && self.useMatrixLoader()) {
+            if (self.busyMessage.skipSubscription) {
+                self.busyMessage.skipSubscription = false;
+                return;
+            }
+            if (Math.random() < 0.5) {
+                self.busyMessage.skipSubscription = true;
+                self.busyMessage('<div class="halloween-message">' + HALLOWEEN_RANDOM_MESSAGES[Math.floor(Math.random() * HALLOWEEN_RANDOM_MESSAGES.length)] + '</div>')
+            }
+        }
+    });
 
     self.useMatrixLoader = ko.pureComputed(function () {
         return [ORDERFACTORY_PHASE_DISPATCH,

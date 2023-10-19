@@ -133,6 +133,7 @@ namespace SharedEFClasses.Models.MertexLive
 
         public DateTime? SuggestedDeliveryDate { get; set; }
 
+        [JsonIgnore]
         [ForeignKey("OrderID")]
         [InverseProperty("OrderLines")]
         public virtual OrderHeadLive Order { get; set; }

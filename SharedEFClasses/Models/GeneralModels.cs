@@ -1137,7 +1137,7 @@ namespace SharedEFClasses.Models.General
     {
         public int tradeAccountId { get; set; }
         public short? launchId { get; set; }
-        public string clearance { get; set; }
+        public string clearance { get; set; } // this is really badly named, or it got repurposed
         public bool searchNew { get; set; }
         public short? applicationId { get; set; }
     }

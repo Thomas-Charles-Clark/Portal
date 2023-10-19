@@ -32,7 +32,7 @@ var leadEnquiryViewModel = function () {
 
     self.availableLanguages = getAvailableLanguages();
 
-    self.availableMertexLanguages = getAvailableMertexLanguages();
+    self.availableMertexLanguages = getAvailableMertexLanguages().filter(x => x.SortOrder != null).sort((a, b) => a.SortOrder > b.SortOrder ? 1 : -1);
 
     self.availableLeadContactTypes = getAvailableLeadContactTypes();
 
@@ -1189,6 +1189,19 @@ This customer wishes their deliveries to be consolidated. Please double check th
 
     self.usSalesTaxExemptionCertificateBase64 = ko.observable();
 
+    self.tradeAccountCreationEmail_send = ko.observable();
+
+    self.tradeAccountCreationEmail_sendProps = {
+        label: 'Send Trade Account Creation Email?',
+        checkboxId: `send-trade-account-creation-email`,
+        observable: self.tradeAccountCreationEmail_send,
+        originalValue: undefined,
+        useNativeValidation: false,
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        busy: ko.observable(false)
+    }
+
     self.tradeAccountCreationEmail_displayAccountManager = ko.observable();
 
     self.tradeAccountCreationEmail_displayAccountManagerSubscription = null;
@@ -1463,6 +1476,7 @@ This customer wishes their deliveries to be consolidated. Please double check th
     }
 
     self.createTradeAccountCreationEmailSubscriptions = () => {
+
         self.tradeAccountCreationEmail_displayAccountManagerSubscription =
             self.tradeAccountCreationEmail_displayAccountManager.subscribe(nv => {
                 self.haveChangedCreationEmailSettings(true);
@@ -3773,6 +3787,8 @@ This customer wishes their deliveries to be consolidated. Please double check th
             self.requestedPaymentOption(undefined);
         }
 
+        self.tradeAccountCreationEmail_send(data.Lead.ShouldSendTradeAccountCreationEmail);
+
         if (data.Lead.TradeAccountCreationEmail_DisplayAccountManager == null) {
             self.tradeAccountCreationEmail_skipLoadingDefault = false;
         } else {
@@ -4086,7 +4102,11 @@ This customer wishes their deliveries to be consolidated. Please double check th
         window.setTimeout(() => {
             self.vatNumberDisplay(data.Lead.VATNumberDisplay || (vatCountry?.Code && data.Lead.VATNumber ? `${vatCountry?.Code}${data.Lead.VATNumber}` : undefined));
         }, 0)
-        
+
+        if (data.Lead.FirstOrderValue === 0) {
+            self.placedAnOrder(false);
+        }
+
         // get appointment stuff
 
         switch (self.stageInformation().CurrentStage)
@@ -5006,6 +5026,7 @@ This customer wishes their deliveries to be consolidated. Please double check th
                 salesDivision: salesDivision,
                 deliveryTerms: self.deliveryTerms(),
                 taxId: self.taxId(),
+                shouldSendTradeAccountCreationEmail: self.tradeAccountCreationEmail_send() ?? false,
                 tradeAccountCreationEmail_displayAccountManager: self.tradeAccountCreationEmail_displayAccountManager(),
                 tradeAccountCreationEmail_displayCustomerService: self.tradeAccountCreationEmail_displayCustomerService(),
                 tradeAccountCreationEmail_displayCreditControl: self.tradeAccountCreationEmail_displayCreditControl(),
@@ -5093,7 +5114,7 @@ This customer wishes their deliveries to be consolidated. Please double check th
                             });
                           },
                           error: function (xhr, e, s) {
-                            self.resetLeadToCreditControl();
+                            //self.resetLeadToCreditControl();
                             $.showError(xhr, e, s);
                           }
                         });

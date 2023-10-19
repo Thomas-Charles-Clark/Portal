@@ -15,7 +15,6 @@ using SharedEFClasses;
 
 namespace Portal.Controllers
 {
-    [System.Web.Http.Authorize]
     public class StatusGroupsController : BaseODataController
     {
         public StatusGroupsController(PortalDbContext dbContext) : base(dbContext)

@@ -296,6 +296,10 @@ namespace Portal
                         $"{cssPrefix}/models/fenwick-invoicing{cssSuffix}"
                 ));
 
+            bundles.Add(new StyleBundle("~/bundles/css/range-management").Include(
+                        $"{cssPrefix}/models/range-management{cssSuffix}"
+                ));
+
             //  
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             //
@@ -691,6 +695,12 @@ namespace Portal
 
             bundles.Add(new ScriptBundle("~/bundles/js/fenwick-invoicing").Include(
                         $"{jsPrefix}/models/fenwick-invoicing{jsSuffix}"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/range-management").Include(
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/range-management{jsSuffix}"
                 ));
 
             foreach (var b in BundleTable.Bundles)

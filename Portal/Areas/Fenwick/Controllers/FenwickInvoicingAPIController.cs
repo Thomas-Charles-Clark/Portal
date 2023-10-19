@@ -25,6 +25,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.ServiceModel.Configuration;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
@@ -49,12 +50,39 @@ namespace Portal.Areas.Fenwick.Controllers
 
         public IHttpActionResult GetSelfBillInvoices([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
         {
+            PortalDb.Configuration.LazyLoadingEnabled = true;
+
             var prelist = PortalDb.FenwickSelfBillInvoices
-                .Include("Branch")
-                .GroupBy(p => p.InvoiceDate)
+                .Where(sbi => sbi.Deleted == false)
                 .ToList();
 
             var list = prelist
+                .Select(sbi => new SelfBillInvoiceDto(
+                    sbi.SelfBillInvoiceID,
+                    sbi.InvoiceDate,
+                    sbi.BranchID,
+                    sbi.TotalGrossSales,
+                    sbi.TotalVAT,
+                    sbi.TotalCommission,
+                    sbi.FenwicksVariance,
+                    sbi.MertexRoundingVariance,
+                    sbi.CreatedDT,
+                    sbi.SignedOffDT,
+                    sbi.SignedOff,
+                    sbi.SignedOffMemberID,
+                    sbi.Notes,
+                    sbi.DeletedDT,
+                    sbi.Deleted,
+                    sbi.InvoicePDF,
+                    sbi.Branch,
+                    sbi.SignedOffByMember == null ? null : sbi.SignedOffByMember.FullName)
+                ).ToList();
+
+            var grouped = prelist
+                .GroupBy(p => p.InvoiceDate)
+                .ToList();
+
+            var listlist = grouped
                 .Select(p => new
                 {
                     InvoiceDate = p.Key,
@@ -63,7 +91,7 @@ namespace Portal.Areas.Fenwick.Controllers
                 }).ToList();
 
             return Ok(
-                list
+                listlist
                 .OrderBy(p => p.InvoiceDate)
                 .AsQueryable()
                 .ToDataSourceResult(request));

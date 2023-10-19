@@ -52,6 +52,11 @@ body > nav.navbar > .container .navbar-collapse.collapse ul.nav li {
   height: 100vh;
 }
 
+.blocker {
+  opacity: 0;
+  transition: opacity 150ms ease-in-out;
+}
+
 input {
   position: relative;
 }
@@ -155,6 +160,10 @@ input[type=search]::-webkit-search-results-decoration {
   animation: barberpole 10s linear reverse infinite;
 }
 
+textarea.mdc-text-field__input {
+  padding-top: 2rem;
+}
+
 .mdc-validating-field .revert:hover,
 .mdc-validating-field .revert:active,
 .mdc-validating-field .revert:focus,
@@ -192,7 +201,7 @@ input[type=search]::-webkit-search-results-decoration {
   padding-right: 2.25rem;
 }
 .mdc-validating-field .mdc-text-field--outlined .mdc-text-field__input.clearable.revertable {
-  padding-right: 4.25rem;
+  padding-right: 5rem;
 }
 .mdc-validating-field .mdc-select .controls {
   right: 33px;

@@ -10,5 +10,6 @@ namespace SharedEFClasses.Models.Fenwick
     {
         public IEnumerable<FenwickInvoiceReconciliationSummary> RecSummaries { get; set; }
         public IEnumerable<FenwickInvoiceResult> Invoices { get; set; }
+        public IEnumerable<FenwickInvoiceNotice> Notifications { get; set; }
     }
 }

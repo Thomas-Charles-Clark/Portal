@@ -1,0 +1,179 @@
+:root {
+  --vsm-gutter: 0.25rem;
+  --sm-gutter: 0.5rem;
+  --m-gutter: 0.75rem;
+  --l-gutter: 1rem;
+  --mxl-gutter: 1.5rem;
+  --xl-gutter: 2rem;
+  --xxl-gutter: 3rem;
+  --disco-color: #e51f7c;
+  --letter-spacing-slight: 0.05rem;
+  --page-heading-colour: #44546b;
+}
+
+.input-group-lg .btn {
+  font-size: 1rem;
+}
+
+#range-management-tab-container,
+.content-container {
+  background-color: white;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 0.375rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+#main-tabs,
+#secondary-tabs {
+  position: relative;
+  border-bottom: 0;
+}
+#main-tabs li,
+#secondary-tabs li {
+  margin-bottom: 1rem;
+}
+#main-tabs li + li,
+#secondary-tabs li + li {
+  margin-left: 1rem;
+}
+#main-tabs .nav-item,
+#secondary-tabs .nav-item {
+  display: flex;
+}
+#main-tabs .nav-item a,
+#secondary-tabs .nav-item a {
+  text-align: center;
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  padding: 0.75rem 3rem;
+}
+#main-tabs .nav-item #add-to-range-anchor,
+#secondary-tabs .nav-item #add-to-range-anchor {
+  /*padding: $mxl-gutter $xxl-gutter;*/
+}
+
+.prefilters {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+  /*
+      #product-type-prefilter,
+      #collection-prefilter {
+          flex: 1 1 auto;
+          max-width: calc(480px + $l-gutter);
+      }
+  */
+}
+.prefilters > div {
+  flex: 0 1 auto;
+  min-width: 240px;
+}
+.prefilters .k-animation-container li.k-item {
+  line-height: 33px;
+}
+.prefilters > div {
+  position: relative;
+}
+.prefilters + .prefilters {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #dee2e6;
+}
+.prefilters .k-dropdown-wrap.k-input {
+  padding: 9px 0 6px 0;
+}
+
+.thumb {
+  width: 90px;
+  height: 90px;
+}
+
+#search-term-prefilter {
+  min-width: 493px;
+}
+#search-term-prefilter .mdc-validating-field {
+  width: auto;
+  flex-grow: 1;
+  flex-basis: 100%;
+}
+
+#results-grid {
+  border: 1px solid #283fa3;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+#results-grid .k-grid-header {
+  background-color: #425296;
+  border-color: #283fa3;
+  color: #dee1f3;
+}
+#results-grid .k-grid-header .k-grid-header-wrap {
+  border-color: #283fa3;
+}
+#results-grid .k-header {
+  background-color: #425296;
+  border-color: #283fa3;
+  color: #dee1f3;
+}
+#results-grid .k-grid-header {
+  border-color: #283fa3;
+}
+#results-grid .k-grid-header a.k-link {
+  color: #dee1f3;
+}
+#results-grid .k-grid-content tr.k-grouping-row td {
+  background-color: #586fc2;
+  color: #d8dce4;
+  font-weight: normal;
+}
+#results-grid .k-grid-content tr.k-grouping-row td.k-group-cell {
+  background-color: #586fc2;
+  color: #d8dce4;
+}
+#results-grid .k-grid-content tr.k-grouping-row .k-group-cell + .k-group-cell {
+  background-color: #98a7da;
+  color: #262a36;
+}
+#results-grid .k-grid-content tr.k-grouping-row td.k-group-cell + td.k-group-cell + td.k-group-cell {
+  background-color: #bac5e6;
+  color: #262a36;
+}
+#results-grid .k-grid-content tr.k-grouping-row td.k-group-cell + td.k-group-cell + td {
+  background-color: #bac5e6;
+  color: #262a36;
+  font-weight: normal;
+}
+#results-grid .k-grid-content tr:not(.k-grouping-row) td.k-group-cell {
+  background-color: #586fc2;
+  color: #d8dce4;
+}
+#results-grid .k-grid-content tr:not(.k-grouping-row) .k-group-cell + .k-group-cell {
+  background-color: #98a7da;
+  color: #262a36;
+}
+#results-grid .k-grid-content tr:not(.k-grouping-row) td.k-group-cell + td.k-group-cell + td.k-group-cell {
+  background-color: #bac5e6;
+  color: #262a36;
+}
+#results-grid .k-grid-content tr:not(.k-grouping-row) td.k-group-cell + td.k-group-cell + td {
+  background-color: #bac5e6;
+  color: #262a36;
+  font-weight: normal;
+}
+#results-grid .k-grid-content .k-grouping-row + .k-grouping-row td:not(.k-group-cell) {
+  background-color: #98a7da;
+  color: #262a36;
+  font-weight: normal;
+}
+#results-grid .k-grid-content .k-grouping-row + .k-grouping-row + .k-grouping-row td:not(.k-group-cell) {
+  background-color: #bac5e6;
+  color: #262a36;
+  font-weight: normal;
+}
+/*# sourceMappingURL=range-management.css.map */

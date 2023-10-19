@@ -1,0 +1,209 @@
+﻿@import "common.scss";
+
+#range-management-tab-container,
+.content-container {
+    background-color: white;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: $border-radius;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+#main-tabs,
+#secondary-tabs {
+    position: relative;
+    border-bottom: 0;
+
+    li {
+        margin-bottom: $l-gutter;
+    }
+
+    li + li {
+        margin-left: $l-gutter;
+    }
+
+    .nav-item {
+        display: flex;
+
+        a {
+            text-align: center;
+            display: flex;
+            flex: 1;
+            justify-content: center;
+            align-items: center;
+            padding: $m-gutter $xxl-gutter
+        }
+
+        #add-to-range-anchor {
+            /*padding: $mxl-gutter $xxl-gutter;*/
+        }
+    }
+}
+
+.prefilters {
+    display: flex;
+    gap: $l-gutter;
+    flex-wrap: wrap;
+    align-items: center;
+
+    > div {
+        flex: 0 1 auto;
+        min-width: 240px;
+    }
+    /*
+    #product-type-prefilter,
+    #collection-prefilter {
+        flex: 1 1 auto;
+        max-width: calc(480px + $l-gutter);
+    }
+*/
+    .k-animation-container {
+        li.k-item {
+            line-height: 33px;
+        }
+    }
+
+    > div {
+        position: relative;
+    }
+
+    + .prefilters {
+        margin-top: $l-gutter;
+        padding-top: $l-gutter;
+        border-top: 1px solid $gray-300;
+    }
+
+    .k-dropdown-wrap.k-input {
+        padding: 9px 0 6px 0;
+    }
+}
+
+.thumb {
+    width: 90px;
+    height: 90px;
+}
+
+#search-term-prefilter {
+    min-width: 493px;
+    .mdc-validating-field {
+        width: auto;
+        flex-grow: 1;
+        flex-basis: 100%;
+    }
+}
+
+$heading-blue: #425296;
+$heading-color: #dee1f3;
+$heading-border-blue: #283fa3;
+$product-filter-blue: #586fc2;
+$product-filter-color: #d8dce4;
+$product-page-blue: #98a7da;
+$product-page-color: #262a36;
+$order-form-group-blue: #bac5e6;
+$order-form-group-color: $product-page-color;
+$product-color: $order-form-group-color;
+
+#results-grid {
+    border: 1px solid $heading-border-blue;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+
+    .k-grid-header {
+        background-color: $heading-blue;
+        border-color: $heading-border-blue;
+        color: $heading-color;
+
+        .k-grid-header-wrap {
+            border-color: $heading-border-blue;
+        }
+    }
+
+    .k-header {
+        background-color: $heading-blue;
+        border-color: $heading-border-blue;
+        color: $heading-color;
+    }
+
+    .k-grid-header {
+        border-color: $heading-border-blue;
+
+        a.k-link {
+            color: $heading-color;
+        }
+    }
+
+    .k-grid-content {
+
+        tr.k-grouping-row {
+            td {
+                background-color: $product-filter-blue;
+                color: $product-filter-color;
+                font-weight: normal;
+            }
+
+            td.k-group-cell {
+                background-color: $product-filter-blue;
+                color: $product-filter-color;
+            }
+
+            .k-group-cell + .k-group-cell {
+                background-color: $product-page-blue;
+                color: $product-page-color;
+            }
+
+            td.k-group-cell + td.k-group-cell + td.k-group-cell {
+                background-color: $order-form-group-blue;
+                color: $order-form-group-color;
+            }
+
+            td.k-group-cell + td.k-group-cell + td {
+                background-color: $order-form-group-blue;
+                color: $order-form-group-color;
+                font-weight: normal;
+            }
+        }
+
+        tr:not(.k-grouping-row) {
+
+            td.k-group-cell {
+                background-color: $product-filter-blue;
+                color: $product-filter-color;
+            }
+
+            .k-group-cell + .k-group-cell {
+                background-color: $product-page-blue;
+                color: $product-page-color;
+            }
+
+            td.k-group-cell + td.k-group-cell + td.k-group-cell {
+                background-color: $order-form-group-blue;
+                color: $order-form-group-color;
+            }
+
+            td.k-group-cell + td.k-group-cell + td {
+                background-color: $order-form-group-blue;
+                color: $order-form-group-color;
+                font-weight: normal;
+            }
+        }
+
+        .k-grouping-row + .k-grouping-row {
+
+            td:not(.k-group-cell) {
+                background-color: $product-page-blue;
+                color: $product-page-color;
+                font-weight: normal;
+            }
+        }
+
+        .k-grouping-row + .k-grouping-row + .k-grouping-row {
+            td:not(.k-group-cell) {
+                background-color: $order-form-group-blue;
+                color: $order-form-group-color;
+                font-weight: normal;
+            }
+        }
+    }
+}

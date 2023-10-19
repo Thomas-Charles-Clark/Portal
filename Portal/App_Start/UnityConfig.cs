@@ -66,7 +66,7 @@ namespace Portal
                 new InjectionConstructor(typeof(PortalDbContext)));
 
             container.RegisterType<IUserIdProvider>(new InjectionFactory(c => new SignalRMemberIDProvider()));
-
+            
             container.RegisterType<TaskAlertHub>(new InjectionFactory(CreateTaskAlertHub));
 
             container.RegisterType<BasketLockHub>(new InjectionFactory(CreateBasketLockHub));

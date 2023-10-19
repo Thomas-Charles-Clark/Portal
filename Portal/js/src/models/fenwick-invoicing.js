@@ -120,6 +120,8 @@ const fenwickInvoicingViewModel = (() => {
 
     self.invoiceResults = ko.observableArray([]);
 
+    self.notifications = ko.observableArray([]);
+
     //#endregion
 
 
@@ -345,10 +347,11 @@ const fenwickInvoicingViewModel = (() => {
 
         self.invoiceDocumentBase64(undefined);
 
-        self.reconciliationResults = ko.observableArray([]);
+        self.reconciliationResults([]);
 
-        self.invoiceResults = ko.observableArray([]);
+        self.invoiceResults([]);
 
+        self.notifications([]);
     });
 
     self.selectedSelfBillInvoice.subscribe(nv => {
@@ -472,7 +475,7 @@ const fenwickInvoicingViewModel = (() => {
         }
     }
 
-    self.load = () => {
+    self.load = (onComplete) => {
         self.busy(true);
 
         let date = self.billingPeriodDate().slice(0, 10);
@@ -487,6 +490,7 @@ const fenwickInvoicingViewModel = (() => {
                 self.invoiceDocumentBase64(data.InvoiceDocumentBase64);
                 self.reconciliationResults(data.Reconciliations);
                 self.invoiceResults(data.Invoices);
+                self.notifications(data.Notifications);
 
                 self.detailGridSettings.widget().dataSource.data(self.invoiceResults());
 
@@ -505,6 +509,10 @@ const fenwickInvoicingViewModel = (() => {
                 self.signedOff(self.selectedSelfBillInvoice().SignedOff);
 
                 self.busy(false);
+
+                if (typeof onComplete === 'function') {
+                    onComplete();
+                }
             })
             .catch(err => {
                 self.busy(false);
@@ -595,15 +603,12 @@ const fenwickInvoicingViewModel = (() => {
                     self.selectedSelfBillInvoice().TotalCommission = self.invoiceTotalCommission.value();
                     self.selectedSelfBillInvoice().Notes = self.signOffNotes.value();
 
-                    self.billingPeriodParams.dropDownListSettings.widget().dataSource.read();
-                    self.billingPeriodParams.dropDownListSettings.widget().trigger("change");
-
-                    self.reload();
-
-                    self.load();
-
                     if (signOff) {
-                        self.signedOff(true);
+                        self.reload();
+                        self.load();
+                    } else {
+                        self.reload();
+                        self.busy(false);
                     }
                 })
                 .catch(err => {
@@ -629,7 +634,8 @@ const fenwickInvoicingViewModel = (() => {
             self.selectBranch(b);
         });
 
-        self.billingPeriodParams.dropDownListSettings.widget().dataSource.read();
+        self.billingPeriodParams.dropDownListSettings.widget().dataSource.query({});
+        //self.billingPeriodParams.dropDownListSettings.widget().trigger("change");
     }
 
     //#endregion

@@ -23,9 +23,10 @@ namespace SharedEFClasses.Models.StockManagement
 
         public DateTime ModifiedDT { get; set; }
 
-        public DateTime DeletedDT { get; set; }
+        public DateTime? DeletedDT { get; set; }
 
-        public bool? Deleted { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public bool Deleted { get; set; }
 
         [InverseProperty("StatusGroup")]
         public virtual ICollection<StockManagementProduct> Products { get; set; } = new List<StockManagementProduct>();

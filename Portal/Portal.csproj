@@ -589,9 +589,12 @@
     <Compile Include="Areas\Retail\Models\PassRetailStoreMembersBatchDto.cs" />
     <Compile Include="Areas\Retail\RetailAreaRegistration.cs" />
     <Compile Include="Areas\Retail\ViewModels\RetailStoreMembersViewModel.cs" />
+    <Compile Include="Areas\Stock\Controllers\RangeManagementAPIController.cs" />
     <Compile Include="Areas\Stock\Controllers\StockManagementAPIController.cs" />
+    <Compile Include="Areas\Stock\Controllers\RangeManagementController.cs" />
     <Compile Include="Areas\Stock\Controllers\StockManagementController.cs" />
     <Compile Include="Areas\Stock\Models\SalesHistoryDataSourceResult.cs" />
+    <Compile Include="Areas\Stock\ViewModels\RangeManagementViewModel.cs" />
     <Compile Include="Areas\Stock\ViewModels\StockManagementViewModel.cs" />
     <Compile Include="Controllers\ODataControllers\AttributesController.cs" />
     <Compile Include="Controllers\ODataControllers\AttributeGroupsController.cs" />
@@ -1813,6 +1816,7 @@
     <Content Include="Areas\Fenwick\Views\web.config" />
     <Content Include="Areas\Fenwick\Views\Invoicing\FenwickInvoicing.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
+    <Content Include="Areas\Stock\Views\RangeManagement\RangeManagement.cshtml" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
@@ -1830,6 +1834,7 @@
     <Content Include="css\src\models\trade-account-creation-email-maintenance.scss" />
     <Content Include="css\src\models\retail-store-members.scss" />
     <Content Include="css\src\models\fenwick-invoicing.scss" />
+    <Content Include="css\src\models\range-management.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

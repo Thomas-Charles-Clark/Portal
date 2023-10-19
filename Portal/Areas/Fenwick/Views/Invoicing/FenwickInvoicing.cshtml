@@ -127,7 +127,7 @@
                         <span data-bind="text: formatCurrency(FenwicksVariance, 2, 'en-GB', 'GBP')"></span>
                     </td>
                     <td>
-                        <span data-bind="html: (SignedOff ? `Signed off by ${SignedOffByMember.FullName} on ${renderDate(SignedOffDT)}` : null)"></span>
+                        <span data-bind="html: (SignedOffByMember ? `Signed off by ${SignedOffByMember.FullName} on ${renderDate(SignedOffDT)}` : null)"></span>
                     </td>
                 </tr>
                 <!-- /ko -->
@@ -242,15 +242,17 @@
                     </tbody>
                 </table>
                 <div data-bind="template: { name: 'generic-form-field-template', data: signOffNotes }"></div>
-
+                <div data-bind="foreach: notifications">
+                    <div class="mb-3" data-bind="html: Notification"></div>
+                </div>
                 <!-- ko ifnot: signedOff -->
-                <button class="btn btn-secondary btn-lg w-100" data-bind="click: () => { save(true); }">
+                <button class="btn btn-secondary btn-lg w-100" data-bind="disable: busy, click: () => { save(true); }">
                     Sign Off
                 </button>
                 <!-- /ko -->
                 <!-- ko if: signedOff -->
                 <button class="btn btn-secondary btn-lg w-100" data-bind="with: selectedSelfBillInvoice" disabled>
-                    <span data-bind="html: (SignedOff ? `Signed off by ${SignedOffByMember.FullName} on ${renderDate(SignedOffDT)}` : null)"></span>
+                    <span data-bind="html: (SignedOffByMember ? `Signed off by ${SignedOffByMember.FullName} on ${renderDate(SignedOffDT)}` : null)"></span>
                 </button>
                 <!-- /ko -->
             </div>
@@ -281,7 +283,7 @@
             <span data-bind="text: formatCurrency(GrossSales, 2, 'en-GB', 'GBP')"></span>
         </td>
         <td class="text-end">
-            <span data-bind="text: formatPercentage(Discount / 100, 2)"></span>
+            <span data-bind="text: formatCurrency(Discount, 2, 'en-GB', 'GBP')"></span>
         </td>
         <td class="text-end">
             <span data-bind="text: formatCurrency(NetSales, 2, 'en-GB', 'GBP')"></span>
