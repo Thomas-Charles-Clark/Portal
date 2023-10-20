@@ -37,7 +37,7 @@ namespace Portal.Controllers
         [EnableQuery]
         public IQueryable<ProductFilterGroup> GetProductFilterGroups()
         {
-            return new PortalDbContext().ProductFilterGroups.OrderBy(p => p.SortOrder).AsQueryable();
+            return new PortalDbContext().ProductFilterGroups.OrderBy(pfg => pfg.Name).AsQueryable();
         }
 
         [EnableQuery(MaxNodeCount = 200)]

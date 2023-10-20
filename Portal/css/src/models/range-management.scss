@@ -1,6 +1,25 @@
 ﻿@import "common.scss";
 
-#range-management-tab-container,
+.navbar.navbar-default.navbar-expand {
+    .container {
+        max-width: unset !important;
+        width: 100% !important;
+        padding-left: 5em;
+        padding-right: 5em;
+    }
+}
+
+.body-content {
+    max-width: unset !important;
+    width: 100% !important;
+    padding-left: 5em;
+    padding-right: 5em;
+}
+
+.page-heading-logo {
+    top: -30px;
+}
+
 .content-container {
     background-color: white;
     padding: 15px;
@@ -15,9 +34,10 @@
 #secondary-tabs {
     position: relative;
     border-bottom: 0;
+    margin-bottom: 0;
 
     li {
-        margin-bottom: $l-gutter;
+        margin-bottom: 0;
     }
 
     li + li {
@@ -33,7 +53,7 @@
             flex: 1;
             justify-content: center;
             align-items: center;
-            padding: $m-gutter $xxl-gutter
+            padding: 9px $xxl-gutter
         }
 
         #add-to-range-anchor {
@@ -69,20 +89,14 @@
         position: relative;
     }
 
-    + .prefilters {
-        margin-top: $l-gutter;
-        padding-top: $l-gutter;
-        border-top: 1px solid $gray-300;
-    }
-
     .k-dropdown-wrap.k-input {
         padding: 9px 0 6px 0;
     }
 }
 
 .thumb {
-    width: 90px;
-    height: 90px;
+    width: 64px;
+    height: 64px;
 }
 
 #search-term-prefilter {
@@ -124,6 +138,12 @@ $product-color: $order-form-group-color;
         background-color: $heading-blue;
         border-color: $heading-border-blue;
         color: $heading-color;
+        padding: 0.4em;
+        line-height: normal;
+    }
+
+    .k-header.k-group-cell + .k-header.k-group-cell {
+        border-left-color: $heading-blue;
     }
 
     .k-grid-header {
@@ -131,22 +151,69 @@ $product-color: $order-form-group-color;
 
         a.k-link {
             color: $heading-color;
+            line-height: normal;
+            min-height: unset;
         }
+    }
+
+    .k-group-col {
+        width: 7px;
     }
 
     .k-grid-content {
 
-        tr.k-grouping-row {
+        .k-grouping-row {
             td {
+                height: 24px;
+                padding-left: 0;
+            }
+
+            position: relative;
+
+            p.k-reset {
+                
+                .group-heading {
+                    display: block;
+                    padding-left: 8px;
+                }
+            }
+
+            td:nth-child(1) {
                 background-color: $product-filter-blue;
                 color: $product-filter-color;
                 font-weight: normal;
             }
 
-            td.k-group-cell {
-                background-color: $product-filter-blue;
-                color: $product-filter-color;
+            td:nth-child(2) {
+                background-color: $product-page-blue;
+                color: $product-page-color;
+                font-weight: normal;
             }
+        }
+
+        .k-grouping-row + .k-grouping-row {
+
+            td:nth-child(1) {
+                background-color: $product-filter-blue;
+            }
+
+            td:nth-child(2) {
+                background-color: $product-page-blue;
+            }
+
+            .k-group-cell + td:not(.k-group-cell) {
+            }
+        }
+
+        .k-grouping-row + .k-grouping-row + .k-grouping-row {
+            /*p.k-reset {
+                left: 24px;
+            }*/
+        }
+
+        tr.k-grouping-row {
+
+
 
             .k-group-cell + .k-group-cell {
                 background-color: $product-page-blue;
@@ -181,12 +248,11 @@ $product-color: $order-form-group-color;
                 background-color: $order-form-group-blue;
                 color: $order-form-group-color;
             }
-
-            td.k-group-cell + td.k-group-cell + td {
+            /*td.k-group-cell + td.k-group-cell + td {
                 background-color: $order-form-group-blue;
                 color: $order-form-group-color;
                 font-weight: normal;
-            }
+            }*/
         }
 
         .k-grouping-row + .k-grouping-row {
@@ -204,6 +270,111 @@ $product-color: $order-form-group-color;
                 color: $order-form-group-color;
                 font-weight: normal;
             }
+        }
+    }
+
+    .k-icon {
+        &.k-i-collapse,
+        &.k-i-expand {
+            display: none;
+        }
+    }
+
+    .k-loading-image {
+        background-image: none;
+    }
+
+    .product-card-wrapper {
+        height: 80px;
+
+        .card.product-card-tooltip {
+            display: inline-flex;
+            flex-direction: row;
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            z-index: 1;
+            transition: opacity 150ms ease-in-out; //, transform 350ms ease-in-out;
+            height: calc(100% - 2px);
+            width: 420px;
+            padding: 0;
+            border-top: 0;
+            border-left: 0;
+            border-bottom: 0;
+            border-radius: 0;
+
+            .pad {
+                height: 100%;
+                width: 6px;
+                border-right: 1px solid #ccc;
+                display: block;
+                background-color: white;
+
+            }
+/**/
+            .product-filter {
+                background-color: $product-filter-blue;
+                border-left: 1px solid $product-filter-blue;
+                width: 5px;
+            }
+
+            .product-name {
+                background-color: $product-page-blue;
+            }
+
+            .order-form-group {
+                background-color: $order-form-group-blue;
+            }
+/**/
+            .card-body {
+                padding: 0 $l-gutter;
+                height: 100%;
+                display: flex;
+                width: 360px;
+                flex-direction: column;
+                justify-content: center;
+                color: $black;
+            }
+
+            span {
+                display: block;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+    }
+}
+
+#range-tabs {
+    .relative {
+        > .blocker,
+        .empty-cover {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            transition: opacity 75ms linear;
+        }
+    }
+}
+.k-loading-mask {
+    display: none!important;
+}
+.k-grid-norecords {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .empty-cover {
+        h4 {
+            margin-bottom: 0;
         }
     }
 }

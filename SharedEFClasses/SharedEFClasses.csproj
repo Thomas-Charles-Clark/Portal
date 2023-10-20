@@ -421,6 +421,9 @@
     <Compile Include="Models\ProductFilter\ProductFilter.cs" />
     <Compile Include="Models\ProductPage\ProductPage.cs" />
     <Compile Include="Models\ProductPage\ProductPage_Attribute.cs" />
+    <Compile Include="Models\RangeManagement\RangeManagementDataFetchDto.cs" />
+    <Compile Include="Models\RangeManagement\RangeManagementDataFetchResponse.cs" />
+    <Compile Include="Models\RangeManagement\RangeManagementDataRecord.cs" />
     <Compile Include="Models\ResourceModels.cs" />
     <Compile Include="Models\DeliveryModels.cs" />
     <Compile Include="Models\GenericKendoDataTransferModels.cs" />

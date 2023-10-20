@@ -85,5 +85,14 @@ namespace Portal.Areas.Stock.Controllers
 
             return queryableResults.ToDataSourceResult(request);
         }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> FetchData(
+            [FromBody] RangeManagementDataFetchDto objDto)
+        {
+            var results = await PortalDb.RangeManagementDataFetch(objDto);
+
+            return Ok(results);
+        }
     }
 }

@@ -29,5 +29,27 @@ namespace SharedEFClasses.Models
                 Results = reply.Read<RangeManagementProductSearchRecord>()
             };
         }
+
+        public async Task<RangeManagementDataFetchResponse> RangeManagementDataFetch(RangeManagementDataFetchDto dto)
+        {
+            var table = new DataTable();
+            table.Columns.Add("ProductID", typeof(int));
+
+            foreach (var pid in dto.ProductIDs)
+            {
+                table.Rows.Add(pid);
+            }
+
+            var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[RangeManagement_Range_Select]", new
+            {
+                BranchID = dto.BranchID,
+                ProductIDs = table
+            }, null, null, CommandType.StoredProcedure);
+
+            return new RangeManagementDataFetchResponse()
+            {
+                Results = reply.Read<RangeManagementDataRecord>()
+            };
+        }
     }
 }
