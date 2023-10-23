@@ -101,7 +101,7 @@
             <span data-bind="text: rangeStatus"></span>
         </td>
         <td class="text-end">
-            <span data-bind="text: rangePlanned"></span>
+            <div class="range-planned" data-bind="component: { name: 'mdc-text-field-numeric-component', params: rangePlannedParams }"></div>
         </td>
         <td class="text-end">
             <span data-bind="text: rangeActual"></span>
@@ -116,13 +116,28 @@
             <span data-bind="html: actionRecommendations"></span>
         </td>
         <td class="text-end" data-bind="style: { 'background-color': actionTransferToBranchHighlight }">
-            <span data-bind="text: actionTransferToBranchQuantity"></span>
+            <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: actionTransferToBranchQuantityParams }"></div>
+            <!-- ko if: actionTransferToBranchBasketItemId -->
+            <button class="btn btn-sm btn-outline-primary mt-2" data-bind="click: removeWH2BRFromOrder, attr: { title: `BasketItemID: ${actionTransferToBranchBasketItemId()}` }">
+                Remove from Order
+            </button>
+            <!-- /ko -->
         </td>
         <td class="text-end" data-bind="style: { 'background-color': actionTransferToWarehouseHighlight }">
             @*ActionTransferToWHQuantity<br />*@
-            <span data-bind="text: actionTransferToWarehouseQuantity"></span>
+            <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: actionTransferToWarehouseQuantityParams }"></div>
+            <!-- ko if: actionTransferToWarehouseBasketItemId -->
+            <button class="btn btn-sm btn-outline-primary mt-2"  data-bind="click: removeBR2WHFromOrder, attr: { title: `BasketItemID: ${actionTransferToWarehouseBasketItemId()}` }">
+                Remove from Order
+            </button>
+            <!-- /ko -->
         </td>
-        <td></td> @* Submit? *@
+        <td>
+            @* Submit? *@
+            <button class="btn btn-secondary" data-bind="click: submitTransfers">
+                Submit
+            </button>
+        </td>
         <td>
             @*Notes<br />*@
             <span data-bind="html: notes"></span>
@@ -145,6 +160,8 @@
         </td>
         <td class="text-end">
             @*StockWHNextPODueDate<br />*@
+            <span data-bind="text: stockWHNextPODueDate"></span>
+            <br/>
             <span data-bind="text: renderDate(stockWHNextPODueDate)"></span>
         </td>
         <td>

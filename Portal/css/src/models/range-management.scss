@@ -160,21 +160,65 @@ $product-color: $order-form-group-color;
         width: 7px;
     }
 
+    span.header-blue {
+        background-color: $heading-blue;
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 421px;
+        border-right: 1px solid $heading-border-blue;
+    }
+
     .k-grid-content {
 
+        tr[role=row] {
+            content-visibility: auto;
+        }
+
         .k-grouping-row {
+            position: relative;
+
             td {
                 height: 24px;
                 padding-left: 0;
             }
 
-            position: relative;
-
             p.k-reset {
-                
+                display: block;
+                background-color: inherit;
+                padding-left: 0;
+                left: 8px;
+                position: relative;
+
                 .group-heading {
-                    display: block;
                     padding-left: 8px;
+                    /*left: 8px;*/
+                    padding-right: 76px;
+                    display: inline-block;
+                    position: relative;
+                    z-index: 1;
+                    /*background-color: $product-filter-blue;*/
+                    background-color: inherit;
+                }
+
+                .range-total {
+                    padding-left: 0;
+                    position: absolute;
+                    text-align: right;
+                }
+
+                .range-planned {
+                    right: 3544px;
+                }
+
+                .range-actual {
+                    right: 3444px;
+                }
+
+                .range-in-progress {
+                    right: 3344px;
                 }
             }
 
@@ -201,14 +245,17 @@ $product-color: $order-form-group-color;
                 background-color: $product-page-blue;
             }
 
+            p.k-reset {
+                padding-left: 0;
+                position: relative;
+                left: 8px;
+
+                .group-heading {
+                }
+            }
+
             .k-group-cell + td:not(.k-group-cell) {
             }
-        }
-
-        .k-grouping-row + .k-grouping-row + .k-grouping-row {
-            /*p.k-reset {
-                left: 24px;
-            }*/
         }
 
         tr.k-grouping-row {
@@ -273,6 +320,63 @@ $product-color: $order-form-group-color;
         }
     }
 
+    td {
+        .btn-sm {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .mdc-numeric-field {
+            .btn {
+                width: unset;
+            }
+
+            .mdc-text-field {
+                background-color: $white;
+
+                input {
+                    padding-right: 4rem;
+
+                    &.unsaved-changes {
+                        z-index: 0;
+                        background-color: $orange-200;
+                    }
+                }
+
+                &.busy {
+                    background-image: repeating-linear-gradient(-45deg, rgba(222, 229, 237, 0.75), rgba(248, 249, 250, 0.95) 1rem, transparent 1rem, transparent 2rem);
+                    transition: background-color 300ms ease-in-out;
+                    background-size: 500% 500%;
+                    animation: barberpole 10s linear reverse infinite;
+                }
+            }
+
+            .controls {
+                > div {
+                    padding: 0;
+                    min-width: 24px;
+                }
+            }
+        }
+
+        .range-planned {
+            .mdc-numeric-field {
+                .mdc-text-field {
+                    input {
+                        padding-right: 3rem;
+                    }
+                }
+
+                .controls {
+                    > div {
+                        padding: 0 0.4em;
+                        min-width: 32 px;
+                    }
+                }
+            }
+        }
+    }
+
     .k-icon {
         &.k-i-collapse,
         &.k-i-expand {
@@ -293,7 +397,7 @@ $product-color: $order-form-group-color;
             position: absolute;
             top: 1px;
             left: 1px;
-            z-index: 1;
+            z-index: 10;
             transition: opacity 150ms ease-in-out; //, transform 350ms ease-in-out;
             height: calc(100% - 2px);
             width: 420px;
@@ -309,9 +413,8 @@ $product-color: $order-form-group-color;
                 border-right: 1px solid #ccc;
                 display: block;
                 background-color: white;
-
             }
-/**/
+            /**/
             .product-filter {
                 background-color: $product-filter-blue;
                 border-left: 1px solid $product-filter-blue;
@@ -325,7 +428,7 @@ $product-color: $order-form-group-color;
             .order-form-group {
                 background-color: $order-form-group-blue;
             }
-/**/
+            /**/
             .card-body {
                 padding: 0 $l-gutter;
                 height: 100%;

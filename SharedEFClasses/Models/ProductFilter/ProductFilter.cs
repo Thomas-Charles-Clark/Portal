@@ -28,6 +28,12 @@ namespace SharedEFClasses.Models
 
         public byte? ProductTypeID { get; set; }
 
+        public byte QuantityPrecision { get; set; }
+
+        public decimal QuantityMinimum { get; set; }
+
+        public decimal QuantityIncrement { get; set; }
+
         public DateTime? DeletedDT { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]

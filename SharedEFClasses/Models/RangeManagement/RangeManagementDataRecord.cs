@@ -37,5 +37,7 @@ namespace SharedEFClasses.Models.RangeManagement
         public decimal Sales_180Day_UKEcommerce { get; set; }
         public decimal Sales_180Day_UKTrade { get; set; }
         public decimal Sales_180Day_ROWTrade { get; set; }
+        public long WH2BR_BasketItemID { get; set; }
+        public long BR2WH_BasketItemID { get; set; }
     }
 }

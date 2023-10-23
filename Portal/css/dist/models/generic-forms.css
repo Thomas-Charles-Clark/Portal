@@ -75,9 +75,9 @@
   border-radius: 10px;
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.25);
 }
-.mdc-validating-field:hover .input-group button,
-.mdc-validating-field :not(:focus) .input-group button,
-.mdc-validating-field :not(:focus-within) .input-group button {
+.mdc-validating-field:hover .input-group button:not(.disabled),
+.mdc-validating-field :not(:focus) .input-group button:not(.disabled),
+.mdc-validating-field :not(:focus-within) .input-group button:not(.disabled) {
   border-color: #6c757d !important;
 }
 .mdc-validating-field .input-group button:has(+ .mdc-text-field--focused),

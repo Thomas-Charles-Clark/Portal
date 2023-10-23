@@ -11,6 +11,7 @@ namespace SharedEFClasses.Models.RangeManagement
     {
         public int ProductID { get; set; }
         public string ProductFilterName { get; set; }
+        public byte? ProductFilterID { get; set; }
         public string ProductPageName { get; set; }
         public string OrderFormGroup { get; set; }
         public long? ImageID { get; set; }

@@ -94,5 +94,21 @@ namespace Portal.Areas.Stock.Controllers
 
             return Ok(results);
         }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> UpsertRange([FromBody]RangeManagementUpsertDto objDto)
+        {
+            var results = await PortalDb.RangeManagementUpsert(objDto);
+
+            return Ok(results);
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> SubmitTransfer([FromBody] RangeManagementTransferDto objDto)
+        {
+            var results = await PortalDb.RangeManagementTransfer(objDto);
+
+            return Ok(results);
+        }
     }
 }

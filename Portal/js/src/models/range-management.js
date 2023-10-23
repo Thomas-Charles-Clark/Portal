@@ -282,9 +282,15 @@ const rangeManagementViewModel = ({ } = {}) => {
 
                         self.previousParameters = params;
 
-                        data.Data = data.Data.map(r => resultRecord({
-                            rec: r
-                        }));
+                        data.Data = data.Data.map(r => {
+                            return resultRecord({
+                                branchId: self.branchId(),
+                                rec: r,
+                                productFilter: ko.computed(() => {
+                                    return self.completeProductFilters().find(p => p.ProductFilterID == r.ProductFilterID)
+                                }, self)
+                            });
+                        });
 
                         //ko.ignoreDependencies(() => {
                         //    //self.clearBusy();
@@ -295,13 +301,14 @@ const rangeManagementViewModel = ({ } = {}) => {
                         options.success(data);
                     })
                     .catch(err => {
-                        self.clearBusy(); tStart
+                        self.clearBusy();
                         window.catchFetchError(err);
                     });
             }
         },
         pagepage: 1,
-        pageSize: 400,
+        //pageSize: 10000000,
+        pageSize: 10,
         serverPaging: false,
         serverSorting: false,
         serverFiltering: false,
@@ -354,7 +361,7 @@ const rangeManagementViewModel = ({ } = {}) => {
             title: "Product Filter Name",
             field: "ProductFilterName",
             groupHeaderTemplate: (r) => {
-                console.log(r);
+                //console.log(r);
                 let productArray = self.searchResults().filter(sr => sr.ProductFilterName == r.value);
                 let productPageSet = new Set(productArray.flatMap(sr => sr.ProductPageName));
 
@@ -362,11 +369,36 @@ const rangeManagementViewModel = ({ } = {}) => {
                     let f = 0;
                 }
 
+                let rangePlannedCount = productArray.reduce((acc, val) => acc + (val.rangePlanned() ?? 0), 0);
+
+                let rangePlannedValue = productArray.reduce((acc, val) => acc + ((val.rangePlanned() ?? 0) * (val.unitCostPriceGBP() ?? 0)), 0);
+
+                let rangeActualCount = productArray.reduce((acc, val) => acc + (val.rangeActual() ?? 0), 0);
+
+                let rangeActualValue = productArray.reduce((acc, val) => acc + ((val.rangeActual() ?? 0) * (val.unitCostPriceGBP() ?? 0)), 0);
+
+                let rangeInProgressCount = productArray.reduce((acc, val) => acc + (val.rangeInProgress() ?? 0), 0);
+
+                let rangeInProgressValue = productArray.reduce((acc, val) => acc + ((val.rangeInProgress() ?? 0) * (val.unitCostPriceGBP() ?? 0)), 0);
+
+                let resultString = ``;
+
                 if (productPageSet.size == 1 && productPageSet[0] == null) {
-                    return `<span class="group-heading product-filter-name">${r.value} (${productArray.length} Product${productArray.length == 1 ? '' : 's'})</span>`;
+                    resultString = `<span class="group-heading product-filter-name">${r.value} (${productArray.length} Product${productArray.length == 1 ? '' : 's'})</span>`;
                 } else {
-                    return `<span class="group-heading product-filter-name">${r.value} (${productPageSet.size} Product Page${productPageSet.size == 1 ? '' : 's'}, ${productArray.length} Product${productArray.length == 1 ? '' : 's'})</span>`;
+                    resultString = `<span class="group-heading product-filter-name">${r.value} (${productPageSet.size} Product Page${productPageSet.size == 1 ? '' : 's'}, ${productArray.length} Product${productArray.length == 1 ? '' : 's'})</span>`;
                 }
+
+                // add rangePlanned
+                resultString += `<span class="range-total range-planned bold">${formatCurrency(rangePlannedValue, 0, "en-GB", "GBP")} (${formatNumber(rangePlannedCount, 0, "en-GB")})</span>`;
+
+                // add rangeActual
+                resultString += `<span class="range-total range-actual bold">${formatCurrency(rangeActualValue, 0, "en-GB", "GBP")} (${formatNumber(rangeActualCount, 0, "en-GB")})</span>`;
+
+                // add rangeInProgress
+                resultString += `<span class="range-total range-in-progress bold">${formatCurrency(rangeInProgressValue, 0, "en-GB", "GBP")} (${formatNumber(rangeInProgressCount, 0, "en-GB")})</span>`;
+
+                return resultString;
             },
             hidden: true
         }, {
@@ -385,10 +417,9 @@ const rangeManagementViewModel = ({ } = {}) => {
             hidden: true
         }, {
             title: " ",
-            columns: [{
-                title: " ",
-                width: 400
-            }]
+            width: 400,
+            headerTemplate: `<span class="group-heading header-blue"></span>`,
+            
         }, {
             title: "Range",
             columns: [{
@@ -398,7 +429,7 @@ const rangeManagementViewModel = ({ } = {}) => {
             }, {
                     field: "RangePlanned",
                     title: "Planned",
-                    width: 140,
+                    width: 182,
                     headerAttributes: {
                         class: "text-end"
                     },
@@ -406,7 +437,7 @@ const rangeManagementViewModel = ({ } = {}) => {
                 }, {
                     field: "RangeActual",
                     title: "Actual",
-                    width: 140,
+                    width: 100,
                     headerAttributes: {
                         class: "text-end"
                     },
@@ -414,14 +445,14 @@ const rangeManagementViewModel = ({ } = {}) => {
                 }, {
                     field: "RangeInProgress",
                     title: "In Progress",
-                    width: 140,
+                    width: 100,
                     headerAttributes: {
                         class: "text-end"
                     }
                 }, {
                     field: "RangeRequired",
                     title: "Required",
-                    width: 140,
+                    width: 80,
                     headerAttributes: {
                         class: "text-end"
                     }
@@ -436,14 +467,14 @@ const rangeManagementViewModel = ({ } = {}) => {
             }, {
                     field: "ActionQuantityToBranch",
                     title: "Quantity to Branch",
-                    width: 160,
+                    width: 190,
                     headerAttributes: {
                         class: "text-end"
                     }
                 }, {
                     field: "ActionQuantityToWH",
                     title: "Quantity to WH",
-                    width: 160,
+                    width: 190,
                     headerAttributes: {
                         class: "text-end"
                     }
@@ -615,6 +646,14 @@ const rangeManagementViewModel = ({ } = {}) => {
             self.parseView(data, array);
 
             self.visibleRecords(array);
+
+            // This is necessary if you're paging because
+            // if you're paging and endless scrolling and grouping something very stupid happens with the 
+            // groups not being completely filled so... you tell the grid to refresh and then it scroll itself argh
+            if (self.gridScrollRestoration) {
+                document.querySelector("#results-grid .k-grid-content.k-auto-scrollable").scrollTo(0, self.gridScrollRestoration);
+                self.gridScrollRestoration = null;
+            }
         },
         columnResize: (e) => {
             self.removeEmptyGroupingRows();
@@ -1477,7 +1516,7 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     self.unsavedChanges = () => {
         return new Promise((resolve, reject) => {
-            let unsaved = self.productSearchResults.peek().find(p => p.unsavedChanges());
+            let unsaved = self.searchResults.peek().find(p => p.unsavedChanges());
 
             if (unsaved) {
                 window.showConfirm('Unsaved changes', 'You have unsaved changes. If you proceed your changes will be lost. Proceed?', () => {
@@ -1492,10 +1531,10 @@ const rangeManagementViewModel = ({ } = {}) => {
     }
 
     self.saveChanges = () => {
-        if (self.productSearchResults().find(p => p.unsavedChanges())) {
+        if (self.searchResults().find(p => p.unsavedChanges())) {
             self.setBusy();
 
-            let products = self.productSearchResults().filter(p => p.unsavedChanges());
+            let products = self.searchResults().filter(p => p.unsavedChanges());
 
             products.forEach(p => {
                 p.preSave();
@@ -1505,14 +1544,14 @@ const rangeManagementViewModel = ({ } = {}) => {
                 products: products.map(p => p.toJS())
             };
 
-            fetch('/api/stockManagement/saveStockManagementChanges', {
+            fetch('/api/rangeManagementApi/UpsertRange', {
                 method: 'POST',
                 headers: window.fetchHeaders,
                 body: JSON.stringify(params)
             })
                 .then(window.handleFetchResponse)
                 .then(data => {
-                    window.showInfo("Success", "Your changes have been saved!");
+                    //window.showInfo("Success", "Your changes have been saved!");
 
                     products.forEach(p => {
                         p.postSave(true);
@@ -1694,17 +1733,30 @@ const rangeManagementViewModel = ({ } = {}) => {
                     data.Results.forEach(r => {
                         let rec = self.visibleRecords().find(vr => vr.ProductID == r.ProductID);
 
-                        rec.loaded(true);
-
                         rec.actionRecommendations(r.Action_Recommendation);
+
                         rec.actionTransferToBranchHighlight(r.Action_TransferToBranchHighlight);
+                        rec.actionTransferToBranchQuantityOriginal(r.Action_TransferToBranchQuantity);
                         rec.actionTransferToBranchQuantity(r.Action_TransferToBranchQuantity);
+                        rec.actionTransferToBranchBasketItemId(r.WH2BR_BasketItemID);
+
+                        if (r.WH2BR_BasketItemID) {
+                            rec.actionTransferToBranchQuantityParams.disable(true);
+                        }
+
                         rec.actionTransferToWarehouseHighlight(r.Action_TransferToWarehouseHighlight);
+                        rec.actionTransferToWarehouseQuantityOriginal(r.Action_TransferToWarehouseQuantity);
                         rec.actionTransferToWarehouseQuantity(r.Action_TransferToWarehouseQuantity);
+                        rec.actionTransferToWarehouseBasketItemId(r.BR2WH_BasketItemID);
+
+                        if (r.BR2WH_BasketItemID) {
+                            rec.actionTransferToWarehouseQuantityParams.disable(true);
+                        }
 
                         rec.rangeStatus(r.Range_Status)
                         rec.rangeActual(r.Range_Actual);
                         rec.rangePlanned(r.Range_Planned);
+                        rec.rangePlannedOriginal(r.Range_Planned);
                         rec.rangeRequired(r.Range_Required);
 
                         rec.sales180DayFW(r.Sales_180Day_FW);
@@ -1726,10 +1778,19 @@ const rangeManagementViewModel = ({ } = {}) => {
                         rec.stockWHNextPOFreeStock(r.Stock_WH_NextPOFreeStock);
                         rec.stockSummary(r.Stock_Summary);
 
-                        rec.unitCostPriceGBP(rec.UnitCostPriceGBP);
+                        rec.unitCostPriceGBP(r.UnitCostPriceGBP);
+
+                        rec.loaded(true);
                     });
 
                     self.fetchDataBusy(false);
+
+                // This is necessary if you're paging because
+                // if you're paging and endless scrolling and grouping something very stupid happens with the
+                // groups not being completely filled so... you tell the grid to refresh and then it scroll itself argh
+                    self.gridScrollRestoration = document.querySelector("#results-grid .k-grid-content.k-auto-scrollable").scrollTop;
+                    self.gridSettings.widget().refresh();
+                ///
 
                     console.log('FetchData returned', data);
                 })
@@ -1823,25 +1884,63 @@ const rangeManagementViewModel = ({ } = {}) => {
 
 //const resultRecord = ((rec, branchGroupRecords, rangeRecords, contrastRecords) => {
 const resultRecord = function ({
-    rec
+    branchId,
+    rec,
+    productFilter
 } = {
-        rec: null
+        branchId: null,
+        rec: null,
+        productFilter: ko.computed(() => { })
     }) {
+    console.log(productFilter);
+
     let self = Object.assign({}, rec);
+
+    self.branchId = branchId;
+
+    self.busy = ko.observable(false);
 
     self.loaded = ko.observable(false);
 
+    self.defaultNumericalExtension = {
+        numberUnformatted: {
+            minValue: 0,
+            maxValue: 999999,
+            digits: 0,
+            currency: {
+                FormattingCulture: 'en-GB'
+            }
+        },
+        numeric: {
+            params: {
+                required: false,
+                numericMin: 0,
+                numericMax: 999999
+            }
+        }
+    };
+
+    self.incrementAmount = ko.observable(1);
+    self.scale = ko.observable(0);
+
+    // don't forget to set your originals to currents on save
+
     self.actionRecommendations = ko.observable();
     self.actionTransferToBranchHighlight = ko.observable();
-    self.actionTransferToBranchQuantity = ko.observable();
+    self.actionTransferToBranchQuantityOriginal = ko.observable();
+    self.actionTransferToBranchQuantity = ko.observable().extend(self.defaultNumericalExtension);
+    self.actionTransferToBranchBasketItemId = ko.observable();
     self.actionTransferToWarehouseHighlight = ko.observable();
-    self.actionTransferToWarehouseQuantity = ko.observable();
+    self.actionTransferToWarehouseQuantityOriginal = ko.observable();
+    self.actionTransferToWarehouseQuantity = ko.observable().extend(self.defaultNumericalExtension);
+    self.actionTransferToWarehouseBasketItemId = ko.observable();
 
     self.rangeStatus = ko.observable();
     self.rangeActual = ko.observable();
     //self.rangeStartDate = ko.observable();
     //self.rangeEndDate = ko.observable();
-    self.rangePlanned = ko.observable();
+    self.rangePlannedOriginal = ko.observable();
+    self.rangePlanned = ko.observable().extend(self.defaultNumericalExtension);
     self.rangeRequired = ko.observable();
     self.rangeInProgress = ko.observable();
 
@@ -1869,6 +1968,148 @@ const resultRecord = function ({
 
     self.notes = ko.observable();
 
+
+
+
+
+
+    productFilter.subscribe(pf => {
+
+        self.incrementAmount(pf.QuantityIncrement || 1);
+
+        self.scale(pf.QuantityPrecision);
+
+        let productFilterNumericalExtension = {
+            numberUnformatted: {
+                minValue: pf.QuantityMinimum,
+                maxValue: 999999,
+                digits: self.scale(),
+                currency: {
+                    FormattingCulture: 'en-GB'
+                }
+            },
+            numeric: {
+                params: {
+                    required: false,
+                    numericMin: pf.QuantityMinimum,
+                    numericMax: 999999
+                }
+            }
+        };
+
+        self.rangePlanned.extend(productFilterNumericalExtension);
+        self.actionTransferToWarehouseQuantity.extend(productFilterNumericalExtension);
+        self.actionTransferToBranchQuantity.extend(productFilterNumericalExtension);
+    });
+
+    self.buildNumericParams = (observable, original, incrementAmount, scale) => {
+        return {
+            label: null,
+            observable: observable,
+            focusObservable: ko.observable(false),
+            busy: ko.observable(),
+            permitRevert: true,
+            originalValue: original,
+            enable: ko.observable(true),
+            disable: ko.observable(false),
+            clearable: ko.observable(true),
+            revertable: ko.observable(true),
+            revertFunction: function () {
+                let self = this;
+                self.observable(self.originalValue());
+            },
+            clearFunction: function () {
+                var self = this;
+                self.observable(undefined);
+                self.observable.DOMElement.focus();
+            },
+            useNativeValidation: false, // this feeds through to mdc objects and affects them
+            decorateInputElement: true,
+            insertValidationMessages: false,
+            inputType: 'number',
+            buttons: true,
+            minValue: 1, // don't have productFilter record in time to set this truthfully, sorry
+            maxValue: 999999,
+            step: 1,
+            cssClasses: null,
+            incrementAmount: incrementAmount,
+            increment: function () {
+                let self = this;
+
+                let v = +self.observable() || 0;
+
+                let factor = Math.pow(10, scale());
+
+                if ((v + self.incrementAmount()) < 1000000)
+                    self.observable(Math.round((v + self.incrementAmount()) * factor) / factor);
+            },
+            decrement: function () {
+                let self = this;
+
+                let v = +self.observable() || 0;
+
+                let factor = Math.pow(10, scale());
+
+                let diff = Math.round((v - self.incrementAmount()) * factor) / factor;
+
+                if ((v - self.incrementAmount()) > 0)
+                    self.observable(diff);
+            }
+        }
+    };
+
+    self.loaded.subscribe(_ => {
+        self.rangePlanned.subscribe(nv => {
+            if (nv != self.rangePlannedOriginal()) {
+                self.rangePlannedParams.busy(true);
+                self.rangePlannedParams.disable(true);
+
+                fetch('/api/rangeManagementApi/UpsertRange', {
+                    method: 'POST',
+                    headers: window.fetchHeaders,
+                    body: JSON.stringify({
+                        branchId: self.branchId,
+                        range: [{
+                            productId: self.ProductID,
+                            quantity: nv
+                        }]
+                    })
+                })
+                    .then(window.handleFetchResponse)
+                    .then(data => {
+                        self.rangePlannedOriginal(nv);
+                        self.rangePlannedParams.busy(false);
+                        self.rangePlannedParams.disable(false);
+                    })
+                    .catch(err => {
+                        self.rangePlannedParams.busy(false);
+                        self.rangePlannedParams.disable(false);
+                        window.catchFetchError(err);
+                    });
+            }
+        });
+    });
+
+    self.rangePlannedParams = self.buildNumericParams(
+        self.rangePlanned,
+        self.rangePlannedOriginal,
+        self.incrementAmount,
+        self.scale);
+
+    self.rangePlannedParams.revertable(false);
+
+    self.actionTransferToWarehouseQuantityParams = self.buildNumericParams(
+        self.actionTransferToWarehouseQuantity,
+        self.actionTransferToWarehouseQuantityOriginal,
+        self.incrementAmount,
+        self.scale);
+
+    self.actionTransferToBranchQuantityParams = self.buildNumericParams(
+        self.actionTransferToBranchQuantity,
+        self.actionTransferToBranchQuantityOriginal,
+        self.incrementAmount,
+        self.scale);
+
     self.toJS = () => {
         return {
             ProductID: self.ProductID,
@@ -1877,23 +2118,101 @@ const resultRecord = function ({
     }
 
     self.preSave = () => {
-        self.branchTargetBusy(true);
+        self.busy(true);
     }
 
     self.postSave = (success) => {
         if (success) {
-            self.branchTargetParams.originalValue = self.branchTarget();
-            self.branchTargetParams.unsavedChanges(false);
-            self.branchTargetBusy(false);
+            self.rangePlannedOriginal(self.rangePlanned());
+            self.actionTransferToBranchQuantityOriginal(self.actionTransferToBranchQuantity());
+            self.actionTransferToWarehouseQuantityOriginal(self.actionTransferToWarehouseQuantity());
+            self.busy(false);
         } else {
-            self.branchTargetBusy(false);
+            self.busy(false);
         }
     }
 
     self.unsavedChanges = ko.computed(() => {
-        //console.warn("not yet implemented");
-        return false;
+        return (self.rangePlanned() != self.rangePlannedOriginal()) ||
+            (self.actionTransferToBranchQuantity() != self.actionTransferToBranchQuantityOriginal()) ||
+            (self.actionTransferToWarehouseQuantity() != self.actionTransferToWarehouseQuantityOriginal())
     }, self);
+
+    self.submitTransfers = () => {
+        if (self.actionTransferToBranchQuantity() != self.actionTransferToBranchQuantityOriginal()) {
+            self.submitTransferWH2BR();
+        }
+
+        if (self.actionTransferToWarehouseQuantity() != self.actionTransferToWarehouseQuantityOriginal()) {
+            self.submitTransferBR2WH();
+        }
+    }
+
+    self.submitTransferWH2BR = () => {
+        self.actionTransferToBranchQuantityParams.busy(true);
+        self.actionTransferToBranchQuantityParams.disable(true);
+
+        fetch('/api/rangemanagementapi/SubmitTransfer', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            body: JSON.stringify({
+                branchId: self.branchId,
+                productId: self.ProductID,
+                transferQuantity: self.actionTransferToBranchQuantity(),
+                transferDirection: 'WH2BR' // BR2WH
+            })
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                self.actionTransferToBranchQuantityParams.busy(false);
+                self.actionTransferToBranchBasketItemId(data.BasketItemID);
+                if (data.Notifications) {
+                    window.showInfo("Notice", data.Notifications);
+                }
+            })
+            .catch(err => {
+                self.actionTransferToBranchQuantityParams.busy(false);
+                self.actionTransferToBranchQuantityParams.disable(false);
+                window.catchFetchError(err);
+            })
+    }
+
+    self.submitTransferBR2WH = () => {
+        self.actionTransferToWarehouseQuantityParams.busy(true);
+        self.actionTransferToWarehouseQuantityParams.disable(true);
+
+        fetch('/api/rangemanagementapi/SubmitTransfer', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            body: JSON.stringify({
+                branchId: self.branchId,
+                productId: self.ProductID,
+                transferQuantity: self.actionTransferToWarehouseQuantity(),
+                transferDirection: 'BR2WH' // BR2WH
+            })
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                self.actionTransferToWarehouseQuantityParams.busy(false);
+                self.actionTransferToWarehouseBasketItemId(data.BasketItemID);
+                if (data.Notifications) {
+                    window.showInfo("Notice", data.Notifications);
+                }
+            })
+            .catch(err => {
+                self.actionTransferToWarehouseQuantityParams.busy(false);
+                self.actionTransferToWarehouseQuantityParams.disable(false);
+                window.catchFetchError(err);
+            })
+    }
+
+    self.removeWH2BRFromOrder = () => {
+        window.showInfo("Not yet implemented")
+    }
+
+    self.removeBR2WHFromOrder = () => {
+        window.showInfo("Not yet implemented")
+    }
 
     return self;
 }

@@ -424,6 +424,10 @@
     <Compile Include="Models\RangeManagement\RangeManagementDataFetchDto.cs" />
     <Compile Include="Models\RangeManagement\RangeManagementDataFetchResponse.cs" />
     <Compile Include="Models\RangeManagement\RangeManagementDataRecord.cs" />
+    <Compile Include="Models\RangeManagement\RangeManagementProductUpsert.cs" />
+    <Compile Include="Models\RangeManagement\RangeManagementTransferDto.cs" />
+    <Compile Include="Models\RangeManagement\RangeManagementTransferResponse.cs" />
+    <Compile Include="Models\RangeManagement\RangeManagementUpsertDto.cs" />
     <Compile Include="Models\ResourceModels.cs" />
     <Compile Include="Models\DeliveryModels.cs" />
     <Compile Include="Models\GenericKendoDataTransferModels.cs" />

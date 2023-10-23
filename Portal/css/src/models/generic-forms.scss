@@ -112,7 +112,7 @@
     :not(:focus),
     :not(:focus-within) {
         .input-group {
-            button {
+            button:not(.disabled) {
                 border-color: $gray-600 !important;
             }
         }
