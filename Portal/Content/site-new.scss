@@ -443,3 +443,18 @@ input[type="search"]::-webkit-search-results-decoration {
         transform: translateX(0%);
     }
 }
+
+.btn-blue-active {
+    &:focus {
+        color: white;
+    }
+
+    &:hover {
+        background-color: $blue-700;
+    }
+
+    background-image: none;
+    background: $blue-400;
+    border-color: #4472c7;
+    color: white;
+}

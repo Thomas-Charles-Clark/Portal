@@ -16,6 +16,7 @@ namespace SharedEFClasses.Models.RangeManagement
         public short? LaunchID { get; set; }
         public byte? BrandID { get; set; }
         public byte? StatusGroupID { get; set; }
+        public string StockStatusCode { get; set; }
         public string SearchTerm { get; set; }
     }
 }

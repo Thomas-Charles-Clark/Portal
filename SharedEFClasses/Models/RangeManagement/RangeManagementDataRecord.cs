@@ -13,13 +13,14 @@ namespace SharedEFClasses.Models.RangeManagement
         public decimal Range_Planned { get; set; }
         public decimal Range_Actual { get; set; }
         public decimal Range_Required { get; set; }
-        public decimal? Range_InProgress { get; set; }
+        public decimal Range_InProgress { get; set; }
         public decimal UnitCostPriceGBP { get; set; }
-        public string Action_Recomendation { get; set; }
+        public string Action_Recommendation { get; set; }
         public decimal Action_TransferToBranchQuantity { get; set; }
         public string Action_TransferToBranchHighlight { get; set; }
         public decimal Action_TransferToWarehouseQuantity { get; set; }
         public string Action_TransferToWarehouseHighlight { get; set; }
+        public string Action_AddToRangeHighlight { get; set; }
         public string Stock_Summary { get; set; }
         public string Stock_Cover { get; set; }
         public decimal Stock_WH_FreeStock { get; set; }
@@ -37,7 +38,7 @@ namespace SharedEFClasses.Models.RangeManagement
         public decimal Sales_180Day_UKEcommerce { get; set; }
         public decimal Sales_180Day_UKTrade { get; set; }
         public decimal Sales_180Day_ROWTrade { get; set; }
-        public long WH2BR_BasketItemID { get; set; }
-        public long BR2WH_BasketItemID { get; set; }
+        public long? WH2BR_BasketItemID { get; set; }
+        public long? BR2WH_BasketItemID { get; set; }
     }
 }

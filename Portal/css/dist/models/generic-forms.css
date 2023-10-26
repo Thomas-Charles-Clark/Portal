@@ -80,28 +80,53 @@
 .mdc-validating-field :not(:focus-within) .input-group button:not(.disabled) {
   border-color: #6c757d !important;
 }
-.mdc-validating-field .input-group button:has(+ .mdc-text-field--focused),
-.mdc-validating-field .input-group .mdc-text-field--focused ~ button {
+.mdc-validating-field :not(.small) .input-group button:has(+ .mdc-text-field--focused),
+.mdc-validating-field :not(.small) .input-group .mdc-text-field--focused ~ button {
   box-sizing: border-box;
   border-color: #888 !important;
   padding-top: calc(0.375rem - 2px);
   padding-bottom: calc(0.375rem - 2px);
 }
-.mdc-validating-field .input-group button:has(+ .mdc-text-field--focused) {
+.mdc-validating-field :not(.small) .input-group button:has(+ .mdc-text-field--focused) {
   border-width: 2px;
   border-right-width: 1px;
   padding-left: calc(0.75rem - 1px);
 }
-.mdc-validating-field .input-group .mdc-text-field--focused + button {
+.mdc-validating-field :not(.small) .input-group .mdc-text-field--focused + button {
   border-width: 2px;
   border-left-width: 1px;
   padding-right: calc(0.75rem - 1px);
 }
-.mdc-validating-field .input-group button:has(+ .mdc-text-field--invalid) {
+.mdc-validating-field :not(.small) .input-group button:has(+ .mdc-text-field--invalid) {
   border-color: #db0028 !important;
 }
-.mdc-validating-field .input-group .mdc-text-field--invalid ~ button {
+.mdc-validating-field :not(.small) .input-group .mdc-text-field--invalid ~ button {
   border-color: #db0028 !important;
+}
+.mdc-validating-field.small {
+  box-sizing: border-box !important;
+  font-size: 0.875rem !important;
+}
+.mdc-validating-field.small *:not(.close):not(.clear) {
+  font-size: 0.875rem !important;
+}
+.mdc-validating-field.small *:not(.close):not(.clear):focus, .mdc-validating-field.small *:not(.close):not(.clear):focus-within {
+  border-width: 1px !important;
+}
+.mdc-validating-field.small .mdc-text-field {
+  height: auto;
+}
+.mdc-validating-field.small input {
+  line-height: normal;
+  border-width: 1px !important;
+}
+.mdc-validating-field.small .btn {
+  padding: 0.25rem 0.5rem;
+}
+.mdc-validating-field.small .mdc-text-field--outlined.mdc-text-field--focused .mdc-notched-outline__leading,
+.mdc-validating-field.small .mdc-text-field--outlined.mdc-text-field--focused .mdc-notched-outline__notch,
+.mdc-validating-field.small .mdc-text-field--outlined.mdc-text-field--focused .mdc-notched-outline__trailing {
+  border-width: 1px;
 }
 
 .mdc-form-field .mdc-checkbox {

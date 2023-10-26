@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Microsoft.AspNet.Identity;
 using SharedEFClasses.Models.RangeManagement;
+using SharedEFClasses.Models.Orders;
 
 namespace Portal.Areas.Stock.Controllers
 {
@@ -30,6 +31,14 @@ namespace Portal.Areas.Stock.Controllers
         {
             this.UserManager = userManager;
             this.PortalDb = portalDbContext;
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> CheckBranch([FromBody]RangeManagementBranchCheckDto objDto)
+        {
+            var result = await PortalDb.RangeManagementCheckBranch(objDto);
+
+            return Ok(new { Notification = result });
         }
 
         [HttpGet]
@@ -69,17 +78,24 @@ namespace Portal.Areas.Stock.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// The Launch check is BS
-        /// </summary>
-        /// <param name="objDto"></param>
-        /// <returns></returns>
         [HttpGet]
         public async Task<DataSourceResult> FetchProducts(
             [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))]DataSourceRequest request, 
             [FromUri]RangeManagementProductFetchDto objDto)
         {
             var results = await PortalDb.RangeManagementProductSearch(objDto);
+
+            var queryableResults = results.Results.AsQueryable();
+
+            return queryableResults.ToDataSourceResult(request);
+        }
+
+        [HttpGet]
+        public async Task<DataSourceResult> FetchProductsAddToRange(
+            [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+            [FromUri] RangeManagementProductFetchDto objDto)
+        {
+            var results = await PortalDb.RangeManagementProductSearchAddToRange(objDto);
 
             var queryableResults = results.Results.AsQueryable();
 
@@ -96,7 +112,7 @@ namespace Portal.Areas.Stock.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> UpsertRange([FromBody]RangeManagementUpsertDto objDto)
+        public async Task<IHttpActionResult> UpsertRange([FromBody] RangeManagementUpsertDto objDto)
         {
             var results = await PortalDb.RangeManagementUpsert(objDto);
 
@@ -107,6 +123,16 @@ namespace Portal.Areas.Stock.Controllers
         public async Task<IHttpActionResult> SubmitTransfer([FromBody] RangeManagementTransferDto objDto)
         {
             var results = await PortalDb.RangeManagementTransfer(objDto);
+
+            return Ok(results);
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> RemoveTransferBasketItem([FromBody] RangeManagementBasketItemRemovalDto objDto)
+        {
+            objDto.MemberID = User.Identity.GetUserId<int>();
+
+            var results = await PortalDb.RangeManagementRemoveBasketItem(objDto);
 
             return Ok(results);
         }

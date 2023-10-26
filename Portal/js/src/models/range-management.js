@@ -1,25 +1,15 @@
 ﻿const
-    TAB_RANGE = 0,
-    TAB_RESTOCK = 1,
-    TAB_RECALL = 2
-
-const
-    SORT_QUANTITY_ASC = 0,
-    SORT_QUANTITY_DESC = 1,
-    SORT_ORDERFORMGROUP_ASC = 2,
-    SORT_ORDERFORMGROUP_DESC = 3
-
-const
     VIEW_MANAGE = 1,
     VIEW_RESTOCK = 2,
-    VIEW_RECALL = 3
+    VIEW_RECALL = 3,
+    VIEW_ADD = 4
 
 const rangeManagementViewModel = ({ } = {}) => {
     let self = {};
 
     //#region Properties
 
-    self.busy = ko.observable(false);
+    self.busy = ko.observable(true);
 
     self.fetchDataBusy = ko.observable(false);
 
@@ -27,44 +17,32 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     self.manageBusy = ko.observable(false);
 
+    self.addBusy = ko.observable(false);
+
     self.restockBusy = ko.observable(false);
 
     self.recallBusy = ko.observable(false);
 
-    self.addToRangeModalBusy = ko.observable(false);
-
-    self.addToRangeModalElement = document.getElementById('add-to-range-modal');
-
-    self.addToRangeModal = bootstrap.Modal.getOrCreateInstance(self.addToRangeModalElement);
-
-
     self.modalBusy = ko.observable(false);
-
-    //self.detailModalElement = document.getElementById('detail-modal');
-
-    //self.detailModal = bootstrap.Modal.getOrCreateInstance(self.detailModalElement);
 
     self.ready = ko.observable(true);
 
-    //self.displayWarehouseStock = ko.observable(false);
-    //window.displayWarehouseStock = self.displayWarehouseStock;
+    self.searchResults = ko.observableArray([]);
 
-    //self.displayRingFencedStock = ko.observable(false);
-    //window.displayRingFencedStock = self.displayRingFencedStock;
+    self.visibleRecords = ko.observableArray([]);
 
-    //self.displaySales = ko.observable(false);
-    //window.displaySales = self.displaySales;
+    self.visibleAddToRangeRecords = ko.observableArray([]);
+
+    self.productSearchResults = ko.observableArray([]);
+
+    self.gridScrollRestoration = null;
+
+    self.addGridScrollRestoration = null;
 
     //#region Prefilters
 
-    self.productTypeKey = ko.observable();
-    self.productType = ko.observable();
-
-    self.branchId = ko.observable(4);
+    self.branchId = ko.observable();
     self.branch = ko.observable();
-
-    self.launchId = ko.observable(''); // '' because dropdowns were borne of selects which demand a '' for empty selection and Kendo carries this torch
-    self.launch = ko.observable();
 
     self.brandId = ko.observable(''); // if you don't initialise to '' you'll find that opening and immediately dismissing the associated dropdown
     self.brand = ko.observable(); // the above caveat appears to only apply to odata bound drop down lists
@@ -72,51 +50,18 @@ const rangeManagementViewModel = ({ } = {}) => {
     self.statusGroupId = ko.observable('');
     self.statusGroup = ko.observable();
 
-    self.productColourId = ko.observable(''); // causes the underlying value to be switched to '', which fires the subscription which fires the search
-    self.productColour = ko.observable();
-
-    self.stockStatusId = ko.observable(''); // which probably isn't what you wanted to happen.
-    self.stockStatus = ko.observable();
-
-    self.collectionId = ko.observable('');
-    self.collection = ko.observable();
-
-    self.attributeGroupId = ko.observable('');
-    self.attributeGroup = ko.observable();
-
-    self.attributeId = ko.observable('');
-    self.attribute = ko.observable();
-
-    self.attributeIds = ko.observableArray([]);
-
-    self.emptyArray = [];
-
-    self.attributes = ko.observableArray(self.emptyArray);
-
-    self.productFilterGroups = ko.observableArray([]);
-    self.productFilterGroup = ko.observable();
-    self.productFilterGroupId = ko.observable('');
-
-    self.searchResults = ko.observableArray([]);
-
+    self.productFilterGroups = ko.observableArray([]);// but why don't these dropdowns cause the above problem!?
+    self.productFilterGroup = ko.observable();// don't set them to anything other than null here because you're setting them to null elsewhere and
+    self.productFilterGroupId = ko.observable(null);// this is tenuous
+               
     self.completeProductFilters = ko.observableArray([]);
     self.currentProductFilters = ko.observableArray([]);
+
     self.productFilter = ko.observable();
-    self.productFilterId = ko.observable('');
+    self.productFilterId = ko.observable(null);
 
-    self.buyer = ko.observable();
-    self.buyerCode = ko.observable('');
-
-    self.supplier = ko.observable();
-    self.supplierCode = ko.observable('');
-
-    self.productDetail = ko.observable();
-
-    self.productImages = ko.observableArray([]);
-
-    self.largeImageProduct = ko.observable();
-
-    self.largeImageId = ko.observable();
+    self.stockStatus = ko.observable();
+    self.stockStatusCode = ko.observable('');
 
     self.searchTerm = ko.observable().extend({
         rateLimit: {
@@ -125,55 +70,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         }
     });
 
-    self.visibleRecords = ko.observableArray([]);
-
     //#endregion
-
-    //#region sorting
-
-    self.productSearchResultsSort = ko.observable(SORT_QUANTITY_DESC);
-
-    //#endregion
-
-    self.productSearchResults = ko.observableArray([]);
-
-    self.rangeRecords = ko.observableArray([]);
-
-    self.intersectionObserverOptions = {
-        rootMargin: "140px",
-        //threshold: 1.0
-    }
-
-    self.intersectionObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(e => {
-            //console.log(e);
-            let obj = ko.dataFor(e.target);
-            if (obj) {
-                if (e.isIntersecting) {
-                    window.setTimeout(() => {
-                        obj.templateName("product-page-group-template");
-                    }, 300);
-                }
-                //else {
-                //    obj.templateName("product-page-group-placeholder-template");
-                //}
-            }
-        });
-    }, self.intersectionObserverOptions);
-
-    self.completeProductFilterSet = ko.observable([]);
-
-    self.orderReference = {
-        observable: ko.observable()
-    };
-
-    self.allFulfilmentOptions = ko.observableArray([]);
-
-    self.searchWidgetValue = ko.observable();
-
-    self.tradeAccount = ko.observable({
-        TradeAccountID: null // intentional see portal.Stock_Select
-    });
 
     self.productStatusCode = ko.observable();
 
@@ -206,32 +103,6 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     //#region Components
 
-    self.searchTermParams = {
-        label: "Search by Product Code or Name",
-        observable: self.searchTerm,
-        focusObservable: ko.observable(),
-        busy: ko.observable(),
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertable: ko.observable(false),
-        clearFunction: function () {
-            var self = this;
-            self.observable(undefined);
-            $(self.observable.DOMElement).focus();
-        },
-        useNativeValidation: false, // this feeds through to mdc objects and affects them
-        decorateInputElement: true,
-        insertValidationMessages: false,
-        enterKey: () => {
-            self.gridSettings.widget().dataSource.read();
-        }
-    }
-
-    self.orderProductsDrilldown = new orderProductsDrilldownViewModel(self, "");
-
-    self.orderProductsDrilldown.tradeAccount = self.tradeAccount();
-
     self.genericUnsavedChangesSelect = (e) => {
         e.preventDefault(); // this prevents the Kendo control from actively selecting the thing the user selected
         self.checkUnsavedChangesThenSelect(e); // this does our check; async promise, confirm dialog, la la la...
@@ -255,7 +126,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         transport: {
             read: (options) => {
 
-                //self.setBusy();
+                self.setBusy();
 
                 var webapi = new kendo.data.transports.webapi({ prefix: "" });
                 var params = webapi.parameterMap(options.data);
@@ -270,7 +141,7 @@ const rangeManagementViewModel = ({ } = {}) => {
 
                 let qs = new URLSearchParams(data);
 
-                //console.log(qs);
+                console.log('fetchProducts calling with', data);
 
                 fetch(`/api/rangeManagementApi/FetchProducts?${qs}`, {
                     method: 'GET',
@@ -292,9 +163,92 @@ const rangeManagementViewModel = ({ } = {}) => {
                             });
                         });
 
-                        //ko.ignoreDependencies(() => {
-                        //    //self.clearBusy();
+                        ko.ignoreDependencies(() => {
+                            self.clearBusy();
+                        });
+
+                        self.searchResults(data.Data);
+
+                        options.success(data);
+                    })
+                    .catch(err => {
+                        self.clearBusy();
+                        window.catchFetchError(err);
+                    });
+            }
+        },
+        pagepage: 1,
+        pageSize: 10,
+        serverPaging: false,
+        serverSorting: false,
+        serverFiltering: false,
+        schema: $.extend({}, kendo.data.schemas.webapi, {
+            data: "Data",
+            total: "Total",
+            model: {
+                id: 'ProductID'
+            }
+        }),
+        group: [{
+            field: "ProductFilterName",
+            aggregates: [{
+                field: "ProductFilterName",
+                aggregate: "count"
+            }, {
+                field: "RangePlanned",
+                aggregate: "sum"
+            }]
+        }, {
+            field: "ProductPageName"
+        }, {
+            field: "OrderFormGroup"
+        }]
+    });
+
+    self.addGridDataSource = new kendo.data.DataSource({
+        transport: {
+            read: (options) => {
+
+                self.setBusy();
+
+                var webapi = new kendo.data.transports.webapi({ prefix: "" });
+                var params = webapi.parameterMap(options.data);
+
+                var data = {};
+
+                for (var propertyName in params) {
+                    data[propertyName] = params[propertyName];
+                }
+
+                data = Object.assign(params, self.gridParams());
+
+                let qs = new URLSearchParams(data);
+
+                console.log('fetchProducts calling with', data);
+
+                fetch(`/api/rangeManagementApi/FetchProductsAddToRange?${qs}`, {
+                    method: 'GET',
+                    headers: window.fetchHeaders
+                })
+                    .then(window.handleFetchResponse)
+                    .then(data => {
+                        console.log('fetchProducts returned', data);
+
+                        self.previousParameters = params;
+
+                        //data.Data = data.Data.map(r => {
+                        //    return addResultRecord({
+                        //        branchId: self.branchId(),
+                        //        rec: r,
+                        //        productFilter: ko.computed(() => {
+                        //            return self.completeProductFilters().find(p => p.ProductFilterID == r.ProductFilterID)
+                        //        }, self)
+                        //    });
                         //});
+
+                        ko.ignoreDependencies(() => {
+                            self.clearBusy();
+                        });
 
                         self.searchResults(data.Data);
 
@@ -308,7 +262,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         },
         pagepage: 1,
         //pageSize: 10000000,
-        pageSize: 10,
+        pageSize: 20,
         serverPaging: false,
         serverSorting: false,
         serverFiltering: false,
@@ -384,9 +338,9 @@ const rangeManagementViewModel = ({ } = {}) => {
                 let resultString = ``;
 
                 if (productPageSet.size == 1 && productPageSet[0] == null) {
-                    resultString = `<span class="group-heading product-filter-name">${r.value} (${productArray.length} Product${productArray.length == 1 ? '' : 's'})</span>`;
+                    resultString = `<span class="group-heading product-filter-name bold">${r.value} (${productArray.length} Product${productArray.length == 1 ? '' : 's'})</span>`;
                 } else {
-                    resultString = `<span class="group-heading product-filter-name">${r.value} (${productPageSet.size} Product Page${productPageSet.size == 1 ? '' : 's'}, ${productArray.length} Product${productArray.length == 1 ? '' : 's'})</span>`;
+                    resultString = `<span class="group-heading product-filter-name bold">${r.value} (${productPageSet.size} Product Page${productPageSet.size == 1 ? '' : 's'}, ${productArray.length} Product${productArray.length == 1 ? '' : 's'})</span>`;
                 }
 
                 // add rangePlanned
@@ -400,211 +354,208 @@ const rangeManagementViewModel = ({ } = {}) => {
 
                 return resultString;
             },
-            hidden: true
         }, {
             title: "Product Page Name",
             field: "ProductPageName",
             groupHeaderTemplate: (r) => {
                 return `<span class="group-heading product-page-name">${r.value}</span>`;
             },
-            hidden: true
         }, {
             title: "Order Form Group",
             field: "OrderFormGroup",
             groupHeaderTemplate: (r) => {
                 return `<span class="group-heading order-form-group">${r.value}</span>`;
             },
-            hidden: true
         }, {
             title: " ",
-            width: 400,
+            width: 310,
             headerTemplate: `<span class="group-heading header-blue"></span>`,
-            
         }, {
             title: "Range",
+            field: "RangeGroup",
+            groupHeaderTemplate: `<span class="bold">Potato!</span>`,
             columns: [{
-                field: "RangeStatus",
-                title: "Status",
-                width: 140
+                field: "RangePlanned",
+                title: "Planned",
+                width: 145,
+                headerAttributes: {
+                    class: "text-end"
+                },
+                aggregates: ["sum"]
             }, {
-                    field: "RangePlanned",
-                    title: "Planned",
-                    width: 182,
-                    headerAttributes: {
-                        class: "text-end"
-                    },
-                    aggregates: ["sum"]
-                }, {
-                    field: "RangeActual",
-                    title: "Actual",
-                    width: 100,
-                    headerAttributes: {
-                        class: "text-end"
-                    },
-                    aggregates: ["sum"]
-                }, {
-                    field: "RangeInProgress",
-                    title: "In Progress",
-                    width: 100,
-                    headerAttributes: {
-                        class: "text-end"
-                    }
-                }, {
-                    field: "RangeRequired",
-                    title: "Required",
-                    width: 80,
-                    headerAttributes: {
-                        class: "text-end"
-                    }
+                field: "RangeActual",
+                title: "Actual",
+                width: 80,
+                headerAttributes: {
+                    class: "text-end"
+                },
+                aggregates: ["sum"]
+            }, {
+                field: "RangeInProgress",
+                title: "In Progress",
+                width: 80,
+                headerAttributes: {
+                    class: "text-end"
                 }
-            ]
+            }, {
+                field: "RangeRequired",
+                title: "Required",
+                width: 80,
+                headerAttributes: {
+                    class: "text-end"
+                }
+            }]
         }, {
             title: "Actions",
             columns: [{
                 field: "ActionRecommendations",
                 title: "Recommendations",
-                width: 220
+                width: 200
             }, {
-                    field: "ActionQuantityToBranch",
-                    title: "Quantity to Branch",
-                    width: 190,
-                    headerAttributes: {
-                        class: "text-end"
-                    }
-                }, {
-                    field: "ActionQuantityToWH",
-                    title: "Quantity to WH",
-                    width: 190,
-                    headerAttributes: {
-                        class: "text-end"
-                    }
-                }, {
-                    field: "ActionSubmit",
-                    title: " ",
-                    width: 100,
-                    filterable: false
-                }, {
-                    field: "ActionNotes",
-                    title: "Notes",
-                    width: 200
-                }]
+                field: "ActionQuantityToBranch",
+                title: "Qty to Branch",
+                width: 160,
+                headerAttributes: {
+                    class: "text-end"
+                }
+            }, {
+                field: "ActionQuantityToWH",
+                title: "Qty to WH",
+                width: 160,
+                headerAttributes: {
+                    class: "text-end"
+                }
+            }, {
+                field: "ActionQuantityToRange",
+                title: "Quantity",
+                width: 160,
+                headerAttributes: {
+                    class: "text-end"
+                },
+                hidden: true
+            }, {
+                field: "ActionSubmit",
+                title: " ",
+                width: 100,
+                filterable: false
+            }, {
+                field: "ActionNotes",
+                title: "Notes",
+                width: 100
+            }]
         }, {
             title: "Stock",
             columns: [{
-                field: "StockSummary",
-                title: "Summary",
-                width: 140
+                field: "StockWarehouse",
+                title: "Warehouse",
+                width: 100,
+                headerAttributes: {
+                    class: "text-end"
+                }
             }, {
-                    field: "StockWarehouse",
-                    title: "Warehouse",
-                    width: 140,
-                    headerAttributes: {
-                        class: "text-end"
-                    }
-                }, {
-                    field: "StockCover",
-                    title: "Cover",
-                    width: 140,
-                    headerAttributes: {
-                        class: "text-end"
-                    }
-                }, {
-                    field: "StockPurchaseOrdersFreeStock",
-                    title: "Purchase Order",
-                    width: 200,
-                    headerAttributes: {
-                        class: "text-end"
-                    }
-                }, {
-                    field: "StockPurchaseOrdersDueDate",
-                    title: "Due Date",
-                    width: 200
-                }, {
-                    field: "StockKingsRoad",
-                    title: "King's Road",
-                    width: 140,
-                    headerAttributes: {
-                        class: "text-end"
-                    }
-                }, {
-                    field: "StockMarylebone",
-                    title: "Marylebone",
-                    width: 140,
-                    headerAttributes: {
-                        class: "text-end"
-                    }
-                }, {
-                    field: "StockFenwickAll",
-                    title: "Fenwick (All)",
-                    width: 140,
-                    headerAttributes: {
-                        class: "text-end"
-                    }
-                }, {
-                    field: "StockRingFenced",
-                    title: "Ring Fenced",
-                    width: 140,
-                    headerAttributes: {
-                        class: "text-end"
-                    }
-                }]
+                field: "StockCover",
+                title: "Cover",
+                width: 100,
+                headerAttributes: {
+                    class: "text-end"
+                }
+            }, {
+                field: "StockPurchaseOrdersFreeStock",
+                title: "Purchase Order",
+                width: 100,
+                headerAttributes: {
+                    class: "text-end"
+                }
+            }, {
+                field: "StockPurchaseOrdersDueDate",
+                title: "Due Date",
+                width: 100
+            }, {
+                field: "StockKingsRoad",
+                title: "King's Road",
+                width: 100,
+                headerAttributes: {
+                    class: "text-end"
+                }
+            }, {
+                field: "StockMarylebone",
+                title: "Marylebone",
+                width: 100,
+                headerAttributes: {
+                    class: "text-end"
+                }
+            }, {
+                field: "StockFenwickAll",
+                title: "Fenwick (All)",
+                width: 100,
+                headerAttributes: {
+                    class: "text-end"
+                }
+            }, {
+                field: "StockRingFenced",
+                title: "Ring Fenced",
+                width: 100,
+                headerAttributes: {
+                    class: "text-end"
+                }
+            }]
         }, {
             title: "Sales",
             columns: [{
                 field: "SalesSummary",
                 title: "Summary",
-                width: 140
+                width: 200
             }, {
-                    field: "SalesTotal",
-                    title: "Total",
-                    width: 140,
-                    headerAttributes: {
-                        class: "text-end"
-                    }
-                }, {
-                    field: "SalesKingsRoad",
-                    title: "King's Road",
-                    width: 140,
-                    headerAttributes: {
-                        class: "text-end"
-                    }
-                }, {
-                    field: "SalesMarylebone",
-                    title: "Marylebone",
-                    width: 140,
-                    headerAttributes: {
-                        class: "text-end"
-                    }
-                }, {
-                    field: "SalesFenwickAll",
-                    title: "Fenwick (All)",
-                    width: 140,
-                    headerAttributes: {
-                        class: "text-end"
-                    }
-                }, {
-                    field: "SalesUKECom",
-                    title: "UK eCommerce",
-                    width: 140,
-                    headerAttributes: {
-                        class: "text-end"
-                    }
-                }, {
-                    field: "SalesUKTrade",
-                    title: "UK Trade",
-                    width: 140,
-                    headerAttributes: {
-                        class: "text-end"
-                    }
-                }, {
-                    field: "SalesROWTrade",
-                    title: "ROW Trade",
-                    width: 140,
-                    headerAttributes: {
-                        class: "text-end"
-                    },
-                    hidden: true
-                }]
+                field: "SalesTotal",
+                title: "Total",
+                width: 100,
+                headerAttributes: {
+                    class: "text-end"
+                }
+            }, {
+                field: "SalesKingsRoad",
+                title: "King's Road",
+                width: 100,
+                headerAttributes: {
+                    class: "text-end"
+                }
+            }, {
+                field: "SalesMarylebone",
+                title: "Marylebone",
+                width: 100,
+                headerAttributes: {
+                    class: "text-end"
+                }
+            }, {
+                field: "SalesFenwickAll",
+                title: "Fenwick (All)",
+                width: 100,
+                headerAttributes: {
+                    class: "text-end"
+                }
+            }, {
+                field: "SalesUKECom",
+                title: "UK eCommerce",
+                width: 100,
+                headerAttributes: {
+                    class: "text-end"
+                }
+            }, {
+                field: "SalesUKTrade",
+                title: "UK Trade",
+                width: 100,
+                headerAttributes: {
+                    class: "text-end"
+                }
+            }, {
+                field: "SalesROWTrade",
+                title: "ROW Trade",
+                width: 100,
+                headerAttributes: {
+                    class: "text-end"
+                },
+                hidden: true
+            }]
         }],
         sortable: true,
         groupable: false,
@@ -617,24 +568,14 @@ const rangeManagementViewModel = ({ } = {}) => {
             numeric: false,
             previousNext: false,
             messages: {
-                display: "{2} items"
+                display: "Showing items {0} to {1} of {2}"
             }
         },
-        height: 1000,
+        height: 1080,
         width: 'auto',
         reorderable: true,
-        //pageable: {
-        //      20,
-        //    pageSizes: [10, 20, 50, 100, 200]
-        //},
-        excelExport: self.exportToExcel,
         noRecords: {
             template: `<div class="empty-cover"><h4>No Results</h4></div>`,
-        },
-        change: (e) => {
-            //self.modalBusy(true);
-
-            //self.openModal(e);
         },
         dataBound: (e) => {
             self.removeEmptyGroupingRows();
@@ -647,6 +588,18 @@ const rangeManagementViewModel = ({ } = {}) => {
 
             self.visibleRecords(array);
 
+            document.querySelectorAll(".product-filter-name").forEach(ppn => {
+                ppn.closest("tr").classList.add("product-filter-name-row");
+            });
+
+            document.querySelectorAll(".product-page-name").forEach(ppn => {
+                ppn.closest("tr").classList.add("product-page-name-row");
+            });
+
+            document.querySelectorAll(".order-form-group").forEach(ofg => {
+                ofg.closest("tr").classList.add("order-form-group-row");
+            });
+
             // This is necessary if you're paging because
             // if you're paging and endless scrolling and grouping something very stupid happens with the 
             // groups not being completely filled so... you tell the grid to refresh and then it scroll itself argh
@@ -654,11 +607,110 @@ const rangeManagementViewModel = ({ } = {}) => {
                 document.querySelector("#results-grid .k-grid-content.k-auto-scrollable").scrollTo(0, self.gridScrollRestoration);
                 self.gridScrollRestoration = null;
             }
-        },
-        columnResize: (e) => {
-            self.removeEmptyGroupingRows();
         }
     };
+
+    self.addGridSettings = {
+        autoBind: false,
+        widget: ko.observable(),
+        useKOTemplates: true,
+        rowTemplate: "add-row-template",
+        data: self.addGridDataSource,
+        columns: [{
+            title: "Product Filter Name",
+            field: "ProductFilterName",
+            groupHeaderTemplate: (r) => {
+                //console.log(r);
+                let productArray = self.searchResults().filter(sr => sr.ProductFilterName == r.value);
+                let productPageSet = new Set(productArray.flatMap(sr => sr.ProductPageName));
+
+                let resultString = ``;
+
+                if (productPageSet.size == 1 && productPageSet[0] == null) {
+                    resultString = `<span class="group-heading product-filter-name bold">${r.value} (${productArray.length} Product${productArray.length == 1 ? '' : 's'})</span>`;
+                } else {
+                    resultString = `<span class="group-heading product-filter-name bold">${r.value} (${productPageSet.size} Product Page${productPageSet.size == 1 ? '' : 's'}, ${productArray.length} Product${productArray.length == 1 ? '' : 's'})</span>`;
+                }
+
+                return resultString;
+            },
+        }, {
+            title: "Product Page Name",
+            field: "ProductPageName",
+            groupHeaderTemplate: (r) => {
+                return `<span class="group-heading product-page-name">${r.value}</span>`;
+            },
+        }, {
+            title: "Order Form Group",
+            field: "OrderFormGroup",
+            groupHeaderTemplate: (r) => {
+                return `<span class="group-heading order-form-group">${r.value}</span>`;
+            },
+        }, {
+            title: " ",
+            width: 310,
+            headerTemplate: `<span class="group-heading header-blue"></span>`,
+        }, {
+            title: "Recommendations",
+            field: "Recommendations",
+            width: 220
+        }, {
+            title: " ",
+            field: " ",
+            width: 180
+        }],
+        sortable: true,
+        groupable: false,
+        filterable: false,
+        selectable: false,
+        scrollable: {
+            endless: true
+        },
+        pageable: {
+            numeric: false,
+            previousNext: false,
+            messages: {
+                display: "Showing items {0} to {1} of {2}"
+            }
+        },
+        height: 1080,
+        width: 'auto',
+        reorderable: true,
+        noRecords: {
+            template: `<div class="empty-cover"><h4>No Results</h4></div>`,
+        },
+        dataBound: (e) => {
+            self.removeEmptyGroupingRows();
+
+            let data = e.sender.dataSource.view();
+
+            let array = [];
+
+            self.parseView(data, array);
+
+            self.visibleAddToRangeRecords(array);
+
+            document.querySelectorAll(".product-filter-name").forEach(ppn => {
+                ppn.closest("tr").classList.add("product-filter-name-row");
+            });
+
+            document.querySelectorAll(".product-page-name").forEach(ppn => {
+                ppn.closest("tr").classList.add("product-page-name-row");
+            });
+
+            document.querySelectorAll(".order-form-group").forEach(ofg => {
+                ofg.closest("tr").classList.add("order-form-group-row");
+            });
+
+            // This is necessary if you're paging because
+            // if you're paging and endless scrolling and grouping something very stupid happens with the 
+            // groups not being completely filled so... you tell the grid to refresh and then it scroll itself argh
+            if (self.addGridScrollRestoration) {
+                document.querySelector("#results-grid .k-grid-content.k-auto-scrollable").scrollTo(0, self.addGridScrollRestoration);
+                self.addGridScrollRestoration = null;
+            }
+        }
+    }
 
     self.branchParams = kendoMDCDropDownList({
         label: 'Please select a Branch',
@@ -680,74 +732,12 @@ const rangeManagementViewModel = ({ } = {}) => {
             dir: 'asc',
             field: 'branchId'
         },
-        select: self.genericUnsavedChangesSelect,
-        clearFunction: self.genericUnsavedChangesClear
-    });
-
-    self.launchParams = kendoMDCDropDownList({
-        label: 'Launch',
-        odata: true,
-        endPoint: '/odata/Launches',
-        textField: 'Name',
-        valueField: 'LaunchID',
-        virtual: true,
-        pageSize: 40,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                if (options.value) {
-                    $.ajax({
-                        url: `/odata/Launches/Default.LaunchValueMapper(launchId=${options.value})`,
-                        type: 'GET',
-                        success: function (data) {
-                            options.success(data.value);
-                            if (data.value.length == 1) {
-                                self.launch(data.value[0]);
-                            }
-                        }
-                    });
-                } else {
-                    options.success();
-                }
-            }
+        select: (e) => {
+            e.preventDefault();
+            self.branchCheck(e, (e) => {
+                e.sender.value(e.dataItem.BranchID);
+            });
         },
-        idObservable: self.launchId,
-        objObservable: self.launch,
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertable: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        autoBind: true,
-        height: 340,
-        sort: {
-            dir: 'desc',
-            field: 'launchId'
-        },
-        select: self.genericUnsavedChangesSelect,
-        clearFunction: self.genericUnsavedChangesClear
-    });
-
-    self.brandParams = kendoMDCDropDownList({
-        label: 'Brand',
-        odata: true,
-        endPoint: '/odata/Brands',
-        textField: 'Name',
-        valueField: 'BrandID',
-        virtual: false,
-        idObservable: self.brandId,
-        objObservable: self.brand,
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertable: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        autoBind: true,
-        height: 340,
-        select: self.genericUnsavedChangesSelect,
         clearFunction: self.genericUnsavedChangesClear
     });
 
@@ -801,6 +791,27 @@ const rangeManagementViewModel = ({ } = {}) => {
         clearFunction: self.genericUnsavedChangesClear
     });
 
+    self.brandParams = kendoMDCDropDownList({
+        label: 'Brand',
+        odata: true,
+        endPoint: '/odata/Brands',
+        textField: 'Name',
+        valueField: 'BrandID',
+        virtual: false,
+        idObservable: self.brandId,
+        objObservable: self.brand,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertable: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear
+    });
+
     self.statusGroupParams = kendoMDCDropDownList({
         label: 'Status Group',
         odata: true,
@@ -822,412 +833,41 @@ const rangeManagementViewModel = ({ } = {}) => {
         clearFunction: self.genericUnsavedChangesClear
     });
 
-    self.salesDataPageSize = 20;
-
-    self.salesDataSource = new kendo.data.DataSource({
-        transport: {
-            read: (options) => {
-
-                self.salesHistoryTabBusyCount(self.salesHistoryTabBusyCount() + 1);
-
-                var webapi = new kendo.data.transports.webapi({ prefix: "" });
-                var params = webapi.parameterMap(options.data);
-
-                var data = {};
-
-                if (self.productId.peek())
-                    data.productId = self.productId.peek();
-
-                for (var propertyName in params) {
-                    data[propertyName] = params[propertyName];
-                }
-
-                let qs = new URLSearchParams(data);
-
-                //console.log(qs);
-
-                fetch(`/api/stockManagement/FetchSalesHistorySummaryGrid?${qs.toString()}`, {
-                    method: 'GET',
-                    headers: window.fetchHeaders
-                })
-                    .then(window.handleFetchResponse)
-                    .then(data => {
-
-                        //console.log("FetchSalesHistorySummaryGrid", data);
-
-
-                        ko.ignoreDependencies(() => {
-                            self.salesHistoryTabBusyCount(self.salesHistoryTabBusyCount() - 1);
-                        });
-
-                        let gridOptions = self.salesGridSettings.widget().getOptions();
-
-                        if (data.Schema != JSON.stringify(self.salesDataSourceSchema) ||
-                            data.Columns != JSON.stringify(self.salesGridColumns) ||
-                            self.salesDataPageSize != gridOptions.dataSource.pageSize) {
-
-                            self.salesDataSourceSchema = JSON.parse(data.Schema);
-
-                            self.salesGridColumns = JSON.parse(data.Columns);
-
-                            gridOptions.columns = self.salesGridColumns;
-
-                            gridOptions.dataSource.schema.model = self.salesDataSourceSchema;
-
-                            self.salesGridSettings.widget().setOptions(gridOptions);
-
-                            let chart = self.salesChartSettings.widget();
-
-                            chart.columns = self.salesGridColumns;
-
-                            chart.dataSource.pageSize(gridOptions.dataSource.pageSize);
-
-                            chart.dataSource.options.schema.model = self.salesDataSourceSchema;
-
-                            self.salesChartSettings.widget().setOptions({
-                                dataSource: chart.dataSource
-                            });
-
-                            self.salesDataPageSize = gridOptions.dataSource.pageSize;
-
-                        }
-
-                        let series = [];
-                        let categories = self.salesGridColumns.flatMap(c => {
-                            if (c.field.indexOf("_") === 0)
-                                return c.title;
-                            else
-                                return [];
-                        });
-
-                        //console.log(categories);
-
-                        data.Data.forEach(d => {
-                            if (d.SeriesHidden === false) {
-                                let records = [];
-                                let seriesColour = null;
-                                Object.keys(d).forEach(k => {
-                                    if (k.indexOf("_") === 0) {
-                                        records.push(d[k]);
-                                    }
-                                    if (k === "SeriesColour") {
-                                        seriesColour = d[k];
-                                    }
-                                });
-                                series.push({
-                                    type: "line",
-                                    color: seriesColour,
-                                    data: records,
-                                    name: d.RowDescriptor,
-                                    tooltip: {
-                                        visible: true
-                                    }
-                                });
-                            }
-                        });
-
-                        self.salesChartSettings.widget().setOptions({
-                            series: series,
-                            categoryAxis: {
-                                min: 0,
-                                max: 19,
-                                categories: categories
-                            },
-                        });
-
-                        options.success(data);
-
-                        //self.salesChartSettings.widget().resize();
-                    })
-                    .catch(window.catchFetchError);
-            }
-        },
-        page: 1,
-        pageSize: self.salesDataPageSize,
-        serverPaging: true,
-        serverSorting: true,
-        serverFiltering: true,
-        schema: $.extend({}, kendo.data.schemas.webapi, {
-            data: "Data",
-            total: "Total",
-            model: self.salesDataSourceSchema
-        })
-    });
-
-    self.salesGridSettings = {
-        autoBind: true, // leave this true: the call causes the grid to bind, which is necessary to pull schema and columns
-        // even better if we do it without a productId initially!
-        widget: ko.observable(),
-        columns: self.salesGridColumns,
-        data: self.salesDataSource,
-        sortable: true,
-        filterable: {
-            extra: false
-        },
-        selectable: 'single',
-        reorderable: true,
-        pageable: {
-            pageSize: self.salesDataPageSize,
-            pageSizes: [10, 20, 50, 100, 200]
-        }
-    };
-
-    self.salesChartSettings = {
-        autoBind: false,
-        widget: ko.observable(),
-        dataSource: self.salesDataSource,
-        categoryAxis: {
-            min: 0,
-            max: 19
-        },
-        pannable: true,
-        legend: {
-            labels: {
-                background: "white",
-                color: "black"
-            }
-        }
-        //chartArea: {
-        //    width: 1080
-        //}
-    }
-
-    self.salesHistoryGridPageSize = 20;
-
-    self.salesHistoryDetailGridColumns = [];
-
-    self.salesHistoryDetailGridSchema = {}
-
-    self.salesHistoryDetailGridSettings = {
-        autoBind: true,
-        widget: ko.observable(),
-        columns: [],
-        data: new kendo.data.DataSource({
-            transport: {
-                read: (options) => {
-
-                    self.salesHistoryTabBusyCount(self.salesHistoryTabBusyCount() + 1);
-
-                    var webapi = new kendo.data.transports.webapi({ prefix: "" });
-                    var params = webapi.parameterMap(options.data);
-
-                    var data = {};
-
-                    if (self.productId.peek())
-                        data.productId = self.productId();
-
-                    for (var propertyName in params) {
-                        data[propertyName] = params[propertyName];
-                    }
-
-                    let qs = new URLSearchParams(data);
-
-                    //console.log(qs);
-
-                    fetch(`/api/stockManagement/FetchSalesHistoryDetailGrid?${qs.toString()}`, {
-                        method: 'GET',
-                        headers: window.fetchHeaders
-                    })
-                        .then(window.handleFetchResponse)
-                        .then(data => {
-
-                            //console.log("FetchSalesHistoryDetailGrid", data);
-
-                            ko.ignoreDependencies(() => {
-                                self.salesHistoryTabBusyCount(self.salesHistoryTabBusyCount() - 1);
-                            });
-
-                            let gridOptions = self.salesHistoryDetailGridSettings.widget().getOptions();
-
-                            if (data.Schema != JSON.stringify(self.salesHistoryDetailGridSchema) ||
-                                data.Columns != JSON.stringify(self.salesHistoryDetailGridColumns) ||
-                                self.salesHistoryGridPageSize != gridOptions.dataSource.pageSize) {
-
-                                self.salesHistoryDetailGridSchema = JSON.parse(data.Schema);
-
-                                self.salesHistoryDetailGridColumns = JSON.parse(data.Columns);
-
-                                gridOptions.columns = self.salesHistoryDetailGridColumns;
-
-                                self.salesHistoryGridPageSize = gridOptions.dataSource.pageSize;
-
-                                gridOptions.dataSource.schema.model = self.salesHistoryDetailGridSchema;
-
-                                self.salesHistoryDetailGridSettings.widget().setOptions(gridOptions);
-                            }
-
-                            options.success(data);
-                        })
-                        .catch(window.catchFetchError);
-                }
-            },
-            page: 1,
-            pageSize: self.salesHistoryGridPageSize,
-            serverPaging: true,
-            serverSorting: true,
-            serverFiltering: true,
-            schema: $.extend({}, kendo.data.schemas.webapi, {
-                data: "Data",
-                total: "Total",
-                model: self.salesHistoryDetailGridSchema
-            })
-        }),
-        sortable: true,
-        filterable: {
-            extra: false
-        },
-        selectable: 'single',
-        reorderable: true,
-        pageable: {
-            pageSize: self.salesHistoryGridPageSize,
-            pageSizes: [10, 20, 50, 100, 200]
-        }
-    };
-
-    self.orderBookDataPageSize = 20;
-
-    self.orderBookDataSource = new kendo.data.DataSource({
-        transport: {
-            read: (options) => {
-
-                self.orderBookBusy(true);
-
-
-                var webapi = new kendo.data.transports.webapi({ prefix: "" });
-                var params = webapi.parameterMap(options.data);
-
-                var data = {};
-
-                if (self.productId.peek()) {
-                    data.productId = self.productId.peek()
-                }
-
-                for (var propertyName in params) {
-                    data[propertyName] = params[propertyName];
-                }
-
-                let qs = new URLSearchParams(data);
-
-                //console.log(qs);
-
-                fetch(`/api/stockManagement/FetchOrderBook?${qs.toString()}`, {
-                    method: 'GET',
-                    headers: window.fetchHeaders
-                })
-                    .then(window.handleFetchResponse)
-                    .then(data => {
-
-                        //console.log("FetchOrderBook", data);
-
-                        ko.ignoreDependencies(() => {
-                            self.orderBookBusy(false);
-                        });
-
-                        let gridOptions = self.orderBookGridSettings.widget().getOptions();
-
-                        if (data.Schema != JSON.stringify(self.orderBookDataSourceSchema) ||
-                            data.Columns != JSON.stringify(self.orderBookGridColumns) ||
-                            self.orderBookDataPageSize != gridOptions.dataSource.pageSize) {
-
-
-                            self.orderBookDataSourceSchema = JSON.parse(data.Schema);
-
-                            self.orderBookGridColumns = JSON.parse(data.Columns);
-
-                            gridOptions.columns = self.orderBookGridColumns;
-
-                            gridOptions.dataSource.schema.model = self.orderBookDataSourceSchema;
-
-                            self.orderBookGridSettings.widget().setOptions(gridOptions);
-
-                            self.orderBookDataPageSize = gridOptions.dataSource.pageSize;
-                        }
-
-                        options.success(data);
-                    })
-                    .catch(window.catchFetchError);
-            }
-        },
-        page: 1,
-        pageSize: self.orderBookDataPageSize,
-        serverPaging: true,
-        serverSorting: true,
-        serverFiltering: true,
-        schema: $.extend({}, kendo.data.schemas.webapi, {
-            data: "Data",
-            total: "Total",
-            model: self.orderBookDataSourceSchema
-        })
-    });
-
-    self.orderBookGridSettings = {
-        autoBind: true,
-        widget: ko.observable(),
-        columns: self.orderBookGridColumns,
-        data: self.orderBookDataSource,
-        sortable: true,
-        filterable: {
-            extra: false
-        },
-        selectable: 'single',
-        reorderable: true,
-        pageable: {
-            pageSize: self.orderBookDataPageSize,
-            pageSizes: [10, 20, 50, 100, 200]
-        }
-    };
-
-    self.productStatusCodeParams = kendoMDCDropDownList({
-        autoBind: true,
-        label: 'Status',
+    self.stockStatusParams = kendoMDCDropDownList({
+        label: 'Stock Status',
         data: [{
-            Name: "Current (c)",
-            Status: "C"
+            Value: "Overstocked",
+            Name: "Overstocked"
         }, {
-            Name: "Pre-Limited (Y)",
-            Status: "Y"
-        }, {
-            Name: "Limited (L)",
-            Status: "L"
-        }, {
-            Name: "Discontinued (D)",
-            Status: "D"
+            Name: "Understocked",
+            Value: "Understocked"
         }],
         textField: 'Name',
-        valueField: 'Status',
-        idObservable: self.productStatusCode,
-        objObservable: self.productStatus,
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(false),
-        revertable: ko.observable(false),
-        readOnly: false,
-        height: 340,
-        sort: {
-            dir: 'desc',
-            field: 'buyerCode'
-        },
-        popupSettings: {
-            appendTo: document.getElementById('product-status-wrapper')
-        },
-        select: self.genericUnsavedChangesSelect,
-        clearFunction: self.genericUnsavedChangesClear
-    });
-
-    self.productClearanceDiscountPercentageParams = {
-        label: null,
-        observable: self.productClearanceDiscountPercentage,
-        focusObservable: ko.observable(false),
-        busy: ko.observable(),
-        permitRevert: true,
-        originalValue: self.productClearanceDiscountPercentageOriginal,
+        valueField: 'Value',
+        virtual: false,
+        idObservable: self.stockStatusCode,
+        objObservable: self.stockStatus,
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
         revertable: ko.observable(false),
-        revertFunction: () => {
-            self.productClearanceDiscountPercentage(self.productClearanceDiscountPercentageOriginal());
-        },
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear
+    });
+
+    self.searchTermParams = {
+        label: "Search by Product Code or Name",
+        observable: self.searchTerm,
+        focusObservable: ko.observable(),
+        busy: ko.observable(),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertable: ko.observable(false),
         clearFunction: function () {
             var self = this;
             self.observable(undefined);
@@ -1236,26 +876,10 @@ const rangeManagementViewModel = ({ } = {}) => {
         useNativeValidation: false, // this feeds through to mdc objects and affects them
         decorateInputElement: true,
         insertValidationMessages: false,
-        inputType: 'number',
-        buttons: true,
-        minValue: 0,
-        maxValue: 10,
-        step: 10,
-        increment: () => {
-            let v = +self.productClearanceDiscountPercentage() || 0;
-
-            let factor = Math.pow(10, 0);
-
-            self.productClearanceDiscountPercentage(Math.round((v + 10) * factor) / factor);
-        },
-        decrement: () => {
-            let v = +self.productClearanceDiscountPercentage() || 0;
-
-            let factor = Math.pow(10, 0);
-
-            self.productClearanceDiscountPercentage(Math.round((v - 10) * factor) / factor);
+        enterKey: () => {
+            self.gridSettings.widget().dataSource.read();
         }
-    };
+    }
 
     //#endregion
 
@@ -1292,27 +916,39 @@ const rangeManagementViewModel = ({ } = {}) => {
         }
     });
 
-    self.salesHistoryTabBusyCount.subscribe(nv => {
-        if (nv > 0) {
-            self.salesBusy(true);
-        } else {
-            self.salesBusy(false);
-        }
-    });
-
-    //self.branchGroupId.subscribe(nv => {
-    //    self.branchParams.clearFunction();
-    //});
-
-    self.attributeGroupId.subscribe(nv => {
-        self.attributeParams.clearFunction();
-        self.attributesParams.clearFunction();
-    });
-
     //#endregion
 
 
     //#region Methods
+
+    self.branchCheck = (e, onComplete) => {
+        self.busy(true);
+        fetch('/api/rangemanagementapi/checkBranch', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            body: JSON.stringify({
+                branchId: e.dataItem.BranchID
+            })
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                self.busy(false);
+                if (data.Notification != null) {
+                    window.showInfo("Information",
+                        `${data.Notification}If this situation persists for more than an hour, please email
+                            <a href="mailto:itsupport@designersguild.com?subject=${(encodeURIComponent(`Range Management - ${e.dataItem.Name} Transfer Order(s) not being Processed by Mertex`))}&body=${encodeURIComponent(data.Notification)}">itsupport@designersguild.com</a>`);
+                    self.branchParams.clearFunction();
+                } else {
+                    if (typeof onComplete === 'function') {
+                        onComplete(e);
+                    }
+                }
+            })
+            .catch(err => {
+                self.busy(false);
+                window.catchFetchError(err);
+            })
+    }
 
     self.refreshProductFilters = (b) => {
         //self.setBusy();
@@ -1362,69 +998,21 @@ const rangeManagementViewModel = ({ } = {}) => {
         });
     }
 
-    self.loadLargeImage = function (result) {
-
-        self.largeImageProduct(self.productDetail());
-
-        // this needs to change when you swipe...
-        self.largeImageId(result.ImageID);
-
-        $('#large-image-container').html('');
-
-        var imagesHtml = '';
-
-        var startIndex = 0;
-
-        ko.utils.arrayForEach(self.productImages(), function (item, index) {
-            if (item.ImageID == result.ImageID) {
-                startIndex = index;
-            }
-            imagesHtml += '<img data-image-id="' + item.ImageID + '" src="https://www.designersguild.com/image/1024/' + item.ImageID + '" />';
-        });
-
-
-        $('#large-image-container').html('<div id="large-image-carousel">' + imagesHtml + '</div>');
-
-        $('#large-image-title').text(self.largeImageProduct().ProductCode + ' - ' + (self.largeImageProduct().ProductName));
-
-        $('.largeimage-nav').empty();
-
-        $('#large-image-wrapper').hide();
-
-        if ($('#large-image-carousel').data('owl.carousel')) {
-            $('#large-image-carousel').data('owl.carousel').destroy();
-            $('#large-image-carousel .owl-stage').empty();
-        }
-
-        window.setTimeout(function () {
-
-            tns({
-                container: '#large-image-carousel',
-                navContainer: '.largeimage-nav',
-                controlsText: ['<i class="material-icons">keyboard_arrow_left</i>', '<i class="material-icons">keyboard_arrow_right</i>'],
-                gutter: 10,
-                loop: false,
-                nav: false,
-                mouseDrag: true,
-                startIndex: startIndex
-            });
-
-            $('#large-image-carousel').closest('.tns-outer').addClass('controls-padded');
-
-            $("#image-modal").modal('show');
-
-            $('#large-image-wrapper').show();
-
-        }, 0);
-
-        $('#large-image-container').show();
-
+    self.clearAllFilters = () => {
+        self.productFilterGroupParams.clearFunction();
+        self.productFilterParams.clearFunction();
+        self.brandParams.clearFunction();
+        self.statusGroupParams.clearFunction();
+        self.searchTerm(undefined);
     }
 
     self.setBusy = () => {
         switch (self.view()) {
             case VIEW_MANAGE:
                 self.manageBusy(true);
+                break;
+            case VIEW_ADD:
+                self.addBusy(true);
                 break;
             case VIEW_RESTOCK:
                 self.restockBusy(true);
@@ -1442,6 +1030,9 @@ const rangeManagementViewModel = ({ } = {}) => {
             case VIEW_MANAGE:
                 self.manageBusy(false);
                 break;
+            case VIEW_ADD:
+                self.addBusy(false);
+                break;
             case VIEW_RESTOCK:
                 self.restockBusy(false);
                 break;
@@ -1452,6 +1043,8 @@ const rangeManagementViewModel = ({ } = {}) => {
                 break;
         }
     }
+
+    //#region unsaved changes handling
 
     self.checkUnsavedChangesThenSelect = async (event) => {
         await self.unsavedChanges().then((d) => {
@@ -1530,6 +1123,8 @@ const rangeManagementViewModel = ({ } = {}) => {
         });
     }
 
+    //#endregion
+
     self.saveChanges = () => {
         if (self.searchResults().find(p => p.unsavedChanges())) {
             self.setBusy();
@@ -1572,36 +1167,6 @@ const rangeManagementViewModel = ({ } = {}) => {
         }
     }
 
-    self.requestStatusChange = () => {
-        self.changeStatusBusy(true);
-        fetch('/api/stockManagement/RequestStatusChange', {
-            method: 'POST',
-            headers: window.fetchHeaders,
-            body: JSON.stringify({
-                productId: self.productId(),
-                status: self.productStatusCode(),
-                clearanceDiscountPercentage: self.productClearanceDiscountPercentage()
-            })
-        })
-            .then(window.handleFetchResponse)
-            .then(data => {
-                self.closeChangeStatusModal();
-
-                if (data.ErrorNumber === 0) {
-                    window.showInfo("Success", "Your changes have been saved");
-                    self.productClearanceDiscountPercentageOriginal(self.productClearanceDiscountPercentage());
-                } else {
-                    window.showInfo("Sorry", data.ErrorMessage);
-                }
-
-                self.changeStatusBusy(false);
-            })
-            .catch(err => {
-                self.changeStatusBusy(false);
-                window.catchFetchError(err);
-            });
-    }
-
     //#endregion
 
 
@@ -1617,7 +1182,8 @@ const rangeManagementViewModel = ({ } = {}) => {
             productFilterGroupId: self.productFilterGroupId(),
             productFilterId: self.productFilterId(),
             brandId: self.brandId(),
-            statusGroupId: self.statusGroupId()
+            statusGroupId: self.statusGroupId(),
+            stockStatusCode: self.stockStatusCode()
         };
 
         if (self.searchTerm())
@@ -1626,10 +1192,28 @@ const rangeManagementViewModel = ({ } = {}) => {
         if (self.gridParamsFirstRun)
             self.gridParamsFirstRun = false;
         else {
-            window.setTimeout(() => {
-                if (self.gridSettings.widget())
-                    self.gridSettings.widget().dataSource.read();
-            }, 0);
+            if (self.branchId() ||
+                self.productFilterGroupId() ||
+                self.productFilterId() ||
+                self.brandId() ||
+                self.statusGroupId() ||
+                self.stockStatusCode() ||
+                self.searchTerm()) {
+                window.setTimeout(() => {
+                    if (self.gridSettings.widget()) {
+                        self.gridSettings.widget().dataSource.data([]);
+
+                        let grouping = self.gridSettings.widget().dataSource.group();
+
+                        self.gridSettings.widget().dataSource.query({
+                            page: 1,
+                            pageSize: 10,
+                            group: grouping
+                        });
+
+                    }
+                }, 0);
+            }
         }
 
         return props;
@@ -1640,164 +1224,116 @@ const rangeManagementViewModel = ({ } = {}) => {
         }
     });
 
-    self.groupBy = (items, key, dataSetName) => {
-        const groupedMap = new Map();
-
-        for (const e of items) {
-            if (!groupedMap.has(e[key])) {
-                groupedMap.set(e[key], []);
-            }
-            groupedMap.get(e[key]).push(e);
-        }
-
-        const result = [];
-
-        groupedMap.forEach((v, k) => {
-            let obj = {
-                key: k,
-                idKey: k.toLowerCase().replace(/\s/g, '-').replace(/[^a-z0-9\-]/g, ''),
-                element: ko.observable(false),
-                templateName: ko.observable("product-page-group-placeholder-template"),
-            }
-            obj.ready = () => {
-                self.intersectionObserver.observe(obj.element.DOMElement);
-            }
-            obj[dataSetName] = v;
-            obj.templateName.subscribe(nv => {
-                //console.log(nv);
-            });
-
-            obj.targetTotal = ko.computed(() => {
-                return 0;// obj[dataSetName].reduce((a0, p0) => a0 += p0.branchTargetParams.originalValue, 0);
-            }, self);
-
-            obj.branchGroupTargetTotal = ko.computed(() => {
-                return 0;// obj[dataSetName].reduce((a0, p0) => a0 += p0.branchGroupTarget(), 0);
-            }, self);
-
-            result.push(obj);
-        });
-
-        return result;
-    }
-
-    self.groupedSortedSearchResults = ko.computed(() => {
-
-        let key = "ProductPageHeading";
-
-        let results = self.groupBy(self.productSearchResults(), key, 'orderFormGroups');
-
-        //console.log(key, results);
-
-        key = "OrderFormGroupName";
-
-        results.forEach(r => {
-            r.orderFormGroups = self.groupBy(r.orderFormGroups, key, 'products');
-        });
-
-        //console.log(key, results);
-
-        return results;
-
-        // self.productSearchResults().sort((a, b) => a.BranchGroup?.Quantity > b.BranchGroup?.Quantity ? -1 : 1);
-    }, self);
-
-    self.visibleProductIds = ko.computed(() => {
-        return self.visibleRecords().map(vp => vp.ProductID)
-    }, self).extend({
-            rateLimit: {
-                timeout: 50,
-                method: 'notifyWhenChangesStop'
-            }
-    });
-
     self.unfilledRecordProductIds = ko.computed(() => {
-        return self.visibleRecords().filter(vr => !vr.loaded()).map(vr => vr.ProductID);
+        return Array.from(new Set(self.visibleRecords().filter(vr => !vr.loaded()).map(vr => vr.ProductID)));
     }, self);
 
     self.fetchData = ko.computed(() => {
         if (self.unfilledRecordProductIds().length) {
 
-            self.fetchDataBusy(true);
+            if (self.unfilledRecordProductIds().length > 1)
+                self.fetchDataBusy(true);
 
-            fetch('/api/rangemanagementapi/FetchData', {
-                method: 'POST',
-                headers: window.fetchHeaders,
-                body: JSON.stringify({
-                    branchId: self.branchId(),
-                    productIds: self.unfilledRecordProductIds()
+            window.setTimeout(() => {
+                console.log('fetchData calling with', self.unfilledRecordProductIds());
+
+                fetch('/api/rangemanagementapi/FetchData', {
+                    method: 'POST',
+                    headers: window.fetchHeaders,
+                    body: JSON.stringify({
+                        branchId: self.branchId(),
+                        productIds: self.unfilledRecordProductIds()
+                    })
                 })
-            })
-                .then(window.handleFetchResponse)
-                .then(data => {
-                    data.Results.forEach(r => {
-                        let rec = self.visibleRecords().find(vr => vr.ProductID == r.ProductID);
+                    .then(window.handleFetchResponse)
+                    .then(data => {
 
-                        rec.actionRecommendations(r.Action_Recommendation);
+                        switch (self.view()) {
+                            case VIEW_MANAGE:
+                                data.Results.forEach(r => {
+                                    let rec = self.visibleRecords().find(vr => vr.ProductID == r.ProductID);
 
-                        rec.actionTransferToBranchHighlight(r.Action_TransferToBranchHighlight);
-                        rec.actionTransferToBranchQuantityOriginal(r.Action_TransferToBranchQuantity);
-                        rec.actionTransferToBranchQuantity(r.Action_TransferToBranchQuantity);
-                        rec.actionTransferToBranchBasketItemId(r.WH2BR_BasketItemID);
+                                    rec.actionRecommendations(r.Action_Recommendation);
 
-                        if (r.WH2BR_BasketItemID) {
-                            rec.actionTransferToBranchQuantityParams.disable(true);
+                                    rec.actionTransferToBranchHighlight(r.Action_TransferToBranchHighlight);
+                                    rec.actionTransferToBranchQuantityOriginal(r.Action_TransferToBranchQuantity);
+                                    rec.actionTransferToBranchQuantity(r.Action_TransferToBranchQuantity);
+                                    rec.actionTransferToBranchBasketItemId(r.WH2BR_BasketItemID);
+
+                                    if (r.WH2BR_BasketItemID) {
+                                        rec.actionTransferToBranchQuantityParams.disable(true);
+                                    }
+
+                                    rec.actionTransferToWarehouseHighlight(r.Action_TransferToWarehouseHighlight);
+                                    rec.actionTransferToWarehouseQuantityOriginal(r.Action_TransferToWarehouseQuantity);
+                                    rec.actionTransferToWarehouseQuantity(r.Action_TransferToWarehouseQuantity);
+                                    rec.actionTransferToWarehouseBasketItemId(r.BR2WH_BasketItemID);
+
+                                    if (r.BR2WH_BasketItemID) {
+                                        rec.actionTransferToWarehouseQuantityParams.disable(true);
+                                    }
+
+                                    rec.actionAddToRangeHighlight(r.Action_AddToRangeHighlight);
+                                    rec.actionAddToRangeQuantity(0);
+
+                                    rec.rangeStatus(r.Range_Status);
+                                    rec.rangeActual(r.Range_Actual);
+                                    rec.rangePlanned(r.Range_Planned);
+                                    rec.rangePlannedOriginal(r.Range_Planned);
+                                    rec.rangeInProgress(r.Range_InProgress);
+                                    rec.rangeRequired(r.Range_Required);
+
+                                    rec.sales180DayFW(r.Sales_180Day_FW);
+                                    rec.sales180DayKR(r.Sales_180Day_KR);
+                                    rec.sales180DayMHS(r.Sales_180Day_MHS);
+                                    rec.sales180DayUKEcommerce(r.Sales_180Day_UKEcommerce);
+                                    rec.sales180DayUKTrade(r.Sales_180Day_UKTrade);
+                                    rec.sales180DayROWTrade(r.Sales_180Day_ROWTrade);
+                                    rec.sales180DayTotal(r.Sales_180Day_Total);
+                                    rec.salesSummary(r.Sales_Summary);
+                                    rec.salesCover(r.Sales_Cover);
+
+                                    rec.stockCover(r.Stock_Cover);
+                                    rec.stockFWFreeStock(r.Stock_FW_FreeStock);
+                                    rec.stockKRFreeStock(r.Stock_KR_FreeStock);
+                                    rec.stockMHSFreeStock(r.Stock_MHS_FreeStock);
+                                    rec.stockWHFreeStock(r.Stock_WH_FreeStock);
+                                    rec.stockWHNextPODueDate(r.Stock_WH_NextPODueDate);
+                                    rec.stockWHNextPOFreeStock(r.Stock_WH_NextPOFreeStock);
+                                    rec.stockSummary(r.Stock_Summary);
+
+                                    rec.unitCostPriceGBP(r.UnitCostPriceGBP);
+
+                                    rec.busy(false);
+
+                                    rec.loaded(true);
+                                });
+
+                                self.fetchDataBusy(false);
+
+                                // This is necessary if you're paging because
+                                // if you're paging and endless scrolling and grouping something very stupid happens with the
+                                // groups not being completely filled so... you tell the grid to refresh and then it scroll itself argh
+                                self.gridScrollRestoration = document.querySelector("#results-grid .k-grid-content.k-auto-scrollable").scrollTop;
+                                self.gridSettings.widget().refresh();
+                        ///
+
+                                break;
+                            case VIEW_ADD:
+
+                                break;
+                            default:
+                                break;
                         }
 
-                        rec.actionTransferToWarehouseHighlight(r.Action_TransferToWarehouseHighlight);
-                        rec.actionTransferToWarehouseQuantityOriginal(r.Action_TransferToWarehouseQuantity);
-                        rec.actionTransferToWarehouseQuantity(r.Action_TransferToWarehouseQuantity);
-                        rec.actionTransferToWarehouseBasketItemId(r.BR2WH_BasketItemID);
-
-                        if (r.BR2WH_BasketItemID) {
-                            rec.actionTransferToWarehouseQuantityParams.disable(true);
-                        }
-
-                        rec.rangeStatus(r.Range_Status)
-                        rec.rangeActual(r.Range_Actual);
-                        rec.rangePlanned(r.Range_Planned);
-                        rec.rangePlannedOriginal(r.Range_Planned);
-                        rec.rangeRequired(r.Range_Required);
-
-                        rec.sales180DayFW(r.Sales_180Day_FW);
-                        rec.sales180DayKR(r.Sales_180Day_KR);
-                        rec.sales180DayMHS(r.Sales_180Day_MHS);
-                        rec.sales180DayUKEcommerce(r.Sales_180Day_UKEcommerce);
-                        rec.sales180DayUKTrade(r.Sales_180Day_UKTrade);
-                        rec.sales180DayROWTrade(r.Sales_180Day_ROWTrade);
-                        rec.sales180DayTotal(r.Sales_180Day_Total);
-                        rec.salesSummary(r.Sales_Summary);
-                        rec.salesCover(r.Sales_Cover);
-
-                        rec.stockCover(r.Stock_Cover);
-                        rec.stockFWFreeStock(r.Stock_FW_FreeStock);
-                        rec.stockKRFreeStock(r.Stock_KR_FreeStock);
-                        rec.stockMHSFreeStock(r.Stock_MHS_FreeStock);
-                        rec.stockWHFreeStock(r.Stock_WH_FreeStock);
-                        rec.stockWHNextPODueDate(r.Stock_WH_NextPODueDate);
-                        rec.stockWHNextPOFreeStock(r.Stock_WH_NextPOFreeStock);
-                        rec.stockSummary(r.Stock_Summary);
-
-                        rec.unitCostPriceGBP(r.UnitCostPriceGBP);
-
-                        rec.loaded(true);
+                        console.log('FetchData returned', data);
+                    })
+                    .catch(err => {
+                        self.clearBusy();
+                        window.catchFetchError(err)
                     });
+            }, 300);
 
-                    self.fetchDataBusy(false);
-
-                // This is necessary if you're paging because
-                // if you're paging and endless scrolling and grouping something very stupid happens with the
-                // groups not being completely filled so... you tell the grid to refresh and then it scroll itself argh
-                    self.gridScrollRestoration = document.querySelector("#results-grid .k-grid-content.k-auto-scrollable").scrollTop;
-                    self.gridSettings.widget().refresh();
-                ///
-
-                    console.log('FetchData returned', data);
-                })
-                .catch(err => {
-                    self.clearBusy();
-                    window.catchFetchError(err)
-                });
         }
     }, self).extend({
         rateLimit: {
@@ -1818,16 +1354,68 @@ const rangeManagementViewModel = ({ } = {}) => {
     console.log('grid horiz scroll fix? look here');
     //$("#Grid-ID").data("kendoGrid").wrapper.find(".k-grid-header-wrap").off("scroll.kendoGrid");
 
-    document.getElementById("range-tab-anchor").addEventListener('show.bs.tab', () => {
-        self.view(TAB_RANGE);
+    document.getElementById("range-tab-btn").addEventListener('show.bs.tab', (e) => {
+
+        if (self.view() != VIEW_MANAGE) {
+            e.preventDefault();
+            self.branchCheck({
+                dataItem: {
+                    BranchID: self.branchId()
+                }
+            }, (e) => {
+
+                self.view(VIEW_MANAGE);
+
+                bootstrap.Tab.getOrCreateInstance(document.getElementById("range-tab-btn")).show();
+            });
+        }
     });
 
-    document.getElementById("restock-tab-anchor").addEventListener('show.bs.tab', () => {
-        self.view(TAB_RESTOCK);
+    document.getElementById("add-to-range-btn").addEventListener('show.bs.tab', (e) => {
+
+        if (self.view() != VIEW_ADD) {
+            e.preventDefault();
+            self.branchCheck({
+                dataItem: {
+                    BranchID: self.branchId()
+                }
+            }, (e) => {
+
+                self.view(VIEW_ADD);
+
+                self.addGridSettings.widget().dataSource.read();
+
+                bootstrap.Tab.getOrCreateInstance(document.getElementById("add-to-range-btn")).show();
+            });
+        }
     });
 
-    document.getElementById("recall-tab-anchor").addEventListener('show.bs.tab', () => {
-        self.view(TAB_RECALL);
+    document.getElementById("restock-tab-btn").addEventListener('show.bs.tab', (e) => {
+        if (self.view() != VIEW_RESTOCK) {
+            e.preventDefault();
+            self.branchCheck({
+                dataItem: {
+                    BranchID: self.branchId()
+                }
+            }, (e) => {
+                self.view(VIEW_RESTOCK);
+                bootstrap.Tab.getOrCreateInstance(document.getElementById("restock-tab-btn")).show();
+            });
+        }
+    });
+
+    document.getElementById("recall-tab-btn").addEventListener('show.bs.tab', (e) => {
+        if (self.view() != VIEW_RECALL) {
+            e.preventDefault();
+            self.branchCheck({
+                dataItem: {
+                    BranchID: self.branchId()
+                }
+            }, (e) => {
+                self.view(VIEW_RECALL);
+                bootstrap.Tab.getOrCreateInstance(document.getElementById("recall-tab-btn")).show();
+            });
+        }
     });
 
     //self.detailModalElement.addEventListener("shown.bs.modal", () => {
@@ -1862,16 +1450,17 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     self.gridSettings.widget.subscribe(nv => {
 
-        document.querySelector(".k-grid-content.k-auto-scrollable").addEventListener("scroll", (e, v) => {
-            let norecords = document.querySelector(".k-grid-content.k-auto-scrollable .k-grid-norecords")
+        document.querySelector("#results-grid .k-grid-content.k-auto-scrollable").addEventListener("scroll", (e, v) => {
+
+            let norecords = document.querySelector("#results-grid .k-grid-content.k-auto-scrollable .k-grid-norecords")
             if (norecords) {
                 norecords.style.transform = `translateX(${e.target.scrollLeft}px)`;
             }
             let diff = 0;
-            document.querySelectorAll('.product-card-tooltip').forEach(c => {
+            document.querySelectorAll('#results-grid .product-card-tooltip').forEach(c => {
                 c.style.transform = `translateX(${e.target.scrollLeft + diff}px)`;
             });
-            document.querySelectorAll('.group-heading').forEach(c => {
+            document.querySelectorAll('#results-grid .group-heading').forEach(c => {
                 c.style.transform = `translateX(${e.target.scrollLeft}px)`;
             });
         });
@@ -1882,7 +1471,6 @@ const rangeManagementViewModel = ({ } = {}) => {
     return self;
 };
 
-//const resultRecord = ((rec, branchGroupRecords, rangeRecords, contrastRecords) => {
 const resultRecord = function ({
     branchId,
     rec,
@@ -1935,6 +1523,9 @@ const resultRecord = function ({
     self.actionTransferToWarehouseQuantity = ko.observable().extend(self.defaultNumericalExtension);
     self.actionTransferToWarehouseBasketItemId = ko.observable();
 
+    self.actionAddToRangeHighlight = ko.observable();
+    self.actionAddToRangeQuantity = ko.observable().extend(self.defaultNumericalExtension);
+    
     self.rangeStatus = ko.observable();
     self.rangeActual = ko.observable();
     //self.rangeStartDate = ko.observable();
@@ -2000,6 +1591,7 @@ const resultRecord = function ({
         self.rangePlanned.extend(productFilterNumericalExtension);
         self.actionTransferToWarehouseQuantity.extend(productFilterNumericalExtension);
         self.actionTransferToBranchQuantity.extend(productFilterNumericalExtension);
+        self.actionAddToRangeQuantity.extend(productFilterNumericalExtension);
     });
 
     self.buildNumericParams = (observable, original, incrementAmount, scale) => {
@@ -2027,6 +1619,7 @@ const resultRecord = function ({
             decorateInputElement: true,
             insertValidationMessages: false,
             inputType: 'number',
+            small: true,
             buttons: true,
             minValue: 1, // don't have productFilter record in time to set this truthfully, sorry
             maxValue: 999999,
@@ -2058,36 +1651,44 @@ const resultRecord = function ({
         }
     };
 
-    self.loaded.subscribe(_ => {
-        self.rangePlanned.subscribe(nv => {
-            if (nv != self.rangePlannedOriginal()) {
-                self.rangePlannedParams.busy(true);
-                self.rangePlannedParams.disable(true);
+    self.rangeSubscription = null;
 
-                fetch('/api/rangeManagementApi/UpsertRange', {
-                    method: 'POST',
-                    headers: window.fetchHeaders,
-                    body: JSON.stringify({
-                        branchId: self.branchId,
-                        range: [{
-                            productId: self.ProductID,
-                            quantity: nv
-                        }]
+    self.loaded.subscribe(_ => {
+        if (self.rangeSubscription === null) {
+            self.rangeSubscription = self.rangePlanned.subscribe(nv => {
+                if (nv != self.rangePlannedOriginal()) {
+                    self.busy(true);
+
+                    //self.rangePlannedParams.busy(true);
+                    //self.rangePlannedParams.disable(true);
+
+                    fetch('/api/rangeManagementApi/UpsertRange', {
+                        method: 'POST',
+                        headers: window.fetchHeaders,
+                        body: JSON.stringify({
+                            branchId: self.branchId,
+                            range: [{
+                                productId: self.ProductID,
+                                quantity: nv
+                            }]
+                        })
                     })
-                })
-                    .then(window.handleFetchResponse)
-                    .then(data => {
-                        self.rangePlannedOriginal(nv);
-                        self.rangePlannedParams.busy(false);
-                        self.rangePlannedParams.disable(false);
-                    })
-                    .catch(err => {
-                        self.rangePlannedParams.busy(false);
-                        self.rangePlannedParams.disable(false);
-                        window.catchFetchError(err);
-                    });
-            }
-        });
+                        .then(window.handleFetchResponse)
+                        .then(data => {
+                            self.rangePlannedOriginal(nv);
+                            self.loaded(false);
+                            //self.rangePlannedParams.busy(false);
+                            //self.rangePlannedParams.disable(false);
+                        })
+                        .catch(err => {
+                            //self.rangePlannedParams.busy(false);
+                            //self.rangePlannedParams.disable(false);
+                            self.busy(false);
+                            window.catchFetchError(err);
+                        });
+                }
+            });
+        }
     });
 
     self.rangePlannedParams = self.buildNumericParams(
@@ -2109,6 +1710,14 @@ const resultRecord = function ({
         self.actionTransferToBranchQuantityOriginal,
         self.incrementAmount,
         self.scale);
+
+    self.actionAddToRangeQuantityParams = self.buildNumericParams(
+        self.actionAddToRangeQuantity,
+        ko.observable(0),
+        self.incrementAmount,
+        self.scale);
+
+    self.actionAddToRangeQuantityParams.revertable(false);
 
     self.toJS = () => {
         return {
@@ -2139,18 +1748,20 @@ const resultRecord = function ({
     }, self);
 
     self.submitTransfers = () => {
-        if (self.actionTransferToBranchQuantity() != self.actionTransferToBranchQuantityOriginal()) {
+        if (self.actionTransferToBranchQuantity() != 0) {
             self.submitTransferWH2BR();
         }
 
-        if (self.actionTransferToWarehouseQuantity() != self.actionTransferToWarehouseQuantityOriginal()) {
+        if (self.actionTransferToWarehouseQuantity() != 0) {
             self.submitTransferBR2WH();
         }
     }
 
     self.submitTransferWH2BR = () => {
-        self.actionTransferToBranchQuantityParams.busy(true);
-        self.actionTransferToBranchQuantityParams.disable(true);
+        self.busy(true);
+
+        //self.actionTransferToBranchQuantityParams.busy(true);
+        //self.actionTransferToBranchQuantityParams.disable(true);
 
         fetch('/api/rangemanagementapi/SubmitTransfer', {
             method: 'POST',
@@ -2164,22 +1775,26 @@ const resultRecord = function ({
         })
             .then(window.handleFetchResponse)
             .then(data => {
-                self.actionTransferToBranchQuantityParams.busy(false);
+                //self.actionTransferToBranchQuantityParams.busy(false);
                 self.actionTransferToBranchBasketItemId(data.BasketItemID);
                 if (data.Notifications) {
                     window.showInfo("Notice", data.Notifications);
                 }
+                self.busy(true); // set whole row busy display...
+                self.loaded(false); // force reload of this record
             })
             .catch(err => {
-                self.actionTransferToBranchQuantityParams.busy(false);
-                self.actionTransferToBranchQuantityParams.disable(false);
+                self.busy(false);
+                //self.actionTransferToBranchQuantityParams.busy(false);
+                //self.actionTransferToBranchQuantityParams.disable(false);
                 window.catchFetchError(err);
             })
     }
 
     self.submitTransferBR2WH = () => {
-        self.actionTransferToWarehouseQuantityParams.busy(true);
-        self.actionTransferToWarehouseQuantityParams.disable(true);
+        self.busy(true);
+        //self.actionTransferToWarehouseQuantityParams.busy(true);
+        //self.actionTransferToWarehouseQuantityParams.disable(true);
 
         fetch('/api/rangemanagementapi/SubmitTransfer', {
             method: 'POST',
@@ -2193,25 +1808,312 @@ const resultRecord = function ({
         })
             .then(window.handleFetchResponse)
             .then(data => {
-                self.actionTransferToWarehouseQuantityParams.busy(false);
+                //self.actionTransferToWarehouseQuantityParams.busy(false);
                 self.actionTransferToWarehouseBasketItemId(data.BasketItemID);
                 if (data.Notifications) {
                     window.showInfo("Notice", data.Notifications);
                 }
+                self.busy(true); // set whole row busy display...
+                self.loaded(false); // force reload of this record
             })
             .catch(err => {
-                self.actionTransferToWarehouseQuantityParams.busy(false);
-                self.actionTransferToWarehouseQuantityParams.disable(false);
+                self.busy(false);
+                //self.actionTransferToWarehouseQuantityParams.busy(false);
+                //self.actionTransferToWarehouseQuantityParams.disable(false);
                 window.catchFetchError(err);
             })
     }
 
     self.removeWH2BRFromOrder = () => {
-        window.showInfo("Not yet implemented")
+        self.busy(true);
+        //self.actionTransferToBranchQuantityParams.busy(true);
+        //self.actionTransferToBranchQuantityParams.disable(true);
+
+        fetch('/api/rangemanagementapi/RemoveTransferBasketItem', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            body: JSON.stringify({
+                basketItemId: self.actionTransferToBranchBasketItemId(),
+                memberId: null
+            })
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                //self.actionTransferToBranchQuantityParams.busy(false);
+                self.actionTransferToBranchBasketItemId(undefined);
+                if (data.Notifications) {
+                    window.showInfo("Notice", data.Notifications);
+                }
+                self.busy(true); // set whole row busy display...
+                self.loaded(false); // force reload of this record
+            })
+            .catch(err => {
+                self.busy(false);
+                //self.actionTransferToBranchQuantityParams.busy(false);
+                //self.actionTransferToBranchQuantityParams.disable(false);
+                window.catchFetchError(err);
+            })
     }
 
     self.removeBR2WHFromOrder = () => {
-        window.showInfo("Not yet implemented")
+        self.busy(true);
+        //self.actionTransferToWarehouseQuantityParams.busy(true);
+        //self.actionTransferToWarehouseQuantityParams.disable(true);
+
+        fetch('/api/RangeManagementAPI/RemoveTransferBasketItem', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            body: JSON.stringify({
+                basketItemId: self.actionTransferToWarehouseBasketItemId(),
+                memberId: null
+            })
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                //self.actionTransferToWarehouseQuantityParams.busy(false);
+                self.actionTransferToWarehouseBasketItemId(null);
+                if (data.Notifications) {
+                    window.showInfo("Notice", data.Notifications);
+                }
+                self.busy(true); // set whole row busy display...
+                self.loaded(false); // force reload of this record
+            })
+            .catch(err => {
+                self.busy(false);
+                //self.actionTransferToWarehouseQuantityParams.busy(false);
+                //self.actionTransferToWarehouseQuantityParams.disable(false);
+                window.catchFetchError(err);
+            })
+    }
+
+    self.busy.subscribe(nv => {
+        self.rangePlannedParams.busy(nv);
+        self.rangePlannedParams.disable(nv);
+        self.actionTransferToBranchQuantityParams.busy(nv);
+        self.actionTransferToBranchQuantityParams.disable(nv);
+        self.actionTransferToWarehouseQuantityParams.busy(nv);
+        self.actionTransferToWarehouseQuantityParams.disable(nv);
+    });
+
+    self.submitDisabled = ko.computed(() => {
+        return (self.actionTransferToBranchQuantity() == 0 &&
+            self.actionTransferToWarehouseQuantity() == 0)
+    }, self);
+
+    return self;
+}
+
+
+const addResultRecord = function ({
+    branchId,
+    rec,
+    productFilter
+} = {
+        branchId: null,
+        rec: null,
+        productFilter: ko.computed(() => { })
+    }) {
+    console.log(productFilter);
+
+    let self = Object.assign({}, rec);
+
+    self.branchId = branchId;
+
+    self.busy = ko.observable(false);
+
+    self.loaded = ko.observable(false);
+
+    self.defaultNumericalExtension = {
+        numberUnformatted: {
+            minValue: 0,
+            maxValue: 999999,
+            digits: 0,
+            currency: {
+                FormattingCulture: 'en-GB'
+            }
+        },
+        numeric: {
+            params: {
+                required: false,
+                numericMin: 0,
+                numericMax: 999999
+            }
+        }
+    };
+
+    self.incrementAmount = ko.observable(1);
+    self.scale = ko.observable(0);
+
+    // don't forget to set your originals to currents on save
+
+    self.actionRecommendations = ko.observable();
+
+    self.actionAddToRangeHighlight = ko.observable();
+    self.actionAddToRangeQuantity = ko.observable().extend(self.defaultNumericalExtension);
+
+    productFilter.subscribe(pf => {
+
+        self.incrementAmount(pf.QuantityIncrement || 1);
+
+        self.scale(pf.QuantityPrecision);
+
+        let productFilterNumericalExtension = {
+            numberUnformatted: {
+                minValue: pf.QuantityMinimum,
+                maxValue: 999999,
+                digits: self.scale(),
+                currency: {
+                    FormattingCulture: 'en-GB'
+                }
+            },
+            numeric: {
+                params: {
+                    required: false,
+                    numericMin: pf.QuantityMinimum,
+                    numericMax: 999999
+                }
+            }
+        };
+
+        self.actionAddToRangeQuantity.extend(productFilterNumericalExtension);
+    });
+
+    self.buildNumericParams = (observable, original, incrementAmount, scale) => {
+        return {
+            label: null,
+            observable: observable,
+            focusObservable: ko.observable(false),
+            busy: ko.observable(),
+            permitRevert: true,
+            originalValue: original,
+            enable: ko.observable(true),
+            disable: ko.observable(false),
+            clearable: ko.observable(true),
+            revertable: ko.observable(true),
+            revertFunction: function () {
+                let self = this;
+                self.observable(self.originalValue());
+            },
+            clearFunction: function () {
+                var self = this;
+                self.observable(undefined);
+                self.observable.DOMElement.focus();
+            },
+            useNativeValidation: false, // this feeds through to mdc objects and affects them
+            decorateInputElement: true,
+            insertValidationMessages: false,
+            inputType: 'number',
+            small: true,
+            buttons: true,
+            minValue: 1, // don't have productFilter record in time to set this truthfully, sorry
+            maxValue: 999999,
+            step: 1,
+            cssClasses: null,
+            incrementAmount: incrementAmount,
+            increment: function () {
+                let self = this;
+
+                let v = +self.observable() || 0;
+
+                let factor = Math.pow(10, scale());
+
+                if ((v + self.incrementAmount()) < 1000000)
+                    self.observable(Math.round((v + self.incrementAmount()) * factor) / factor);
+            },
+            decrement: function () {
+                let self = this;
+
+                let v = +self.observable() || 0;
+
+                let factor = Math.pow(10, scale());
+
+                let diff = Math.round((v - self.incrementAmount()) * factor) / factor;
+
+                if ((v - self.incrementAmount()) > 0)
+                    self.observable(diff);
+            }
+        }
+    };
+
+    self.actionAddToRangeQuantityParams = self.buildNumericParams(
+        self.actionAddToRangeQuantity,
+        ko.observable(0),
+        self.incrementAmount,
+        self.scale);
+
+    self.actionAddToRangeQuantityParams.revertable(false);
+
+    self.preSave = () => {
+        self.busy(true);
+    }
+
+    self.postSave = (success) => {
+        if (success) {
+            self.actionAddToRangeQuantity(0);
+            self.busy(false);
+        } else {
+            self.busy(false);
+        }
+    }
+
+    self.unsavedChanges = ko.computed(() => {
+        return (self.actionAddToRangeQuantity() != 0)
+    }, self);
+
+    self.busy.subscribe(nv => {
+        self.actionAddToRangeQuantityParams.busy(nv);
+        self.actionAddToRangeQuantityParams.disable(nv);
+    });
+
+    self.submitDisabled = ko.computed(() => {
+        return (self.actionAddToRangeQuantityParams.busy());
+    }, self);
+
+    self.submitTransfers = () => {
+        if (self.actionAddToRangeQuantity() != 0) {
+            self.submitToRange();
+        }
+    }
+
+    self.submitToRange = () => {
+        self.busy(true);
+
+        //self.actionTransferToBranchQuantityParams.busy(true);
+        //self.actionTransferToBranchQuantityParams.disable(true);
+
+        fetch('/api/rangemanagementapi/UpsertRange', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            body: JSON.stringify({
+                branchId: self.branchId,
+                range: [{
+                    productId: self.ProductID,
+                    quantity: self.actionAddToRangeQuantity(),
+                    startDate: null,
+                    endDate: null
+                }]
+            })
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                //self.actionTransferToBranchQuantityParams.busy(false);
+                self.actionTransferToRangeBasketItemId(data.BasketItemID);
+                if (data.Notifications) {
+                    window.showInfo("Notice", data.Notifications);
+                }
+                //self.busy(true); // set whole row busy display...
+                //self.loaded(false); // force reload of this record
+
+                self.busy(false);
+
+                self.actionTransferToBranchQuantityParams.disable(true); // ... ?
+            })
+            .catch(err => {
+                self.busy(false);
+                //self.actionTransferToBranchQuantityParams.busy(false);
+                //self.actionTransferToBranchQuantityParams.disable(false);
+                window.catchFetchError(err);
+            })
     }
 
     return self;

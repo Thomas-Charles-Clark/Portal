@@ -618,3 +618,16 @@ textarea.mdc-text-field__input {
         display: none;
     }
 }
+
+.btn-blue-active {
+    background-image: none;
+    background: #4472c7;
+    border-color: #4472c7;
+    color: white;
+
+    &:focus,
+    &:hover {
+        background-color: $blue-700;
+        color: $white;
+    }
+}

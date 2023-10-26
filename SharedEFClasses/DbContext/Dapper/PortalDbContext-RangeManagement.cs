@@ -12,6 +12,16 @@ namespace SharedEFClasses.Models
 {
     public partial class PortalDbContext : IdentityDbContext<Member, Role, int, Member_Login, Member_Role, Member_Claim>
     {
+        public async Task<string> RangeManagementCheckBranch(RangeManagementBranchCheckDto dto)
+        {
+            var reply = await this.Database.Connection.QuerySingleAsync<string>("[portal].[RangeManagement_Branch_Check]", new
+            {
+                dto.BranchID
+            }, null, null, CommandType.StoredProcedure);
+
+            return reply;
+        }
+
         public async Task<RangeManagementProductSearchResponse> RangeManagementProductSearch(RangeManagementProductFetchDto dto)
         {
             var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[RangeManagement_Product_Select]", new
@@ -22,6 +32,27 @@ namespace SharedEFClasses.Models
                 dto.LaunchID,
                 dto.BrandID,
                 dto.StatusGroupID,
+                StockStatus = dto.StockStatusCode,
+                dto.SearchTerm
+            }, null, null, CommandType.StoredProcedure);
+
+            return new RangeManagementProductSearchResponse()
+            {
+                Results = reply.Read<RangeManagementProductSearchRecord>()
+            };
+        }
+
+        public async Task<RangeManagementProductSearchResponse> RangeManagementProductSearchAddToRange(RangeManagementProductFetchDto dto)
+        {
+            var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[RangeManagement_Product_SelectForAdd]", new
+            {
+                dto.BranchID,
+                dto.ProductFilterGroupID,
+                dto.ProductFilterID,
+                dto.LaunchID,
+                dto.BrandID,
+                dto.StatusGroupID,
+                StockStatus = dto.StockStatusCode,
                 dto.SearchTerm
             }, null, null, CommandType.StoredProcedure);
 
@@ -77,7 +108,7 @@ namespace SharedEFClasses.Models
 
         public async Task<RangeManagementTransferResponse> RangeManagementTransfer(RangeManagementTransferDto dto)
         {
-            var reply = await this.Database.Connection.QuerySingleAsync<RangeManagementTransferResponse>("[portal].[RangeManagement_Range_Transfer]", new
+            var reply = await this.Database.Connection.QuerySingleAsync<RangeManagementTransferResponse>("[portal].[RangeManagement_TransferBasket_Add]", new
             {
                 dto.BranchID,
                 dto.ProductID,
@@ -86,6 +117,18 @@ namespace SharedEFClasses.Models
             }, null, null, CommandType.StoredProcedure);
 
             return reply;
+        }
+
+        public async Task<int> RangeManagementRemoveBasketItem(RangeManagementBasketItemRemovalDto dto)
+        {
+            var _ = await this.Database.Connection.QueryAsync("[portal].[BasketItem_Delete]", new
+            {
+                dto.BasketItemID,
+                dto.MemberID,
+                ReportErrors = false
+            }, null, null, CommandType.StoredProcedure);
+
+            return 0;
         }
     }
 }

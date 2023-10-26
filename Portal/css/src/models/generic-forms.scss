@@ -118,34 +118,68 @@
         }
     }
 
-    .input-group {
-        button:has(+ .mdc-text-field--focused),
-        .mdc-text-field--focused ~ button {
-            box-sizing: border-box;
-            border-color: $mdc-theme-primary !important;
-            padding-top: calc($btn-padding-y - 2px);
-            padding-bottom: calc($btn-padding-y - 2px);
+    :not(.small) {
+        .input-group {
+            button:has(+ .mdc-text-field--focused),
+            .mdc-text-field--focused ~ button {
+                box-sizing: border-box;
+                border-color: $mdc-theme-primary !important;
+                padding-top: calc($btn-padding-y - 2px);
+                padding-bottom: calc($btn-padding-y - 2px);
+            }
+
+            button:has(+ .mdc-text-field--focused) {
+                border-width: 2px;
+                border-right-width: 1px;
+                padding-left: calc($btn-padding-x - 1px);
+            }
+
+            .mdc-text-field--focused + button {
+                border-width: 2px;
+                border-left-width: 1px;
+                padding-right: calc($btn-padding-x - 1px);
+            }
+
+
+            button:has(+ .mdc-text-field--invalid) {
+                border-color: $mdc-error-color !important;
+            }
+
+            .mdc-text-field--invalid ~ button {
+                border-color: $mdc-error-color !important;
+            }
+        }
+    }
+
+    &.small {
+        box-sizing: border-box !important;
+        font-size: $font-size-sm !important;
+
+        *:not(.close):not(.clear) {
+            font-size: $font-size-sm !important;
+
+            &:focus, &:focus-within {
+                border-width: 1px !important;
+            }
         }
 
-        button:has(+ .mdc-text-field--focused) {
-            border-width: 2px;
-            border-right-width: 1px;
-            padding-left: calc($btn-padding-x - 1px);
+        .mdc-text-field {
+            height: auto;
         }
 
-        .mdc-text-field--focused + button {
-            border-width: 2px;
-            border-left-width: 1px;
-            padding-right: calc($btn-padding-x - 1px);
+        input {
+            line-height: normal;
+            border-width: 1px !important;
         }
 
-
-        button:has(+ .mdc-text-field--invalid) {
-            border-color: $mdc-error-color !important;
+        .btn {
+            padding: $btn-padding-y-sm $btn-padding-x-sm;
         }
 
-        .mdc-text-field--invalid ~ button {
-            border-color: $mdc-error-color !important;
+        .mdc-text-field--outlined.mdc-text-field--focused .mdc-notched-outline__leading,
+        .mdc-text-field--outlined.mdc-text-field--focused .mdc-notched-outline__notch,
+        .mdc-text-field--outlined.mdc-text-field--focused .mdc-notched-outline__trailing {
+            border-width: 1px;
         }
     }
 }

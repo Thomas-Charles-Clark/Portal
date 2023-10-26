@@ -511,4 +511,15 @@ textarea.mdc-text-field__input {
 .btn-close > span {
   display: none;
 }
+
+.btn-blue-active {
+  background-image: none;
+  background: #4472c7;
+  border-color: #4472c7;
+  color: white;
+}
+.btn-blue-active:focus, .btn-blue-active:hover {
+  background-color: #084298;
+  color: #fff;
+}
 /*# sourceMappingURL=site-new.css.map */

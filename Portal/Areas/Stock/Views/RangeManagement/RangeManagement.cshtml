@@ -34,6 +34,8 @@
 
         ko.applyBindings(viewModel, document.body);
 
+        viewModel.busy(false);
+
         window.self = viewModel;
     </script>
 }
@@ -48,38 +50,64 @@
     </h4>
 </div>
 
-<div class="form-group row mb-2">
+<div class="form-group row mb-0">
     <div class="col-xs-12">
         <div class="page-heading-logo">
             <div></div>
         </div>
-        <div class="page-heading text-right">
-            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
-            {
-                <h1 class="main-heading">
-                    @(Model.ApplicationHeading)
-                </h1>
-            }
-            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
-            {
-                <h4 class="sub-heading">
-                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
-                </h4>
-            }
+        <div>
+            <div id="prefilters-first" class="prefilters" style="display: none" data-bind="visible: true">
+                <ul id="main-tabs" class="nav nav-pills">
+                    <li class="nav-item">
+                        @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+                        {
+                            <h3 class="main-heading mb-0 me-3">
+                                @(Model.ApplicationHeading)
+                            </h3>
+                        }
+                    </li>
+                    <li class="nav-item">
+                        <div id="branch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: branchParams }"></div>
+                    </li>
+                    <li class="nav-item" data-bind="visible: branch">
+                        <button id="range-tab-btn" data-bs-target="#range-tab" data-bs-toggle="tab" class="btn nav-link active">
+                            Manage Range
+                        </button>
+                    </li>
+                    <li class="nav-item" data-bind="visible: branch">
+                        <button id="add-to-range-btn" class="btn nav-link" data-bs-target="#add-tab" data-bs-toggle="tab">
+                            Add to Range
+                        </button>
+                    </li>
+                    <li class="nav-item" data-bind="visible: branch">
+                        <button id="restock-tab-btn" href="#restock-tab" data-bs-toggle="tab" class="btn nav-link">
+                            Transfer Orders - Restock (WH &raquo; Branch)
+                        </button>
+                    </li>
+                    <li class="nav-item" data-bind="visible: branch">
+                        <button id="recall-tab-btn" href="#recall-tab" data-bs-toggle="tab" class="btn nav-link">
+                            Transfer Orders - Recall (Branch &raquo; WH)
+                        </button>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>
 
 <script id="row-template" type="text/html">
-    <tr class="relative">
-        <td class="k-group-cell"></td>
-        <td class="k-group-cell"></td>
-        <td class="k-group-cell"></td>
+    <tr class="relative" data-bind="css: { busy: typeof busy === 'undefined' ? false : busy }">
+        <td class="k-group-cell product-filter-name-pad"></td>
+        <td class="k-group-cell product-page-name-pad"></td>
+        <td class="k-group-cell order-form-group-pad"></td>
+        <td></td>
+        <td></td>
+        <td></td>
         <td class="product-card-wrapper" valign="top">
             <div class="product-card-tooltip card">
-                <div class="pad product-filter"></div>
-                <div class="pad product-name"></div>
-                <div class="pad order-form-group"></div>
+                <div class="pad product-filter-pad"></div>
+                <div class="pad product-name-pad"></div>
+                <div class="pad order-form-group-pad"></div>
                 <div class="card-body">
                     <div class="flex">
                         <!-- ko if: ImageID -->
@@ -97,9 +125,10 @@
                 </div>
             </div>
         </td>
-        <td>
-            <span data-bind="text: rangeStatus"></span>
-        </td>
+        <!-- ko if: typeof busy === 'undefined' -->
+        <td colspan="200"></td>
+        <!-- /ko -->
+        <!-- ko ifnot: typeof busy === 'undefined' -->
         <td class="text-end">
             <div class="range-planned" data-bind="component: { name: 'mdc-text-field-numeric-component', params: rangePlannedParams }"></div>
         </td>
@@ -117,136 +146,149 @@
         </td>
         <td class="text-end" data-bind="style: { 'background-color': actionTransferToBranchHighlight }">
             <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: actionTransferToBranchQuantityParams }"></div>
-            <!-- ko if: actionTransferToBranchBasketItemId -->
-            <button class="btn btn-sm btn-outline-primary mt-2" data-bind="click: removeWH2BRFromOrder, attr: { title: `BasketItemID: ${actionTransferToBranchBasketItemId()}` }">
+            <button class="btn btn-sm btn-outline-primary mt-2" style="display: none" data-bind="
+                    visible: actionTransferToBranchBasketItemId,
+                    disable: actionTransferToBranchQuantityParams.busy,
+                    click: removeWH2BRFromOrder,
+                    css: { busy: actionTransferToBranchQuantityParams.busy },
+                    attr: { title: `BasketItemID: ${actionTransferToBranchBasketItemId()}` }">
                 Remove from Order
             </button>
-            <!-- /ko -->
         </td>
         <td class="text-end" data-bind="style: { 'background-color': actionTransferToWarehouseHighlight }">
-            @*ActionTransferToWHQuantity<br />*@
             <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: actionTransferToWarehouseQuantityParams }"></div>
-            <!-- ko if: actionTransferToWarehouseBasketItemId -->
-            <button class="btn btn-sm btn-outline-primary mt-2"  data-bind="click: removeBR2WHFromOrder, attr: { title: `BasketItemID: ${actionTransferToWarehouseBasketItemId()}` }">
+            <button class="btn btn-sm btn-outline-primary mt-2" style="display: none" data-bind="
+                    visible: actionTransferToWarehouseBasketItemId,
+                    disable: actionTransferToWarehouseQuantityParams.busy,
+                    click: removeBR2WHFromOrder,
+                    css: { busy: actionTransferToWarehouseQuantityParams.busy },
+                    attr: { title: `BasketItemID: ${actionTransferToWarehouseBasketItemId()}` }">
                 Remove from Order
             </button>
-            <!-- /ko -->
         </td>
         <td>
-            @* Submit? *@
-            <button class="btn btn-secondary" data-bind="click: submitTransfers">
+            <button class="btn btn-secondary btn-sm" data-bind="disable: busy() || submitDisabled(), click: submitTransfers">
                 Submit
             </button>
         </td>
         <td>
-            @*Notes<br />*@
             <span data-bind="html: notes"></span>
         </td>
-        <td>
-            @*StockSummary<br />*@
-            <span data-bind="text: stockSummary"></span>
-        </td>
         <td class="text-end">
-            @*StockWHFreeStock<br />*@
             <span data-bind="text: stockWHFreeStock"></span>
         </td>
         <td class="text-end">
-            @*StockCover<br />*@
             <span data-bind="text: stockCover"></span>
         </td>
         <td class="text-end">
-            @*StockWHNextPOFreeStock<br />*@
             <span data-bind="text: stockWHNextPOFreeStock"></span>
         </td>
         <td class="text-end">
-            @*StockWHNextPODueDate<br />*@
-            <span data-bind="text: stockWHNextPODueDate"></span>
-            <br/>
-            <span data-bind="text: renderDate(stockWHNextPODueDate)"></span>
+            <!-- ko if: stockWHNextPODueDate -->
+            <span data-bind="text: renderDate(stockWHNextPODueDate().substring(0, 10))"></span>
+            <!-- /ko -->
         </td>
         <td>
-            @*StockKRFreeStock<br />*@
             <span data-bind="text: stockKRFreeStock"></span>
         </td>
         <td class="text-end">
-            @*StockMHSFreeStock<br />*@
             <span data-bind="text: stockMHSFreeStock"></span>
         </td>
         <td class="text-end">
-            @*StockFWFreeStock<br />*@
             <span data-bind="text: stockFWFreeStock"></span>
         </td>
         <td class="text-end">
-            @*StockRingFence<br />*@
             <span data-bind="text: stockRingFence"></span>
         </td>
         <td>
-            @*SalesSummary<br />*@
             <span data-bind="html: salesSummary"></span>
         </td>
         <td class="text-end">
-            @*Sales180DayTotal<br />*@
             <span data-bind="text: sales180DayTotal"></span>
         </td>
         <td class="text-end">
-            @*Sales180DayKR<br />*@
             <span data-bind="text: sales180DayKR"></span>
         </td>
         <td class="text-end">
-            @*Sales180DayMHS<br />*@
             <span data-bind="text: sales180DayMHS"></span>
         </td>
         <td class="text-end">
-            @*Sales180DayFW<br />*@
             <span data-bind="text: sales180DayFW"></span>
         </td>
         <td class="text-end">
-            @*Sales180DayUKEcom<br />*@
             <span data-bind="text: sales180DayUKEcommerce"></span>
         </td>
         <td class="text-end">
-            @*Sales180DayUKTrade<br />*@
             <span data-bind="text: sales180DayUKTrade"></span>
         </td>
+        <!-- /ko -->
+    </tr>
+</script>
+
+
+<script id="add-row-template" type="text/html">
+    <tr class="relative" data-bind="css: { busy: typeof busy === 'undefined' ? false : busy }">
+        <td class="k-group-cell product-filter-name-pad"></td>
+        <td class="k-group-cell product-page-name-pad"></td>
+        <td class="k-group-cell order-form-group-pad"></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td class="product-card-wrapper" valign="top">
+            <div class="product-card-tooltip card">
+                <div class="pad product-filter-pad"></div>
+                <div class="pad product-name-pad"></div>
+                <div class="pad order-form-group-pad"></div>
+                <div class="card-body">
+                    <div class="flex">
+                        <!-- ko if: ImageID -->
+                        <img class="thumb" width="80" height="80" data-bind="attr: { src: `https://www.designersguild.com/image/90/${ImageID}` }" />
+                        <!-- /ko -->
+                        <div>
+                            <span data-bind="text: ProductName"></span>
+                            <span data-bind="text: ProductCode"></span>
+                            <span class="d-flex justify-content-between">
+                                <span data-bind="text: Launch"></span>
+                                <span data-bind="text: ProductStatus"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </td>
+        <!-- ko if: typeof busy === 'undefined' -->
+        <td colspan="200"></td>
+        <!-- /ko -->
+        <!-- ko ifnot: typeof busy === 'undefined' -->
+        <td class="text-end" style="display: none;" data-bind="style: { 'background-color': actionAddToRangeHighlight }">
+            <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: actionAddToRangeQuantityParams }"></div>
+        </td>
+        <td>
+            <button class="btn btn-secondary btn-sm" data-bind="disable: busy() || submitDisabled(), click: submitTransfers">
+                Submit
+            </button>
+        </td>
+        <!-- /ko -->
     </tr>
 </script>
 
 <script id="group-header-template" type="text/html">
     <tr>
         <td colspan="200">
-        <h5>
-            Group Header Template
-        </h5>
+            <h5>
+                Group Header Template
+            </h5>
         </td>
     </tr>
 </script>
 
-<div class="content-container">
-    <div class="prefilters mb-3">
-        <div id="branch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: branchParams }"></div>
-        <ul id="main-tabs" class="nav nav-pills" style="display: none" data-bind="visible: branch">
-            <li class="nav-item">
-                <a id="range-tab-anchor" href="#range-tab" data-bs-toggle="tab" class="nav-link active">
-                    Manage Range
-                </a>
-            </li>
-            <li class="nav-item">
-                <a id="restock-tab-anchor" href="#restock-tab" data-bs-toggle="tab" class="nav-link">
-                    Transfer Orders - Restock (WH &raquo; Branch)
-                </a>
-            </li>
-            <li class="nav-item">
-                <a id="recall-tab-anchor" href="#recall-tab" data-bs-toggle="tab" class="nav-link">
-                    Transfer Orders - Recall (Branch &raquo; WH)
-                </a>
-            </li>
-        </ul>
-    </div>
-    <div class="prefilters mb-3" style="display: none" data-bind="visible: branch">
+<div class="content-container" style="display: none" data-bind="visible: branch">
+    <div id="prefilters-second" class="prefilters mb-2">
         <div id="product-filter-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productFilterGroupParams }"></div>
         <div id="product-filter-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productFilterParams }"></div>
         <div id="brand-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: brandParams }"></div>
         <div id="status-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statusGroupParams }"></div>
+        <div id="stock-status-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: stockStatusParams }"></div>
         @*<div id="status-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statusGroupParams }"></div>*@
         @*<div id="buyer-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: buyerParams }"></div>
             <div id="supplier-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
@@ -255,15 +297,11 @@
             <div id="stock-level-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: stockLevelParams }"></div>
             <div id="collection-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: collectionParams }"></div>*@
         <div id="search-term-prefilter" data-bind="component: { name: 'mdc-text-field-component', params: searchTermParams }"></div>
-        <ul id="secondary-tabs" class="nav nav-pills">
-            <li class="nav-item">
-                <a id="add-to-range-anchor" class="nav-link active" data-bind="click: openAddToRangeModal">
-                    Add to Range
-                </a>
-            </li>
-        </ul>
+        <a id="clear-all-filters-anchor" class="btn btn-blue-active" data-bind="click: clearAllFilters">
+            Clear all Filters
+        </a>
     </div>
-    <div id="range-management-tab-container" style="display: none" data-bind="visible: branch">
+    <div id="range-management-tab-container" class="tab-content" style="display: none" data-bind="visible: branch">
         <div id="range-tab" class="tab-pane active">
             <div class="blocker" data-bind="flexFadeVisible: manageBusy">
                 <div class="loading-spinner"></div>
@@ -279,6 +317,17 @@
                     </h4>
                 </div>
                 <div id="results-grid" data-bind="kendoGrid: gridSettings"></div>
+            </div>
+        </div>
+        <div id="add-tab" class="tab-pane">
+            <div class="relative">
+                <div class="blocker" data-bind="flexFadeVisible: addBusy">
+                    <div class="loading-spinner"></div>
+                    <h4 class="mt-3">
+                        Please wait...
+                    </h4>
+                </div>
+                <div id="add-results-grid" data-bind="kendoGrid: addGridSettings"></div>
             </div>
         </div>
         <div id="restock-tab" class="tab-pane">
@@ -299,60 +348,3 @@
         </div>
     </div>
 </div>
-<div id="add-to-range-modal" class="modal fade" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="blocker" data-bind="flexFadeVisible: addToRangeModalBusy">
-                <div class="loading-spinner"></div>
-                <h4 class="mt-3">
-                    Please wait...
-                </h4>
-            </div>
-            <div class="modal-header grey-blue">
-                <h4 class="modal-title">
-                    Add to Range
-                </h4>
-                <button type="button" class="btn-close btn-close-white" aria-label="Close" data-bind="click: closeAddToRangeModal"></button>
-            </div>
-            <div class="modal-body d-flex flex-column gap-3">
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-default pull-left" data-bind="click: closeAddToRangeModal">
-                    Cancel
-                </button>
-                <button class="btn btn-green pull-right" data-bind="click: confirmAddToRangeModal">
-                    Confirm
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-@*<div id="detail-modal" class="modal fade" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered modal-md">
-        <div class="modal-content">
-            <div class="blocker" data-bind="flexFadeVisible: modalBusy">
-                <div class="loading-spinner"></div>
-                <h4 class="mt-3">
-                    Please wait...
-                </h4>
-            </div>
-            <div class="modal-header grey-blue">
-                <h4 class="modal-title">
-                </h4>
-                <button type="button" class="btn-close btn-close-white" aria-label="Close" data-bind="click: closeModal"></button>
-            </div>
-            <div class="modal-body d-flex flex-column gap-3">
-
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-default pull-left" data-bind="click: closeModal">
-                    Cancel
-                </button>
-                <button class="btn btn-green pull-right" data-bind="click: confirmModal">
-                    Confirm
-                </button>
-            </div>
-        </div>
-    </div>
-</div>*@
