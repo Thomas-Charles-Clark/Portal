@@ -16,6 +16,8 @@
 
     <script type="text/javascript">
 
+        //console.log = () => { };
+
         function getStockLocationIDFilterOptions() {
             return @Html.Raw(JsonConvert.SerializeObject(Model.StockLocations))
         }
@@ -43,60 +45,9 @@
     @Html.Partial("Modals/_ImageModalNew")
 }
 
-<div class="blocker" data-bind="flexFadeVisible: busy">
-    <div class="loading-spinner"></div>
-    <h4 class="mt-3">
-        Please wait...
-    </h4>
-</div>
-
-<div class="form-group row mb-0">
-    <div class="col-xs-12">
-        <div class="page-heading-logo">
-            <div></div>
-        </div>
-        <div>
-            <div id="prefilters-first" class="prefilters" style="display: none" data-bind="visible: true">
-                <ul id="main-tabs" class="nav nav-pills">
-                    <li class="nav-item">
-                        @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
-                        {
-                            <h3 class="main-heading mb-0 me-3">
-                                @(Model.ApplicationHeading)
-                            </h3>
-                        }
-                    </li>
-                    <li class="nav-item">
-                        <div id="branch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: branchParams }"></div>
-                    </li>
-                    <li class="nav-item" data-bind="visible: branch">
-                        <button id="range-tab-btn" data-bs-target="#range-tab" data-bs-toggle="tab" class="btn nav-link active">
-                            Manage Range
-                        </button>
-                    </li>
-                    <li class="nav-item" data-bind="visible: branch">
-                        <button id="add-to-range-btn" class="btn nav-link" data-bs-target="#add-tab" data-bs-toggle="tab">
-                            Add to Range
-                        </button>
-                    </li>
-                    <li class="nav-item" data-bind="visible: branch">
-                        <button id="restock-tab-btn" href="#restock-tab" data-bs-toggle="tab" class="btn nav-link">
-                            Transfer Orders - Restock (WH &raquo; Branch)
-                        </button>
-                    </li>
-                    <li class="nav-item" data-bind="visible: branch">
-                        <button id="recall-tab-btn" href="#recall-tab" data-bs-toggle="tab" class="btn nav-link">
-                            Transfer Orders - Recall (Branch &raquo; WH)
-                        </button>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script id="row-template" type="text/html">
-    <tr class="relative" data-bind="css: { busy: typeof busy === 'undefined' ? false : busy }">
+    <!-- ko ifnot: $parent.getFilledRecord($data.ProductID) -->
+    <tr class="relative" data-bind="css: { busy: typeof busy === 'undefined' ? true : busy }">
         <td class="k-group-cell product-filter-name-pad"></td>
         <td class="k-group-cell product-page-name-pad"></td>
         <td class="k-group-cell order-form-group-pad"></td>
@@ -125,10 +76,39 @@
                 </div>
             </div>
         </td>
-        <!-- ko if: typeof busy === 'undefined' -->
         <td colspan="200"></td>
-        <!-- /ko -->
-        <!-- ko ifnot: typeof busy === 'undefined' -->
+    </tr>
+    <!-- /ko -->
+    <!-- ko with: $parent.getFilledRecord($data.ProductID) -->
+    <tr class="relative" data-bind="css: { busy: typeof busy === 'undefined' ? true : busy }">
+        <td class="k-group-cell product-filter-name-pad"></td>
+        <td class="k-group-cell product-page-name-pad"></td>
+        <td class="k-group-cell order-form-group-pad"></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td class="product-card-wrapper" valign="top">
+            <div class="product-card-tooltip card">
+                <div class="pad product-filter-pad"></div>
+                <div class="pad product-name-pad"></div>
+                <div class="pad order-form-group-pad"></div>
+                <div class="card-body">
+                    <div class="flex">
+                        <!-- ko if: ImageID -->
+                        <img class="thumb" width="80" height="80" data-bind="attr: { src: `https://www.designersguild.com/image/90/${ImageID}` }" />
+                        <!-- /ko -->
+                        <div>
+                            <span data-bind="text: ProductName"></span>
+                            <span data-bind="text: ProductCode"></span>
+                            <span class="d-flex justify-content-between">
+                                <span data-bind="text: Launch"></span>
+                                <span data-bind="text: ProductStatus"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </td>
         <td class="text-end">
             <div class="range-planned" data-bind="component: { name: 'mdc-text-field-numeric-component', params: rangePlannedParams }"></div>
         </td>
@@ -142,7 +122,7 @@
             <span data-bind="text: rangeRequired"></span>
         </td>
         <td>
-            <span data-bind="html: actionRecommendations"></span>
+            <div data-bind="html: actionRecommendations"></div>
         </td>
         <td class="text-end" data-bind="style: { 'background-color': actionTransferToBranchHighlight }">
             <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: actionTransferToBranchQuantityParams }"></div>
@@ -167,7 +147,7 @@
             </button>
         </td>
         <td>
-            <button class="btn btn-secondary btn-sm" data-bind="disable: busy() || submitDisabled(), click: submitTransfers">
+            <button class="btn btn-secondary btn-sm submit-btn" data-bind="disable: busy() || submitDisabled(), click: submitTransfers">
                 Submit
             </button>
         </td>
@@ -221,19 +201,16 @@
         <td class="text-end">
             <span data-bind="text: sales180DayUKTrade"></span>
         </td>
-        <!-- /ko -->
     </tr>
+    <!-- /ko -->
 </script>
 
 
 <script id="add-row-template" type="text/html">
-    <tr class="relative" data-bind="css: { busy: typeof busy === 'undefined' ? false : busy }">
+    <tr class="relative" data-bind="css: { busy: typeof busy === 'undefined' ? true : busy }">
         <td class="k-group-cell product-filter-name-pad"></td>
         <td class="k-group-cell product-page-name-pad"></td>
         <td class="k-group-cell order-form-group-pad"></td>
-        <td></td>
-        <td></td>
-        <td></td>
         <td class="product-card-wrapper" valign="top">
             <div class="product-card-tooltip card">
                 <div class="pad product-filter-pad"></div>
@@ -256,19 +233,23 @@
                 </div>
             </div>
         </td>
-        <!-- ko if: typeof busy === 'undefined' -->
-        <td colspan="200"></td>
-        <!-- /ko -->
-        <!-- ko ifnot: typeof busy === 'undefined' -->
-        <td class="text-end" style="display: none;" data-bind="style: { 'background-color': actionAddToRangeHighlight }">
+        <td>
+            <!-- ko if: typeof actionRecommendations !== 'undefined' -->
+            <div data-bind="html: actionRecommendations"></div>
+            <!-- /ko -->
+        </td>
+        <td class="text-end" data-bind="style: { 'background-color': typeof actionAddToRangeHighlight  === 'undefined' ? 'none' : actionAddToRangeHighlight }">
+            <!-- ko if: typeof actionAddToRangeQuantityParams !== 'undefined' -->
             <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: actionAddToRangeQuantityParams }"></div>
+            <!-- /ko -->
         </td>
         <td>
-            <button class="btn btn-secondary btn-sm" data-bind="disable: busy() || submitDisabled(), click: submitTransfers">
+            <!-- ko if: typeof submitTransfers !== 'undefined' -->
+            <button class="btn btn-secondary btn-sm submit-btn" data-bind="disable: busy() || submitDisabled(), click: submitTransfers">
                 Submit
             </button>
+            <!-- /ko -->
         </td>
-        <!-- /ko -->
     </tr>
 </script>
 
@@ -282,25 +263,78 @@
     </tr>
 </script>
 
-<div class="content-container" style="display: none" data-bind="visible: branch">
-    <div id="prefilters-second" class="prefilters mb-2">
-        <div id="product-filter-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productFilterGroupParams }"></div>
-        <div id="product-filter-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productFilterParams }"></div>
-        <div id="brand-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: brandParams }"></div>
-        <div id="status-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statusGroupParams }"></div>
-        <div id="stock-status-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: stockStatusParams }"></div>
-        @*<div id="status-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statusGroupParams }"></div>*@
-        @*<div id="buyer-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: buyerParams }"></div>
-            <div id="supplier-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
-            <div id="launch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: launchParams }"></div>
-            <div id="product-colour-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productColourParams }"></div>
-            <div id="stock-level-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: stockLevelParams }"></div>
-            <div id="collection-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: collectionParams }"></div>*@
-        <div id="search-term-prefilter" data-bind="component: { name: 'mdc-text-field-component', params: searchTermParams }"></div>
-        <a id="clear-all-filters-anchor" class="btn btn-blue-active" data-bind="click: clearAllFilters">
-            Clear all Filters
-        </a>
+<div class="blocker" data-bind="flexFadeVisible: busy">
+    <div class="loading-spinner"></div>
+    <h4 class="mt-3">
+        Please wait...
+    </h4>
+</div>
+
+<div class="form-group row mb-0">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div>
+            <div id="prefilters-first" class="prefilters" style="display: none" data-bind="visible: true">
+                <ul id="main-tabs" class="nav nav-pills">
+                    <li class="nav-item">
+                        @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+                        {
+                            <h3 class="main-heading mb-0">
+                                @(Model.ApplicationHeading)
+                            </h3>
+                        }
+                    </li>
+                    <li class="nav-item">
+                        <div id="branch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: branchParams }"></div>
+                    </li>
+                    <li class="nav-item" data-bind="visible: branch">
+                        <button id="range-tab-btn" class="btn nav-link active" data-bs-target="#range-tab" data-bs-toggle="tab">
+                            Manage Range
+                        </button>
+                    </li>
+                    <li class="nav-item" data-bind="visible: branch">
+                        <button id="add-to-range-btn" class="btn nav-link" data-bs-target="#add-tab" data-bs-toggle="tab">
+                            Add to Range
+                        </button>
+                    </li>
+                    <li class="nav-item" data-bind="visible: branch">
+                        <button id="restock-tab-btn" href="#restock-tab" data-bs-toggle="tab" class="btn nav-link">
+                            Transfer Orders - Restock (WH &raquo; Branch)
+                        </button>
+                    </li>
+                    <li class="nav-item" data-bind="visible: branch">
+                        <button id="recall-tab-btn" href="#recall-tab" data-bs-toggle="tab" class="btn nav-link">
+                            Transfer Orders - Recall (Branch &raquo; WH)
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
+</div>
+
+<div id="prefilters-second" class="prefilters mb-2" style="display: none" data-bind="visible: branch">
+    <div id="product-filter-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productFilterGroupParams }"></div>
+    <div id="product-filter-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productFilterParams }"></div>
+    <div id="brand-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: brandParams }"></div>
+    <div id="status-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statusGroupParams }"></div>
+    <div id="stock-status-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: stockStatusParams }"></div>
+    @*<div id="status-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statusGroupParams }"></div>*@
+    @*<div id="buyer-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: buyerParams }"></div>
+        <div id="supplier-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+        <div id="launch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: launchParams }"></div>
+        <div id="product-colour-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productColourParams }"></div>
+        <div id="stock-level-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: stockLevelParams }"></div>
+        <div id="collection-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: collectionParams }"></div>*@
+    <div id="search-term-prefilter" data-bind="component: { name: 'mdc-text-field-component', params: searchTermParams }"></div>
+    <a id="clear-all-filters-anchor" class="btn btn-blue-active" data-bind="click: clearAllFilters">
+        Clear all Filters
+    </a>
+</div>
+
+<div class="content-container" style="display: none" data-bind="visible: branch">
     <div id="range-management-tab-container" class="tab-content" style="display: none" data-bind="visible: branch">
         <div id="range-tab" class="tab-pane active">
             <div class="blocker" data-bind="flexFadeVisible: manageBusy">
@@ -320,8 +354,14 @@
             </div>
         </div>
         <div id="add-tab" class="tab-pane">
+            <div class="blocker" data-bind="flexFadeVisible: addBusy">
+                <div class="loading-spinner"></div>
+                <h4 class="mt-3">
+                    Please wait...
+                </h4>
+            </div>
             <div class="relative">
-                <div class="blocker" data-bind="flexFadeVisible: addBusy">
+                <div class="blocker" data-bind="flexFadeVisible: fetchAddDataBusy">
                     <div class="loading-spinner"></div>
                     <h4 class="mt-3">
                         Please wait...

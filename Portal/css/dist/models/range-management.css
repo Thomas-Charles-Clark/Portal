@@ -51,6 +51,7 @@ body {
 
 .main-heading {
   line-height: 32px;
+  margin-right: 13px;
 }
 
 #main-tabs {
@@ -164,6 +165,14 @@ body {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   font-size: 0.875rem !important;
+  /*
+  tr {
+      td {
+          &.busy {
+              background-image: repeating-linear-gradient(-45deg, rgba(222, 229, 237, 0.75), rgba(248, 249, 250, 0.95) 1rem, transparent 1rem, transparent 2rem);
+          }
+      }
+  }*/
 }
 #results-grid .k-grid-header,
 #add-results-grid .k-grid-header {
@@ -402,16 +411,17 @@ body {
 #add-results-grid td ul:last-of-type {
   margin-bottom: 0;
 }
-#results-grid tr.busy:hover,
-#add-results-grid tr.busy:hover {
-  background: none;
+#results-grid tr.busy,
+#add-results-grid tr.busy {
+  background-image: repeating-linear-gradient(-45deg, rgba(222, 229, 237, 0.75), rgba(248, 249, 250, 0.95) 1rem, transparent 1rem, transparent 2rem);
+  transition: background-color 300ms ease-in-out;
+  background-size: 200% 200%;
+  animation: barberpole 20s linear reverse infinite;
 }
 #results-grid tr.busy td,
 #add-results-grid tr.busy td {
-  background-image: repeating-linear-gradient(-45deg, rgba(222, 229, 237, 0.75), rgba(248, 249, 250, 0.95) 1rem, transparent 1rem, transparent 2rem);
-  transition: background-color 300ms ease-in-out;
-  background-size: 500% 500%;
-  animation: barberpole 10s linear reverse infinite;
+  background: transparent;
+  background-color: transparent !important;
 }
 #results-grid .k-icon.k-i-collapse, #results-grid .k-icon.k-i-expand,
 #add-results-grid .k-icon.k-i-collapse,
@@ -510,5 +520,9 @@ body {
 }
 .k-grid-norecords .empty-cover h4 {
   margin-bottom: 0;
+}
+
+.submit-btn {
+  max-width: 180px;
 }
 /*# sourceMappingURL=range-management.css.map */

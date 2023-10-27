@@ -13,6 +13,8 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     self.fetchDataBusy = ko.observable(false);
 
+    self.fetchAddDataBusy = ko.observable(false);
+
     self.view = ko.observable(VIEW_MANAGE);
 
     self.manageBusy = ko.observable(false);
@@ -29,9 +31,17 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     self.searchResults = ko.observableArray([]);
 
+    self.addSearchResults = ko.observableArray([]);
+
     self.visibleRecords = ko.observableArray([]);
 
+    self.filledRecords = ko.observableArray([]);
+
+    //self.visibleRecords.subscribe(nv => { console.log('visibleRecords', nv) });
+
     self.visibleAddToRangeRecords = ko.observableArray([]);
+
+    //self.visibleAddToRangeRecords.subscribe(nv => { console.log('visibleAddToRangeRecords', nv) });
 
     self.productSearchResults = ko.observableArray([]);
 
@@ -103,6 +113,80 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     //#region Components
 
+    self.getFilledRecord = (productId) => {
+        return self.filledRecords().find(p => p.ProductID === productId);
+    }
+
+    self.gridParamsFirstRun = true;
+
+    self.gridParams = ko.computed(() => {
+        //console.log('gridParams computed');
+
+        let props = {
+            branchId: self.branchId(),
+            productFilterGroupId: self.productFilterGroupId(),
+            productFilterId: self.productFilterId(),
+            brandId: self.brandId(),
+            statusGroupId: self.statusGroupId(),
+            stockStatusCode: self.stockStatusCode()
+        };
+
+        let view = self.view();
+
+        if (self.searchTerm())
+            props.searchTerm = self.searchTerm();
+
+        if (self.gridParamsFirstRun)
+            self.gridParamsFirstRun = false;
+        else {
+            if (self.branchId() ||
+                self.productFilterGroupId() ||
+                self.productFilterId() ||
+                self.brandId() ||
+                self.statusGroupId() ||
+                self.stockStatusCode() ||
+                self.searchTerm()) {
+                window.setTimeout(() => {
+                    let obj = null;
+
+                    let pageSize = 10;
+
+                    switch (self.view()) {
+                        case VIEW_MANAGE:
+                            obj = self.gridSettings;
+                            break;
+                        case VIEW_ADD:
+                            obj = self.addGridSettings;
+                            pageSize = 20;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    if (obj && obj.widget()) {
+                        obj.widget().dataSource.data([]);
+
+                        let grouping = obj.widget().dataSource.group();
+
+                        obj.widget().dataSource.query({
+                            page: 1,
+                            pageSize: pageSize,
+                            group: grouping
+                        });
+                    }
+                }, 0);
+            }
+        }
+
+        return props;
+    }, self).extend({
+        rateLimit: {
+            timeout: 50,
+            method: 'notifyWhenChangesStop'
+        }
+    });
+
+
     self.genericUnsavedChangesSelect = (e) => {
         e.preventDefault(); // this prevents the Kendo control from actively selecting the thing the user selected
         self.checkUnsavedChangesThenSelect(e); // this does our check; async promise, confirm dialog, la la la...
@@ -151,21 +235,7 @@ const rangeManagementViewModel = ({ } = {}) => {
                     .then(data => {
                         console.log('fetchProducts returned', data);
 
-                        self.previousParameters = params;
-
-                        data.Data = data.Data.map(r => {
-                            return resultRecord({
-                                branchId: self.branchId(),
-                                rec: r,
-                                productFilter: ko.computed(() => {
-                                    return self.completeProductFilters().find(p => p.ProductFilterID == r.ProductFilterID)
-                                }, self)
-                            });
-                        });
-
-                        ko.ignoreDependencies(() => {
-                            self.clearBusy();
-                        });
+                        self.clearBusy();
 
                         self.searchResults(data.Data);
 
@@ -179,90 +249,6 @@ const rangeManagementViewModel = ({ } = {}) => {
         },
         pagepage: 1,
         pageSize: 10,
-        serverPaging: false,
-        serverSorting: false,
-        serverFiltering: false,
-        schema: $.extend({}, kendo.data.schemas.webapi, {
-            data: "Data",
-            total: "Total",
-            model: {
-                id: 'ProductID'
-            }
-        }),
-        group: [{
-            field: "ProductFilterName",
-            aggregates: [{
-                field: "ProductFilterName",
-                aggregate: "count"
-            }, {
-                field: "RangePlanned",
-                aggregate: "sum"
-            }]
-        }, {
-            field: "ProductPageName"
-        }, {
-            field: "OrderFormGroup"
-        }]
-    });
-
-    self.addGridDataSource = new kendo.data.DataSource({
-        transport: {
-            read: (options) => {
-
-                self.setBusy();
-
-                var webapi = new kendo.data.transports.webapi({ prefix: "" });
-                var params = webapi.parameterMap(options.data);
-
-                var data = {};
-
-                for (var propertyName in params) {
-                    data[propertyName] = params[propertyName];
-                }
-
-                data = Object.assign(params, self.gridParams());
-
-                let qs = new URLSearchParams(data);
-
-                console.log('fetchProducts calling with', data);
-
-                fetch(`/api/rangeManagementApi/FetchProductsAddToRange?${qs}`, {
-                    method: 'GET',
-                    headers: window.fetchHeaders
-                })
-                    .then(window.handleFetchResponse)
-                    .then(data => {
-                        console.log('fetchProducts returned', data);
-
-                        self.previousParameters = params;
-
-                        //data.Data = data.Data.map(r => {
-                        //    return addResultRecord({
-                        //        branchId: self.branchId(),
-                        //        rec: r,
-                        //        productFilter: ko.computed(() => {
-                        //            return self.completeProductFilters().find(p => p.ProductFilterID == r.ProductFilterID)
-                        //        }, self)
-                        //    });
-                        //});
-
-                        ko.ignoreDependencies(() => {
-                            self.clearBusy();
-                        });
-
-                        self.searchResults(data.Data);
-
-                        options.success(data);
-                    })
-                    .catch(err => {
-                        self.clearBusy();
-                        window.catchFetchError(err);
-                    });
-            }
-        },
-        pagepage: 1,
-        //pageSize: 10000000,
-        pageSize: 20,
         serverPaging: false,
         serverSorting: false,
         serverFiltering: false,
@@ -319,22 +305,6 @@ const rangeManagementViewModel = ({ } = {}) => {
                 let productArray = self.searchResults().filter(sr => sr.ProductFilterName == r.value);
                 let productPageSet = new Set(productArray.flatMap(sr => sr.ProductPageName));
 
-                if (r.value === 'Candles') {
-                    let f = 0;
-                }
-
-                let rangePlannedCount = productArray.reduce((acc, val) => acc + (val.rangePlanned() ?? 0), 0);
-
-                let rangePlannedValue = productArray.reduce((acc, val) => acc + ((val.rangePlanned() ?? 0) * (val.unitCostPriceGBP() ?? 0)), 0);
-
-                let rangeActualCount = productArray.reduce((acc, val) => acc + (val.rangeActual() ?? 0), 0);
-
-                let rangeActualValue = productArray.reduce((acc, val) => acc + ((val.rangeActual() ?? 0) * (val.unitCostPriceGBP() ?? 0)), 0);
-
-                let rangeInProgressCount = productArray.reduce((acc, val) => acc + (val.rangeInProgress() ?? 0), 0);
-
-                let rangeInProgressValue = productArray.reduce((acc, val) => acc + ((val.rangeInProgress() ?? 0) * (val.unitCostPriceGBP() ?? 0)), 0);
-
                 let resultString = ``;
 
                 if (productPageSet.size == 1 && productPageSet[0] == null) {
@@ -342,6 +312,18 @@ const rangeManagementViewModel = ({ } = {}) => {
                 } else {
                     resultString = `<span class="group-heading product-filter-name bold">${r.value} (${productPageSet.size} Product Page${productPageSet.size == 1 ? '' : 's'}, ${productArray.length} Product${productArray.length == 1 ? '' : 's'})</span>`;
                 }
+
+                let rangePlannedCount = productArray.reduce((acc, val) => acc + (val.hasOwnProperty('rangePlanned') ? val.rangePlanned() ?? 0 : 0), 0);
+
+                let rangePlannedValue = productArray.reduce((acc, val) => acc + ((val.hasOwnProperty('rangePlanned') ? val.rangePlanned() ?? 0 : 0) * (val.hasOwnProperty('unitCostPriceGBP') ? val.unitCostPriceGBP() ?? 0 : 0)), 0);
+
+                let rangeActualCount = productArray.reduce((acc, val) => acc + (val.hasOwnProperty('rangeActual') ? val.rangeActual() ?? 0 : 0), 0);
+
+                let rangeActualValue = productArray.reduce((acc, val) => acc + ((val.hasOwnProperty('rangeActual') ? val.rangeActual() ?? 0 : 0) * (val.hasOwnProperty('unitCostPriceGBP') ? val.unitCostPriceGBP() ?? 0 : 0)), 0);
+
+                let rangeInProgressCount = productArray.reduce((acc, val) => acc + (val.hasOwnProperty('rangeInProgress') ? val.rangeInProgress() ?? 0 : 0), 0);
+
+                let rangeInProgressValue = productArray.reduce((acc, val) => acc + ((val.hasOwnProperty('rangeInProgress') ? val.rangeInProgress() ?? 0 : 0) * (val.hasOwnProperty('unitCostPriceGBP') ? val.unitCostPriceGBP() ?? 0 : 0)), 0);
 
                 // add rangePlanned
                 resultString += `<span class="range-total range-planned bold">${formatCurrency(rangePlannedValue, 0, "en-GB", "GBP")} (${formatNumber(rangePlannedCount, 0, "en-GB")})</span>`;
@@ -351,7 +333,7 @@ const rangeManagementViewModel = ({ } = {}) => {
 
                 // add rangeInProgress
                 resultString += `<span class="range-total range-in-progress bold">${formatCurrency(rangeInProgressValue, 0, "en-GB", "GBP")} (${formatNumber(rangeInProgressCount, 0, "en-GB")})</span>`;
-
+                
                 return resultString;
             },
         }, {
@@ -425,14 +407,6 @@ const rangeManagementViewModel = ({ } = {}) => {
                 headerAttributes: {
                     class: "text-end"
                 }
-            }, {
-                field: "ActionQuantityToRange",
-                title: "Quantity",
-                width: 160,
-                headerAttributes: {
-                    class: "text-end"
-                },
-                hidden: true
             }, {
                 field: "ActionSubmit",
                 title: " ",
@@ -561,6 +535,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         groupable: false,
         filterable: false,
         selectable: false,
+        reorderable: false,
         scrollable: {
             endless: true
         },
@@ -573,7 +548,6 @@ const rangeManagementViewModel = ({ } = {}) => {
         },
         height: 1080,
         width: 'auto',
-        reorderable: true,
         noRecords: {
             template: `<div class="empty-cover"><h4>No Results</h4></div>`,
         },
@@ -599,16 +573,78 @@ const rangeManagementViewModel = ({ } = {}) => {
             document.querySelectorAll(".order-form-group").forEach(ofg => {
                 ofg.closest("tr").classList.add("order-form-group-row");
             });
-
-            // This is necessary if you're paging because
-            // if you're paging and endless scrolling and grouping something very stupid happens with the 
-            // groups not being completely filled so... you tell the grid to refresh and then it scroll itself argh
-            if (self.gridScrollRestoration) {
-                document.querySelector("#results-grid .k-grid-content.k-auto-scrollable").scrollTo(0, self.gridScrollRestoration);
-                self.gridScrollRestoration = null;
-            }
         }
     };
+
+    self.addGridDataSource = new kendo.data.DataSource({
+        transport: {
+            read: (options) => {
+
+                self.setBusy();
+
+                var webapi = new kendo.data.transports.webapi({ prefix: "" });
+                var params = webapi.parameterMap(options.data);
+
+                var data = {};
+
+                for (var propertyName in params) {
+                    data[propertyName] = params[propertyName];
+                }
+
+                data = Object.assign(params, self.gridParams());
+
+                let qs = new URLSearchParams(data);
+
+                console.log('fetchProductsAddToRange calling with', data);
+
+                fetch(`/api/rangeManagementApi/FetchProductsAddToRange?${qs}`, {
+                    method: 'GET',
+                    headers: window.fetchHeaders
+                })
+                    .then(window.handleFetchResponse)
+                    .then(data => {
+                        console.log('fetchProductsAddToRange returned', data);
+
+                        self.clearBusy();
+
+                        self.addSearchResults(data.Data);
+
+                        options.success(data);
+                    })
+                    .catch(err => {
+                        self.clearBusy();
+                        window.catchFetchError(err);
+                    });
+            }
+        },
+        pagepage: 1,
+        //pageSize: 10000000,
+        pageSize: 20,
+        serverPaging: false,
+        serverSorting: false,
+        serverFiltering: false,
+        schema: $.extend({}, kendo.data.schemas.webapi, {
+            data: "Data",
+            total: "Total",
+            model: {
+                id: 'ProductID'
+            }
+        }),
+        group: [{
+            field: "ProductFilterName",
+            aggregates: [{
+                field: "ProductFilterName",
+                aggregate: "count"
+            }, {
+                field: "RangePlanned",
+                aggregate: "sum"
+            }]
+        }, {
+            field: "ProductPageName"
+        }, {
+            field: "OrderFormGroup"
+        }]
+    });
 
     self.addGridSettings = {
         autoBind: false,
@@ -621,7 +657,7 @@ const rangeManagementViewModel = ({ } = {}) => {
             field: "ProductFilterName",
             groupHeaderTemplate: (r) => {
                 //console.log(r);
-                let productArray = self.searchResults().filter(sr => sr.ProductFilterName == r.value);
+                let productArray = self.addSearchResults().filter(sr => sr.ProductFilterName == r.value);
                 let productPageSet = new Set(productArray.flatMap(sr => sr.ProductPageName));
 
                 let resultString = ``;
@@ -634,33 +670,43 @@ const rangeManagementViewModel = ({ } = {}) => {
 
                 return resultString;
             },
+            hidden: true
         }, {
             title: "Product Page Name",
             field: "ProductPageName",
             groupHeaderTemplate: (r) => {
                 return `<span class="group-heading product-page-name">${r.value}</span>`;
             },
+            hidden: true
         }, {
             title: "Order Form Group",
             field: "OrderFormGroup",
             groupHeaderTemplate: (r) => {
                 return `<span class="group-heading order-form-group">${r.value}</span>`;
             },
+            hidden: true
         }, {
             title: " ",
             width: 310,
-            headerTemplate: `<span class="group-heading header-blue"></span>`,
+            headerTemplate: `<span class="group-heading header-blue"></span>`
         }, {
             title: "Recommendations",
             field: "Recommendations",
-            width: 220
+            width: 300
+        }, {
+            field: "ActionQuantityToRange",
+            title: "Quantity",
+            width: 200,
+            headerAttributes: {
+                class: "text-end"
+            }
         }, {
             title: " ",
-            field: " ",
-            width: 180
+            field: "Submit"
         }],
         sortable: true,
         groupable: false,
+        reorderable: false,
         filterable: false,
         selectable: false,
         scrollable: {
@@ -675,7 +721,6 @@ const rangeManagementViewModel = ({ } = {}) => {
         },
         height: 1080,
         width: 'auto',
-        reorderable: true,
         noRecords: {
             template: `<div class="empty-cover"><h4>No Results</h4></div>`,
         },
@@ -702,13 +747,7 @@ const rangeManagementViewModel = ({ } = {}) => {
                 ofg.closest("tr").classList.add("order-form-group-row");
             });
 
-            // This is necessary if you're paging because
-            // if you're paging and endless scrolling and grouping something very stupid happens with the 
-            // groups not being completely filled so... you tell the grid to refresh and then it scroll itself argh
-            if (self.addGridScrollRestoration) {
-                document.querySelector("#results-grid .k-grid-content.k-auto-scrollable").scrollTo(0, self.addGridScrollRestoration);
-                self.addGridScrollRestoration = null;
-            }
+            //console.log("addRange grid dataBound");
         }
     }
 
@@ -908,7 +947,7 @@ const rangeManagementViewModel = ({ } = {}) => {
     });
 
     self.branch.subscribe(branch => {
-        console.log('branch', branch);
+        //console.log('branch', branch);
         if (branch) {
             self.refreshProductFilters(branch);
         } else {
@@ -965,7 +1004,7 @@ const rangeManagementViewModel = ({ } = {}) => {
             })
             .then(window.handleFetchResponse)
             .then(data => {
-                console.log('FetchProductFilters returned', data);
+                //console.log('FetchProductFilters returned', data);
                 self.productFilterGroups(data.ProductFilterGroups);
                 self.completeProductFilters(data.ProductFilters);
                 self.currentProductFilters(data.ProductFilters);
@@ -1109,7 +1148,20 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     self.unsavedChanges = () => {
         return new Promise((resolve, reject) => {
-            let unsaved = self.searchResults.peek().find(p => p.unsavedChanges());
+
+            let array = [];
+
+            switch (self.view()) {
+                case VIEW_MANAGE:
+                    array = self.searchResults.peek();
+                    break;
+                case VIEW_ADD:
+                    array = self.visibleAddToRangeRecords();
+                    break;
+                default: break;
+            }
+
+            let unsaved = array.find(p => p.unsavedChanges());
 
             if (unsaved) {
                 window.showConfirm('Unsaved changes', 'You have unsaved changes. If you proceed your changes will be lost. Proceed?', () => {
@@ -1172,61 +1224,16 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     //#region Computeds
 
-    self.gridParamsFirstRun = true;
-
-    self.gridParams = ko.computed(() => {
-        console.log('gridParams computed');
-
-        let props = {
-            branchId: self.branchId(),
-            productFilterGroupId: self.productFilterGroupId(),
-            productFilterId: self.productFilterId(),
-            brandId: self.brandId(),
-            statusGroupId: self.statusGroupId(),
-            stockStatusCode: self.stockStatusCode()
-        };
-
-        if (self.searchTerm())
-            props.searchTerm = self.searchTerm();
-
-        if (self.gridParamsFirstRun)
-            self.gridParamsFirstRun = false;
-        else {
-            if (self.branchId() ||
-                self.productFilterGroupId() ||
-                self.productFilterId() ||
-                self.brandId() ||
-                self.statusGroupId() ||
-                self.stockStatusCode() ||
-                self.searchTerm()) {
-                window.setTimeout(() => {
-                    if (self.gridSettings.widget()) {
-                        self.gridSettings.widget().dataSource.data([]);
-
-                        let grouping = self.gridSettings.widget().dataSource.group();
-
-                        self.gridSettings.widget().dataSource.query({
-                            page: 1,
-                            pageSize: 10,
-                            group: grouping
-                        });
-
-                    }
-                }, 0);
-            }
-        }
-
-        return props;
+    self.unfilledRecordProductIds = ko.computed(() => {
+        return Array.from(new Set(self.visibleRecords().filter(sr => {
+            return self.filledRecords().find(fr => fr.ProductID == sr.ProductID) == null;
+        }).map(sr => sr.ProductID)));
     }, self).extend({
         rateLimit: {
             timeout: 50,
-            method: 'notifyWhenChangesStop'
+            method: "notifyWhenChangesStop"
         }
     });
-
-    self.unfilledRecordProductIds = ko.computed(() => {
-        return Array.from(new Set(self.visibleRecords().filter(vr => !vr.loaded()).map(vr => vr.ProductID)));
-    }, self);
 
     self.fetchData = ko.computed(() => {
         if (self.unfilledRecordProductIds().length) {
@@ -1237,103 +1244,210 @@ const rangeManagementViewModel = ({ } = {}) => {
             window.setTimeout(() => {
                 console.log('fetchData calling with', self.unfilledRecordProductIds());
 
+                let pids = self.unfilledRecordProductIds();
+
                 fetch('/api/rangemanagementapi/FetchData', {
                     method: 'POST',
                     headers: window.fetchHeaders,
                     body: JSON.stringify({
                         branchId: self.branchId(),
-                        productIds: self.unfilledRecordProductIds()
+                        productIds: pids
                     })
                 })
                     .then(window.handleFetchResponse)
                     .then(data => {
+                        console.log('fetchData returned', data);
 
-                        switch (self.view()) {
-                            case VIEW_MANAGE:
-                                data.Results.forEach(r => {
-                                    let rec = self.visibleRecords().find(vr => vr.ProductID == r.ProductID);
+                        let records = self.searchResults();// gridSettings.widget().dataSource.data();
 
-                                    rec.actionRecommendations(r.Action_Recommendation);
+                        let affectedRecords = [];
 
-                                    rec.actionTransferToBranchHighlight(r.Action_TransferToBranchHighlight);
-                                    rec.actionTransferToBranchQuantityOriginal(r.Action_TransferToBranchQuantity);
-                                    rec.actionTransferToBranchQuantity(r.Action_TransferToBranchQuantity);
-                                    rec.actionTransferToBranchBasketItemId(r.WH2BR_BasketItemID);
+                        pids.forEach(pid => {
+                            let rec = records.find(p => p.ProductID === pid);
+                            let r = data.Results.find(p => p.ProductID == rec.ProductID);
 
-                                    if (r.WH2BR_BasketItemID) {
-                                        rec.actionTransferToBranchQuantityParams.disable(true);
-                                    }
-
-                                    rec.actionTransferToWarehouseHighlight(r.Action_TransferToWarehouseHighlight);
-                                    rec.actionTransferToWarehouseQuantityOriginal(r.Action_TransferToWarehouseQuantity);
-                                    rec.actionTransferToWarehouseQuantity(r.Action_TransferToWarehouseQuantity);
-                                    rec.actionTransferToWarehouseBasketItemId(r.BR2WH_BasketItemID);
-
-                                    if (r.BR2WH_BasketItemID) {
-                                        rec.actionTransferToWarehouseQuantityParams.disable(true);
-                                    }
-
-                                    rec.actionAddToRangeHighlight(r.Action_AddToRangeHighlight);
-                                    rec.actionAddToRangeQuantity(0);
-
-                                    rec.rangeStatus(r.Range_Status);
-                                    rec.rangeActual(r.Range_Actual);
-                                    rec.rangePlanned(r.Range_Planned);
-                                    rec.rangePlannedOriginal(r.Range_Planned);
-                                    rec.rangeInProgress(r.Range_InProgress);
-                                    rec.rangeRequired(r.Range_Required);
-
-                                    rec.sales180DayFW(r.Sales_180Day_FW);
-                                    rec.sales180DayKR(r.Sales_180Day_KR);
-                                    rec.sales180DayMHS(r.Sales_180Day_MHS);
-                                    rec.sales180DayUKEcommerce(r.Sales_180Day_UKEcommerce);
-                                    rec.sales180DayUKTrade(r.Sales_180Day_UKTrade);
-                                    rec.sales180DayROWTrade(r.Sales_180Day_ROWTrade);
-                                    rec.sales180DayTotal(r.Sales_180Day_Total);
-                                    rec.salesSummary(r.Sales_Summary);
-                                    rec.salesCover(r.Sales_Cover);
-
-                                    rec.stockCover(r.Stock_Cover);
-                                    rec.stockFWFreeStock(r.Stock_FW_FreeStock);
-                                    rec.stockKRFreeStock(r.Stock_KR_FreeStock);
-                                    rec.stockMHSFreeStock(r.Stock_MHS_FreeStock);
-                                    rec.stockWHFreeStock(r.Stock_WH_FreeStock);
-                                    rec.stockWHNextPODueDate(r.Stock_WH_NextPODueDate);
-                                    rec.stockWHNextPOFreeStock(r.Stock_WH_NextPOFreeStock);
-                                    rec.stockSummary(r.Stock_Summary);
-
-                                    rec.unitCostPriceGBP(r.UnitCostPriceGBP);
-
-                                    rec.busy(false);
-
-                                    rec.loaded(true);
+                            if (r) {
+                                rec = resultRecord({
+                                    branchId: self.branchId(),
+                                    rec: rec,
+                                    productFilter: ko.computed(() => {
+                                        return self.completeProductFilters().find(p => p.ProductFilterID == rec.ProductFilterID)
+                                    }, self)
                                 });
 
-                                self.fetchDataBusy(false);
+                                rec.actionRecommendations(r.Action_Recommendation);
 
-                                // This is necessary if you're paging because
-                                // if you're paging and endless scrolling and grouping something very stupid happens with the
-                                // groups not being completely filled so... you tell the grid to refresh and then it scroll itself argh
-                                self.gridScrollRestoration = document.querySelector("#results-grid .k-grid-content.k-auto-scrollable").scrollTop;
-                                self.gridSettings.widget().refresh();
-                        ///
+                                rec.actionTransferToBranchHighlight(r.Action_TransferToBranchHighlight);
+                                rec.actionTransferToBranchQuantityOriginal(r.Action_TransferToBranchQuantity);
+                                rec.actionTransferToBranchQuantity(r.Action_TransferToBranchQuantity);
+                                rec.actionTransferToBranchBasketItemId(r.WH2BR_BasketItemID);
 
-                                break;
-                            case VIEW_ADD:
+                                if (r.WH2BR_BasketItemID) {
+                                    rec.actionTransferToBranchQuantityParams.disable(true);
+                                }
 
-                                break;
-                            default:
-                                break;
-                        }
+                                rec.actionTransferToWarehouseHighlight(r.Action_TransferToWarehouseHighlight);
+                                rec.actionTransferToWarehouseQuantityOriginal(r.Action_TransferToWarehouseQuantity);
+                                rec.actionTransferToWarehouseQuantity(r.Action_TransferToWarehouseQuantity);
+                                rec.actionTransferToWarehouseBasketItemId(r.BR2WH_BasketItemID);
 
-                        console.log('FetchData returned', data);
+                                if (r.BR2WH_BasketItemID) {
+                                    rec.actionTransferToWarehouseQuantityParams.disable(true);
+                                }
+
+                                rec.rangeStatus(r.Range_Status);
+                                rec.rangeActual(r.Range_Actual);
+                                rec.rangePlanned(r.Range_Planned);
+                                rec.rangePlannedOriginal(r.Range_Planned);
+                                rec.rangeInProgress(r.Range_InProgress);
+                                rec.rangeRequired(r.Range_Required);
+
+                                rec.sales180DayFW(r.Sales_180Day_FW);
+                                rec.sales180DayKR(r.Sales_180Day_KR);
+                                rec.sales180DayMHS(r.Sales_180Day_MHS);
+                                rec.sales180DayUKEcommerce(r.Sales_180Day_UKEcommerce);
+                                rec.sales180DayUKTrade(r.Sales_180Day_UKTrade);
+                                rec.sales180DayROWTrade(r.Sales_180Day_ROWTrade);
+                                rec.sales180DayTotal(r.Sales_180Day_Total);
+                                rec.salesSummary(r.Sales_Summary);
+                                rec.salesCover(r.Sales_Cover);
+
+                                rec.stockCover(r.Stock_Cover);
+                                rec.stockFWFreeStock(r.Stock_FW_FreeStock);
+                                rec.stockKRFreeStock(r.Stock_KR_FreeStock);
+                                rec.stockMHSFreeStock(r.Stock_MHS_FreeStock);
+                                rec.stockWHFreeStock(r.Stock_WH_FreeStock);
+                                rec.stockWHNextPODueDate(r.Stock_WH_NextPODueDate);
+                                rec.stockWHNextPOFreeStock(r.Stock_WH_NextPOFreeStock);
+                                rec.stockSummary(r.Stock_Summary);
+
+                                rec.unitCostPriceGBP(r.UnitCostPriceGBP);
+
+                                rec.busy(false);
+
+                                rec.loaded(true);
+                            } else {
+                                rec.loaded = ko.observable(true);
+                                rec.ErrorMessage = `<h5 class="mb-0">portal.RangeManagement_Range_Select did not return a result for ProductID ${rec.ProductID}</h5>`;
+                            }
+
+                            affectedRecords.push(rec);
+                        });
+
+                        ko.utils.arrayPushAll(self.filledRecords, affectedRecords);
+
+                        self.searchResults(records);
+
+                        self.fetchDataBusy(false);
+
+                        console.log('manageGrid fetchData affectedRecords.length', affectedRecords.length);
+
+                        //self.gridSettings.widget().dataSource.pushUpdate(affectedRecords);
+
+                        //self.gridSettings.widget().refresh();
+
+                        //console.log("fetchData done");
+
+                        // This is necessary if you're paging because
+                        // if you're paging and endless scrolling and grouping something very stupid happens with the
+                        // groups not being completely filled so... you tell the grid to refresh and then it scroll itself argh
+                        document.querySelector("#results-grid .k-grid-content.k-auto-scrollable").scrollTo(0, self.gridScrollRestoration);
                     })
                     .catch(err => {
                         self.clearBusy();
                         window.catchFetchError(err)
                     });
             }, 300);
+        }
+    }, self).extend({
+        rateLimit: {
+            timeout: 100,
+            method: 'notifyWhenChangesStop'
+        }
+    });
 
+    self.unfilledAddRecordProductIds = ko.computed(() => {
+        return Array.from(new Set(self.visibleAddToRangeRecords().filter(vr => vr.hasOwnProperty('loaded') ? !vr.loaded() : true).map(vr => vr.ProductID)));
+    }, self);
+
+    self.fetchAddData = ko.computed(() => {
+        let pids = self.unfilledAddRecordProductIds();
+
+        if (pids.length) {
+
+            if (pids.length > 1)
+                self.fetchAddDataBusy(true);
+
+            window.setTimeout(() => {
+                console.log('fetchData [add] calling with', self.unfilledAddRecordProductIds());
+
+                fetch('/api/rangemanagementapi/FetchData', {
+                    method: 'POST',
+                    headers: window.fetchHeaders,
+                    body: JSON.stringify({
+                        branchId: self.branchId(),
+                        productIds: pids
+                    })
+                })
+                    .then(window.handleFetchResponse)
+                    .then(data => {
+                        console.log('fetchData [add] retured', data);
+
+                        let records = self.addGridSettings.widget().dataSource.data();
+
+                        let affectedRecords = [];
+
+                        pids.forEach(pid => {
+                            let rec = records.find(p => p.ProductID === pid);
+                            let r = data.Results.find(p => p.ProductID == rec.ProductID);
+
+                            if (r) {
+                                rec = addResultRecord({
+                                    branchId: self.branchId(),
+                                    rec: rec,
+                                    productFilter: ko.computed(() => {
+                                        return self.completeProductFilters().find(p => p.ProductFilterID == rec.ProductFilterID)
+                                    }, self)
+                                });
+
+                                rec.actionAddToRangeHighlight(r.Action_AddToRangeHighlight);
+                                rec.actionRecommendations(r.Action_Recommendation);
+
+                                rec.busy(false);
+
+                                rec.loaded(true);
+                            } else {
+                                rec.loaded = ko.observable(true);
+                                rec.ErrorMessage = `<h5 class="mb-0">portal.RangeManagement_Range_Select did not return a result for ProductID ${rec.ProductID}</h5>`;
+                            }
+
+                            affectedRecords.push(rec);
+                        });
+
+                        self.fetchAddDataBusy(false);
+
+                        console.log('addGrid fetchData affectedRecords.length', affectedRecords.length);
+
+                        window.ffs = affectedRecords;
+
+                        self.addGridSettings.widget().dataSource.pushUpdate(affectedRecords);
+
+                        self.addGridSettings.widget().refresh();
+
+                        // so... does it has some notion of not wanting to pushUpdate a record if it's not literally scrolled into view?
+
+                        //console.log("addRange fetchData done");
+
+                        // This is necessary if you're paging because
+                        // if you're paging and endless scrolling and grouping something very stupid happens with the
+                        // groups not being completely filled so... you tell the grid to refresh and then it scroll itself argh
+                        document.querySelector("#add-results-grid .k-grid-content.k-auto-scrollable").scrollTo(0, self.addGridScrollRestoration);
+                    })
+                    .catch(err => {
+                        self.clearBusy();
+                        window.catchFetchError(err)
+                    });
+            }, 300);
         }
     }, self).extend({
         rateLimit: {
@@ -1346,13 +1460,6 @@ const rangeManagementViewModel = ({ } = {}) => {
 
 
     //#region Events
-
-    //document.getElementById("prelaunch-tab-anchor").addEventListener('show.bs.tab', () => {
-    //    self.stockStatusGroupId(TAB_PRELAUNCH);
-    //});
-
-    console.log('grid horiz scroll fix? look here');
-    //$("#Grid-ID").data("kendoGrid").wrapper.find(".k-grid-header-wrap").off("scroll.kendoGrid");
 
     document.getElementById("range-tab-btn").addEventListener('show.bs.tab', (e) => {
 
@@ -1382,8 +1489,6 @@ const rangeManagementViewModel = ({ } = {}) => {
             }, (e) => {
 
                 self.view(VIEW_ADD);
-
-                self.addGridSettings.widget().dataSource.read();
 
                 bootstrap.Tab.getOrCreateInstance(document.getElementById("add-to-range-btn")).show();
             });
@@ -1450,7 +1555,13 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     self.gridSettings.widget.subscribe(nv => {
 
-        document.querySelector("#results-grid .k-grid-content.k-auto-scrollable").addEventListener("scroll", (e, v) => {
+        nv.element.find(".k-grid-header-wrap").off("scroll.kendoGrid");
+
+        document.querySelector("#results-grid .k-grid-content.k-auto-scrollable").addEventListener("scroll", (e) => {
+
+            self.gridScrollRestoration = e.target.scrollTop;
+
+            //console.log("gridScrollRestoration", self.gridScrollRestoration);
 
             let norecords = document.querySelector("#results-grid .k-grid-content.k-auto-scrollable .k-grid-norecords")
             if (norecords) {
@@ -1464,6 +1575,17 @@ const rangeManagementViewModel = ({ } = {}) => {
                 c.style.transform = `translateX(${e.target.scrollLeft}px)`;
             });
         });
+    });
+
+    self.addGridSettings.widget.subscribe(nv => {
+
+        nv.element.find(".k-grid-header-wrap").off("scroll.kendoGrid");
+
+        document.querySelector("#add-results-grid .k-grid-content.k-auto-scrollable").addEventListener("scroll", (e) => {
+            self.addGridScrollRestoration = e.target.scrollTop;
+        });
+
+        //console.log("addGridScrollRestoration", self.addGridScrollRestoration);
     });
 
     //#endregion
@@ -1480,7 +1602,7 @@ const resultRecord = function ({
         rec: null,
         productFilter: ko.computed(() => { })
     }) {
-    console.log(productFilter);
+    //console.log(productFilter);
 
     let self = Object.assign({}, rec);
 
@@ -1523,9 +1645,6 @@ const resultRecord = function ({
     self.actionTransferToWarehouseQuantity = ko.observable().extend(self.defaultNumericalExtension);
     self.actionTransferToWarehouseBasketItemId = ko.observable();
 
-    self.actionAddToRangeHighlight = ko.observable();
-    self.actionAddToRangeQuantity = ko.observable().extend(self.defaultNumericalExtension);
-    
     self.rangeStatus = ko.observable();
     self.rangeActual = ko.observable();
     //self.rangeStartDate = ko.observable();
@@ -1591,14 +1710,13 @@ const resultRecord = function ({
         self.rangePlanned.extend(productFilterNumericalExtension);
         self.actionTransferToWarehouseQuantity.extend(productFilterNumericalExtension);
         self.actionTransferToBranchQuantity.extend(productFilterNumericalExtension);
-        self.actionAddToRangeQuantity.extend(productFilterNumericalExtension);
     });
 
     self.buildNumericParams = (observable, original, incrementAmount, scale) => {
         return {
             label: null,
             observable: observable,
-            focusObservable: ko.observable(false),
+            //focusObservable: ko.observable(false),// ffffffffffffffffffff WHAT?! this being provided here was causing the input element to bounce focus out to body -- TWICE
             busy: ko.observable(),
             permitRevert: true,
             originalValue: original,
@@ -1711,13 +1829,9 @@ const resultRecord = function ({
         self.incrementAmount,
         self.scale);
 
-    self.actionAddToRangeQuantityParams = self.buildNumericParams(
-        self.actionAddToRangeQuantity,
-        ko.observable(0),
-        self.incrementAmount,
-        self.scale);
-
-    self.actionAddToRangeQuantityParams.revertable(false);
+    //self.actionTransferToWarehouseQuantityParams.focusObservable.subscribe((nv, e) => {
+    //    console.log('focus', nv, e);
+    //});
 
     self.toJS = () => {
         return {
@@ -1913,7 +2027,7 @@ const addResultRecord = function ({
         rec: null,
         productFilter: ko.computed(() => { })
     }) {
-    console.log(productFilter);
+    //console.log(productFilter);
 
     let self = Object.assign({}, rec);
 
@@ -1949,7 +2063,10 @@ const addResultRecord = function ({
     self.actionRecommendations = ko.observable();
 
     self.actionAddToRangeHighlight = ko.observable();
-    self.actionAddToRangeQuantity = ko.observable().extend(self.defaultNumericalExtension);
+    self.actionAddToRangeQuantity = ko.observable(0).extend(self.defaultNumericalExtension);
+    self.actionAddToRangeQuantityOriginal = ko.observable(0);
+
+    self.actionTransferToRangeBasketItemId = ko.observable();
 
     productFilter.subscribe(pf => {
 
@@ -1982,7 +2099,7 @@ const addResultRecord = function ({
         return {
             label: null,
             observable: observable,
-            focusObservable: ko.observable(false),
+            //focusObservable: ko.observable(false),// ffffffffffffffffffff WHAT?! this being provided here was causing the input element to bounce focus out to body -- TWICE
             busy: ko.observable(),
             permitRevert: true,
             originalValue: original,
@@ -1996,7 +2113,7 @@ const addResultRecord = function ({
             },
             clearFunction: function () {
                 var self = this;
-                self.observable(undefined);
+                self.observable(0);
                 self.observable.DOMElement.focus();
             },
             useNativeValidation: false, // this feeds through to mdc objects and affects them
@@ -2029,7 +2146,7 @@ const addResultRecord = function ({
 
                 let diff = Math.round((v - self.incrementAmount()) * factor) / factor;
 
-                if ((v - self.incrementAmount()) > 0)
+                if ((v - self.incrementAmount()) > 0 || diff === 0)
                     self.observable(diff);
             }
         }
@@ -2037,7 +2154,7 @@ const addResultRecord = function ({
 
     self.actionAddToRangeQuantityParams = self.buildNumericParams(
         self.actionAddToRangeQuantity,
-        ko.observable(0),
+        self.actionAddToRangeQuantityOriginal,
         self.incrementAmount,
         self.scale);
 
@@ -2057,7 +2174,7 @@ const addResultRecord = function ({
     }
 
     self.unsavedChanges = ko.computed(() => {
-        return (self.actionAddToRangeQuantity() != 0)
+        return ((self.actionAddToRangeQuantity() != 0) && (self.actionAddToRangeQuantityParams.disable() == false))
     }, self);
 
     self.busy.subscribe(nv => {
@@ -2066,7 +2183,7 @@ const addResultRecord = function ({
     });
 
     self.submitDisabled = ko.computed(() => {
-        return (self.actionAddToRangeQuantityParams.busy());
+        return (self.actionAddToRangeQuantityParams.busy() || self.actionAddToRangeQuantityParams.disable());
     }, self);
 
     self.submitTransfers = () => {
@@ -2106,7 +2223,12 @@ const addResultRecord = function ({
 
                 self.busy(false);
 
-                self.actionTransferToBranchQuantityParams.disable(true); // ... ?
+                self.actionRecommendations("<div class='alert alert-success mb-0'><p>This product has been added to the range.<br/>Consider reloading this grid.</p></div>")
+
+                self.actionAddToRangeQuantityParams.busy(false); // ... ?
+                window.setTimeout(() => {
+                    self.actionAddToRangeQuantityParams.disable(true); // ... ?
+                }, 0);
             })
             .catch(err => {
                 self.busy(false);
