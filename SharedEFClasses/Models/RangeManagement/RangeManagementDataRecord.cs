@@ -40,5 +40,6 @@ namespace SharedEFClasses.Models.RangeManagement
         public decimal Sales_180Day_ROWTrade { get; set; }
         public long? WH2BR_BasketItemID { get; set; }
         public long? BR2WH_BasketItemID { get; set; }
+        public bool Control_Allow_AddToRange { get; set; }
     }
 }

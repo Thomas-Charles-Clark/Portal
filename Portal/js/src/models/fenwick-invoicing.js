@@ -406,6 +406,24 @@ const fenwickInvoicingViewModel = (() => {
 
     //#region Functions
 
+    //self.fetchBranches = (sb) => {
+    //    fetch('/api/FenwickInvoicingAPI/FetchSelfBillInvoiceBranches', {
+    //        method: 'POST',
+    //        headers: window.fetchHeaders,
+    //        body: JSON.stringify({
+    //            selfBillInvoiceId: selfBillInvoiceId
+    //        })
+    //    }).then(window.handleFetchResponse)
+    //        .then(data => {
+    //            let bp = self.billingPeriod();
+
+    //            bp.Branches = data;
+
+    //            self.billingPeriod(bp);
+    //        })
+    //        .catch(err => window.catchFetchError);
+    //}
+
     self.ready = () => {
         self.busy(false);
     }

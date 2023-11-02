@@ -48,7 +48,7 @@ namespace Portal.Areas.Fenwick.Controllers
             this.PortalDb = portalDbContext;
         }
 
-        public IHttpActionResult GetSelfBillInvoices([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
+        public async Task<IHttpActionResult> GetSelfBillInvoices([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
         {
             PortalDb.Configuration.LazyLoadingEnabled = true;
 
@@ -78,11 +78,13 @@ namespace Portal.Areas.Fenwick.Controllers
                     sbi.SignedOffByMember == null ? null : sbi.SignedOffByMember.FullName)
                 ).ToList();
 
-            var grouped = prelist
+            //var list = await PortalDb.FetchSelfBillInvoices();
+
+            var grouped = list
                 .GroupBy(p => p.InvoiceDate)
                 .ToList();
 
-            var listlist = grouped
+            var groupedResult = grouped
                 .Select(p => new
                 {
                     InvoiceDate = p.Key,
@@ -91,7 +93,7 @@ namespace Portal.Areas.Fenwick.Controllers
                 }).ToList();
 
             return Ok(
-                listlist
+                groupedResult
                 .OrderBy(p => p.InvoiceDate)
                 .AsQueryable()
                 .ToDataSourceResult(request));

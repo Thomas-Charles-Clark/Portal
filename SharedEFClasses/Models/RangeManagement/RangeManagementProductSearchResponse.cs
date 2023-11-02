@@ -24,5 +24,6 @@ namespace SharedEFClasses.Models.RangeManagement
     public class RangeManagementProductSearchResponse
     {
         public IEnumerable<RangeManagementProductSearchRecord> Results { get; set; }
+        public IEnumerable<RangeManagementProductFilterTotal> Totals { get; set; }
     }
 }

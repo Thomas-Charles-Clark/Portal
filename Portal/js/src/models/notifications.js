@@ -191,9 +191,9 @@
         //}, 30000);
     });
 
-    document.querySelector('body').addEventListener('click', function (ev) {
-        self.hide();
-    });
+    //document.querySelector('body').addEventListener('click', function (ev) {
+    //    self.hide();
+    //});
 
     //#endregion
 

@@ -30,5 +30,15 @@ namespace SharedEFClasses.Models
                 Notifications = reply.Read<FenwickInvoiceNotice>()
             };
         }
+
+        public async Task<IEnumerable<SelfBillInvoiceDto>> FetchSelfBillInvoices()
+        {
+            var reply = await this.Database.Connection.QueryAsync<SelfBillInvoiceDto>("[Fenwicks].[SelfBillInvoice_SelectList]", new
+            {
+
+            }, null, 300, CommandType.StoredProcedure);
+
+            return reply;
+        }
     }
 }

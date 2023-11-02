@@ -29,29 +29,52 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     self.ready = ko.observable(true);
 
+    //#region Manage Grid
+
+    // this is used to hold the results of productSearch: "stubs", unfilled records pending fetchData treatment
     self.searchResults = ko.observableArray([]);
 
-    self.addSearchResults = ko.observableArray([]);
-
+    // this is used to hold the currently visible records: those which the dataSource has deemed to be "in view"
     self.visibleRecords = ko.observableArray([]);
 
+    // this holds those records which have been fleshed out by the fetchData results
     self.filledRecords = ko.observableArray([]);
 
-    //self.visibleRecords.subscribe(nv => { console.log('visibleRecords', nv) });
-
-    self.visibleAddToRangeRecords = ko.observableArray([]);
-
-    //self.visibleAddToRangeRecords.subscribe(nv => { console.log('visibleAddToRangeRecords', nv) });
-
-    self.productSearchResults = ko.observableArray([]);
-
+    // this lets us return the grid to where it was before "refresh" was called
+    // calling refresh is necessary following an endless scrolling paging event because we're grouping
     self.gridScrollRestoration = null;
+
+    self.productFilterTotals = ko.observableArray([]);
+
+    self.branchBaskets = ko.observableArray([]);
+
+    //#endregion
+
+
+    //#region Add to Range Grid
+
+    // these variants, the same as above but for our "add to range" grid.
+    self.addSearchResults = ko.observableArray([]).extend({
+        infinitescroll: {
+            itemsWidth: 600,
+            itemsHeight: 90,
+            itemWidth: 600,
+            itemHeight: 90
+        }
+    });
+
+    self.addVisibleRecords = ko.observableArray([]);
+
+    self.addFilledRecords = ko.observableArray([]);
 
     self.addGridScrollRestoration = null;
 
+    //#endregion
+
+
     //#region Prefilters
 
-    self.branchId = ko.observable();
+    self.branchId = ko.observable('');
     self.branch = ko.observable();
 
     self.brandId = ko.observable(''); // if you don't initialise to '' you'll find that opening and immediately dismissing the associated dropdown
@@ -63,9 +86,10 @@ const rangeManagementViewModel = ({ } = {}) => {
     self.productFilterGroups = ko.observableArray([]);// but why don't these dropdowns cause the above problem!?
     self.productFilterGroup = ko.observable();// don't set them to anything other than null here because you're setting them to null elsewhere and
     self.productFilterGroupId = ko.observable(null);// this is tenuous
-               
-    self.completeProductFilters = ko.observableArray([]);
+
+    self.sel = ko.observableArray([]);
     self.currentProductFilters = ko.observableArray([]);
+    self.completeProductFilters = ko.observableArray([]);
 
     self.productFilter = ko.observable();
     self.productFilterId = ko.observable(null);
@@ -82,31 +106,47 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     //#endregion
 
-    self.productStatusCode = ko.observable();
-
-    self.productStatus = ko.observable();
-
-    self.productClearanceDiscountPercentageOriginal = ko.observable();
-
-    self.productClearanceDiscountPercentage = ko.observable().extend({
-        numberUnformatted: {
-            minValue: 5,
-            maxValue: 95,
-            digits: 0,
-            currency: {
-                FormattingCulture: 'en-GB'
+    self.intersectionObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                console.log('intersecting');
+                let data = ko.dataFor(entry.target);
+                if (data == null || !data.hasOwnProperty("loaded")) {
+                    if (!self.visibleRecords().find(vid => vid.ProductID === data.ProductID)) {
+                        self.visibleRecords.push(data);
+                        self.intersectionObserver.unobserve(entry.target);
+                    }
+                }
             }
-        },
-        numeric: {
-            params: {
-                required: false,
-                numericMin: 0,
-                numericMax: 100
-            }
-        }
+        });
+    }, {
+        rootMargin: "140px",
+        threshold: 0.1
     });
 
-    self.salesHistoryTabBusyCount = ko.observable(0);
+
+    self.addIntersectionObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+            console.log('observation');
+            if (entry.isIntersecting) {
+                let data = ko.dataFor(entry.target);
+                if (data == null || !data.hasOwnProperty("loaded")) {
+                    if (!self.addVisibleRecords().find(vid => vid.ProductID === data.ProductID))
+                        self.addVisibleRecords.push(data);
+                }
+                //entry.target.style.display = "table-row";
+            } else {
+                let data = ko.dataFor(entry.target);
+                if (data && data.hasOwnProperty('loaded') && data.loaded()) {
+                    self.addIntersectionObserver.unobserve(entry.target);
+                }
+                //entry.target.style.display = "none";   
+            }
+        });
+    }, {
+        rootMargin: "140px",
+        threshold: 0.1
+    });
 
     //#endregion
 
@@ -127,14 +167,18 @@ const rangeManagementViewModel = ({ } = {}) => {
             productFilterGroupId: self.productFilterGroupId(),
             productFilterId: self.productFilterId(),
             brandId: self.brandId(),
-            statusGroupId: self.statusGroupId(),
-            stockStatusCode: self.stockStatusCode()
+            statusGroupId: self.statusGroupId()
         };
 
         let view = self.view();
 
+        // because if I don't do this 
         if (self.searchTerm())
             props.searchTerm = self.searchTerm();
+
+        // they'll end up serialising "undefined" or "null" :\
+        if (self.stockStatusCode())
+            props.stockStatusCode = self.stockStatusCode();
 
         if (self.gridParamsFirstRun)
             self.gridParamsFirstRun = false;
@@ -149,15 +193,12 @@ const rangeManagementViewModel = ({ } = {}) => {
                 window.setTimeout(() => {
                     let obj = null;
 
-                    let pageSize = 10;
-
                     switch (self.view()) {
                         case VIEW_MANAGE:
                             obj = self.gridSettings;
                             break;
                         case VIEW_ADD:
                             obj = self.addGridSettings;
-                            pageSize = 20;
                             break;
                         default:
                             break;
@@ -167,6 +208,8 @@ const rangeManagementViewModel = ({ } = {}) => {
                         obj.widget().dataSource.data([]);
 
                         let grouping = obj.widget().dataSource.group();
+
+                        let pageSize = obj.widget().dataSource.pageSize();
 
                         obj.widget().dataSource.query({
                             page: 1,
@@ -206,375 +249,9 @@ const rangeManagementViewModel = ({ } = {}) => {
         self.checkUnsavedChangesThenClear(e);
     }
 
-    self.gridDataSource = new kendo.data.DataSource({
-        transport: {
-            read: (options) => {
-
-                self.setBusy();
-
-                var webapi = new kendo.data.transports.webapi({ prefix: "" });
-                var params = webapi.parameterMap(options.data);
-
-                var data = {};
-
-                for (var propertyName in params) {
-                    data[propertyName] = params[propertyName];
-                }
-
-                data = Object.assign(params, self.gridParams());
-
-                let qs = new URLSearchParams(data);
-
-                console.log('fetchProducts calling with', data);
-
-                fetch(`/api/rangeManagementApi/FetchProducts?${qs}`, {
-                    method: 'GET',
-                    headers: window.fetchHeaders
-                })
-                    .then(window.handleFetchResponse)
-                    .then(data => {
-                        console.log('fetchProducts returned', data);
-
-                        self.clearBusy();
-
-                        self.searchResults(data.Data);
-
-                        options.success(data);
-                    })
-                    .catch(err => {
-                        self.clearBusy();
-                        window.catchFetchError(err);
-                    });
-            }
-        },
-        pagepage: 1,
-        pageSize: 10,
-        serverPaging: false,
-        serverSorting: false,
-        serverFiltering: false,
-        schema: $.extend({}, kendo.data.schemas.webapi, {
-            data: "Data",
-            total: "Total",
-            model: {
-                id: 'ProductID'
-            }
-        }),
-        group: [{
-            field: "ProductFilterName",
-            aggregates: [{
-                field: "ProductFilterName",
-                aggregate: "count"
-            }, {
-                field: "RangePlanned",
-                aggregate: "sum"
-            }]
-        }, {
-            field: "ProductPageName"
-        }, {
-            field: "OrderFormGroup"
-        }]
-    });
-
-    self.removeEmptyGroupingRows = () => {
-        $('p.k-reset:contains("null")').each((n, e) => {
-            $(e).parent().parent().remove();
-        });
+    self.getAddFilledRecord = (productId) => {
+        return self.addFilledRecords().find(p => p.ProductID === productId);
     }
-
-    self.parseView = (items, array) => {
-        items.forEach(item => {
-            if (item.hasOwnProperty("ProductID")) {
-                array.push(item);
-            } else {
-                self.parseView(item.items, array);
-            }
-        });
-    }
-
-    self.gridSettings = {
-        autoBind: false,
-        widget: ko.observable(),
-        useKOTemplates: true,
-        rowTemplate: "row-template",
-        data: self.gridDataSource,
-        columns: [{
-            title: "Product Filter Name",
-            field: "ProductFilterName",
-            groupHeaderTemplate: (r) => {
-                //console.log(r);
-                let productArray = self.searchResults().filter(sr => sr.ProductFilterName == r.value);
-                let productPageSet = new Set(productArray.flatMap(sr => sr.ProductPageName));
-
-                let resultString = ``;
-
-                if (productPageSet.size == 1 && productPageSet[0] == null) {
-                    resultString = `<span class="group-heading product-filter-name bold">${r.value} (${productArray.length} Product${productArray.length == 1 ? '' : 's'})</span>`;
-                } else {
-                    resultString = `<span class="group-heading product-filter-name bold">${r.value} (${productPageSet.size} Product Page${productPageSet.size == 1 ? '' : 's'}, ${productArray.length} Product${productArray.length == 1 ? '' : 's'})</span>`;
-                }
-
-                let rangePlannedCount = productArray.reduce((acc, val) => acc + (val.hasOwnProperty('rangePlanned') ? val.rangePlanned() ?? 0 : 0), 0);
-
-                let rangePlannedValue = productArray.reduce((acc, val) => acc + ((val.hasOwnProperty('rangePlanned') ? val.rangePlanned() ?? 0 : 0) * (val.hasOwnProperty('unitCostPriceGBP') ? val.unitCostPriceGBP() ?? 0 : 0)), 0);
-
-                let rangeActualCount = productArray.reduce((acc, val) => acc + (val.hasOwnProperty('rangeActual') ? val.rangeActual() ?? 0 : 0), 0);
-
-                let rangeActualValue = productArray.reduce((acc, val) => acc + ((val.hasOwnProperty('rangeActual') ? val.rangeActual() ?? 0 : 0) * (val.hasOwnProperty('unitCostPriceGBP') ? val.unitCostPriceGBP() ?? 0 : 0)), 0);
-
-                let rangeInProgressCount = productArray.reduce((acc, val) => acc + (val.hasOwnProperty('rangeInProgress') ? val.rangeInProgress() ?? 0 : 0), 0);
-
-                let rangeInProgressValue = productArray.reduce((acc, val) => acc + ((val.hasOwnProperty('rangeInProgress') ? val.rangeInProgress() ?? 0 : 0) * (val.hasOwnProperty('unitCostPriceGBP') ? val.unitCostPriceGBP() ?? 0 : 0)), 0);
-
-                // add rangePlanned
-                resultString += `<span class="range-total range-planned bold">${formatCurrency(rangePlannedValue, 0, "en-GB", "GBP")} (${formatNumber(rangePlannedCount, 0, "en-GB")})</span>`;
-
-                // add rangeActual
-                resultString += `<span class="range-total range-actual bold">${formatCurrency(rangeActualValue, 0, "en-GB", "GBP")} (${formatNumber(rangeActualCount, 0, "en-GB")})</span>`;
-
-                // add rangeInProgress
-                resultString += `<span class="range-total range-in-progress bold">${formatCurrency(rangeInProgressValue, 0, "en-GB", "GBP")} (${formatNumber(rangeInProgressCount, 0, "en-GB")})</span>`;
-                
-                return resultString;
-            },
-        }, {
-            title: "Product Page Name",
-            field: "ProductPageName",
-            groupHeaderTemplate: (r) => {
-                return `<span class="group-heading product-page-name">${r.value}</span>`;
-            },
-        }, {
-            title: "Order Form Group",
-            field: "OrderFormGroup",
-            groupHeaderTemplate: (r) => {
-                return `<span class="group-heading order-form-group">${r.value}</span>`;
-            },
-        }, {
-            title: " ",
-            width: 310,
-            headerTemplate: `<span class="group-heading header-blue"></span>`,
-        }, {
-            title: "Range",
-            field: "RangeGroup",
-            groupHeaderTemplate: `<span class="bold">Potato!</span>`,
-            columns: [{
-                field: "RangePlanned",
-                title: "Planned",
-                width: 145,
-                headerAttributes: {
-                    class: "text-end"
-                },
-                aggregates: ["sum"]
-            }, {
-                field: "RangeActual",
-                title: "Actual",
-                width: 80,
-                headerAttributes: {
-                    class: "text-end"
-                },
-                aggregates: ["sum"]
-            }, {
-                field: "RangeInProgress",
-                title: "In Progress",
-                width: 80,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "RangeRequired",
-                title: "Required",
-                width: 80,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }]
-        }, {
-            title: "Actions",
-            columns: [{
-                field: "ActionRecommendations",
-                title: "Recommendations",
-                width: 200
-            }, {
-                field: "ActionQuantityToBranch",
-                title: "Qty to Branch",
-                width: 160,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "ActionQuantityToWH",
-                title: "Qty to WH",
-                width: 160,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "ActionSubmit",
-                title: " ",
-                width: 100,
-                filterable: false
-            }, {
-                field: "ActionNotes",
-                title: "Notes",
-                width: 100
-            }]
-        }, {
-            title: "Stock",
-            columns: [{
-                field: "StockWarehouse",
-                title: "Warehouse",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "StockCover",
-                title: "Cover",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "StockPurchaseOrdersFreeStock",
-                title: "Purchase Order",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "StockPurchaseOrdersDueDate",
-                title: "Due Date",
-                width: 100
-            }, {
-                field: "StockKingsRoad",
-                title: "King's Road",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "StockMarylebone",
-                title: "Marylebone",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "StockFenwickAll",
-                title: "Fenwick (All)",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "StockRingFenced",
-                title: "Ring Fenced",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }]
-        }, {
-            title: "Sales",
-            columns: [{
-                field: "SalesSummary",
-                title: "Summary",
-                width: 200
-            }, {
-                field: "SalesTotal",
-                title: "Total",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "SalesKingsRoad",
-                title: "King's Road",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "SalesMarylebone",
-                title: "Marylebone",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "SalesFenwickAll",
-                title: "Fenwick (All)",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "SalesUKECom",
-                title: "UK eCommerce",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "SalesUKTrade",
-                title: "UK Trade",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "SalesROWTrade",
-                title: "ROW Trade",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                },
-                hidden: true
-            }]
-        }],
-        sortable: true,
-        groupable: false,
-        filterable: false,
-        selectable: false,
-        reorderable: false,
-        scrollable: {
-            endless: true
-        },
-        pageable: {
-            numeric: false,
-            previousNext: false,
-            messages: {
-                display: "Showing items {0} to {1} of {2}"
-            }
-        },
-        height: 1080,
-        width: 'auto',
-        noRecords: {
-            template: `<div class="empty-cover"><h4>No Results</h4></div>`,
-        },
-        dataBound: (e) => {
-            self.removeEmptyGroupingRows();
-
-            let data = e.sender.dataSource.view();
-
-            let array = [];
-
-            self.parseView(data, array);
-
-            self.visibleRecords(array);
-
-            document.querySelectorAll(".product-filter-name").forEach(ppn => {
-                ppn.closest("tr").classList.add("product-filter-name-row");
-            });
-
-            document.querySelectorAll(".product-page-name").forEach(ppn => {
-                ppn.closest("tr").classList.add("product-page-name-row");
-            });
-
-            document.querySelectorAll(".order-form-group").forEach(ofg => {
-                ofg.closest("tr").classList.add("order-form-group-row");
-            });
-        }
-    };
 
     self.addGridDataSource = new kendo.data.DataSource({
         transport: {
@@ -617,9 +294,8 @@ const rangeManagementViewModel = ({ } = {}) => {
                     });
             }
         },
-        pagepage: 1,
-        //pageSize: 10000000,
-        pageSize: 20,
+        page: 1,
+        pageSize: 200,
         serverPaging: false,
         serverSorting: false,
         serverFiltering: false,
@@ -645,6 +321,22 @@ const rangeManagementViewModel = ({ } = {}) => {
             field: "OrderFormGroup"
         }]
     });
+
+    self.removeEmptyGroupingRows = () => {
+        $('#add-results-grid p.k-reset:contains("null")').each((n, e) => {
+            $(e).parent().parent().remove();
+        });
+    }
+
+    self.parseView = (items, array) => {
+        items.forEach(item => {
+            if (item.hasOwnProperty("ProductID")) {
+                array.push(item);
+            } else {
+                self.parseView(item.items, array);
+            }
+        });
+    }
 
     self.addGridSettings = {
         autoBind: false,
@@ -704,7 +396,7 @@ const rangeManagementViewModel = ({ } = {}) => {
             title: " ",
             field: "Submit"
         }],
-        sortable: true,
+        sortable: false,
         groupable: false,
         reorderable: false,
         filterable: false,
@@ -719,10 +411,11 @@ const rangeManagementViewModel = ({ } = {}) => {
                 display: "Showing items {0} to {1} of {2}"
             }
         },
-        height: 1080,
+        height: 1060,
         width: 'auto',
         noRecords: {
-            template: `<div class="empty-cover"><h4>No Results</h4></div>`,
+            //template: `<div class="empty-cover"><h4>No Results</h4></div>`,
+            template: ` `,
         },
         dataBound: (e) => {
             self.removeEmptyGroupingRows();
@@ -733,7 +426,7 @@ const rangeManagementViewModel = ({ } = {}) => {
 
             self.parseView(data, array);
 
-            self.visibleAddToRangeRecords(array);
+            self.addVisibleRecords(array);
 
             document.querySelectorAll(".product-filter-name").forEach(ppn => {
                 ppn.closest("tr").classList.add("product-filter-name-row");
@@ -748,6 +441,242 @@ const rangeManagementViewModel = ({ } = {}) => {
             });
 
             //console.log("addRange grid dataBound");
+        }
+    }
+
+    self.transferOrdersWH2BRDataSource = new kendo.data.DataSource({
+        transport: {
+            read: (options) => {
+
+                self.setBusy();
+
+                var webapi = new kendo.data.transports.webapi({ prefix: "" });
+                var params = webapi.parameterMap(options.data);
+
+                var data = {};
+
+                for (var propertyName in params) {
+                    data[propertyName] = params[propertyName];
+                }
+
+                data = Object.assign(params, {
+                    branchId: self.branchId(),
+                    transferDirection: "WH2BR"
+                });
+
+                let qs = new URLSearchParams(data);
+
+                console.log('fetchTransferOrders calling with', data);
+
+                fetch(`/api/rangeManagementApi/FetchTransferOrders?${qs}`, {
+                    method: 'GET',
+                    headers: window.fetchHeaders
+                })
+                    .then(window.handleFetchResponse)
+                    .then(data => {
+                        console.log('fetchTransferOrders returned', data);
+
+                        self.clearBusy();
+
+                        options.success(data);
+                    })
+                    .catch(err => {
+                        self.clearBusy();
+                        window.catchFetchError(err);
+                    });
+            }
+        },
+        page: 1,
+        pageSize: 20,
+        serverPaging: false,
+        serverSorting: false,
+        serverFiltering: false,
+        schema: $.extend({}, kendo.data.schemas.webapi, {
+            data: "Data",
+            total: "Total",
+            model: {
+                id: 'OrderID'
+            }
+        }),
+        sort: {
+            field: "SortOrder"
+        }
+    });
+
+    self.transferOrdersBR2WHDataSource = new kendo.data.DataSource({
+        transport: {
+            read: (options) => {
+
+                self.setBusy();
+
+                var webapi = new kendo.data.transports.webapi({ prefix: "" });
+                var params = webapi.parameterMap(options.data);
+
+                var data = {};
+
+                for (var propertyName in params) {
+                    data[propertyName] = params[propertyName];
+                }
+
+                data = Object.assign(params, {
+                    branchId: self.branchId(),
+                    transferDirection: "BR2WH"
+                });
+
+                let qs = new URLSearchParams(data);
+
+                console.log('fetchTransferOrders calling with', data);
+
+                fetch(`/api/rangeManagementApi/FetchTransferOrders?${qs}`, {
+                    method: 'GET',
+                    headers: window.fetchHeaders
+                })
+                    .then(window.handleFetchResponse)
+                    .then(data => {
+                        console.log('fetchTransferOrders returned', data);
+
+                        self.clearBusy();
+
+                        options.success(data);
+                    })
+                    .catch(err => {
+                        self.clearBusy();
+                        window.catchFetchError(err);
+                    });
+            }
+        },
+        page: 1,
+        pageSize: 20,
+        serverPaging: false,
+        serverSorting: false,
+        serverFiltering: false,
+        schema: $.extend({}, kendo.data.schemas.webapi, {
+            data: "Data",
+            total: "Total",
+            model: {
+                id: 'OrderID'
+            }
+        }),
+        sort: {
+            field: "SortOrder"
+        }
+    });
+
+    self.transferOrdersColumns = [{
+        title: " ",
+        field: "ImageID",
+        width: 80
+    }, {
+        title: "Type",
+        field: "Type",
+        width: 60
+    }, {
+        title: "Product",
+        field: "Product"
+    }, {
+        title: "Quantity",
+        field: "QuantityOrdered",
+        width: 80,
+        headerAttributes: {
+            class: "text-end"
+        }
+    }, {
+        title: "Order ID",
+        field: "OrderID",
+        width: 100,
+        headerAttributes: {
+            class: "text-end"
+        }
+    }, {
+        title: "Order Date",
+        field: "OrderDT",
+        width: 100
+    }, {
+        title: "Order Line ID",
+        field: "OrderLineID",
+        width: 120,
+        headerAttributes: {
+            class: "text-end"
+        }
+    }, {
+        title: "Basket ID",
+        field: "BasketID",
+        width: 100,
+        headerAttributes: {
+            class: "text-end"
+        }
+    }, {
+        title: "Basket Date",
+        field: "BasketDT",
+        width: 100,
+        template: (e) => {
+            return renderDate(e.value)
+        }
+    }, {
+        title: "Basket Item ID",
+        field: "BasketItemID",
+        width: 120,
+        headerAttributes: {
+            class: "text-end"
+        }
+    }, {
+        title: "Trade Account",
+        field: "TradeAccount"
+    }, {
+        title: "Status",
+        width: 140,
+        field: "DetailedLineStatus"
+    }]
+
+    self.transferOrdersWH2BRGridSettings = {
+        autoBind: false,
+        widget: ko.observable(),
+        useKOTemplates: true,
+        rowTemplate: "transfer-orders-row-template",
+        data: self.transferOrdersWH2BRDataSource,
+        columns: self.transferOrdersColumns,
+        sortable: false,
+        groupable: false,
+        reorderable: false,
+        filterable: false,
+        selectable: false,
+        scrollable: {
+            endless: true
+        },
+        pageable: {
+            pageSize: 20,
+            pageSizes: [10, 20, 30, 50, 100, 200]
+        },
+        height: 1080,
+        width: 'auto',
+        noRecords: {
+            template: `<div class="empty-cover"><h4>No Results</h4></div>`,
+        }
+    }
+
+    self.transferOrdersBR2WHGridSettings = {
+        autoBind: false,
+        widget: ko.observable(),
+        useKOTemplates: true,
+        rowTemplate: "transfer-orders-row-template",
+        data: self.transferOrdersBR2WHDataSource,
+        columns: self.transferOrdersColumns,
+        sortable: false,
+        groupable: false,
+        reorderable: false,
+        filterable: false,
+        selectable: false,
+        scrollable: {
+            endless: true
+        },
+        pageable: {
+            pageSize: 20,
+            pageSizes: [10, 20, 30, 50, 100, 200]
+        },
+        height: 1080,
+        width: 'auto',
+        noRecords: {
+            template: `<div class="empty-cover"><h4>No Results</h4></div>`,
         }
     }
 
@@ -796,10 +725,10 @@ const rangeManagementViewModel = ({ } = {}) => {
         filter: 'contains',
         autoBind: true,
         height: 340,
-        sort: {
+        sort: [{
             dir: 'asc',
             field: 'Name'
-        },
+        }],
         select: self.genericUnsavedChangesSelect,
         clearFunction: self.genericUnsavedChangesClear
     });
@@ -822,10 +751,10 @@ const rangeManagementViewModel = ({ } = {}) => {
         filter: 'contains',
         autoBind: true,
         height: 340,
-        sort: {
+        sort: [{
             dir: 'asc',
             field: 'Name'
-        },
+        }],
         select: self.genericUnsavedChangesSelect,
         clearFunction: self.genericUnsavedChangesClear
     });
@@ -852,7 +781,7 @@ const rangeManagementViewModel = ({ } = {}) => {
     });
 
     self.statusGroupParams = kendoMDCDropDownList({
-        label: 'Status Group',
+        label: 'Product Status',
         odata: true,
         endPoint: '/odata/StatusGroups',
         textField: 'Name',
@@ -865,7 +794,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         clearable: ko.observable(true),
         revertable: ko.observable(false),
         readOnly: false,
-        filter: 'contains',
+        filter: false,
         autoBind: true,
         height: 340,
         select: self.genericUnsavedChangesSelect,
@@ -891,7 +820,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         clearable: ko.observable(true),
         revertable: ko.observable(false),
         readOnly: false,
-        filter: 'contains',
+        filter: false,
         autoBind: true,
         height: 340,
         select: self.genericUnsavedChangesSelect,
@@ -960,6 +889,74 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     //#region Methods
 
+    self.fetchBranchBaskets = ko.computed(() => {
+        let data = {
+            branchId: self.branchId()
+        }
+
+        if (data.branchId) {
+
+            self.branchBaskets([]);
+
+            let results = self.searchResults();
+
+            let qs = new URLSearchParams(data);
+
+            fetch(`/api/rangeManagementApi/FetchBranchBaskets?${qs}`, {
+                method: 'GET',
+                headers: window.fetchHeaders
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    ko.ignoreDependencies(() => {
+                        self.branchBaskets(data);
+                    });
+                })
+                .catch(window.catchFetchErrors);
+        }
+    }, self);
+
+    self.releaseBranchBaskets = () => {
+        window.showConfirm("Are you sure?", "This action will submit the transfer orders for this branch.", () => {
+            fetch('/api/rangeManagementApi/ReleaseBranchBaskets', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                body: JSON.stringify({
+                    branchId: self.branchId()
+                })
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    window.showInfo("Success", "Transfer orders submitted successfully.", () => {
+                        console.log("Clear or reset or run the branch check again or something...");
+                    });
+                })
+                .catch(window.catchFetchError);
+        }, null);
+    }
+
+    self.searchResultsPostProcessing = () => {
+        window.setTimeout(() => {
+            if (self.intersectionObserver) {
+                document.querySelectorAll("#results-grid tbody tr[role=row]:not(.k-grouping-row)").forEach(row => {
+                    console.log('observing');
+                    self.intersectionObserver.observe(row);
+                });
+            }
+        }, 0);
+    }
+
+    self.addSearchResultsPostProcessing = () => {
+        window.setTimeout(() => {
+            if (self.addIntersectionObserver) {
+                document.querySelectorAll("#add-results-grid tbody tr[role=row]:not(.k-grouping-row)").forEach(row => {
+                    console.log('observing');
+                    self.addIntersectionObserver.observe(row);
+                });
+            }
+        }, 0);
+    }
+
     self.branchCheck = (e, onComplete) => {
         self.busy(true);
         fetch('/api/rangemanagementapi/checkBranch', {
@@ -990,9 +987,8 @@ const rangeManagementViewModel = ({ } = {}) => {
     }
 
     self.refreshProductFilters = (b) => {
-        //self.setBusy();
-        self.productFilterGroupId(null);
-        self.productFilterId(null);
+        //self.productFilterGroupId(null); // why 
+        //self.productFilterId(null); // why
         fetch('/api/rangemanagementapi/FetchProductFilters?' + new URLSearchParams({
             tradeAccountId: b.TradeAccountID,
             clearance: 'all', // this is really badly named, it's actually @Lifecycle
@@ -1008,10 +1004,8 @@ const rangeManagementViewModel = ({ } = {}) => {
                 self.productFilterGroups(data.ProductFilterGroups);
                 self.completeProductFilters(data.ProductFilters);
                 self.currentProductFilters(data.ProductFilters);
-                //self.clearBusy();
             })
             .catch(err => {
-                //self.clearBusy();
                 window.catchFetchError(err);
             });
     }
@@ -1042,6 +1036,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         self.productFilterParams.clearFunction();
         self.brandParams.clearFunction();
         self.statusGroupParams.clearFunction();
+        self.stockStatusParams.clearFunction();
         self.searchTerm(undefined);
     }
 
@@ -1153,10 +1148,10 @@ const rangeManagementViewModel = ({ } = {}) => {
 
             switch (self.view()) {
                 case VIEW_MANAGE:
-                    array = self.searchResults.peek();
+                    array = self.filledRecords.peek();
                     break;
                 case VIEW_ADD:
-                    array = self.visibleAddToRangeRecords();
+                    array = self.addFilledRecords.peek();
                     break;
                 default: break;
             }
@@ -1224,134 +1219,219 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     //#region Computeds
 
+    self.fetchProducts = ko.computed(() => {
+
+        if (self.view() == VIEW_MANAGE) {
+            self.setBusy();
+
+            let data = self.gridParams();
+
+            let qs = new URLSearchParams(data);
+
+            self.visibleRecords([]);
+            self.filledRecords([]);
+            self.searchResults([]);
+
+            console.log('fetchProducts calling with', data);
+
+            fetch(`/api/rangeManagementApi/FetchProducts?${qs}`, {
+                method: 'GET',
+                headers: window.fetchHeaders
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    console.log('fetchProducts returned', data);
+
+                    //if (data.Results.length === 0)
+                    self.clearBusy();
+
+                    self.searchResults(data.Results);
+
+                    self.productFilterTotals(data.Totals);
+
+                    window.setTimeout(() => {
+                        self.searchResultsPostProcessing();
+                    }, 0);
+                })
+                .catch(err => {
+                    self.clearBusy();
+                    window.catchFetchError(err);
+                });
+        }
+
+    }, self);
+
+    self.fetchAddProducts = ko.computed(() => {
+
+        if (self.view() == VIEW_ADD) {
+            self.setBusy();
+
+            let data = self.gridParams();
+
+            let qs = new URLSearchParams(data);
+
+            console.log('fetchProductsAddToRange calling with', data);
+
+            fetch(`/api/rangeManagementApi/FetchProductsAddToRange?${qs}`, {
+                method: 'GET',
+                headers: window.fetchHeaders
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    console.log('fetchProductsAddToRange returned', data);
+
+                    if (data.Data.length === 0)
+                        self.clearBusy();
+
+                    self.addSearchResults(data.Data);
+
+                    window.setTimeout(() => {
+                        self.addSearchResultsPostProcessing();
+                    }, 0);
+                })
+                .catch(err => {
+                    self.clearBusy();
+                    window.catchFetchError(err);
+                });
+        }
+    }, self);
+
     self.unfilledRecordProductIds = ko.computed(() => {
-        return Array.from(new Set(self.visibleRecords().filter(sr => {
-            return self.filledRecords().find(fr => fr.ProductID == sr.ProductID) == null;
-        }).map(sr => sr.ProductID)));
+        return Array.from(new Set(self.visibleRecords().filter(vr => {
+            let r = self.filledRecords().find(fr => fr.ProductID == vr.ProductID);
+            return (r == null || r && r.loaded() == false);
+        }).map(cr => cr.ProductID)));
     }, self).extend({
         rateLimit: {
-            timeout: 50,
+            timeout: 100,
             method: "notifyWhenChangesStop"
         }
     });
 
     self.fetchData = ko.computed(() => {
-        if (self.unfilledRecordProductIds().length) {
+        let urpids = self.unfilledRecordProductIds();
 
-            if (self.unfilledRecordProductIds().length > 1)
-                self.fetchDataBusy(true);
+        if (urpids.length) {
 
             window.setTimeout(() => {
-                console.log('fetchData calling with', self.unfilledRecordProductIds());
+                console.log('fetchData calling with', urpids);
 
-                let pids = self.unfilledRecordProductIds();
+                let callStart = new Date();
 
                 fetch('/api/rangemanagementapi/FetchData', {
                     method: 'POST',
                     headers: window.fetchHeaders,
                     body: JSON.stringify({
                         branchId: self.branchId(),
-                        productIds: pids
+                        productIds: urpids
                     })
                 })
                     .then(window.handleFetchResponse)
                     .then(data => {
-                        console.log('fetchData returned', data);
 
-                        let records = self.searchResults();// gridSettings.widget().dataSource.data();
+                        let callReturn = new Date();
 
+                        console.log(`fetchData returned in ${callReturn - callStart}ms`, data);
+
+                        let records = self.searchResults.peek();
                         let affectedRecords = [];
+                        let filledRecords = self.filledRecords.peek();
 
-                        pids.forEach(pid => {
-                            let rec = records.find(p => p.ProductID === pid);
-                            let r = data.Results.find(p => p.ProductID == rec.ProductID);
+                        urpids.forEach(pid => {
 
-                            if (r) {
-                                rec = resultRecord({
-                                    branchId: self.branchId(),
-                                    rec: rec,
-                                    productFilter: ko.computed(() => {
-                                        return self.completeProductFilters().find(p => p.ProductFilterID == rec.ProductFilterID)
-                                    }, self)
-                                });
+                            let record = records.find(p => p.ProductID === pid);
+                            let dataResult = data.Results.find(p => p.ProductID == pid);
+                            let filledRecord = filledRecords.find(p => p.ProductID == pid);
 
-                                rec.actionRecommendations(r.Action_Recommendation);
+                            let add = true;
 
-                                rec.actionTransferToBranchHighlight(r.Action_TransferToBranchHighlight);
-                                rec.actionTransferToBranchQuantityOriginal(r.Action_TransferToBranchQuantity);
-                                rec.actionTransferToBranchQuantity(r.Action_TransferToBranchQuantity);
-                                rec.actionTransferToBranchBasketItemId(r.WH2BR_BasketItemID);
+                            if (dataResult) {
 
-                                if (r.WH2BR_BasketItemID) {
-                                    rec.actionTransferToBranchQuantityParams.disable(true);
+                                if (filledRecord == null) {
+                                    record = resultRecord({
+                                        branchId: self.branchId(),
+                                        rec: record
+                                    });
+                                } else {
+                                    add = false;
+                                    filledRecord.loaded(true);
+                                    record = filledRecord;
                                 }
 
-                                rec.actionTransferToWarehouseHighlight(r.Action_TransferToWarehouseHighlight);
-                                rec.actionTransferToWarehouseQuantityOriginal(r.Action_TransferToWarehouseQuantity);
-                                rec.actionTransferToWarehouseQuantity(r.Action_TransferToWarehouseQuantity);
-                                rec.actionTransferToWarehouseBasketItemId(r.BR2WH_BasketItemID);
+                                record.actionRecommendations = dataResult.Action_Recommendation;
 
-                                if (r.BR2WH_BasketItemID) {
-                                    rec.actionTransferToWarehouseQuantityParams.disable(true);
+                                record.actionTransferToBranchHighlight = dataResult.Action_TransferToBranchHighlight;
+
+                                record.actionTransferToBranchQuantityOriginal(dataResult.Action_TransferToBranchQuantity);
+                                record.actionTransferToBranchQuantity(dataResult.Action_TransferToBranchQuantity);
+                                record.actionTransferToBranchBasketItemId(dataResult.WH2BR_BasketItemID);
+
+                                if (dataResult.WH2BR_BasketItemID) {
+                                    record.actionTransferToBranchQuantityParams.disable(true);
                                 }
 
-                                rec.rangeStatus(r.Range_Status);
-                                rec.rangeActual(r.Range_Actual);
-                                rec.rangePlanned(r.Range_Planned);
-                                rec.rangePlannedOriginal(r.Range_Planned);
-                                rec.rangeInProgress(r.Range_InProgress);
-                                rec.rangeRequired(r.Range_Required);
+                                record.actionTransferToWarehouseHighlight = dataResult.Action_TransferToWarehouseHighlight;
 
-                                rec.sales180DayFW(r.Sales_180Day_FW);
-                                rec.sales180DayKR(r.Sales_180Day_KR);
-                                rec.sales180DayMHS(r.Sales_180Day_MHS);
-                                rec.sales180DayUKEcommerce(r.Sales_180Day_UKEcommerce);
-                                rec.sales180DayUKTrade(r.Sales_180Day_UKTrade);
-                                rec.sales180DayROWTrade(r.Sales_180Day_ROWTrade);
-                                rec.sales180DayTotal(r.Sales_180Day_Total);
-                                rec.salesSummary(r.Sales_Summary);
-                                rec.salesCover(r.Sales_Cover);
+                                record.actionTransferToWarehouseQuantityOriginal(dataResult.Action_TransferToWarehouseQuantity);
+                                record.actionTransferToWarehouseQuantity(dataResult.Action_TransferToWarehouseQuantity);
+                                record.actionTransferToWarehouseBasketItemId(dataResult.BR2WH_BasketItemID);
 
-                                rec.stockCover(r.Stock_Cover);
-                                rec.stockFWFreeStock(r.Stock_FW_FreeStock);
-                                rec.stockKRFreeStock(r.Stock_KR_FreeStock);
-                                rec.stockMHSFreeStock(r.Stock_MHS_FreeStock);
-                                rec.stockWHFreeStock(r.Stock_WH_FreeStock);
-                                rec.stockWHNextPODueDate(r.Stock_WH_NextPODueDate);
-                                rec.stockWHNextPOFreeStock(r.Stock_WH_NextPOFreeStock);
-                                rec.stockSummary(r.Stock_Summary);
+                                if (dataResult.BR2WH_BasketItemID) {
+                                    record.actionTransferToWarehouseQuantityParams.disable(true);
+                                }
 
-                                rec.unitCostPriceGBP(r.UnitCostPriceGBP);
+                                record.rangeStatus = dataResult.Range_Status;
+                                record.rangeActual = dataResult.Range_Actual;
 
-                                rec.busy(false);
+                                record.rangePlanned(dataResult.Range_Planned);
+                                record.rangePlannedOriginal(dataResult.Range_Planned);
 
-                                rec.loaded(true);
+                                record.rangeInProgress = dataResult.Range_InProgress;
+                                record.rangeRequired = dataResult.Range_Required;
+
+                                record.sales180DayFW = dataResult.Sales_180Day_FW;
+                                record.sales180DayKR = dataResult.Sales_180Day_KR;
+                                record.sales180DayMHS = dataResult.Sales_180Day_MHS;
+                                record.sales180DayUKEcommerce = dataResult.Sales_180Day_UKEcommerce;
+                                record.sales180DayUKTrade = dataResult.Sales_180Day_UKTrade;
+                                record.sales180DayROWTrade = dataResult.Sales_180Day_ROWTrade;
+                                record.sales180DayTotal = dataResult.Sales_180Day_Total;
+                                record.salesSummary = dataResult.Sales_Summary;
+                                record.salesCover = dataResult.Sales_Cover;
+
+                                record.stockCover = dataResult.Stock_Cover;
+                                record.stockFWFreeStock = dataResult.Stock_FW_FreeStock;
+                                record.stockKRFreeStock = dataResult.Stock_KR_FreeStock;
+                                record.stockMHSFreeStock = dataResult.Stock_MHS_FreeStock;
+                                record.stockWHFreeStock = dataResult.Stock_WH_FreeStock;
+                                record.stockWHNextPODueDate = dataResult.Stock_WH_NextPODueDate;
+                                record.stockWHNextPOFreeStock = dataResult.Stock_WH_NextPOFreeStock;
+                                record.stockSummary = dataResult.Stock_Summary;
+
+                                record.unitCostPriceGBP = dataResult.UnitCostPriceGBP;
+
+                                record.busy(false);
+
+                                record.loaded(true);
                             } else {
-                                rec.loaded = ko.observable(true);
-                                rec.ErrorMessage = `<h5 class="mb-0">portal.RangeManagement_Range_Select did not return a result for ProductID ${rec.ProductID}</h5>`;
+                                record.loaded = ko.observable(true);
+                                record.ErrorMessage = `<h5 class="mb-0">portal.RangeManagement_Range_Select did not return a result for ProductID ${record.ProductID}</h5>`;
                             }
 
-                            affectedRecords.push(rec);
+                            if (add) {
+                                affectedRecords.push(record);
+                            }
                         });
 
-                        ko.utils.arrayPushAll(self.filledRecords, affectedRecords);
+                        ko.ignoreDependencies(() => {
+                            ko.utils.arrayPushAll(self.filledRecords, affectedRecords);
+                        });
 
-                        self.searchResults(records);
+                        let callBound = new Date();
 
-                        self.fetchDataBusy(false);
-
-                        console.log('manageGrid fetchData affectedRecords.length', affectedRecords.length);
-
-                        //self.gridSettings.widget().dataSource.pushUpdate(affectedRecords);
-
-                        //self.gridSettings.widget().refresh();
-
-                        //console.log("fetchData done");
-
-                        // This is necessary if you're paging because
-                        // if you're paging and endless scrolling and grouping something very stupid happens with the
-                        // groups not being completely filled so... you tell the grid to refresh and then it scroll itself argh
-                        document.querySelector("#results-grid .k-grid-content.k-auto-scrollable").scrollTo(0, self.gridScrollRestoration);
+                        window.setTimeout(() => {
+                            console.log(`fetchData bound in ${callBound - callReturn}ms`);
+                        }, 0);
                     })
                     .catch(err => {
                         self.clearBusy();
@@ -1367,19 +1447,29 @@ const rangeManagementViewModel = ({ } = {}) => {
     });
 
     self.unfilledAddRecordProductIds = ko.computed(() => {
-        return Array.from(new Set(self.visibleAddToRangeRecords().filter(vr => vr.hasOwnProperty('loaded') ? !vr.loaded() : true).map(vr => vr.ProductID)));
-    }, self);
+        return Array.from(new Set(self.addVisibleRecords().filter(vr => {
+            return self.addFilledRecords().find(fr => fr.ProductID == vr.ProductID) == null;
+        }).map(vr => vr.ProductID)));
+    }, self).extend({
+        rateLimit: {
+            timeout: 100,
+            method: 'notifyWhenChangesStop'
+        }
+    });
 
     self.fetchAddData = ko.computed(() => {
         let pids = self.unfilledAddRecordProductIds();
 
         if (pids.length) {
 
-            if (pids.length > 1)
-                self.fetchAddDataBusy(true);
+            //if (pids.length > 1)
+            //    self.fetchAddDataBusy(true);
+
+            //ko.ignoreDependencies(() => {
+            //    self.setBusy();
+            //});
 
             window.setTimeout(() => {
-                console.log('fetchData [add] calling with', self.unfilledAddRecordProductIds());
 
                 fetch('/api/rangemanagementapi/FetchData', {
                     method: 'POST',
@@ -1391,17 +1481,19 @@ const rangeManagementViewModel = ({ } = {}) => {
                 })
                     .then(window.handleFetchResponse)
                     .then(data => {
-                        console.log('fetchData [add] retured', data);
 
-                        let records = self.addGridSettings.widget().dataSource.data();
-
+                        let records = self.addSearchResults();
                         let affectedRecords = [];
 
                         pids.forEach(pid => {
+
                             let rec = records.find(p => p.ProductID === pid);
                             let r = data.Results.find(p => p.ProductID == rec.ProductID);
+                            let fr = self.filledRecords().find(p => p.ProductID == pid);
 
-                            if (r) {
+                            let add = true;
+
+                            if (fr == null) {
                                 rec = addResultRecord({
                                     branchId: self.branchId(),
                                     rec: rec,
@@ -1410,41 +1502,42 @@ const rangeManagementViewModel = ({ } = {}) => {
                                     }, self)
                                 });
 
-                                rec.actionAddToRangeHighlight(r.Action_AddToRangeHighlight);
-                                rec.actionRecommendations(r.Action_Recommendation);
+                                rec.element.subscribe(nv => {
+                                    self.addIntersectionObserver.observe(nv);
+                                });
 
                                 rec.busy(false);
 
                                 rec.loaded(true);
                             } else {
-                                rec.loaded = ko.observable(true);
-                                rec.ErrorMessage = `<h5 class="mb-0">portal.RangeManagement_Range_Select did not return a result for ProductID ${rec.ProductID}</h5>`;
+                                add = false;
+                                fr.loaded(true);
+                                rec = fr;
+                            }
+
+                            rec.actionAddToRangeHighlight(r.Action_AddToRangeHighlight);
+                            rec.actionRecommendations(r.Action_Recommendation);
+                            rec.allowed(r.Control_Allow_AddToRange);
+
+                            if (add) {
+                                affectedRecords.push(rec);
                             }
 
                             affectedRecords.push(rec);
                         });
 
-                        self.fetchAddDataBusy(false);
+                        ko.utils.arrayPushAll(self.addFilledRecords, affectedRecords);
 
-                        console.log('addGrid fetchData affectedRecords.length', affectedRecords.length);
+                        //self.fetchAddDataBusy(false);
 
-                        window.ffs = affectedRecords;
+                        //self.addGridSettings.widget().refresh();
 
-                        self.addGridSettings.widget().dataSource.pushUpdate(affectedRecords);
-
-                        self.addGridSettings.widget().refresh();
-
-                        // so... does it has some notion of not wanting to pushUpdate a record if it's not literally scrolled into view?
-
-                        //console.log("addRange fetchData done");
-
-                        // This is necessary if you're paging because
-                        // if you're paging and endless scrolling and grouping something very stupid happens with the
-                        // groups not being completely filled so... you tell the grid to refresh and then it scroll itself argh
-                        document.querySelector("#add-results-grid .k-grid-content.k-auto-scrollable").scrollTo(0, self.addGridScrollRestoration);
+                        //document.querySelector("#add-results-grid .k-grid-content.k-auto-scrollable").scrollTo(0, self.addGridScrollRestoration);
                     })
                     .catch(err => {
-                        self.clearBusy();
+                        //ko.ignoreDependencies(() => {
+                        //    self.clearBusy();
+                        //});
                         window.catchFetchError(err)
                     });
             }, 300);
@@ -1455,6 +1548,164 @@ const rangeManagementViewModel = ({ } = {}) => {
             method: 'notifyWhenChangesStop'
         }
     });
+
+    self.groupedSearchResults = ko.computed(() => {
+
+        let key = "ProductFilterName";
+
+        if (self.searchResults().length) {
+            let results = [];
+
+            let productFilterGrouping = Object.groupBy(self.searchResults(), (sr) => sr.ProductFilterID);
+
+            Object.keys(productFilterGrouping).forEach(k => {
+                let productFilterGroup = {};
+
+                k = +k;
+
+                productFilterGroup.name = ko.computed(() => {
+                    let cpfs = self.completeProductFilters();
+                    let pf = cpfs.find(pfid => {
+                        return pfid.ProductFilterID === k;
+                    });
+                    if (pf)
+                        return pf.Name.replace(/<br\/>/g, ' ');
+                }, self);
+
+                productFilterGroup.items = ko.observableArray(productFilterGrouping[k]);
+
+                productFilterGroup.plannedCount = ko.computed(() => {
+                    return self.productFilterTotals().find(pft => pft.ProductFilterID === k)?.PlannedCount;
+                }, self);
+
+                productFilterGroup.plannedValue = ko.computed(() => {
+                    return self.productFilterTotals().find(pft => pft.ProductFilterID === k)?.PlannedValue;
+                }, self);
+
+                productFilterGroup.actualCount = ko.computed(() => {
+                    return self.productFilterTotals().find(pft => pft.ProductFilterID === k)?.ActualCount;
+                }, self);
+
+                productFilterGroup.actualValue = ko.computed(() => {
+                    return self.productFilterTotals().find(pft => pft.ProductFilterID === k)?.ActualValue;
+                }, self);
+
+                productFilterGroup.inProgressCount = ko.computed(() => {
+                    return self.productFilterTotals().find(pft => pft.ProductFilterID === k)?.InProgressCount;
+                }, self);
+
+                productFilterGroup.inProgressValue = ko.computed(() => {
+                    return self.productFilterTotals().find(pft => pft.ProductFilterID === k)?.InProgressValue;
+                }, self);
+                
+                results.push(productFilterGroup);
+            });
+
+            results.forEach(pf => {
+                let productPages = [];
+
+                let productPageGrouping = Object.groupBy(pf.items(), (i) => i.ProductPageName || "");
+
+                Object.keys(productPageGrouping).forEach(k => {
+                    productPages.push({
+                        name: k,
+                        items: ko.observableArray(productPageGrouping[k])
+                    });
+                });
+
+                productPages.forEach(ppg => {
+                    let orderFormGroups = [];
+
+                    let orderFormGrouping = Object.groupBy(ppg.items(), (i) => i.OrderFormGroup || "");
+
+                    Object.keys(orderFormGrouping).forEach(k => {
+                        orderFormGroups.push({
+                            name: k,
+                            items: ko.observableArray(orderFormGrouping[k])
+                        });
+                    });
+
+                    ppg.items = orderFormGroups;
+                });
+
+                pf.items = productPages;
+            });
+
+            console.log(results);
+
+            return results;
+        }
+    }, self);
+
+
+    self.groupedAddSearchResults = ko.computed(() => {
+
+        let key = "ProductFilterName";
+
+        if (self.searchResults().length) {
+            let results = [];
+
+            let productFilterGrouping = Object.groupBy(self.addSearchResults(), (sr) => sr.ProductFilterName);
+
+            Object.keys(productFilterGrouping).forEach(k => {
+                results.push({
+                    name: k,
+                    items: ko.observableArray(productFilterGrouping[k])
+                });
+            });
+
+            results.forEach(pf => {
+                let productPages = [];
+
+                let productPageGrouping = Object.groupBy(pf.items(), (i) => i.ProductPageName || "");
+
+                Object.keys(productPageGrouping).forEach(k => {
+                    productPages.push({
+                        name: k,
+                        items: ko.observableArray(productPageGrouping[k])
+                    });
+                });
+
+                productPages.forEach(ppg => {
+                    let orderFormGroups = [];
+
+                    let orderFormGrouping = Object.groupBy(ppg.items(), (i) => i.OrderFormGroup || "");
+
+                    Object.keys(orderFormGrouping).forEach(k => {
+                        orderFormGroups.push({
+                            name: k,
+                            items: ko.observableArray(orderFormGrouping[k])
+                        });
+                    });
+
+                    ppg.items = orderFormGroups;
+                });
+
+                pf.items = productPages;
+            });
+
+            console.log(results);
+
+            return results;
+        }
+    }, self);
+
+    self.refreshProductFilterTotal = (productFilterId) => {
+        fetch('/api/rangemanagementapi/RefreshProductFilterTotal', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            body: JSON.stringify({
+                branchId: self.branchId(),
+                productFilterId: productFilterId
+            })
+        })
+        .then(window.handleFetchResponse)
+        .then(data => {
+            self.productFilterTotals.remove(pft => pft.ProductFilterID == productFilterId);
+            self.productFilterTotals.push(data);
+        })
+        .catch(window.catchFetchError);
+    }
 
     //#endregion
 
@@ -1504,6 +1755,7 @@ const rangeManagementViewModel = ({ } = {}) => {
                 }
             }, (e) => {
                 self.view(VIEW_RESTOCK);
+                self.transferOrdersWH2BRGridSettings.widget().dataSource.read();
                 bootstrap.Tab.getOrCreateInstance(document.getElementById("restock-tab-btn")).show();
             });
         }
@@ -1518,18 +1770,11 @@ const rangeManagementViewModel = ({ } = {}) => {
                 }
             }, (e) => {
                 self.view(VIEW_RECALL);
+                self.transferOrdersBR2WHGridSettings.widget().dataSource.read();
                 bootstrap.Tab.getOrCreateInstance(document.getElementById("recall-tab-btn")).show();
             });
         }
     });
-
-    //self.detailModalElement.addEventListener("shown.bs.modal", () => {
-    //    window.setTimeout(() => {
-    //        //console.log('detail-modal shown, resizing chart...');
-    //        //self.salesChartSettings.widget().resize();
-    //        //self.salesChartSettings.widget().redraw();
-    //    }, 0);
-    //})
 
     window.addEventListener("onbeforeunload", (event) => {
         self.checkUnsavedChangesThenSelect = async (event) => {
@@ -1539,72 +1784,25 @@ const rangeManagementViewModel = ({ } = {}) => {
         }
     });
 
-    self.windowResizeTimeout = 100; //ms
-
-    self.windowResizedCallback = () => {
-        // Haven't resized in self.resizeTimeout ms!
-        //self.salesChartSettings.widget().resize();
-    }
-
-    self.onWindowResize = function () {
-        window.clearTimeout(self.resizeCounter);
-        self.resizeCounter = window.setTimeout(self.windowResizedCallback, self.windowResizeTimeout);
-    };
-
-    window.addEventListener("resize", self.onWindowResize);
-
-    self.gridSettings.widget.subscribe(nv => {
-
-        nv.element.find(".k-grid-header-wrap").off("scroll.kendoGrid");
-
-        document.querySelector("#results-grid .k-grid-content.k-auto-scrollable").addEventListener("scroll", (e) => {
-
-            self.gridScrollRestoration = e.target.scrollTop;
-
-            //console.log("gridScrollRestoration", self.gridScrollRestoration);
-
-            let norecords = document.querySelector("#results-grid .k-grid-content.k-auto-scrollable .k-grid-norecords")
-            if (norecords) {
-                norecords.style.transform = `translateX(${e.target.scrollLeft}px)`;
-            }
-            let diff = 0;
-            document.querySelectorAll('#results-grid .product-card-tooltip').forEach(c => {
-                c.style.transform = `translateX(${e.target.scrollLeft + diff}px)`;
-            });
-            document.querySelectorAll('#results-grid .group-heading').forEach(c => {
-                c.style.transform = `translateX(${e.target.scrollLeft}px)`;
-            });
-        });
-    });
-
-    self.addGridSettings.widget.subscribe(nv => {
-
-        nv.element.find(".k-grid-header-wrap").off("scroll.kendoGrid");
-
-        document.querySelector("#add-results-grid .k-grid-content.k-auto-scrollable").addEventListener("scroll", (e) => {
-            self.addGridScrollRestoration = e.target.scrollTop;
-        });
-
-        //console.log("addGridScrollRestoration", self.addGridScrollRestoration);
-    });
-
-    //#endregion
-
     return self;
 };
 
 const resultRecord = function ({
     branchId,
     rec,
-    productFilter
+    //productFilter,
+    //productFilterRefreshFn
 } = {
         branchId: null,
         rec: null,
-        productFilter: ko.computed(() => { })
+        //productFilter: ko.computed(() => { }),
+        //productFilterRefreshFn: () => { }
     }) {
     //console.log(productFilter);
 
     let self = Object.assign({}, rec);
+
+    //self.element = ko.observable();
 
     self.branchId = branchId;
 
@@ -1630,89 +1828,84 @@ const resultRecord = function ({
         }
     };
 
-    self.incrementAmount = ko.observable(1);
-    self.scale = ko.observable(0);
+    self.incrementAmount = self.ProductFilterGroupID === 1 ? 0.5 : 1;
+    self.scale = self.ProductFilterGroupID === 1 ? 1 : 0;
 
     // don't forget to set your originals to currents on save
 
-    self.actionRecommendations = ko.observable();
-    self.actionTransferToBranchHighlight = ko.observable();
+    self.actionRecommendations = null;
+    self.actionTransferToBranchHighlight = null;
     self.actionTransferToBranchQuantityOriginal = ko.observable();
     self.actionTransferToBranchQuantity = ko.observable().extend(self.defaultNumericalExtension);
     self.actionTransferToBranchBasketItemId = ko.observable();
-    self.actionTransferToWarehouseHighlight = ko.observable();
+    self.actionTransferToWarehouseHighlight = null;
     self.actionTransferToWarehouseQuantityOriginal = ko.observable();
     self.actionTransferToWarehouseQuantity = ko.observable().extend(self.defaultNumericalExtension);
     self.actionTransferToWarehouseBasketItemId = ko.observable();
 
-    self.rangeStatus = ko.observable();
-    self.rangeActual = ko.observable();
-    //self.rangeStartDate = ko.observable();
-    //self.rangeEndDate = ko.observable();
+    self.rangeStatus = null;
+    self.rangeActual = null;
+    //self.rangeStartDate = null;
+    //self.rangeEndDate = null;
     self.rangePlannedOriginal = ko.observable();
     self.rangePlanned = ko.observable().extend(self.defaultNumericalExtension);
-    self.rangeRequired = ko.observable();
-    self.rangeInProgress = ko.observable();
+    self.rangeRequired = null;
+    self.rangeInProgress = null;
 
-    self.sales180DayFW = ko.observable();
-    self.sales180DayKR = ko.observable();
-    self.sales180DayMHS = ko.observable();
-    self.sales180DayUKEcommerce = ko.observable();
-    self.sales180DayUKTrade = ko.observable();
-    self.sales180DayROWTrade = ko.observable();
-    self.sales180DayTotal = ko.observable();
-    self.salesSummary = ko.observable();
-    self.salesCover = ko.observable();
+    self.sales180DayFW = null;
+    self.sales180DayKR = null;
+    self.sales180DayMHS = null;
+    self.sales180DayUKEcommerce = null;
+    self.sales180DayUKTrade = null;
+    self.sales180DayROWTrade = null;
+    self.sales180DayTotal = null;
+    self.salesSummary = null;
+    self.salesCover = null;
 
-    self.stockCover = ko.observable();
-    self.stockFWFreeStock = ko.observable();
-    self.stockKRFreeStock = ko.observable();
-    self.stockMHSFreeStock = ko.observable();
-    self.stockWHFreeStock = ko.observable();
-    self.stockWHNextPODueDate = ko.observable();
-    self.stockWHNextPOFreeStock = ko.observable();
-    self.stockRingFence = ko.observable();
-    self.stockSummary = ko.observable();
+    self.stockCover = null;
+    self.stockFWFreeStock = null;
+    self.stockKRFreeStock = null;
+    self.stockMHSFreeStock = null;
+    self.stockWHFreeStock = null;
+    self.stockWHNextPODueDate = null;
+    self.stockWHNextPOFreeStock = null;
+    self.stockRingFence = null;
+    self.stockSummary = null;
 
-    self.unitCostPriceGBP = ko.observable();
+    self.unitCostPriceGBP = null;
 
-    self.notes = ko.observable();
+    self.notes = null;
 
+    //productFilter.subscribe(pf => {
 
+    //    self.incrementAmount(pf.QuantityIncrement || 1);
 
+    //    self.scale(pf.QuantityPrecision);
 
+    //    let productFilterNumericalExtension = {
+    //        numberUnformatted: {
+    //            minValue: pf.QuantityMinimum,
+    //            maxValue: 999999,
+    //            digits: self.scale(),
+    //            currency: {
+    //                FormattingCulture: 'en-GB'
+    //            }
+    //        },
+    //        numeric: {
+    //            params: {
+    //                required: false,
+    //                numericMin: pf.QuantityMinimum,
+    //                numericMax: 999999
+    //            }
+    //        }
+    //    };
 
+    //    self.rangePlanned.extend(productFilterNumericalExtension);
+    //    self.actionTransferToWarehouseQuantity.extend(productFilterNumericalExtension);
+    //    self.actionTransferToBranchQuantity.extend(productFilterNumericalExtension);
+    //});
 
-    productFilter.subscribe(pf => {
-
-        self.incrementAmount(pf.QuantityIncrement || 1);
-
-        self.scale(pf.QuantityPrecision);
-
-        let productFilterNumericalExtension = {
-            numberUnformatted: {
-                minValue: pf.QuantityMinimum,
-                maxValue: 999999,
-                digits: self.scale(),
-                currency: {
-                    FormattingCulture: 'en-GB'
-                }
-            },
-            numeric: {
-                params: {
-                    required: false,
-                    numericMin: pf.QuantityMinimum,
-                    numericMax: 999999
-                }
-            }
-        };
-
-        self.rangePlanned.extend(productFilterNumericalExtension);
-        self.actionTransferToWarehouseQuantity.extend(productFilterNumericalExtension);
-        self.actionTransferToBranchQuantity.extend(productFilterNumericalExtension);
-    });
-
-    self.buildNumericParams = (observable, original, incrementAmount, scale) => {
+    self.buildNumericParams = (observable, original, incrementAmount, scale, min, max) => {
         return {
             label: null,
             observable: observable,
@@ -1730,7 +1923,7 @@ const resultRecord = function ({
             },
             clearFunction: function () {
                 var self = this;
-                self.observable(undefined);
+                self.observable(0);
                 self.observable.DOMElement.focus();
             },
             useNativeValidation: false, // this feeds through to mdc objects and affects them
@@ -1739,8 +1932,8 @@ const resultRecord = function ({
             inputType: 'number',
             small: true,
             buttons: true,
-            minValue: 1, // don't have productFilter record in time to set this truthfully, sorry
-            maxValue: 999999,
+            minValue: min, // don't have productFilter record in time to set this truthfully, sorry
+            maxValue: max,
             step: 1,
             cssClasses: null,
             incrementAmount: incrementAmount,
@@ -1749,21 +1942,21 @@ const resultRecord = function ({
 
                 let v = +self.observable() || 0;
 
-                let factor = Math.pow(10, scale());
+                let factor = Math.pow(10, scale);
 
-                if ((v + self.incrementAmount()) < 1000000)
-                    self.observable(Math.round((v + self.incrementAmount()) * factor) / factor);
+                if ((v + self.incrementAmount) < max)
+                    self.observable(Math.round((v + self.incrementAmount) * factor) / factor);
             },
             decrement: function () {
                 let self = this;
 
                 let v = +self.observable() || 0;
 
-                let factor = Math.pow(10, scale());
+                let factor = Math.pow(10, scale);
 
-                let diff = Math.round((v - self.incrementAmount()) * factor) / factor;
+                let diff = Math.round((v - self.incrementAmount) * factor) / factor;
 
-                if ((v - self.incrementAmount()) > 0)
+                if ((v - self.incrementAmount) > min)
                     self.observable(diff);
             }
         }
@@ -1794,6 +1987,8 @@ const resultRecord = function ({
                         .then(window.handleFetchResponse)
                         .then(data => {
                             self.rangePlannedOriginal(nv);
+                            viewModel.refreshProductFilterTotal(self.ProductFilterID);
+
                             self.loaded(false);
                             //self.rangePlannedParams.busy(false);
                             //self.rangePlannedParams.disable(false);
@@ -1813,7 +2008,9 @@ const resultRecord = function ({
         self.rangePlanned,
         self.rangePlannedOriginal,
         self.incrementAmount,
-        self.scale);
+        self.scale,
+        0,
+        9999);
 
     self.rangePlannedParams.revertable(false);
 
@@ -1821,13 +2018,17 @@ const resultRecord = function ({
         self.actionTransferToWarehouseQuantity,
         self.actionTransferToWarehouseQuantityOriginal,
         self.incrementAmount,
-        self.scale);
+        self.scale,
+        0,
+        9999);
 
     self.actionTransferToBranchQuantityParams = self.buildNumericParams(
         self.actionTransferToBranchQuantity,
         self.actionTransferToBranchQuantityOriginal,
         self.incrementAmount,
-        self.scale);
+        self.scale,
+        0,
+        9999);
 
     //self.actionTransferToWarehouseQuantityParams.focusObservable.subscribe((nv, e) => {
     //    console.log('focus', nv, e);
@@ -1891,8 +2092,8 @@ const resultRecord = function ({
             .then(data => {
                 //self.actionTransferToBranchQuantityParams.busy(false);
                 self.actionTransferToBranchBasketItemId(data.BasketItemID);
-                if (data.Notifications) {
-                    window.showInfo("Notice", data.Notifications);
+                if (data.Notification) {
+                    window.showInfo("Notice", data.Notification);
                 }
                 self.busy(true); // set whole row busy display...
                 self.loaded(false); // force reload of this record
@@ -1924,8 +2125,8 @@ const resultRecord = function ({
             .then(data => {
                 //self.actionTransferToWarehouseQuantityParams.busy(false);
                 self.actionTransferToWarehouseBasketItemId(data.BasketItemID);
-                if (data.Notifications) {
-                    window.showInfo("Notice", data.Notifications);
+                if (data.Notification) {
+                    window.showInfo("Notice", data.Notification);
                 }
                 self.busy(true); // set whole row busy display...
                 self.loaded(false); // force reload of this record
@@ -1986,8 +2187,8 @@ const resultRecord = function ({
             .then(data => {
                 //self.actionTransferToWarehouseQuantityParams.busy(false);
                 self.actionTransferToWarehouseBasketItemId(null);
-                if (data.Notifications) {
-                    window.showInfo("Notice", data.Notifications);
+                if (data.Notification) {
+                    window.showInfo("Notice", data.Notification);
                 }
                 self.busy(true); // set whole row busy display...
                 self.loaded(false); // force reload of this record
@@ -2009,7 +2210,7 @@ const resultRecord = function ({
         self.actionTransferToWarehouseQuantityParams.disable(nv);
     });
 
-    self.submitDisabled = ko.computed(() => {
+    self.submitHidden = ko.computed(() => {
         return (self.actionTransferToBranchQuantity() == 0 &&
             self.actionTransferToWarehouseQuantity() == 0)
     }, self);
@@ -2031,11 +2232,15 @@ const addResultRecord = function ({
 
     let self = Object.assign({}, rec);
 
+    self.element = ko.observable();
+
     self.branchId = branchId;
 
     self.busy = ko.observable(false);
 
     self.loaded = ko.observable(false);
+
+    self.allowed = ko.observable(false);
 
     self.defaultNumericalExtension = {
         numberUnformatted: {
@@ -2095,7 +2300,7 @@ const addResultRecord = function ({
         self.actionAddToRangeQuantity.extend(productFilterNumericalExtension);
     });
 
-    self.buildNumericParams = (observable, original, incrementAmount, scale) => {
+    self.buildNumericParams = (observable, original, incrementAmount, scale, min, max) => {
         return {
             label: null,
             observable: observable,
@@ -2122,8 +2327,8 @@ const addResultRecord = function ({
             inputType: 'number',
             small: true,
             buttons: true,
-            minValue: 1, // don't have productFilter record in time to set this truthfully, sorry
-            maxValue: 999999,
+            minValue: min, // don't have productFilter record in time to set this truthfully, sorry
+            maxValue: max,
             step: 1,
             cssClasses: null,
             incrementAmount: incrementAmount,
@@ -2134,7 +2339,7 @@ const addResultRecord = function ({
 
                 let factor = Math.pow(10, scale());
 
-                if ((v + self.incrementAmount()) < 1000000)
+                if ((v + self.incrementAmount()) < max)
                     self.observable(Math.round((v + self.incrementAmount()) * factor) / factor);
             },
             decrement: function () {
@@ -2146,7 +2351,7 @@ const addResultRecord = function ({
 
                 let diff = Math.round((v - self.incrementAmount()) * factor) / factor;
 
-                if ((v - self.incrementAmount()) > 0 || diff === 0)
+                if ((v - self.incrementAmount()) > min || diff === 0)
                     self.observable(diff);
             }
         }
@@ -2156,9 +2361,13 @@ const addResultRecord = function ({
         self.actionAddToRangeQuantity,
         self.actionAddToRangeQuantityOriginal,
         self.incrementAmount,
-        self.scale);
+        self.scale,
+        1,
+        9999);
 
     self.actionAddToRangeQuantityParams.revertable(false);
+
+    self.actionAddToRangeQuantityParams.enable = self.allowed;
 
     self.preSave = () => {
         self.busy(true);

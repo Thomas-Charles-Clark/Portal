@@ -46,26 +46,20 @@
 }
 
 <script id="row-template" type="text/html">
-    <!-- ko ifnot: $parent.getFilledRecord($data.ProductID) -->
-    <tr class="relative" data-bind="css: { busy: typeof busy === 'undefined' ? true : busy }">
+    <!-- ko ifnot: $root.getFilledRecord($data.ProductID) -->
+    <tr data-bind="css: { busy: typeof busy === 'undefined' ? true : busy }" role="row">
         <td class="k-group-cell product-filter-name-pad"></td>
         <td class="k-group-cell product-page-name-pad"></td>
         <td class="k-group-cell order-form-group-pad"></td>
-        <td></td>
-        <td></td>
-        <td></td>
         <td class="product-card-wrapper" valign="top">
             <div class="product-card-tooltip card">
-                <div class="pad product-filter-pad"></div>
-                <div class="pad product-name-pad"></div>
-                <div class="pad order-form-group-pad"></div>
                 <div class="card-body">
                     <div class="flex">
                         <!-- ko if: ImageID -->
                         <img class="thumb" width="80" height="80" data-bind="attr: { src: `https://www.designersguild.com/image/90/${ImageID}` }" />
                         <!-- /ko -->
                         <div>
-                            <span data-bind="text: ProductName"></span>
+                            <span data-bind="text: ProductName, attr: { title: ProductName }"></span>
                             <span data-bind="text: ProductCode"></span>
                             <span class="d-flex justify-content-between">
                                 <span data-bind="text: Launch"></span>
@@ -79,26 +73,20 @@
         <td colspan="200"></td>
     </tr>
     <!-- /ko -->
-    <!-- ko with: $parent.getFilledRecord($data.ProductID) -->
-    <tr class="relative" data-bind="css: { busy: typeof busy === 'undefined' ? true : busy }">
+    <!-- ko with: $root.getFilledRecord($data.ProductID) -->
+    <tr data-bind="css: { busy: typeof busy === 'undefined' ? true : busy }">
         <td class="k-group-cell product-filter-name-pad"></td>
         <td class="k-group-cell product-page-name-pad"></td>
         <td class="k-group-cell order-form-group-pad"></td>
-        <td></td>
-        <td></td>
-        <td></td>
         <td class="product-card-wrapper" valign="top">
             <div class="product-card-tooltip card">
-                <div class="pad product-filter-pad"></div>
-                <div class="pad product-name-pad"></div>
-                <div class="pad order-form-group-pad"></div>
                 <div class="card-body">
                     <div class="flex">
                         <!-- ko if: ImageID -->
                         <img class="thumb" width="80" height="80" data-bind="attr: { src: `https://www.designersguild.com/image/90/${ImageID}` }" />
                         <!-- /ko -->
                         <div>
-                            <span data-bind="text: ProductName"></span>
+                            <span data-bind="text: ProductName, attr: { title: ProductName }"></span>
                             <span data-bind="text: ProductCode"></span>
                             <span class="d-flex justify-content-between">
                                 <span data-bind="text: Launch"></span>
@@ -125,29 +113,29 @@
             <div data-bind="html: actionRecommendations"></div>
         </td>
         <td class="text-end" data-bind="style: { 'background-color': actionTransferToBranchHighlight }">
-            <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: actionTransferToBranchQuantityParams }"></div>
-            <button class="btn btn-sm btn-outline-primary mt-2" style="display: none" data-bind="
+            <div data-bind="visible: actionTransferToBranchBasketItemId() == null, component: { name: 'mdc-text-field-numeric-component', params: actionTransferToBranchQuantityParams }"></div>
+            <button class="btn btn-sm btn-outline-primary" style="display: none" data-bind="
                     visible: actionTransferToBranchBasketItemId,
                     disable: actionTransferToBranchQuantityParams.busy,
                     click: removeWH2BRFromOrder,
                     css: { busy: actionTransferToBranchQuantityParams.busy },
                     attr: { title: `BasketItemID: ${actionTransferToBranchBasketItemId()}` }">
-                Remove from Order
+                Cancel Transfer
             </button>
         </td>
         <td class="text-end" data-bind="style: { 'background-color': actionTransferToWarehouseHighlight }">
-            <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: actionTransferToWarehouseQuantityParams }"></div>
-            <button class="btn btn-sm btn-outline-primary mt-2" style="display: none" data-bind="
+            <div data-bind="visible: actionTransferToWarehouseBasketItemId() == null, component: { name: 'mdc-text-field-numeric-component', params: actionTransferToWarehouseQuantityParams }"></div>
+            <button class="btn btn-sm btn-outline-primary" style="display: none" data-bind="
                     visible: actionTransferToWarehouseBasketItemId,
                     disable: actionTransferToWarehouseQuantityParams.busy,
                     click: removeBR2WHFromOrder,
                     css: { busy: actionTransferToWarehouseQuantityParams.busy },
                     attr: { title: `BasketItemID: ${actionTransferToWarehouseBasketItemId()}` }">
-                Remove from Order
+                Cancel Transfer
             </button>
         </td>
         <td>
-            <button class="btn btn-secondary btn-sm submit-btn" data-bind="disable: busy() || submitDisabled(), click: submitTransfers">
+            <button class="btn btn-secondary btn-sm submit-btn" data-bind="visible: !submitHidden(), disable: busy, click: submitTransfers">
                 Submit
             </button>
         </td>
@@ -163,12 +151,12 @@
         <td class="text-end">
             <span data-bind="text: stockWHNextPOFreeStock"></span>
         </td>
-        <td class="text-end">
+        <td>
             <!-- ko if: stockWHNextPODueDate -->
-            <span data-bind="text: renderDate(stockWHNextPODueDate().substring(0, 10))"></span>
+            <span data-bind="text: renderDate(stockWHNextPODueDate.substring(0, 10))"></span>
             <!-- /ko -->
         </td>
-        <td>
+        <td class="text-end">
             <span data-bind="text: stockKRFreeStock"></span>
         </td>
         <td class="text-end">
@@ -207,6 +195,43 @@
 
 
 <script id="add-row-template" type="text/html">
+    <!-- ko ifnot: $root.getAddFilledRecord($data.ProductID) -->
+    <tr class="relative busy">
+        <td class="k-group-cell product-filter-name-pad"></td>
+        <td class="k-group-cell product-page-name-pad"></td>
+        <td class="k-group-cell order-form-group-pad"></td>
+        <td class="product-card-wrapper" valign="top">
+            <div class="product-card-tooltip card">
+                <div class="pad product-filter-pad"></div>
+                <div class="pad product-name-pad"></div>
+                <div class="pad order-form-group-pad"></div>
+                <div class="card-body">
+                    <div class="flex">
+                        <!-- ko if: ImageID -->
+                        <img class="thumb" width="80" height="80" data-bind="attr: { src: `https://www.designersguild.com/image/90/${ImageID}` }" />
+                        <!-- /ko -->
+                        <div>
+                            <span data-bind="text: ProductName, attr: { title: ProductName }"></span>
+                            <span data-bind="text: ProductCode"></span>
+                            <span class="d-flex justify-content-between">
+                                <span data-bind="text: Launch"></span>
+                                <span data-bind="text: ProductStatus"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </td>
+        <td></td>
+        <td></td>
+        <td>
+            <button class="btn btn-secondary btn-sm submit-btn disabled" disabled>
+                Submit
+            </button>
+        </td>
+    </tr>
+    <!-- /ko -->
+    <!-- ko with: $root.getAddFilledRecord($data.ProductID) -->
     <tr class="relative" data-bind="css: { busy: typeof busy === 'undefined' ? true : busy }">
         <td class="k-group-cell product-filter-name-pad"></td>
         <td class="k-group-cell product-page-name-pad"></td>
@@ -222,7 +247,7 @@
                         <img class="thumb" width="80" height="80" data-bind="attr: { src: `https://www.designersguild.com/image/90/${ImageID}` }" />
                         <!-- /ko -->
                         <div>
-                            <span data-bind="text: ProductName"></span>
+                            <span data-bind="text: ProductName, attr: { title: ProductName }"></span>
                             <span data-bind="text: ProductCode"></span>
                             <span class="d-flex justify-content-between">
                                 <span data-bind="text: Launch"></span>
@@ -234,21 +259,73 @@
             </div>
         </td>
         <td>
-            <!-- ko if: typeof actionRecommendations !== 'undefined' -->
             <div data-bind="html: actionRecommendations"></div>
-            <!-- /ko -->
         </td>
         <td class="text-end" data-bind="style: { 'background-color': typeof actionAddToRangeHighlight  === 'undefined' ? 'none' : actionAddToRangeHighlight }">
-            <!-- ko if: typeof actionAddToRangeQuantityParams !== 'undefined' -->
             <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: actionAddToRangeQuantityParams }"></div>
-            <!-- /ko -->
         </td>
         <td>
-            <!-- ko if: typeof submitTransfers !== 'undefined' -->
+            <!-- ko if: allowed -->
             <button class="btn btn-secondary btn-sm submit-btn" data-bind="disable: busy() || submitDisabled(), click: submitTransfers">
                 Submit
             </button>
             <!-- /ko -->
+        </td>
+    </tr>
+    <!-- /ko -->
+</script>
+
+<script id="transfer-orders-row-template" type="text/html">
+    <tr>
+        <td>
+            <!-- ko if: ImageID -->
+            <img class="thumb" width="80" height="80" data-bind="attr: { src: `https://www.designersguild.com/image/90/${ImageID}` }" />
+            <!-- /ko -->
+        </td>
+        <td class="text-center">
+            <span data-bind="text: Type"></span>
+        </td>
+        <td>
+            <span data-bind="attr: { title: `ProductID: ${ProductID}` }">
+                <span class="block" data-bind="text: ProductName, attr: { title: ProductName }"></span>
+                <span class="block" data-bind="text: ProductCode"></span>
+            </span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: QuantityOrdered"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: OrderID"></span>
+        </td>
+        <td>
+            <span data-bind="text: renderDate(OrderDT)"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: OrderLineID"></span>
+        </td>
+        <td class="text-end">
+            <!-- ko if: BasketID -->
+            <span data-bind="text: BasketID"></span>
+            <!-- /ko -->
+        </td>
+        <td>
+            <!-- ko if: BasketID -->
+            <span data-bind="text: renderDate(BasketDT)"></span>
+            <!-- /ko -->
+        </td>
+        <td class="text-end">
+            <!-- ko if: BasketID -->
+            <span data-bind="text: BasketItemID"></span>
+            <!-- /ko -->
+        </td>
+        <td>
+            <span data-bind="attr: { title: `TradeAccountID: ${TradeAccountID}` }">
+                <span class="block" data-bind="text: TradeAccountName"></span>
+                <span class="block" data-bind="text: TradeAccountCode"></span>
+            </span>
+        </td>
+        <td>
+            <div data-bind="html: DetailedLineStatus"></div>
         </td>
     </tr>
 </script>
@@ -270,71 +347,104 @@
     </h4>
 </div>
 
-<div class="form-group row mb-0">
-    <div class="col-xs-12">
-        <div class="page-heading-logo">
-            <div></div>
-        </div>
-        <div>
-            <div id="prefilters-first" class="prefilters" style="display: none" data-bind="visible: true">
-                <ul id="main-tabs" class="nav nav-pills">
-                    <li class="nav-item">
-                        @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
-                        {
-                            <h3 class="main-heading mb-0">
-                                @(Model.ApplicationHeading)
-                            </h3>
-                        }
-                    </li>
-                    <li class="nav-item">
-                        <div id="branch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: branchParams }"></div>
-                    </li>
-                    <li class="nav-item" data-bind="visible: branch">
-                        <button id="range-tab-btn" class="btn nav-link active" data-bs-target="#range-tab" data-bs-toggle="tab">
-                            Manage Range
-                        </button>
-                    </li>
-                    <li class="nav-item" data-bind="visible: branch">
-                        <button id="add-to-range-btn" class="btn nav-link" data-bs-target="#add-tab" data-bs-toggle="tab">
-                            Add to Range
-                        </button>
-                    </li>
-                    <li class="nav-item" data-bind="visible: branch">
-                        <button id="restock-tab-btn" href="#restock-tab" data-bs-toggle="tab" class="btn nav-link">
-                            Transfer Orders - Restock (WH &raquo; Branch)
-                        </button>
-                    </li>
-                    <li class="nav-item" data-bind="visible: branch">
-                        <button id="recall-tab-btn" href="#recall-tab" data-bs-toggle="tab" class="btn nav-link">
-                            Transfer Orders - Recall (Branch &raquo; WH)
-                        </button>
-                    </li>
-                </ul>
+<div id="upper-section">
+
+    <div id="page-heading-container" class="form-group row mb-0">
+        <div class="col-xs-12">
+            <div class="page-heading-logo">
+                <div></div>
+            </div>
+            <div>
+                <div id="prefilters-first" class="prefilters" style="display: none" data-bind="visible: true">
+                    <ul id="main-tabs" class="nav nav-pills">
+                        <li class="nav-item">
+                            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+                            {
+                                <h3 class="main-heading mb-0">
+                                    @(Model.ApplicationHeading)
+                                </h3>
+                            }
+                        </li>
+                        <li class="nav-item">
+                            <div id="branch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: branchParams }"></div>
+                        </li>
+                        <li class="nav-item" data-bind="visible: branch">
+                            <button id="range-tab-btn" class="btn nav-link active" data-bs-target="#range-tab" data-bs-toggle="tab">
+                                Manage Range
+                            </button>
+                        </li>
+                        <li class="nav-item" data-bind="visible: branch">
+                            <button id="add-to-range-btn" class="btn nav-link" data-bs-target="#add-tab" data-bs-toggle="tab">
+                                Add to Range
+                            </button>
+                        </li>
+                        <li class="nav-item" data-bind="visible: branch">
+                            <button id="restock-tab-btn" href="#restock-tab" data-bs-toggle="tab" class="btn nav-link">
+                                Transfer Orders - Restock (WH &raquo; Branch)
+                            </button>
+                        </li>
+                        <li class="nav-item" data-bind="visible: branch">
+                            <button id="recall-tab-btn" href="#recall-tab" data-bs-toggle="tab" class="btn nav-link">
+                                Transfer Orders - Recall (Branch &raquo; WH)
+                            </button>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
+
+    <div id="prefilters-second" class="prefilters" style="display: none" data-bind="visible: branch() && [VIEW_MANAGE, VIEW_ADD].indexOf(view()) > -1">
+        <div id="product-filter-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productFilterGroupParams }"></div>
+        <div id="product-filter-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productFilterParams }"></div>
+        <div id="brand-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: brandParams }"></div>
+        <div id="status-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statusGroupParams }"></div>
+        <div id="stock-status-prefilter" data-bind="visible: view() == VIEW_MANAGE, component: { name: 'mdc-kendo-dropdown-component', params: stockStatusParams }"></div>
+        @*<div id="status-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statusGroupParams }"></div>*@
+        @*<div id="buyer-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: buyerParams }"></div>
+            <div id="supplier-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+            <div id="launch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: launchParams }"></div>
+            <div id="product-colour-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productColourParams }"></div>
+            <div id="stock-level-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: stockLevelParams }"></div>
+            <div id="collection-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: collectionParams }"></div>*@
+        <div id="search-term-prefilter" data-bind="component: { name: 'mdc-text-field-component', params: searchTermParams }"></div>
+        <a id="clear-all-filters-anchor" class="btn btn-blue-active" data-bind="click: clearAllFilters">
+            Clear all Filters
+        </a>
+        <!-- ko if: branchBaskets() -->
+        <div class="dropdown">
+            <a id="branch-baskets-anchor" class="btn btn-outline-primary dropdown-toggle me-auto" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                Baskets <span class="badge rounded-pill bg-primary" data-bind="text: `(${branchBaskets().length})`"></span>
+            </a>
+            <div id="baskets-dropdown" class="dropdown-menu">
+                <table class="table table-condensed">
+                    <colgroup></colgroup>
+                    <tbody>
+                        <!-- ko foreach: branchBaskets -->
+                        <tr data-bind="attr: { title: `BasketID: ${BasketID}, Created ${renderDate(BasketCreatedDT)}` }">
+                            <td>
+                                <span data-bind="text: TradeAccountCode"></span>
+                            </td>
+                            <td>
+                                <span data-bind="text: TradeAccountName"></span>
+                            </td>
+                            <td class="text-end">
+                                <span class="badge rounded-pill bg-primary" data-bind="text: LineCount"></span>
+                            </td>
+                        </tr>
+                        <!-- /ko -->
+                    </tbody>
+                </table>
+                <button class="btn btn-success" data-bind="click: releaseBranchBaskets">
+                    Submit
+                </button>
+            </div>
+        </div>
+        <!-- /ko -->
+    </div>
 </div>
 
-<div id="prefilters-second" class="prefilters mb-2" style="display: none" data-bind="visible: branch">
-    <div id="product-filter-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productFilterGroupParams }"></div>
-    <div id="product-filter-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productFilterParams }"></div>
-    <div id="brand-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: brandParams }"></div>
-    <div id="status-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statusGroupParams }"></div>
-    <div id="stock-status-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: stockStatusParams }"></div>
-    @*<div id="status-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statusGroupParams }"></div>*@
-    @*<div id="buyer-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: buyerParams }"></div>
-        <div id="supplier-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
-        <div id="launch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: launchParams }"></div>
-        <div id="product-colour-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productColourParams }"></div>
-        <div id="stock-level-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: stockLevelParams }"></div>
-        <div id="collection-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: collectionParams }"></div>*@
-    <div id="search-term-prefilter" data-bind="component: { name: 'mdc-text-field-component', params: searchTermParams }"></div>
-    <a id="clear-all-filters-anchor" class="btn btn-blue-active" data-bind="click: clearAllFilters">
-        Clear all Filters
-    </a>
-</div>
-
-<div class="content-container" style="display: none" data-bind="visible: branch">
+<div @*class="cntent-container"*@ style="display: none" data-bind="visible: branch">
     <div id="range-management-tab-container" class="tab-content" style="display: none" data-bind="visible: branch">
         <div id="range-tab" class="tab-pane active">
             <div class="blocker" data-bind="flexFadeVisible: manageBusy">
@@ -350,7 +460,137 @@
                         Please wait...
                     </h4>
                 </div>
-                <div id="results-grid" data-bind="kendoGrid: gridSettings"></div>
+                <div id="results-grid" class="k-grid k-widget k-display-block">
+                    <div class="k-grid-content">
+                        <table role="grid">
+                            <colgroup>
+                                <col class="k-group-col" style="width:6px"/>
+                                <col class="k-group-col" style="width:6px"/>
+                                <col class="k-group-col" style="width:6px"/>
+                                <col style="width:310px" />
+                                <col style="width:145px" />
+                                <col style="width:90px" />
+                                <col style="width:90px" />
+                                <col style="width:80px" />
+                                <col style="width:260px" />
+                                <col style="width:160px" />
+                                <col style="width:160px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:200px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                            </colgroup>
+                            <thead role="rowgroup">
+                                <tr role="row">
+                                    <th class="k-group-cell k-header" colspan="3" rowspan="2"></th>
+                                    <th class="k-group-cell k-header sticky-heading" scope="col" rowspan="2">
+                                        <div class="sticky-heading-block"></div>
+                                    </th>
+                                    <th scope="col" role="columnheader" data-field="RangeGroup" aria-haspopup="true" colspan="4" data-colspan="4" data-title="Range" id="74a57c47-01c1-483d-8399-bbdbdcdf4e86" class="k-header">Range</th>
+                                    <th scope="col" role="columnheader" aria-haspopup="true" colspan="5" data-colspan="5" data-title="Actions" id="c0ffb590-b731-407c-85e1-52a33908f0d6" class="k-header">Actions</th>
+                                    <th scope="col" role="columnheader" aria-haspopup="true" colspan="8" data-colspan="8" data-title="Stock" id="da5784a6-90d5-4d68-a051-258fcb7ca6e0" class="k-header">Stock</th>
+                                    <th scope="col" role="columnheader" aria-haspopup="true" colspan="7" data-colspan="8" data-title="Sales" id="b17c73e0-ebd5-47ed-8d83-a566ed8028c7" class="k-header">Sales</th>
+                                </tr>
+                                <tr role="row">
+                                    <th scope="col" role="columnheader" data-field="RangePlanned" aria-haspopup="true" data-title="Planned" data-aggregates="sum" data-index="4" id="066a2f9d-a8c9-44f4-965e-cc57169c4f8d" class="text-end k-header k-first">Planned</th>
+                                    <th scope="col" role="columnheader" data-field="RangeActual" aria-haspopup="true" data-title="Actual" data-aggregates="sum" data-index="5" id="094e5977-6e3a-40e8-9d10-a9578bf5308c" class="text-end k-header">Actual</th>
+                                    <th scope="col" role="columnheader" data-field="RangeInProgress" aria-haspopup="true" data-title="In Progress" data-index="6" id="8bfd1349-213c-439f-a98d-5f1a0523d5d7" class="text-end k-header">In Progress</th>
+                                    <th scope="col" role="columnheader" data-field="RangeRequired" aria-haspopup="true" data-title="Required" data-index="7" id="9494a067-1e55-45bc-855a-f6e19c138024" class="text-end k-header">Required</th>
+                                    <th scope="col" role="columnheader" data-field="ActionRecommendations" aria-haspopup="true" data-title="Recommendations" data-index="8" id="9dd78706-98c0-4739-892b-5198af5d9720" class="k-header">Recommendations</th>
+                                    <th scope="col" role="columnheader" data-field="ActionQuantityToBranch" aria-haspopup="true" data-title="Qty to Branch" data-index="9" id="aca3a23b-163a-4bde-a094-9631b0dd5202" class="text-end k-header">Qty to Branch</th>
+                                    <th scope="col" role="columnheader" data-field="ActionQuantityToWH" aria-haspopup="true" data-title="Qty to WH" data-index="10" id="810de9b8-37a1-4428-9fa4-e590d163c7f8" class="text-end k-header">Qty to WH</th>
+                                    <th scope="col" role="columnheader" data-field="ActionSubmit" aria-haspopup="true" data-title=" " data-index="11" id="77e8089d-5489-4ad5-bf54-e4bf73215618" class="k-header"> </th>
+                                    <th scope="col" role="columnheader" data-field="ActionNotes" aria-haspopup="true" data-title="Notes" data-index="12" id="10b4c72a-28b1-4bb9-9e5a-1e01c5bc7d3a" class="k-header">Notes</th>
+                                    <th scope="col" role="columnheader" data-field="StockWarehouse" aria-haspopup="true" data-title="Warehouse" data-index="13" id="beb7f12b-b769-4a02-8dff-7d846d1b7f26" class="text-end k-header">Warehouse</th>
+                                    <th scope="col" role="columnheader" data-field="StockCover" aria-haspopup="true" data-title="Cover" data-index="14" id="10dac473-57cb-4df8-b60b-bd6ccc98dd45" class="text-end k-header">Cover</th>
+                                    <th scope="col" role="columnheader" data-field="StockPurchaseOrdersFreeStock" aria-haspopup="true" data-title="Purchase Order" data-index="15" id="714be0e2-61be-4410-9454-4ce25935f22a" class="text-end k-header">Purchase Order</th>
+                                    <th scope="col" role="columnheader" data-field="StockPurchaseOrdersDueDate" aria-haspopup="true" data-title="Due Date" data-index="16" id="245d9410-c8ff-482c-bdd6-1e6f02871d88" class="k-header">Due Date</th>
+                                    <th scope="col" role="columnheader" data-field="StockKingsRoad" aria-haspopup="true" data-title="King's Road" data-index="17" id="50a6eb78-ef37-4947-bf68-3dd0280a671d" class="text-end k-header">King's Road</th>
+                                    <th scope="col" role="columnheader" data-field="StockMarylebone" aria-haspopup="true" data-title="Marylebone" data-index="18" id="84d7e4ee-6c14-46fb-8f17-12912b188007" class="text-end k-header">Marylebone</th>
+                                    <th scope="col" role="columnheader" data-field="StockFenwickAll" aria-haspopup="true" data-title="Fenwick (All)" data-index="19" id="472c2f98-6074-4310-8e14-b0918ac047ae" class="text-end k-header">Fenwick (All)</th>
+                                    <th scope="col" role="columnheader" data-field="StockRingFenced" aria-haspopup="true" data-title="Ring Fenced" data-index="20" id="1f8fbdf7-2a3c-4fd4-ae6a-3f68745944e5" class="text-end k-header">Ring Fenced</th>
+                                    <th scope="col" role="columnheader" data-field="SalesSummary" aria-haspopup="true" data-title="Summary" data-index="21" id="b39c97c3-3190-47cb-8237-d887691b9377" class="k-header">Summary</th>
+                                    <th scope="col" role="columnheader" data-field="SalesTotal" aria-haspopup="true" data-title="Total" data-index="22" id="b4b124fe-e0a4-4ebf-94f2-71c4b376c3a0" class="text-end k-header">Total</th>
+                                    <th scope="col" role="columnheader" data-field="SalesKingsRoad" aria-haspopup="true" data-title="King's Road" data-index="23" id="ac520c5f-9a4e-4970-8749-291783f501f5" class="text-end k-header">King's Road</th>
+                                    <th scope="col" role="columnheader" data-field="SalesMarylebone" aria-haspopup="true" data-title="Marylebone" data-index="24" id="0285663f-e506-4855-8a6a-a22adc24812f" class="text-end k-header">Marylebone</th>
+                                    <th scope="col" role="columnheader" data-field="SalesFenwickAll" aria-haspopup="true" data-title="Fenwick (All)" data-index="25" id="f0ee3048-d628-4f20-bd62-f6d27739b645" class="text-end k-header">Fenwick (All)</th>
+                                    <th scope="col" role="columnheader" data-field="SalesUKECom" aria-haspopup="true" data-title="UK eCommerce" data-index="26" id="481c8750-d3d2-42d0-94b7-80956d1a83c4" class="text-end k-header">UK eCommerce</th>
+                                    <th scope="col" role="columnheader" data-field="SalesUKTrade" aria-haspopup="true" data-title="UK Trade" data-index="27" id="e29ac9f2-d54b-4669-8273-e244bb3e5b7e" class="text-end k-header">UK Trade</th>
+                                </tr>
+                            </thead>
+                            @*<tbody role="rowgroup" data-bind="template: { name: 'row-template', foreach: searchResults }"></tbody>*@
+                            <tbody role="rowgroup" data-bind="foreach: groupedSearchResults">
+                                <tr role="row" class="k-grouping-row product-filter-name-row">
+                                    <td aria-expanded="true" colspan="28" class="relative">
+                                        <p class="k-reset">
+                                            <span class="group-heading product-filter-name bold" data-bind="text: name"></span>
+                                        </p>
+                                        <span class="range-total range-planned bold">
+                                            <span data-bind="text: formatCurrency(plannedValue(), 0, 'en-GB', 'GBP')"></span>
+                                            <!-- ko if: plannedCount -->
+                                            (<span data-bind="text: plannedCount"></span>)
+                                            <!-- /ko -->
+                                        </span>
+                                        <span class="range-total range-actual bold">
+                                            <span data-bind="text: formatCurrency(actualValue(), 0, 'en-GB', 'GBP')"></span>
+                                            <!-- ko if: actualCount -->
+                                            (<span data-bind="text: actualCount"></span>)
+                                            <!-- /ko -->
+                                        </span>
+                                        <span class="range-total range-in-progress bold">
+                                            <span data-bind="text: formatCurrency(inProgressValue(), 0, 'en-GB', 'GBP')"></span>
+                                            <!-- ko if: inProgressCount -->
+                                            (<span data-bind="text: inProgressCount"></span>)
+                                            <!-- /ko -->
+                                        </span>
+                                    </td>
+                                </tr>
+                                <!-- ko foreach: items -->
+                                <!-- ko if: name -->
+                                <tr role="row" class="k-grouping-row product-page-name-row">
+                                    <td class="k-group-cell"></td>
+                                    <td colspan="27" aria-expanded="true">
+                                        <p class="k-reset">
+                                            <a class="k-icon k-i-collapse" href="#" tabindex="-1" aria-label="Collapse"></a>
+                                            <span class="group-heading product-filter-name" style="transform: translateX(0px);" data-bind="text: name"></span>
+                                        </p>
+                                    </td>
+                                </tr>
+                                <!-- /ko -->
+                                <!-- ko foreach: items -->
+                                <!-- ko if: name -->
+                                <tr role="row" class="k-grouping-row order-form-group-row">
+                                    <td class="k-group-cell"></td>
+                                    <td class="k-group-cell"></td>
+                                    <td colspan="26" aria-expanded="true">
+                                        <p class="k-reset">
+                                            <a class="k-icon k-i-collapse" href="#" tabindex="-1" aria-label="Collapse"></a>
+                                            <span class="group-heading product-filter-name" style="transform: translateX(0px);" data-bind="text: name"></span>
+                                        </p>
+                                    </td>
+                                </tr>
+                                <!-- /ko -->
+                                <!-- ko template: { name: 'row-template', foreach: items } --><!-- /ko -->
+                                <!-- /ko -->
+                                <!-- /ko -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @*<div id="results-grid" data-bind="kendoGrid: gridSettings"></div>*@
             </div>
         </div>
         <div id="add-tab" class="tab-pane">
@@ -377,6 +617,7 @@
                     Please wait...
                 </h4>
             </div>
+            <div id="results-grid" data-bind="kendoGrid: transferOrdersWH2BRGridSettings"></div>
         </div>
         <div id="recall-tab" class="tab-pane">
             <div class="blocker" data-bind="flexFadeVisible: recallBusy">
@@ -385,6 +626,7 @@
                     Please wait...
                 </h4>
             </div>
+            <div id="results-grid" data-bind="kendoGrid: transferOrdersBR2WHGridSettings"></div>
         </div>
     </div>
 </div>

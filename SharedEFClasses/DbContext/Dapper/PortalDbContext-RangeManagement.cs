@@ -5,6 +5,8 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using SharedEFClasses.Models.RangeManagement;
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 
@@ -24,7 +26,10 @@ namespace SharedEFClasses.Models
 
         public async Task<RangeManagementProductSearchResponse> RangeManagementProductSearch(RangeManagementProductFetchDto dto)
         {
-            var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[RangeManagement_Product_Select]", new
+            var sql = @"EXEC [portal].[RangeManagement_Product_Select] @BranchID, @ProductFilterGroupID, @ProductFilterID, @LaunchID, @BrandID, @StatusGroupID, @StockStatus, @SearchTerm;
+                EXEC [portal].[RangeManagement_ProductFilterTotals_Select] @BranchID;";
+
+            var searchResults = await this.Database.Connection.QueryAsync<RangeManagementProductSearchRecord>("[portal].[RangeManagement_Product_Select]", new
             {
                 dto.BranchID,
                 dto.ProductFilterGroupID,
@@ -36,10 +41,27 @@ namespace SharedEFClasses.Models
                 dto.SearchTerm
             }, null, null, CommandType.StoredProcedure);
 
+            var totalResults = await this.Database.Connection.QueryAsync<RangeManagementProductFilterTotal>("[portal].[RangeManagement_ProductFilterTotals_Select]", new
+            {
+                dto.BranchID
+            }, null, null, CommandType.StoredProcedure);
+
             return new RangeManagementProductSearchResponse()
             {
-                Results = reply.Read<RangeManagementProductSearchRecord>()
+                Results = searchResults,
+                Totals = totalResults
             };
+        }
+
+        public async Task<RangeManagementProductFilterTotal> RangeManagementProductFilterTotal(RangeManagementProductFilterTotalDto dto)
+        {
+            var results = await this.Database.Connection.QuerySingleAsync<RangeManagementProductFilterTotal>("[portal].[RangeManagement_ProductFilterTotals_Select]", new
+            {
+                dto.BranchID,
+                dto.ProductFilterID
+            }, null, null, CommandType.StoredProcedure);
+
+            return results;
         }
 
         public async Task<RangeManagementProductSearchResponse> RangeManagementProductSearchAddToRange(RangeManagementProductFetchDto dto)
@@ -62,6 +84,20 @@ namespace SharedEFClasses.Models
             };
         }
 
+        public async Task<RangeManagementTransferOrdersResponse> RangeManagementTransferOrders(RangeManagementTransferOrdersDto dto)
+        {
+            var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[RangeManagement_Transfer_Select]", new
+            {
+                dto.BranchID,
+                dto.TransferDirection
+            }, null, null, CommandType.StoredProcedure);
+
+            return new RangeManagementTransferOrdersResponse()
+            {
+                Results = reply.Read<RangeManagementTransferOrderResult>()
+            };
+        }
+        
         public async Task<RangeManagementDataFetchResponse> RangeManagementDataFetch(RangeManagementDataFetchDto dto)
         {
             var table = new DataTable();
@@ -126,6 +162,26 @@ namespace SharedEFClasses.Models
                 dto.BasketItemID,
                 dto.MemberID,
                 ReportErrors = false
+            }, null, null, CommandType.StoredProcedure);
+
+            return 0;
+        }
+
+        public async Task<IEnumerable<RangeManagementTransferBasketRecord>> RangeManagementBasketSelect(RangeManagementBranchCheckDto dto)
+        {
+            var reply = await this.Database.Connection.QueryAsync<RangeManagementTransferBasketRecord>("[portal].[RangeManagement_TransferBasket_Select]", new
+            {
+                dto.BranchID
+            }, null, null, CommandType.StoredProcedure);
+
+            return reply;
+        }
+
+        public async Task<int> RangeManagementBasketRelease(RangeManagementBranchCheckDto dto)
+        {
+            var _ = await this.Database.Connection.QueryAsync("[portal].[RangeManagement_TransferBasket_Release]", new
+            {
+                dto.BranchID
             }, null, null, CommandType.StoredProcedure);
 
             return 0;

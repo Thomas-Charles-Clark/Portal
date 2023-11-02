@@ -3011,18 +3011,18 @@
         }
 
         // with thanks: https://stackoverflow.com/questions/32581987/need-click-twice-after-hide-a-shown-bootstrap-popover#answer-34320956
-        $('html').on('hidden.bs.popover', function (e) {
-            $(e.target).data("bs.popover").inState.click = false;
-        });
+        //$('html').on('hidden.bs.popover', function (e) {
+        //    $(e.target).data("bs.popover").inState.click = false;
+        //});
 
         // with thanks: https://stackoverflow.com/questions/11703093/how-to-dismiss-a-twitter-bootstrap-popover-by-clicking-outside#answer-15670200
-        $('html').on('mouseup', function (e) {
-            if (!$(e.target).closest('.popover').length) {
-                $('.popover').each(function () {
-                    $(this.previousSibling).popover('hide');
-                });
-            }
-        });
+        //$('html').on('mouseup', function (e) {
+        //    if (!$(e.target).closest('.popover').length) {
+        //        $('.popover').each(function () {
+        //            $(this.previousSibling).popover('hide');
+        //        });
+        //    }
+        //});
     </script>
 
     <script type="text/javascript">
