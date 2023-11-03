@@ -186,5 +186,29 @@ namespace SharedEFClasses.Models
 
             return 0;
         }
+
+        public async Task<IEnumerable<RangeMangementNote>> RangeManagementFetchNotes(RangeManagementNotesDto dto)
+        {
+            var results = await this.Database.Connection.QueryAsync<RangeMangementNote>("[portal].[RangeManagement_RangeNote_Select]", new
+            {
+                dto.BranchID,
+                dto.ProductID
+            }, null, null, CommandType.StoredProcedure);
+
+            return results;
+        }
+
+        public async Task<int> RangeManagementSaveNote(RangeManagementNotesDto dto)
+        {
+            var _ = await this.Database.Connection.QueryAsync("[portal].[RangeManagement_RangeNote_Add]", new
+            {
+                dto.BranchID,
+                dto.ProductID,
+                dto.MemberID,
+                dto.Note
+            }, null, null, CommandType.StoredProcedure);
+
+            return 0;
+        }
     }
 }

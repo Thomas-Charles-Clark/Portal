@@ -21,6 +21,7 @@ namespace SharedEFClasses.Models.RangeManagement
         public decimal Action_TransferToWarehouseQuantity { get; set; }
         public string Action_TransferToWarehouseHighlight { get; set; }
         public string Action_AddToRangeHighlight { get; set; }
+        public int? Action_NoteCount { get; set; }
         public string Stock_Summary { get; set; }
         public string Stock_Cover { get; set; }
         public decimal Stock_WH_FreeStock { get; set; }

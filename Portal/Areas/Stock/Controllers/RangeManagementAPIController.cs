@@ -175,5 +175,23 @@ namespace Portal.Areas.Stock.Controllers
 
             return Ok(results);
         }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> FetchNotes([FromBody] RangeManagementNotesDto objDto)
+        {
+            var results = await PortalDb.RangeManagementFetchNotes(objDto);
+
+            return Ok(results);
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> SaveNote([FromBody] RangeManagementNotesDto objDto)
+        {
+            objDto.MemberID = User.Identity.GetUserId<int>();
+
+            var results = await PortalDb.RangeManagementSaveNote(objDto);
+
+            return Ok(results);
+        }
     }
 }
