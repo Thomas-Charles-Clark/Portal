@@ -584,7 +584,8 @@ namespace Portal
                         $"{jsPrefix}/lib/linq/linq{jsSuffix}",
                         $"{jsPrefix}/models/functions{jsSuffix}",
                         $"{jsPrefix}/models/extensions{jsSuffix}",
-                        $"{jsPrefix}/lib/jquery-3.1.1/jquery.signalR{jsSuffix}"
+                        $"{jsPrefix}/lib/jquery-3.1.1/jquery.signalR{jsSuffix}",
+                        $"{jsPrefix}/lib/debounce/debounce{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/global-new").Include(
@@ -593,7 +594,8 @@ namespace Portal
                         $"{jsPrefix}/lib/linq/linq{jsSuffix}",
                         $"{jsPrefix}/models/functions-new{jsSuffix}",
                         $"{jsPrefix}/models/extensions{jsSuffix}",
-                        $"{jsPrefix}/lib/jquery-3.1.1/jquery.signalR{jsSuffix}"
+                        $"{jsPrefix}/lib/jquery-3.1.1/jquery.signalR{jsSuffix}",
+                        $"{jsPrefix}/lib/debounce/debounce{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-returns").Include(

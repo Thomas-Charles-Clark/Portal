@@ -898,7 +898,7 @@
     <script id="mdc-file-field-component" type="text/html">
         <div class="mdc-validating-field d-flex gap-2 justify-content-center align-items-center" data-bind="visible: $data.hasOwnProperty('visible') ? $data.visible : true">
             <button type="button" class="btn btn-outline-secondary w-25"
-                    data-bind="click: () => { document.getElementById('file-input').click() }, 
+                    data-bind="click: () => { document.getElementById('file-input').click() },
                     css: { disabled: busy },
                     disable: busy">
                 <span data-bind="text: buttonText ?? 'Choose File'"></span>
@@ -1562,6 +1562,24 @@
                 </div>
             </div>
         </div>
+    </script>
+
+    <script id="virtual-scroll-component-template" type="text/html">
+        <tbody class="virtual-scroll" data-bind="virtualScrollComponent: $data">
+            <tr>
+                <td colspan="200" data-bind="style: { height: precedingHeight() + 'px' }"></td>
+            </tr>
+            <!-- ko foreach: displayItems -->
+            <tr class="sct-target" data-bind="attr: { id: 't' + ($parent.firstRenderedIndex() + $index()) }">
+                <td data-bind="style: { height: hg + 'px' }" colspan="200">
+                    <span data-bind="text: $parent.firstRenderedIndex() + $index()"></span>
+                </td>
+            </tr>
+            <!-- /ko -->
+            <tr>
+                <td colspan="200" data-bind="style: { height: trailingHeight() + 'px' }"></td>
+            </tr>
+        </tbody>
     </script>
 
     <script id="code-mirror-component-template" type="text/html">
@@ -2841,6 +2859,10 @@
 
         ko.components.register('hidden-field-component', {
             template: { element: document.getElementById('hidden-field-component-template') }
+        })
+
+        ko.components.register('virtual-scroll-component', {
+            template: { element: document.getElementById('virtual-scroll-component-template') }
         })
 
         ko.components.register('code-mirror-component', {

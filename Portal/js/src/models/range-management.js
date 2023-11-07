@@ -9,13 +9,33 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     //#region Properties
 
+    // impossible virtual scrolling property madness
+
+    self.rowHeight = 80;
+
+    self.scrollY = ko.observable(0);
+
+    self.addGridHeaderHeight = 73;
+
+    self.productFilterGroupRowHeight = 30;
+
+    self.maxY = ko.observable(window.innerHeight);
+
+    self.scrollEpsilon = ko.observable(self.rowHeight + 2);
+
+    self.addGridTotalHeight = ko.observable();
+
+    self.firstHeadersHeight = ko.observable(0);
+
+    ///
+
     self.busy = ko.observable(true);
 
     self.fetchDataBusy = ko.observable(false);
 
     self.fetchAddDataBusy = ko.observable(false);
 
-    self.view = ko.observable(VIEW_MANAGE);
+    self.view = ko.observable(VIEW_ADD);
 
     self.manageBusy = ko.observable(false);
 
@@ -89,14 +109,7 @@ const rangeManagementViewModel = ({ } = {}) => {
     //#region Add to Range Grid
 
     // these variants, the same as above but for our "add to range" grid.
-    self.addSearchResults = ko.observableArray([]).extend({
-        infinitescroll: {
-            itemsWidth: 600,
-            itemsHeight: 90,
-            itemWidth: 600,
-            itemHeight: 90
-        }
-    });
+    self.addSearchResults = ko.observableArray([]);
 
     self.addVisibleRecords = ko.observableArray([]);
 
@@ -1486,6 +1499,8 @@ const rangeManagementViewModel = ({ } = {}) => {
 
             console.log('fetchProductsAddToRange calling with', data);
 
+            let callStart = new Date();
+
             fetch(`/api/rangeManagementApi/FetchProductsAddToRange?${qs}`, {
                 method: 'GET',
                 headers: window.fetchHeaders
@@ -1494,14 +1509,27 @@ const rangeManagementViewModel = ({ } = {}) => {
                 .then(data => {
                     console.log('fetchProductsAddToRange returned', data);
 
-                    if (data.Data.length === 0)
+                    let callReturn = new Date();
+
+                    console.log(`fetchProductsAddToRange returned in ${callReturn - callStart}ms`, data);
+
+                    //if (data.Data.length === 0)
                         self.clearBusy();
 
-                    self.addSearchResults(data.Data);
+                    self.addSearchResults(data.Data.map((d, i) => {
+                        d.offsetY = self.rowHeight * (i + 1);
+                        return d;
+                    }));
 
                     window.setTimeout(() => {
-                        self.addSearchResultsPostProcessing();
+                        //self.addSearchResultsPostProcessing();
+
+                        let renderDone = new Date();
+
+                        console.log(`fetchProductsAddToRange rendered in ${renderDone - callStart}ms`, data);
+
                     }, 0);
+
                 })
                 .catch(err => {
                     self.clearBusy();
@@ -1675,13 +1703,16 @@ const rangeManagementViewModel = ({ } = {}) => {
     });
 
     self.fetchAddData = ko.computed(() => {
+
+        return;
+
         let uarpids = self.unfilledAddRecordProductIds();
 
         if (uarpids.length) {
 
-            if (uarpids.length > 1) {
-                self.setBusy();
-            }
+            //if (uarpids.length > 1) {
+            //    self.setBusy();
+            //}
 
             window.setTimeout(() => {
 
@@ -1768,9 +1799,9 @@ const rangeManagementViewModel = ({ } = {}) => {
 
                         //document.querySelector("#add-results-grid .k-grid-content.k-auto-scrollable").scrollTo(0, self.addGridScrollRestoration);
 
-                        if (uarpids.length > 1) {
-                            self.clearBusy();
-                        }
+                        //if (uarpids.length > 1) {
+                        //    self.clearBusy();
+                        //}
                     })
                     .catch(err => {
                         //ko.ignoreDependencies(() => {
@@ -1880,51 +1911,181 @@ const rangeManagementViewModel = ({ } = {}) => {
 
         let key = "ProductFilterName";
 
-        if (self.searchResults().length) {
+        if (self.addSearchResults().length) {
             let results = [];
 
+            // counts the number of *end* product rows we have rendered
+            let runningCount = 0;
+
+            // grouping
             let productFilterGrouping = Object.groupBy(self.addSearchResults(), (sr) => sr.ProductFilterName);
 
-            Object.keys(productFilterGrouping).forEach(k => {
-                results.push({
+            // the height of the table's thead element
+            let startingOffset = self.addGridHeaderHeight; // not a magic number, honest - I'm not guaranteed that the necessary element exists on page when this line is hit
+
+            // we can only really do this if we're working with *exact* known heights.
+            // otherwise all bets are off.
+            // therefore let us achieve the knowing of the heights.
+            let additionalOffset = startingOffset;
+
+            let productFilterGroupRowHeight = self.productFilterGroupRowHeight;
+
+            let productPageGroupRowHeight = 26;
+
+            let orderFormGroupRowHeight = 22.5;
+
+            // all product filter groups have a name, so we need to account for that row...
+            self.firstHeadersHeight(startingOffset + productFilterGroupRowHeight);
+
+            Object.keys(productFilterGrouping).forEach((k, ki) => {
+                let r = {
                     name: k,
-                    items: ko.observableArray(productFilterGrouping[k])
-                });
+                    items: ko.observableArray(productFilterGrouping[k]),
+                    height: 0,//ko.observable(0), // 0 is obviously wrong
+                    offsetY: 0//ko.observable(0)
+                };
+
+                results.push(r);
             });
 
-            results.forEach(pf => {
+            results.forEach((productFilterGroup, productFilterGroupIndex) => {
                 let productPages = [];
 
-                let productPageGrouping = Object.groupBy(pf.items(), (i) => i.ProductPageName || "");
+                let productPageGrouping = Object.groupBy(productFilterGroup.items(), (i) => i.ProductPageName || "");
 
                 Object.keys(productPageGrouping).forEach(k => {
-                    productPages.push({
+                    let r = {
                         name: k,
-                        items: ko.observableArray(productPageGrouping[k])
-                    });
+                        items: ko.observableArray(productPageGrouping[k]),
+                        height: 0,//ko.observable(0),
+                        offsetY: 0//ko.observable(0)
+                    };
+
+                    productPages.push(r);
                 });
 
-                productPages.forEach(ppg => {
+                productPages.forEach((productPageGroup, productPageGroupIndex) => {
                     let orderFormGroups = [];
 
-                    let orderFormGrouping = Object.groupBy(ppg.items(), (i) => i.OrderFormGroup || "");
+                    let orderFormGrouping = Object.groupBy(productPageGroup.items(), (i) => i.OrderFormGroup || "");
 
                     Object.keys(orderFormGrouping).forEach(k => {
-                        orderFormGroups.push({
+
+                        if (productFilterGroup.name != null) {
+                            additionalOffset += productFilterGroupRowHeight;
+                        }
+
+                        orderFormGrouping[k].forEach((product, productIndex) => {
+
+                            // this is questionable at best
+                            product.offsetY = ((((runningCount + (productIndex)) * self.rowHeight) + additionalOffset) - productIndex);
+
+                            additionalOffset += 1; // to account for... something? leave it in, damn you
+
+                        })
+
+                        let r = {
                             name: k,
-                            items: ko.observableArray(orderFormGrouping[k])
+                            items: ko.observableArray(orderFormGrouping[k]),
+                            height: 0,//ko.observable(0),
+                            offsetY: 0//ko.observable(0)
+                        }
+
+                        runningCount += orderFormGrouping[k].length;
+
+                        r.visibleItems = ko.computed(() => {
+                            return ko.unwrap(r.items).filter(i => {
+
+                                //return i;
+
+                                return ((i.offsetY + self.rowHeight) > (self.scrollY())) &&
+                                    ((i.offsetY) <= (self.maxY()))
+                            });
+                        });
+
+                        console.log("skipped filling records for Add Grid");
+                        //r.visibleItems.subscribe(vis => {
+                        //    ko.utils.arrayPushAll(self.addVisibleRecords, vis);
+                        //});
+
+                        additionalOffset -= orderFormGrouping[k].length; // to account for 1px of y-axis border for each row, I believe...
+
+                        orderFormGroups.push(r);
+                    });
+
+                    orderFormGroups.forEach((orderFormGroup, orderFormGroupIndex) => {
+                        ko.unwrap(orderFormGroup.items).forEach((product, productIndex) => {
+                            product.effectiveHeight = self.rowHeight +
+                                (productIndex == 0 ?
+                                    (orderFormGroup.name != "" ? orderFormGroupRowHeight : 0) +
+                                    (orderFormGroupIndex == 0  && productPageGroup.name != "" ? productPageGroupRowHeight : 0) +
+                                    (productPageGroupIndex == 0 ? productFilterGroupRowHeight : 0)
+                                    : 0);
                         });
                     });
 
-                    ppg.items = orderFormGroups;
+                    productPageGroup.items = orderFormGroups;
                 });
 
-                pf.items = productPages;
+                productFilterGroup.items = productPages;
             });
+
+            let cumulativeHeight = startingOffset;
+
+            let itemCount = 0;
+
+            results.forEach((productFilterGroup, pfgi) => {
+                // productFilterGroup.name is never null, always add the productFilterGroupRowHeight
+
+                productFilterGroup.items.forEach((productPageGroup, ppgi) => {
+
+                    // productPageGroup.name can be null, test before adding productPageGroupRowHeight
+
+                    productPageGroup.items.forEach((orderFormGroup, ofgi) => {
+
+                        // orderFormGroup.name can be null, test before adding orderFormGroupRowHeight
+
+                        let items = ko.unwrap(orderFormGroup.items);
+
+                        // this orderFormGroup's height is equal to the number of items it contains by the height of each item, possibly plus its own grouping row height.
+                        orderFormGroup.height = ((items.length * self.rowHeight) + (orderFormGroup.name == "" ? 0 : orderFormGroupRowHeight));
+
+                        cumulativeHeight += orderFormGroup.height;
+
+                        // if our first rendered order form group has a name, we need to know about it because it offsets our wossname
+                        if (pfgi === 0 && ppgi === 0 && ofgi === 0 && orderFormGroup.name != "") {
+                            self.firstHeadersHeight(self.firstHeadersHeight() + orderFormGroupRowHeight);
+                        }
+                    });
+
+                    // this productPageGroup's height is equal to the sum of its orderFormGroup heights, possibly plus its own grouping row height.
+                    productPageGroup.height = (ko.unwrap(productPageGroup.items).reduce((a, i) => a += i.height, 0) + (productPageGroup.name == "" ? 0 : productPageGroupRowHeight));
+
+                    // this productPageGroup's offsetY is equal to all preceeding measured height, less its own height!
+                    productPageGroup.offsetY = (cumulativeHeight - productPageGroup.height);
+
+                    // if our first rendered product page group has a name, we need to know about it because it offsets our wossname
+                    if (pfgi === 0 && ppgi === 0 && productPageGroup.name != "") {
+                        self.firstHeadersHeight(self.firstHeadersHeight() + productPageGroupRowHeight);
+                    }
+                });
+
+                // this productFilterGroup's height is equal to the sum of its productPageGroup heights, plus its own grouping row height.
+                productFilterGroup.height = (ko.unwrap(productFilterGroup.items).reduce((a, i) => a += i.height, 0) + productFilterGroupRowHeight);
+
+                // this productFilterGroup's offsetY is equal to all preceeding measured height, 
+                // less the entirety of its own height, 
+                // plus n * (pfgrh + 1)
+                productFilterGroup.offsetY = ((cumulativeHeight - productFilterGroup.height) + ((pfgi + 1) * productFilterGroupRowHeight));
+            })
+
+            self.addGridTotalHeight(cumulativeHeight);
 
             console.log(results);
 
             return results;
+        } else {
+            return [];
         }
     }, self);
 
@@ -1944,6 +2105,69 @@ const rangeManagementViewModel = ({ } = {}) => {
         })
         .catch(window.catchFetchError);
     }
+
+    // maybe replace this with something that actually works
+    self.addGridScrollTopPadding = ko.computed(() => {
+        let sy = self.scrollY() + self.addGridHeaderHeight;
+        let my = self.maxY();
+
+        let result = 0;
+
+        ko.ignoreDependencies(() => {
+
+            let searchResults = self.groupedAddSearchResults();
+
+            if (searchResults.length) {
+
+                let filterGroupsEntirelyAbove = searchResults.filter(gasr => ((gasr.offsetY + gasr.height) < sy));
+
+                let filterGroupPartiallyAbove = searchResults.find(gasr => ((gasr.offsetY + self.productFilterGroupRowHeight) < sy && ((gasr.offsetY + gasr.height) < my)));
+
+                if (filterGroupsEntirelyAbove) {
+                    console.log("filterGroupsEntirelyAbove", filterGroupsEntirelyAbove);
+                }
+
+                //console.log("filterGroupsEntirelyAbove", filterGroupsEntirelyAbove);
+
+                if (filterGroupPartiallyAbove) {
+                    console.log("filterGroupPartiallyAbove", filterGroupPartiallyAbove);
+
+                    // find effectiveHeight sum from all products completely out of view
+                    let goneProductsEffectiveHeight = filterGroupPartiallyAbove.items.reduce((a, i) => {
+                        return a + (i.offsetY + i.effectiveHeight < sy ? i.effectiveHeight : 0);
+                    }, 0);
+
+                    result += self.productFilterGroupRowHeight + goneProductsEffectiveHeight;
+                }
+
+                //console.log("filterGroupPartiallyAbove", filterGroupPartiallyAbove);
+            }
+        });
+
+        console.log(result);
+
+        return result;
+
+        //let filterGroupsAbove = self.groupedAddSearchResults.peek().filter(gasr => gasr.offsetY() <= sy);
+
+        //console.log("filterGroupsAbove", filterGroupsAbove);
+
+        //let productPageGroupsAbove = filterGroupsAbove.flatMap(a => a.items.filter(i => i.offsetY() <= sy));
+
+        //let orderFormGroupsAbove = productPageGroupsAbove.flatMap(a => a.items.filter(i => i.offsetY() < sy));
+
+        //let productsAbove = orderFormGroupsAbove
+
+        // return self.scrollY() > self.firstHeadersHeight() ? self.scrollY() - self.firstHeadersHeight() + self.rowHeight : 0;
+    }, self).extend({
+        rateLimit: 50
+    });
+
+    self.addGridScrollBottomPadding = ko.computed(() => {
+        return self.addGridTotalHeight() - self.rowHeight;
+    }).extend({
+        rateLimit: 50
+    });
 
     //#endregion
 
@@ -2013,6 +2237,20 @@ const rangeManagementViewModel = ({ } = {}) => {
             });
         }
     });
+
+    window.addEventListener("scroll", (event) => {
+        self.scrollY(window.scrollY);
+        self.maxY(self.scrollY() + window.innerHeight);
+    });
+
+    //window.addEventListener("scroll", debounce((event) => {
+    //    self.scrollY(window.scrollY);
+    //    self.maxY(self.scrollY() + window.innerHeight);
+    //}, 0));
+
+    window.addEventListener("resize", debounce((event) => {
+        self.maxY(self.scrollY() + window.innerHeight);
+    }, 50));
 
     window.addEventListener("onbeforeunload", (event) => {
         self.checkUnsavedChangesThenSelect = async (event) => {

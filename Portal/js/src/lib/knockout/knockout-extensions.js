@@ -3371,3 +3371,136 @@ ko.validation.rules['isUnique'] = {
         }
     }
 };
+
+ko.bindingHandlers.virtualScrollComponent = {
+    init: function (element, valueAccessor) {
+       
+        var self = ko.unwrap(valueAccessor)();
+
+        self.scrollingElement = self.scrollingElement || element;
+
+        self.displayItems = ko.observableArray();
+        self.firstRenderedIndex = ko.observable(-1);
+        self.lastRenderedIndex = ko.observable(-1);
+        self.fakedItemHeight = ko.computed(function () {
+            // care about the 'IE8 1342177 pixels' problem
+            // same problem occurs with other browsers/versions too, if we have very huge lists to show
+            return Math.min(120, 1000000 / self.items().length);
+        });
+        self.precedingHeight = ko.computed(function () {
+            var i = self.firstRenderedIndex();
+            if (i >= 0) {
+                return Math.round(i * self.fakedItemHeight());
+            } else {
+                return 0;
+            }
+        });
+        self.trailingHeight = ko.computed(function () {
+            var i = self.lastRenderedIndex();
+            if (i >= 0) {
+                return Math.floor((self.items().length - 1 - i) * self.fakedItemHeight());
+            } else {
+                return Math.floor((self.items().length) * self.fakedItemHeight());;
+            }
+        });
+        self.goto = function (newIndex) {
+            console.log('goto', newIndex);
+            if (!isNaN(newIndex) && newIndex >= 0 && newIndex < self.items().length) {
+                self.updateScope(newIndex);
+                element.scrollTo(element.scrollLeft, element.querySelector(`#t${newIndex}`).offsetTop - 20);
+            }
+        };
+
+        // detect resize
+        window.addEventListener('resize', debounce(function () {
+            var fl = evalFirstLastVisible(element, element.scrollTop);
+            self.updateScope(parseInt(fl.topLeft.id.slice(1)), parseInt(fl.btmRight.id.slice(1)));
+        }, 50));
+
+        // (debounce is important for all browsers)
+        self.scrollingElement.addEventListener('scroll', debounce(function () {
+            var st = element.scrollTop,
+                sh = element.scrollHeight;
+            //console.log("scrollHeight: " + sh);
+            //console.log("scrollTop: " + st);
+
+            var fl = self.evalFirstLastVisible(self.scrollingElement, st);
+            if (!fl.topLeft.id) {
+                if (st >= sh - element.clientHeight) {
+                    self.goto(self.items().length - 1); // ensure the last one
+                } else {
+                    self.goto(Math.floor(self.items().length * st / sh));
+                }
+            } else if (self.updateScope(parseInt(fl.topLeft.id.slice(1)), parseInt(fl.btmRight.id.slice(1)))) {
+                var nsp = element.querySelector(`#${document.getElementById(fl.topLeft.id).offsetTop}`);
+                element.scrollTo(element.scrollLeft, nsp - fl.topLeft.dt); // repositioning 
+            }
+
+        }, 100));
+
+        // returns:
+        // topLeft.id defined ==> near scroll (btmRight.id is defined too, no need for check)
+        // topLeft.id undefined, btmRight.id undefined ==> wide scroll upwards
+        // topLeft.id undefined, btmRight.id defined ==> wide scroll downwards        
+        self.evalFirstLastVisible = function(scrollingElement, scrollTop) {
+            //console.time('evalFirstLastVisible');
+            var topLim = scrollTop;
+            var botLim = scrollTop + scrollingElement.innerHeight || scrollingElement.clientHeight;
+
+            var result = { topLeft: {}, btmRight: {} }, pos, id;
+            element.querySelectorAll(`.sct-target`).forEach((e) => {
+                //pos = $(this).offset().top, // offset().top is document relativ (entire document scrolling)
+                pos = e.offsetTop; // we are in a box (<ul>), so we need the relative offset to the ul
+
+                if (pos > botLim) {
+                    return false;   // ==> break iteration
+                }
+
+                id = e.id;
+                if (!result.topLeft.id && pos >= topLim) {
+                    result.topLeft.id = id; // first entire visible top-left item
+                    result.topLeft.dt = pos - topLim; // delta for exact repositioning
+                }
+                result.btmRight.id = id;
+            });
+
+            //console.timeEnd('evalFirstLastVisible');
+            return result;
+        }
+
+        self.updateScope = function (firstVisibleIndex, lastVisibleIndex) {
+            console.log('updateScope', firstVisibleIndex, lastVisibleIndex);
+            var forced = !lastVisibleIndex, // data has changed
+                padding = 20,
+                res = false;
+            if (forced) {
+                lastVisibleIndex = firstVisibleIndex;
+            } else {
+                padding = Math.max(lastVisibleIndex - firstVisibleIndex, padding);
+            }
+            var fri = Math.max(firstVisibleIndex - padding, 0),
+                lri = Math.min(lastVisibleIndex + padding, self.items().length - 1),
+                threshold = padding / 2;
+            if (fri < threshold || lri > self.items().length - threshold)
+                threshold = 0;
+
+            //if (forced)
+            //    console.log("desired index: " + firstVisibleIndex);
+            //else
+            //    console.log("firstVisibleIndex: " + firstVisibleIndex + "  lastVisibleIndex: " + lastVisibleIndex);
+
+            if (fri < self.firstRenderedIndex() - threshold || lri > self.lastRenderedIndex() + threshold) {
+                self.firstRenderedIndex(fri);
+                self.displayItems(self.items().slice(fri, lri + 1));
+                self.lastRenderedIndex(lri);
+
+                //console.log("rendered items: " + fri + " to " + lri);
+                res = true;
+            }
+            return res;
+        };
+    },
+    update: function (element, valueAccessor, allBindingsAccessor) {
+
+    }
+}
