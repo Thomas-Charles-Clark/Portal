@@ -209,7 +209,7 @@
 
 <script id="add-row-template" type="text/html">
     <!-- ko ifnot: $root.getAddFilledRecord($data.ProductID) -->
-    <tr class="relative">
+    <tr role="row" class="relative">
         <td class="k-group-cell product-filter-name-pad"></td>
         <td class="k-group-cell product-page-name-pad"></td>
         <td class="k-group-cell order-form-group-pad"></td>
@@ -243,7 +243,7 @@
             </button>
         </td>
         <td colspan="30">
-            <span data-bind="text: `offsetY: ${offsetY}; effectiveHeight: ${effectiveHeight}`"></span>
+            <span data-bind="text: `offsetY: ${offsetY}`"></span>
         </td>
     </tr>
     <!-- /ko -->
@@ -761,29 +761,31 @@
                                 </tr>
                             </tbody>
                             <tbody role="rowgroup" data-bind="foreach: groupedAddSearchResults">
-                                <tr role="row" class="k-grouping-row product-filter-name-row" data-bind="css: { gone: (($root.scrollY() + $root.addGridHeaderHeight) > offsetY + $root.productFilterGroupRowHeight) }">
+                                <!-- ko if: headerVisible -->
+                                <tr role="row" class="k-grouping-row product-filter-name-row">
                                     <td aria-expanded="true" colspan="28" class="relative">
                                         <p class="k-reset">
                                             <span class="group-heading bold" data-bind="text: name"></span>
-                                            <span data-bind="text: `{ h: ${height}px; y: ${offsetY}px }`"></span>
+                                            <span data-bind="text: `{ h: ${height}px; y: ${offsetY}px, rh: ${runningHeight}px }`"></span>
                                         </p>
                                     </td>
                                 </tr>
+                                <!-- /ko -->
                                 <!-- ko foreach: items -->
-                                <!-- ko if: name && $root.scrollY() >= offsetY -->
+                                <!-- ko if: name && (($root.scrollY() + $root.addGridHeaderHeight) <= offsetY + $root.productPageGroupRowHeight) -->
                                 <tr role="row" class="k-grouping-row product-page-name-row">
                                     <td class="k-group-cell"></td>
                                     <td colspan="27" aria-expanded="true">
                                         <p class="k-reset">
                                             <a class="k-icon k-i-collapse" href="#" tabindex="-1" aria-label="Collapse"></a>
                                             <span class="group-heading" style="transform: translateX(0px);" data-bind="text: name"></span>
-                                            <span data-bind="text: `{ h: ${height}px; y: ${items[0].offsetY}px }`"></span>
+                                            <span data-bind="text: `{ h: ${height}px; y: ${offsetY}px }`"></span>
                                         </p>
                                     </td>
                                 </tr>
                                 <!-- /ko -->
                                 <!-- ko foreach: items -->
-                                <!-- ko if: name && $root.scrollY() >= offsetY -->
+                                <!-- ko if: name && (($root.scrollY() + $root.addGridHeaderHeight) <= offsetY + $root.orderFormGroupRowHeight) -->
                                 <tr role="row" class="k-grouping-row order-form-group-row">
                                     <td class="k-group-cell"></td>
                                     <td class="k-group-cell"></td>
