@@ -21,15 +21,13 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     self.productPageGroupRowHeight = 26;
 
-    self.orderFormGroupRowHeight = 22.5;
+    self.orderFormGroupRowHeight = 22;
 
     self.maxY = ko.observable(window.innerHeight);
 
     self.scrollEpsilon = ko.observable(self.rowHeight + 2);
 
     self.addGridTotalHeight = ko.observable();
-
-    self.firstHeadersHeight = ko.observable(0);
 
     ///
 
@@ -1513,6 +1511,8 @@ const rangeManagementViewModel = ({ } = {}) => {
                 .then(data => {
                     console.log('fetchProductsAddToRange returned', data);
 
+                    window.scrollTo(0, 0);
+
                     let callReturn = new Date();
 
                     console.log(`fetchProductsAddToRange returned in ${callReturn - callStart}ms`, data);
@@ -1921,18 +1921,16 @@ const rangeManagementViewModel = ({ } = {}) => {
             // counts the number of *end* product rows we have rendered
             let runningCount = 0;
 
-            // grouping
+            // grouping initially by ProductFilterName. All search results must have a Product Filter Name, no exceptions.
             let productFilterGrouping = Object.groupBy(self.addSearchResults(), (sr) => sr.ProductFilterName);
 
             // the height of the table's thead element
-            let startingOffset = self.addGridHeaderHeight; // not a magic number, honest - I'm not guaranteed that the necessary element exists on page when this line is hit
+            let startingOffset = self.addGridHeaderHeight; 
 
             // we can only really do this if we're working with *exact* known heights.
             // otherwise all bets are off.
             // therefore let us achieve the knowing of the heights.
             let additionalOffset = startingOffset;
-
-            let productFilterGroupRowHeight = self.productFilterGroupRowHeight;
 
             let runningProductFilterGroupHeight = 0;
 
@@ -1940,24 +1938,32 @@ const rangeManagementViewModel = ({ } = {}) => {
 
             let runningOrderFormGroupHeight = 0;
 
-            // all product filter groups have a name, so we need to account for that row...
-            self.firstHeadersHeight(startingOffset + productFilterGroupRowHeight);
-
+            // Object.groupBy returns an object having properties for each group key whose values are the group's items.
             Object.keys(productFilterGrouping).forEach((k, ki) => {
+
+                // Therefore we iterate over the keys of that object and create an entry into an array...
                 let r = {
                     name: k,
                     items: ko.observableArray(productFilterGrouping[k]),
                     height: 0,
                     offsetY: 0,
-                    runningHeight: runningProductFilterGroupHeight
+                    runningHeight: runningProductFilterGroupHeight // setting initial properties to zero, hooray for declaration
                 };
 
+                // add the array entry
                 results.push(r);
             });
 
+            // then we can iterate over the array as usual - always useful to have the index around in case you need it
             results.forEach((productFilterGroup, productFilterGroupIndex) => {
+
+                // every record has at least a bit of offset: this accumulates across the data set.
+                // every product filter contributes a fixed height of offset (30px), which must be considered in addition to the main header rows on the grid (73px).
+                additionalOffset += self.productFilterGroupRowHeight;
+
                 let productPages = [];
 
+                // continue the grouping dance at the product page level - grouping by null is not okay, so if you have to group by an empty string:
                 let productPageGrouping = Object.groupBy(productFilterGroup.items(), (i) => i.ProductPageName || "");
 
                 Object.keys(productPageGrouping).forEach(k => {
@@ -1973,24 +1979,18 @@ const rangeManagementViewModel = ({ } = {}) => {
                 });
 
                 productPages.forEach((productPageGroup, productPageGroupIndex) => {
+
+                    // if this productPageGroup has a name, it will have rendered a heading (22px) and we need to account for the height of that heading.
+                    if (productPageGroup.name != "") {
+                        additionalOffset += self.productPageGroupRowHeight;
+                    }
+
                     let orderFormGroups = [];
 
+                    // continue grouping to the order form group level:
                     let orderFormGrouping = Object.groupBy(productPageGroup.items(), (i) => i.OrderFormGroup || "");
 
                     Object.keys(orderFormGrouping).forEach(k => {
-
-                        if (productFilterGroup.name != null) {
-                            additionalOffset += productFilterGroupRowHeight;
-                        }
-
-                        orderFormGrouping[k].forEach((product, productIndex) => {
-
-                            // this is questionable at best
-                            product.offsetY = ((((runningCount + (productIndex)) * self.rowHeight) + additionalOffset) - productIndex);
-
-                            additionalOffset += 1; // to account for... something? leave it in, damn you
-
-                        })
 
                         let r = {
                             name: k,
@@ -2000,46 +2000,43 @@ const rangeManagementViewModel = ({ } = {}) => {
                             runningHeight: runningOrderFormGroupHeight
                         }
 
-                        runningCount += orderFormGrouping[k].length;
+                        orderFormGroups.push(r);
+                    });
 
-                        //let sy = self.scrollY();
-                        //let my = self.maxY();
+                    orderFormGroups.forEach((orderFormGroup, orderFormGroupIndex) => {
 
-                        r.visibleItems = ko.computed(() => {
-                            return ko.unwrap(r.items).filter(i => {
+                        // if this orderFormGroup has a name, it will have rendered a heading (20px) and we need to account for the height of that heading.
+                        if (orderFormGroup.name != "") {
+                            additionalOffset += self.orderFormGroupRowHeight;
+                        }
 
-                                //return ((i.offsetY + i.effectiveHeight) > self.scrollY()) &&
-                                //       (i.offsetY <= my); // remove from top...
-                                //                            // and eventually also from bottom
+                        let products = ko.unwrap(orderFormGroup.items);
 
-                                //return i;
+                        //iterate over the products belonging to this order form group
+                        products.forEach((product, productIndex) => {
 
+                            // each product record has one fundamental height: 80px.
+                            product.height = self.rowHeight;
+
+                            // each product is offset from the top by some Y 
+                            product.offsetY = (((runningCount + (productIndex)) * self.rowHeight) + additionalOffset);
+                        })
+
+                        runningCount += products.length;
+
+                        orderFormGroup.visibleItems = ko.computed(() => {
+                            return ko.unwrap(orderFormGroup.items).filter(i => {
                                 return ((i.offsetY - self.addGridHeaderHeight + self.rowHeight) >= (self.scrollY())) &&
                                     ((i.offsetY - self.addGridHeaderHeight + self.rowHeight) <= (self.maxY()))
                             });
                         });
 
                         console.log("skipped filling records for Add Grid");
+
                         //r.visibleItems.subscribe(vis => {
                         //    ko.utils.arrayPushAll(self.addVisibleRecords, vis);
                         //});
 
-                        additionalOffset -= orderFormGrouping[k].length; // to account for 1px of y-axis border for each row, I believe...
-
-                        orderFormGroups.push(r);
-                    });
-
-                    orderFormGroups.forEach((orderFormGroup, orderFormGroupIndex) => {
-                        ko.unwrap(orderFormGroup.items).forEach((product, productIndex) => {
-                            product.height = self.rowHeight;
-
-                            product.effectiveHeight = self.rowHeight +
-                                (productIndex == 0 ?
-                                    (orderFormGroup.name != "" ? self.orderFormGroupRowHeight : 0)
-                                    + (orderFormGroupIndex == 0 && productPageGroup.name != "" ? self.productPageGroupRowHeight : 0)
-                                    + (productPageGroupIndex == 0 ? productFilterGroupRowHeight : 0)
-                                : 0);
-                        });
                     });
 
                     productPageGroup.items = orderFormGroups;
@@ -2074,10 +2071,15 @@ const rangeManagementViewModel = ({ } = {}) => {
 
                         cumulativeHeight += orderFormGroup.height;
 
-                        // if our first rendered order form group has a name, we need to know about it because it offsets our wossname
-                        if (pfgi === 0 && ppgi === 0 && ofgi === 0 && orderFormGroup.name != "") {
-                            self.firstHeadersHeight(self.firstHeadersHeight() + self.orderFormGroupRowHeight);
-                        }
+                        orderFormGroup.offsetY = (cumulativeHeight - orderFormGroup.height) + ((pfgi + 1) * self.productFilterGroupRowHeight) + ((ppgi + 1) * self.productPageGroupRowHeight);
+
+                        orderFormGroup.headerVisible = ko.computed(() => {
+                            if (orderFormGroup.name && orderFormGroup.offsetY + self.orderFormGroupRowHeight >= self.scrollY() + self.addGridHeaderHeight) {
+                                return true;
+                            }
+
+                            return false;
+                        }, self);
                     });
 
                     // this productPageGroup's height is equal to the sum of its orderFormGroup heights, possibly plus its own grouping row height.
@@ -2087,44 +2089,33 @@ const rangeManagementViewModel = ({ } = {}) => {
 
                     productPageGroup.runningHeight = runningProductPageGroupHeight;
 
-                    // this productPageGroup's offsetY is equal to all preceeding measured height, less its own height!
-                    productPageGroup.offsetY = (cumulativeHeight - productPageGroup.height);
+                    productPageGroup.offsetY = (cumulativeHeight - productPageGroup.height) + ((pfgi + 1) * self.productFilterGroupRowHeight) + ((ppgi + 1) * self.productPageGroupRowHeight);
 
-                    // if our first rendered product page group has a name, we need to know about it because it offsets our wossname
-                    if (pfgi === 0 && ppgi === 0 && productPageGroup.name != "") {
-                        self.firstHeadersHeight(self.firstHeadersHeight() + self.productPageGroupRowHeight);
-                    }
+                    productPageGroup.headerVisible = ko.computed(() => {
+                        if (productPageGroup.name && productPageGroup.offsetY + self.productPageGroupRowHeight >= self.scrollY() + self.addGridHeaderHeight) {
+                            return true;
+                        }
+                        return false;
+                    }, self);
                 });
 
+                // because the height of productPageGroup headings is not catered for in the above...
+                cumulativeHeight += productFilterGroup.items.reduce((a, i) => a += i.name === "" ? 0 : self.productPageGroupRowHeight, 0);
+
                 // this productFilterGroup's height is equal to the sum of its productPageGroup heights, plus its own grouping row height.
-                productFilterGroup.height = (ko.unwrap(productFilterGroup.items).reduce((a, i) => a += i.height, 0) + productFilterGroupRowHeight);
+                productFilterGroup.height = (ko.unwrap(productFilterGroup.items).reduce((a, i) => a += i.height, 0) + self.productFilterGroupRowHeight);
 
                 runningProductFilterGroupHeight += productFilterGroup.height;
 
                 productFilterGroup.runningHeight = runningProductFilterGroupHeight;
 
-                // this productFilterGroup's offsetY is equal to all preceeding measured height,
-                // less the entirety of its own height,
-                // plus n * (pfgrh + 1)
-                // ... is it f***?
-                // this is the closest though...
-                //productFilterGroup.offsetY = ((cumulativeHeight - productFilterGroup.height) + ((pfgi + 1) * productFilterGroupRowHeight));
-
-                // this is also wrong
-                //productFilterGroup.offsetY = runningProductFilterGroupHeight + ((pfgi + 1) * productFilterGroupRowHeight) - productFilterGroupRowHeight;
-
                 productFilterGroup.offsetY = productFilterGroup.runningHeight - productFilterGroup.height + self.addGridHeaderHeight;
 
-
                 productFilterGroup.headerVisible = ko.computed(() => {
-                    // be even better if this bit worked, wouldn't it
                     if (productFilterGroup.offsetY + self.productFilterGroupRowHeight >= self.scrollY() + self.addGridHeaderHeight) {
                         return true;
                     }
-                    // I believe it isn't working because offsetY is calculated before any of the spacing cells exist...
-
                     return false;
-                    //return (self.scrollY() + self.addGridHeaderHeight) <= (productFilterGroup.offsetY + self.productFilterGroupRowHeight);
                 }, self);
             })
 
@@ -2185,60 +2176,69 @@ const rangeManagementViewModel = ({ } = {}) => {
 
                 // you must not be able to be both partially and entirely above: one or the other.
 
-
                 if (filterGroupsEntirelyAbove.length) {
-                    result += filterGroupsEntirelyAbove.flatMap(fgea => fgea.items).reduce((a, i) => a += i.height, 0);
 
-                    result += filterGroupsEntirelyAbove.length * self.productFilterGroupRowHeight;
+                    let productPageGroupsHeight = filterGroupsEntirelyAbove.flatMap(fgea => fgea.items).reduce((a, i) => a += i.height, 0);
+
+                    console.log("productPageGroupsHeight", productPageGroupsHeight);
+
+                    result += productPageGroupsHeight;
+
+                    let productPageGroupsHeaderRowsHeight = filterGroupsEntirelyAbove.length * self.productFilterGroupRowHeight
+
+                    console.log("productPageGroupsHeaderRowsHeight", productPageGroupsHeaderRowsHeight);
+
+                    result += productPageGroupsHeaderRowsHeight; // every filterGroup provides a row
+
+                     // not every productPageGroup provides a row and they're all accounted for elsewhere in the algorithm so remove their height here
+                    //result -= filterGroupsEntirelyAbove.flatMap(fgea => fgea.items).reduce((a, i) => a += i.name == "" ? 0 : self.productPageGroupRowHeight, 0);
                 }
 
                 console.log("filterGroupsEntirelyAbove", filterGroupsEntirelyAbove);
 
                 if (filterGroupPartiallyAbove) {
-                    // find effectiveHeight sum from all products completely out of view
-                    //let goneProductsEffectiveHeight = filterGroupPartiallyAbove.items.reduce((a, i) => {
-                    //    return a + (i.offsetY + i.effectiveHeight < sy ? i.effectiveHeight : 0);
-                    //}, 0);
+
+                    let additionFromPartiallyAboveGroup = 0;
 
                     filterGroupPartiallyAbove.items.forEach(ppg => {
+                        if (ppg.name && !ppg.headerVisible()) {
+                            additionFromPartiallyAboveGroup += self.productPageGroupRowHeight;
+                        }
+
                         ppg.items.forEach(ofg => {
+                            if (ofg.name && !ofg.headerVisible()) {
+                                additionFromPartiallyAboveGroup += self.orderFormGroupRowHeight;
+                            }
+
                             ko.unwrap(ofg.items).forEach(p => {
                                 if (scrollYPlusHeaderHeight > p.offsetY + self.rowHeight) {
-                                    result += p.height;
+                                    additionFromPartiallyAboveGroup += p.height;
                                 }
                             })
                         })
                     })
 
                     if ((scrollYPlusHeaderHeight - filterGroupPartiallyAbove.offsetY) > self.productFilterGroupRowHeight)
-                        result += self.productFilterGroupRowHeight;// + goneProductsEffectiveHeight;
+                        additionFromPartiallyAboveGroup += self.productFilterGroupRowHeight;
+
+                    console.log("additionFromPartiallyAboveGroup", additionFromPartiallyAboveGroup);
+
+                    result += additionFromPartiallyAboveGroup;
                 }
 
                 console.log("filterGroupPartiallyAbove", filterGroupPartiallyAbove);
             }
         });
 
-        console.log(result);
+        console.log("virtualSpacing top", result);
 
+        console.log(" ");
+                        
         return result;
-
-        //let filterGroupsAbove = self.groupedAddSearchResults.peek().filter(gasr => gasr.offsetY() <= sy);
-
-        //console.log("filterGroupsAbove", filterGroupsAbove);
-
-        //let productPageGroupsAbove = filterGroupsAbove.flatMap(a => a.items.filter(i => i.offsetY() <= sy));
-
-        //let orderFormGroupsAbove = productPageGroupsAbove.flatMap(a => a.items.filter(i => i.offsetY() < sy));
-
-        //let productsAbove = orderFormGroupsAbove
-
-        // return self.scrollY() > self.firstHeadersHeight() ? self.scrollY() - self.firstHeadersHeight() + self.rowHeight : 0;
     }, self);
 
     self.addGridScrollBottomPadding = ko.computed(() => {
-        return self.addGridTotalHeight() - self.rowHeight;
-    }).extend({
-        rateLimit: 50
+        return self.addGridTotalHeight() - self.addGridScrollTopPadding();
     });
 
     //#endregion

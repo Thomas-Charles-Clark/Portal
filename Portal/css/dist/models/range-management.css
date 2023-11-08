@@ -401,7 +401,7 @@ body {
   position: absolute;
   text-align: right;
   /* height: 30px;
-   line-height: 30px;*/
+  line-height: 30px;*/
   display: block;
   z-index: 1;
   top: 0;
@@ -462,12 +462,11 @@ body {
 #results-grid tbody .product-page-name-row td,
 #add-results-grid tbody .product-page-name-row td {
   padding: 0;
-  height: 24px;
+  height: 26px;
+  box-sizing: border-box;
 }
 #results-grid tbody .product-page-name-row td p.k-reset,
 #add-results-grid tbody .product-page-name-row td p.k-reset {
-  height: 24px;
-  line-height: 24px;
   font-weight: normal;
   padding-right: 0;
 }
@@ -492,12 +491,16 @@ body {
 #results-grid tbody .order-form-group-row td,
 #add-results-grid tbody .order-form-group-row td {
   padding: 0;
-  height: 20px;
+  height: 22px;
+  box-sizing: border-box;
+  font-size: 12px;
+  line-height: 12px;
   font-weight: normal;
 }
 #results-grid tbody .order-form-group-row td p,
 #add-results-grid tbody .order-form-group-row td p {
   margin-bottom: 0;
+  padding-left: 12px;
 }
 #results-grid tbody .order-form-group-row td.k-group-cell,
 #add-results-grid tbody .order-form-group-row td.k-group-cell {

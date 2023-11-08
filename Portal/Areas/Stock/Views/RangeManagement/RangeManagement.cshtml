@@ -772,7 +772,7 @@
                                 </tr>
                                 <!-- /ko -->
                                 <!-- ko foreach: items -->
-                                <!-- ko if: name && (($root.scrollY() + $root.addGridHeaderHeight) <= offsetY + $root.productPageGroupRowHeight) -->
+                                <!-- ko if: headerVisible -->
                                 <tr role="row" class="k-grouping-row product-page-name-row">
                                     <td class="k-group-cell"></td>
                                     <td colspan="27" aria-expanded="true">
@@ -785,7 +785,7 @@
                                 </tr>
                                 <!-- /ko -->
                                 <!-- ko foreach: items -->
-                                <!-- ko if: name && (($root.scrollY() + $root.addGridHeaderHeight) <= offsetY + $root.orderFormGroupRowHeight) -->
+                                <!-- ko if: headerVisible -->
                                 <tr role="row" class="k-grouping-row order-form-group-row">
                                     <td class="k-group-cell"></td>
                                     <td class="k-group-cell"></td>
