@@ -573,7 +573,7 @@
         <div class="mdc-validating-field" data-bind="visible: $data.hasOwnProperty('visible') ? $data.visible : true, css: { 'small': typeof small === 'undefined' ? false : small }">
             <div class="mdc-numeric-field input-group" data-bind="css: { 'no-buttons': !!buttons === false }">
                 <!-- ko if: typeof buttons === 'undefined' || buttons === true -->
-                <button type="button" class="btn btn-light border-dark-subtle" data-bind="click: decrement, css: { 'disabled':  typeof disable == 'undefined' ? false : disable }">
+                <button type="button" class="btn btn-light border-dark-subtle" data-bind="click: decrement, disable: disable() || !enable(), css: { 'disabled': disable() || !enable() }">
                     <i class="bi bi-dash-lg"></i>
                 </button>
                 <!-- /ko -->
@@ -612,7 +612,7 @@
                            step: step
                         },
                         event: typeof events === 'undefined' ? null : events,
-                        disable: disable
+                        disable: disable() || !enable()
                         " />
                     <div class="mdc-notched-outline">
                         <div class="mdc-notched-outline__leading"></div>
@@ -627,21 +627,21 @@
                     </div>
                     <div class="controls">
                         <!-- ko if: revertable -->
-                        <div class="close revert" data-bind="click: revertFunction, css: { 'disabled':  typeof disable == 'undefined' ? false : disable }">
+                        <div class="close revert" data-bind="click: revertFunction, css: { 'disabled': disable() || !enable() }">
                             <i class="material-icons">
                                 replay
                             </i>
                         </div>
                         <!-- /ko -->
                         <!-- ko if: clearable -->
-                        <div class="close clear" data-bind="click: clearFunction, css: { 'disabled':  typeof disable == 'undefined' ? false : disable }">
+                        <div class="close clear" data-bind="click: clearFunction, css: { 'disabled': disable() || !enable()}">
                             &times;
                         </div>
                         <!-- /ko -->
                     </div>
                 </div>
                 <!-- ko if: typeof buttons === 'undefined' || buttons === true -->
-                <button type="button" class="btn btn-light border-dark-subtle" data-bind="click: increment, css: { 'disabled':  typeof disable == 'undefined' ? false : disable }">
+                <button type="button" class="btn btn-light border-dark-subtle" data-bind="click: increment, disable: disable() || !enable(), css: { 'disabled': disable() || !enable() }">
                     <i class="bi bi-plus-lg"></i>
                 </button>
                 <!-- /ko -->
@@ -655,7 +655,7 @@
                  'input-group-lg': typeof large !== 'undefined' && large,
                  'barber-busy': typeof busy == 'undefined' ? false : ko.unwrap(busy)
                 }">
-                <button type="button" class="btn btn-light border-dark-subtle" data-bind="click: decrement">
+                <button type="button" class="btn btn-light border-dark-subtle" data-bind="click: decrement, disable: disable() || !enable(), css: { 'disabled': disable() || !enable() }">
                     <i class="bi bi-dash-lg"></i>
                 </button>
                 <div class="mdc-text-field mdc-text-field--outlined" data-bind="
@@ -714,13 +714,13 @@
                         </div>
                         <!-- /ko -->
                         <!-- ko if: clearable -->
-                        <div class="close clear" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
+                        <div class="close clear" data-bind="click: clearFunction, css: { 'disabled': disable() || !enable() }">
                             &times;
                         </div>
                         <!-- /ko -->
                     </div>
                 </div>
-                <button type="button" class="btn btn-light border-dark-subtle" data-bind="click: increment">
+                <button type="button" class="btn btn-light border-dark-subtle" data-bind="click: increment, disable: disable() || !enable(), css: { 'disabled': disable() || !enable() }">
                     <i class="bi bi-plus-lg"></i>
                 </button>
             </div>
@@ -730,7 +730,7 @@
     <script id="mdc-text-field-numeric-component-no-outline" type="text/html">
         <div class="mdc-validating-field" data-bind="visible: $data.hasOwnProperty('visible') ? $data.visible : true">
             <div class="mdc-numeric-field input-group">
-                <button type="button" class="btn btn-light border-dark-subtle" data-bind="click: decrement">
+                <button type="button" class="btn btn-light border-dark-subtle" data-bind="click: decrement, disable: disable() || !enable(), css: { 'disabled': disable() || !enable() }">
                     <i class="bi bi-dash-lg"></i>
                 </button>
                 <div class="mdc-text-field mdc-text-field--outlined" data-bind="
@@ -782,7 +782,7 @@
                         <!-- /ko -->
                     </div>
                 </div>
-                <button type="button" class="btn btn-light border-dark-subtle" data-bind="click: increment">
+                <button type="button" class="btn btn-light border-dark-subtle" data-bind="click: increment, disable: disable() || !enable(), css: { 'disabled': disable() || !enable() }">
                     <i class="bi bi-plus-lg"></i>
                 </button>
             </div>

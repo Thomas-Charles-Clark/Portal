@@ -279,7 +279,7 @@ body {
 #results-grid thead tr:nth-of-type(2) th,
 #add-results-grid thead tr:nth-of-type(2) th {
   position: sticky;
-  top: 204px;
+  top: 196px;
   z-index: 20;
 }
 #results-grid .k-header,
@@ -296,7 +296,7 @@ body {
 #results-grid .sticky-heading,
 #add-results-grid .sticky-heading {
   padding: 0;
-  height: 72px;
+  height: 55px;
 }
 #results-grid .sticky-heading .sticky-heading-block,
 #add-results-grid .sticky-heading .sticky-heading-block {
@@ -304,6 +304,7 @@ body {
   background-color: #425296;
   flex-direction: row;
   width: 100%;
+  height: 100%;
   border-right: 1px solid #586fc2;
   padding: 0;
   border-top: 0;
@@ -314,6 +315,11 @@ body {
   left: -1px;
   top: 2px;
   z-index: 10;
+}
+#results-grid .sticky-heading .sticky-heading-block span,
+#add-results-grid .sticky-heading .sticky-heading-block span {
+  display: block;
+  height: auto;
 }
 #results-grid .k-grid-pager,
 #add-results-grid .k-grid-pager {
@@ -387,7 +393,7 @@ body {
   position: sticky;
   left: 0;
   white-space: nowrap;
-  overflow-x: hidden;
+  overflow: hidden;
   text-overflow: ellipsis;
   width: 310px;
   z-index: 2;
@@ -404,7 +410,7 @@ body {
   line-height: 30px;*/
   display: block;
   z-index: 1;
-  top: 0;
+  top: 5px;
 }
 #results-grid tbody .k-grouping-row .range-planned,
 #add-results-grid tbody .k-grouping-row .range-planned {
@@ -500,7 +506,6 @@ body {
 #results-grid tbody .order-form-group-row td p,
 #add-results-grid tbody .order-form-group-row td p {
   margin-bottom: 0;
-  padding-left: 12px;
 }
 #results-grid tbody .order-form-group-row td.k-group-cell,
 #add-results-grid tbody .order-form-group-row td.k-group-cell {
@@ -609,11 +614,6 @@ body {
 #add-results-grid tr.busy td:not(.k-group-cell):not(.product-card-wrapper) {
   background: transparent;
   background-color: transparent !important;
-}
-#results-grid .k-icon.k-i-collapse, #results-grid .k-icon.k-i-expand,
-#add-results-grid .k-icon.k-i-collapse,
-#add-results-grid .k-icon.k-i-expand {
-  display: none;
 }
 #results-grid .k-loading-image,
 #add-results-grid .k-loading-image {
@@ -748,6 +748,7 @@ body {
   border-radius: 0;
 }
 
+#results-grid,
 #add-results-grid {
   /*
       thead {
@@ -778,13 +779,19 @@ body {
       }
   */
 }
+#results-grid tbody tr:not(.k-grouping-row) td,
 #add-results-grid tbody tr:not(.k-grouping-row) td {
   height: 80px;
   box-sizing: border-box;
 }
 
-.add-note-btn {
+.btn.add-note-btn {
   width: 27.38px;
+}
+.btn.add-note-btn .material-icons {
+  margin: 0;
+  font-weight: normal;
+  color: #495057;
 }
 
 #add-note-modal .modal-header {
@@ -820,5 +827,39 @@ tbody.virtual-spacing tr td {
   padding: 0;
   border: 0;
   box-sizing: border-box;
+}
+
+.recommendations-container > div {
+  padding-right: 1rem;
+  height: auto;
+  max-height: 68px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+.recommendations-container > div::-webkit-scrollbar-track {
+  /*-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);*/
+  border-radius: 4px;
+  background-color: #F5F5F5;
+}
+.recommendations-container > div::-webkit-scrollbar {
+  width: 6px;
+  background-color: #F5F5F5;
+}
+.recommendations-container > div::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  /*-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);*/
+  background-color: #ced4da;
+}
+.recommendations-container > div p {
+  margin-bottom: 0;
+}
+
+.transfer-grid {
+  position: relative;
+  top: 68px;
+}
+
+.k-icon.k-i-collapse, .k-icon.k-i-expand {
+  display: none;
 }
 /*# sourceMappingURL=range-management.css.map */

@@ -2720,7 +2720,7 @@ This customer wishes their deliveries to be consolidated. Please double check th
     }
 
     self.processApplicationSave = function () {
-        if (self.emailAttachmentErrors().length > 0) {
+        if (self.tradeAccountCreationEmail_send() && self.emailAttachmentErrors().length > 0) {
             self.emailAttachmentErrors.showAllMessages(true);
             return;
         }
@@ -2728,7 +2728,7 @@ This customer wishes their deliveries to be consolidated. Please double check th
             self.salesRepErrors.showAllMessages(true);
         } else {
             // if you haven't interacted with the creation email stuff
-            if (self.haveChangedCreationEmailSettings() === false) {
+            if (self.tradeAccountCreationEmail_send() && self.haveChangedCreationEmailSettings() === false) {
                 let displayProps = [];
                 if (self.tradeAccountCreationEmail_displayAccountManager())
                     displayProps.push("Account Manager");

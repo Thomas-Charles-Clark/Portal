@@ -1206,11 +1206,13 @@ button.close:not(.text) span {
   border-right: 0;
   border-radius: 0;
   padding: 5px 10px;
+  line-height: 22px;
 }
 
 .search-btn {
   font-size: 16px;
   padding: 5px 18px;
+  line-height: 22px;
 }
 
 .calendar-btn {

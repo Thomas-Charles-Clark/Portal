@@ -15,8 +15,6 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     self.scrollY = ko.observable(0);
 
-    self.addGridHeaderHeight = 73;
-
     self.productFilterGroupRowHeight = 30;
 
     self.productPageGroupRowHeight = 26;
@@ -25,9 +23,17 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     self.maxY = ko.observable(window.innerHeight);
 
-    self.scrollEpsilon = ko.observable(self.rowHeight + 2);
+    self.addGridHeaderHeight = 56;
 
     self.addGridTotalHeight = ko.observable();
+
+    self.gridHeaderHeight = 56;
+
+    self.gridTotalHeight = ko.observable();
+
+    self.gridScrollBottomPadding = ko.observable(0);
+
+    self.finalRowVisible = ko.observable(false);
 
     ///
 
@@ -37,7 +43,7 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     self.fetchAddDataBusy = ko.observable(false);
 
-    self.view = ko.observable(VIEW_ADD);
+    self.view = ko.observable(VIEW_MANAGE);
 
     self.manageBusy = ko.observable(false);
 
@@ -91,8 +97,8 @@ const rangeManagementViewModel = ({ } = {}) => {
     // this is used to hold the results of productSearch: "stubs", unfilled records pending fetchData treatment
     self.searchResults = ko.observableArray([]);
 
-    // this is used to hold the currently visible records: those which the dataSource has deemed to be "in view"
-    self.visibleRecords = ko.observableArray([]);
+    // this is used to hold the records we need to data fetch for those which the dataSource has deemed to be "in view"
+    self.recordsToDataFetch = ko.observableArray([]);
 
     // this holds those records which have been fleshed out by the fetchData results
     self.filledRecords = ko.observableArray([]);
@@ -113,7 +119,7 @@ const rangeManagementViewModel = ({ } = {}) => {
     // these variants, the same as above but for our "add to range" grid.
     self.addSearchResults = ko.observableArray([]);
 
-    self.addVisibleRecords = ko.observableArray([]);
+    self.addRecordsToDataFetch = ko.observableArray([]);
 
     self.addFilledRecords = ko.observableArray([]);
 
@@ -158,45 +164,35 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     self.intersectionObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                console.log('intersecting');
-                let data = ko.dataFor(entry.target);
-                if (data == null || !data.hasOwnProperty("loaded")) {
-                    if (!self.visibleRecords().find(vid => vid.ProductID === data.ProductID)) {
-                        self.visibleRecords.push(data);
-                        self.intersectionObserver.unobserve(entry.target);
-                    }
-                }
-            }
+            self.finalRowVisible(entry.isIntersecting);
         });
     }, {
-        rootMargin: "140px",
-        threshold: 0.1
+        rootMargin: "0px"
     });
 
 
-    self.addIntersectionObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach((entry) => {
-            console.log('observation');
-            if (entry.isIntersecting) {
-                let data = ko.dataFor(entry.target);
-                if (data == null || !data.hasOwnProperty("loaded")) {
-                    if (!self.addVisibleRecords().find(vid => vid.ProductID === data.ProductID))
-                        self.addVisibleRecords.push(data);
-                }
-                //entry.target.style.display = "table-row";
-            } else {
-                let data = ko.dataFor(entry.target);
-                if (data && data.hasOwnProperty('loaded') && data.loaded()) {
-                    self.addIntersectionObserver.unobserve(entry.target);
-                }
-                //entry.target.style.display = "none";   
-            }
-        });
-    }, {
-        rootMargin: "140px",
-        threshold: 0.1
-    });
+    //self.addIntersectionObserver = new IntersectionObserver((entries, observer) => {
+    //    entries.forEach((entry) => {
+    //        console.log('observation');
+    //        if (entry.isIntersecting) {
+    //            let data = ko.dataFor(entry.target);
+    //            if (data == null || !data.hasOwnProperty("loaded")) {
+    //                if (!self.addVisibleRecords().find(vid => vid.ProductID === data.ProductID))
+    //                    self.addVisibleRecords.push(data);
+    //            }
+    //            //entry.target.style.display = "table-row";
+    //        } else {
+    //            let data = ko.dataFor(entry.target);
+    //            if (data && data.hasOwnProperty('loaded') && data.loaded()) {
+    //                self.addIntersectionObserver.unobserve(entry.target);
+    //            }
+    //            //entry.target.style.display = "none";   
+    //        }
+    //    });
+    //}, {
+    //    rootMargin: "140px",
+    //    threshold: 0.1
+    //});
 
     //#endregion
 
@@ -245,28 +241,30 @@ const rangeManagementViewModel = ({ } = {}) => {
 
                     switch (self.view()) {
                         case VIEW_MANAGE:
-                            obj = self.gridSettings;
+                            //obj = self.gridSettings;
+                            self.recordsToDataFetch([]);
                             break;
                         case VIEW_ADD:
-                            obj = self.addGridSettings;
+                            //obj = self.addGridSettings;
+                            self.addRecordsToDataFetch([]);
                             break;
                         default:
                             break;
                     }
 
-                    if (obj && obj.widget()) {
-                        obj.widget().dataSource.data([]);
+                    //if (obj && obj.widget()) {
+                    //    obj.widget().dataSource.data([]);
 
-                        let grouping = obj.widget().dataSource.group();
+                    //    let grouping = obj.widget().dataSource.group();
 
-                        let pageSize = obj.widget().dataSource.pageSize();
+                    //    let pageSize = obj.widget().dataSource.pageSize();
 
-                        obj.widget().dataSource.query({
-                            page: 1,
-                            pageSize: pageSize,
-                            group: grouping
-                        });
-                    }
+                    //    obj.widget().dataSource.query({
+                    //        page: 1,
+                    //        pageSize: pageSize,
+                    //        group: grouping
+                    //    });
+                    //}
                 }, 0);
             }
         }
@@ -301,311 +299,6 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     self.getAddFilledRecord = (productId) => {
         return self.addFilledRecords().find(p => p.ProductID === productId);
-    }
-
-    self.addGridDataSource = new kendo.data.DataSource({
-        transport: {
-            read: (options) => {
-
-                self.setBusy();
-
-                var webapi = new kendo.data.transports.webapi({ prefix: "" });
-                var params = webapi.parameterMap(options.data);
-
-                var data = {};
-
-                for (var propertyName in params) {
-                    data[propertyName] = params[propertyName];
-                }
-
-                data = Object.assign(params, self.gridParams());
-
-                let qs = new URLSearchParams(data);
-
-                console.log('fetchProductsAddToRange calling with', data);
-
-                fetch(`/api/rangeManagementApi/FetchProductsAddToRange?${qs}`, {
-                    method: 'GET',
-                    headers: window.fetchHeaders
-                })
-                    .then(window.handleFetchResponse)
-                    .then(data => {
-                        console.log('fetchProductsAddToRange returned', data);
-
-                        self.clearBusy();
-
-                        self.addSearchResults(data.Data);
-
-                        options.success(data);
-                    })
-                    .catch(err => {
-                        self.clearBusy();
-                        window.catchFetchError(err);
-                    });
-            }
-        },
-        page: 1,
-        pageSize: 200,
-        serverPaging: false,
-        serverSorting: false,
-        serverFiltering: false,
-        schema: $.extend({}, kendo.data.schemas.webapi, {
-            data: "Data",
-            total: "Total",
-            model: {
-                id: 'ProductID'
-            }
-        }),
-        group: [{
-            field: "ProductFilterName",
-            aggregates: [{
-                field: "ProductFilterName",
-                aggregate: "count"
-            }, {
-                field: "RangePlanned",
-                aggregate: "sum"
-            }]
-        }, {
-            field: "ProductPageName"
-        }, {
-            field: "OrderFormGroup"
-        }]
-    });
-
-    self.removeEmptyGroupingRows = () => {
-        $('#add-results-grid p.k-reset:contains("null")').each((n, e) => {
-            $(e).parent().parent().remove();
-        });
-    }
-
-    self.parseView = (items, array) => {
-        items.forEach(item => {
-            if (item.hasOwnProperty("ProductID")) {
-                array.push(item);
-            } else {
-                self.parseView(item.items, array);
-            }
-        });
-    }
-
-    self.addGridSettings = {
-        autoBind: false,
-        widget: ko.observable(),
-        useKOTemplates: true,
-        rowTemplate: "add-row-template",
-        data: self.addGridDataSource,
-        columns: [{
-            title: "Product Filter Name",
-            field: "ProductFilterName",
-            groupHeaderTemplate: (r) => {
-                //console.log(r);
-                let productArray = self.addSearchResults().filter(sr => sr.ProductFilterName == r.value);
-                let productPageSet = new Set(productArray.flatMap(sr => sr.ProductPageName));
-
-                let resultString = ``;
-
-                if (productPageSet.size == 1 && productPageSet[0] == null) {
-                    resultString = `<span class="group-heading product-filter-name bold">${r.value} (${productArray.length} Product${productArray.length == 1 ? '' : 's'})</span>`;
-                } else {
-                    resultString = `<span class="group-heading product-filter-name bold">${r.value} (${productPageSet.size} Product Page${productPageSet.size == 1 ? '' : 's'}, ${productArray.length} Product${productArray.length == 1 ? '' : 's'})</span>`;
-                }
-
-                return resultString;
-            },
-            hidden: true
-        }, {
-            title: "Product Page Name",
-            field: "ProductPageName",
-            groupHeaderTemplate: (r) => {
-                return `<span class="group-heading product-page-name">${r.value}</span>`;
-            },
-            hidden: true
-        }, {
-            title: "Order Form Group",
-            field: "OrderFormGroup",
-            groupHeaderTemplate: (r) => {
-                return `<span class="group-heading order-form-group">${r.value}</span>`;
-            },
-            hidden: true
-        }, {
-            title: " ",
-            width: 310,
-            headerTemplate: `<span class="group-heading header-blue"></span>`
-        }, {
-            title: "Recommendations",
-            field: "Recommendations",
-            width: 300
-        }, {
-            field: "ActionQuantityToRange",
-            title: "Quantity",
-            width: 200,
-            headerAttributes: {
-                class: "text-end"
-            }
-        }, {
-            title: " ",
-            field: "Submit",
-            width: 140
-        }, {
-            title: "Stock",
-            columns: [{
-                field: "StockWarehouse",
-                title: "Warehouse",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "StockCover",
-                title: "Cover",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "StockPurchaseOrdersFreeStock",
-                title: "PO Quantity",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "StockPurchaseOrdersDueDate",
-                title: "PO Due Date",
-                width: 100
-            }, {
-                field: "StockKingsRoad",
-                title: "King's Road",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "StockMarylebone",
-                title: "Marylebone",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "StockFenwickAll",
-                title: "Fenwick (All)",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "StockRingFenced",
-                title: "Ring Fenced",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }]
-        }, {
-            title: "Sales - Last 180 Days",
-            columns: [{
-                field: "SalesSummary",
-                title: "Summary",
-                width: 200
-            }, {
-                field: "SalesTotal",
-                title: "Total",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "SalesKingsRoad",
-                title: "King's Road",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "SalesMarylebone",
-                title: "Marylebone",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "SalesFenwickAll",
-                title: "Fenwick (All)",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "SalesUKECom",
-                title: "UK eComm",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "SalesUKTrade",
-                title: "UK Trade",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                }
-            }, {
-                field: "SalesROWTrade",
-                title: "ROW Trade",
-                width: 100,
-                headerAttributes: {
-                    class: "text-end"
-                },
-                hidden: true
-            }]
-        }],
-        sortable: false,
-        groupable: false,
-        reorderable: false,
-        filterable: false,
-        selectable: false,
-        scrollable: {
-            endless: true
-        },
-        pageable: {
-            numeric: false,
-            previousNext: false,
-            messages: {
-                display: "Showing items {0} to {1} of {2}"
-            }
-        },
-        height: 1060,
-        width: 'auto',
-        noRecords: {
-            //template: `<div class="empty-cover"><h4>No Results</h4></div>`,
-            template: ` `,
-        },
-        dataBound: (e) => {
-            self.removeEmptyGroupingRows();
-
-            let data = e.sender.dataSource.view();
-
-            let array = [];
-
-            self.parseView(data, array);
-
-            self.addVisibleRecords(array);
-
-            document.querySelectorAll(".product-filter-name").forEach(ppn => {
-                ppn.closest("tr").classList.add("product-filter-name-row");
-            });
-
-            document.querySelectorAll(".product-page-name").forEach(ppn => {
-                ppn.closest("tr").classList.add("product-page-name-row");
-            });
-
-            document.querySelectorAll(".order-form-group").forEach(ofg => {
-                ofg.closest("tr").classList.add("order-form-group-row");
-            });
-
-            //console.log("addRange grid dataBound");
-        }
     }
 
     self.transferOrdersWH2BRDataSource = new kendo.data.DataSource({
@@ -664,7 +357,12 @@ const rangeManagementViewModel = ({ } = {}) => {
         }),
         sort: {
             field: "SortOrder"
-        }
+        },
+        group: [{
+            field: "TradeAccountLabel"
+        }, {
+            field: "SecondaryGroupingLabel" 
+        }]
     });
 
     self.transferOrdersBR2WHDataSource = new kendo.data.DataSource({
@@ -727,73 +425,98 @@ const rangeManagementViewModel = ({ } = {}) => {
     });
 
     self.transferOrdersColumns = [{
+        title: "Trade Account",
+        field: "TradeAccountLabel",
+        width: 375,
+        groupHeaderTemplate: (e) => {
+            return `Trade Account: ${e.value}`;
+        },
+        hidden: true,
+        filterable: false
+    }, {
         title: " ",
-        field: "ImageID",
-        width: 80
-    }, {
-        title: "Type",
-        field: "Type",
-        width: 60
-    }, {
-        title: "Product",
-        field: "Product"
-    }, {
-        title: "Quantity",
-        field: "QuantityOrdered",
-        width: 80,
-        headerAttributes: {
-            class: "text-end"
-        }
+        field: "SecondaryGroupingLabel",
+        groupHeaderTemplate: (e) => {
+            return `${e.value}`;
+        },
+        hidden: true,
+        filterable: false
     }, {
         title: "Order ID",
         field: "OrderID",
         width: 100,
         headerAttributes: {
             class: "text-end"
-        }
+        },
+        groupHeaderTemplate: (e) => {
+            return `Order ID: ${e.value} - Order Date: ${renderDate(e.items[0].OrderDT)}`;
+        },
+        hidden: true,
+        filterable: false
     }, {
         title: "Order Date",
         field: "OrderDT",
-        width: 100
-    }, {
-        title: "Order Line ID",
-        field: "OrderLineID",
-        width: 120,
-        headerAttributes: {
-            class: "text-end"
-        }
-    }, {
-        title: "Basket ID",
-        field: "BasketID",
         width: 100,
-        headerAttributes: {
-            class: "text-end"
-        }
+        hidden: true,
+        filterable: false
     }, {
         title: "Basket Date",
         field: "BasketDT",
         width: 100,
         template: (e) => {
             return renderDate(e.value)
-        }
+        },
+        hidden: true,
+        filterable: false
+    }, {
+        title: " ",
+        field: "ImageID",
+        width: 80,
+        filterable: false
+    }, {
+        title: "Product",
+        field: "Product",
+        filterable: false
+    }, {
+        title: "Quantity",
+        field: "QuantityOrdered",
+        width: 80,
+        headerAttributes: {
+            class: "text-end"
+        },
+        filterable: false
+    }, {
+        title: "Status",
+        field: "DetailedLineStatus",
+        filterable: {
+            multi: true
+        } 
     }, {
         title: "Basket Item ID",
         field: "BasketItemID",
         width: 120,
         headerAttributes: {
             class: "text-end"
-        }
+        },
+        filterable: false
     }, {
-        title: "Trade Account",
-        field: "TradeAccount"
-    }, {
-        title: "Status",
+        title: "Order Line ID",
+        field: "OrderLineID",
         width: 140,
-        field: "DetailedLineStatus"
+        headerAttributes: {
+            class: "text-end"
+        },
+        filterable: false
+    }, {
+        title: "Type",
+        field: "Type",
+        width: 60,
+        filterable: false,
+        hidden: true
     }]
 
     self.transferOrdersWH2BRGridSettings = {
-        autoBind: false,
+        autoBind: true,
         widget: ko.observable(),
         useKOTemplates: true,
         rowTemplate: "transfer-orders-row-template",
@@ -802,7 +525,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         sortable: false,
         groupable: false,
         reorderable: false,
-        filterable: false,
+        filterable: true,
         selectable: false,
         scrollable: {
             endless: true
@@ -920,6 +643,9 @@ const rangeManagementViewModel = ({ } = {}) => {
             field: 'Name'
         }],
         select: self.genericUnsavedChangesSelect,
+        afterClear: () => {
+            self.productFilterGroupParams.clearFunction();
+        },
         clearFunction: self.genericUnsavedChangesClear
     });
 
@@ -1009,7 +735,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         decorateInputElement: true,
         insertValidationMessages: false,
         enterKey: () => {
-            self.gridSettings.widget().dataSource.read();
+            //self.gridSettings.widget().dataSource.read();
         }
     }
 
@@ -1036,6 +762,9 @@ const rangeManagementViewModel = ({ } = {}) => {
             }
         } else {
             self.currentProductFilters(self.completeProductFilters());
+
+            // 
+            self.productFilterParams.clearFunction();
         }
     });
 
@@ -1053,6 +782,16 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     //#region Methods
 
+    self.clearGridData = () => {
+        self.recordsToDataFetch([]);
+        self.filledRecords([]);
+    }
+
+    self.clearAddGridData = () => {
+        self.addRecordsToDataFetch([]);
+        self.addFilledRecords([]);
+    }
+
     self.showAddNoteModal = (record) => {
         self.addingNoteToRecord(record);
         self.addNoteModal.show();
@@ -1064,6 +803,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         self.note(undefined);
         self.addingNoteToRecord().busy(true);
         self.addingNoteToRecord().loaded(false);
+        self.reloadRecord(self.addingNoteToRecord());
         self.addingNoteToRecord(undefined);
     }
 
@@ -1157,7 +897,11 @@ const rangeManagementViewModel = ({ } = {}) => {
                 .then(data => {
                     window.showInfo("Success", "Transfer orders submitted successfully.", () => {
                         console.log("Clear or reset or run the branch check again or something...");
-                        self.branchCheck();
+                        self.branchCheck({
+                            dataItem: {
+                                BranchID: self.branchId()
+                            }
+                        });
                     });
                 })
                 .catch(window.catchFetchError);
@@ -1165,25 +909,32 @@ const rangeManagementViewModel = ({ } = {}) => {
     }
 
     self.searchResultsPostProcessing = () => {
-        window.setTimeout(() => {
-            if (self.intersectionObserver) {
-                document.querySelectorAll("#results-grid tbody tr[role=row]:not(.k-grouping-row)").forEach(row => {
-                    console.log('observing');
-                    self.intersectionObserver.observe(row);
-                });
-            }
-        }, 0);
+        //let productFilterRows = Array.from(document.querySelectorAll(".product-filter-name-row")).reduce((a, i) => a += i.clientHeight, 0);
+        //let productPageNameRows = Array.from(document.querySelectorAll(".product-page-name-row")).reduce((a, i) => a += i.clientHeight, 0);
+        //let orderFormGroupNameRows = Array.from(document.querySelectorAll(".order-form-group-row")).reduce((a, i) => a += i.clientHeight, 0);
+        //let rows = self.searchResults().length * self.rowHeight;
+
+        //self.gridTotalHeight(productFilterRows + productPageNameRows + orderFormGroupNameRows + rows);
+
+        //window.setTimeout(() => {
+        //    if (self.intersectionObserver) {
+        //        document.querySelectorAll("#results-grid tbody tr[role=row]:not(.k-grouping-row)").forEach(row => {
+        //            console.log('observing');
+        //            self.intersectionObserver.observe(row);
+        //        });
+        //    }
+        //}, 0);
     }
 
     self.addSearchResultsPostProcessing = () => {
-        window.setTimeout(() => {
-            if (self.addIntersectionObserver) {
-                document.querySelectorAll("#add-results-grid tbody tr[role=row]:not(.k-grouping-row)").forEach(row => {
-                    console.log('observing');
-                    self.addIntersectionObserver.observe(row);
-                });
-            }
-        }, 0);
+        //window.setTimeout(() => {
+        //    if (self.addIntersectionObserver) {
+        //        document.querySelectorAll("#add-results-grid tbody tr[role=row]:not(.k-grouping-row)").forEach(row => {
+        //            console.log('observing');
+        //            self.addIntersectionObserver.observe(row);
+        //        });
+        //    }
+        //}, 0);
     }
 
     self.branchCheck = (e, onComplete) => {
@@ -1443,6 +1194,14 @@ const rangeManagementViewModel = ({ } = {}) => {
         }
     }
 
+    self.reloadRecord = (rec) => {
+        self.recordsToDataFetch.push(rec);
+    }
+
+    self.reloadAddRecord = (rec) => {
+        self.addRecordsToDataFetch.push(rec);
+    }
+
     //#endregion
 
 
@@ -1451,15 +1210,18 @@ const rangeManagementViewModel = ({ } = {}) => {
     self.fetchProducts = ko.computed(() => {
 
         if (self.view() == VIEW_MANAGE) {
+
+            self.filledRecords([]);
+
+            self.clearAddGridData();
+
+            window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+
             self.setBusy();
 
             let data = self.gridParams();
 
             let qs = new URLSearchParams(data);
-
-            self.visibleRecords([]);
-            self.filledRecords([]);
-            self.searchResults([]);
 
             console.log('fetchProducts calling with', data);
 
@@ -1493,15 +1255,26 @@ const rangeManagementViewModel = ({ } = {}) => {
     self.fetchAddProducts = ko.computed(() => {
 
         if (self.view() == VIEW_ADD) {
+
+            window.scrollTo({
+                top: 0,
+                left: 0,
+                behavior: "instant"
+            });
+
+            self.addFilledRecords([]);
+
+            self.clearGridData();
+
             self.setBusy();
 
             let data = self.gridParams();
 
             let qs = new URLSearchParams(data);
 
-            console.log('fetchProductsAddToRange calling with', data);
+            //console.log('fetchProductsAddToRange calling with', data);
 
-            let callStart = new Date();
+            //let callStart = new Date();
 
             fetch(`/api/rangeManagementApi/FetchProductsAddToRange?${qs}`, {
                 method: 'GET',
@@ -1509,13 +1282,11 @@ const rangeManagementViewModel = ({ } = {}) => {
             })
                 .then(window.handleFetchResponse)
                 .then(data => {
-                    console.log('fetchProductsAddToRange returned', data);
+                    //console.log('fetchProductsAddToRange returned', data);
 
-                    window.scrollTo(0, 0);
+                    //let callReturn = new Date();
 
-                    let callReturn = new Date();
-
-                    console.log(`fetchProductsAddToRange returned in ${callReturn - callStart}ms`, data);
+                    //console.log(`fetchProductsAddToRange returned in ${callReturn - callStart}ms`, data);
 
                     //if (data.Data.length === 0)
                         self.clearBusy();
@@ -1528,9 +1299,9 @@ const rangeManagementViewModel = ({ } = {}) => {
                     window.setTimeout(() => {
                         //self.addSearchResultsPostProcessing();
 
-                        let renderDone = new Date();
+                        //let renderDone = new Date();
 
-                        console.log(`fetchProductsAddToRange rendered in ${renderDone - callStart}ms`, data);
+                        //console.log(`fetchProductsAddToRange rendered in ${renderDone - callStart}ms`, data);
 
                     }, 0);
 
@@ -1543,10 +1314,11 @@ const rangeManagementViewModel = ({ } = {}) => {
     }, self);
 
     self.unfilledRecordProductIds = ko.computed(() => {
-        return Array.from(new Set(self.visibleRecords().filter(vr => {
+        let results = Array.from(new Set(self.recordsToDataFetch().filter(vr => {
             let r = self.filledRecords().find(fr => fr.ProductID == vr.ProductID);
             return (r == null || r && r.loaded() == false);
         }).map(cr => cr.ProductID)));
+        return results;
     }, self).extend({
         rateLimit: {
             timeout: 100,
@@ -1560,9 +1332,9 @@ const rangeManagementViewModel = ({ } = {}) => {
         if (urpids.length) {
 
             window.setTimeout(() => {
-                console.log('fetchData calling with', urpids);
+                //console.log('fetchData calling with', urpids);
 
-                let callStart = new Date();
+                //let callStart = new Date();
 
                 fetch('/api/rangemanagementapi/FetchData', {
                     method: 'POST',
@@ -1575,68 +1347,218 @@ const rangeManagementViewModel = ({ } = {}) => {
                     .then(window.handleFetchResponse)
                     .then(data => {
 
-                        let callReturn = new Date();
+                        //let callReturn = new Date();
 
-                        console.log(`fetchData returned in ${callReturn - callStart}ms`, data);
+                        //console.log(`fetchData returned in ${callReturn - callStart}ms`, data);
 
                         let records = self.searchResults.peek();
                         let affectedRecords = [];
                         let filledRecords = self.filledRecords.peek();
+                        let forcedRemovals = [];
 
                         urpids.forEach(pid => {
 
                             let record = records.find(p => p.ProductID === pid);
-                            let dataResult = data.Results.find(p => p.ProductID == pid);
-                            let filledRecord = filledRecords.find(p => p.ProductID == pid);
+                            // if record is null here, we've fetched data for something which is no longer amongst our search results.
+                            // this will readily cause chaos: remove it from the 'to be fetched' collection.
 
-                            let add = true;
+                            if (record != null) {
 
-                            if (dataResult) {
+                                let dataResult = data.Results.find(p => p.ProductID == pid);
+                                let filledRecord = filledRecords.find(p => p.ProductID == pid);
+
+                                let add = true;
+
+                                if (dataResult) {
+
+                                    if (filledRecord == null) {
+                                        record = resultRecord({
+                                            branchId: self.branchId(),
+                                            rec: record,
+                                            fetchBranchBasketsNonce: self.fetchBranchBasketsNonce,
+                                            reload: self.reloadRecord
+                                        });
+                                    } else {
+                                        add = false;
+                                        filledRecord.loaded(true);
+                                        record = filledRecord;
+                                    }
+
+                                    record.actionRecommendations = dataResult.Action_Recommendation;
+
+                                    record.actionTransferToBranchHighlight = dataResult.Action_TransferToBranchHighlight;
+
+                                    record.actionTransferToBranchQuantityOriginal(dataResult.Action_TransferToBranchQuantity);
+                                    record.actionTransferToBranchQuantity(dataResult.Action_TransferToBranchQuantity);
+                                    record.actionTransferToBranchBasketItemId(dataResult.WH2BR_BasketItemID);
+
+                                    if (dataResult.WH2BR_BasketItemID) {
+                                        record.actionTransferToBranchQuantityParams.disable(true);
+                                    }
+
+                                    record.actionTransferToWarehouseHighlight = dataResult.Action_TransferToWarehouseHighlight;
+
+                                    record.actionTransferToWarehouseQuantityOriginal(dataResult.Action_TransferToWarehouseQuantity);
+                                    record.actionTransferToWarehouseQuantity(dataResult.Action_TransferToWarehouseQuantity);
+                                    record.actionTransferToWarehouseBasketItemId(dataResult.BR2WH_BasketItemID);
+
+                                    if (dataResult.BR2WH_BasketItemID) {
+                                        record.actionTransferToWarehouseQuantityParams.disable(true);
+                                    }
+
+                                    record.notes = dataResult.Action_NoteCount;
+
+                                    record.rangeStatus = dataResult.Range_Status;
+                                    record.rangeActual = dataResult.Range_Actual;
+
+                                    record.rangePlanned(dataResult.Range_Planned);
+                                    record.rangePlannedOriginal(dataResult.Range_Planned);
+
+                                    record.rangeInProgress = dataResult.Range_InProgress;
+                                    record.rangeRequired = dataResult.Range_Required;
+
+                                    record.sales180DayFW = dataResult.Sales_180Day_FW;
+                                    record.sales180DayKR = dataResult.Sales_180Day_KR;
+                                    record.sales180DayMHS = dataResult.Sales_180Day_MHS;
+                                    record.sales180DayUKEcommerce = dataResult.Sales_180Day_UKEcommerce;
+                                    record.sales180DayUKTrade = dataResult.Sales_180Day_UKTrade;
+                                    record.sales180DayROWTrade = dataResult.Sales_180Day_ROWTrade;
+                                    record.sales180DayTotal = dataResult.Sales_180Day_Total;
+                                    record.salesSummary = dataResult.Sales_Summary;
+                                    record.salesCover = dataResult.Sales_Cover;
+
+                                    record.stockCover = dataResult.Stock_Cover;
+                                    record.stockFWFreeStock = dataResult.Stock_FW_FreeStock;
+                                    record.stockKRFreeStock = dataResult.Stock_KR_FreeStock;
+                                    record.stockMHSFreeStock = dataResult.Stock_MHS_FreeStock;
+                                    record.stockWHFreeStock = dataResult.Stock_WH_FreeStock;
+                                    record.stockWHNextPODueDate = dataResult.Stock_WH_NextPODueDate;
+                                    record.stockWHNextPOFreeStock = dataResult.Stock_WH_NextPOFreeStock;
+                                    record.stockSummary = dataResult.Stock_Summary;
+
+                                    record.unitCostPriceGBP = dataResult.UnitCostPriceGBP;
+
+                                    record.busy(false);
+
+                                    record.loaded(true);
+                                } else {
+                                    record.loaded = ko.observable(true);
+                                    record.ErrorMessage = `<h5 class="mb-0">portal.RangeManagement_Range_Select did not return a result for ProductID ${record.ProductID}</h5>`;
+                                }
+
+                                if (add) {
+                                    affectedRecords.push(record);
+                                }
+                            } else {
+                                forcedRemovals.push(pid);
+                            }
+                        });
+
+                        ko.ignoreDependencies(() => {
+                            affectedRecords.forEach(ar => {
+                                self.recordsToDataFetch.remove(rtdf => rtdf.ProductID === ar.ProductID);
+                            });
+
+                            forcedRemovals.forEach(fr => {
+                                self.recordsToDataFetch.remove(rtdf => rtdf.ProductID == fr);
+                            })
+
+                            ko.utils.arrayPushAll(self.filledRecords, affectedRecords);
+                        });
+
+                        //let callBound = new Date();
+
+                        //window.setTimeout(() => {
+                        //    console.log(`fetchData bound in ${callBound - callReturn}ms`);
+                        //}, 0);
+                    })
+                    .catch(err => {
+                        self.clearBusy();
+                        window.catchFetchError(err)
+                    });
+            }, 300);
+        }
+    }, self).extend({
+        rateLimit: {
+            timeout: 100,
+            method: 'notifyWhenChangesStop'
+        }
+    });
+
+    self.unfilledAddRecordProductIds = ko.computed(() => {
+        return Array.from(new Set(self.addRecordsToDataFetch().filter(vr => {
+            return self.addFilledRecords.peek().find(fr => fr.ProductID == vr.ProductID) == null;
+        }).map(vr => vr.ProductID)));
+    }, self).extend({
+        rateLimit: {
+            timeout: 100,
+            method: 'notifyWhenChangesStop'
+        }
+    });
+
+    self.fetchAddData = ko.computed(() => {
+        let uarpids = self.unfilledAddRecordProductIds();
+
+        if (uarpids.length) {
+
+            window.setTimeout(() => {
+
+                fetch('/api/rangemanagementapi/FetchData', {
+                    method: 'POST',
+                    headers: window.fetchHeaders,
+                    body: JSON.stringify({
+                        branchId: self.branchId(),
+                        productIds: uarpids
+                    })
+                })
+                    .then(window.handleFetchResponse)
+                    .then(data => {
+
+                        let records = self.addSearchResults.peek();
+                        let affectedRecords = [];
+                        let filledRecords = self.filledRecords.peek();
+                        let forcedRemovals = [];
+
+                        uarpids.forEach(pid => {
+
+                            let record = records.find(p => p.ProductID === pid);
+                            // if record is null here, we've fetched data for something which is no longer amongst our search results.
+                            // this will readily cause chaos: remove it from the 'to be fetched' collection.
+
+                            if (record != null) {
+
+
+                                let dataResult = data.Results.find(p => p.ProductID == pid);
+                                let filledRecord = filledRecords.find(p => p.ProductID == pid);
+
+                                let add = true;
 
                                 if (filledRecord == null) {
-                                    record = resultRecord({
+                                    record = addResultRecord({
                                         branchId: self.branchId(),
                                         rec: record,
-                                        fetchBranchBasketsNonce: self.fetchBranchBasketsNonce
+                                        reload: self.reloadRecord
+                                        //productFilter: ko.computed(() => {
+                                        //    return self.completeProductFilters().find(p => p.ProductFilterID == record.ProductFilterID)
+                                        //}, self)
                                     });
+
+                                    record.element.subscribe(nv => {
+                                        self.addIntersectionObserver.observe(nv);
+                                    });
+
+                                    record.busy(false);
+
+                                    record.loaded(true);
                                 } else {
                                     add = false;
                                     filledRecord.loaded(true);
                                     record = filledRecord;
                                 }
 
-                                record.actionRecommendations = dataResult.Action_Recommendation;
-
-                                record.actionTransferToBranchHighlight = dataResult.Action_TransferToBranchHighlight;
-
-                                record.actionTransferToBranchQuantityOriginal(dataResult.Action_TransferToBranchQuantity);
-                                record.actionTransferToBranchQuantity(dataResult.Action_TransferToBranchQuantity);
-                                record.actionTransferToBranchBasketItemId(dataResult.WH2BR_BasketItemID);
-
-                                if (dataResult.WH2BR_BasketItemID) {
-                                    record.actionTransferToBranchQuantityParams.disable(true);
-                                }
-
-                                record.actionTransferToWarehouseHighlight = dataResult.Action_TransferToWarehouseHighlight;
-
-                                record.actionTransferToWarehouseQuantityOriginal(dataResult.Action_TransferToWarehouseQuantity);
-                                record.actionTransferToWarehouseQuantity(dataResult.Action_TransferToWarehouseQuantity);
-                                record.actionTransferToWarehouseBasketItemId(dataResult.BR2WH_BasketItemID);
-
-                                if (dataResult.BR2WH_BasketItemID) {
-                                    record.actionTransferToWarehouseQuantityParams.disable(true);
-                                }
-
-                                record.notes = dataResult.Action_NoteCount;
-
-                                record.rangeStatus = dataResult.Range_Status;
-                                record.rangeActual = dataResult.Range_Actual;
-
-                                record.rangePlanned(dataResult.Range_Planned);
-                                record.rangePlannedOriginal(dataResult.Range_Planned);
-
-                                record.rangeInProgress = dataResult.Range_InProgress;
-                                record.rangeRequired = dataResult.Range_Required;
+                                record.actionAddToRangeHighlight(dataResult.Action_AddToRangeHighlight);
+                                record.actionRecommendations(dataResult.Action_Recommendation);
+                                record.allowed(dataResult.Control_Allow_AddToRange);
 
                                 record.sales180DayFW = dataResult.Sales_180Day_FW;
                                 record.sales180DayKR = dataResult.Sales_180Day_KR;
@@ -1657,145 +1579,28 @@ const rangeManagementViewModel = ({ } = {}) => {
                                 record.stockWHNextPOFreeStock = dataResult.Stock_WH_NextPOFreeStock;
                                 record.stockSummary = dataResult.Stock_Summary;
 
-                                record.unitCostPriceGBP = dataResult.UnitCostPriceGBP;
+                                if (add) {
+                                    affectedRecords.push(record);
+                                }
 
-                                record.busy(false);
-
-                                record.loaded(true);
-                            } else {
-                                record.loaded = ko.observable(true);
-                                record.ErrorMessage = `<h5 class="mb-0">portal.RangeManagement_Range_Select did not return a result for ProductID ${record.ProductID}</h5>`;
-                            }
-
-                            if (add) {
                                 affectedRecords.push(record);
+                            }
+                            else {
+                                forcedRemovals.push(pid);
                             }
                         });
 
                         ko.ignoreDependencies(() => {
-                            ko.utils.arrayPushAll(self.filledRecords, affectedRecords);
+                            affectedRecords.forEach(ar => {
+                                self.addRecordsToDataFetch.remove(rtdf => rtdf.ProductID === ar.ProductID);
+                            });
+
+                            forcedRemovals.forEach(fr => {
+                                self.addRecordsToDataFetch.remove(rtdf => rtdf.ProductID == fr);
+                            })
+
+                            ko.utils.arrayPushAll(self.addFilledRecords, affectedRecords);
                         });
-
-                        let callBound = new Date();
-
-                        window.setTimeout(() => {
-                            console.log(`fetchData bound in ${callBound - callReturn}ms`);
-                        }, 0);
-                    })
-                    .catch(err => {
-                        self.clearBusy();
-                        window.catchFetchError(err)
-                    });
-            }, 300);
-        }
-    }, self).extend({
-        rateLimit: {
-            timeout: 100,
-            method: 'notifyWhenChangesStop'
-        }
-    });
-
-    self.unfilledAddRecordProductIds = ko.computed(() => {
-        return Array.from(new Set(self.addVisibleRecords().filter(vr => {
-            return self.addFilledRecords().find(fr => fr.ProductID == vr.ProductID) == null;
-        }).map(vr => vr.ProductID)));
-    }, self).extend({
-        rateLimit: {
-            timeout: 100,
-            method: 'notifyWhenChangesStop'
-        }
-    });
-
-    self.fetchAddData = ko.computed(() => {
-
-        return;
-
-        let uarpids = self.unfilledAddRecordProductIds();
-
-        if (uarpids.length) {
-
-            //if (uarpids.length > 1) {
-            //    self.setBusy();
-            //}
-
-            window.setTimeout(() => {
-
-                fetch('/api/rangemanagementapi/FetchData', {
-                    method: 'POST',
-                    headers: window.fetchHeaders,
-                    body: JSON.stringify({
-                        branchId: self.branchId(),
-                        productIds: uarpids
-                    })
-                })
-                    .then(window.handleFetchResponse)
-                    .then(data => {
-
-                        let records = self.addSearchResults.peek();
-                        let affectedRecords = [];
-                        let filledRecords = self.filledRecords.peek();
-
-                        uarpids.forEach(pid => {
-
-                            let record = records.find(p => p.ProductID === pid);
-                            let dataResult = data.Results.find(p => p.ProductID == pid);
-                            let filledRecord = filledRecords.find(p => p.ProductID == pid);
-
-                            let add = true;
-
-                            if (filledRecord == null) {
-                                record = addResultRecord({
-                                    branchId: self.branchId(),
-                                    rec: record,
-                                    productFilter: ko.computed(() => {
-                                        return self.completeProductFilters().find(p => p.ProductFilterID == record.ProductFilterID)
-                                    }, self)
-                                });
-
-                                record.element.subscribe(nv => {
-                                    self.addIntersectionObserver.observe(nv);
-                                });
-
-                                record.busy(false);
-
-                                record.loaded(true);
-                            } else {
-                                add = false;
-                                filledRecord.loaded(true);
-                                record = filledRecord;
-                            }
-
-                            record.actionAddToRangeHighlight(dataResult.Action_AddToRangeHighlight);
-                            record.actionRecommendations(dataResult.Action_Recommendation);
-                            record.allowed(dataResult.Control_Allow_AddToRange);
-
-                            record.sales180DayFW = dataResult.Sales_180Day_FW;
-                            record.sales180DayKR = dataResult.Sales_180Day_KR;
-                            record.sales180DayMHS = dataResult.Sales_180Day_MHS;
-                            record.sales180DayUKEcommerce = dataResult.Sales_180Day_UKEcommerce;
-                            record.sales180DayUKTrade = dataResult.Sales_180Day_UKTrade;
-                            record.sales180DayROWTrade = dataResult.Sales_180Day_ROWTrade;
-                            record.sales180DayTotal = dataResult.Sales_180Day_Total;
-                            record.salesSummary = dataResult.Sales_Summary;
-                            record.salesCover = dataResult.Sales_Cover;
-
-                            record.stockCover = dataResult.Stock_Cover;
-                            record.stockFWFreeStock = dataResult.Stock_FW_FreeStock;
-                            record.stockKRFreeStock = dataResult.Stock_KR_FreeStock;
-                            record.stockMHSFreeStock = dataResult.Stock_MHS_FreeStock;
-                            record.stockWHFreeStock = dataResult.Stock_WH_FreeStock;
-                            record.stockWHNextPODueDate = dataResult.Stock_WH_NextPODueDate;
-                            record.stockWHNextPOFreeStock = dataResult.Stock_WH_NextPOFreeStock;
-                            record.stockSummary = dataResult.Stock_Summary;
-
-                            if (add) {
-                                affectedRecords.push(record);
-                            }
-
-                            affectedRecords.push(record);
-                        });
-
-                        ko.utils.arrayPushAll(self.addFilledRecords, affectedRecords);
 
                         //self.fetchAddDataBusy(false);
 
@@ -1829,89 +1634,360 @@ const rangeManagementViewModel = ({ } = {}) => {
         if (self.searchResults().length) {
             let results = [];
 
-            let productFilterGrouping = Object.groupBy(self.searchResults(), (sr) => sr.ProductFilterID);
+            // counts the number of *end* product rows we have rendered
+            let runningCount = 0;
 
-            Object.keys(productFilterGrouping).forEach(k => {
-                let productFilterGroup = {};
+            // grouping initially by ProductFilterName. All search results must have a Product Filter Name, no exceptions.
+            let productFilterGrouping = Object.groupBy(self.searchResults(), (sr) => sr.ProductFilterName);
 
-                k = +k;
+            // the height of the table's thead element
+            let startingOffset = self.gridHeaderHeight;
 
-                productFilterGroup.name = ko.computed(() => {
-                    let cpfs = self.completeProductFilters();
-                    let pf = cpfs.find(pfid => {
-                        return pfid.ProductFilterID === k;
-                    });
-                    if (pf)
-                        return pf.Name.replace(/<br\/>/g, ' ');
-                }, self);
+            // we can only really do this if we're working with *exact* known heights.
+            // otherwise all bets are off.
+            // therefore let us achieve the knowing of the heights.
+            let additionalOffset = startingOffset;
 
-                productFilterGroup.items = ko.observableArray(productFilterGrouping[k]);
+            let runningProductFilterGroupHeight = 0;
 
-                productFilterGroup.plannedCount = ko.computed(() => {
-                    return self.productFilterTotals().find(pft => pft.ProductFilterID === k)?.PlannedCount;
-                }, self);
+            let runningProductPageGroupHeight = 0;
 
-                productFilterGroup.plannedValue = ko.computed(() => {
-                    return self.productFilterTotals().find(pft => pft.ProductFilterID === k)?.PlannedValue;
-                }, self);
+            let runningOrderFormGroupHeight = 0;
 
-                productFilterGroup.actualCount = ko.computed(() => {
-                    return self.productFilterTotals().find(pft => pft.ProductFilterID === k)?.ActualCount;
-                }, self);
+            let filledRecords = self.filledRecords.peek();
 
-                productFilterGroup.actualValue = ko.computed(() => {
-                    return self.productFilterTotals().find(pft => pft.ProductFilterID === k)?.ActualValue;
-                }, self);
+            // Object.groupBy returns an object having properties for each group key whose values are the group's items.
+            Object.keys(productFilterGrouping).forEach((k, ki) => {
 
-                productFilterGroup.inProgressCount = ko.computed(() => {
-                    return self.productFilterTotals().find(pft => pft.ProductFilterID === k)?.InProgressCount;
-                }, self);
+                // Therefore we iterate over the keys of that object and create an entry into an array...
+                let r = {
+                    name: k,
+                    items: ko.observableArray(productFilterGrouping[k]),
+                    height: 0,
+                    offsetY: 0,
+                    runningHeight: runningProductFilterGroupHeight, // setting initial properties to zero, hooray for declaration
+                    plannedCount: ko.computed(() => {
+                        return self.productFilterTotals().find(pft => pft.ProductFilterName === k)?.PlannedCount;
+                    }, self),
+                    plannedValue: ko.computed(() => {
+                        return self.productFilterTotals().find(pft => pft.ProductFilterName === k)?.PlannedValue;
+                    }, self),
+                    actualCount: ko.computed(() => {
+                        return self.productFilterTotals().find(pft => pft.ProductFilterName === k)?.ActualCount;
+                    }, self),
+                    actualValue: ko.computed(() => {
+                        return self.productFilterTotals().find(pft => pft.ProductFilterName === k)?.ActualValue;
+                    }, self),
+                    inProgressCount: ko.computed(() => {
+                        return self.productFilterTotals().find(pft => pft.ProductFilterName === k)?.InProgressCount;
+                    }, self),
+                    inProgressValue: ko.computed(() => {
+                        return self.productFilterTotals().find(pft => pft.ProductFilterName === k)?.InProgressValue;
+                    }, self)
+                };
 
-                productFilterGroup.inProgressValue = ko.computed(() => {
-                    return self.productFilterTotals().find(pft => pft.ProductFilterID === k)?.InProgressValue;
-                }, self);
-                
-                results.push(productFilterGroup);
+                // add the array entry
+                results.push(r);
             });
 
-            results.forEach(pf => {
+            // then we can iterate over the array as usual - always useful to have the index around in case you need it
+            results.forEach((productFilterGroup, productFilterGroupIndex) => {
+
+                // every record has at least a bit of offset: this accumulates across the data set.
+                // every product filter contributes a fixed height of offset (30px), which must be considered in addition to the main header rows on the grid (73px).
+                additionalOffset += self.productFilterGroupRowHeight;
+
                 let productPages = [];
 
-                let productPageGrouping = Object.groupBy(pf.items(), (i) => i.ProductPageName || "");
+                // continue the grouping dance at the product page level - grouping by null is not okay, so if you have to group by an empty string:
+                let productPageGrouping = Object.groupBy(productFilterGroup.items(), (i) => i.ProductPageName || "");
 
                 Object.keys(productPageGrouping).forEach(k => {
-                    productPages.push({
+                    let r = {
                         name: k,
-                        items: ko.observableArray(productPageGrouping[k])
-                    });
+                        items: ko.observableArray(productPageGrouping[k]),
+                        height: 0,
+                        offsetY: 0,
+                        runningHeight: runningProductPageGroupHeight
+                    };
+
+                    productPages.push(r);
                 });
 
-                productPages.forEach(ppg => {
+                productPages.forEach((productPageGroup, productPageGroupIndex) => {
+
+                    // if this productPageGroup has a name, it will have rendered a heading (22px) and we need to account for the height of that heading.
+                    if (productPageGroup.name != "") {
+                        additionalOffset += self.productPageGroupRowHeight;
+                    }
+
                     let orderFormGroups = [];
 
-                    let orderFormGrouping = Object.groupBy(ppg.items(), (i) => i.OrderFormGroup || "");
+                    // continue grouping to the order form group level:
+                    let orderFormGrouping = Object.groupBy(productPageGroup.items(), (i) => i.OrderFormGroup || "");
 
                     Object.keys(orderFormGrouping).forEach(k => {
-                        orderFormGroups.push({
+
+                        let r = {
                             name: k,
-                            items: ko.observableArray(orderFormGrouping[k])
+                            items: ko.observableArray(orderFormGrouping[k]),
+                            height: 0,
+                            offsetY: 0,
+                            runningHeight: runningOrderFormGroupHeight
+                        }
+
+                        orderFormGroups.push(r);
+                    });
+
+                    orderFormGroups.forEach((orderFormGroup, orderFormGroupIndex) => {
+
+                        // if this orderFormGroup has a name, it will have rendered a heading (20px) and we need to account for the height of that heading.
+                        if (orderFormGroup.name != "") {
+                            additionalOffset += self.orderFormGroupRowHeight;
+                        }
+
+                        let products = ko.unwrap(orderFormGroup.items);
+
+                        //iterate over the products belonging to this order form group
+                        products.forEach((product, productIndex) => {
+
+                            // each product record has one fundamental height: 80px.
+                            product.height = self.rowHeight;
+
+                            // each product is offset from the top by some Y 
+                            product.offsetY = (((runningCount + (productIndex)) * self.rowHeight) + additionalOffset);
+                        })
+
+                        runningCount += products.length;
+
+                        orderFormGroup.visibleItems = ko.computed(() => {
+
+                            let toFetch = [];
+                                
+                            let results = ko.unwrap(orderFormGroup.items).filter(i => {
+                                let actuallyVisible = ((i.offsetY - self.gridHeaderHeight + self.rowHeight) >= (self.scrollY())) &&
+                                    ((i.offsetY - self.gridHeaderHeight + self.rowHeight) <= (self.maxY()));
+
+                                let dataFetchVisible = actuallyVisible;// ((i.offsetY - self.gridHeaderHeight + self.rowHeight) >= (self.scrollY() - 5000)) &&
+                                    // ((i.offsetY - self.gridHeaderHeight + self.rowHeight) <= (self.maxY() + 5000));
+
+                                if (dataFetchVisible && !filledRecords.find(fr => fr.ProductID === i.ProductID))
+                                    toFetch.push(i);
+
+                                return actuallyVisible;
+                            });
+
+                            ko.utils.arrayPushAll(self.recordsToDataFetch, toFetch);
+
+                            return results;
                         });
                     });
 
-                    ppg.items = orderFormGroups;
+                    productPageGroup.items = orderFormGroups;
                 });
 
-                pf.items = productPages;
+                productFilterGroup.items = productPages;
             });
 
-            console.log(results);
+            let cumulativeHeight = startingOffset;
+
+            let itemCount = 0;
+
+            results.forEach((productFilterGroup, pfgi) => {
+                // productFilterGroup.name is never null, always add the productFilterGroupRowHeight
+
+                productFilterGroup.items.forEach((productPageGroup, ppgi) => {
+
+                    // productPageGroup.name can be null, test before adding productPageGroupRowHeight
+
+                    productPageGroup.items.forEach((orderFormGroup, ofgi) => {
+
+                        // orderFormGroup.name can be null, test before adding orderFormGroupRowHeight
+
+                        let items = ko.unwrap(orderFormGroup.items);
+
+                        // this orderFormGroup's height is equal to the number of items it contains by the height of each item, possibly plus its own grouping row height.
+                        orderFormGroup.height = ((items.length * self.rowHeight) + (orderFormGroup.name == "" ? 0 : self.orderFormGroupRowHeight));
+
+                        runningOrderFormGroupHeight += orderFormGroup.height;
+
+                        orderFormGroup.runningHeight = runningOrderFormGroupHeight;
+
+                        cumulativeHeight += orderFormGroup.height;
+
+                        orderFormGroup.offsetY = (cumulativeHeight - orderFormGroup.height) + ((pfgi + 1) * self.productFilterGroupRowHeight) + ((ppgi + 1) * self.productPageGroupRowHeight);
+
+                        orderFormGroup.headerVisible = ko.computed(() => {
+                            if (orderFormGroup.name && orderFormGroup.offsetY + self.orderFormGroupRowHeight >= self.scrollY() + self.gridHeaderHeight) {
+                                return true;
+                            }
+
+                            return false;
+                        }, self);
+                    });
+
+                    // this productPageGroup's height is equal to the sum of its orderFormGroup heights, possibly plus its own grouping row height.
+                    productPageGroup.height = (ko.unwrap(productPageGroup.items).reduce((a, i) => a += i.height, 0) + (productPageGroup.name == "" ? 0 : self.productPageGroupRowHeight));
+
+                    runningProductPageGroupHeight += productPageGroup.height;
+
+                    productPageGroup.runningHeight = runningProductPageGroupHeight;
+
+                    productPageGroup.offsetY = (cumulativeHeight - productPageGroup.height) + ((pfgi + 1) * self.productFilterGroupRowHeight) + ((ppgi + 1) * self.productPageGroupRowHeight);
+
+                    productPageGroup.headerVisible = ko.computed(() => {
+                        if (productPageGroup.name && productPageGroup.offsetY + self.productPageGroupRowHeight >= self.scrollY() + self.gridHeaderHeight) {
+                            return true;
+                        }
+                        return false;
+                    }, self);
+                });
+
+                // because the height of productPageGroup headings is not catered for in the above...
+                cumulativeHeight += productFilterGroup.items.reduce((a, i) => a += i.name === "" ? 0 : self.productPageGroupRowHeight, 0);
+
+                // this productFilterGroup's height is equal to the sum of its productPageGroup heights, plus its own grouping row height.
+                productFilterGroup.height = (ko.unwrap(productFilterGroup.items).reduce((a, i) => a += i.height, 0) + self.productFilterGroupRowHeight);
+
+                runningProductFilterGroupHeight += productFilterGroup.height;
+
+                productFilterGroup.runningHeight = runningProductFilterGroupHeight;
+
+                productFilterGroup.offsetY = productFilterGroup.runningHeight - productFilterGroup.height + self.gridHeaderHeight;
+
+                productFilterGroup.headerVisible = ko.computed(() => {
+                    if (productFilterGroup.offsetY + self.productFilterGroupRowHeight >= self.scrollY() + self.gridHeaderHeight) {
+                        return true;
+                    }
+                    return false;
+                }, self);
+            });
+
+            self.gridTotalHeight(cumulativeHeight - self.rowHeight - 1);
+            //self.gridTotalHeight((runningCount * self.rowHeight) - 170);
+
+            window.setTimeout(() => {
+                document.querySelectorAll(".final-row").forEach(tr => {
+                    if (tr)
+                        self.intersectionObserver.observe(tr);
+                })
+            }, 0);
+
+            //console.log(results);
 
             return results;
+        } else {
+            self.gridTotalHeight(0);
+
+            return [];
+        }
+
+    }, self);
+
+    self.gridScrollTopPadding = ko.computed(() => {
+        let scrollY = self.scrollY();
+        let scrollYPlusHeaderHeight = scrollY + self.gridHeaderHeight;
+        let my = self.maxY();
+
+        let result = 0;
+
+        ko.ignoreDependencies(() => {
+
+            let searchResults = self.groupedSearchResults();
+
+            if (searchResults.length) {
+
+                // you are fully scrolled out of view as soon as scrollY is greater than your height.
+                // gasr.height includes self.productFilterGroupRowHeight
+                let filterGroupsEntirelyAbove = searchResults.filter(productFilterGroup => {
+                    return scrollY > productFilterGroup.runningHeight
+                });
+
+                // we consider you partially above when your product filter group row goes out of pane
+                // can more than one productFilterGroup be partially above? no; the next becomes partially above, this becomes fully above.
+
+                let filterGroupPartiallyAbove = searchResults.find(productFilterGroup => {
+                    return ((productFilterGroup.offsetY) <= scrollYPlusHeaderHeight &&
+                        (scrollY <= productFilterGroup.runningHeight))
+                });
+
+                // you must not be able to be both partially and entirely above: one or the other.
+
+                if (filterGroupsEntirelyAbove.length) {
+
+                    let productPageGroupsHeight = filterGroupsEntirelyAbove.flatMap(fgea => fgea.items).reduce((a, i) => a += i.height, 0);
+
+                    //console.log("productPageGroupsHeight", productPageGroupsHeight);
+
+                    result += productPageGroupsHeight;
+
+                    let productPageGroupsHeaderRowsHeight = filterGroupsEntirelyAbove.length * self.productFilterGroupRowHeight
+
+                    //console.log("productPageGroupsHeaderRowsHeight", productPageGroupsHeaderRowsHeight);
+
+                    result += productPageGroupsHeaderRowsHeight; // every filterGroup provides a row
+
+                    // not every productPageGroup provides a row and they're all accounted for elsewhere in the algorithm so remove their height here
+                    //result -= filterGroupsEntirelyAbove.flatMap(fgea => fgea.items).reduce((a, i) => a += i.name == "" ? 0 : self.productPageGroupRowHeight, 0);
+                }
+
+                //console.log("filterGroupsEntirelyAbove", filterGroupsEntirelyAbove);
+
+                if (filterGroupPartiallyAbove) {
+
+                    let additionFromPartiallyAboveGroup = 0;
+
+                    filterGroupPartiallyAbove.items.forEach(ppg => {
+                        if (ppg.name && !ppg.headerVisible()) {
+                            additionFromPartiallyAboveGroup += self.productPageGroupRowHeight;
+                        }
+
+                        ppg.items.forEach(ofg => {
+                            if (ofg.name && !ofg.headerVisible()) {
+                                additionFromPartiallyAboveGroup += self.orderFormGroupRowHeight;
+                            }
+
+                            ko.unwrap(ofg.items).forEach(p => {
+                                if (scrollYPlusHeaderHeight > p.offsetY + self.rowHeight) {
+                                    additionFromPartiallyAboveGroup += p.height;
+                                }
+                            })
+                        })
+                    })
+
+                    if ((scrollYPlusHeaderHeight - filterGroupPartiallyAbove.offsetY) > self.productFilterGroupRowHeight)
+                        additionFromPartiallyAboveGroup += self.productFilterGroupRowHeight;
+
+                    //console.log("additionFromPartiallyAboveGroup", additionFromPartiallyAboveGroup);
+
+                    result += additionFromPartiallyAboveGroup;
+                }
+
+                //console.log("filterGroupPartiallyAbove", filterGroupPartiallyAbove);
+            }
+        }); 
+
+        //console.log("virtualSpacing top", result);
+
+        //console.log(" ");
+
+        //self.addGridScrollBottomPadding(self.addGridTotalHeight() - result - self.rowHeight);
+
+    
+        //self.gridScrollBottomPadding(self.gridTotalHeight() - result);
+
+        return result;
+    }, self);
+
+    self.gridScrollBottomPadding = ko.computed(() => {
+        if (self.finalRowVisible()) {
+            return 0;
+        } else {
+            return self.gridTotalHeight() - self.gridScrollTopPadding() - self.gridHeaderHeight - 116;
         }
     }, self);
 
-
-    self.groupedAddSearchResults = ko.computed(() => {
+    self.addGroupedSearchResults = ko.computed(() => {
 
         let key = "ProductFilterName";
 
@@ -1937,6 +2013,8 @@ const rangeManagementViewModel = ({ } = {}) => {
             let runningProductPageGroupHeight = 0;
 
             let runningOrderFormGroupHeight = 0;
+
+            let addFilledRecords = self.addFilledRecords.peek();
 
             // Object.groupBy returns an object having properties for each group key whose values are the group's items.
             Object.keys(productFilterGrouping).forEach((k, ki) => {
@@ -2024,19 +2102,29 @@ const rangeManagementViewModel = ({ } = {}) => {
 
                         runningCount += products.length;
 
+                        let toFetch = [];
+
                         orderFormGroup.visibleItems = ko.computed(() => {
-                            return ko.unwrap(orderFormGroup.items).filter(i => {
-                                return ((i.offsetY - self.addGridHeaderHeight + self.rowHeight) >= (self.scrollY())) &&
-                                    ((i.offsetY - self.addGridHeaderHeight + self.rowHeight) <= (self.maxY()))
+
+                            let toFetch = [];
+
+                            let results = ko.unwrap(orderFormGroup.items).filter(i => {
+                                let actuallyVisible = ((i.offsetY - self.addGridHeaderHeight + self.rowHeight) >= (self.scrollY())) &&
+                                    ((i.offsetY - self.addGridHeaderHeight + self.rowHeight) <= (self.maxY()));
+
+                                let dataFetchVisible = actuallyVisible;// ((i.offsetY - self.gridHeaderHeight + self.rowHeight) >= (self.scrollY() - 5000)) &&
+                                // ((i.offsetY - self.gridHeaderHeight + self.rowHeight) <= (self.maxY() + 5000));
+
+                                if (dataFetchVisible && !addFilledRecords.find(fr => fr.ProductID === i.ProductID))
+                                    toFetch.push(i);
+
+                                return actuallyVisible;
                             });
+
+                            ko.utils.arrayPushAll(self.addRecordsToDataFetch, toFetch);
+
+                            return results;
                         });
-
-                        console.log("skipped filling records for Add Grid");
-
-                        //r.visibleItems.subscribe(vis => {
-                        //    ko.utils.arrayPushAll(self.addVisibleRecords, vis);
-                        //});
-
                     });
 
                     productPageGroup.items = orderFormGroups;
@@ -2117,36 +2205,28 @@ const rangeManagementViewModel = ({ } = {}) => {
                     }
                     return false;
                 }, self);
-            })
+            });
 
-            self.addGridTotalHeight(cumulativeHeight);
+            self.addGridTotalHeight(cumulativeHeight - self.rowHeight - 1);
 
-            console.log(results);
+            window.setTimeout(() => {
+                document.querySelectorAll(".final-row").forEach(tr => {
+                    if (tr)
+                        self.intersectionObserver.observe(tr);
+                })
+            }, 0);
+
+            //console.log(results);
 
             return results;
         } else {
+
+            self.addGridTotalHeight(0);
+
             return [];
         }
     }, self);
 
-    self.refreshProductFilterTotal = (productFilterId) => {
-        fetch('/api/rangemanagementapi/RefreshProductFilterTotal', {
-            method: 'POST',
-            headers: window.fetchHeaders,
-            body: JSON.stringify({
-                branchId: self.branchId(),
-                productFilterId: productFilterId
-            })
-        })
-        .then(window.handleFetchResponse)
-        .then(data => {
-            self.productFilterTotals.remove(pft => pft.ProductFilterID == productFilterId);
-            self.productFilterTotals.push(data);
-        })
-        .catch(window.catchFetchError);
-    }
-
-    // maybe replace this with something that actually works
     self.addGridScrollTopPadding = ko.computed(() => {
         let scrollY = self.scrollY();
         let scrollYPlusHeaderHeight = scrollY + self.addGridHeaderHeight;
@@ -2156,7 +2236,7 @@ const rangeManagementViewModel = ({ } = {}) => {
 
         ko.ignoreDependencies(() => {
 
-            let searchResults = self.groupedAddSearchResults();
+            let searchResults = self.addGroupedSearchResults();
 
             if (searchResults.length) {
 
@@ -2164,7 +2244,7 @@ const rangeManagementViewModel = ({ } = {}) => {
                 // gasr.height includes self.productFilterGroupRowHeight
                 let filterGroupsEntirelyAbove = searchResults.filter(productFilterGroup => {
                     return scrollY > productFilterGroup.runningHeight
-                }); 
+                });
 
                 // we consider you partially above when your product filter group row goes out of pane
                 // can more than one productFilterGroup be partially above? no; the next becomes partially above, this becomes fully above.
@@ -2180,21 +2260,21 @@ const rangeManagementViewModel = ({ } = {}) => {
 
                     let productPageGroupsHeight = filterGroupsEntirelyAbove.flatMap(fgea => fgea.items).reduce((a, i) => a += i.height, 0);
 
-                    console.log("productPageGroupsHeight", productPageGroupsHeight);
+                    //console.log("productPageGroupsHeight", productPageGroupsHeight);
 
                     result += productPageGroupsHeight;
 
                     let productPageGroupsHeaderRowsHeight = filterGroupsEntirelyAbove.length * self.productFilterGroupRowHeight
 
-                    console.log("productPageGroupsHeaderRowsHeight", productPageGroupsHeaderRowsHeight);
+                    //console.log("productPageGroupsHeaderRowsHeight", productPageGroupsHeaderRowsHeight);
 
                     result += productPageGroupsHeaderRowsHeight; // every filterGroup provides a row
 
-                     // not every productPageGroup provides a row and they're all accounted for elsewhere in the algorithm so remove their height here
+                    // not every productPageGroup provides a row and they're all accounted for elsewhere in the algorithm so remove their height here
                     //result -= filterGroupsEntirelyAbove.flatMap(fgea => fgea.items).reduce((a, i) => a += i.name == "" ? 0 : self.productPageGroupRowHeight, 0);
                 }
 
-                console.log("filterGroupsEntirelyAbove", filterGroupsEntirelyAbove);
+                //console.log("filterGroupsEntirelyAbove", filterGroupsEntirelyAbove);
 
                 if (filterGroupPartiallyAbove) {
 
@@ -2221,25 +2301,48 @@ const rangeManagementViewModel = ({ } = {}) => {
                     if ((scrollYPlusHeaderHeight - filterGroupPartiallyAbove.offsetY) > self.productFilterGroupRowHeight)
                         additionFromPartiallyAboveGroup += self.productFilterGroupRowHeight;
 
-                    console.log("additionFromPartiallyAboveGroup", additionFromPartiallyAboveGroup);
+                    //console.log("additionFromPartiallyAboveGroup", additionFromPartiallyAboveGroup);
 
                     result += additionFromPartiallyAboveGroup;
                 }
 
-                console.log("filterGroupPartiallyAbove", filterGroupPartiallyAbove);
+                //console.log("filterGroupPartiallyAbove", filterGroupPartiallyAbove);
             }
         });
 
-        console.log("virtualSpacing top", result);
+        //console.log("virtualSpacing top", result);
 
-        console.log(" ");
-                        
+        //console.log(" ");
+
+        //self.addGridScrollBottomPadding(self.addGridTotalHeight() - result - self.rowHeight);
+
         return result;
     }, self);
 
     self.addGridScrollBottomPadding = ko.computed(() => {
-        return self.addGridTotalHeight() - self.addGridScrollTopPadding();
+        if (self.finalRowVisible()) {
+            return 0;
+        } else {
+            return self.addGridTotalHeight() - self.addGridScrollTopPadding() - self.addGridHeaderHeight;
+        }
     });
+
+    self.refreshProductFilterTotal = (productFilterId) => {
+        fetch('/api/rangemanagementapi/RefreshProductFilterTotal', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            body: JSON.stringify({
+                branchId: self.branchId(),
+                productFilterId: productFilterId
+            })
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                self.productFilterTotals.remove(pft => pft.ProductFilterID == productFilterId);
+                self.productFilterTotals.push(data);
+            })
+            .catch(window.catchFetchError);
+    }
 
     //#endregion
 
@@ -2311,17 +2414,25 @@ const rangeManagementViewModel = ({ } = {}) => {
     });
 
     window.addEventListener("scroll", (event) => {
-        self.scrollY(window.scrollY);
-        self.maxY(self.scrollY() + window.innerHeight);
+        if (self.finalRowVisible()) {
+            if (window.scrollY < self.scrollY()) {
+                self.scrollY(window.scrollY);
+                self.maxY(self.scrollY() + window.innerHeight);
+            }
+        } else {
+            self.scrollY(window.scrollY);
+            self.maxY(self.scrollY() + window.innerHeight);
+        }
     });
 
-    //window.addEventListener("scroll", debounce((event) => {
-    //    self.scrollY(window.scrollY);
-    //    self.maxY(self.scrollY() + window.innerHeight);
-    //}, 0));
-
     window.addEventListener("resize", debounce((event) => {
-        self.maxY(self.scrollY() + window.innerHeight);
+        if (self.finalRowVisible()) {
+            if (window.scrollY < self.scrollY()) {
+                self.maxY(self.scrollY() + window.innerHeight);
+            }
+        } else {
+            self.maxY(self.scrollY() + window.innerHeight);
+        }
     }, 50));
 
     window.addEventListener("onbeforeunload", (event) => {
@@ -2338,12 +2449,15 @@ const rangeManagementViewModel = ({ } = {}) => {
 const resultRecord = function ({
     branchId,
     rec,
-    fetchBranchBasketsNonce
+    fetchBranchBasketsNonce,
+    reload
     //productFilter,
     //productFilterRefreshFn
 } = {
         branchId: null,
         rec: null,
+        fetchBranchBasketsNonce: null,
+        reload: () => { }
         //productFilter: ko.computed(() => { }),
         //productFilterRefreshFn: () => { }
     }) {
@@ -2360,6 +2474,8 @@ const resultRecord = function ({
     self.loaded = ko.observable(false);
 
     self.fetchBranchBasketsNonce = fetchBranchBasketsNonce;
+
+    self.reload = reload;
 
     self.defaultNumericalExtension = {
         numberUnformatted: {
@@ -2541,6 +2657,8 @@ const resultRecord = function ({
                             viewModel.refreshProductFilterTotal(self.ProductFilterID);
 
                             self.loaded(false);
+
+                            self.reload(self);
                             //self.rangePlannedParams.busy(false);
                             //self.rangePlannedParams.disable(false);
                         })
@@ -2647,8 +2765,10 @@ const resultRecord = function ({
                 if (data.Notification) {
                     window.showInfo("Notice", data.Notification);
                 }
+                viewModel.refreshProductFilterTotal(self.ProductFilterID);
                 self.busy(true); // set whole row busy display...
                 self.loaded(false); // force reload of this record
+                self.reload(self);
             })
             .catch(err => {
                 self.busy(false);
@@ -2681,8 +2801,11 @@ const resultRecord = function ({
                 if (data.Notification) {
                     window.showInfo("Notice", data.Notification);
                 }
+                viewModel.refreshProductFilterTotal(self.ProductFilterID);
                 self.busy(true); // set whole row busy display...
                 self.loaded(false); // force reload of this record
+
+                self.reload(self);
             })
             .catch(err => {
                 self.busy(false);
@@ -2713,8 +2836,11 @@ const resultRecord = function ({
                 if (data.Notifications) {
                     window.showInfo("Notice", data.Notifications);
                 }
+                viewModel.refreshProductFilterTotal(self.ProductFilterID);
                 self.busy(true); // set whole row busy display...
                 self.loaded(false); // force reload of this record
+
+                self.reload(self);
             })
             .catch(err => {
                 self.busy(false);
@@ -2745,8 +2871,11 @@ const resultRecord = function ({
                 if (data.Notification) {
                     window.showInfo("Notice", data.Notification);
                 }
+                viewModel.refreshProductFilterTotal(self.ProductFilterID);
                 self.busy(true); // set whole row busy display...
                 self.loaded(false); // force reload of this record
+
+                self.reload(self);
             })
             .catch(err => {
                 self.busy(false);
@@ -2777,11 +2906,13 @@ const resultRecord = function ({
 const addResultRecord = function ({
     branchId,
     rec,
-    productFilter
+    reload
+    //productFilter
 } = {
         branchId: null,
         rec: null,
-        productFilter: ko.computed(() => { })
+        reload: () => { }
+        //productFilter: ko.computed(() => { })
     }) {
     //console.log(productFilter);
 
@@ -2790,6 +2921,8 @@ const addResultRecord = function ({
     self.element = ko.observable();
 
     self.branchId = branchId;
+
+    self.reload = reload;
 
     self.busy = ko.observable(false);
 
@@ -2835,8 +2968,8 @@ const addResultRecord = function ({
         }
     };
 
-    self.incrementAmount = ko.observable(1);
-    self.scale = ko.observable(0);
+    self.incrementAmount = self.ProductFilterGroupID === 1 ? 0.5 : 1;
+    self.scale = self.ProductFilterGroupID === 1 ? 1 : 0;
 
     // don't forget to set your originals to currents on save
 
@@ -2848,32 +2981,32 @@ const addResultRecord = function ({
 
     self.actionTransferToRangeBasketItemId = ko.observable();
 
-    productFilter.subscribe(pf => {
+    //productFilter.subscribe(pf => {
 
-        self.incrementAmount(pf.QuantityIncrement || 1);
+    //    self.incrementAmount(pf.QuantityIncrement || 1);
 
-        self.scale(pf.QuantityPrecision);
+    //    self.scale(pf.QuantityPrecision);
 
-        let productFilterNumericalExtension = {
-            numberUnformatted: {
-                minValue: pf.QuantityMinimum,
-                maxValue: 999999,
-                digits: self.scale(),
-                currency: {
-                    FormattingCulture: 'en-GB'
-                }
-            },
-            numeric: {
-                params: {
-                    required: false,
-                    numericMin: pf.QuantityMinimum,
-                    numericMax: 999999
-                }
-            }
-        };
+    //    let productFilterNumericalExtension = {
+    //        numberUnformatted: {
+    //            minValue: pf.QuantityMinimum,
+    //            maxValue: 999999,
+    //            digits: self.scale(),
+    //            currency: {
+    //                FormattingCulture: 'en-GB'
+    //            }
+    //        },
+    //        numeric: {
+    //            params: {
+    //                required: false,
+    //                numericMin: pf.QuantityMinimum,
+    //                numericMax: 999999
+    //            }
+    //        }
+    //    };
 
-        self.actionAddToRangeQuantity.extend(productFilterNumericalExtension);
-    });
+    //    self.actionAddToRangeQuantity.extend(productFilterNumericalExtension);
+    //});
 
     self.buildNumericParams = (observable, original, incrementAmount, scale, min, max) => {
         return {
@@ -2912,21 +3045,21 @@ const addResultRecord = function ({
 
                 let v = +self.observable() || 0;
 
-                let factor = Math.pow(10, scale());
+                let factor = Math.pow(10, scale);
 
-                if ((v + self.incrementAmount()) < max)
-                    self.observable(Math.round((v + self.incrementAmount()) * factor) / factor);
+                if ((v + self.incrementAmount) < max)
+                    self.observable(Math.round((v + self.incrementAmount) * factor) / factor);
             },
             decrement: function () {
                 let self = this;
 
                 let v = +self.observable() || 0;
 
-                let factor = Math.pow(10, scale());
+                let factor = Math.pow(10, scale);
 
-                let diff = Math.round((v - self.incrementAmount()) * factor) / factor;
+                let diff = Math.round((v - self.incrementAmount) * factor) / factor;
 
-                if ((v - self.incrementAmount()) > min || diff === 0)
+                if ((v - self.incrementAmount) > min || diff === 0)
                     self.observable(diff);
             }
         }
@@ -2937,7 +3070,7 @@ const addResultRecord = function ({
         self.actionAddToRangeQuantityOriginal,
         self.incrementAmount,
         self.scale,
-        1,
+        0,
         9999);
 
     self.actionAddToRangeQuantityParams.revertable(false);
@@ -3009,10 +3142,13 @@ const addResultRecord = function ({
 
                 self.actionRecommendations("<div class='alert alert-success mb-0'><p>This product has been added to the range.<br/>Consider reloading this grid.</p></div>")
 
+                // the hell was this for?
                 self.actionAddToRangeQuantityParams.busy(false); // ... ?
                 window.setTimeout(() => {
                     self.actionAddToRangeQuantityParams.disable(true); // ... ?
                 }, 0);
+
+                self.reload(self);
             })
             .catch(err => {
                 self.busy(false);
