@@ -31,9 +31,9 @@ namespace SharedEFClasses.Models
             };
         }
 
-        public async Task<IEnumerable<SelfBillInvoiceDto>> FetchSelfBillInvoices()
+        public async Task<IEnumerable<SelfBillInvoiceSelectResult>> FetchSelfBillInvoices()
         {
-            var reply = await this.Database.Connection.QueryAsync<SelfBillInvoiceDto>("[Fenwicks].[SelfBillInvoice_SelectList]", new
+            var reply = await this.Database.Connection.QueryAsync<SelfBillInvoiceSelectResult>("[Fenwicks].[SelfBillInvoice_SelectList]", new
             {
 
             }, null, 300, CommandType.StoredProcedure);

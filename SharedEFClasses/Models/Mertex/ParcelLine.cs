@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -58,10 +60,12 @@ namespace SharedEFClasses.Models.MertexLive
 
         public bool? Completed { get; set; }
 
+        [JsonIgnore]
         [ForeignKey("DespatchLineID")]
         [InverseProperty("ParcelLines")]
         public virtual DespatchLine DespatchLine { get; set; }
 
+        [JsonIgnore]
         [ForeignKey("ParcelHeadID")]
         [InverseProperty("ParcelLines")]
         public virtual ParcelHead ParcelHead { get; set; }

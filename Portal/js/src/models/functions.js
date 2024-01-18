@@ -841,6 +841,9 @@ function formatCurrency(value, digits, culture, currency) {
     if (value == null)
         return value;
 
+    if (currency === 'E')
+        currency = 'GBP'; // Because Export Sterling. Because the finance department were a law unto themselves years ago and ended up inventing a currency code.
+
     var formatter = new Intl.NumberFormat(
         culture,
         {

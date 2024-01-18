@@ -50,5 +50,20 @@ namespace SharedEFClasses.Models.RangeManagement
                 }
             }
         }
+
+        public string SecondarySorting
+        {
+            get
+            {
+                if (OrderID != null)
+                {
+                    return $"Order ID: {OrderID}";
+                }
+                else
+                {
+                    return $"Basket ID: {BasketID}";
+                }
+            }
+        }
     }
 }

@@ -18,5 +18,7 @@ namespace SharedEFClasses.Models.RangeManagement
         public byte? StatusGroupID { get; set; }
         public string StockStatusCode { get; set; }
         public string SearchTerm { get; set; }
+        public string AddStockStatusCode { get; set; }
+        public string SaleStatusCode { get; set; }
     }
 }

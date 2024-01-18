@@ -15,6 +15,10 @@
   font-size: 1rem;
 }
 
+body {
+  min-width: 1170px;
+}
+
 .navbar.navbar-default.navbar-expand {
   position: fixed;
   z-index: 1;
@@ -28,6 +32,7 @@
 }
 
 #upper-section {
+  min-width: 1260px;
   position: fixed;
   width: 100%;
   z-index: 2;
@@ -41,35 +46,67 @@
 #upper-section #prefilters-first ul li {
   margin-bottom: 0;
 }
+#upper-section #prefilters-second {
+  min-width: 1245px;
+}
 
+#branch-totals,
 #prefilters-second {
   padding: 0.5rem;
   border: 1px solid #dee2e6;
   border-radius: 0.375rem;
   background-color: #fff;
 }
+#branch-totals .dropdown,
 #prefilters-second .dropdown {
   margin-left: auto;
   min-width: unset;
 }
+#branch-totals .dropdown #branch-baskets-anchor #basket-count,
 #prefilters-second .dropdown #branch-baskets-anchor #basket-count {
   position: relative;
   top: -1px;
   line-height: normal;
 }
+#branch-totals .dropdown #branch-baskets-anchor.disabled,
 #prefilters-second .dropdown #branch-baskets-anchor.disabled {
   background-color: #e9ecef;
 }
+#branch-totals .dropdown #baskets-dropdown,
 #prefilters-second .dropdown #baskets-dropdown {
   padding: 0 0.5rem 0.5rem 0.5rem;
   width: 360px;
 }
+#branch-totals .dropdown #baskets-dropdown table,
 #prefilters-second .dropdown #baskets-dropdown table {
   margin-bottom: 0.5rem;
 }
+#branch-totals .dropdown #baskets-dropdown .btn-success,
 #prefilters-second .dropdown #baskets-dropdown .btn-success {
   display: block;
   width: 100%;
+}
+
+#branch-totals {
+  margin-top: 0.25rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-weight: bold;
+}
+#branch-totals h4 {
+  margin: 0.25rem 0;
+}
+#branch-totals h4 + label {
+  margin-left: 2rem;
+}
+#branch-totals label {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+#branch-totals label + label {
+  margin-left: 2rem;
 }
 
 body {
@@ -182,7 +219,7 @@ body {
   max-width: 240px;
 }
 
-.prefilters {
+.prefilters .flex {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
@@ -195,18 +232,29 @@ body {
       }
   */
 }
-.prefilters > div {
+.prefilters .flex > div {
   flex: 0 1 auto;
   min-width: 240px;
 }
-.prefilters .k-animation-container li.k-item {
+.prefilters .flex > div.flex-zero-row {
+  height: 0;
+  min-width: 100%;
+  flex: 1 1 100%;
+}
+.prefilters .flex .k-animation-container li.k-item {
   line-height: 33px;
 }
-.prefilters > div {
+.prefilters .flex > div {
   position: relative;
 }
-.prefilters .k-dropdown-wrap.k-input {
+.prefilters .flex .k-dropdown-wrap.k-input {
   padding: 9px 0 6px 0;
+}
+.prefilters .flex + .prefilters {
+  margin-top: 0.5rem;
+}
+.prefilters .flex + .prefilters + .controls {
+  margin-top: 0.5rem;
 }
 
 .thumb {
@@ -215,7 +263,6 @@ body {
 }
 
 #search-term-prefilter {
-  max-width: 487px;
   flex-grow: 1;
 }
 #search-term-prefilter .mdc-validating-field {
@@ -267,19 +314,19 @@ body {
 #add-results-grid thead tr:nth-of-type(1) th:nth-of-type(2) {
   position: sticky;
   left: 0;
-  top: 168px;
+  top: 262px;
   z-index: 40;
 }
 #results-grid thead tr:nth-of-type(1) th:not(:nth-of-type(1)):not(:nth-of-type(2)),
 #add-results-grid thead tr:nth-of-type(1) th:not(:nth-of-type(1)):not(:nth-of-type(2)) {
   position: sticky;
-  top: 168px;
+  top: 262px;
   z-index: 20;
 }
 #results-grid thead tr:nth-of-type(2) th,
 #add-results-grid thead tr:nth-of-type(2) th {
   position: sticky;
-  top: 196px;
+  top: 290px;
   z-index: 20;
 }
 #results-grid .k-header,
@@ -414,15 +461,15 @@ body {
 }
 #results-grid tbody .k-grouping-row .range-planned,
 #add-results-grid tbody .k-grouping-row .range-planned {
-  right: 2590px;
+  right: 2490px;
 }
 #results-grid tbody .k-grouping-row .range-actual,
 #add-results-grid tbody .k-grouping-row .range-actual {
-  right: 2500px;
+  right: 2370px;
 }
 #results-grid tbody .k-grouping-row .range-in-progress,
 #add-results-grid tbody .k-grouping-row .range-in-progress {
-  right: 2410px;
+  right: 2250px;
 }
 #results-grid tbody .k-grouping-row + .k-grouping-row td:first-of-type,
 #add-results-grid tbody .k-grouping-row + .k-grouping-row td:first-of-type {
@@ -689,7 +736,7 @@ body {
 #results-grid,
 #add-results-grid {
   position: relative;
-  top: 116px;
+  top: 210px;
   z-index: 1;
 }
 #results-grid .k-grid-content,
@@ -856,7 +903,7 @@ tbody.virtual-spacing tr td {
 
 .transfer-grid {
   position: relative;
-  top: 68px;
+  top: 120px;
 }
 
 .k-icon.k-i-collapse, .k-icon.k-i-expand {

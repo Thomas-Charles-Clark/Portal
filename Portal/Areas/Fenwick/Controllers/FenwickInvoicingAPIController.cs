@@ -16,6 +16,7 @@ using SharedEFClasses.Models.Fenwick;
 using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Products;
+using SharedEFClasses.Models.StockManagement;
 using SharedEFClasses.ReturnModels;
 
 using System;
@@ -52,33 +53,33 @@ namespace Portal.Areas.Fenwick.Controllers
         {
             PortalDb.Configuration.LazyLoadingEnabled = true;
 
-            var prelist = PortalDb.FenwickSelfBillInvoices
-                .Where(sbi => sbi.Deleted == false)
-                .ToList();
+            //var prelist = PortalDb.FenwickSelfBillInvoices
+            //    .Where(sbi => sbi.Deleted == false)
+            //    .ToList();
 
-            var list = prelist
-                .Select(sbi => new SelfBillInvoiceDto(
-                    sbi.SelfBillInvoiceID,
-                    sbi.InvoiceDate,
-                    sbi.BranchID,
-                    sbi.TotalGrossSales,
-                    sbi.TotalVAT,
-                    sbi.TotalCommission,
-                    sbi.FenwicksVariance,
-                    sbi.MertexRoundingVariance,
-                    sbi.CreatedDT,
-                    sbi.SignedOffDT,
-                    sbi.SignedOff,
-                    sbi.SignedOffMemberID,
-                    sbi.Notes,
-                    sbi.DeletedDT,
-                    sbi.Deleted,
-                    sbi.InvoicePDF,
-                    sbi.Branch,
-                    sbi.SignedOffByMember == null ? null : sbi.SignedOffByMember.FullName)
-                ).ToList();
+            //var list = prelist
+            //    .Select(sbi => new SelfBillInvoiceDto(
+            //        sbi.SelfBillInvoiceID,
+            //        sbi.InvoiceDate,
+            //        sbi.BranchID,
+            //        sbi.TotalGrossSales,
+            //        sbi.TotalVAT,
+            //        sbi.TotalCommission,
+            //        sbi.FenwicksVariance,
+            //        sbi.MertexRoundingVariance,
+            //        sbi.CreatedDT,
+            //        sbi.SignedOffDT,
+            //        sbi.SignedOff,
+            //        sbi.SignedOffMemberID,
+            //        sbi.Notes,
+            //        sbi.DeletedDT,
+            //        sbi.Deleted,
+            //        sbi.InvoicePDF,
+            //        sbi.Branch,
+            //        sbi.SignedOffByMember == null ? null : sbi.SignedOffByMember.FullName)
+            //    ).ToList();
 
-            //var list = await PortalDb.FetchSelfBillInvoices();
+            var list = await PortalDb.FetchSelfBillInvoices();
 
             var grouped = list
                 .GroupBy(p => p.InvoiceDate)
@@ -88,8 +89,7 @@ namespace Portal.Areas.Fenwick.Controllers
                 .Select(p => new
                 {
                     InvoiceDate = p.Key,
-                    Label = $"{p.Key.ToString("dd/MM/yyyy")} - Incomplete: {p.Select(q => q.SignedOff == true ? 0 : 1).Sum()}",
-                    Branches = p
+                    Label = $"{p.Key.ToString("dd/MM/yyyy")} - Incomplete: {p.Select(q => q.SignedOff == true ? 0 : 1).Sum()}"
                 }).ToList();
 
             return Ok(
@@ -97,6 +97,30 @@ namespace Portal.Areas.Fenwick.Controllers
                 .OrderBy(p => p.InvoiceDate)
                 .AsQueryable()
                 .ToDataSourceResult(request));
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> FetchSelfBillInvoicesForDate([FromBody] PassFencwickSelfBillInvoiceDate objDto)
+        {
+            var results = PortalDb.FenwickSelfBillInvoices.Where(sbi => sbi.InvoiceDate == objDto.InvoiceDate).Select(sbi => new 
+            {
+                sbi.BranchID,
+                sbi.CreatedDT,
+                BranchName = sbi.Branch.Name,
+                sbi.FenwicksVariance,
+                sbi.MertexRoundingVariance,
+                sbi.Notes,
+                sbi.SelfBillInvoiceID,
+                sbi.SignedOff,
+                sbi.SignedOffDT,
+                sbi.SignedOffMemberID,
+                SignedOffByMemberFullName = sbi.SignedOffByMember == null ? null : sbi.SignedOffByMember.FullName,
+                sbi.TotalCommission,
+                sbi.TotalGrossSales,
+                sbi.TotalVAT
+            });
+
+            return Ok(results);
         }
 
         [HttpGet]

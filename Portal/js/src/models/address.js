@@ -18,6 +18,8 @@
         }
     });
 
+    self.isDefaultDeliveryAddress = ko.observable(false);
+
     self.tradeAccountAddressId = ko.observable();
 
     self.cleansedAddress = ko.observable(false);
@@ -61,11 +63,21 @@
         }
     });
 
+    self.changed = ko.observable(false);
+
     self.changesHappened = function (loqateRelated) {
         //console.log('address changesHappened');
 
-        if (!self.promptForOverwrite())
+        if (JSON.stringify(self.getState()) === JSON.stringify(self.initialState())) {
+            self.changed(false);
+            self.promptForOverwrite(false);
+        } else {
+            self.changed(true);
             self.promptForOverwrite(true);
+        }
+
+        //if (!self.promptForOverwrite())
+        //    self.promptForOverwrite(true);
 
         if (loqateRelated)
             self.loqateAddress(false);
@@ -722,6 +734,8 @@
                 self.clearCleanseFields();
             })
         );
+
+        self.changed(false);
     }
 
     self.detectChanges = function () {
@@ -798,8 +812,8 @@
 
     self.initialState = ko.observable({});
 
-    self.recordInitialState = function () {
-        self.initialState({
+    self.getState = () => {
+        return {
             DeliveryName: self.name.observable(),
             DeliveryCompanyName: self.companyName.observable(),
             AddressLine1: self.addressLine1.observable(),
@@ -808,7 +822,11 @@
             County: self.county.observable(),
             Postcode: self.postcode.observable(),
             Country: self.country()
-        });
+        }
+    }
+
+    self.recordInitialState = function () {
+        self.initialState(self.getState());
     }
 
     self.load = function (address) {
@@ -1369,7 +1387,7 @@
         // also, is DeliveryReference now obsolete?
     }
 
-    self.loadFromOtherAddressObject = function (other) {
+    self.loadFromOtherAddressObject = function (other, isDefault) {
         self.reset();
 
         self.deletable(other.deletable);
@@ -1463,6 +1481,8 @@
             }
             self.tags(tags);
         }
+
+        self.isDefaultDeliveryAddress(isDefault);
     }
 
     self.reflowLabels = function () {
@@ -1620,6 +1640,10 @@
         //        self.addressSearchCountryWidget().trigger('change');
         //    }, 0);
         //}
+
+        self.isDefaultDeliveryAddress(false);
+
+        self.changed(false);
 
         self.promptForOverwrite(false);
 

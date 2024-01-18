@@ -22,6 +22,7 @@ namespace SharedEFClasses.Models.RangeManagement
         public string Action_TransferToWarehouseHighlight { get; set; }
         public string Action_AddToRangeHighlight { get; set; }
         public int? Action_NoteCount { get; set; }
+        public string Price_Summary { get; set; }
         public string Stock_Summary { get; set; }
         public string Stock_Cover { get; set; }
         public decimal Stock_WH_FreeStock { get; set; }
@@ -32,15 +33,18 @@ namespace SharedEFClasses.Models.RangeManagement
         public decimal Stock_FW_FreeStock { get; set; }
         public decimal? Stock_RingFence { get; set; }
         public string Sales_Summary { get; set; }
-        public decimal Sales_180Day_Total { get; set; }
-        public decimal Sales_180Day_KR { get; set; }
-        public decimal Sales_180Day_MHS { get; set; }
-        public decimal Sales_180Day_FW { get; set; }
-        public decimal Sales_180Day_UKEcommerce { get; set; }
-        public decimal Sales_180Day_UKTrade { get; set; }
-        public decimal Sales_180Day_ROWTrade { get; set; }
+        public decimal? Sales_180Day_Total { get; set; }
+        public decimal? Sales_180Day_Branch { get; set; }
+        public decimal? Sales_180Day_KR { get; set; }
+        public decimal? Sales_180Day_MHS { get; set; }
+        public decimal? Sales_180Day_FW { get; set; }
+        public decimal? Sales_180Day_UKEcommerce { get; set; }
+        public decimal? Sales_180Day_UKTrade { get; set; }
+        public decimal? Sales_180Day_ROWTrade { get; set; }
         public long? WH2BR_BasketItemID { get; set; }
+        public decimal? WH2BR_Quantity { get; set; }
         public long? BR2WH_BasketItemID { get; set; }
+        public decimal? BR2WH_Quantity { get; set; }
         public bool Control_Allow_AddToRange { get; set; }
     }
 }

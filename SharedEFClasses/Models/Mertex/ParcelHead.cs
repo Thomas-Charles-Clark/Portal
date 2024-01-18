@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -76,6 +78,7 @@ namespace SharedEFClasses.Models.MertexLive
         [StringLength(40)]
         public string Pclno { get; set; }
 
+        [JsonIgnore]
         [ForeignKey("DespatchHeadID")]
         [InverseProperty("ParcelHeads")]
         public virtual DespatchHead DespatchHead { get; set; }

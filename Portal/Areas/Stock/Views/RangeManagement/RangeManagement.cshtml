@@ -108,6 +108,8 @@
                 </div>
             </div>
         </td>
+        <td data-bind="html: priceSummary">
+        </td>
         <td class="text-end">
             <div class="range-planned" data-bind="component: { name: 'mdc-text-field-numeric-component', params: rangePlannedParams }"></div>
         </td>
@@ -131,7 +133,7 @@
                     click: removeWH2BRFromOrder,
                     css: { busy: actionTransferToBranchQuantityParams.busy },
                     attr: { title: `BasketItemID: ${actionTransferToBranchBasketItemId()}` }">
-                Cancel Transfer
+                Cancel Transfer of <span data-bind="text: actionTransferToBranchExtantTransferQuantity"></span>
             </button>
         </td>
         <td class="text-end" data-bind="style: { 'background-color': actionTransferToWarehouseHighlight }">
@@ -142,32 +144,23 @@
                     click: removeBR2WHFromOrder,
                     css: { busy: actionTransferToWarehouseQuantityParams.busy },
                     attr: { title: `BasketItemID: ${actionTransferToWarehouseBasketItemId()}` }">
-                Cancel Transfer
+                Cancel Transfer of <span data-bind="text: actionTransferToWarehouseExtantTransferQuantity"></span>
             </button>
         </td>
         <td>
-            <button class="btn btn-secondary btn-sm submit-btn" data-bind="visible: !submitHidden(), disable: busy, click: submitTransfers">
+            <button class="btn btn-secondary btn-sm submit-btn" data-bind="visible: submitVisible(), disable: busy, click: submitTransfers">
                 Submit
             </button>
         </td>
-        <td>
-            <!-- ko if: notes != null && notes.length > 0 -->
-            <button class="add-note-btn btn btn-link btn-sm" data-bind="click: $root.showAddNoteModal">
-                <span data-bind="text: notes"></span>
-            </button>
-            <!-- /ko -->
-            <!-- ko if: notes == null || notes.length == 0 -->
-            <button class="add-note-btn btn btn-sm" data-bind="click: $root.showAddNoteModal">
-                <i class="material-icons">add</i>
-            </button>
-            <!-- /ko -->
+        <td class="text-end">
+            <span data-bind="text: sales180DayBranch"></span>
         </td>
         <td class="text-end">
             <span data-bind="text: stockWHFreeStock"></span>
         </td>
-        <td class="text-end">
+        @*<td class="text-end">
             <span data-bind="text: stockCover"></span>
-        </td>
+        </td>*@
         <td class="text-end">
             <span data-bind="text: stockWHNextPOFreeStock"></span>
         </td>
@@ -188,9 +181,9 @@
         <td class="text-end">
             <span data-bind="text: stockRingFence"></span>
         </td>
-        <td>
+        @*<td>
             <span data-bind="html: salesSummary"></span>
-        </td>
+        </td>*@
         <td class="text-end">
             <span data-bind="text: sales180DayTotal"></span>
         </td>
@@ -208,6 +201,18 @@
         </td>
         <td class="text-end">
             <span data-bind="text: sales180DayUKTrade"></span>
+        </td>
+        <td>
+            <!-- ko if: notes != null && notes.length > 0 -->
+            <button class="add-note-btn btn btn-link btn-sm" data-bind="click: $root.showAddNoteModal">
+                <span data-bind="text: notes"></span>
+            </button>
+            <!-- /ko -->
+            <!-- ko if: notes == null || notes.length == 0 -->
+            <button class="add-note-btn btn btn-sm" data-bind="click: $root.showAddNoteModal">
+                <i class="material-icons">add</i>
+            </button>
+            <!-- /ko -->
         </td>
     </tr>
     <!-- /ko -->
@@ -249,100 +254,105 @@
                 Submit
             </button>
         </td>
-        <td colspan="30">
+        <td colspan="200">
             @*<span data-bind="text: `offsetY: ${offsetY}`"></span>*@
         </td>
     </tr>
     <!-- /ko -->
     <!-- ko with: $root.getAddFilledRecord($data.ProductID) -->
     @*<tr class="relative"><td colspan="200"></td></tr>*@
-    <tr class="relative" data-bind="css: { busy: typeof busy === 'undefined' ? true : busy }">
-        <td class="k-group-cell product-filter-name-pad"></td>
-        <td class="k-group-cell product-page-name-pad"></td>
-        <td class="k-group-cell order-form-group-pad"></td>
-        <td class="product-card-wrapper" valign="top">
-            <div class="product-card-tooltip card">
-                <div class="pad product-filter-pad"></div>
-                <div class="pad product-name-pad"></div>
-                <div class="pad order-form-group-pad"></div>
-                <div class="card-body">
-                    <div class="flex">
-                        <!-- ko if: ImageID -->
-                        <img class="thumb" width="80" height="80" data-bind="attr: { src: `https://www.designersguild.com/image/90/${ImageID}` }" />
-                        <!-- /ko -->
-                        <div>
-                            <span data-bind="text: ProductName, attr: { title: ProductName }"></span>
-                            <span data-bind="text: ProductCode"></span>
-                            <span class="d-flex justify-content-between">
-                                <span data-bind="text: Launch"></span>
-                                <span data-bind="text: ProductStatus"></span>
-                            </span>
-                        </div>
+<tr class="relative" data-bind="css: { busy: typeof busy === 'undefined' ? true : busy }">
+    <td class="k-group-cell product-filter-name-pad"></td>
+    <td class="k-group-cell product-page-name-pad"></td>
+    <td class="k-group-cell order-form-group-pad"></td>
+    <td class="product-card-wrapper" valign="top">
+        <div class="product-card-tooltip card">
+            <div class="pad product-filter-pad"></div>
+            <div class="pad product-name-pad"></div>
+            <div class="pad order-form-group-pad"></div>
+            <div class="card-body">
+                <div class="flex">
+                    <!-- ko if: ImageID -->
+                    <img class="thumb" width="80" height="80" data-bind="attr: { src: `https://www.designersguild.com/image/90/${ImageID}` }" />
+                    <!-- /ko -->
+                    <div>
+                        <span data-bind="text: ProductName, attr: { title: ProductName }"></span>
+                        <span data-bind="text: ProductCode"></span>
+                        <span class="d-flex justify-content-between">
+                            <span data-bind="text: Launch"></span>
+                            <span data-bind="text: ProductStatus"></span>
+                        </span>
                     </div>
                 </div>
             </div>
-        </td>
-        <td class="recommendations-container">
-            <div data-bind="html: actionRecommendations"></div>
-        </td>
-        <td class="text-end" data-bind="style: { 'background-color': typeof actionAddToRangeHighlight  === 'undefined' ? 'none' : actionAddToRangeHighlight }">
-            <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: actionAddToRangeQuantityParams }"></div>
-        </td>
-        <td>
-            <!-- ko if: allowed -->
-            <button class="btn btn-secondary btn-sm submit-btn" data-bind="disable: busy() || submitDisabled(), click: submitTransfers">
-                Submit
-            </button>
-            <!-- /ko -->
-        </td>
-        <td class="text-end">
-            <span data-bind="text: stockWHFreeStock"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: stockCover"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: stockWHNextPOFreeStock"></span>
-        </td>
-        <td>
-            <!-- ko if: stockWHNextPODueDate -->
-            <span data-bind="text: renderDate(stockWHNextPODueDate.substring(0, 10))"></span>
-            <!-- /ko -->
-        </td>
-        <td class="text-end">
-            <span data-bind="text: stockKRFreeStock"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: stockMHSFreeStock"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: stockFWFreeStock"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: stockRingFence"></span>
-        </td>
-        <td>
-            <span data-bind="html: salesSummary"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: sales180DayTotal"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: sales180DayKR"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: sales180DayMHS"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: sales180DayFW"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: sales180DayUKEcommerce"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: sales180DayUKTrade"></span>
-        </td>
-    </tr>
+        </div>
+    </td>
+    <td data-bind="html: priceSummary">
+    </td>
+    <td class="recommendations-container">
+        <div data-bind="html: actionRecommendations"></div>
+    </td>
+    <td class="text-end" data-bind="style: { 'background-color': typeof actionAddToRangeHighlight  === 'undefined' ? 'none' : actionAddToRangeHighlight }">
+        <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: actionAddToRangeQuantityParams }"></div>
+    </td>
+    <td>
+        <!-- ko if: allowed -->
+        <button class="btn btn-secondary btn-sm submit-btn" data-bind="disable: busy() || submitDisabled(), click: submitTransfers">
+            Submit
+        </button>
+        <!-- /ko -->
+    </td>
+    <td class="text-end">
+        <span data-bind="text: stockWHFreeStock"></span>
+    </td>
+    @*<td class="text-end">
+        <span data-bind="text: stockCover"></span>
+    </td>*@
+    <td class="text-end">
+        <span data-bind="text: stockWHNextPOFreeStock"></span>
+    </td>
+    <td>
+        <!-- ko if: stockWHNextPODueDate -->
+        <span data-bind="text: renderDate(stockWHNextPODueDate.substring(0, 10))"></span>
+        <!-- /ko -->
+    </td>
+    <td class="text-end">
+        <span data-bind="text: stockKRFreeStock"></span>
+    </td>
+    <td class="text-end">
+        <span data-bind="text: stockMHSFreeStock"></span>
+    </td>
+    <td class="text-end">
+        <span data-bind="text: stockFWFreeStock"></span>
+    </td>
+    <td class="text-end">
+        <span data-bind="text: stockRingFence"></span>
+    </td>
+    @*<td>
+        <span data-bind="html: salesSummary"></span>
+    </td>*@
+    <td class="text-end">
+        <span data-bind="text: sales180DayTotal"></span>
+    </td>
+    <td class="text-end">
+        <span data-bind="text: sales180DayBranch"></span>
+    </td>
+    <td class="text-end">
+        <span data-bind="text: sales180DayKR"></span>
+    </td>
+    <td class="text-end">
+        <span data-bind="text: sales180DayMHS"></span>
+    </td>
+    <td class="text-end">
+        <span data-bind="text: sales180DayFW"></span>
+    </td>
+    <td class="text-end">
+        <span data-bind="text: sales180DayUKEcommerce"></span>
+    </td>
+    <td class="text-end">
+        <span data-bind="text: sales180DayUKTrade"></span>
+    </td>
+</tr>
     <!-- /ko -->
 </script>
 
@@ -407,14 +417,6 @@
                 <div id="prefilters-first" class="prefilters" style="display: none" data-bind="visible: true">
                     <ul id="main-tabs" class="nav nav-pills">
                         <li class="nav-item">
-                            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
-                            {
-                                <h3 class="main-heading mb-0">
-                                    @(Model.ApplicationHeading)
-                                </h3>
-                            }
-                        </li>
-                        <li class="nav-item">
                             <div id="branch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: branchParams }"></div>
                         </li>
                         <li class="nav-item" data-bind="visible: branch">
@@ -437,6 +439,11 @@
                                 Transfer Orders - Recall (Branch &raquo; WH)
                             </button>
                         </li>
+                        <li class="nav-item" data-bind="visible: branch"> 
+                            <button id="refresh-transfers-btn" class="btn nav-link" data-bind="click: refreshTransferOrders">
+                                Refresh Transfer Orders <i class="material-icons">refresh</i>
+                            </button>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -444,59 +451,94 @@
     </div>
 
     <div id="prefilters-second" class="prefilters" style="display: none" data-bind="visible: branch() && [VIEW_MANAGE, VIEW_ADD].indexOf(view()) > -1">
-        <div id="product-filter-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productFilterGroupParams }"></div>
-        <div id="product-filter-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productFilterParams }"></div>
-        <div id="brand-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: brandParams }"></div>
-        <div id="status-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statusGroupParams }"></div>
-        <div id="stock-status-prefilter" data-bind="visible: view() == VIEW_MANAGE, component: { name: 'mdc-kendo-dropdown-component', params: stockStatusParams }"></div>
-        @*<div id="status-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statusGroupParams }"></div>*@
-        @*<div id="buyer-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: buyerParams }"></div>
-            <div id="supplier-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+        <div class="flex">
+            <div id="product-filter-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productFilterGroupParams }"></div>
+            <div id="product-filter-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productFilterParams }"></div>
+            <div id="brand-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: brandParams }"></div>
             <div id="launch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: launchParams }"></div>
-            <div id="product-colour-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productColourParams }"></div>
-            <div id="stock-level-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: stockLevelParams }"></div>
-            <div id="collection-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: collectionParams }"></div>*@
-        <div id="search-term-prefilter" data-bind="component: { name: 'mdc-text-field-component', params: searchTermParams }"></div>
-        <a id="clear-all-filters-anchor" class="btn btn-blue-active" data-bind="click: clearAllFilters">
-            Clear all Filters
-        </a>
-        <!-- ko if: view() == VIEW_MANAGE && branchBaskets() -->
-        <div class="dropdown">
-            <a id="branch-baskets-anchor" class="btn btn-blue-active dropdown-toggle me-auto" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside">
-                Baskets <span id="basket-count" class="ms-1 display-inline-block" data-bind="text: `(${branchBaskets().length})`"></span>
-            </a>
-            <div id="baskets-dropdown" class="dropdown-menu">
-                <table class="table table-condensed">
-                    <colgroup></colgroup>
-                    <tbody>
-                        <!-- ko foreach: branchBaskets -->
-                        <tr data-bind="attr: { title: `BasketID: ${BasketID}, Created ${renderDate(BasketCreatedDT)}` }">
-                            <td>
-                                <span data-bind="text: TradeAccountCode"></span>
-                            </td>
-                            <td>
-                                <span data-bind="text: TradeAccountName"></span>
-                            </td>
-                            <td class="text-end">
-                                <span class="badge rounded-pill bg-primary" data-bind="text: LineCount"></span>
-                            </td>
-                        </tr>
-                        <!-- /ko -->
-                    </tbody>
-                </table>
-                <!-- ko if: branchBaskets().length -->
-                <button class="btn btn-success" data-bind="click: releaseBranchBaskets">
-                    Submit
-                </button>
-                <!-- /ko -->
-                <!-- ko ifnot: branchBaskets().length -->
-                <p class="mb-0">
-                    No baskets exist for this branch
-                </p>
-                <!-- /ko -->
-            </div>
+            <div id="status-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statusGroupParams }"></div>
+            <div id="sale-status-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: saleStatusParams }"></div>
+            @*<div id="status-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statusGroupParams }"></div>*@
+            @*<div id="buyer-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: buyerParams }"></div>
+        <div id="supplier-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+        <div id="launch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: launchParams }"></div>
+        <div id="product-colour-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productColourParams }"></div>
+        <div id="stock-level-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: stockLevelParams }"></div>
+        <div id="collection-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: collectionParams }"></div>*@
         </div>
-        <!-- /ko -->
+        <div class="flex prefilters">
+            <div id="stock-status-prefilter" data-bind="visible: view() == VIEW_MANAGE, component: { name: 'mdc-kendo-dropdown-component', params: stockStatusParams }"></div>
+            <div id="add-stock-status-prefilter" data-bind="visible: view() == VIEW_ADD, component: { name: 'mdc-kendo-dropdown-component', params: addStockStatusParams }"></div>
+            <div id="search-term-prefilter" data-bind="component: { name: 'mdc-text-field-component', params: searchTermParams }"></div>
+
+            <a id="clear-all-filters-anchor" class="btn btn-blue-active" data-bind="click: clearAllFilters">
+                Clear all Filters
+            </a>
+            <!-- ko if: view() == VIEW_MANAGE && branchBaskets() -->
+            <div class="dropdown">
+                <a id="branch-baskets-anchor" class="btn btn-blue-active dropdown-toggle me-auto" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                    Baskets
+                </a>
+                <div id="baskets-dropdown" class="dropdown-menu">
+                    <table class="table table-condensed">
+                        <colgroup></colgroup>
+                        <tbody>
+                            <!-- ko foreach: branchBaskets -->
+                            <tr data-bind="attr: { title: `BasketID: ${BasketID}, Created ${renderDate(BasketCreatedDT)}` }">
+                                <td>
+                                    <span data-bind="text: TradeAccountCode"></span>
+                                </td>
+                                <td>
+                                    <span data-bind="text: TradeAccountName"></span>
+                                </td>
+                                <td class="text-end">
+                                    <span class="badge rounded-pill bg-primary" data-bind="text: LineCount"></span>
+                                </td>
+                            </tr>
+                            <!-- /ko -->
+                        </tbody>
+                    </table>
+                    <!-- ko if: branchBaskets().length -->
+                    <button class="btn btn-success" data-bind="click: releaseBranchBaskets">
+                        Submit
+                    </button>
+                    <!-- /ko -->
+                    <!-- ko ifnot: branchBaskets().length -->
+                    <p class="mb-0">
+                        No baskets exist for this branch
+                    </p>
+                    <!-- /ko -->
+                </div>
+            </div>
+            <!-- /ko -->
+        </div>
+    </div>
+
+    <div id="branch-totals" class="prefilters" style="display: none" data-bind="visible: branch() && [VIEW_MANAGE, VIEW_RECALL, VIEW_RESTOCK, VIEW_ADD].indexOf(view()) > -1">
+        <h4>
+            <span data-bind="text: branch() && branch().Name"></span> Totals
+        </h4>
+        <label>
+            <span>
+                Planned
+            </span>
+            <span data-bind="text: branchTotalPlannedValue"></span>
+            <span data-bind="text: branchTotalPlannedCount"></span>
+        </label>
+        <label>
+            <span>
+                Actual
+            </span>
+            <span data-bind="text: branchTotalActualValue"></span>
+            <span data-bind="text: branchTotalActualCount"></span>
+        </label>
+        <label>
+            <span>
+                In Progress
+            </span>
+            <span data-bind="text: branchTotalInProgressValue"></span>
+            <span data-bind="text: branchTotalInProgressCount"></span>
+        </label>
     </div>
 </div>
 
@@ -524,128 +566,133 @@
                                 <col class="k-group-col" style="width:6px" />
                                 <col class="k-group-col" style="width:6px" />
                                 <col style="width:310px" />
+                                <col style="width:180px" />
                                 <col style="width:145px" />
-                                <col style="width:90px" />
-                                <col style="width:90px" />
+                                <col style="width:120px" />
+                                <col style="width:120px" />
                                 <col style="width:80px" />
                                 <col style="width:260px" />
                                 <col style="width:160px" />
                                 <col style="width:160px" />
                                 <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                @*<col style="width:100px" />*@
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                @*<col style="width:200px" />*@
+                                <col style="width:140px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
                                 <col style="width:50px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:200px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
                             </colgroup>
                             <thead role="rowgroup">
                                 <tr role="row">
                                     <th class="k-group-cell k-header" colspan="3" rowspan="2"></th>
                                     <th class="k-group-cell k-header sticky-heading" scope="col" rowspan="2">
-                                        <div class="sticky-heading-block">
-                                            <span class="me-3" data-bind="text: `scrollY: ${scrollY()}px`"></span>
-                                            <span class="me-3" data-bind="text: `pt: ${gridScrollTopPadding()}px`"></span>
-                                            <span data-bind="text: `pb: ${gridScrollBottomPadding()}px`"></span>
-                                        </div>
+                                        <div class="sticky-heading-block"></div>
                                     </th>
-                                    <th scope="col" role="columnheader" data-field="RangeGroup" aria-haspopup="true" colspan="4" data-colspan="4" data-title="Range" id="74a57c47-01c1-483d-8399-bbdbdcdf4e86" class="k-header">Range</th>
-                                    <th scope="col" role="columnheader" aria-haspopup="true" colspan="5" data-colspan="5" data-title="Actions" id="c0ffb590-b731-407c-85e1-52a33908f0d6" class="k-header">Actions</th>
-                                    <th scope="col" role="columnheader" aria-haspopup="true" colspan="8" data-colspan="8" data-title="Stock" id="da5784a6-90d5-4d68-a051-258fcb7ca6e0" class="k-header">Stock</th>
-                                    <th scope="col" role="columnheader" aria-haspopup="true" colspan="7" data-colspan="8" data-title="Sales" id="b17c73e0-ebd5-47ed-8d83-a566ed8028c7" class="k-header">Sales - Last 180 Days</th>
+                                    <th scope="col" role="columnheader" colspan="5" class="k-header">
+                                        Range
+                                    </th>
+                                    <th scope="col" role="columnheader" colspan="5" class="k-header">
+                                        Actions
+                                    </th>
+                                    <th scope="col" role="columnheader" colspan="7" class="k-header">
+                                        Stock
+                                    </th>
+                                    <th scope="col" role="columnheader" colspan="7" class="k-header">
+                                        Sales - Last 180 Days
+                                    </th>
                                 </tr>
                                 <tr role="row">
-                                    <th scope="col" role="columnheader" data-field="RangePlanned" aria-haspopup="true" data-title="Planned" data-aggregates="sum" data-index="4" id="066a2f9d-a8c9-44f4-965e-cc57169c4f8d" class="text-end k-header k-first">Planned</th>
-                                    <th scope="col" role="columnheader" data-field="RangeActual" aria-haspopup="true" data-title="Actual" data-aggregates="sum" data-index="5" id="094e5977-6e3a-40e8-9d10-a9578bf5308c" class="text-end k-header">Actual</th>
-                                    <th scope="col" role="columnheader" data-field="RangeInProgress" aria-haspopup="true" data-title="In Progress" data-index="6" id="8bfd1349-213c-439f-a98d-5f1a0523d5d7" class="text-end k-header">In Progress</th>
-                                    <th scope="col" role="columnheader" data-field="RangeRequired" aria-haspopup="true" data-title="Required" data-index="7" id="9494a067-1e55-45bc-855a-f6e19c138024" class="text-end k-header">Required</th>
-                                    <th scope="col" role="columnheader" data-field="ActionRecommendations" aria-haspopup="true" data-title="Recommendations" data-index="8" id="9dd78706-98c0-4739-892b-5198af5d9720" class="k-header">Recommendations</th>
-                                    <th scope="col" role="columnheader" data-field="ActionQuantityToBranch" aria-haspopup="true" data-title="Qty to Branch" data-index="9" id="aca3a23b-163a-4bde-a094-9631b0dd5202" class="text-end k-header">Qty to Branch</th>
-                                    <th scope="col" role="columnheader" data-field="ActionQuantityToWH" aria-haspopup="true" data-title="Qty to WH" data-index="10" id="810de9b8-37a1-4428-9fa4-e590d163c7f8" class="text-end k-header">Qty to WH</th>
-                                    <th scope="col" role="columnheader" data-field="ActionSubmit" aria-haspopup="true" data-title=" " data-index="11" id="77e8089d-5489-4ad5-bf54-e4bf73215618" class="k-header"> </th>
-                                    <th scope="col" role="columnheader" data-field="ActionNotes" aria-haspopup="true" data-title="Notes" data-index="12" id="10b4c72a-28b1-4bb9-9e5a-1e01c5bc7d3a" class="k-header">Notes</th>
-                                    <th scope="col" role="columnheader" data-field="StockWarehouse" aria-haspopup="true" data-title="Warehouse" data-index="13" id="beb7f12b-b769-4a02-8dff-7d846d1b7f26" class="text-end k-header">Warehouse</th>
-                                    <th scope="col" role="columnheader" data-field="StockCover" aria-haspopup="true" data-title="Cover" data-index="14" id="10dac473-57cb-4df8-b60b-bd6ccc98dd45" class="text-end k-header">Cover</th>
-                                    <th scope="col" role="columnheader" data-field="StockPurchaseOrdersFreeStock" aria-haspopup="true" data-title="Purchase Order" data-index="15" id="714be0e2-61be-4410-9454-4ce25935f22a" class="text-end k-header">PO Quantity</th>
-                                    <th scope="col" role="columnheader" data-field="StockPurchaseOrdersDueDate" aria-haspopup="true" data-title="Due Date" data-index="16" id="245d9410-c8ff-482c-bdd6-1e6f02871d88" class="k-header">PO Due Date</th>
-                                    <th scope="col" role="columnheader" data-field="StockKingsRoad" aria-haspopup="true" data-title="King's Road" data-index="17" id="50a6eb78-ef37-4947-bf68-3dd0280a671d" class="text-end k-header">King's Road</th>
-                                    <th scope="col" role="columnheader" data-field="StockMarylebone" aria-haspopup="true" data-title="Marylebone" data-index="18" id="84d7e4ee-6c14-46fb-8f17-12912b188007" class="text-end k-header">Marylebone</th>
-                                    <th scope="col" role="columnheader" data-field="StockFenwickAll" aria-haspopup="true" data-title="Fenwick (All)" data-index="19" id="472c2f98-6074-4310-8e14-b0918ac047ae" class="text-end k-header">Fenwick (All)</th>
-                                    <th scope="col" role="columnheader" data-field="StockRingFenced" aria-haspopup="true" data-title="Ring Fenced" data-index="20" id="1f8fbdf7-2a3c-4fd4-ae6a-3f68745944e5" class="text-end k-header">Ring Fenced</th>
-                                    <th scope="col" role="columnheader" data-field="SalesSummary" aria-haspopup="true" data-title="Summary" data-index="21" id="b39c97c3-3190-47cb-8237-d887691b9377" class="k-header">Summary</th>
-                                    <th scope="col" role="columnheader" data-field="SalesTotal" aria-haspopup="true" data-title="Total" data-index="22" id="b4b124fe-e0a4-4ebf-94f2-71c4b376c3a0" class="text-end k-header">Total</th>
-                                    <th scope="col" role="columnheader" data-field="SalesKingsRoad" aria-haspopup="true" data-title="King's Road" data-index="23" id="ac520c5f-9a4e-4970-8749-291783f501f5" class="text-end k-header">King's Road</th>
-                                    <th scope="col" role="columnheader" data-field="SalesMarylebone" aria-haspopup="true" data-title="Marylebone" data-index="24" id="0285663f-e506-4855-8a6a-a22adc24812f" class="text-end k-header">Marylebone</th>
-                                    <th scope="col" role="columnheader" data-field="SalesFenwickAll" aria-haspopup="true" data-title="Fenwick (All)" data-index="25" id="f0ee3048-d628-4f20-bd62-f6d27739b645" class="text-end k-header">Fenwick (All)</th>
-                                    <th scope="col" role="columnheader" data-field="SalesUKECom" aria-haspopup="true" data-title="UK eCommerce" data-index="26" id="481c8750-d3d2-42d0-94b7-80956d1a83c4" class="text-end k-header">UK eComm</th>
-                                    <th scope="col" role="columnheader" data-field="SalesUKTrade" aria-haspopup="true" data-title="UK Trade" data-index="27" id="e29ac9f2-d54b-4669-8273-e244bb3e5b7e" class="text-end k-header">UK Trade</th>
+                                    <th scope="col" role="columnheader" class="k-header k-first">
+                                        Price
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header k-first">
+                                        Planned
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        Actual
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        In Progress
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        Required
+                                    </th>
+                                    <th scope="col" role="columnheader" class="k-header">
+                                        Recommendations
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        Qty to Branch
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        Qty to WH
+                                    </th>
+                                    <th scope="col" role="columnheader" class="k-header">
+
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        180 Day Sales Branch
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        Warehouse
+                                    </th>
+                                    @*<th scope="col" role="columnheader" class="text-end k-header">
+                                        Cover
+                                    </th>*@
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        PO Quantity
+                                    </th>
+                                    <th scope="col" role="columnheader" class="k-header">
+                                        PO Due Date
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        King's Road
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        Marylebone
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        Fenwick (All)
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        Ring Fenced
+                                    </th>
+                                    @*<th scope="col" role="columnheader" class="k-header">
+                                        Summary
+                                    </th>*@
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        Total Worldwide
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        King's Road
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        Marylebone
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        Fenwick (All)
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        UK eComm
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        UK Trade
+                                    </th>
+                                    <th scope="col" role="columnheader" class="k-header">
+                                        Notes
+                                    </th>
                                 </tr>
                             </thead>
-                            @*<tbody role="rowgroup" data-bind="foreach: groupedSearchResults">
-                                <tr role="row" class="k-grouping-row product-filter-name-row">
-                                    <td aria-expanded="true" colspan="28" class="relative">
-                                        <p class="k-reset">
-                                            <span class="group-heading product-filter-name bold" data-bind="text: name"></span>
-                                        </p>
-                                        <span class="range-total range-planned bold">
-                                            <span data-bind="text: formatCurrency(plannedValue(), 0, 'en-GB', 'GBP')"></span>
-                                            <!-- ko if: plannedCount -->
-                                            (<span data-bind="text: plannedCount"></span>)
-                                            <!-- /ko -->
-                                        </span>
-                                        <span class="range-total range-actual bold">
-                                            <span data-bind="text: formatCurrency(actualValue(), 0, 'en-GB', 'GBP')"></span>
-                                            <!-- ko if: actualCount -->
-                                            (<span data-bind="text: actualCount"></span>)
-                                            <!-- /ko -->
-                                        </span>
-                                        <span class="range-total range-in-progress bold">
-                                            <span data-bind="text: formatCurrency(inProgressValue(), 0, 'en-GB', 'GBP')"></span>
-                                            <!-- ko if: inProgressCount -->
-                                            (<span data-bind="text: inProgressCount"></span>)
-                                            <!-- /ko -->
-                                        </span>
-                                    </td>
-                                </tr>
-                                <!-- ko foreach: items -->
-                                <!-- ko if: name -->
-                                <tr role="row" class="k-grouping-row product-page-name-row">
-                                    <td class="k-group-cell"></td>
-                                    <td colspan="27" aria-expanded="true">
-                                        <p class="k-reset">
-                                            <a class="k-icon k-i-collapse" href="#" tabindex="-1" aria-label="Collapse"></a>
-                                            <span class="group-heading product-filter-name" style="transform: translateX(0px);" data-bind="text: name"></span>
-                                        </p>
-                                    </td>
-                                </tr>
-                                <!-- /ko -->
-                                <!-- ko foreach: items -->
-                                <!-- ko if: name -->
-                                <tr role="row" class="k-grouping-row order-form-group-row">
-                                    <td class="k-group-cell"></td>
-                                    <td class="k-group-cell"></td>
-                                    <td colspan="26" aria-expanded="true">
-                                        <p class="k-reset">
-                                            <a class="k-icon k-i-collapse" href="#" tabindex="-1" aria-label="Collapse"></a>
-                                            <span class="group-heading product-filter-name" style="transform: translateX(0px);" data-bind="text: name"></span>
-                                        </p>
-                                    </td>
-                                </tr>
-                                <!-- /ko -->
-                                <!-- ko template: { name: 'row-template', foreach: items } --><!-- /ko -->
-                                <!-- /ko -->
-                                <!-- /ko -->
-                            </tbody>*@
                             <tbody class="virtual-spacing">
                                 <tr>
                                     <td colspan="300" data-bind="style: { height: `${gridScrollTopPadding()}px` }">
@@ -655,26 +702,26 @@
                             <tbody role="rowgroup" data-bind="foreach: groupedSearchResults">
                                 <!-- ko if: headerVisible -->
                                 <tr role="row" class="k-grouping-row product-filter-name-row">
-                                    <td aria-expanded="true" colspan="28" class="relative">
+                                    <td aria-expanded="true" colspan="300" class="relative">
                                         <p class="k-reset">
                                             <span class="group-heading bold" data-bind="text: name"></span>
                                         </p>
                                         <span class="range-total range-planned bold">
                                             <span data-bind="text: formatCurrency(plannedValue(), 0, 'en-GB', 'GBP')"></span>
                                             <!-- ko if: plannedCount -->
-                                            (<span data-bind="text: plannedCount"></span>)
+                                            (Q. <span data-bind="text: plannedCount"></span>)
                                             <!-- /ko -->
                                         </span>
                                         <span class="range-total range-actual bold">
                                             <span data-bind="text: formatCurrency(actualValue(), 0, 'en-GB', 'GBP')"></span>
                                             <!-- ko if: actualCount -->
-                                            (<span data-bind="text: actualCount"></span>)
+                                            (Q. <span data-bind="text: actualCount"></span>)
                                             <!-- /ko -->
                                         </span>
                                         <span class="range-total range-in-progress bold">
                                             <span data-bind="text: formatCurrency(inProgressValue(), 0, 'en-GB', 'GBP')"></span>
                                             <!-- ko if: inProgressCount -->
-                                            (<span data-bind="text: inProgressCount"></span>)
+                                            (Q. <span data-bind="text: inProgressCount"></span>)
                                             <!-- /ko -->
                                         </span>
                                     </td>
@@ -684,7 +731,7 @@
                                 <!-- ko if: headerVisible -->
                                 <tr role="row" class="k-grouping-row product-page-name-row">
                                     <td class="k-group-cell"></td>
-                                    <td colspan="27" aria-expanded="true">
+                                    <td colspan="300" aria-expanded="true">
                                         <p class="k-reset">
                                             <a class="k-icon k-i-collapse" href="#" tabindex="-1" aria-label="Collapse"></a>
                                             <span class="group-heading" style="transform: translateX(0px);" data-bind="text: name"></span>
@@ -697,7 +744,7 @@
                                 <tr role="row" class="k-grouping-row order-form-group-row">
                                     <td class="k-group-cell"></td>
                                     <td class="k-group-cell"></td>
-                                    <td colspan="26" aria-expanded="true">
+                                    <td colspan="300" aria-expanded="true">
                                         <p class="k-reset">
                                             <a class="k-icon k-i-collapse" href="#" tabindex="-1" aria-label="Collapse"></a>
                                             <span class="group-heading" data-bind="text: `${name}`"></span>
@@ -711,7 +758,7 @@
                             </tbody>
                             <tbody style="display: none" data-bind="visible: groupedSearchResults().length === 0 && manageBusy() == false">
                                 <tr class="no-results">
-                                    <td colspan="30">
+                                    <td colspan="300">
                                         <h4 class="mb-0">
                                             No Results
                                         </h4>
@@ -720,14 +767,13 @@
                             </tbody>
                             <tbody class="virtual-spacing">
                                 <tr class="final-row">
-                                    <td colspan="30" data-bind="style: { height: `${gridScrollBottomPadding()}px` }">
+                                    <td colspan="300" data-bind="style: { height: `${gridScrollBottomPadding()}px` }">
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-                @*<div id="results-grid" data-bind="kendoGrid: gridSettings"></div>*@
             </div>
         </div>
         <div id="add-tab" class="tab-pane">
@@ -752,56 +798,104 @@
                                 <col class="k-group-col" style="width:6px" />
                                 <col class="k-group-col" style="width:6px" />
                                 <col style="width:310px" />
+                                <col style="width:180px" />
                                 <col style="width:300px" />
                                 <col style="width:200px" />
+                                <col style="width:140px" />
+                                <col style="width:100px" />
+                                @*<col style="width:100px" />*@
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                <col style="width:100px" />
+                                @*<col style="width:200px" />*@
+                                <col style="width:100px" />
                                 <col style="width:140px" />
                                 <col style="width:100px" />
                                 <col style="width:100px" />
                                 <col style="width:100px" />
                                 <col style="width:100px" />
                                 <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:200px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
+                                <col style="width:50px" />
                             </colgroup>
                             <thead role="rowgroup">
                                 <tr role="row">
                                     <th class="k-group-cell k-header" colspan="3" rowspan="2"></th>
                                     <th class="k-group-cell k-header sticky-heading" scope="col" rowspan="2">
-                                        <div class="sticky-heading-block">
-                                            @*<span data-bind="text: `scrollY: ${scrollY()}px`"></span>*@
-                                        </div>
+                                        <div class="sticky-heading-block"></div>
                                     </th>
-                                    <th scope="col" role="columnheader" colspan="3" class="k-header">Actions</th>
-                                    <th scope="col" role="columnheader" colspan="8" class="k-header">Stock</th>
-                                    <th scope="col" role="columnheader" colspan="7" class="k-header">Sales - Last 180 Days</th>
+                                    <th scope="col" role="columnheader" colspan="4" class="k-header">
+                                        Actions
+                                    </th>
+                                    <th scope="col" role="columnheader" colspan="7" class="k-header">
+                                        Stock
+                                    </th>
+                                    <th scope="col" role="columnheader" colspan="7" class="k-header">
+                                        Sales - Last 180 Days
+                                    </th>
                                 </tr>
                                 <tr role="row">
-                                    <th scope="col" role="columnheader" class="k-header">Recommendations</th>
-                                    <th scope="col" role="columnheader" data-field="ActionQuantityToBranch" class="text-end k-header">Quantity</th>
-                                    <th scope="col" role="columnheader" data-field="ActionSubmit" class="k-header"> </th>
-                                    <th scope="col" role="columnheader" data-field="StockWarehouse" class="text-end k-header">Warehouse</th>
-                                    <th scope="col" role="columnheader" data-field="StockCover" class="text-end k-header">Cover</th>
-                                    <th scope="col" role="columnheader" data-field="StockPurchaseOrdersFreeStock" class="text-end k-header">PO Quantity</th>
-                                    <th scope="col" role="columnheader" data-field="StockPurchaseOrdersDueDate" class="k-header">PO Due Date</th>
-                                    <th scope="col" role="columnheader" data-field="StockKingsRoad" class="text-end k-header">King's Road</th>
-                                    <th scope="col" role="columnheader" data-field="StockMarylebone" class="text-end k-header">Marylebone</th>
-                                    <th scope="col" role="columnheader" data-field="StockFenwickAll" class="text-end k-header">Fenwick (All)</th>
-                                    <th scope="col" role="columnheader" data-field="StockRingFenced" class="text-end k-header">Ring Fenced</th>
-                                    <th scope="col" role="columnheader" data-field="SalesSummary" class="k-header">Summary</th>
-                                    <th scope="col" role="columnheader" data-field="SalesTotal" class="text-end k-header">Total</th>
-                                    <th scope="col" role="columnheader" data-field="SalesKingsRoad" class="text-end k-header">King's Road</th>
-                                    <th scope="col" role="columnheader" data-field="SalesMarylebone" class="text-end k-header">Marylebone</th>
-                                    <th scope="col" role="columnheader" data-field="SalesFenwickAll" class="text-end k-header">Fenwick (All)</th>
-                                    <th scope="col" role="columnheader" data-field="SalesUKECom" class="text-end k-header">UK eComm</th>
-                                    <th scope="col" role="columnheader" data-field="SalesUKTrade" class="text-end k-header">UK Trade</th>
+                                    <th scope="col" role="columnheader" class="k-header">
+                                        Price
+                                    </th>
+                                    <th scope="col" role="columnheader" class="k-header">
+                                        Recommendations
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        Quantity
+                                    </th>
+                                    <th scope="col" role="columnheader" class="k-header">
+
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        Warehouse
+                                    </th>
+                                    @*<th scope="col" role="columnheader" class="text-end k-header">
+                                        Cover
+                                    </th>*@
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        PO Quantity
+                                    </th>
+                                    <th scope="col" role="columnheader" class="k-header">
+                                        PO Due Date
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        King's Road
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        Marylebone
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        Fenwick (All)
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        Ring Fenced
+                                    </th>
+                                    @*<th scope="col" role="columnheader" class="k-header">
+                                        Summary
+                                    </th>*@
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        Total Worldwide
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        King's Road
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        Marylebone
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        Fenwick (All)
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        UK eComm
+                                    </th>
+                                    <th scope="col" role="columnheader" class="text-end k-header">
+                                        UK Trade
+                                    </th>
+                                    <th scope="col" role="columnheader" class="k-header">
+                                        Notes
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody class="virtual-spacing">
@@ -813,7 +907,7 @@
                             <tbody role="rowgroup" data-bind="foreach: addGroupedSearchResults">
                                 <!-- ko if: headerVisible -->
                                 <tr role="row" class="k-grouping-row product-filter-name-row">
-                                    <td aria-expanded="true" colspan="28" class="relative">
+                                    <td aria-expanded="true" colspan="300" class="relative">
                                         <p class="k-reset">
                                             <span class="group-heading bold" data-bind="text: name"></span>
                                             @*<span data-bind="text: `{ h: ${height}px; y: ${offsetY}px, rh: ${runningHeight}px }`"></span>*@
@@ -825,7 +919,7 @@
                                 <!-- ko if: headerVisible -->
                                 <tr role="row" class="k-grouping-row product-page-name-row">
                                     <td class="k-group-cell"></td>
-                                    <td colspan="27" aria-expanded="true">
+                                    <td colspan="300" aria-expanded="true">
                                         <p class="k-reset">
                                             <a class="k-icon k-i-collapse" href="#" tabindex="-1" aria-label="Collapse"></a>
                                             <span class="group-heading" style="transform: translateX(0px);" data-bind="text: name"></span>
@@ -839,7 +933,7 @@
                                 <tr role="row" class="k-grouping-row order-form-group-row">
                                     <td class="k-group-cell"></td>
                                     <td class="k-group-cell"></td>
-                                    <td colspan="26" aria-expanded="true">
+                                    <td colspan="300" aria-expanded="true">
                                         <p class="k-reset">
                                             <a class="k-icon k-i-collapse" href="#" tabindex="-1" aria-label="Collapse"></a>
                                             <span class="group-heading" data-bind="text: `${name}`"></span>
@@ -854,7 +948,7 @@
                             </tbody>
                             <tbody style="display: none" data-bind="visible: addGroupedSearchResults().length === 0 && addBusy() == false">
                                 <tr class="no-results">
-                                    <td colspan="30">
+                                    <td colspan="300">
                                         <h4 class="mb-0">
                                             No Results
                                         </h4>

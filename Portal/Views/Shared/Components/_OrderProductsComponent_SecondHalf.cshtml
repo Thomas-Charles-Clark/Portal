@@ -934,8 +934,13 @@
                                                                                     </td>
                                                                                     <td>
                                                                                         <span data-bind="text: DueInDisplay"></span>
+                                                                                        <!-- ko if: POOnCallOff -->
+                                                                                        <span>(call off)</span>
+                                                                                        <!-- /ko -->
+                                                                                        <!-- ko ifnot: POOnCallOff -->
                                                                                         <!-- ko if: POConfirmed != null -->
                                                                                         <span data-bind="text: POConfirmed ? '(confirmed)' : '(unconfirmed)'"></span>
+                                                                                        <!-- /ko -->
                                                                                         <!-- /ko -->
                                                                                     </td>
                                                                                 </tr>
@@ -2873,8 +2878,13 @@
                                                             </td>
                                                             <td>
                                                                 <span data-bind="text: DueInDisplay"></span>
+                                                                <!-- ko if: POOnCallOff -->
+                                                                <span>(call off)</span>
+                                                                <!-- /ko -->
+                                                                <!-- ko ifnot: POOnCallOff -->
                                                                 <!-- ko if: POConfirmed != null -->
                                                                 <span data-bind="text: POConfirmed ? '(confirmed)' : '(unconfirmed)'"></span>
+                                                                <!-- /ko -->
                                                                 <!-- /ko -->
                                                             </td>
                                                         </tr>

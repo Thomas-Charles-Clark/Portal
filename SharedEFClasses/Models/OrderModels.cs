@@ -972,6 +972,7 @@ namespace SharedEFClasses.Models.Orders
         public DateTime? DueInDate { get; set; }
         public string DueInMessage { get; set; }
         public bool? POConfirmed { get; set; }
+        public bool? POOnCallOff { get; set; }
     }
 
     public class ProductStockFetchResult : BasketItemAllocationStockFetchResult
@@ -1768,7 +1769,7 @@ namespace SharedEFClasses.Models.Orders
         public string email { get; set; }
         public string endCustomerCode { get; set; }
         public string endCustomerName { get; set; }
-
+        public bool isDefaultDeliveryAddress { get; set; }
         public string invoiceAddressCountryCode { get; set; }
         public string invoiceAddressPostcode { get; set; }
     }

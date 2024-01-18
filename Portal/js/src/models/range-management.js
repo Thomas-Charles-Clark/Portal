@@ -35,6 +35,10 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     self.finalRowVisible = ko.observable(false);
 
+    self.gridPositionTop = 158;
+
+    self.addGridPositionTop = 158;
+
     ///
 
     self.busy = ko.observable(true);
@@ -133,6 +137,9 @@ const rangeManagementViewModel = ({ } = {}) => {
     self.branchId = ko.observable('');
     self.branch = ko.observable();
 
+    self.launchId = ko.observable(''); // if you don't initialise to '' you'll find that opening and immediately dismissing the associated dropdown
+    self.launch = ko.observable(); // the above caveat appears to only apply to odata bound drop down lists
+
     self.brandId = ko.observable(''); // if you don't initialise to '' you'll find that opening and immediately dismissing the associated dropdown
     self.brand = ko.observable(); // the above caveat appears to only apply to odata bound drop down lists
 
@@ -150,8 +157,14 @@ const rangeManagementViewModel = ({ } = {}) => {
     self.productFilter = ko.observable();
     self.productFilterId = ko.observable(null);
 
+    self.saleStatus = ko.observable();
+    self.saleStatusCode = ko.observable('');
+
     self.stockStatus = ko.observable();
     self.stockStatusCode = ko.observable('');
+
+    self.addStockStatus = ko.observable();
+    self.addStockStatusCode = ko.observable('');
 
     self.searchTerm = ko.observable().extend({
         rateLimit: {
@@ -213,6 +226,8 @@ const rangeManagementViewModel = ({ } = {}) => {
             productFilterGroupId: self.productFilterGroupId(),
             productFilterId: self.productFilterId(),
             brandId: self.brandId(),
+            launchId: self.launchId(),
+            saleStatusCode: self.saleStatusCode(),
             statusGroupId: self.statusGroupId()
         };
 
@@ -226,6 +241,10 @@ const rangeManagementViewModel = ({ } = {}) => {
         if (self.stockStatusCode())
             props.stockStatusCode = self.stockStatusCode();
 
+        // they'll end up serialising "undefined" or "null" :\
+        if (self.addStockStatusCode())
+            props.addStockStatusCode = self.addStockStatusCode();
+
         if (self.gridParamsFirstRun)
             self.gridParamsFirstRun = false;
         else {
@@ -233,8 +252,11 @@ const rangeManagementViewModel = ({ } = {}) => {
                 self.productFilterGroupId() ||
                 self.productFilterId() ||
                 self.brandId() ||
+                self.launchId() ||
+                self.saleStatusCode() ||
                 self.statusGroupId() ||
                 self.stockStatusCode() ||
+                self.addStockStatusCode() ||
                 self.searchTerm()) {
                 window.setTimeout(() => {
                     let obj = null;
@@ -355,13 +377,12 @@ const rangeManagementViewModel = ({ } = {}) => {
                 id: 'OrderID'
             }
         }),
-        sort: {
-            field: "SortOrder"
-        },
         group: [{
-            field: "TradeAccountLabel"
+            field: "TradeAccountLabel",
+            dir: "desc"
         }, {
-            field: "SecondaryGroupingLabel" 
+            field: "SecondaryGroupingLabel",
+            dir: "asc"
         }]
     });
 
@@ -419,9 +440,13 @@ const rangeManagementViewModel = ({ } = {}) => {
                 id: 'OrderID'
             }
         }),
-        sort: {
-            field: "SortOrder"
-        }
+        group: [{
+            field: "TradeAccountLabel",
+            dir: "desc"
+        }, {
+            field: "SecondaryGroupingLabel",
+            dir: "asc"
+        }]
     });
 
     self.transferOrdersColumns = [{
@@ -513,6 +538,10 @@ const rangeManagementViewModel = ({ } = {}) => {
         width: 60,
         filterable: false,
         hidden: true
+    }, {
+        title: "SecondarySorting",
+        field: "SecondarySorting",
+        hidden: true
     }]
 
     self.transferOrdersWH2BRGridSettings = {
@@ -527,9 +556,6 @@ const rangeManagementViewModel = ({ } = {}) => {
         reorderable: false,
         filterable: true,
         selectable: false,
-        scrollable: {
-            endless: true
-        },
         pageable: {
             pageSize: 20,
             pageSizes: [10, 20, 30, 50, 100, 200]
@@ -553,9 +579,6 @@ const rangeManagementViewModel = ({ } = {}) => {
         reorderable: false,
         filterable: false,
         selectable: false,
-        scrollable: {
-            endless: true
-        },
         pageable: {
             pageSize: 20,
             pageSizes: [10, 20, 30, 50, 100, 200]
@@ -649,6 +672,52 @@ const rangeManagementViewModel = ({ } = {}) => {
         clearFunction: self.genericUnsavedChangesClear
     });
 
+    self.launchParams = kendoMDCDropDownList({
+        label: 'Launch',
+        odata: true,
+        endPoint: '/odata/Launches',
+        textField: 'Name',
+        valueField: 'LaunchID',
+        virtual: true,
+        pageSize: 40,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/Launches/Default.LaunchValueMapper(launchId=${options.value})`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                            if (data.value.length == 1) {
+                                self.launch(data.value[0]);
+                            }
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        idObservable: self.launchId,
+        objObservable: self.launch,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertable: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'desc',
+            field: 'launchId'
+        },
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear
+    });
+
     self.brandParams = kendoMDCDropDownList({
         label: 'Brand',
         odata: true,
@@ -691,6 +760,32 @@ const rangeManagementViewModel = ({ } = {}) => {
         clearFunction: self.genericUnsavedChangesClear
     });
 
+    self.saleStatusParams = kendoMDCDropDownList({
+        label: 'Sale Status',
+        data: [{
+            Name: "On Sale",
+            Value: "OnSale"
+        }, {
+            Name: "Not on Sale",
+            Value: "NotOnSale"
+        }],
+        textField: 'Name',
+        valueField: 'Value',
+        virtual: false,
+        idObservable: self.saleStatusCode,
+        objObservable: self.saleStatus,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertable: ko.observable(false),
+        readOnly: false,
+        filter: false,
+        autoBind: true,
+        height: 340,
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear
+    });
+
     self.stockStatusParams = kendoMDCDropDownList({
         label: 'Stock Status',
         data: [{
@@ -705,6 +800,32 @@ const rangeManagementViewModel = ({ } = {}) => {
         virtual: false,
         idObservable: self.stockStatusCode,
         objObservable: self.stockStatus,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertable: ko.observable(false),
+        readOnly: false,
+        filter: false,
+        autoBind: true,
+        height: 340,
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear
+    });
+
+    self.addStockStatusParams = kendoMDCDropDownList({
+        label: 'Stock Status',
+        data: [{
+            Value: "InStock",
+            Name: "In Stock"
+        }, {
+            Name: "OutOfStock",
+            Value: "Out of Stock"
+        }],
+        textField: 'Name',
+        valueField: 'Value',
+        virtual: false,
+        idObservable: self.addStockStatusCode,
+        objObservable: self.addStockStatus,
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -772,6 +893,15 @@ const rangeManagementViewModel = ({ } = {}) => {
         //console.log('branch', branch);
         if (branch) {
             self.refreshProductFilters(branch);
+            switch (self.view()) {
+                case VIEW_RESTOCK:
+                    self.transferOrdersWH2BRGridSettings.widget().dataSource.read();
+                    break;
+                case VIEW_RECALL:
+                    self.transferOrdersBR2WHGridSettings.widget().dataSource.read();
+                    break;
+                default: break;
+            }
         } else {
             self.clearProductFilters();
         }
@@ -781,6 +911,67 @@ const rangeManagementViewModel = ({ } = {}) => {
 
 
     //#region Methods
+
+    self.refreshTransferOrders = () => {
+        self.setBusy();
+        let direction = null;
+        switch (self.view()) {
+            case VIEW_RESTOCK:
+                direction = 'WH2BR';
+                break;
+            case VIEW_RECALL:
+                direction = 'BR2WH';
+                break;
+            default: break;
+        }
+
+        data = {
+            branchId: self.branchId(),
+            transferDirection: "WH2BR"
+        };
+
+        let qs = new URLSearchParams(data);
+
+        fetch(`/api/RangeManagementAPI/RefreshTransferOrders?${qs}`, {
+            method: 'GET',
+            headers: window.fetchHeaders,
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                switch (self.view()) {
+                    case VIEW_MANAGE:
+                        self.filledRecords().forEach(fr => {
+                            fr.loaded(false);
+                            fr.busy(true);
+                        });
+                        self.recordsToDataFetch(self.filledRecords().map((fr) => { return { ProductID: fr.ProductID } }));
+                        break;
+                    case VIEW_ADD:
+                        self.addFilledRecords().forEach(fr => {
+                            fr.loaded(false);
+                            fr.busy(true);
+                        });
+                        self.addRecordsToDataFetch(self.addFilledRecords().map((fr) => { return { ProductID: fr.ProductID } }));
+                        self.addFilledRecords([]);
+                        self.addRecordsToDataFetch.valueHasMutated(); // this extra shenanigans necessary because look at the 
+                        // computed for the add to grid unfilledrecordproductids 
+                        break;
+                    case VIEW_RESTOCK:
+                        self.transferOrdersWH2BRGridSettings.widget().dataSource.read();
+                        break;
+                    case VIEW_RECALL:
+                        self.transferOrdersBR2WHGridSettings.widget().dataSource.read();
+                        break;
+                    default:
+                        break;
+                }
+
+                self.clearBusy();
+            })
+            .catch(err => {
+                window.handleFetchError(err);
+            })
+    }
 
     self.clearGridData = () => {
         self.recordsToDataFetch([]);
@@ -1207,6 +1398,36 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     //#region Computeds
 
+    self.branchTotalPlannedValue = ko.computed(() => {
+        let totalValue = self.productFilterTotals().reduce((a, i) => a += i.PlannedValue, 0);
+        return `${formatCurrency(totalValue, 0, 'en-GB', 'GBP')}`;
+    }, self);
+
+    self.branchTotalPlannedCount = ko.computed(() => {
+        let totalCount = self.productFilterTotals().reduce((a, i) => a += i.PlannedCount, 0);
+        return `(Q. ${formatNumber(totalCount, 0, 'en-GB')})`;
+    }, self);
+
+    self.branchTotalActualValue = ko.computed(() => {
+        let totalValue = self.productFilterTotals().reduce((a, i) => a += i.ActualValue, 0);
+        return `${formatCurrency(totalValue, 0, 'en-GB', 'GBP')}`;
+    }, self);
+
+    self.branchTotalActualCount = ko.computed(() => {
+        let totalCount = self.productFilterTotals().reduce((a, i) => a += i.ActualCount, 0);
+        return `(Q. ${formatNumber(totalCount, 0, 'en-GB')})`;
+    }, self);
+
+    self.branchTotalInProgressValue = ko.computed(() => {
+        let totalValue = self.productFilterTotals().reduce((a, i) => a += i.InProgressValue, 0);
+        return `${formatCurrency(totalValue, 0, 'en-GB', 'GBP')}`;
+    }, self);
+
+    self.branchTotalInProgressCount = ko.computed(() => {
+        let totalCount = self.productFilterTotals().reduce((a, i) => a += i.InProgressCount, 0);
+        return `(Q. ${formatNumber(totalCount, 0, 'en-GB')})`;
+    }, self);
+
     self.fetchProducts = ko.computed(() => {
 
         if (self.view() == VIEW_MANAGE) {
@@ -1238,7 +1459,10 @@ const rangeManagementViewModel = ({ } = {}) => {
 
                     self.searchResults(data.Results);
 
-                    self.productFilterTotals(data.Totals);
+                    self.productFilterTotals(data.Totals.map(t => {
+                        t.ProductFilterName = t.ProductFilterName.replace('<br/>', ' ');
+                        return t;
+                    }));
 
                     window.setTimeout(() => {
                         self.searchResultsPostProcessing();
@@ -1391,6 +1615,7 @@ const rangeManagementViewModel = ({ } = {}) => {
                                     record.actionTransferToBranchQuantityOriginal(dataResult.Action_TransferToBranchQuantity);
                                     record.actionTransferToBranchQuantity(dataResult.Action_TransferToBranchQuantity);
                                     record.actionTransferToBranchBasketItemId(dataResult.WH2BR_BasketItemID);
+                                    record.actionTransferToBranchExtantTransferQuantity(dataResult.WH2BR_Quantity);
 
                                     if (dataResult.WH2BR_BasketItemID) {
                                         record.actionTransferToBranchQuantityParams.disable(true);
@@ -1401,6 +1626,7 @@ const rangeManagementViewModel = ({ } = {}) => {
                                     record.actionTransferToWarehouseQuantityOriginal(dataResult.Action_TransferToWarehouseQuantity);
                                     record.actionTransferToWarehouseQuantity(dataResult.Action_TransferToWarehouseQuantity);
                                     record.actionTransferToWarehouseBasketItemId(dataResult.BR2WH_BasketItemID);
+                                    record.actionTransferToWarehouseExtantTransferQuantity(dataResult.BR2WH_Quantity);
 
                                     if (dataResult.BR2WH_BasketItemID) {
                                         record.actionTransferToWarehouseQuantityParams.disable(true);
@@ -1417,6 +1643,7 @@ const rangeManagementViewModel = ({ } = {}) => {
                                     record.rangeInProgress = dataResult.Range_InProgress;
                                     record.rangeRequired = dataResult.Range_Required;
 
+                                    record.sales180DayBranch = dataResult.Sales_180Day_Branch;
                                     record.sales180DayFW = dataResult.Sales_180Day_FW;
                                     record.sales180DayKR = dataResult.Sales_180Day_KR;
                                     record.sales180DayMHS = dataResult.Sales_180Day_MHS;
@@ -1437,6 +1664,8 @@ const rangeManagementViewModel = ({ } = {}) => {
                                     record.stockSummary = dataResult.Stock_Summary;
 
                                     record.unitCostPriceGBP = dataResult.UnitCostPriceGBP;
+
+                                    record.priceSummary = dataResult.Price_Summary;
 
                                     record.busy(false);
 
@@ -1527,7 +1756,6 @@ const rangeManagementViewModel = ({ } = {}) => {
 
                             if (record != null) {
 
-
                                 let dataResult = data.Results.find(p => p.ProductID == pid);
                                 let filledRecord = filledRecords.find(p => p.ProductID == pid);
 
@@ -1560,6 +1788,7 @@ const rangeManagementViewModel = ({ } = {}) => {
                                 record.actionRecommendations(dataResult.Action_Recommendation);
                                 record.allowed(dataResult.Control_Allow_AddToRange);
 
+                                record.sales180DayBranch = dataResult.Sales_180Day_Branch;
                                 record.sales180DayFW = dataResult.Sales_180Day_FW;
                                 record.sales180DayKR = dataResult.Sales_180Day_KR;
                                 record.sales180DayMHS = dataResult.Sales_180Day_MHS;
@@ -1578,6 +1807,8 @@ const rangeManagementViewModel = ({ } = {}) => {
                                 record.stockWHNextPODueDate = dataResult.Stock_WH_NextPODueDate;
                                 record.stockWHNextPOFreeStock = dataResult.Stock_WH_NextPOFreeStock;
                                 record.stockSummary = dataResult.Stock_Summary;
+
+                                record.priceSummary = dataResult.Price_Summary;
 
                                 if (add) {
                                     affectedRecords.push(record);
@@ -1983,7 +2214,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         if (self.finalRowVisible()) {
             return 0;
         } else {
-            return self.gridTotalHeight() - self.gridScrollTopPadding() - self.gridHeaderHeight - 116;
+            return self.gridTotalHeight() - self.gridScrollTopPadding() - self.gridHeaderHeight - self.gridPositionTop;
         }
     }, self);
 
@@ -2323,7 +2554,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         if (self.finalRowVisible()) {
             return 0;
         } else {
-            return self.addGridTotalHeight() - self.addGridScrollTopPadding() - self.addGridHeaderHeight;
+            return self.addGridTotalHeight() - self.addGridScrollTopPadding() - self.addGridHeaderHeight - self.addGridPositionTop;
         }
     });
 
@@ -2505,10 +2736,12 @@ const resultRecord = function ({
     self.actionTransferToBranchQuantityOriginal = ko.observable();
     self.actionTransferToBranchQuantity = ko.observable().extend(self.defaultNumericalExtension);
     self.actionTransferToBranchBasketItemId = ko.observable();
+    self.actionTransferToBranchExtantTransferQuantity = ko.observable();
     self.actionTransferToWarehouseHighlight = null;
     self.actionTransferToWarehouseQuantityOriginal = ko.observable();
     self.actionTransferToWarehouseQuantity = ko.observable().extend(self.defaultNumericalExtension);
     self.actionTransferToWarehouseBasketItemId = ko.observable();
+    self.actionTransferToWarehouseExtantTransferQuantity = ko.observable();
 
     self.rangeStatus = null;
     self.rangeActual = null;
@@ -2519,6 +2752,7 @@ const resultRecord = function ({
     self.rangeRequired = null;
     self.rangeInProgress = null;
 
+    self.sales180DayBranch = null;
     self.sales180DayFW = null;
     self.sales180DayKR = null;
     self.sales180DayMHS = null;
@@ -2542,6 +2776,8 @@ const resultRecord = function ({
     self.unitCostPriceGBP = null;
 
     self.notes = null;
+
+    self.priceSummary = null;
 
     //productFilter.subscribe(pf => {
 
@@ -2732,11 +2968,11 @@ const resultRecord = function ({
     }, self);
 
     self.submitTransfers = () => {
-        if (self.actionTransferToBranchQuantity() != 0) {
+        if (self.actionTransferToBranchQuantity() != 0 && self.actionTransferToBranchBasketItemId() == null) {
             self.submitTransferWH2BR();
         }
 
-        if (self.actionTransferToWarehouseQuantity() != 0) {
+        if (self.actionTransferToWarehouseQuantity() != 0 && self.actionTransferToWarehouseBasketItemId() == null) {
             self.submitTransferBR2WH();
         }
     }
@@ -2894,9 +3130,14 @@ const resultRecord = function ({
         self.actionTransferToWarehouseQuantityParams.disable(nv);
     });
 
-    self.submitHidden = ko.computed(() => {
-        return (self.actionTransferToBranchQuantity() == 0 &&
-            self.actionTransferToWarehouseQuantity() == 0)
+    // the submit button should only be visible when there's at least ONE action which CAN be performed
+    // when submitting, we only want to submit that direction who is NON ZERO and who does NOT have an extant transfer (basketItemId)
+    // if we have an extant transfer, show BasketItemQuantity for that direction 
+    // Cancel Transfer of 2
+
+    self.submitVisible = ko.computed(() => {
+        return ((self.actionTransferToBranchQuantity() != 0 && self.actionTransferToBranchBasketItemId() == null) ||
+            (self.actionTransferToWarehouseQuantity() != 0 && self.actionTransferToWarehouseBasketItemId() == null))
     }, self);
 
     return self;
@@ -2930,6 +3171,7 @@ const addResultRecord = function ({
 
     self.allowed = ko.observable(false);
 
+    self.sales180DayBranch = null;
     self.sales180DayFW = null;
     self.sales180DayKR = null;
     self.sales180DayMHS = null;
@@ -2949,6 +3191,8 @@ const addResultRecord = function ({
     self.stockWHNextPOFreeStock = null;
     self.stockRingFence = null;
     self.stockSummary = null;
+
+    self.priceSummary = null;
 
     self.defaultNumericalExtension = {
         numberUnformatted: {

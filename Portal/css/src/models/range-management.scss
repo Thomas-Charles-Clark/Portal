@@ -1,5 +1,11 @@
 ﻿@import "common.scss";
 
+body {
+    min-width: 1170px;
+}
+
+$grid-position-top: 210px;
+
 .navbar.navbar-default.navbar-expand {
     position: fixed;
     z-index: 1;
@@ -14,6 +20,7 @@
 }
 
 #upper-section {
+    min-width: 1260px;
     position: fixed;
     width: 100%;
     z-index: 2;
@@ -30,11 +37,16 @@
             }
         }
     }
+
+    #prefilters-second {
+        min-width: 1245px;
+    }
 }
 
 #page-heading-container {
 }
 
+#branch-totals,
 #prefilters-second {
     padding: $sm-gutter;
     border: 1px solid $gray-300;
@@ -70,6 +82,28 @@
                 display: block;
                 width: 100%;
             }
+        }
+    }
+}
+
+#branch-totals {
+    margin-top: $vsm-gutter;
+    display: flex;
+    gap: $sm-gutter;
+    align-items: center;
+    font-weight: bold;
+    h4{
+        margin: $vsm-gutter 0;
+        + label {
+            margin-left: $xl-gutter;
+        }
+    }
+    label {
+        display: flex;
+        gap: $sm-gutter;
+        align-items: center;
+        + label {
+            margin-left: $xl-gutter;
         }
     }
 }
@@ -206,34 +240,50 @@ body {
 }
 
 .prefilters {
-    display: flex;
-    gap: $sm-gutter;
-    flex-wrap: wrap;
-    align-items: center;
+    .flex {
+        display: flex;
+        gap: $sm-gutter;
+        flex-wrap: wrap;
+        align-items: center;
 
-    > div {
-        flex: 0 1 auto;
-        min-width: 240px;
-    }
-    /*
+        > div {
+            flex: 0 1 auto;
+            min-width: 240px;
+
+            &.flex-zero-row {
+                height: 0;
+                min-width: 100%;
+                flex: 1 1 100%;
+            }
+        }
+        /*
     #product-type-prefilter,
     #collection-prefilter {
         flex: 1 1 auto;
         max-width: calc(480px + $l-gutter);
     }
 */
-    .k-animation-container {
-        li.k-item {
-            line-height: 33px;
+        .k-animation-container {
+            li.k-item {
+                line-height: 33px;
+            }
         }
-    }
 
-    > div {
-        position: relative;
-    }
+        > div {
+            position: relative;
+        }
 
-    .k-dropdown-wrap.k-input {
-        padding: 9px 0 6px 0;
+        .k-dropdown-wrap.k-input {
+            padding: 9px 0 6px 0;
+        }
+
+        & + .prefilters {
+            margin-top: $sm-gutter;
+
+            & + .controls {
+                margin-top: $sm-gutter;
+            }
+        }
     }
 }
 
@@ -243,7 +293,6 @@ body {
 }
 
 #search-term-prefilter {
-    max-width: 487px;
     flex-grow: 1;
     .mdc-validating-field {
         width: auto;
@@ -302,13 +351,13 @@ $product-color: $order-form-group-color;
             th:nth-of-type(2) {
                 position: sticky;
                 left: 0;
-                top: 168px;
+                top: $grid-position-top + 52px;
                 z-index: 40;
             }
 
             th:not(:nth-of-type(1)):not(:nth-of-type(2)) {
                 position: sticky;
-                top: 168px;
+                top: $grid-position-top + 52px;
                 z-index: 20;
             }
         }
@@ -316,7 +365,7 @@ $product-color: $order-form-group-color;
         tr:nth-of-type(2) {
             th {
                 position: sticky;
-                top: 196px;
+                top: $grid-position-top + 80px;
                 z-index: 20;
             }
         }
@@ -353,6 +402,7 @@ $product-color: $order-form-group-color;
             left: -1px;
             top: 2px;
             z-index: 10;
+
             span {
                 display: block;
                 height: auto;
@@ -455,15 +505,15 @@ $product-color: $order-form-group-color;
             }
 
             .range-planned {
-                right: 2590px;
+                right: 2490px;
             }
 
             .range-actual {
-                right: 2500px;
+                right: 2370px;
             }
 
             .range-in-progress {
-                right: 2410px;
+                right: 2250px;
             }
 
             + .k-grouping-row {
@@ -771,7 +821,7 @@ $product-color: $order-form-group-color;
 #results-grid,
 #add-results-grid {
     position: relative;
-    top: 116px;
+    top: $grid-position-top;
     z-index: 1;
 
     .k-grid-content {
@@ -979,8 +1029,8 @@ tbody.virtual-spacing {
 }
 
 .transfer-grid {
-    position:relative; 
-    top: 68px;
+    position: relative;
+    top: calc($grid-position-top - 90px);
 }
 
 .k-icon {

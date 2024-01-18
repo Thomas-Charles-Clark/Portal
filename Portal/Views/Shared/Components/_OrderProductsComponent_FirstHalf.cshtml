@@ -1223,7 +1223,7 @@
                                 <div class="section">
                                     <h4>
                                         Delivery Address
-                                        <span class="text-transparent" data-bind="text: deliveryAddress.deliveryReference"></span>
+                                        <span data-bind="text: deliveryAddress.deliveryReference"></span>
                                     </h4>
                                     <button class="btn btn-default pull-right" style="display: none;" data-bind="visible: !deliveryAddressConfirmed(), click: function () { loadAddresses(null, true, true); }">
                                         Refresh Addresses
@@ -1280,7 +1280,7 @@
                                     <!-- ko if: displayDefaultDeliveryAddress() -->
                                     <div class="section">
                                         <h4>
-                                            Deliver to Customer's Default Delivery Address
+                                            Deliver to Customer's Default Delivery Address (<span data-bind="text: defaultDeliveryAddress.deliveryReference"></span>)
                                         </h4>
                                         <div class="flex-container" data-bind="with: defaultDeliveryAddress">
                                             <div data-bind="html: displayBlock()"></div>

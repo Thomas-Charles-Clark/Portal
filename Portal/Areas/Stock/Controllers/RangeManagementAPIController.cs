@@ -123,7 +123,16 @@ namespace Portal.Areas.Stock.Controllers
             var queryableResults = results.Results.AsQueryable();
 
             return queryableResults.ToDataSourceResult(request);
-        } 
+        }
+
+        [HttpGet]
+        public async Task<IHttpActionResult> RefreshTransferOrders(
+            [FromUri] RangeManagementTransferOrdersDto objDto)
+        {
+            var result = await PortalDb.RangeManagementTransferOrdersRefresh(objDto);
+            
+            return Ok(new { result });
+        }
 
         [HttpPost]
         public async Task<IHttpActionResult> FetchData(

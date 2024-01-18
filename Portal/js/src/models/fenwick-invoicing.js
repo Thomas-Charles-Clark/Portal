@@ -13,6 +13,10 @@ const fenwickInvoicingViewModel = (() => {
 
     self.billingPeriod = ko.observable();
 
+    self.branch = ko.observable();
+
+    self.selfBillInvoices = ko.observableArray();
+
     self.selectedSelfBillInvoice = ko.observable();
 
     self.validateNow = ko.observable(false);
@@ -127,9 +131,9 @@ const fenwickInvoicingViewModel = (() => {
 
     //#region Components
 
-    self.genericUnsavedChangesSelect = (e) => {
+    self.genericUnsavedChangesSelect = (e, cb) => {
         e.preventDefault(); // this prevents the Kendo control from actively selecting the thing the user selected
-        self.checkUnsavedChangesThenSelect(e); // this does our check; async promise, confirm dialog, la la la...
+        self.checkUnsavedChangesThenSelect(e, cb); // this does our check; async promise, confirm dialog, la la la...
     }
 
     self.genericUnsavedChangesClear = (e) => {
@@ -170,7 +174,11 @@ const fenwickInvoicingViewModel = (() => {
         filter: 'contains',
         autoBind: true,
         height: 340,
-        select: self.genericUnsavedChangesSelect,
+        select: (e) => {
+            self.genericUnsavedChangesSelect(e, (e) => {
+                self.fetchSelfBillInvoicesForDate(e.dataItem.InvoiceDate);
+            });
+        },
         clearFunction: self.genericUnsavedChangesClear,
         sort: {
             field: 'InvoiceDate',
@@ -428,11 +436,14 @@ const fenwickInvoicingViewModel = (() => {
         self.busy(false);
     }
 
-    self.checkUnsavedChangesThenSelect = async (event) => {
+    self.checkUnsavedChangesThenSelect = async (event, callback) => {
         await self.unsavedChanges().then((d) => {
             //console.log('go', event.sender.options.dataValueField, event.dataItem[event.sender.options.dataValueField]);
             event.sender._widgetOptions.value(event.dataItem[event.sender.options.dataValueField]);
 
+        }).then(() => {
+            if (typeof callback === 'function')
+                callback(event);
         }).catch((e) => { });
     }
 
@@ -493,6 +504,33 @@ const fenwickInvoicingViewModel = (() => {
         }
     }
 
+    self.fetchSelfBillInvoicesForDate = (sbid) => {
+        self.busy(true);
+
+        let data = {
+            invoiceDate: sbid
+        }
+
+        console.log("fetchSelfBillInvoicesForDate calling with", data);
+
+        fetch(`/api/FenwickInvoicingAPI/FetchSelfBillInvoicesForDate`, {
+            method: "POST",
+            headers: window.fetchHeaders,
+            body: JSON.stringify(data)
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                console.log("fetchSelfBillInvoicesForDate returned", data);
+                self.selfBillInvoices(data);
+                self.busy(false);
+            })
+            .catch(err => {
+                self.busy(false);
+                window.catchFetchError(err);
+            })
+
+    }
+
     self.load = (onComplete) => {
         self.busy(true);
 
@@ -526,10 +564,10 @@ const fenwickInvoicingViewModel = (() => {
 
                 self.signedOff(self.selectedSelfBillInvoice().SignedOff);
 
-                self.busy(false);
-
                 if (typeof onComplete === 'function') {
                     onComplete();
+                } else {
+                    self.busy(false);
                 }
             })
             .catch(err => {
@@ -621,13 +659,14 @@ const fenwickInvoicingViewModel = (() => {
                     self.selectedSelfBillInvoice().TotalCommission = self.invoiceTotalCommission.value();
                     self.selectedSelfBillInvoice().Notes = self.signOffNotes.value();
 
-                    if (signOff) {
-                        self.reload();
-                        self.load();
-                    } else {
-                        self.reload();
-                        self.busy(false);
-                    }
+                    self.reload();
+
+                    //if (signOff) {
+                    //    self.reload();
+                    //} else {
+                    //    self.reload();
+                    //    self.busy(false);
+                    //}
                 })
                 .catch(err => {
                     self.busy(false);
@@ -645,14 +684,19 @@ const fenwickInvoicingViewModel = (() => {
     }
 
     self.reload = () => {
-        self.billingPeriodParams.dropDownListSettings.widget().one('dataBound', (e) => {
-            let bp = self.billingPeriodParams.dropDownListSettings.widget().dataSource.data().find(d => d.InvoiceDate == self.billingPeriodDate());
-            self.billingPeriod(bp);
-            let b = bp.Branches.find(d => d.BranchID === self.selectedBranchId());
-            self.selectBranch(b);
+        self.load(() => {
+            self.fetchSelfBillInvoicesForDate(self.billingPeriodDate());
         });
 
-        self.billingPeriodParams.dropDownListSettings.widget().dataSource.query({});
+        //self.billingPeriodParams.dropDownListSettings.widget().one('dataBound', (e) => {
+
+        //    let bp = self.billingPeriodParams.dropDownListSettings.widget().dataSource.data().find(d => d.InvoiceDate == self.billingPeriodDate());
+        //    self.billingPeriod(bp);
+        //    let b = bp.Branches.find(d => d.BranchID === self.selectedBranchId());
+        //    self.selectBranch(b);
+        //});
+
+        //self.billingPeriodParams.dropDownListSettings.widget().dataSource.query({});
         //self.billingPeriodParams.dropDownListSettings.widget().trigger("change");
     }
 

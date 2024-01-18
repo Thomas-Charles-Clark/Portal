@@ -1689,10 +1689,10 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                 self.busyMessage.skipSubscription = false;
                 return;
             }
-            if (Math.random() < 0.5) {
-                self.busyMessage.skipSubscription = true;
-                self.busyMessage('<div class="halloween-message">' + HALLOWEEN_RANDOM_MESSAGES[Math.floor(Math.random() * HALLOWEEN_RANDOM_MESSAGES.length)] + '</div>')
-            }
+            //if (Math.random() < 0.5) {
+            //    self.busyMessage.skipSubscription = true;
+            //    self.busyMessage('<div class="halloween-message">' + HALLOWEEN_RANDOM_MESSAGES[Math.floor(Math.random() * HALLOWEEN_RANDOM_MESSAGES.length)] + '</div>')
+            //}
         }
     });
 
@@ -20473,7 +20473,7 @@ var deliveryAddressFactory = function (parent) {
 
                 console.log('default delivery address was found to be valid');
 
-                self.deliveryAddress.loadFromOtherAddressObject(self.defaultDeliveryAddress);
+                self.deliveryAddress.loadFromOtherAddressObject(self.defaultDeliveryAddress, true);
                 self.deliveryAddressSearch.showEditModal();
 
                 //window.setTimeout(function () {
@@ -20863,7 +20863,8 @@ var deliveryAddressFactory = function (parent) {
             tradeAccountCode: self.parent.tradeAccount().Code,
             tradeAccountId: self.parent.tradeAccount().TradeAccountID,
             endCustomerCode: self.endCustomer() ? self.endCustomer().Code : null,
-            endCustomerName: self.endCustomer() ? self.endCustomer().Name : null
+            endCustomerName: self.endCustomer() ? self.endCustomer().Name : null,
+            isDefaultDeliveryAddress: false// (self.deliveryAddress.isDefaultDeliveryAddress() && self.deliveryAddress.changed() === false)
         };
 
         $.extend(data, self.deliveryAddress.toBasketAddressJS());

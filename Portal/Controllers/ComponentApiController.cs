@@ -2181,7 +2181,8 @@ namespace Portal.Controllers
                     carriageCode: null,
                     usStateCode: null,
                     usCountyCode: null,
-                    usTaxExemptionCertificateReference: null);
+                    usTaxExemptionCertificateReference: null,
+                    isDefaultDeliveryAddress: objAddress.isDefaultDeliveryAddress);
 
             // do the stupid name / company name switcheroo
             if (String.IsNullOrWhiteSpace(objAddress.deliveryCompanyName) && !String.IsNullOrWhiteSpace(objAddress.deliveryName))
@@ -2209,16 +2210,29 @@ namespace Portal.Controllers
                     // if we have any extant DELADD records which match the details of the address we're trying to save
                     if (extantDelrefs.Any())
                     {
-                        // take the lowest ID and use that as the defacto 
-                        objAddress.deliveryReference = extantDelrefs.OrderBy(p => p).First();
+                        // prefer the default if it's returned
+                        var defaultDeliveryReference = extantDelrefs.SingleOrDefault(p => p.IsDefault);
+
+                        if (defaultDeliveryReference != null)
+                        {
+                            objAddress.deliveryReference = defaultDeliveryReference.DeliveryReference;
+                        }
+                        else
+                        {
+                            // if the default is not returned,
+                            // take the lowest ID and use that as the defacto 
+                            objAddress.deliveryReference = extantDelrefs.OrderBy(p => p.DeliveryReference).Select(p => p.DeliveryReference).First();
+                        }
 
                         var now = DateTime.Now;
 
                         // iterate over the other DELADD records
-                        foreach (var dr in extantDelrefs.Where(p => p != objAddress.deliveryReference))
+                        foreach (var dr in extantDelrefs.Where(p => p.DeliveryReference != objAddress.deliveryReference))
                         {
                             // check for a TradeAccountAddressCleanse
-                            var taac = PortalDb.TradeAccountAddressCleanses.Where(p => p.TradeAccountCode == objAddress.tradeAccountCode && p.DeliveryReference == dr).SingleOrDefault();
+                            var taac = PortalDb.TradeAccountAddressCleanses.Where(p => 
+                                p.TradeAccountCode == objAddress.tradeAccountCode && 
+                                p.DeliveryReference == dr.DeliveryReference).SingleOrDefault();
 
                             // if there is one
                             if (taac != null)
@@ -2237,7 +2251,7 @@ namespace Portal.Controllers
                                 {
                                     // create one and set it to deleted
                                     TradeAccountCode = objAddress.tradeAccountCode,
-                                    DeliveryReference = dr,
+                                    DeliveryReference = dr.DeliveryReference,
                                     SourceAddressHash = objAddress.md5Hash,
                                     SourceAddress = JsonConvert.SerializeObject(objAddress),
                                     Status = null,
@@ -2342,132 +2356,155 @@ namespace Portal.Controllers
             {
                 if (address.Key != "C")
                 {
-                    var extantDelrefs = PortalDb.DeliveryAddressExists(dataSource.CustomerReference, address);
-
-                    if (extantDelrefs.Any())
+                    // Are we dealing with them having selected the Default Delivery Address (and having left it unchanged)?
+                    if (address.IsDefaultDeliveryAddress)
                     {
-                        objAddress.deliveryReference = extantDelrefs.OrderBy(p => p).First();
-
-                        var now = DateTime.Now;
-
-                        foreach (var dr in extantDelrefs)
-                        {
-                            if (dr != objAddress.deliveryReference)
-                            {
-                                var taac = PortalDb.TradeAccountAddressCleanses.Where(p => p.TradeAccountCode == objAddress.tradeAccountCode && p.DeliveryReference == dr).SingleOrDefault();
-
-                                if (taac != null)
-                                {
-                                    if (taac.DeletedDT == null)
-                                    {
-                                        taac.DeletedDT = now;
-                                        taac.ModifiedDT = now;
-                                    }
-                                }
-                                else
-                                {
-                                    var a = new TradeAccountAddressCleanse()
-                                    {
-                                        TradeAccountCode = objAddress.tradeAccountCode,
-                                        DeliveryReference = dr,
-                                        SourceAddressHash = objAddress.md5Hash,
-                                        SourceAddress = JsonConvert.SerializeObject(objAddress),
-                                        Status = null,
-                                        CreatedDT = now,
-                                        ModifiedDT = now,
-                                        LookupDT = null,
-                                        DeletedDT = now
-                                    };
-                                }
-                            }
-                        }
-
-                        PortalDb.SaveChanges();
-                    }
-
-                    // Right. Have we got a TAAC for the DELREF at play?
-                    var cleanse = PortalDb.TradeAccountAddressCleanses.Where(p => p.TradeAccountCode == (objAddress.endCustomerCode ?? objAddress.tradeAccountCode) && p.DeliveryReference == objAddress.deliveryReference).SingleOrDefault();
-
-                    if (cleanse == null)
-                    {   // nope, create a TAAC for this address
-                        var now = DateTime.Now;
-
-                        cleanse = new TradeAccountAddressCleanse()
-                        {
-                            TradeAccountCode = objAddress.endCustomerCode ?? objAddress.tradeAccountCode,
-                            DeliveryReference = objAddress.deliveryReference,
-                            SourceAddressHash = objAddress.md5Hash,
-                            SourceAddress = JsonConvert.SerializeObject(new
-                            {
-                                Type = objAddress.manual ? "Manual" : "Loqate",
-                                DeliveryReferenceID = objAddress.deliveryReference,
-                                DeliveryReference = objAddress.deliveryReference,
-                                TradeAccountCode = objAddress.endCustomerCode ?? objAddress.tradeAccountCode,
-                                Label = objAddress.label,
-                                Name = objAddress.deliveryName,
-                                Company = objAddress.deliveryCompanyName,
-                                Line1 = objAddress.deliveryAddressLine1,
-                                Line2 = objAddress.deliveryAddressLine2,
-                                City = objAddress.deliveryTown,
-                                Province = objAddress.deliveryCounty,
-                                PostalCode = objAddress.deliveryPostcode,
-                                Email = objAddress.email,
-                                Phone = objAddress.deliveryPhoneNumber,
-                                Country = objAddress.deliveryCountryCode,
-                                MD5Hash = objAddress.md5Hash
-                            }),
-                            Status = objAddress.status,
-                            CreatedDT = now,
-                            LastUsedDT = now,
-                            LookupDT = objAddress.loqateLookupPerformed ? now : (DateTime?)null,
-                            DeletedDT = null
-                        };
-
-                        PortalDb.TradeAccountAddressCleanses.Add(cleanse);
-
-                        PortalDb.SaveChanges();
+                        // If so, we need do nothing: no changes were made by the user to the default delivery address which was
+                        // loaded out from portal.TradeAccount_Address_Select
                     }
                     else
                     {
-                        // we did find a TAAC for this delivery address
-                        if (cleanse.SourceAddressHash != objAddress.md5Hash)
+                        var extantDelrefs = PortalDb.DeliveryAddressExists(dataSource.CustomerReference, address);
+
+                        if (extantDelrefs.Any())
                         {
-                            // if the address info needs updating, update it
-                            cleanse.SourceAddressHash = objAddress.md5Hash;
-                            cleanse.SourceAddress = JsonConvert.SerializeObject(new
+                            // prefer the default if it's returned
+                            var defaultDeliveryReference = extantDelrefs.SingleOrDefault(p => p.IsDefault);
+
+                            if (defaultDeliveryReference != null)
                             {
-                                Type = objAddress.manual ? "Manual" : "Loqate",
-                                DeliveryReferenceID = objAddress.deliveryReference,
-                                DeliveryReference = objAddress.deliveryReference,
+                                objAddress.deliveryReference = defaultDeliveryReference.DeliveryReference;
+                            }
+                            else
+                            {
+                                // if the default is not returned,
+                                // take the lowest ID and use that as the defacto 
+                                objAddress.deliveryReference = extantDelrefs.OrderBy(p => p.DeliveryReference).Select(p => p.DeliveryReference).First();
+                            }
+
+                            var now = DateTime.Now;
+
+                            foreach (var dr in extantDelrefs)
+                            {
+                                if (dr.DeliveryReference != objAddress.deliveryReference)
+                                {
+                                    var taac = PortalDb.TradeAccountAddressCleanses.Where(p =>
+                                        p.TradeAccountCode == objAddress.tradeAccountCode && 
+                                        p.DeliveryReference == dr.DeliveryReference).SingleOrDefault();
+
+                                    if (taac != null)
+                                    {
+                                        if (taac.DeletedDT == null)
+                                        {
+                                            taac.DeletedDT = now;
+                                            taac.ModifiedDT = now;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        var a = new TradeAccountAddressCleanse()
+                                        {
+                                            TradeAccountCode = objAddress.tradeAccountCode,
+                                            DeliveryReference = dr.DeliveryReference,
+                                            SourceAddressHash = objAddress.md5Hash,
+                                            SourceAddress = JsonConvert.SerializeObject(objAddress),
+                                            Status = null,
+                                            CreatedDT = now,
+                                            ModifiedDT = now,
+                                            LookupDT = null,
+                                            DeletedDT = now
+                                        };
+                                    }
+                                }
+                            }
+
+                            PortalDb.SaveChanges();
+                        }
+
+                        // Right. Have we got a TAAC for the DELREF at play?
+                        var cleanse = PortalDb.TradeAccountAddressCleanses.Where(p => p.TradeAccountCode == (objAddress.endCustomerCode ?? objAddress.tradeAccountCode) && p.DeliveryReference == objAddress.deliveryReference).SingleOrDefault();
+
+                        if (cleanse == null)
+                        {   // nope, create a TAAC for this address
+                            var now = DateTime.Now;
+
+                            cleanse = new TradeAccountAddressCleanse()
+                            {
                                 TradeAccountCode = objAddress.endCustomerCode ?? objAddress.tradeAccountCode,
-                                Label = objAddress.label,
-                                Name = objAddress.deliveryName,
-                                Company = objAddress.deliveryCompanyName,
-                                Line1 = objAddress.deliveryAddressLine1,
-                                Line2 = objAddress.deliveryAddressLine2,
-                                City = objAddress.deliveryTown,
-                                Province = objAddress.deliveryCounty,
-                                PostalCode = objAddress.deliveryPostcode,
-                                Email = objAddress.email,
-                                Phone = objAddress.deliveryPhoneNumber,
-                                Country = objAddress.deliveryCountryCode,
-                                MD5Hash = objAddress.md5Hash
-                            });
-                            cleanse.LastUsedDT = DateTime.Now;
+                                DeliveryReference = objAddress.deliveryReference,
+                                SourceAddressHash = objAddress.md5Hash,
+                                SourceAddress = JsonConvert.SerializeObject(new
+                                {
+                                    Type = objAddress.manual ? "Manual" : "Loqate",
+                                    DeliveryReferenceID = objAddress.deliveryReference,
+                                    DeliveryReference = objAddress.deliveryReference,
+                                    TradeAccountCode = objAddress.endCustomerCode ?? objAddress.tradeAccountCode,
+                                    Label = objAddress.label,
+                                    Name = objAddress.deliveryName,
+                                    Company = objAddress.deliveryCompanyName,
+                                    Line1 = objAddress.deliveryAddressLine1,
+                                    Line2 = objAddress.deliveryAddressLine2,
+                                    City = objAddress.deliveryTown,
+                                    Province = objAddress.deliveryCounty,
+                                    PostalCode = objAddress.deliveryPostcode,
+                                    Email = objAddress.email,
+                                    Phone = objAddress.deliveryPhoneNumber,
+                                    Country = objAddress.deliveryCountryCode,
+                                    MD5Hash = objAddress.md5Hash
+                                }),
+                                Status = objAddress.status,
+                                CreatedDT = now,
+                                LastUsedDT = now,
+                                LookupDT = objAddress.loqateLookupPerformed ? now : (DateTime?)null,
+                                DeletedDT = null
+                            };
+
+                            PortalDb.TradeAccountAddressCleanses.Add(cleanse);
+
+                            PortalDb.SaveChanges();
                         }
                         else
                         {
-                            var now = DateTime.Now;
-                            cleanse.LastUsedDT = now;
-                            cleanse.LookupDT = objAddress.loqateLookupPerformed ? now : (DateTime?)null;
-                            cleanse.Status = objAddress.status;
+                            // we did find a TAAC for this delivery address
+                            if (cleanse.SourceAddressHash != objAddress.md5Hash)
+                            {
+                                // if the address info needs updating, update it
+                                cleanse.SourceAddressHash = objAddress.md5Hash;
+                                cleanse.SourceAddress = JsonConvert.SerializeObject(new
+                                {
+                                    Type = objAddress.manual ? "Manual" : "Loqate",
+                                    DeliveryReferenceID = objAddress.deliveryReference,
+                                    DeliveryReference = objAddress.deliveryReference,
+                                    TradeAccountCode = objAddress.endCustomerCode ?? objAddress.tradeAccountCode,
+                                    Label = objAddress.label,
+                                    Name = objAddress.deliveryName,
+                                    Company = objAddress.deliveryCompanyName,
+                                    Line1 = objAddress.deliveryAddressLine1,
+                                    Line2 = objAddress.deliveryAddressLine2,
+                                    City = objAddress.deliveryTown,
+                                    Province = objAddress.deliveryCounty,
+                                    PostalCode = objAddress.deliveryPostcode,
+                                    Email = objAddress.email,
+                                    Phone = objAddress.deliveryPhoneNumber,
+                                    Country = objAddress.deliveryCountryCode,
+                                    MD5Hash = objAddress.md5Hash
+                                });
+                                cleanse.LastUsedDT = DateTime.Now;
+                            }
+                            else
+                            {
+                                var now = DateTime.Now;
+                                cleanse.LastUsedDT = now;
+                                cleanse.LookupDT = objAddress.loqateLookupPerformed ? now : (DateTime?)null;
+                                cleanse.Status = objAddress.status;
+                            }
+
+                            PortalDb.SaveChanges();
                         }
 
-                        PortalDb.SaveChanges();
+                        // No DELADD records match on this address's details - update the DELADD record having this DELREF.
+                        PortalDb.DeliveryAddressUpsert(dataSource.CustomerReference, address);
                     }
-
-                    // No DELADD records match on this address's details - update the DELADD record having this DELREF.
-                    PortalDb.DeliveryAddressUpsert(dataSource.CustomerReference, address);
                 }
                 else
                 {
@@ -2880,7 +2917,9 @@ namespace Portal.Controllers
                 }
             });
 
-            mertexResults = mertexResults.GroupBy(p => p.MD5Hash).Select(p => p.OrderBy(q => q.Key).First()).ToList();
+            mertexResults = mertexResults.GroupBy(p => p.MD5Hash).Select(p => 
+                p.FirstOrDefault(q => q.IsDefaultDeliveryAddress == true) ?? p.OrderBy(q => q.Key).First()
+            ).ToList();
 
             var removeMarkedAsDeleted = new List<DeliveryAddress>();
 

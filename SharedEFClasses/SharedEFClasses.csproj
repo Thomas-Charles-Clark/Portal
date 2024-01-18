@@ -346,6 +346,7 @@
     <Compile Include="Models\Fenwick\FenwickSelfbillInvoiceResponse.cs" />
     <Compile Include="Models\Fenwick\Invoice.cs" />
     <Compile Include="Models\Fenwick\InvoiceFile.cs" />
+    <Compile Include="Models\Fenwick\PassFencwickSelfBillInvoiceDate.cs" />
     <Compile Include="Models\Fenwick\PassFenwickSelfBillInvoiceSaveDto.cs" />
     <Compile Include="Models\Fenwick\PassFenwickSelfBillInvoiceFetchDto.cs" />
     <Compile Include="Models\Fenwick\SelfBillInvoice.cs" />
@@ -388,6 +389,7 @@
     <Compile Include="Models\Mertex\CollectionLive.cs" />
     <Compile Include="Models\Mertex\Composition.cs" />
     <Compile Include="Models\Mertex\CurrencyLive.cs" />
+    <Compile Include="Models\Mertex\DeliveryAddressExistsResult.cs" />
     <Compile Include="Models\Mertex\DespatchHead.cs" />
     <Compile Include="Models\Mertex\DespatchLine.cs" />
     <Compile Include="Models\Mertex\ExchangeRate.cs" />

@@ -3409,7 +3409,8 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
                                                                 result = result + ' due ' + moment(this.DueInDate).format('DD/MM/YYYY');
                                                         }
                                                         return result;
-                                                    }, x)
+                                                    }, x),
+                                                    POOnCallOff: x.POOnCallOff
                                                 });
                                             }).OrderBy(function (x) {
                                                 return x.SortOrder;
@@ -4748,7 +4749,8 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
                                                                         result = result + ' due ' + moment(this.DueInDate).format('DD/MM/YYYY');
                                                                 }
                                                                 return result;
-                                                            }, x)
+                                                            }, x),
+                                                            POOnCallOff: x.POOnCallOff
                                                         });
                                                     }).OrderBy(function (x) {
                                                         return x.SortOrder;

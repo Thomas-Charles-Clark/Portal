@@ -2774,7 +2774,7 @@ ko.bindingHandlers.matrixLoader = {
             //]
 
             //Winter
-            //return [String.fromCodePoint(0x2744), String.fromCodePoint(0x26C4), String.fromCodePoint(0x1F3BF), String.fromCodePoint(0x1F3C2), String.fromCodePoint(0x2B50)]
+            return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F343), String.fromCodePoint(0x2614), String.fromCodePoint(0x1F36C), String.fromCodePoint(0x26C4), String.fromCodePoint(0x1F3BF), String.fromCodePoint(0x1F3C2), String.fromCodePoint(0x2B50)]
 
             //Christmas
             //return [String.fromCodePoint(0x2744),
@@ -2860,7 +2860,7 @@ bg #1ca9c9
             //return [String.fromCodePoint(0x1F31E), String.fromCodePoint(0x1F33B), String.fromCodePoint(0x1F3BE), String.fromCodePoint(0x1F349), String.fromCodePoint(0x1F353), String.fromCodePoint(0x1F343), String.fromCodePoint(0x1F33E), String.fromCodePoint(0x1F337), String.fromCodePoint(0x1F425), String.fromCodePoint(0x1F3CF)]
 
             // Autumn
-            return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F343), String.fromCodePoint(0x1F480), String.fromCodePoint(0x1F383), String.fromCodePoint(0x1F47B), String.fromCodePoint(0x2614), String.fromCodePoint(0x1F987), String.fromCodePoint(0x1F36C), String.fromCodePoint(0x1F578), String.fromCodePoint(0x1F577)]
+            //return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F343), String.fromCodePoint(0x1F480), String.fromCodePoint(0x1F383), String.fromCodePoint(0x1F47B), String.fromCodePoint(0x2614), String.fromCodePoint(0x1F987), String.fromCodePoint(0x1F36C), String.fromCodePoint(0x1F578), String.fromCodePoint(0x1F577)]
 
             // Halloween
             //return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F343), String.fromCodePoint(0x1F480), String.fromCodePoint(0x1F383), String.fromCodePoint(0x1F47B), String.fromCodePoint(0x2614), String.fromCodePoint(0x1F987), String.fromCodePoint(0x1F36C), String.fromCodePoint(0x1F578), String.fromCodePoint(0x1F577)]
@@ -2891,10 +2891,10 @@ bg #1ca9c9
             //self.ctx.fillStyle = "rgba(0,0,0,0.25)";
 
             //self.ctx.fillStyle = "#da5e04"; // autumn (bright)
-            self.ctx.fillStyle = '#c86e2d'; // autumn (darker)
+            //self.ctx.fillStyle = '#c86e2d'; // autumn (darker)
             //self.ctx.fillStyle = "#f0b447"; // autumn (golden yellow)
 
-            //self.ctx.fillStyle = "#66b8ff"; //winter
+            self.ctx.fillStyle = "#66b8ff"; //winter
             //self.ctx.fillStyle = "#ffbbd7"; //valentine's (pink)
             //self.ctx.fillStyle = '#f8c9dd'; // spring (pink)
             //self.ctx.fillStyle = '#53bfea'; // spring (sky blue)

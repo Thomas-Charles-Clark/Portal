@@ -26,7 +26,7 @@ namespace Portal.Areas.Stock.Controllers
         // GET: Stock/Management
         public ActionResult Index()
         {
-            var application = PortalDb.Applications.Where(p => p.ControllerName == "range-management" && p.AreaName == "stock" && p.ActionName == "index").Single();
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "RangeManagement" && p.AreaName == "stock" && p.ActionName == "index").Single();
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 

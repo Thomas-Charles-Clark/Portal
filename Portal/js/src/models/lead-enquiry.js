@@ -942,12 +942,20 @@ var leadEdit = function (parent) {
       if (newValue) {
         try {
             let salesMarketId = self.salesMarket()?.SalesMarketID;
-            if (salesMarketId) {
-                let currency = self.parent.bankSalesMarketMap.find(b =>
-                    b.BankCode === newValue &&
-                    b.SalesMarketID == salesMarketId)
-                    .SalesMarket.Currency;
-                self.companyCurrencyId(currency.CurrencyID);
+
+            // by and large, only one currency per sales market.
+            // except for when you've potentially got two.
+            // here, look the other way for a second would you...?
+            if (salesMarketId == 5 && newValue == '360') {
+                self.companyCurrencyId(3); // Magico Euro selection!
+            } else {
+                if (salesMarketId) {
+                    let currency = self.parent.bankSalesMarketMap.find(b =>
+                        b.BankCode === newValue &&
+                        b.SalesMarketID == salesMarketId)
+                        .SalesMarket.Currency;
+                    self.companyCurrencyId(currency.CurrencyID);
+                }
             }
         }
         catch (e) {
@@ -2770,23 +2778,23 @@ This customer wishes their deliveries to be consolidated. Please double check th
                     If you're absolutely sure you can click Yes to proceed. If not, please click No and make any changes you deem necessary.
                     </p>
                 `, () => {
-                    if (self.salesMarket().Code == 'T') { // Italy
-                        if (getUserId() != 548350 && getUserId() != 8) { // not Conchita or myself
-                            $("#market-manager-modal").modal('show');
-                        } else {
-                            $('#credit-controller-modal').modal('show');
-                        }
-                    }
-                    else if (self.salesMarket().Code == 'P') { // Spain
-                        if (getUserId() != 5471 && getUserId() != 8) { // not Fatima or myself
-                            $("#market-manager-modal").modal('show');
-                        } else {
-                            $('#credit-controller-modal').modal('show');
-                        }
-                    }
-                    else {
+                    //if (self.salesMarket().Code == 'T') { // Italy
+                    //    if (getUserId() != 548350 && getUserId() != 8) { // not Conchita or myself
+                    //        $("#market-manager-modal").modal('show');
+                    //    } else {
+                    //        $('#credit-controller-modal').modal('show');
+                    //    }
+                    //}
+                    //else if (self.salesMarket().Code == 'P') { // Spain
+                    //    if (getUserId() != 5471 && getUserId() != 8) { // not Fatima or myself
+                    //        $("#market-manager-modal").modal('show');
+                    //    } else {
+                    //        $('#credit-controller-modal').modal('show');
+                    //    }
+                    //}
+                    //else {
                         $('#credit-controller-modal').modal('show');
-                    }
+                    //}
                 }, null);
                 return;
             }
@@ -2796,23 +2804,23 @@ This customer wishes their deliveries to be consolidated. Please double check th
             // we need to present with a different modal and inform the user
             // that the lead has been assigned to the market manager for approval.
 
-            if (self.salesMarket().Code == 'T') { // Italy
-                if (getUserId() != 548350 && getUserId() != 8) { // not Conchita or myself
-                    $("#market-manager-modal").modal('show');
-                } else {
-                    $('#credit-controller-modal').modal('show');
-                }
-            }
-            else if (self.salesMarket().Code == 'P') { // Spain
-                if (getUserId() != 5471 && getUserId() != 8) { // not Fatima or myself
-                    $("#market-manager-modal").modal('show');
-                } else {
-                    $('#credit-controller-modal').modal('show');
-                }
-            }
-            else {
+            //if (self.salesMarket().Code == 'T') { // Italy
+            //    if (getUserId() != 548350 && getUserId() != 8) { // not Conchita or myself
+            //        $("#market-manager-modal").modal('show');
+            //    } else {
+            //        $('#credit-controller-modal').modal('show');
+            //    }
+            //}
+            //else if (self.salesMarket().Code == 'P') { // Spain
+            //    if (getUserId() != 5471 && getUserId() != 8) { // not Fatima or myself
+            //        $("#market-manager-modal").modal('show');
+            //    } else {
+            //        $('#credit-controller-modal').modal('show');
+            //    }
+            //}
+            //else {
                 $('#credit-controller-modal').modal('show');
-            }
+            //}
         }
     }
 

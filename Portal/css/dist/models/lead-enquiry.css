@@ -1812,7 +1812,7 @@ tr.k-state-selected td.view-button {
 }
 #attachment-from-list label {
   position: absolute;
-  top: 0;
+  top: 2px;
   left: 0;
   padding: 0.375rem 0.75rem;
   z-index: 1;

@@ -261,6 +261,9 @@ namespace SharedEFClasses.Models.Mertexer
             }
         }
 
+        // This will only be true if the user has selected the Default Delivery Address and HASN'T changed it.
+        public bool IsDefaultDeliveryAddress { get; set; }
+
         public DeliveryAddress(
             string tradeAccountCode,
             string addressLine1,
@@ -281,7 +284,8 @@ namespace SharedEFClasses.Models.Mertexer
             string usCountyCode = null,
             string usTaxExemptionCertificateReference = null,
             string lastConfirmedDt = null,
-            short? countryId = null) : base(deliveryReference)
+            short? countryId = null,
+            bool isDefaultDeliveryAddress = false) : base(deliveryReference)
         {
             TradeAccountCode = tradeAccountCode;
             AddressLine1 = addressLine1;
@@ -302,6 +306,7 @@ namespace SharedEFClasses.Models.Mertexer
             USTaxExemptionCertificate = usTaxExemptionCertificateReference;
             CountryID = countryId;
             DeliveryReference = deliveryReference;
+            IsDefaultDeliveryAddress = isDefaultDeliveryAddress;
 
             if (!String.IsNullOrEmpty(lastConfirmedDt))
             {

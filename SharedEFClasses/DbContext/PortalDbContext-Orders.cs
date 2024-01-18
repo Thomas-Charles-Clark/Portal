@@ -25,6 +25,7 @@ using NLog.Internal;
 using PassAutocompleteTerm = SharedEFClasses.Models.TradeAccounts.PassAutocompleteTerm;
 using SharedEFClasses.Models.Mertexer;
 using DeliveryTerm = SharedEFClasses.Models.Mertexer.DeliveryTerm;
+using SharedEFClasses.Models.Mertex;
 
 namespace SharedEFClasses.Models
 {
@@ -1872,7 +1873,9 @@ namespace SharedEFClasses.Models
                         usTaxExemptionCertificateReference: reader.IsDBNull(14) ? null : reader.GetString(14),
                         usStateCode: reader.IsDBNull(15) ? null : reader.GetString(15),
                         usCountyCode: reader.IsDBNull(16) ? null : reader.GetString(16),
-                        countryId: reader.IsDBNull(17) ? (short?)null : reader.GetInt16(17)));
+                        countryId: reader.IsDBNull(17) ? (short?)null : reader.GetInt16(17),
+                        isDefaultDeliveryAddress: reader.GetBoolean(18))
+                    );
                 }
             }
             catch (SqlException e)
@@ -1888,11 +1891,11 @@ namespace SharedEFClasses.Models
             return result;
         }
 
-        public IEnumerable<string> DeliveryAddressExists(
+        public IEnumerable<DeliveryAddressExistsResult> DeliveryAddressExists(
             string tradeAccountCode,
             DeliveryAddress address)
         {
-            var results = new List<string>();
+            var results = new List<DeliveryAddressExistsResult>();
 
             var parameters = new List<SqlParameter>()
             {
@@ -1922,7 +1925,11 @@ namespace SharedEFClasses.Models
 
                 while (reader.Read())
                 {
-                    results.Add(reader.GetString(0));
+                    results.Add(new DeliveryAddressExistsResult()
+                    {
+                        DeliveryReference = reader.GetString(0),
+                        IsDefault = reader.GetBoolean(1)
+                    });
                 }
             }
             catch (SqlException e)

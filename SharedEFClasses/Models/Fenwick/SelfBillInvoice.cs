@@ -164,4 +164,40 @@ namespace SharedEFClasses.Models.Fenwick
             SignedOffByMemberFullName = signedOffByMemberFullName;
         }
     }
+
+
+    public class SelfBillInvoiceSelectResult
+    {
+        public int SelfBillInvoiceID { get; set; }
+
+        public DateTime InvoiceDate { get; set; }
+
+        public int BranchID { get; set; }
+
+        public decimal? TotalGrossSales { get; set; }
+
+        public decimal? TotalVAT { get; set; }
+
+        public decimal? TotalCommission { get; set; }
+
+        public decimal? FenwicksVariance { get; set; }
+
+        public decimal? MertexRoundingVariance { get; set; }
+
+        public DateTime CreatedDT { get; set; }
+
+        public DateTime? SignedOffDT { get; set; }
+
+        public bool SignedOff { get; set; }
+
+        public int? SignedOffMemberID { get; set; }
+
+        public string Notes { get; set; }
+
+        public DateTime? DeletedDT { get; set; }
+
+        public bool? Deleted { get; set; }
+
+        public string SignedOffByMemberFullName { get; set; }
+    }
 }

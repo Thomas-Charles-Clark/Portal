@@ -109,10 +109,10 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- ko foreach: billingPeriod().Branches -->
+                <!-- ko foreach: selfBillInvoices -->
                 <tr data-bind="css: { 'table-active': $parent.selectedBranchId() === $data.BranchID }, click: $parent.selectBranch">
                     <td>
-                        <span data-bind="text: Branch.Name "></span>
+                        <span data-bind="text: BranchName "></span>
                     </td>
                     <td class="text-end">
                         <span data-bind="text: formatCurrency(TotalGrossSales, 2, 'en-GB', 'GBP')"></span>
@@ -136,16 +136,16 @@
                         Total
                     </th>
                     <td class="text-end">
-                        <span data-bind="text: formatCurrency(billingPeriod().Branches.reduce((a, i) => { return a + i.TotalGrossSales }, 0), 2, 'en-GB', 'GBP')"></span>
+                        <span data-bind="text: formatCurrency(selfBillInvoices().reduce((a, i) => { return a + i.TotalGrossSales }, 0), 2, 'en-GB', 'GBP')"></span>
                     </td>
                     <td class="text-end">
-                        <span data-bind="text: formatCurrency(billingPeriod().Branches.reduce((a, i) => { return a + i.TotalVAT }, 0), 2, 'en-GB', 'GBP')"></span>
+                        <span data-bind="text: formatCurrency(selfBillInvoices().reduce((a, i) => { return a + i.TotalVAT }, 0), 2, 'en-GB', 'GBP')"></span>
                     </td>
                     <td class="text-end">
-                        <span data-bind="text: formatCurrency(billingPeriod().Branches.reduce((a, i) => { return a + i.TotalCommission }, 0), 2, 'en-GB', 'GBP')"></span>
+                        <span data-bind="text: formatCurrency(selfBillInvoices().reduce((a, i) => { return a + i.TotalCommission }, 0), 2, 'en-GB', 'GBP')"></span>
                     </td>
                     <td class="text-end">
-                        <span data-bind="text: formatCurrency(billingPeriod().Branches.reduce((a, i) => { return a + i.FenwicksVariance }, 0), 2, 'en-GB', 'GBP')"></span>
+                        <span data-bind="text: formatCurrency(selfBillInvoices().reduce((a, i) => { return a + i.FenwicksVariance }, 0), 2, 'en-GB', 'GBP')"></span>
                     </td>
                     <td>
                     </td>
@@ -157,7 +157,7 @@
     <div id="sbi-result">
         <h4 class="heading mt-3 mb-2">
             <span>
-                <span data-bind="text: selectedSelfBillInvoice()?.Branch.Name"></span>
+                <span data-bind="text: selectedSelfBillInvoice()?.BranchName"></span>
             </span>
         </h4>
         <div class="grid gap-2">
@@ -252,7 +252,7 @@
                 <!-- /ko -->
                 <!-- ko if: signedOff -->
                 <button class="btn btn-secondary btn-lg w-100" data-bind="with: selectedSelfBillInvoice" disabled>
-                    <span data-bind="html: (SignedOffByMember ? `Signed off by ${SignedOffByMember.FullName} on ${renderDate(SignedOffDT)}` : null)"></span>
+                    <span data-bind="html: (SignedOffByMemberFullName ? `Signed off by ${SignedOffByMemberFullName} on ${renderDate(SignedOffDT)}` : null)"></span>
                 </button>
                 <!-- /ko -->
             </div>
@@ -314,7 +314,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <span data-bind="text: selectedSelfBillInvoice()?.Branch.Name"></span>
+                    <span data-bind="text: selectedSelfBillInvoice()?.BranchName"></span>
                 </h5>
                 <button type="button" class="btn-close" aria-label="Close" data-bs-dismiss="modal"></button>
             </div>

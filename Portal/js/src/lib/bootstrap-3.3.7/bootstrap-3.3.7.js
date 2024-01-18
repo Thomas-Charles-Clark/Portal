@@ -1122,6 +1122,10 @@ if (typeof jQuery === 'undefined') {
 
             if (doAnimate) this.$backdrop[0].offsetWidth // force reflow
 
+            if (this.$backdrop && this.$element[0].style.zIndex) {
+                this.$backdrop[0].style.zIndex = this.$element[0].style.zIndex - 1;
+            }
+
             this.$backdrop.addClass('in')
 
             if (!callback) return
