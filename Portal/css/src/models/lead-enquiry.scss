@@ -1849,3 +1849,31 @@ tr.k-state-selected td.view-button {
     display: flex;
     gap: $l-gutter;
 }
+
+#trade-account-creation-email-attachment-modal {
+    .modal-body {
+        p {
+            font-size: $font-size-lg;
+        }
+
+        .k-dropdown-wrap {
+            background: none;
+            background-color: transparent;
+            border-color: none;
+        }
+
+        .mdc-form-field {
+            label {
+                font-size: 1rem;
+            }
+        }
+
+        #attachment-manager {
+            ul {
+                li:not(:last-of-type) {
+                    padding: $vsm-gutter;
+                }
+            }
+        }
+    }
+}

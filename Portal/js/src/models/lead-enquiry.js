@@ -2731,9 +2731,6 @@ This customer wishes their deliveries to be consolidated. Please double check th
         if (self.tradeAccountCreationEmail_send() && self.emailAttachmentErrors().length > 0) {
             self.emailAttachmentErrors.showAllMessages(true);
             return;
-        }
-        if (self.salesRepErrors().length > 0) {
-            self.salesRepErrors.showAllMessages(true);
         } else {
             // if you haven't interacted with the creation email stuff
             if (self.tradeAccountCreationEmail_send() && self.haveChangedCreationEmailSettings() === false) {
@@ -2828,6 +2825,7 @@ This customer wishes their deliveries to be consolidated. Please double check th
         if (self.creditControllerErrors().length > 0) {
             self.creditControllerErrors.showAllMessages(true);
         } else {
+            $("#trade-account-creation-email-attachment-modal").modal("hide");
             $("#credit-controller-modal").modal('hide');
             if (self.mustPassToSalesManager()) {
                 self.ownerMember({
@@ -4838,7 +4836,18 @@ This customer wishes their deliveries to be consolidated. Please double check th
         //});
     }
 
+    self.tradeAccountCreationEmailModal = () => {
+        if (self.salesRepErrors().length > 0) {
+            self.salesRepErrors.showAllMessages(true);
+        } else {
+            $("#trade-account-creation-email-attachment-modal").modal("show");
+        }
+    }
+
     self.passToCreditControl = function () {
+        // Now we need to pop the modal and ask the questions in there trade-account-creation-email-attachment-modal
+        // We cannot mandate the selection of any particular count of attachments but we need the thing to be in their faces.
+
         self.processApplicationSave();
     }
 

@@ -1823,4 +1823,19 @@ tr.k-state-selected td.view-button {
   display: flex;
   gap: 1rem;
 }
+
+#trade-account-creation-email-attachment-modal .modal-body p {
+  font-size: 1.25rem;
+}
+#trade-account-creation-email-attachment-modal .modal-body .k-dropdown-wrap {
+  background: none;
+  background-color: transparent;
+  border-color: none;
+}
+#trade-account-creation-email-attachment-modal .modal-body .mdc-form-field label {
+  font-size: 1rem;
+}
+#trade-account-creation-email-attachment-modal .modal-body #attachment-manager ul li:not(:last-of-type) {
+  padding: 0.25rem;
+}
 /*# sourceMappingURL=lead-enquiry.css.map */
