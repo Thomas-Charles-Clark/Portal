@@ -27,19 +27,39 @@ $grid-position-top: 210px;
     padding: $l-gutter $l-gutter 9px $l-gutter;
     background-color: #f3f1ed;
 
-    #prefilters-first {
-        display: block;
-        margin-bottom: $sm-gutter;
+}
 
-        ul {
-            li {
-                margin-bottom: 0;
-            }
+#prefilters-wrapper {
+    display: flex;
+    gap: $xl-gutter;
+
+    > .grid {
+        gap: $sm-gutter;
+        flex: 0 1 50%;
+    }
+
+    #prefilters-deals {
+        --bs-columns: 3;
+
+        #trade-account-prefilter {
+            grid-column: 1 / span 3;
         }
     }
 
-    #prefilters-second {
-        min-width: 1245px;
+    #prefilters-impact {
+        --bs-columns: 4;
+
+        #search-term-prefilter {
+            grid-column: 2 / span 3;
+        }
+    }
+}
+
+#upper-section {
+
+
+    #trade-account-prefilter {
+        flex: 1 1 auto;
     }
 }
 
@@ -92,20 +112,16 @@ $grid-position-top: 210px;
     gap: $sm-gutter;
     align-items: center;
     font-weight: bold;
-
-    h4 {
+    h4{
         margin: $vsm-gutter 0;
-
         + label {
             margin-left: $xl-gutter;
         }
     }
-
     label {
         display: flex;
         gap: $sm-gutter;
         align-items: center;
-
         + label {
             margin-left: $xl-gutter;
         }
@@ -130,6 +146,7 @@ body {
 }
 
 .container {
+
 }
 
 @media (min-width: 1320px) {
@@ -140,7 +157,7 @@ body {
 
 .page-heading-logo {
     top: -26px;
-    height: 80px;
+    left: -18px;
 }
 
 .content-container {
@@ -198,7 +215,6 @@ body {
     li {
         display: flex;
         margin-bottom: $sm-gutter;
-
         + li {
             margin-left: $sm-gutter;
         }
@@ -240,7 +256,7 @@ body {
 
 #clear-all-filters-btn {
     flex-grow: 1;
-    max-width: 240px;
+    max-width: 220px;
 }
 
 .prefilters {
@@ -252,7 +268,7 @@ body {
 
         > div {
             flex: 0 1 auto;
-            min-width: 240px;
+            min-width: 220px;
 
             &.flex-zero-row {
                 height: 0;
@@ -298,7 +314,6 @@ body {
 
 #search-term-prefilter {
     flex-grow: 1;
-
     .mdc-validating-field {
         width: auto;
         flex-grow: 1;
@@ -842,72 +857,72 @@ $product-color: $order-form-group-color;
 
 
 
-#range-tabs {
-    .relative {
-        > .blocker,
-        .empty-cover {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            transition: opacity 75ms linear;
+    #range-tabs {
+        .relative {
+            > .blocker,
+            .empty-cover {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                transition: opacity 75ms linear;
+            }
         }
     }
-}
 
-.k-loading-mask {
-    display: none !important;
-}
-
-.k-grid-norecords {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    .empty-cover {
-        h4 {
-            margin-bottom: 0;
-        }
+    .k-loading-mask {
+        display: none !important;
     }
-}
 
-.submit-btn {
-    max-width: 180px;
-}
-
-
-
-.k-grid {
-    tr:hover {
-        background-color: unset;
-    }
-}
-
-
-
-
-
-
-.tab-pane {
-    > .blocker {
-        position: fixed;
+    .k-grid-norecords {
+        position: absolute;
+        top: 0;
         left: 0;
-        top: 54px;
         right: 0;
         bottom: 0;
-        border-radius: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .empty-cover {
+            h4 {
+                margin-bottom: 0;
+            }
+        }
     }
-}
+
+    .submit-btn {
+        max-width: 180px;
+    }
+
+
+
+    .k-grid {
+        tr:hover {
+            background-color: unset;
+        }
+    }
+
+
+
+
+
+
+    .tab-pane {
+        > .blocker {
+            position: fixed;
+            left: 0;
+            top: 54px;
+            right: 0;
+            bottom: 0;
+            border-radius: 0;
+        }
+    }
 
 #results-grid,
 #add-results-grid {
-    /*
+/*
     thead {
         background-color: unset;
 
@@ -947,7 +962,6 @@ $product-color: $order-form-group-color;
 
 .btn.add-note-btn {
     width: 27.38px;
-
     .material-icons {
         margin: 0;
         font-weight: normal;

@@ -747,6 +747,15 @@ namespace SharedEFClasses.Models.General
 
         [NotMapped]
         public byte? SalesMarketID { get; set; }
+
+        [NotMapped]
+        public string Label
+        {
+            get
+            {
+                return $"{Name} - {Code}";
+            }
+        }
     }
 
     public class SalesRepresentative_SalesMarket

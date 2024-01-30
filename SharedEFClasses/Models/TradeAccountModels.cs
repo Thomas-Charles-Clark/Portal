@@ -191,6 +191,7 @@ namespace SharedEFClasses.Models.TradeAccounts
         public virtual Country Country { get; set; }
         public virtual TradeLanguage TradeLanguage { get; set; }
         public virtual PaymentTerms PaymentTerms { get; set; }
+        public virtual SalesMarket SalesMarket { get; set; }
 
         [NotMapped]
         public string CompanyName

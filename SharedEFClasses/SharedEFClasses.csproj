@@ -336,6 +336,7 @@
     <Compile Include="Models\Attribute\Attribute.cs" />
     <Compile Include="Models\AttributeGroup\AttributeGroup.cs" />
     <Compile Include="Models\BasketStatusModels.cs" />
+    <Compile Include="Models\ContractPricing\ContractPricingDealsDto.cs" />
     <Compile Include="Models\CreditControlRegion.cs" />
     <Compile Include="Models\CreditControlRegion_SalesMarket.cs" />
     <Compile Include="Models\DotDigital\SyncAction.cs" />

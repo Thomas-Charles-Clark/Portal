@@ -64,6 +64,7 @@ namespace Portal
             odataBuilder.EntitySet<SharedEFClasses.Models.Maintenance.MaintenanceSupplier>("Suppliers");
             odataBuilder.EntitySet<Launch>("Launches");
             odataBuilder.EntitySet<ProductType>("ProductTypes");
+            odataBuilder.EntitySet<SalesMarket>("SalesMarkets");
             odataBuilder.EntitySet<Mertex_ProductType>("Mertex_ProductTypes");
             odataBuilder.EntitySet<Product>("Products");
             odataBuilder.EntitySet<ProductPage>("ProductPages");
@@ -91,6 +92,7 @@ namespace Portal
             odataBuilder.EntitySet<Member>("Members");
             odataBuilder.EntitySet<MarketingBudget>("MarketingBudgets");
             odataBuilder.EntitySet<SelfBillInvoice>("SelfBillInvoices");
+            odataBuilder.EntitySet<SalesRepresentative>("SalesRepresentatives");
 
             // This because it's not mapped to SQL and has the [NotMapped] attribute
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_ProductType)).AddProperty(typeof(Mertex_ProductType).GetProperty("Label"));
@@ -98,6 +100,8 @@ namespace Portal
 
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(ProductFilterGroup)).AddProperty(typeof(ProductFilterGroup).GetProperty("ProductTypeIDs"));
 
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SalesMarket)).AddProperty(typeof(SalesMarket).GetProperty("Label"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SalesRepresentative)).AddProperty(typeof(SalesRepresentative).GetProperty("Label"));
 
             odataBuilder.EntityType<Resource_Language>().HasKey(p => new { p.ResourceID, p.LanguageID });
 
@@ -331,6 +335,21 @@ namespace Portal
                 .ReturnsCollectionFromEntitySet<Attribute>("Attribute");
 
             attributeValueMapperFunction.Parameter<short?>("attributeId");
+
+            var salesMarketValueMapperFunction = odataBuilder.EntityType<SalesMarket>()
+                .Collection
+                .Function("SalesMarketValueMapper")
+                .ReturnsCollectionFromEntitySet<SalesMarket>("SalesMarket");
+
+            salesMarketValueMapperFunction.Parameter<byte?>("salesMarketId");
+
+
+            var salesRepresentativeValueMapperFunction = odataBuilder.EntityType<SalesRepresentative>()
+                .Collection
+                .Function("SalesRepresentativeValueMapper")
+                .ReturnsCollectionFromEntitySet<SalesRepresentative>("SalesRepresentative");
+
+            salesRepresentativeValueMapperFunction.Parameter<short?>("salesRepresentativeId");
 
 
             var productTypeValueMapperFunction = odataBuilder.EntityType<ProductType>()

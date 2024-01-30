@@ -405,6 +405,9 @@ namespace SharedEFClasses.Models.Leads
         public virtual ICollection<PaymentTerms> PaymentTerms { get; set; }
 
         [JsonIgnore]
+        public virtual ICollection<TradeAccount> TradeAccounts { get; set; }
+
+        [JsonIgnore]
         public virtual ICollection<SalesRepresentative_SalesMarket> SalesRepresentative_SalesMarkets { get; set; }
 
         [JsonIgnore]
@@ -425,6 +428,15 @@ namespace SharedEFClasses.Models.Leads
 
         [ForeignKey("MarketManagerMemberID")]
         public virtual Member MarketManager { get; set; }
+
+        [NotMapped]
+        public string Label
+        {
+            get
+            {
+                return $"{Name} - {Code}";
+            }
+        }
     }
 
     public class LeadType

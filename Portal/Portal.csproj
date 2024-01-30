@@ -546,9 +546,9 @@
     <Compile Include="App_Start\UnityMvcActivator.cs" />
     <Compile Include="App_Start\UnityWebApiActivator.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Areas\Customers\Controllers\CustomerPricingAPIController.cs" />
+    <Compile Include="Areas\Customers\Controllers\ContractPricingAPIController.cs" />
     <Compile Include="Areas\Customers\Controllers\CustomerMaintenanceAPIController.cs" />
-    <Compile Include="Areas\Customers\Controllers\CustomerPricingController.cs" />
+    <Compile Include="Areas\Customers\Controllers\ContractPricingController.cs" />
     <Compile Include="Areas\Customers\Controllers\CustomerMaintenanceController.cs" />
     <Compile Include="Areas\Customers\Controllers\CustomerNotesAPIController.cs" />
     <Compile Include="Areas\Customers\Controllers\CustomerNotesController.cs" />
@@ -601,6 +601,8 @@
     <Compile Include="Areas\Stock\ViewModels\StockManagementViewModel.cs" />
     <Compile Include="Controllers\ODataControllers\AttributesController.cs" />
     <Compile Include="Controllers\ODataControllers\AttributeGroupsController.cs" />
+    <Compile Include="Controllers\ODataControllers\SalesRepresentativesController.cs" />
+    <Compile Include="Controllers\ODataControllers\SalesMarketsController.cs" />
     <Compile Include="Controllers\ODataControllers\StockStatusesController.cs" />
     <Compile Include="Controllers\ODataControllers\StockManagement\StatusGroupsController.cs" />
     <Compile Include="Controllers\ODataControllers\SuppliersController.cs" />

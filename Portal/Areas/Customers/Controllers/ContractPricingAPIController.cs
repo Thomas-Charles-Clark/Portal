@@ -15,21 +15,28 @@ using System.Web.Http.ModelBinding;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using System.IO;
+using SharedEFClasses.Models.ContractPricing;
+using Portal.Utilities.DynamicRoles;
 
 namespace Portal.Areas.Customers.Controllers
 {
-    public class CustomerPricingController : ApiController
+    [DynamicRoleAuthorize]
+    public class ContractPricingController : ApiController
     {
         private PortalDbContext PortalDb { get; set; }
         private ApplicationUserManager UserManager { get; set; }
 
-        public CustomerPricingController(PortalDbContext portalDbContext, ApplicationUserManager userManager)
+        public ContractPricingController(PortalDbContext portalDbContext, ApplicationUserManager userManager)
         {
             this.PortalDb = portalDbContext;
             this.UserManager = userManager;
         }
 
-
+        [HttpGet]
+        public async Task<IHttpActionResult> FetchDeals([FromUri]ContractPricingDealsDto objDto)
+        {
+            return Ok(new { });
+        }
 
         //[System.Web.Http.HttpGet]
         //public DataSourceResult CreationEmailsGridView(
