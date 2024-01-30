@@ -858,7 +858,7 @@ var SamplesViewModel = function () {
         DeliveryReference: null,
         CompanyName: 'Designers Guild',
         Name: 'Sample Order Collection',
-        AddressLine1: 'Unit 10 Matrix Park',
+        AddressLine1: 'Unit 10 Segro Park',
         AddressLine2: '900 Coronation Road',
         AddressLine3: null,
         AddressLine4: 'London',

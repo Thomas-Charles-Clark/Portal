@@ -15,7 +15,8 @@
     ORDERFACTORY_MODE_BESPOKE_RUGS = 4,
     ORDERFACTORY_MODE_BESPOKE_FURNITURE = 5,
     ORDERFACTORY_MODE_BESPOKE_ARCHITECT = 6,
-    ORDERFACTORY_MODE_QUICKDISPLAYS = 6,
+    ORDERFACTORY_MODE_BESPOKE_ARCHITECT_FOLDER = 7,
+    ORDERFACTORY_MODE_QUICKDISPLAYS = 8,
     ORDERFACTORY_PHASE_BLANK = -1,
     ORDERFACTORY_PHASE_MISC = 0,
     ORDERFACTORY_PHASE_ADDRESS = 1,
@@ -63,6 +64,7 @@
     BASKETITEM_TYPE_BESPOKEFURNITURE = 6,
     BASKETITEM_TYPE_BESPOKEARCHITECTRING = 7,
     BASKETITEM_TYPE_BESPOKESHELFSAMPLE = 8,
+    BASKETITEM_TYPE_BESPOKEARCHITECTFOLDER = 18,
     RUG_TYPE_RECTANGULAR = 'Rectangular',
     RUG_TYPE_ROUND = 'Round',
     ORDERFACTORY_SEARCH_DISPLAY_GRID = 0,
@@ -80,10 +82,11 @@
     ADVANCED_STAGE_BESPOKE_FURNITURE_FABRIC = 6.1,
     ADVANCED_STAGE_BESPOKE_FURNITURE_FABRIC_ALLOCATION = 6.2,
     ADVANCED_STAGE_BESPOKE_ARCHITECT_RING = 7,
-    ADVANCED_STAGE_REVIEW_ALLOCATION = 8,
-    ADVANCED_STAGE_APPLY_TREATMENT = 9,
-    ADVANCED_STAGE_REVIEW_PRICING = 10,
-    ADVANCED_STAGE_REVIEW_MEMOS = 11,
+    ADVANCED_STAGE_BESPOKE_ARCHITECT_FOLDER = 8,
+    ADVANCED_STAGE_REVIEW_ALLOCATION = 9,
+    ADVANCED_STAGE_APPLY_TREATMENT = 10,
+    ADVANCED_STAGE_REVIEW_PRICING = 11,
+    ADVANCED_STAGE_REVIEW_MEMOS = 12,
     ALLOCATION_WARNING_BUTTON_AMEND = 0,
     ALLOCATION_WARNING_BUTTON_ORDER_X_BACKORDER_Y = 1,
     ALLOCATION_WARNING_BUTTON_REDUCE_QUANTITY = 2,
@@ -3767,6 +3770,11 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                         self.mode(ORDERFACTORY_MODE_BESPOKE_ARCHITECT);
                         self.searchTerm.valueHasMutated();
                         break;
+                    case 'ArchitectFolder':
+                        self.bespokeArchitectFolderFactory.reset();
+                        self.mode(ORDERFACTORY_MODE_BESPOKE_ARCHITECT_FOLDER);
+                        self.searchTerm.valueHasMutated();
+                        break;
                     case 'QuickDisplay':
                         $('#quickdisplay-list').empty();
                         self.mode(ORDERFACTORY_MODE_QUICKDISPLAYS);
@@ -4925,6 +4933,9 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
     // Manages the bespoke architect ring form
     self.bespokeArchitectRingFactory = new bespokeArchitectRingFactory(self);
 
+    // Manages the bespoke architect folder form
+    self.bespokeArchitectFolderFactory = new bespokeArchitectFolderFactory(self);
+
     // Manages the QuickDisplay stuff
     self.quickDisplayFactory = new quickDisplayFactory(self);
 
@@ -5403,6 +5414,7 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                 console.log('orderFactory fetchBasketParameters returned', data);
                 self.patternBookSchemes(data.PatternBookSchemes);
                 self.usSalesTaxExemptionCertificateRequired(data.BasketDetails.USTaxExemptionCertificateRequired);
+                self.usTaxExemptionCertificate.observable(data.BasketDetails.USTaxExemptionCertificate);
                 self.purchaseOrderNumberRequired(data.BasketDetails.PurchaseOrderNumberRequired);
                 self.allowEUExitCode(data.BasketDetails.AllowEUExitCode);
                 self.euExitingConfirmed(data.BasketDetails.EUExitingConfirmed);
@@ -6292,6 +6304,7 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                                     self.bespokeWallpaperShowlengthFactory.reset();
                                     self.bespokeRugFactory.reset();
                                     self.bespokeArchitectRingFactory.reset();
+                                    self.bespokeArchitectFolderFactory.reset();
                                     self.bespokeFurnitureFactory.reset();
 
                                     self.parent.orderProductsDrilldown.addingProductToBasket(sr);
@@ -6558,8 +6571,6 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                         self.bespokeFurnitureFactory.loadFabric(sr, null);
                     };
                     item.savingMethod = self.bespokeFurnitureFactory.save;
-                    // this was the only one which needed to return a promise.
-                    // this was the cause of me having to go through ALL OF THEM AND TURN THEM INTO PROMISES ARGH
                     item.performValidation = self.bespokeFurnitureFactory.validateFabric;
                     break;
                 case ADVANCED_STAGE_BESPOKE_FURNITURE_FABRIC_ALLOCATION:
@@ -6567,18 +6578,31 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                         self.bespokeFurnitureFactory.loadAllocationStage(sr, null);
                     };
                     item.savingMethod = self.bespokeFurnitureFactory.proceedToFurniturePricing;
-                    // this was the only one which needed to return a promise.
-                    // this was the cause of me having to go through ALL OF THEM AND TURN THEM INTO PROMISES ARGH
                     item.performValidation = self.bespokeFurnitureFactory.validateAllocation;
                     break;
                 case ADVANCED_STAGE_BESPOKE_ARCHITECT_RING:
                     item.loadingMethod = function () {
-                        self.bespokeArchitectRingFactory.load(sr, null);
+                        self.bespokeArchitectRingFactory.load(sr, sr.record.ProcessAnswersJSON);
                     };
                     item.savingMethod = self.bespokeArchitectRingFactory.save;
                     item.performValidation = function () {
                         return new Promise(function (resolve, reject) {
                             if (self.bespokeArchitectRingFactory.validate()) {
+                                resolve();
+                            } else {
+                                reject();
+                            }
+                        });
+                    }
+                    break;
+                case ADVANCED_STAGE_BESPOKE_ARCHITECT_FOLDER:
+                    item.loadingMethod = function () {
+                        self.bespokeArchitectFolderFactory.load(sr, sr.record.ProcessAnswersJSON);
+                    };
+                    item.savingMethod = self.bespokeArchitectFolderFactory.save;
+                    item.performValidation = function () {
+                        return new Promise(function (resolve, reject) {
+                            if (self.bespokeArchitectFolderFactory.validate()) {
                                 resolve();
                             } else {
                                 reject();
@@ -6724,6 +6748,7 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                     sr.orderTypeId = data.searchResults.ExtensionFields.OrderTypeID;
                     sr.backOrder(data.searchResults.ExtensionFields.BackOrder);
                     sr.record.BespokeFurnitureJSON = data.searchResults.ExtensionFields.BespokeFurnitureJSON;
+                    sr.record.ProcessAnswersJSON = data.searchResults.ExtensionFields.ProcessAnswersJSON;
 
                     self.configureDataStages(data, sr);
 
@@ -6732,6 +6757,7 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                     self.bespokeRugFactory.reset();
                     self.bespokeFurnitureFactory.reset();
                     self.bespokeArchitectRingFactory.reset();
+                    self.bespokeArchitectFolderFactory.reset();
 
                     self.parent.orderProductsDrilldown.stageInformation().stages(data.stages);
 
@@ -6772,6 +6798,7 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                     self.bespokeWallpaperShowlengthFactory.reset();
                     self.bespokeRugFactory.reset();
                     self.bespokeArchitectRingFactory.reset();
+                    self.bespokeArchitectFolderFactory.reset();
 
                     self.configureDataStages(data, sr, true);
 
@@ -7400,6 +7427,9 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
             case ORDERFACTORY_MODE_BESPOKE_ARCHITECT:
                 self.bespokeArchitectRingFactory.open(data);
                 break;
+            case ORDERFACTORY_MODE_BESPOKE_ARCHITECT_FOLDER:
+                self.bespokeArchitectFolderFactory.open(data);
+                break;
         }
     };
 
@@ -7443,6 +7473,9 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
             case 54:
                 self.bespokeArchitectRingFactory.open(data);
                 break;
+            case 213:
+                self.bespokeArchitectFolderFactory.open(data);
+                break;
         }
     };
 
@@ -7465,6 +7498,9 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                 break;
             case 54:
                 self.bespokeArchitectRingFactory.open(data);
+                break;
+            case 213:
+                self.bespokeArchitectFolderFactory.open(data);
                 break;
             default:
                 if (data.hasOwnProperty('searchResult'))
@@ -9677,6 +9713,9 @@ var searchResult = function (data, parent, patternBookSaturation) {
             break;
         case 117:
             self.basketItemTypeId = BASKETITEM_TYPE_BESPOKEARCHITECTRING;
+            break;
+        case 213:
+            self.basketItemTypeId = BASKETITEM_TYPE_BESPOKEARCHITECTFOLDER;
             break;
     }
 
@@ -11941,7 +11980,10 @@ var bespokeFabricShowlengthFactory = function (parent) {
 
         self.busy(true);
 
-        self.parent.updateBasketItem(data, onComplete);
+        self.parent.updateBasketItem(data, onComplete, () => {
+            self.busy(false);
+            self.parent.parent.orderProductsDrilldown.processingBusy(false);
+        });
 
         //function () {
         //        self.busy(false);
@@ -12599,7 +12641,10 @@ var bespokeWallpaperShowlengthFactory = function (parent) {
 
         self.busy(true);
 
-        self.parent.updateBasketItem(data, onComplete);
+        self.parent.updateBasketItem(data, onComplete, () => {
+            self.busy(false);
+            self.parent.parent.orderProductsDrilldown.processingBusy(false);
+        });
         //    , function () {
         //    self.busy(false);
         //    self.hide();
@@ -13172,7 +13217,10 @@ var bespokeRugFactory = function (parent) {
 
         self.busy(true);
 
-        self.parent.updateBasketItem(data, onComplete);
+        self.parent.updateBasketItem(data, onComplete, () => {
+            self.busy(false);
+            self.parent.parent.orderProductsDrilldown.processingBusy(false);
+        });
         //function () {
         //        self.busy(false);
         //        self.hide();
@@ -15839,7 +15887,7 @@ var bespokeArchitectRingFactory = function (parent) {
 
     self.load = function (data, bespokeJsonData) {
 
-        var jsonData = JSON.parse(bespokeJsonData);
+        var jsonData = bespokeJsonData ? JSON.parse(bespokeJsonData) : null;
 
         console.log('bespokeArchitectRingFactory load called', data, jsonData);
 
@@ -15977,7 +16025,10 @@ var bespokeArchitectRingFactory = function (parent) {
 
         self.busy(true);
 
-        self.parent.updateBasketItem(data, onComplete);
+        self.parent.updateBasketItem(data, onComplete, () => {
+            self.busy(false);
+            self.parent.parent.orderProductsDrilldown.processingBusy(false);
+        });
         //function () {
         //        self.busy(false);
         //        self.hide();
@@ -16035,6 +16086,535 @@ var bespokeArchitectRingFactory = function (parent) {
 
         return JSON.stringify({
             architectRingProducts: self.selectedFabrics(),
+            dateRequired: forwardOrderDate || 'N/A',
+            fullDespatch: self.fullDispatch() ? 'Y' : 'N',
+            memo: ''
+        });
+    }
+}
+
+var bespokeArchitectFolderFactory = function (parent) {
+    var self = this;
+
+    self.parent = parent;
+
+    self.busy = ko.observable(false);
+
+    self.loaded = ko.observable(false);
+
+    self.validateNow = ko.observable(false);
+
+    self.basketItemId = ko.observable();
+
+    self.productId = ko.observable();
+
+    self.fullDispatch = ko.observable(false);
+
+    self.dateRequired = {
+        label: 'Date Required*',
+        observable: ko.observable(),
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        showClear: true,
+        readOnly: true,
+        clearFunction: function () {
+            this.observable(undefined);
+        },
+        dateTimePickerOptions: {
+            locale: 'en-gb',
+            format: 'DD/MM/YYYY',
+            ignoreReadonly: true,
+            showClear: true,
+            allowInputToggle: true,
+            sideBySide: true,
+            useCurrent: true,
+            minDate: new moment().add(2, 'week').toDate(),
+            showClose: true,
+            keepInvalid: false
+        }
+    };
+
+    self.quantity = {
+        label: 'Quantity',
+        observable: ko.observable().extend({
+            required: {
+                params: true,
+                onlyIf: function () {
+                    return self.validateNow()
+                },
+                message: ' '
+            },
+            numberFormatted: {
+                digits: 0,
+                currency: {
+                    FormattingCulture: 'en-GB'
+                }
+            },
+            min: {
+                params: 1,
+                onlyIf: function () {
+                    return self.validateNow()
+                },
+                message: 'Minimum 1 Item'
+            },
+            max: {
+                params: 99,
+                onlyIf: function () {
+                    return self.validateNow()
+                },
+                message: 'Maximum 99 Items'
+            },
+            notEqual: {
+                params: "",
+                onlyIf: function () {
+                    return self.validateNow()
+                },
+                message: 'Quantity == ""'
+            },
+            //notEqual: {
+            //    params: 0,
+            //    onlyIf: function () {
+            //        return self.validateNow()
+            //    },
+            //    message: 'Quantity == 0'
+            //}
+        }),
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        showClear: false
+    };
+
+    self.showDefaultLeadTimeMessage = ko.observable(true);
+
+    // the desired folder size: cutting: "RING/H" / returnable: "RING/H/A4"
+    self.folderSize = {
+        observable: ko.observable(226052).extend({
+            required: {
+                params: true,
+                onlyIf: function () {
+                    return self.validateNow()
+                },
+                message: ''
+            },
+            notify: 'always'
+        }),
+        label: 'Folder Size',
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        options: [{
+            name: 'Standard (Cutting)',
+            code: 'LADG0414',
+            productId: 226052
+        }],
+        //, {
+        //    name: 'Custom',
+        //    code: 'RING/CUSTOM'
+        //}],
+        optionsText: 'name',
+        optionsValue: 'productId',
+        optionsCaption: ' ',
+        width: 'auto',
+        visible: false,
+        hidden: true
+    }
+
+    self.selectedFabrics = ko.observableArray([]).extend({
+        maxLength: {
+            params: 20,
+            onlyIf: function () {
+                return self.validateNow();
+            },
+            message: 'Please select no more than 20 samples.'
+        },
+        minLength: {
+            params: 1,
+            onlyIf: function () {
+                return self.validateNow();
+            },
+            message: 'You must select at least one sample to add to this Architect Folder.'
+        }
+    });
+
+    self.selectedFabricProductIds = ko.observableArray([]);
+
+    self.fabricAutocompleteResults = ko.observableArray([]);
+
+    self.fabricSearch = ko.observable().extend({
+        required: {
+            params: true,
+            onlyIf: function () {
+                return self.selectedFabrics().length == 0;
+            },
+            message: ' '
+        }
+    });
+
+    self.fabricSearchAutocomplete = {
+        label: 'Search for Fabric by Code or Name',
+        observable: ko.observable(),
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        showClear: true,
+        clearFunction: function () {
+            self.fabricSearch(undefined);
+            self.fabricSearchAutocomplete.observable(undefined);
+            $(self.fabricSearchAutocomplete.observable.DOMElement).focus();
+        },
+        charsRemainingOptions: {
+            maxLength: 50
+        },
+        autocompleteSettings: {
+            value: self.fabricSearch,
+            appendTo: 'body',
+            delay: 600,
+            source: function (request, response) {
+                var data = {
+                    term: request.term,
+                    tradePriceListId: self.parent.tradeAccount().TradePriceListID,
+                    productTypeId: 15
+                };
+                $.ajax({
+                    url: '/api/ComponentAPI/ProductCodeAutocompleteSamples',
+                    type: "POST",
+                    dataType: "json",
+                    data: data,
+                    success: function (data) {
+                        self.fabricAutocompleteResults($.map(data, function (p) {
+                            return {
+                                productId: p.ProductID,
+                                label: p.Code + ' - ' + p.Name,
+                                value: p
+                            };
+                        }));
+                        response();
+                        //response($.map(data, function (item) {
+                        //    return {
+                        //        label: item.Name,
+                        //        value: item.ProductID,
+                        //        obj: item
+                        //    };
+                        //}));
+                    }
+                });
+            },
+            minLength: 1,
+            select: function (event, ui) {
+                event.preventDefault();
+                console.log('fabricSearchAutocomplete select', ui);
+            },
+            autoFocus: true,
+            create: function () {
+                if (self.classField != null) {
+                    $(this).data("ui-autocomplete")._renderItem = function (ul, item) {
+                        var li = $("<li>");
+                        var div = li.append("<div class='ui-menu-item-wrapper'><a href='#'>" + item.label + "<span class='type'>" + item.value[self.typeField] + "</span></a></div>");
+
+                        li.addClass(item.value[self.classField]);
+
+                        return li.appendTo(ul);
+                    };
+                }
+            }
+        }
+    };
+
+    self.fabricSortable = {
+        data: self.selectedFabrics,
+        helper: function (element) {
+            return element.clone().addClass('bespoke-waterfall-helper');
+        }
+    };
+
+    self.errors = ko.validation.group([
+        self.folderSize.observable,
+        self.quantity,
+        self.selectedFabrics,
+        self.fabricSearch
+    ]);
+
+    self.addAllResults = function () {
+        ko.utils.arrayForEach(self.fabricAutocompleteResults(), function (item) {
+            if (item.value.CuttingProductID != null) {
+                if (self.selectedFabricProductIds().length < 20) {
+                    self.selectedFabricProductIds.push(item.productId);
+                }
+            }
+        });
+    }
+
+    self.removeAllResults = function () {
+        ko.utils.arrayForEach(self.fabricAutocompleteResults(), function (item) {
+            self.selectedFabricProductIds.remove(item.productId);
+        });
+    }
+
+    self.clearRing = function () {
+        self.selectedFabricProductIds([]);
+    }
+
+    self.isProductInRing = function (data) {
+        var result = ko.utils.arrayFirst(self.selectedFabrics(), function (item) {
+            return item.productId == data.productId
+        });
+        if (result == null) {
+            return false
+        } else {
+            return true;
+        }
+    }
+
+    self.removeFabric = function (data) {
+        self.selectedFabricProductIds.remove(data.productId);
+    }
+
+    self.selectedFabricProductIds.subscribe(function (newValues) {
+        self.busy(true);
+        ko.utils.arrayForEach(newValues, function (item) {
+            if (item.status == 'added') {
+                var addition = Enumerable.From(self.fabricAutocompleteResults()).Where(function (x) {
+                    return x.productId == item.value;
+                }).SingleOrDefault();
+                if (addition != null) { // can be null in case of loading: no autocompleteResults exist
+                    self.selectedFabrics.push(addition);
+                }
+            } else if (item.status == 'deleted') {
+                self.selectedFabrics.remove(function (x) {
+                    return x.productId == item.value;
+                });
+            }
+        });
+        self.busy(false);
+    }, self, 'arrayChange');
+
+    self.dateRequired.observable.subscribe(function (newValue) {
+        self.showDefaultLeadTimeMessage(false);
+    });
+
+    self.loaded.subscribe(function (newValue) {
+        window.setTimeout(function () {
+            self.folderSize.observable.mdcSelect.layout();
+            self.quantity.observable.mdcTextField.layout();
+            self.dateRequired.observable.mdcTextField.layout();
+        }, 300);
+    })
+
+    self.open = function (data) {
+
+        self.folderSize.observable(data.record.ProductID);
+
+        self.show();
+    }
+
+    self.close = function () {
+        self.reset();
+        self.hide();
+    }
+
+    self.load = function (data, bespokeJsonData) {
+
+        var jsonData = bespokeJsonData ? JSON.parse(bespokeJsonData) : null;
+
+        console.log('bespokeArchitectFolderFactory load called', data, jsonData);
+
+        self.basketItemId(data.basketItemId);
+
+        self.productId(data.record.ProductID);
+
+        self.folderSize.observable(data.record.ProductID);
+
+        self.folderSize.observable.mdcSelect.disabled = true;
+
+        self.quantity.observable(data.quantity());
+
+        if (jsonData) {
+            var forwardOrderDate = null;
+
+            if (jsonData.dateRequired && jsonData.dateRequired != 'N/A')
+                forwardOrderDate = moment(jsonData.dateRequired, 'DD/MM/YY');
+
+            if (forwardOrderDate) {
+                self.dateRequired.observable(forwardOrderDate);
+            }
+
+            self.fullDispatch(jsonData.fullDespatch == 'Y' ? true : false);
+
+            self.selectedFabricProductIds(Enumerable.From(jsonData.architectFolderProducts).Select(function (x) {
+                return x.productId
+            }).ToArray());
+
+            self.selectedFabrics(jsonData.architectFolderProducts);
+        }
+
+        self.loaded(true);
+    }
+
+    self.validate = function () {
+        self.validateNow(true);
+        self.errors.showAllMessages(false);
+        if (self.errors().length) {
+            self.errors.showAllMessages(true);
+            self.folderSize.observable.isValid.notifySubscribers(self.folderSize.observable.isValid());
+            self.quantity.observable.isValid.notifySubscribers(self.quantity.observable.isValid());
+            self.fabricSearch.isValid.notifySubscribers(self.fabricSearch.isValid());
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    self.addToBasket = function () {
+        self.validateNow(true);
+        self.errors.showAllMessages(false);
+
+        if (self.errors().length) {
+            self.errors.showAllMessages(true);
+            self.folderSize.observable.isValid.notifySubscribers(self.folderSize.observable.isValid());
+            self.quantity.observable.isValid.notifySubscribers(self.quantity.observable.isValid());
+            self.fabricSearch.isValid.notifySubscribers(self.fabricSearch.isValid());
+        } else {
+
+            self.busy(true);
+
+            var data = {
+                tradeAccountId: self.parent.tradeAccount().TradeAccountID,
+                basketId: self.parent.basketId(),
+                basketItemTypeId: BASKETITEM_TYPE_BESPOKEARCHITECTFOLDER,
+                productId: self.folderSize.observable(),
+                quantity: self.quantity.observable(),
+                stockLocationId: 91,
+                fulfilmentTypeId: 1,
+                lineReference: null,
+                orderTypeId: ORDERFACTORY_ADD_MODE_STOCK,
+                processAnswersJSON: self.toJSON()
+            };
+
+            console.log('bespokeArchitectFolderFactory addBasketItem calling with', data);
+
+            self.busy(true);
+
+            $.ajax({
+                url: '/api/componentapi/AddBasketItem',
+                type: 'POST',
+                dataType: 'json',
+                data: data,
+                success: function (data) {
+                    console.log('bespokeArchitectFolderFactory addBasketItem returned', data);
+
+                    self.busy(false);
+
+                    if (data.addResult.BasketItemID != null) {
+                        self.reset();
+                        self.hide();
+                        self.parent.fetchBasket();
+
+                    } else {
+                        $.showError(data.addResult, null, null);
+                    }
+                },
+                error: function (xhr, s, a) {
+                    self.busy(false);
+                    $.showError('Sorry', 'There was an error attempting to add this item to your basket.');
+                }
+            });
+
+            self.hide();
+        }
+    }
+
+    self.save = function (onComplete) {
+        //self.validateNow(true);
+        //self.errors.showAllMessages(false);
+
+        //if (self.errors().length) {
+        //    self.errors.showAllMessages(true);
+        //    self.folderSize.observable.isValid.notifySubscribers(self.folderSize.observable.isValid());
+        //    self.quantity.isValid.notifySubscribers(self.quantity.isValid());
+        //} else {
+
+        var data = {
+            tradeAccountId: self.parent.tradeAccount().TradeAccountID,
+            basketId: self.parent.basketId(),
+            basketItemId: self.basketItemId(),
+            productId: self.productId(),
+            quantity: self.quantity.observable(),
+            stockLocationId: 91,
+            fulfilmentTypeId: 1,
+            lineReference: null,
+            orderTypeId: ORDERFACTORY_ADD_MODE_STOCK,
+            architectFolderProductIds: self.selectedFabricProductIds(),
+            processAnswersJSON: self.toJSON(),
+            backOrder: self.parent.parent.orderProductsDrilldown.addingProductToBasket().backOrder()
+        };
+
+        console.log('bespokeArchitectFolderFactory updateBasketItem calling with', data);
+
+        self.busy(true);
+
+        self.parent.updateBasketItem(data, onComplete, () => {
+            self.busy(false);
+            self.parent.parent.orderProductsDrilldown.processingBusy(false);
+        });
+        //function () {
+        //        self.busy(false);
+        //        self.hide();
+        //        self.parent.fetchBasket();
+        //    }, function () {
+        //        self.busy(false);
+        //            console.log('bespokeArchitectFolderFactory updateBasketItem failed');
+        //    });
+        ////}
+    }
+
+    self.show = function () {
+        //$('#bespoke-fabric-architect-ring-modal').modal('show');
+    }
+
+    self.hide = function () {
+        //$('#bespoke-fabric-architect-ring-modal').modal('hide');
+    }
+
+    self.reset = function () {
+        console.log('bespokeArchitectFolderFactory reset called');
+        self.busy(false);
+        self.validateNow(false);
+        self.basketItemId(undefined);
+        self.productId(undefined);
+        self.quantity.observable(1);
+        //self.ringSize.observable('RING/H');
+        //self.ringSize.observable.mdcSelect.disabled = false;
+        self.fabricSearchAutocomplete.clearFunction();
+        self.selectedFabrics([]);
+        self.fullDispatch(false);
+        self.selectedFabricProductIds([]);
+        self.fabricAutocompleteResults([]);
+        self.dateRequired.observable(undefined);
+        self.showDefaultLeadTimeMessage(true);
+        self.loaded(false);
+    }
+
+    $('#bespoke-fabric-architect-folder-modal').on('shown.bs.modal', function () {
+        window.setTimeout(function () {
+            self.ringSize.observable.mdcSelect.layout();
+            self.quantity.observable.mdcTextField.layout();
+        }, 0);
+    });
+
+    $('#bespoke-fabric-architect-folder-modal').on('hide.bs.modal', function () {
+        self.reset();
+    });
+
+    self.toJSON = function () {
+        var forwardOrderDate = null;
+
+        if (self.dateRequired.observable())
+            forwardOrderDate = moment(self.dateRequired.observable()).format('DD/MM/YY');
+
+        return JSON.stringify({
+            architectFolderProducts: self.selectedFabrics(),
             dateRequired: forwardOrderDate || 'N/A',
             fullDespatch: self.fullDispatch() ? 'Y' : 'N',
             memo: ''
@@ -19284,12 +19864,15 @@ var dispatchFactory = function (parent) {
 
                                                 haulier.servicesBusy(true);
 
-                                                self.saveDeliveryOptions(function () {
-                                                    self.refreshServicesList(haulier.haulierCode, function (data) {
-                                                        self.rebuildServicesList(haulier.haulierCode, data);
-                                                        haulier.servicesBusy(false);
-                                                    });
-                                                }, self.selectedOrder().deliveryGroup.basketSplitId);
+                                                self.saveDeliveryOptions(
+                                                    function () {
+                                                        self.refreshServicesList(haulier.haulierCode, function (data) {
+                                                            self.rebuildServicesList(haulier.haulierCode, data);
+                                                            haulier.servicesBusy(false);
+                                                        });
+                                                    }, // onComplete
+                                                    self.selectedOrder().deliveryGroup.basketSplitId, // basketSplitId
+                                                    true); // skipValidation
 
                                                 //console.log('haulier transportShipperButtons observable subscribe hit : PAYEE_DESIGNERSGUILD - TransportBilledToCode is now NULL');
                                                 break;
@@ -19333,13 +19916,16 @@ var dispatchFactory = function (parent) {
 
                                             $.error('Warning', 'You have changed the Transport Charge Account Number.<br/><br/>Delivery Services are being refreshed.<br/><br/><strong>YOU MUST RE-SELECT YOUR REQUIRED DELIVERY SERVICE.</strong>');
 
-                                            self.saveDeliveryOptions(function () {
-                                                self.refreshServicesList(self.selectedService().haulier.haulierCode, function (data) {
-                                                    console.log('a) dispatchFactory save singular successful, refreshed basketSplitId', self.selectedOrder().deliveryGroup.basketSplitId);
-                                                    self.rebuildServicesList(self.selectedService().haulier.haulierCode, data);
-                                                    haulier.servicesBusy(false);
-                                                });
-                                            }, self.selectedOrder().deliveryGroup.basketSplitId);
+                                            self.saveDeliveryOptions(
+                                                function () {
+                                                    self.refreshServicesList(self.selectedService().haulier.haulierCode, function (data) {
+                                                        console.log('a) dispatchFactory save singular successful, refreshed basketSplitId', self.selectedOrder().deliveryGroup.basketSplitId);
+                                                        self.rebuildServicesList(self.selectedService().haulier.haulierCode, data);
+                                                        haulier.servicesBusy(false);
+                                                    });
+                                                }, // onComplete
+                                                self.selectedOrder().deliveryGroup.basketSplitId, // basketSplitId
+                                                true); // skipValidation
                                         }
                                     }
                                 }));
@@ -20158,18 +20744,6 @@ var dispatchFactory = function (parent) {
         }
     }, self);
 
-    self.fetchTimeInTransit = function () {
-        $.ajax({
-            url: '/api/componentapi/FetchUPSTimeInTransit',
-            type: 'POST',
-            dataType: 'json',
-            data: {},
-            success: function (data) {
-                console.log(data);
-            }
-        });
-    }
-
     self.showDeliveryOptions = function (data) {
         self.selectedOrder(data);
         window.setTimeout(function () {
@@ -20183,11 +20757,16 @@ var dispatchFactory = function (parent) {
         $('#delivery-services-modal').modal('hide');
     }
 
-    self.saveDeliveryOptions = function (onComplete, basketSplitId) {
+    self.saveDeliveryOptions = function (onComplete, basketSplitId, skipValidation) {
 
         self.validateNow(true);
 
         basketSplitId = typeof basketSplitId === 'undefined' ? null : basketSplitId;
+
+        // this became necessary because you can swap to UPS and be in a failed validation state, then provide an account number
+        // which forces a save immediately without regard to the validation of other fields (DeliveryTerms, FinalPrice)
+        // it's actually valid that it doesn't care about your other fields: the provision of an account number can render the other fields moot
+        skipValidation = typeof skipValidation === 'undefined' ? false : skipValidation;
 
         if (basketSplitId == null) {
             self.busy(true);
@@ -20232,7 +20811,7 @@ var dispatchFactory = function (parent) {
             }
         });
 
-        window.setTimeout(function () { // this because clicking Revert on Customer's Account Number for Transport / Taxes 
+        window.setTimeout(function () { // this because clicking Revert on Customer's Account Number for Transport / Taxes
             // fires the save before updating the observable
 
             ko.utils.arrayForEach(self.deliveryGroups(), function (item) {
@@ -20299,13 +20878,18 @@ var dispatchFactory = function (parent) {
 
                 if (basketSplitId) {
                     if (item.deliveryGroup.basketSplitId == basketSplitId) {
-                        item.isValid(item.deliveryService().errors().length == 0);
-                        if (!item.isValid()) {
-                            permitSave = false;
-                            return false;
+                        if (skipValidation) {
+                            deliveryServices.push(service);
+                            return true;
+                        } else {
+                            item.isValid(item.deliveryService().errors().length == 0);
+                            if (!item.isValid()) {
+                                permitSave = false;
+                                return false;
+                            }
+                            deliveryServices.push(service);
+                            return true;
                         }
-                        deliveryServices.push(service);
-                        return true;
                     }
                 } else {
                     deliveryServices.push(service);

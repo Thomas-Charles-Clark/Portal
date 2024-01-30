@@ -1071,10 +1071,10 @@
             </div>
             <div class="modal-body">
                 <!-- ko if: salesMarket -->
-                <div class="form-group row">
+                <div class="row">
                     <div class="col-xs-12">
                         <div class="alert alert-info bg-info well-sm margin-bottom-0">
-                            <div class="row">
+                            <div class="form-group row">
                                 <div class="col-xs-12">
                                     <p>
                                         Here you can configure the welcome pack email which will be sent to this customer when Credit Control have opened the account.
@@ -1083,7 +1083,7 @@
                                 </div>
                             </div>
                             <div id="trade-account-creation-email-reveal" data-bind="fadeSlideVisible: tradeAccountCreationEmail_send">
-                                <div class="form-group row">
+                                <div class="form-group row" style="display: none">
                                     <div class="col-xs-12">
                                         <div id="trade-account-creation-display-options">
                                             <div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountCreationEmail_displayAccountManagerProps }"></div>
@@ -1102,7 +1102,7 @@
                                                 <li class="list-group-item list-group-item-danger">
                                                     <p class="margin-bottom-0">
                                                         <label class="margin-bottom-0">
-                                                            NO ATTACHMENTS HAVE BEEN SPECIFIED: NO PRICELIST(S) WILL BE SENT WITH THE WELCOME EMAIL
+                                                            NO PRICELISTS HAVE BEEN SELECTED, PLEASE SELECT FROM THE LIST BELOW
                                                         </label>
                                                     </p>
                                                 </li> 
@@ -1121,7 +1121,7 @@
                                                     <span class="bi bi-plus-lg pointer" data-bind="click: openAttachmentsList"></span>
                                                     <div id="attachment-from-list">
                                                         <label class="pointer" data-bind="click: openAttachmentsList">
-                                                            Add Attachment
+                                                            Select Pricelist(s) to send with Welcome Email
                                                         </label>
                                                         <div data-bind="component: { name: 'mdc-kendo-dropdown-component-no-outline', params: attachmentsListParams }"></div>
                                                     </div>

@@ -1489,6 +1489,8 @@ namespace SharedEFClasses.Models
             cmd.CommandText = "[portal].[BasketItem_Update]";
             cmd.CommandType = CommandType.StoredProcedure;
 
+            cmd.CommandTimeout = 120;
+
             cmd.Parameters.AddRange(parameters.ToArray());
 
             try
@@ -1968,6 +1970,7 @@ namespace SharedEFClasses.Models
             var cmd = this.Database.Connection.CreateCommand();
 
             cmd.CommandText = "[portal].[TradeAccount_DeliveryAddress_Upsert]";
+
             cmd.CommandType = CommandType.StoredProcedure;
 
             cmd.Parameters.AddRange(parameters.ToArray());

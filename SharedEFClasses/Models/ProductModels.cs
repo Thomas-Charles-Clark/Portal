@@ -1358,6 +1358,7 @@ namespace SharedEFClasses.Models.Products
     public class BasketDetail
     {
         public bool USTaxExemptionCertificateRequired { get; set; }
+        public string USTaxExemptionCertificate { get; set; }
         public bool PurchaseOrderNumberRequired { get; set; }
         public byte AllowEUExitCode { get; set; } // 0 = Hide EU Exit Details, 1 = Allow Exit Code, 2 = Delivering into EU but Exit Code forbidden on account
         public bool? EUExitingConfirmed { get; set; }

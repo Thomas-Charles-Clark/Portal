@@ -45,11 +45,19 @@ namespace SharedEFClasses.Models
             }
         }
 
+        public string ParentFolderName
+        {
+            get
+            {
+                return System.IO.Directory.GetParent(path).Name;
+            }
+        }
+
         public string FinalFilePath
         {
             get
             {
-                return $"{PathRoot}\\{SalesMarketFolderName}\\{DestinationFileName}";
+                return $"{PathRoot}\\{SalesMarketFolderName}\\{ParentFolderName}\\{DestinationFileName}";
             }
         }
     }

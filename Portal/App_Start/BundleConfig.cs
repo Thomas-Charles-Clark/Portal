@@ -300,6 +300,10 @@ namespace Portal
                         $"{cssPrefix}/models/range-management{cssSuffix}"
                 ));
 
+            bundles.Add(new StyleBundle("~/bundles/css/contract-pricing").Include(
+                        $"{cssPrefix}/models/contract-pricing{cssSuffix}"
+                ));
+
             //  
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             //
@@ -703,6 +707,10 @@ namespace Portal
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/emailer{jsSuffix}",
                         $"{jsPrefix}/models/range-management{jsSuffix}"
+                ));
+
+            bundles.Add(new StyleBundle("~/bundles/js/contract-pricing").Include(
+                        $"{jsPrefix}/models/contract-pricing{jsSuffix}"
                 ));
 
             foreach (var b in BundleTable.Bundles)

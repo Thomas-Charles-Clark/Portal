@@ -546,7 +546,9 @@
     <Compile Include="App_Start\UnityMvcActivator.cs" />
     <Compile Include="App_Start\UnityWebApiActivator.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Areas\Customers\Controllers\CustomerPricingAPIController.cs" />
     <Compile Include="Areas\Customers\Controllers\CustomerMaintenanceAPIController.cs" />
+    <Compile Include="Areas\Customers\Controllers\CustomerPricingController.cs" />
     <Compile Include="Areas\Customers\Controllers\CustomerMaintenanceController.cs" />
     <Compile Include="Areas\Customers\Controllers\CustomerNotesAPIController.cs" />
     <Compile Include="Areas\Customers\Controllers\CustomerNotesController.cs" />
@@ -557,6 +559,7 @@
     <Compile Include="Areas\Customers\Controllers\CustomerEnquiryODataController.cs" />
     <Compile Include="Areas\Customers\Controllers\CustomerInviteController.cs" />
     <Compile Include="Areas\Customers\CustomersAreaRegistration.cs" />
+    <Compile Include="Areas\Customers\ViewModels\ContractPricingViewModel.cs" />
     <Compile Include="Areas\Customers\ViewModels\TradeAccountCreationEmailMaintenanceViewModel.cs" />
     <Compile Include="Areas\Customers\ViewModels\CustomerMaintenanceViewModel.cs" />
     <Compile Include="Areas\Fenwick\Controllers\FenwickInvoicingAPIController.cs" />
@@ -773,11 +776,6 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="Service References\UPS_Rate_Service\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
     <Compile Include="Service References\VAT_Lookup\Reference.cs">
       <AutoGen>True</AutoGen>
@@ -1815,6 +1813,7 @@
     <Content Include="Areas\Stock\Views\Management\StockManagement.cshtml" />
     <Content Include="Areas\Fenwick\Views\web.config" />
     <Content Include="Areas\Fenwick\Views\Invoicing\FenwickInvoicing.cshtml" />
+    <Content Include="Areas\Customers\Views\Pricing\ContractPricing.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
     <Content Include="Areas\Stock\Views\RangeManagement\RangeManagement.cshtml" />
     <None Include="compilerconfig.json" />
@@ -1835,6 +1834,7 @@
     <Content Include="css\src\models\retail-store-members.scss" />
     <Content Include="css\src\models\fenwick-invoicing.scss" />
     <Content Include="css\src\models\range-management.scss" />
+    <Content Include="css\src\models\contract-pricing.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -2551,21 +2551,9 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
     <None Include="Service References\PCARetrieve_v1_10\wsdlnew.wsdl" />
-    <None Include="Service References\UPS_Rate_Service\configuration91.svcinfo" />
-    <None Include="Service References\UPS_Rate_Service\configuration.svcinfo" />
     <None Include="Service References\PCARetrieve_v1_10\configuration91.svcinfo" />
     <None Include="Service References\PCARetrieve_v1_10\configuration.svcinfo" />
     <None Include="Service References\PCARetrieve_v1_10\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
-    <Content Include="Service References\UPS_Rate_Service\Portal.UPS_Rate_Service.RateResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\UPS_Rate_Service\Portal.UPS_Rate_Service.RateResponse1.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <None Include="Service References\UPS_Rate_Service\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
@@ -2701,19 +2689,6 @@
     <Content Include="Views\Shared\Components\_DropDownComponentNew.cshtml" />
     <Content Include="Views\Shared\Components\_MultiSelectComponent.cshtml" />
     <Content Include="Views\Shared\Components\_OrderProductsComponent.cshtml" />
-    <None Include="Service References\UPS_Rate_Service\common.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\UPS_Rate_Service\Error1.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\UPS_Rate_Service\RateWebServiceSchema.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\UPS_Rate_Service\RateWS.wsdl" />
-    <None Include="Service References\UPS_Rate_Service\UPSSecurity.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <Content Include="Views\Shared\Modals\_PatternBookContentsModal.cshtml" />
     <Content Include="Views\Home\TestBed.cshtml" />
     <Content Include="Views\Shared\Components\_TaggingComponent.cshtml" />
@@ -2912,7 +2887,6 @@
     <WCFMetadataStorage Include="Service References\PCAFind_v1_10\" />
     <WCFMetadataStorage Include="Service References\PCARetrieve\" />
     <WCFMetadataStorage Include="Service References\PCARetrieve_v1_10\" />
-    <WCFMetadataStorage Include="Service References\UPS_Rate_Service\" />
     <WCFMetadataStorage Include="Service References\VAT_Lookup\" />
   </ItemGroup>
   <ItemGroup>

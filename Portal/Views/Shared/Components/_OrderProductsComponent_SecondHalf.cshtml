@@ -3463,9 +3463,9 @@
                 <!-- ko template: { name: 'processing-progression' } --><!-- /ko -->
                 <div class="product-progression-stage" data-bind="fadeBetweenMany: {
                          observable: stageInformation().currentStage,
-                         visibleWhen: function (stage) { 
+                         visibleWhen: function (stage) {
                             return (stage.StepID == ADVANCED_STAGE_BESPOKE_FABRIC_HANGER) ||
-                                   (stage.StepID == ADVANCED_STAGE_BESPOKE_FABRIC_SHOWLENGTH) || 
+                                   (stage.StepID == ADVANCED_STAGE_BESPOKE_FABRIC_SHOWLENGTH) ||
                                    (stage.StepID == ADVANCED_STAGE_BESPOKE_FABRIC_SHELFSAMPLE)
                          },
                          swapWith: '.product-progression-stage'
@@ -3475,9 +3475,9 @@
                     <h4 class="blue-heading bold">
                         This is available as a Stocked Hanger. Please consider ordering from the beneath list before placing a Bespoke order.
                     </h4>
-                    <hr/>
+                    <hr />
                     <div data-bind="template: { name: 'order-tab-list', data: $.extend(record(), { products: stockedHanger().products, preventClick: true, classySuffix: 'order-tab-pane' }) }"></div>
-                    <hr/>
+                    <hr />
                     <!-- /ko -->
                     <div class="flex-container">
                         <div class="controls-container">
@@ -3505,27 +3505,27 @@
                             </div>
                             <div class="bespoke-memo" data-bind="component: { name: 'mdc-text-area-component', params: memo }"></div>
                             @*<div>
-                                <ul>
-                                    <li>
-                                        <label class="checkbox-wrapper">
-                                            <input type="checkbox" data-bind="checked: fullDispatch, checkedValue: true" />
-                                            <span>
-                                                Does your customer request full despatch?
-                                            </span>
-                                        </label>
-                                    </li>
-                                    <!-- ko if: bespokeType() == 'Showlength' -->
-                                    <li>
-                                        <label class="checkbox-wrapper">
-                                            <input type="checkbox" data-bind="checked: halfWidth, checkedValue: true" />
-                                            <span>
-                                                Half Width required?
-                                            </span>
-                                        </label>
-                                    </li>
-                                    <!-- /ko -->
-                                </ul>
-                            </div>*@
+                        <ul>
+                            <li>
+                                <label class="checkbox-wrapper">
+                                    <input type="checkbox" data-bind="checked: fullDispatch, checkedValue: true" />
+                                    <span>
+                                        Does your customer request full despatch?
+                                    </span>
+                                </label>
+                            </li>
+                            <!-- ko if: bespokeType() == 'Showlength' -->
+                            <li>
+                                <label class="checkbox-wrapper">
+                                    <input type="checkbox" data-bind="checked: halfWidth, checkedValue: true" />
+                                    <span>
+                                        Half Width required?
+                                    </span>
+                                </label>
+                            </li>
+                            <!-- /ko -->
+                        </ul>
+                    </div>*@
                             <div class="waterfall-wrapper">
                                 <div class="waterfall-wrapper-inner">
                                     <div class="waterfall">
@@ -3572,7 +3572,7 @@
                                 <li class="bespoke-waterfall-available list-group-item" data-bind="css: { 'disabled': $parent.bespokeWaterfallProducts().length == 12, 'selected': $parent.isProductInSelection($data) }">
                                     <label class="checkbox-wrapper">
                                         <!-- ko if: value.ImageID -->
-                                        <img class="thumb"  data-bind="attr: { src: 'https://www.designersguild.com/image/239/' + value.ImageID, title: value.Code }" />
+                                        <img class="thumb" data-bind="attr: { src: 'https://www.designersguild.com/image/239/' + value.ImageID, title: value.Code }" />
                                         <!-- /ko -->
                                         <!-- ko ifnot: value.ImageID -->
                                         <span class="thumb"></span>
@@ -3595,7 +3595,7 @@
                                 <li class="bespoke-waterfall-available list-group-item">
                                     <label class="checkbox-wrapper">
                                         <!-- ko if: value.ImageID -->
-                                        <img class="thumb"  data-bind="attr: { src: 'https://www.designersguild.com/image/239/' + value.ImageID, title: value.Code }" />
+                                        <img class="thumb" data-bind="attr: { src: 'https://www.designersguild.com/image/239/' + value.ImageID, title: value.Code }" />
                                         <!-- /ko -->
                                         <!-- ko ifnot: value.ImageID -->
                                         <span class="thumb"></span>
@@ -3636,7 +3636,7 @@
                 </div>
                 <div class="product-progression-stage" data-bind="fadeBetweenMany: {
                          observable: stageInformation().currentStage,
-                         visibleWhen: function (stage) { 
+                         visibleWhen: function (stage) {
                             return stage.StepID == ADVANCED_STAGE_BESPOKE_WALLPAPER_SHOWLENGTH
                          },
                          swapWith: '.product-progression-stage'
@@ -3696,7 +3696,7 @@
                 </div>
                 <div class="product-progression-stage" data-bind="fadeBetweenMany: {
                          observable: stageInformation().currentStage,
-                         visibleWhen: function (stage) { 
+                         visibleWhen: function (stage) {
                             return stage.StepID == ADVANCED_STAGE_BESPOKE_RUG
                          },
                          swapWith: '.product-progression-stage'
@@ -3753,13 +3753,13 @@
                                                 </label>
                                             </li>
                                             @*<li>
-                                                <label class="checkbox-wrapper">
-                                                    <input type="checkbox" data-bind="checked: directDispatch, checkedValue: true" />
-                                                    <span>
-                                                        Does your customer request direct despatch from our supplier?
-                                                    </span>
-                                                </label>
-                                            </li>*@
+                                        <label class="checkbox-wrapper">
+                                            <input type="checkbox" data-bind="checked: directDispatch, checkedValue: true" />
+                                            <span>
+                                                Does your customer request direct despatch from our supplier?
+                                            </span>
+                                        </label>
+                                    </li>*@
                                         </ul>
                                     </div>
                                     <p>
@@ -3798,12 +3798,12 @@
                                 Rug Treatment
                             </h4>
                             <p class="margin-bottom-0">
-                                We offer a protective treatment for your new rug prior to delivery on request. 
-                                This service is carried out by our certified rug specialist. The unique treatment is completely natural, 
-                                using a non-toxic formula which creates an easy-clean protective layer which prevents permanent damage 
+                                We offer a protective treatment for your new rug prior to delivery on request.
+                                This service is carried out by our certified rug specialist. The unique treatment is completely natural,
+                                using a non-toxic formula which creates an easy-clean protective layer which prevents permanent damage
                                 to your rug from spillages and stains. The treatment does not alter the appearance or softness of your rug.
                                 For general care of your treated rug, please continue to vacuum the rug regularly and if a spillage does
-                                occur, please deal with it straight away by gently soaking up the spillage using a clean white cloth or 
+                                occur, please deal with it straight away by gently soaking up the spillage using a clean white cloth or
                                 paper towel.  For more information and to add this to your order please contact our Customer Service team.
                             </p>
                         </div>
@@ -3811,7 +3811,7 @@
                 </div>
                 <div class="product-progression-stage bespoke-furniture-stage" data-bind="fadeBetweenMany: {
                          observable: stageInformation().currentStage,
-                         visibleWhen: function (stage) { 
+                         visibleWhen: function (stage) {
                             return stage.StepID == ADVANCED_STAGE_BESPOKE_FURNITURE
                          },
                          swapWith: '.product-progression-stage'
@@ -3926,32 +3926,32 @@
                 <div class="product-progression-stage bespoke-furniture-stage" data-bind="fadeBetweenMany: {
                         observable: stageInformation().currentStage,
                         visibleWhen: function (stage) {
-                            return stage.StepID == ADVANCED_STAGE_BESPOKE_FURNITURE_FABRIC    
+                            return stage.StepID == ADVANCED_STAGE_BESPOKE_FURNITURE_FABRIC
                         },
                         swapWith: '.product-progression-stage'
-                     }, 
+                     },
                      with: parent.orderFactory.bespokeFurnitureFactory">
                     <div class="flex-container">
                         <div>
                             <h4 class="component-heading">
                                 Fabric Selection
                             </h4>
-                            <div class="furniture-component-groups" data-bind="foreach: Enumerable.From(availableComponents()).GroupBy(function (x) { 
-                                    return { group: x.key.group } 
-                                }, 
-                                function (x) { 
-                                    return x 
-                                }, 
-                                function (key, data) { 
-                                    return { 
+                            <div class="furniture-component-groups" data-bind="foreach: Enumerable.From(availableComponents()).GroupBy(function (x) {
+                                    return { group: x.key.group }
+                                },
+                                function (x) {
+                                    return x
+                                },
+                                function (key, data) {
+                                    return {
                                         key: key,
                                         components: data.source
                                     }
-                                }, 
-                                function (x) { 
+                                },
+                                function (x) {
                                     return x.group
                                 }).ToArray()">
-                            <h4 data-bind="text: key.group"></h4>
+                                <h4 data-bind="text: key.group"></h4>
                                 <!-- ko foreach: Enumerable.From(components).OrderBy('$.key.name').ToArray() -->
                                 <!-- ko template: { name: 'bespoke-furniture-component-template' } --><!-- /ko -->
                                 <!-- /ko -->
@@ -3987,10 +3987,10 @@
                 <div class="product-progression-stage bespoke-furniture-stage" data-bind="fadeBetweenMany: {
                         observable: stageInformation().currentStage,
                         visibleWhen: function (stage) {
-                            return stage.StepID == ADVANCED_STAGE_BESPOKE_FURNITURE_FABRIC_ALLOCATION   
+                            return stage.StepID == ADVANCED_STAGE_BESPOKE_FURNITURE_FABRIC_ALLOCATION
                         },
                         swapWith: '.product-progression-stage'
-                     }, 
+                     },
                      with: parent.orderFactory.bespokeFurnitureFactory">
                     <div>
                         <h4 class="component-heading">
@@ -4026,7 +4026,7 @@
                 </div>
                 <div class="product-progression-stage" data-bind="fadeBetweenMany: {
                          observable: stageInformation().currentStage,
-                         visibleWhen: function (stage) { 
+                         visibleWhen: function (stage) {
                             return stage.StepID == ADVANCED_STAGE_BESPOKE_ARCHITECT_RING
                          },
                          swapWith: '.product-progression-stage'
@@ -4051,6 +4051,10 @@
                             <div class="margin-bottom-20">
                                 <ul>
                                     <li>
+                                        <p>
+                                            This product will be dispatched ASAP with in-stock samples only. Any remaining samples will follow on once they are in stock and the customer will need to hole punch them and load them onto the ring manually.
+                                            If your customer would like to wait for all samples to be available and receive a complete ring, please tick this box.
+                                        </p>
                                         <label class="checkbox-wrapper">
                                             <input type="checkbox" data-bind="checked: fullDispatch, checkedValue: true" />
                                             <span>
@@ -4113,6 +4117,125 @@
                                     <span data-bind="text: 20 - selectedFabrics().length"></span>
                                     sample<span data-bind="text: selectedFabrics().length < 19 ? 's' : ''"></span>
                                     to this ring.
+                                </span>
+                                <!-- /ko -->
+                            </div>
+                            <ul class="list-group current-selection" data-bind="foreach: selectedFabrics, kendoSortable: fabricSortable">
+                                <li class="list-group-item architect-ring-selected">
+                                    <label class="checkbox-wrapper">
+                                        <!-- ko if: value.ImageID -->
+                                        <img class="thumb" data-bind="attr: { src: 'https://www.designersguild.com/image/90/' + value.ImageID, title: value.Code }" />
+                                        <!-- /ko -->
+                                        <!-- ko ifnot: value.ImageID -->
+                                        <span class="thumb"></span>
+                                        <!-- /ko -->
+                                        <span data-bind="text: label"></span>
+                                        <button type="button" class="close" aria-label="Close" data-bind="click: function (data) { $parent.removeFabric(data) }">
+                                            <span aria-hidden="true">
+                                                &times;
+                                            </span>
+                                        </button>
+                                    </label>
+                                </li>
+                            </ul>
+                            <!-- /ko -->
+                        </div>
+                        <!-- /ko -->
+                    </div>
+                </div>
+                <div class="product-progression-stage" data-bind="fadeBetweenMany: {
+                         observable: stageInformation().currentStage,
+                         visibleWhen: function (stage) {
+                            return stage.StepID == ADVANCED_STAGE_BESPOKE_ARCHITECT_FOLDER
+                         },
+                         swapWith: '.product-progression-stage'
+                     },
+                     with: parent.orderFactory.bespokeArchitectFolderFactory">
+                    <div class="flex-container">
+                        <div class="controls-container">
+                            <div class="btn-toolbar">
+                                <div class="btn-group">
+                                    <div id="architect-folder-size" data-bind="component: { name: 'mdc-select-component', params: folderSize }"></div>
+                                </div>
+                                <div class="btn-group">
+                                    <div class="bespoke-quantity" data-bind="component: { name: 'mdc-text-field-numeric-component', params: quantity }"></div>
+                                </div>
+                                <div class="btn-group">
+                                    <div class="bespoke-date-required" data-bind="component: { name: 'mdc-date-time-picker-component', params: dateRequired }"></div>
+                                </div>
+                                <div class="btn-group">
+                                    <i class="note">*Not Guaranteed</i>
+                                </div>
+                            </div>
+                            <div class="margin-bottom-20">
+                                <ul>
+                                    <li>
+                                        <p>
+                                            This product will be dispatched ASAP with in-stock samples only. Any remaining samples will follow on once they are in stock and the customer will need to hole punch them and insert into their folder manually.
+                                            If your customer would like to wait for all samples to be available and receive a complete folder, please tick this box.
+                                        </p>
+                                        <label class="checkbox-wrapper">
+                                            <input type="checkbox" data-bind="checked: fullDispatch, checkedValue: true" />
+                                            <span>
+                                                Await all samples before despatch
+                                            </span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-bind="component: { name: 'mdc-text-field-autocomplete-component', params: fabricSearchAutocomplete }"></div>
+                    <span class="validation-message red-text" data-bind="validationMessage: selectedFabrics"></span>
+                    <div id="architect-ring-search-results" class="row">
+                        <!-- ko if: fabricAutocompleteResults().length || selectedFabrics().length -->
+                        <div class="col-xs-6">
+                            <ul class="list-group" data-bind="foreach: fabricAutocompleteResults">
+                                <li class="list-group-item" data-bind="css: { 'disabled': ($data.value.CuttingProductID == null) || ($parent.selectedFabrics().length == 20) || ($parent.busy() == true), 'selected': $parent.isProductInRing($data) }">
+                                    <label class="checkbox-wrapper" data-bind="validationOptions: { insertMessages: false }">
+                                        <!-- ko if: value.ImageID -->
+                                        <img class="thumb" data-bind="attr: { src: 'https://www.designersguild.com/image/90/' + value.ImageID, title: value.Code }" />
+                                        <!-- /ko -->
+                                        <!-- ko ifnot: value.ImageID -->
+                                        <span class="thumb"></span>
+                                        <!-- /ko -->
+                                        <input type="checkbox" data-bind="checked: $parent.selectedFabricProductIds, checkedValue: productId" />
+                                        <span data-bind="text: $data.value.CuttingProductID ? label : label + ' [Sample Not Available]'"></span>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="btn-toolbar form-group">
+                                <div class="btn-group">
+                                    <button class="btn btn-green" data-bind="click: addAllResults">
+                                        Add all Results
+                                    </button>
+                                </div>
+                                <div class="btn-group">
+                                    <button class="btn btn-blue" data-bind="click: removeAllResults">
+                                        Remove all Results
+                                    </button>
+                                </div>
+                                <div class="btn-group pull-right">
+                                    <button class="btn btn-red" data-bind="click: clearRing">
+                                        Clear Folder
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- ko if: selectedFabrics().length -->
+                            <div class="margin-bottom-15">
+                                <!-- ko if: selectedFabrics().length == 20 -->
+                                <span>
+                                    You may not add any more samples to this folder.
+                                </span>
+                                <!-- /ko -->
+                                <!-- ko ifnot: selectedFabrics().length == 20 -->
+                                <span>
+                                    You may add a further
+                                    <span data-bind="text: 20 - selectedFabrics().length"></span>
+                                    sample<span data-bind="text: selectedFabrics().length < 19 ? 's' : ''"></span>
+                                    to this folder.
                                 </span>
                                 <!-- /ko -->
                             </div>

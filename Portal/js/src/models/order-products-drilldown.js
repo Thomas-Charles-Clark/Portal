@@ -598,7 +598,7 @@ var orderProductsDrilldownViewModel = function (parent, name) {
                     // only those batches which DO have a piece...
                 }).Where(function (j) {
                     return j.length
-                }).SingleOrDefault();
+                }).ToArray().flatMap(i => i);
             }
         },
         write: function (value) {

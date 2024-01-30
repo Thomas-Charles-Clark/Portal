@@ -60,6 +60,11 @@ namespace Portal.Areas.Customers.Controllers
                     System.IO.Directory.CreateDirectory($"{dto.PathRoot}\\{dto.SalesMarketFolderName}\\");
                 }
 
+                if (!System.IO.Directory.Exists($"{dto.PathRoot}\\{dto.SalesMarketFolderName}\\{dto.ParentFolderName}"))
+                {
+                    System.IO.Directory.CreateDirectory($"{dto.PathRoot}\\{dto.SalesMarketFolderName}\\{dto.ParentFolderName}");
+                }
+
                 if (!System.IO.File.Exists(dto.FinalFilePath))
                 {
                     System.IO.File.Copy(dto.path, dto.FinalFilePath);

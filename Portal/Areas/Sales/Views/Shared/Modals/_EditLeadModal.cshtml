@@ -3948,9 +3948,16 @@
                         <p>
                             Once the lead has been credit checked and the account is open, the lead will be assigned back to you and will appear in your dashboard under the "Trade Accounts Opened" pod for your reference only.
                         </p>
+                        <!-- ko if: tradeAccountCreationEmail_send() === false || attachmentsManager.attachments().length > 0 -->
                         <h4 class="margin-bottom-0 bold" style="line-height: 1.5rem">
-                            Please be sure that you have double checked your Trade Account Creation Email settings
+                            Please be sure that you have double checked your Welcome Email settings
                         </h4>
+                        <!-- /ko -->
+                        <!-- ko if: tradeAccountCreationEmail_send() === true && attachmentsManager.attachments().length === 0 -->
+                        <h4 class="margin-bottom-0 bold text-danger" style="line-height: 1.5rem">
+                            You have chosen not to attach any pricelist(s) to the Welcome Email. Are you sure this is correct?
+                        </h4>
+                        <!-- /ko -->
                     </div>
                 </div>
                 <div class="row" data-bind="visible: mustPassToSalesManager()">

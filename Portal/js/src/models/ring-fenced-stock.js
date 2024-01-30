@@ -827,7 +827,7 @@
                             }
                         },
                         function (b) { // compare
-                            return b.batch
+                            return b
                         }
                     ).ToArray());
 
