@@ -103,27 +103,27 @@ namespace Portal.Areas.Customers.Controllers
         }
     }
 
-    [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
-    public class ItemTypesController : BaseODataController
-    {
-        public ItemTypesController(PortalDbContext portalDb) : base(portalDb) { }
+    //[EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
+    //public class ItemTypesController : BaseODataController
+    //{
+    //    public ItemTypesController(PortalDbContext portalDb) : base(portalDb) { }
 
-        // GET: odata/ItemTypesOData
-        [EnableQuery(MaxNodeCount = 200)]
-        public IQueryable<ItemType> GetItemTypes()
-        {
-            return PortalDb.ItemTypes;
-        }
+    //    // GET: odata/ItemTypesOData
+    //    [EnableQuery(MaxNodeCount = 200)]
+    //    public IQueryable<ItemType> GetItemTypes()
+    //    {
+    //        return PortalDb.ItemTypes;
+    //    }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                PortalDb.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-    }
+    //    protected override void Dispose(bool disposing)
+    //    {
+    //        if (disposing)
+    //        {
+    //            PortalDb.Dispose();
+    //        }
+    //        base.Dispose(disposing);
+    //    }
+    //}
 
     //[EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
     //public class LaunchesController : BaseODataController

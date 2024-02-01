@@ -16283,6 +16283,8 @@ var bespokeArchitectFolderFactory = function (parent) {
                     dataType: "json",
                     data: data,
                     success: function (data) {
+                        console.log('bespokeArchitectFolderFactory fabricSearchAutocomplete returned', data)
+                        data = data.filter(d => d.ItemTypeID == 49 || d.ItemTypeID == 80); // PLF & WOF
                         self.fabricAutocompleteResults($.map(data, function (p) {
                             return {
                                 productId: p.ProductID,

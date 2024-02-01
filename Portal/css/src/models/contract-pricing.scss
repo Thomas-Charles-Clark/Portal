@@ -4,7 +4,34 @@ body {
     min-width: 1170px;
 }
 
-$grid-position-top: 210px;
+$offset-position-top: 102px;
+
+$background-color-a: #1f4e78;
+$background-color-b: #4472c4;
+$background-color-c: #b4c6e7;
+$background-color-d: #d9e1f2;
+$background-color-red: #c00000;
+
+
+$background-color-on: $green-400;
+$color-on: ffffff;
+
+$background-color-pending-off: $yellow-400;
+$color-pending-off: ffffff;
+
+$background-color-pending-on: $orange-400;
+$color-pending-on: ffffff;
+
+$background-color-future-plan: $background-color-c;
+$color-future-plan: 343a40;
+
+$background-color-recently-expired: $red-300;
+$color-recently-expired: ffffff;
+
+$background-color-off: $red-800;
+$color-off: ffffff;
+
+
 
 .navbar.navbar-default.navbar-expand {
     position: fixed;
@@ -16,6 +43,7 @@ $grid-position-top: 210px;
         width: 100% !important;
         padding-left: 5em;
         padding-right: 5em;
+        min-width: 1260px;
     }
 }
 
@@ -27,14 +55,30 @@ $grid-position-top: 210px;
     padding: $l-gutter $l-gutter 9px $l-gutter;
     background-color: #f3f1ed;
 
+    #trade-account-prefilter {
+        flex: 1 1 auto;
+    }
 }
 
-#prefilters-wrapper {
+#prefilters-wrapper,
+#body-wrapper {
     display: flex;
     gap: $xl-gutter;
 
+    > div:first-of-type {
+        flex: 0 1 40%;
+        min-width: 482px;
+
+    }
+
+    > div:last-of-type {
+        flex: 0 1 60%;
+    }
+}
+
+#prefilters-wrapper {
     > .grid {
-        gap: $sm-gutter;
+        gap: $m-gutter;
         flex: 0 1 50%;
     }
 
@@ -55,13 +99,308 @@ $grid-position-top: 210px;
     }
 }
 
-#upper-section {
 
+#body-wrapper {
+    padding: 0 $l-gutter;
+    position: relative;
+    top: $offset-position-top;
 
-    #trade-account-prefilter {
-        flex: 1 1 auto;
+    pre {
+        margin: 0;
+    }
+
+    .deal-group-heading,
+    .impact-heading {
+        display: block;
+        padding: $m-gutter $l-gutter;
+        color: $white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        a {
+            color: inherit;
+        }
+    }
+
+    #current-deals,
+    #impact {
+        background-color: $background-color-a;
+        margin-bottom: $sm-gutter;
+        font-size: $font-size-lg;
+    }
+
+    .deal-group-heading,
+    .impact-heading {
+        background-color: $background-color-b;
     }
 }
+
+
+.date-ranges-wrapper,
+.deal-types {
+    &.accordion {
+        margin-bottom: $sm-gutter;
+        border-radius: 0;
+        border: 0;
+
+        .accordion-item {
+            margin-top: $sm-gutter;
+            border: 0;
+            border-radius: 0;
+            background-color: transparent;
+
+            .accordion-header {
+                border: 0;
+                border-radius: 0;
+
+                .accordion-button {
+                    background-color: $background-color-c;
+                    color: $gray-800;
+                    border-radius: 0;
+                    border: 0;
+                    padding: $m-gutter $l-gutter;
+
+                    &::after {
+                        width: $l-gutter;
+                        height: $l-gutter;
+                        background-size: $l-gutter;
+                        order: -1; //swap order
+                        margin-left: 0;
+                        margin-right: 0.5em; // just extra space between text and icon
+                    }
+                }
+            }
+
+            &:last-of-type {
+                .accordion-button {
+                    &.collapsed {
+                        border-bottom-left-radius: 0;
+                        border-bottom-right-radius: 0;
+                    }
+                }
+            }
+
+            .accordion-collapse {
+                margin-left: $l-gutter;
+                margin-top: $sm-gutter;
+
+                .accordion-body {
+                    padding: 0;
+                    background-color: $white;
+                }
+            }
+
+
+            &.on {
+                .accordion-button {
+                    background-color: $background-color-on;
+                    color: ##{$color-on};
+
+                    &::after {
+                        color: ##{$color-on};
+                        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23#{$color-on}'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+                    }
+
+                    a {
+                        color: ##{$color-on};
+                    }
+                }
+
+                .deal-types {
+                    .accordion-button {
+                        background-color: tint-color($background-color-on, 40%);
+                    }
+                }
+            }
+
+            &.pending-off {
+                .accordion-button {
+                    background-color: $background-color-pending-off;
+                    color: ##{$color-off};
+
+                    &::after {
+                        color: ##{$color-off};
+                        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23#{$color-off}'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+                    }
+
+                    a {
+                        color: ##{$color-off};
+                    }
+                }
+
+                .deal-types {
+                    .accordion-button {
+                        background-color: tint-color($background-color-pending-off, 40%);
+                    }
+                }
+            }
+
+            &.pending-off {
+                .accordion-button {
+                    background-color: $background-color-pending-on;
+                    color: ##{$color-pending-on};
+
+                    &::after {
+                        color: ##{$color-pending-on};
+                        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23#{$color-pending-on}'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+                    }
+
+                    a {
+                        color: ##{$color-pending-on};
+                    }
+                }
+
+                .deal-types {
+                    .accordion-button {
+                        background-color: tint-color($background-color-pending-on, 40%);
+                    }
+                }
+            }
+
+            &.future-plan {
+                .accordion-button {
+                    background-color: $background-color-future-plan;
+                    color: ##{$color-future-plan};
+
+                    &::after {
+                        color: ##{$color-future-plan};
+                        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23#{$color-future-plan}'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+                    }
+
+                    a {
+                        color: ##{$color-future-plan};
+                    }
+                }
+
+                .deal-types {
+                    .accordion-button {
+                        background-color: tint-color($background-color-future-plan, 40%);
+                    }
+                }
+            }
+
+            &.recently-expired {
+                .accordion-button {
+                    background-color: $background-color-recently-expired;
+                    color: ##{$color-recently-expired};
+
+                    &::after {
+                        color: ##{$color-recently-expired};
+                        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23#{$color-recently-expired}'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+                    }
+
+                    a {
+                        color: ##{$color-recently-expired};
+                    }
+                }
+
+                .deal-types {
+                    .accordion-button {
+                        background-color: tint-color($background-color-recently-expired, 40%);
+                    }
+                }
+            }
+
+            &.off {
+                .accordion-button {
+                    background-color: $background-color-off;
+                    color: ##{$color-off};
+
+                    &::after {
+                        color: ##{$color-off};
+                        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23#{$color-off}'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+                    }
+
+                    a {
+                        color: ##{$color-off};
+                    }
+                }
+
+                .deal-types {
+                    .accordion-button {
+                        background-color: tint-color($background-color-off, 40%);
+                    }
+                }
+            }
+        }
+    }
+}
+
+.deal-types {
+    &.accordion {
+        margin-bottom: 0;
+
+        .accordion-item {
+            margin-top: 0;
+
+            .accordion-header {
+                .accordion-button {
+                    background-color: $background-color-d;
+                }
+            }
+
+            .accordion-collapse {
+                margin: 0;
+
+                .deal-types-wrapper {
+
+                    .no-contracts {
+                        display: block;
+                        padding: $m-gutter;
+                    }
+
+                    .contract-table {
+                        margin-bottom: 0;
+
+                        tr {
+                            th:first-of-type,
+                            td:first-of-type {
+                                padding-left: $m-gutter;
+                            }
+                            th:last-of-type,
+                            td:last-of-type {
+                                padding-right: $m-gutter;
+                            }
+
+                            td {
+                                will-change: background-color, color;
+                                transition: background-color 100ms linear, color 100ms linear;
+                            }
+
+                            &.selected,
+                            &:hover {
+                                td {
+                                    background-color: $gray-600;
+                                    color: $white;
+                                    a {
+                                        color: $white;
+                                    }
+                                }
+                            }
+                        }
+
+                        tr:last-of-type {
+                            td {
+                                border-bottom: 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
 
 #page-heading-container {
 }
@@ -371,13 +710,13 @@ $product-color: $order-form-group-color;
             th:nth-of-type(2) {
                 position: sticky;
                 left: 0;
-                top: $grid-position-top + 52px;
+                top: $offset-position-top + 52px;
                 z-index: 40;
             }
 
             th:not(:nth-of-type(1)):not(:nth-of-type(2)) {
                 position: sticky;
-                top: $grid-position-top + 52px;
+                top: $offset-position-top + 52px;
                 z-index: 20;
             }
         }
@@ -385,7 +724,7 @@ $product-color: $order-form-group-color;
         tr:nth-of-type(2) {
             th {
                 position: sticky;
-                top: $grid-position-top + 80px;
+                top: $offset-position-top + 80px;
                 z-index: 20;
             }
         }
@@ -841,7 +1180,7 @@ $product-color: $order-form-group-color;
 #results-grid,
 #add-results-grid {
     position: relative;
-    top: $grid-position-top;
+    top: $offset-position-top;
     z-index: 1;
 
     .k-grid-content {
@@ -1050,7 +1389,7 @@ tbody.virtual-spacing {
 
 .transfer-grid {
     position: relative;
-    top: calc($grid-position-top - 90px);
+    top: calc($offset-position-top - 90px);
 }
 
 .k-icon {

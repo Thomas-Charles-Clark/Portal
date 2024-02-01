@@ -80,9 +80,11 @@ $(document).ajaxSuccess(function (event, xhr, settings) {
 });
 
 $(document).ajaxError(function (event, xhr, textStatus, errorThrown) {
-    if (xhr.status == 401 && !($("#credentials-modal").hasClass('in'))) {
-        $("#credentials-modal").modal('show');
-    }
+    $(document).ready(() => {
+        if (xhr.status == 401 && !($("#credentials-modal").hasClass('in'))) {
+            $("#credentials-modal").modal('show');
+        }
+    });
 });
 
 $.extend({

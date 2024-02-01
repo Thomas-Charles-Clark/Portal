@@ -35,7 +35,17 @@ namespace Portal.Areas.Customers.Controllers
         [HttpGet]
         public async Task<IHttpActionResult> FetchDeals([FromUri]ContractPricingDealsDto objDto)
         {
-            return Ok(new { });
+            var result = await PortalDb.ContractManagement_ContractList_Select(objDto);
+
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IHttpActionResult> FetchImpact([FromUri]ContractPricingImpactDto objDto)
+        {
+            var result = await PortalDb.ContractManagement_ContractImpact_Select(objDto);
+
+            return Ok(result);
         }
 
         //[System.Web.Http.HttpGet]

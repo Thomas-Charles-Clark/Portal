@@ -318,6 +318,7 @@
     <Compile Include="App_Start\UnityMvcActivator.cs" />
     <Compile Include="BaseController.cs" />
     <Compile Include="BaseViewModel.cs" />
+    <Compile Include="DbContext\Dapper\PortalDbContext-ContractPricing.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-Fenwick.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-RangeManagement.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-StockManagement.cs" />
@@ -336,7 +337,10 @@
     <Compile Include="Models\Attribute\Attribute.cs" />
     <Compile Include="Models\AttributeGroup\AttributeGroup.cs" />
     <Compile Include="Models\BasketStatusModels.cs" />
+    <Compile Include="Models\ContractPricing\ContractManagement_ContractImpact_SelectResult.cs" />
+    <Compile Include="Models\ContractPricing\ContractManagement_ContractList_SelectResult.cs" />
     <Compile Include="Models\ContractPricing\ContractPricingDealsDto.cs" />
+    <Compile Include="Models\ContractPricing\ContractPricingImpactDto.cs" />
     <Compile Include="Models\CreditControlRegion.cs" />
     <Compile Include="Models\CreditControlRegion_SalesMarket.cs" />
     <Compile Include="Models\DotDigital\SyncAction.cs" />

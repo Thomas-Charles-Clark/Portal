@@ -737,7 +737,6 @@ namespace SharedEFClasses.Models.General
         //[JsonIgnore]
         //public virtual SalesMarket SalesMarket { get; set; }
 
-        [JsonIgnore]
         public virtual ICollection<SalesRepresentative_SalesMarket> SalesRepresentative_SalesMarkets { get; set; }
 
         //[JsonIgnore] // ... Why was this ever enabled...? The Leads -> Misc Trade Account assignment modal demands MiscTradeAccounts ?

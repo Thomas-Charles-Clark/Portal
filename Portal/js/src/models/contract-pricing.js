@@ -84,6 +84,17 @@ const contractPricingViewModel = ({ } = {}) => {
 
     //#region Manage Grid
 
+    // this is used to hold the results of the fetchDeals call
+    self.tradeAccountDealDetails = ko.observable();
+
+    self.tradeAccountGroupDealDetails = ko.observable();
+
+    self.selectedContractListId = ko.observable();
+
+    self.impactResults = ko.observableArray([]);
+
+    self.haveImpactResults = ko.observable(false);
+
     // this is used to hold the results of productSearch: "stubs", unfilled records pending fetchData treatment
     self.currentDeals = ko.observableArray([]);
 
@@ -178,7 +189,7 @@ const contractPricingViewModel = ({ } = {}) => {
             if (ko.isObservableArray(self.observable)) {
                 self.observable([]);
             } else {
-                self.observable(undefined);
+                self.observable('');
             }
             if (self.dropDownListSettings.widget()) {
                 if (ko.isObservableArray(self.observable)) {
@@ -340,9 +351,6 @@ const contractPricingViewModel = ({ } = {}) => {
                         type: 'GET',
                         success: function (data) {
                             options.success(data.value);
-                            if (data.value.length == 1) {
-                                self.salesMarketId(opt);
-                            }
                         }
                     });
                 } else {
@@ -401,7 +409,7 @@ const contractPricingViewModel = ({ } = {}) => {
     self.salesRepresentativeParams = kendoMDCDropDownList({
         label: 'Sales Representative',
         odata: true,
-        endPoint: '/odata/SalesRepresentatives',
+        endPoint: '/odata/SalesRepresentatives?$expand=SalesRepresentative_SalesMarkets',
         textField: 'Label',
         valueField: 'SalesRepresentativeID',
         virtual: true,
@@ -412,13 +420,10 @@ const contractPricingViewModel = ({ } = {}) => {
             valueMapper: function (options) {
                 if (options.value) {
                     $.ajax({
-                        url: `/odata/SalesRepresentatives/Default.SalesRepresentativeValueMapper(salesRepresentativeId=${options.value})`,
+                        url: `/odata/SalesRepresentatives/Default.SalesRepresentativeValueMapper(salesRepresentativeId=${options.value})?$expand=SalesRepresentative_SalesMarkets`,
                         type: 'GET',
                         success: function (data) {
                             options.success(data.value);
-                            if (data.value.length == 1) {
-                                self.salesRepresentative(data.value[0]);
-                            }
                         }
                     });
                 } else {
@@ -506,8 +511,8 @@ const contractPricingViewModel = ({ } = {}) => {
     self.tradeAccountParams = kendoMDCDropDownList({
         label: 'Trade Account',
         odata: true,
-        endPoint: '/odata/TradeAccounts',
-        textField: 'Name',
+        endPoint: '/odata/TradeAccounts?$expand=TradePriceList',
+        textField: 'ShortLabel',
         valueField: 'TradeAccountID',
         virtual: true,
         pageSize: 40,
@@ -517,13 +522,10 @@ const contractPricingViewModel = ({ } = {}) => {
             valueMapper: function (options) {
                 if (options.value) {
                     $.ajax({
-                        url: `/odata/TradeAccounts/Default.TradeAccountValueMapper(tradeAccountId=${options.value})`,
+                        url: `/odata/TradeAccounts/Default.TradeAccountValueMapper(tradeAccountId=${options.value})?$expand=TradePriceList`,
                         type: 'GET',
                         success: function (data) {
                             options.success(data.value);
-                            if (data.value.length == 1) {
-                                self.tradeAccount(data.value[0]);
-                            }
                         }
                     });
                 } else {
@@ -556,6 +558,10 @@ const contractPricingViewModel = ({ } = {}) => {
             delete d.$callback; // <-- remove callback
 
             d.$count = true;
+
+            if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
+                d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
+            }
 
             if (self.salesMarketId()) {
                 //Add filter by matching any reference containing value
@@ -592,9 +598,6 @@ const contractPricingViewModel = ({ } = {}) => {
                         type: 'GET',
                         success: function (data) {
                             options.success(data.value);
-                            if (data.value.length == 1) {
-                                self.launch(data.value[0]);
-                            }
                         }
                     });
                 } else {
@@ -701,9 +704,6 @@ const contractPricingViewModel = ({ } = {}) => {
                         type: 'GET',
                         success: function (data) {
                             options.success(data.value);
-                            if (data.value.length == 1) {
-                                self.collection(data.value[0]);
-                            }
                         }
                     });
                 } else {
@@ -756,17 +756,79 @@ const contractPricingViewModel = ({ } = {}) => {
 
     //#region Subscriptions
 
-    self.tradeAccount.subscribe(nv => {
-        if (nv) {
-            self.salesMarketId(nv.SalesMarketID);
-            self.salesRepresentativeId(nv.SalesRepresentativeID);
-        }
-    });
+
 
     //#endregion
 
 
     //#region Methods
+
+    self.fetchImpact = (selection) => {
+        self.busy(true);
+
+        self.selectedContractListId(selection.contractListId);
+
+        let contractDiscountTradeAccountGroupIds = [];
+        let contractPriceTradeAccountGroupIds = [];
+        let contractDiscountTradeAccountIds = [];
+        let contractPriceTradeAccountIds = [];
+
+        if (selection.hasOwnProperty('contractDiscountTradeAccountGroupId')) {
+            contractDiscountTradeAccountGroupIds.push(selection.contractDiscountTradeAccountGroupId);
+        }
+
+        if (selection.hasOwnProperty('contractPriceTradeAccountGroupId')) {
+            contractPriceTradeAccountGroupIds.push(selection.contractPriceTradeAccountGroupId);
+        }
+
+        if (selection.hasOwnProperty('contractDiscountTradeAccountId')) {
+            contractDiscountTradeAccountIds.push(selection.contractDiscountTradeAccountId);
+        }
+
+        if (selection.hasOwnProperty('contractPriceTradeAccountId')) {
+            contractPriceTradeAccountIds.push(selection.contractPriceTradeAccountId);
+        }
+
+        let data = {
+            tradeAccountId: self.tradeAccountId(),
+            contractListJson: JSON.stringify({
+                contractDiscountTradeAccountGroupId: contractDiscountTradeAccountGroupIds,
+                contractPriceTradeAccountGroupId: contractPriceTradeAccountGroupIds,
+                contractDiscountTradeAccountId: contractDiscountTradeAccountIds,
+                contractPriceTradeAccountId: contractPriceTradeAccountIds
+            })
+        };
+
+        self.impactResults(undefined);
+
+        self.haveImpactResults(false);
+
+        let qs = new URLSearchParams(data);
+
+        console.log('fetchImpact calling with', data);
+
+        fetch(`/api/contractPricing/FetchImpact?${qs}`, {
+            method: 'GET',
+            headers: window.fetchHeaders
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                console.log('fetchImpact returned', data);
+
+                //if (data.Results.length === 0)
+                self.clearBusy();
+
+                if (data.Results.length > 1)
+                    self.haveImpactResults(true);
+
+                self.impactResults(data.Results);
+
+            })
+            .catch(err => {
+                self.clearBusy();
+                window.catchFetchError(err);
+            });
+    }
 
     self.showModal = (record) => {
         /*self.addingNoteToRecord(record);*/
@@ -921,32 +983,42 @@ const contractPricingViewModel = ({ } = {}) => {
 
         self.setBusy();
 
-        let data = self.currentDealsParams();
+        let data = {
+            tradeAccountId: self.tradeAccountId()
+        };
 
-        if (data) {
+        self.tradeAccountDealDetails(undefined);
+        self.tradeAccountGroupDealDetails(undefined);
 
-            let qs = new URLSearchParams(data);
+        let qs = new URLSearchParams(data);
 
-            console.log('fetchDeals calling with', data);
+        console.log('fetchDeals calling with', data);
 
-            fetch(`/api/contractPricing/FetchDeals?${qs}`, {
-                method: 'GET',
-                headers: window.fetchHeaders
+        fetch(`/api/contractPricing/FetchDeals?${qs}`, {
+            method: 'GET',
+            headers: window.fetchHeaders
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                console.log('fetchDeals returned', data);
+
+                //if (data.Results.length === 0)
+                self.clearBusy();
+
+                if (data.TradeAccountContractJSON) {
+                    self.tradeAccountDealDetails(JSON.parse(data.TradeAccountContractJSON));
+                }
+
+                if (data.TradeAccountGroupContractJSON) {
+                    self.tradeAccountGroupDealDetails(JSON.parse(data.TradeAccountGroupContractJSON));
+                }
+
+                //self.currentDeals(JSON.parse(data.tradeAccountContractJson));
             })
-                .then(window.handleFetchResponse)
-                .then(data => {
-                    console.log('fetchDeals returned', data);
-
-                    //if (data.Results.length === 0)
-                    self.clearBusy();
-
-                    self.currentDeals(data.Results);
-                })
-                .catch(err => {
-                    self.clearBusy();
-                    window.catchFetchError(err);
-                });
-        }
+            .catch(err => {
+                self.clearBusy();
+                window.catchFetchError(err);
+            });
 
     }, self);
 

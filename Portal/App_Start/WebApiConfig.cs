@@ -56,6 +56,8 @@ namespace Portal
             odataBuilder.EntitySet<Language>("Languages");
             odataBuilder.EntitySet<Colour>("Colours");
             odataBuilder.EntitySet<ProductColour>("ProductColours");
+            odataBuilder.EntitySet<ProductGroup>("ProductGroups");
+            odataBuilder.EntitySet<ItemType>("ItemTypes");
             odataBuilder.EntitySet<ProductFilter>("ProductFilters");
             odataBuilder.EntitySet<ProductFilterGroup>("ProductFilterGroups");
             odataBuilder.EntitySet<Collection>("Collections");
@@ -102,6 +104,7 @@ namespace Portal
 
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SalesMarket)).AddProperty(typeof(SalesMarket).GetProperty("Label"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SalesRepresentative)).AddProperty(typeof(SalesRepresentative).GetProperty("Label"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccount)).AddProperty(typeof(TradeAccount).GetProperty("ShortLabel"));
 
             odataBuilder.EntityType<Resource_Language>().HasKey(p => new { p.ResourceID, p.LanguageID });
 
@@ -198,6 +201,20 @@ namespace Portal
 
             productColourValueMapperFunction.Parameter<string>("name");
 
+
+            var productGroupValueMapperFunction = odataBuilder.EntityType<ProductGroup>()
+                .Collection
+                .Function("ProductGroupValueMapper")
+                .ReturnsCollectionFromEntitySet<ProductGroup>("ProductGroups");
+
+            productGroupValueMapperFunction.Parameter<byte>("productGroupId");
+
+            var itemTypeValueMapperFunction = odataBuilder.EntityType<ItemType>()
+                .Collection
+                .Function("ItemTypeValueMapper")
+                .ReturnsCollectionFromEntitySet<ItemType>("ItemTypes");
+
+            itemTypeValueMapperFunction.Parameter<byte>("itemTypeId");
 
             var productFilterValueMapperFunction = odataBuilder.EntityType<ProductFilter>()
                 .Collection

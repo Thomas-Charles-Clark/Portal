@@ -29,6 +29,7 @@ body {
   width: 100% !important;
   padding-left: 5em;
   padding-right: 5em;
+  min-width: 1260px;
 }
 
 #upper-section {
@@ -39,13 +40,27 @@ body {
   padding: 1rem 1rem 9px 1rem;
   background-color: #f3f1ed;
 }
+#upper-section #trade-account-prefilter {
+  flex: 1 1 auto;
+}
 
-#prefilters-wrapper {
+#prefilters-wrapper,
+#body-wrapper {
   display: flex;
   gap: 2rem;
 }
+#prefilters-wrapper > div:first-of-type,
+#body-wrapper > div:first-of-type {
+  flex: 0 1 40%;
+  min-width: 482px;
+}
+#prefilters-wrapper > div:last-of-type,
+#body-wrapper > div:last-of-type {
+  flex: 0 1 60%;
+}
+
 #prefilters-wrapper > .grid {
-  gap: 0.5rem;
+  gap: 0.75rem;
   flex: 0 1 50%;
 }
 #prefilters-wrapper #prefilters-deals {
@@ -61,8 +76,237 @@ body {
   grid-column: 2/span 3;
 }
 
-#upper-section #trade-account-prefilter {
-  flex: 1 1 auto;
+#body-wrapper {
+  padding: 0 1rem;
+  position: relative;
+  top: 102px;
+}
+#body-wrapper pre {
+  margin: 0;
+}
+#body-wrapper .deal-group-heading,
+#body-wrapper .impact-heading {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#body-wrapper .deal-group-heading a,
+#body-wrapper .impact-heading a {
+  color: inherit;
+}
+#body-wrapper #current-deals,
+#body-wrapper #impact {
+  background-color: #1f4e78;
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+}
+#body-wrapper .deal-group-heading,
+#body-wrapper .impact-heading {
+  background-color: #4472c4;
+}
+
+.date-ranges-wrapper.accordion,
+.deal-types.accordion {
+  margin-bottom: 0.5rem;
+  border-radius: 0;
+  border: 0;
+}
+.date-ranges-wrapper.accordion .accordion-item,
+.deal-types.accordion .accordion-item {
+  margin-top: 0.5rem;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+}
+.date-ranges-wrapper.accordion .accordion-item .accordion-header,
+.deal-types.accordion .accordion-item .accordion-header {
+  border: 0;
+  border-radius: 0;
+}
+.date-ranges-wrapper.accordion .accordion-item .accordion-header .accordion-button,
+.deal-types.accordion .accordion-item .accordion-header .accordion-button {
+  background-color: #b4c6e7;
+  color: #343a40;
+  border-radius: 0;
+  border: 0;
+  padding: 0.75rem 1rem;
+}
+.date-ranges-wrapper.accordion .accordion-item .accordion-header .accordion-button::after,
+.deal-types.accordion .accordion-item .accordion-header .accordion-button::after {
+  width: 1rem;
+  height: 1rem;
+  background-size: 1rem;
+  order: -1;
+  margin-left: 0;
+  margin-right: 0.5em;
+}
+.date-ranges-wrapper.accordion .accordion-item:last-of-type .accordion-button.collapsed,
+.deal-types.accordion .accordion-item:last-of-type .accordion-button.collapsed {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.date-ranges-wrapper.accordion .accordion-item .accordion-collapse,
+.deal-types.accordion .accordion-item .accordion-collapse {
+  margin-left: 1rem;
+  margin-top: 0.5rem;
+}
+.date-ranges-wrapper.accordion .accordion-item .accordion-collapse .accordion-body,
+.deal-types.accordion .accordion-item .accordion-collapse .accordion-body {
+  padding: 0;
+  background-color: #fff;
+}
+.date-ranges-wrapper.accordion .accordion-item.on .accordion-button,
+.deal-types.accordion .accordion-item.on .accordion-button {
+  background-color: #479f76;
+  color: #ffffff;
+}
+.date-ranges-wrapper.accordion .accordion-item.on .accordion-button::after,
+.deal-types.accordion .accordion-item.on .accordion-button::after {
+  color: #ffffff;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+.date-ranges-wrapper.accordion .accordion-item.on .accordion-button a,
+.deal-types.accordion .accordion-item.on .accordion-button a {
+  color: #ffffff;
+}
+.date-ranges-wrapper.accordion .accordion-item.on .deal-types .accordion-button,
+.deal-types.accordion .accordion-item.on .deal-types .accordion-button {
+  background-color: #91c5ad;
+}
+.date-ranges-wrapper.accordion .accordion-item.pending-off .accordion-button,
+.deal-types.accordion .accordion-item.pending-off .accordion-button {
+  background-color: #ffcd39;
+  color: #ffffff;
+}
+.date-ranges-wrapper.accordion .accordion-item.pending-off .accordion-button::after,
+.deal-types.accordion .accordion-item.pending-off .accordion-button::after {
+  color: #ffffff;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+.date-ranges-wrapper.accordion .accordion-item.pending-off .accordion-button a,
+.deal-types.accordion .accordion-item.pending-off .accordion-button a {
+  color: #ffffff;
+}
+.date-ranges-wrapper.accordion .accordion-item.pending-off .deal-types .accordion-button,
+.deal-types.accordion .accordion-item.pending-off .deal-types .accordion-button {
+  background-color: #ffe188;
+}
+.date-ranges-wrapper.accordion .accordion-item.pending-off .accordion-button,
+.deal-types.accordion .accordion-item.pending-off .accordion-button {
+  background-color: #fd9843;
+  color: #ffffff;
+}
+.date-ranges-wrapper.accordion .accordion-item.pending-off .accordion-button::after,
+.deal-types.accordion .accordion-item.pending-off .accordion-button::after {
+  color: #ffffff;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+.date-ranges-wrapper.accordion .accordion-item.pending-off .accordion-button a,
+.deal-types.accordion .accordion-item.pending-off .accordion-button a {
+  color: #ffffff;
+}
+.date-ranges-wrapper.accordion .accordion-item.pending-off .deal-types .accordion-button,
+.deal-types.accordion .accordion-item.pending-off .deal-types .accordion-button {
+  background-color: #fec18e;
+}
+.date-ranges-wrapper.accordion .accordion-item.future-plan .accordion-button,
+.deal-types.accordion .accordion-item.future-plan .accordion-button {
+  background-color: #b4c6e7;
+  color: #343a40;
+}
+.date-ranges-wrapper.accordion .accordion-item.future-plan .accordion-button::after,
+.deal-types.accordion .accordion-item.future-plan .accordion-button::after {
+  color: #343a40;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23343a40'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+.date-ranges-wrapper.accordion .accordion-item.future-plan .accordion-button a,
+.deal-types.accordion .accordion-item.future-plan .accordion-button a {
+  color: #343a40;
+}
+.date-ranges-wrapper.accordion .accordion-item.future-plan .deal-types .accordion-button,
+.deal-types.accordion .accordion-item.future-plan .deal-types .accordion-button {
+  background-color: #d2ddf1;
+}
+.date-ranges-wrapper.accordion .accordion-item.recently-expired .accordion-button,
+.deal-types.accordion .accordion-item.recently-expired .accordion-button {
+  background-color: #ea868f;
+  color: #ffffff;
+}
+.date-ranges-wrapper.accordion .accordion-item.recently-expired .accordion-button::after,
+.deal-types.accordion .accordion-item.recently-expired .accordion-button::after {
+  color: #ffffff;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+.date-ranges-wrapper.accordion .accordion-item.recently-expired .accordion-button a,
+.deal-types.accordion .accordion-item.recently-expired .accordion-button a {
+  color: #ffffff;
+}
+.date-ranges-wrapper.accordion .accordion-item.recently-expired .deal-types .accordion-button,
+.deal-types.accordion .accordion-item.recently-expired .deal-types .accordion-button {
+  background-color: #f2b6bc;
+}
+.date-ranges-wrapper.accordion .accordion-item.off .accordion-button,
+.deal-types.accordion .accordion-item.off .accordion-button {
+  background-color: #58151c;
+  color: #ffffff;
+}
+.date-ranges-wrapper.accordion .accordion-item.off .accordion-button::after,
+.deal-types.accordion .accordion-item.off .accordion-button::after {
+  color: #ffffff;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+.date-ranges-wrapper.accordion .accordion-item.off .accordion-button a,
+.deal-types.accordion .accordion-item.off .accordion-button a {
+  color: #ffffff;
+}
+.date-ranges-wrapper.accordion .accordion-item.off .deal-types .accordion-button,
+.deal-types.accordion .accordion-item.off .deal-types .accordion-button {
+  background-color: #9b7377;
+}
+
+.deal-types.accordion {
+  margin-bottom: 0;
+}
+.deal-types.accordion .accordion-item {
+  margin-top: 0;
+}
+.deal-types.accordion .accordion-item .accordion-header .accordion-button {
+  background-color: #d9e1f2;
+}
+.deal-types.accordion .accordion-item .accordion-collapse {
+  margin: 0;
+}
+.deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .no-contracts {
+  display: block;
+  padding: 0.75rem;
+}
+.deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table {
+  margin-bottom: 0;
+}
+.deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table tr th:first-of-type,
+.deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table tr td:first-of-type {
+  padding-left: 0.75rem;
+}
+.deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table tr th:last-of-type,
+.deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table tr td:last-of-type {
+  padding-right: 0.75rem;
+}
+.deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table tr td {
+  will-change: background-color, color;
+  transition: background-color 100ms linear, color 100ms linear;
+}
+.deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table tr.selected td, .deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table tr:hover td {
+  background-color: #6c757d;
+  color: #fff;
+}
+.deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table tr.selected td a, .deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table tr:hover td a {
+  color: #fff;
+}
+.deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table tr:last-of-type td {
+  border-bottom: 0;
 }
 
 #branch-totals,
@@ -329,19 +573,19 @@ body {
 #add-results-grid thead tr:nth-of-type(1) th:nth-of-type(2) {
   position: sticky;
   left: 0;
-  top: 262px;
+  top: 154px;
   z-index: 40;
 }
 #results-grid thead tr:nth-of-type(1) th:not(:nth-of-type(1)):not(:nth-of-type(2)),
 #add-results-grid thead tr:nth-of-type(1) th:not(:nth-of-type(1)):not(:nth-of-type(2)) {
   position: sticky;
-  top: 262px;
+  top: 154px;
   z-index: 20;
 }
 #results-grid thead tr:nth-of-type(2) th,
 #add-results-grid thead tr:nth-of-type(2) th {
   position: sticky;
-  top: 290px;
+  top: 182px;
   z-index: 20;
 }
 #results-grid .k-header,
@@ -751,7 +995,7 @@ body {
 #results-grid,
 #add-results-grid {
   position: relative;
-  top: 210px;
+  top: 102px;
   z-index: 1;
 }
 #results-grid .k-grid-content,
@@ -918,7 +1162,7 @@ tbody.virtual-spacing tr td {
 
 .transfer-grid {
   position: relative;
-  top: 120px;
+  top: 12px;
 }
 
 .k-icon.k-i-collapse, .k-icon.k-i-expand {

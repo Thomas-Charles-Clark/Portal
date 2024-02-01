@@ -171,6 +171,16 @@ namespace SharedEFClasses.Models.TradeAccounts
             }
         }
 
+
+        [NotMapped]
+        public string ShortLabel
+        {
+            get
+            {
+                return $"{Code} - {Name}";
+            }
+        }
+
         [ForeignKey("DefaultInvoiceTradeAccountAddressID")]
         public virtual TradeAccountAddress DefaultInvoiceAddress { get; set; }
 
