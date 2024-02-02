@@ -37,7 +37,7 @@
         ko.applyBindings(viewModel, document.body);
 
         $(document).ready(() => {
-            viewModel.tradeAccountParams.dropDownListSettings.widget().value(6400);
+            viewModel.tradeAccountParams.dropDownListSettings.widget().value(36691);
         });
 
         window.self = viewModel;
@@ -419,7 +419,7 @@
             </tr>
         </thead>
         <tbody data-bind="foreach: contracts">
-            <tr data-bind="css: { 'selected': contractListId == $root.selectedContractListId() }, click: $root.fetchImpact">
+            <tr data-bind="keepElement: element, css: { 'selected': contractListId == $root.selectedContractListId() }, click: $root.fetchImpact">
                 <td>
                     <span data-bind="text: productName"></span>
                 </td>
@@ -474,7 +474,7 @@
             </tr>
         </thead>
         <tbody data-bind="foreach: contracts">
-            <tr data-bind="css: { 'selected': contractListId == $root.selectedContractListId() }, click: $root.fetchImpact">
+            <tr data-bind="keepElement: element, css: { 'selected': contractListId == $root.selectedContractListId() }, click: $root.fetchImpact">
                 <td>
                     <span data-bind="text: qualityCode"></span>
                     -
@@ -535,7 +535,7 @@
             </tr>
         </thead>
         <tbody data-bind="foreach: contracts">
-            <tr data-bind="css: { 'selected': contractListId == $root.selectedContractListId() }, click: $root.fetchImpact">
+            <tr data-bind="keepElement: element, css: { 'selected': contractListId == $root.selectedContractListId() }, click: $root.fetchImpact">
                 <td>
                     <span data-bind="text: itemTypeName, attr: { title: itemTypeCode }"></span>
                 </td>
@@ -599,7 +599,7 @@
             </tr>
         </thead>
         <tbody data-bind="foreach: contracts">
-            <tr data-bind="css: { 'selected': contractListId == $root.selectedContractListId() }, click: $root.fetchImpact">
+            <tr data-bind="keepElement: element, css: { 'selected': contractListId == $root.selectedContractListId() }, click: $root.fetchImpact">
                 <td>
                     <span data-bind="text: productGroupName, attr: { title: productGroupCode }"></span>
                 </td>
@@ -615,7 +615,29 @@
                     <span data-bind="text: quantityBreak"></span>
                 </td>
                 <td class="text-end">
-                    <span class="d-flex gap-2 justify-content-end">
+                    <span class="contract-controls">
+                        <!-- ko if: _overrides.length -->
+                        <a href="javascript:;" class="icon overrides" title="Overrides"
+                           tabindex="0"
+                           data-bs-toggle="popover"
+                           data-bs-trigger="focus"
+                           data-bind="click: (d, e) => { e.preventDefault(); e.stopPropagation(); }">
+                            <span class="material-icons-sharp">
+                                layers
+                            </span>
+                        </a>
+                        <!-- /ko -->
+                        <!-- ko if: _conflicts.length -->
+                        <a href="javascript:;" class="icon conflicts" title="Conflicts"
+                           tabindex="0"
+                           data-bs-toggle="popover"
+                           data-bs-trigger="focus"
+                           data-bind="click: (d, e) => { e.preventDefault(); e.stopPropagation(); }">
+                            <span class="material-icons-sharp">
+                                warning
+                            </span>
+                        </a>
+                        <!-- /ko -->
                         <a href="javascript:;">
                             Edit
                         </a>
@@ -623,6 +645,22 @@
                             Delete
                         </a>
                     </span>
+                    <div class="pop-content-overrides" style="display: none">
+                        <p>
+                            This deal overrides the following:
+                        </p>
+                        <div class="list-group" data-bind="foreach: overrides">
+                            <a class="list-group-item list-group-item-action" data-bind="text: label"></a>
+                        </div>
+                    </div>
+                    <div class="pop-content-conflicts" style="display: none">
+                        <p>
+                            This deal conflicts with the following:
+                        </p>
+                        <div class="list-group" data-bind="foreach: conflicts">
+                            <a class="list-group-item list-group-item-action" data-bind="text: label"></a>
+                        </div>
+                    </div>
                 </td>
             </tr>
         </tbody>
@@ -634,10 +672,12 @@
     <div class="date-ranges-wrapper accordion" data-bind="attr: { id: accordionId }, foreach: dateRanges">
         <div class="date-range accordion-item" data-bind="class: statusLabel.replace(/\s/g, '-').toLowerCase()">
             <div class="accordion-header">
-                <div class="accordion-button"
+                <div class="accordion-button collapsed"
                      type="button"
                      data-bs-toggle="collapse"
-                     data-bind="attr: { 'data-bs-target': `#${$parent.accordionId}-date-range-${$index()}` }">
+                     data-bind="attr: { 'data-bs-target': `#${$parent.accordionId}-date-range-${$index()}` },
+                        css: { 'selected': `contract-levels-${contractLevels.flatMap(function (cl) { return cl.contracts.flatMap(function (c) { return c.contractListId }) }).reduce(function (a, i) { return a = a + i }, 0)}` == $root.selectedContractListId() }, 
+                        click: $root.fetchImpact">
                     <span>
                         <span data-bind="text: label"></span>
                         <span data-bind="text: `(${contractLevels.reduce((a, i) => a = a + i.contracts.length, 0)} deal${(contractLevels.reduce((a, i) => a = a + i.contracts.length, 0) > 1 ? 's' : '')})`"></span>
@@ -649,7 +689,7 @@
                     </div>
                 </div>
             </div>
-            <div class="accordion-collapse collapse show"
+            <div class="accordion-collapse collapse"
                  data-bind="attr: {
                     id: `${$parent.accordionId}-date-range-${$index()}`,
                     'data-bs-parent': `#${$parent.accordionId}`
@@ -661,7 +701,9 @@
                                 <div class="accordion-button collapsed"
                                      type="button"
                                      data-bs-toggle="collapse"
-                                     data-bind="attr: { 'data-bs-target': `#${$parentContext.$parent.accordionId}-date-range-${$parentContext.$index()}-contract-level-${$index()}` }">
+                                     data-bind="attr: { 'data-bs-target': `#${$parentContext.$parent.accordionId}-date-range-${$parentContext.$index()}-contract-level-${$index()}` },
+                                        css: { 'selected': `contracts-${contracts.flatMap(function (c) { return c.contractListId }).reduce(function (a, i) { return a = a + i }, 0)}` == $root.selectedContractListId() },
+                                        click: $root.fetchImpact">
                                     <span data-bind="text: `${label} Deals (${contracts.length})`"></span>
                                     <div class="ms-auto">
                                         <a href="javascript:;">Add Deal</a>
@@ -672,6 +714,7 @@
                                  data-bind="attr: { id: `${$parentContext.$parent.accordionId}-date-range-${$parentContext.$index()}-contract-level-${$index()}` }">
                                 <div class="deal-types-wrapper">
                                     <!-- ko template: { name: `contract-level-${label.replace(/\s/g, '-').toLowerCase()}-template` } --><!-- /ko -->
+                                    @*<pre class="prettyprint lang-js" data-bind="html: PR.prettyPrintOne(JSON.stringify($data, null, 4), 'js', false)"></pre>*@
                                 </div>
                             </div>
                         </div>
@@ -737,9 +780,84 @@
             <!-- ko template: { name: 'date-ranges-template', data: Object.assign($data, { accordionId: 'account-date-ranges' }) } --><!-- /ko -->
         </div>
     </div>
-    <div>
-        <div id="impact" class="impact-heading" style="display: none;" data-bind="visible: haveImpactResults">
-            Impact
+    <div id="impact">
+        <div style="display: none;" data-bind="visible: haveImpactResults">
+            <div class="impact-heading">
+                Impact
+            </div>
+            <nav class="nav nav-pills nav-justified">
+                <a class="nav-link active" href="#" data-bs-toggle="tab" data-bs-target="#all-discounted">
+                    <span>
+                        All Discounted
+                    </span>
+                </a>
+                <a class="nav-link" href="#" data-bs-toggle="tab" data-bs-target="#low-margin">
+                    <span>
+                        Low Margin
+                    </span>
+                </a>
+                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#expiry-imminent">
+                    <span>
+                        Expiry Imminent
+                    </span>
+                </a>
+            </nav>
+            <div class="tab-content">
+                <div id="all-discounted"
+                     class="tab-pane active">
+                    <div class="impact-results">
+                        <table class="table">
+                            <colgroup>
+                                <col />
+                                <col />
+                                <col />
+                                <col />
+                                <col />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody class="virtual-spacing">
+                                <tr>
+                                    <td colspan="300" style="height: 0px;" data-bind="style: { height: `${gridScrollTopPadding()}px` }"></td>
+                                </tr>
+                            </tbody>
+                            <tbody data-bind="foreach: visibleItems">
+                                <tr>
+                                    <td colspan="300">
+                                        <div class="impact-result">
+                                            Potato
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tbody class="virtual-spacing">
+                                <tr class="final-row">
+                                    <td colspan="300" style="height: 0px;" data-bind="style: { height: `${gridScrollBottomPadding()}px` }"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="low-margin"
+                     class="tab-pane">
+                    <h5>
+                        Low Margin
+                    </h5>
+                </div>
+                <div id="expiry-imminent"
+                     class="tab-pane">
+                    <h5>
+                        Expiry Imminent
+                    </h5>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -51,12 +51,13 @@ body {
 }
 #prefilters-wrapper > div:first-of-type,
 #body-wrapper > div:first-of-type {
-  flex: 0 1 40%;
+  flex: 0 1 45%;
   min-width: 482px;
 }
 #prefilters-wrapper > div:last-of-type,
 #body-wrapper > div:last-of-type {
-  flex: 0 1 60%;
+  flex: 0 1 55%;
+  min-width: 724px;
 }
 
 #prefilters-wrapper > .grid {
@@ -98,13 +99,12 @@ body {
   color: inherit;
 }
 #body-wrapper #current-deals,
-#body-wrapper #impact {
+#body-wrapper .impact-heading {
   background-color: #1f4e78;
   margin-bottom: 0.5rem;
   font-size: 1.25rem;
 }
-#body-wrapper .deal-group-heading,
-#body-wrapper .impact-heading {
+#body-wrapper .deal-group-heading {
   background-color: #4472c4;
 }
 
@@ -142,6 +142,21 @@ body {
   order: -1;
   margin-left: 0;
   margin-right: 0.5em;
+}
+.date-ranges-wrapper.accordion .accordion-item .accordion-header .accordion-button.selected, .date-ranges-wrapper.accordion .accordion-item .accordion-header .accordion-button:hover,
+.deal-types.accordion .accordion-item .accordion-header .accordion-button.selected,
+.deal-types.accordion .accordion-item .accordion-header .accordion-button:hover {
+  background-color: #6c757d;
+  color: #fff;
+}
+.date-ranges-wrapper.accordion .accordion-item .accordion-header .accordion-button.selected a, .date-ranges-wrapper.accordion .accordion-item .accordion-header .accordion-button:hover a,
+.deal-types.accordion .accordion-item .accordion-header .accordion-button.selected a,
+.deal-types.accordion .accordion-item .accordion-header .accordion-button:hover a {
+  color: #fff;
+}
+.date-ranges-wrapper.accordion .accordion-item .accordion-header .accordion-button .popover a,
+.deal-types.accordion .accordion-item .accordion-header .accordion-button .popover a {
+  color: #3d8bfd;
 }
 .date-ranges-wrapper.accordion .accordion-item:last-of-type .accordion-button.collapsed,
 .deal-types.accordion .accordion-item:last-of-type .accordion-button.collapsed {
@@ -276,6 +291,16 @@ body {
 .deal-types.accordion .accordion-item .accordion-header .accordion-button {
   background-color: #d9e1f2;
 }
+.deal-types.accordion .accordion-item .accordion-header .accordion-button.selected, .deal-types.accordion .accordion-item .accordion-header .accordion-button:hover {
+  background-color: #6c757d;
+  color: #fff;
+}
+.deal-types.accordion .accordion-item .accordion-header .accordion-button.selected a, .deal-types.accordion .accordion-item .accordion-header .accordion-button:hover a {
+  color: #fff;
+}
+.deal-types.accordion .accordion-item .accordion-header .accordion-button .popover a {
+  color: #3d8bfd;
+}
 .deal-types.accordion .accordion-item .accordion-collapse {
   margin: 0;
 }
@@ -298,15 +323,44 @@ body {
   will-change: background-color, color;
   transition: background-color 100ms linear, color 100ms linear;
 }
+.deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table tr td .contract-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+.deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table tr td .contract-controls a.icon {
+  width: 24px;
+  height: 24px;
+}
 .deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table tr.selected td, .deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table tr:hover td {
   background-color: #6c757d;
   color: #fff;
 }
-.deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table tr.selected td a, .deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table tr:hover td a {
+.deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table tr.selected td > span > a, .deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table tr:hover td > span > a {
+  color: #fff;
+}
+.deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table tr .popover {
+  max-width: unset;
+}
+.deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table tr .popover .popover-header {
+  background-color: #6c757d;
   color: #fff;
 }
 .deal-types.accordion .accordion-item .accordion-collapse .deal-types-wrapper .contract-table tr:last-of-type td {
   border-bottom: 0;
+}
+
+#impact .nav-pills {
+  border-bottom: 0;
+}
+#impact .impact-result {
+  height: 42px;
+  display: flex;
+  align-items: center;
+}
+#impact .impact-result + .impact-result {
+  border-top: 1px solid #ced4da;
 }
 
 #branch-totals,

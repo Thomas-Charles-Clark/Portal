@@ -31,6 +31,8 @@ $color-recently-expired: ffffff;
 $background-color-off: $red-800;
 $color-off: ffffff;
 
+$deal-hover-background: $gray-600;
+$deal-hover-color: $white;
 
 
 .navbar.navbar-default.navbar-expand {
@@ -66,13 +68,14 @@ $color-off: ffffff;
     gap: $xl-gutter;
 
     > div:first-of-type {
-        flex: 0 1 40%;
+        flex: 0 1 45%;
         min-width: 482px;
 
     }
 
     > div:last-of-type {
-        flex: 0 1 60%;
+        flex: 0 1 55%;
+        min-width: 724px;
     }
 }
 
@@ -124,17 +127,17 @@ $color-off: ffffff;
     }
 
     #current-deals,
-    #impact {
+    .impact-heading {
         background-color: $background-color-a;
         margin-bottom: $sm-gutter;
         font-size: $font-size-lg;
     }
 
-    .deal-group-heading,
-    .impact-heading {
+    .deal-group-heading {
         background-color: $background-color-b;
     }
 }
+
 
 
 .date-ranges-wrapper,
@@ -168,6 +171,22 @@ $color-off: ffffff;
                         order: -1; //swap order
                         margin-left: 0;
                         margin-right: 0.5em; // just extra space between text and icon
+                    }
+
+                    &.selected,
+                    &:hover {
+                        background-color: $deal-hover-background;
+                        color: $deal-hover-color;
+
+                        a {
+                            color: $deal-hover-color;
+                        }
+                    }
+
+                    .popover {
+                        a {
+                            color: $blue-400;
+                        }
                     }
                 }
             }
@@ -337,6 +356,22 @@ $color-off: ffffff;
             .accordion-header {
                 .accordion-button {
                     background-color: $background-color-d;
+
+                    &.selected,
+                    &:hover {
+                        background-color: $deal-hover-background;
+                        color: $deal-hover-color;
+
+                        a {
+                            color: $deal-hover-color;
+                        }
+                    }
+
+                    .popover {
+                        a {
+                            color: $blue-400;
+                        }
+                    }
                 }
             }
 
@@ -358,6 +393,7 @@ $color-off: ffffff;
                             td:first-of-type {
                                 padding-left: $m-gutter;
                             }
+
                             th:last-of-type,
                             td:last-of-type {
                                 padding-right: $m-gutter;
@@ -366,16 +402,43 @@ $color-off: ffffff;
                             td {
                                 will-change: background-color, color;
                                 transition: background-color 100ms linear, color 100ms linear;
+
+                                .contract-controls {
+                                    display: flex;
+                                    gap: $sm-gutter;
+                                    align-items: center;
+                                    justify-content: flex-end;
+
+                                    a.icon {
+                                        width: 24px;
+                                        height: 24px;
+                                    }
+                                }
                             }
 
                             &.selected,
                             &:hover {
                                 td {
-                                    background-color: $gray-600;
-                                    color: $white;
-                                    a {
-                                        color: $white;
+                                    background-color: $deal-hover-background;
+                                    color: $deal-hover-color;
+
+                                    > span {
+                                        > a {
+                                            color: $deal-hover-color;
+                                        }
                                     }
+
+                                    .popover {
+                                    }
+                                }
+                            }
+
+                            .popover {
+                                max-width: unset;
+
+                                .popover-header {
+                                    background-color: $deal-hover-background;
+                                    color: $deal-hover-color;
                                 }
                             }
                         }
@@ -388,6 +451,22 @@ $color-off: ffffff;
                     }
                 }
             }
+        }
+    }
+}
+
+#impact {
+    .nav-pills {
+        border-bottom: 0;
+    }
+
+    .impact-result {
+        height: 42px;
+        display: flex;
+        align-items: center;
+
+        + .impact-result {
+            border-top: 1px solid $gray-400;
         }
     }
 }

@@ -17,6 +17,7 @@ using System.Linq.Expressions;
 using System.IO;
 using SharedEFClasses.Models.ContractPricing;
 using Portal.Utilities.DynamicRoles;
+using System.Collections;
 
 namespace Portal.Areas.Customers.Controllers
 {
@@ -46,6 +47,12 @@ namespace Portal.Areas.Customers.Controllers
             var result = await PortalDb.ContractManagement_ContractImpact_Select(objDto);
 
             return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IHttpActionResult> FetchSalesData([FromUri]ContractPricingSalesDataDto objDto)
+        {
+            return Ok(new ArrayList());
         }
 
         //[System.Web.Http.HttpGet]

@@ -1780,7 +1780,7 @@ ko.bindingHandlers.bootstrapPopover = {
 
             var pop = $(element).popover({
                 container: properties.container || false,
-                selector: element,
+                selector: properties.selector || element,
                 placement: properties.placement,
                 title: properties.title,
                 content: properties.content,
