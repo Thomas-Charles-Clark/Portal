@@ -339,6 +339,7 @@
     <Compile Include="Models\BasketStatusModels.cs" />
     <Compile Include="Models\ContractPricing\ContractManagement_ContractImpact_SelectResult.cs" />
     <Compile Include="Models\ContractPricing\ContractManagement_ContractList_SelectResult.cs" />
+    <Compile Include="Models\ContractPricing\ContractManagement_SalesData_SelectResult.cs" />
     <Compile Include="Models\ContractPricing\ContractPricingDealsDto.cs" />
     <Compile Include="Models\ContractPricing\ContractPricingImpactDto.cs" />
     <Compile Include="Models\ContractPricing\ContractPricingSalesDataDto.cs" />

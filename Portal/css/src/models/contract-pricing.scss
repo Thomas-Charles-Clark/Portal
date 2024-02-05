@@ -143,7 +143,6 @@ $deal-hover-color: $white;
 .date-ranges-wrapper,
 .deal-types {
     &.accordion {
-        margin-bottom: $sm-gutter;
         border-radius: 0;
         border: 0;
 
@@ -346,6 +345,10 @@ $deal-hover-color: $white;
     }
 }
 
+.date-ranges-wrapper {
+
+}
+
 .deal-types {
     &.accordion {
         margin-bottom: 0;
@@ -455,7 +458,26 @@ $deal-hover-color: $white;
     }
 }
 
+#trade-account-deals {
+    position: fixed;
+    width: calc(45% - 26px);
+    overflow-y: scroll;
+    max-height: 1024px;
+    padding-right: $vsm-gutter;
+}
+
 #impact {
+    position: relative;
+    left: calc(45% + 17px);
+
+    .impact-wrapper {
+        z-index: 1;
+        padding-bottom: 11px;
+        position: fixed;
+        width: calc(55% - 31px);
+        background-color: #f3f1ed;
+    }
+
     .nav-pills {
         border-bottom: 0;
     }
@@ -469,8 +491,41 @@ $deal-hover-color: $white;
             border-top: 1px solid $gray-400;
         }
     }
+
+    .tab-content {
+        padding: 100px 0 $l-gutter 0;
+        width: calc(100% - $l-gutter - 2px);
+    }
 }
 
+#impact-table-all {
+    border-top: none;
+
+    thead {
+        tr {
+            border-top: none;
+
+            th {
+                position: sticky;
+                top: 254px;
+                background-color: $background-color-c;
+                color: $gray-800;
+                border-width: 0;
+                border-top-width: 0;
+            }
+        }
+    }
+
+    tbody {
+        tr {
+            td {
+                height: 60px;
+                vertical-align: middle;
+                background: $white;
+            }
+        }
+    }
+}
 
 
 

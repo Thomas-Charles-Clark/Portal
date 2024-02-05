@@ -8,6 +8,8 @@ namespace SharedEFClasses.Models.ContractPricing
 {
     public class ContractPricingSalesDataDto
     {
-        public int TradeAccountID { get; set; }
+        public int tradeAccountId { get; set; }
+        public IEnumerable<int?> productId { get; set; }
+        public IEnumerable<short?> qualityId { get; set; }
     }
 }

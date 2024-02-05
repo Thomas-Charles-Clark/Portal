@@ -779,35 +779,49 @@
             </div>
             <!-- ko template: { name: 'date-ranges-template', data: Object.assign($data, { accordionId: 'account-date-ranges' }) } --><!-- /ko -->
         </div>
+        <label class="d-block" data-bind="text: `gridTotalHeight: ${gridTotalHeight()}`"></label>
+        <label class="d-block" data-bind="text: `gridScrollTopPadding height: ${gridScrollTopPadding()}`"></label>
+        <label class="d-block" data-bind="text: `gridScrollBottomPadding height: ${gridScrollBottomPadding()}`"></label>
+        <label class="d-block" data-bind="text: `finalRowVisible: ${finalRowVisible()}`"></label>
+        <label class="d-block" data-bind="text: `visibleCount: ${visibleItems().length}`"></label>
+        <label class="d-block" data-bind="text: `recordsToDataFetch: ${recordsToDataFetch().length}`"></label>
+        <label class="d-block" data-bind="text: `filledRecords: ${filledRecords().length}`"></label>
+        <label class="d-block" data-bind="text: `unfilledRecords: ${unfilledRecords().length}`"></label>
     </div>
     <div id="impact">
         <div style="display: none;" data-bind="visible: haveImpactResults">
-            <div class="impact-heading">
-                Impact
+            <div class="impact-wrapper">
+                <div class="impact-heading">
+                    Impact
+                </div>
+                <nav class="nav nav-pills nav-justified">
+                    <a class="nav-link active" href="#" data-bs-toggle="tab" data-bs-target="#all-discounted">
+                        <span>
+                            All Discounted
+                        </span>
+                    </a>
+                    <a class="nav-link" href="#" data-bs-toggle="tab" data-bs-target="#low-margin">
+                        <span>
+                            Low Margin
+                        </span>
+                    </a>
+                    <a class="nav-link" data-bs-toggle="tab" data-bs-target="#expiry-imminent">
+                        <span>
+                            Expiry Imminent
+                        </span>
+                    </a>
+                </nav>
             </div>
-            <nav class="nav nav-pills nav-justified">
-                <a class="nav-link active" href="#" data-bs-toggle="tab" data-bs-target="#all-discounted">
-                    <span>
-                        All Discounted
-                    </span>
-                </a>
-                <a class="nav-link" href="#" data-bs-toggle="tab" data-bs-target="#low-margin">
-                    <span>
-                        Low Margin
-                    </span>
-                </a>
-                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#expiry-imminent">
-                    <span>
-                        Expiry Imminent
-                    </span>
-                </a>
-            </nav>
             <div class="tab-content">
                 <div id="all-discounted"
                      class="tab-pane active">
                     <div class="impact-results">
-                        <table class="table">
+                        <table id="impact-table-all" class="table table-bordered">
                             <colgroup>
+                                <col />
+                                <col />
+                                <col />
+                                <col />
                                 <col />
                                 <col />
                                 <col />
@@ -816,30 +830,78 @@
                             </colgroup>
                             <thead>
                                 <tr>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
+                                    <th>
+                                        Quality / Product
+                                    </th>
+                                    <th>
+                                        Discount
+                                    </th>
+                                    <th>
+                                        Status
+                                    </th>
+                                    <th>
+                                        Sales Quantity
+                                        <br />
+                                        last 180 days
+                                    </th>
+                                    <th>
+                                        Sales Value
+                                        <br />
+                                        last 180 days
+                                    </th>
+                                    <th>
+                                        List Price
+                                    </th>
+                                    <th>
+                                        Contract Price
+                                    </th>
+                                    <th>
+                                        Cost Price
+                                    </th>
+                                    <th>
+                                        Margin Price
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody class="virtual-spacing">
                                 <tr>
-                                    <td colspan="300" style="height: 0px;" data-bind="style: { height: `${gridScrollTopPadding()}px` }"></td>
+                                    <td colspan="9" style="height: 0px;" data-bind="style: { height: `${gridScrollTopPadding()}px` }"></td>
                                 </tr>
                             </tbody>
                             <tbody data-bind="foreach: visibleItems">
                                 <tr>
-                                    <td colspan="300">
-                                        <div class="impact-result">
-                                            Potato
-                                        </div>
+                                    <td>
+                                        <span data-bind="text: ProductOrQualityLabel"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: DiscountLabel"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: StatusLabel"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: salesQuantity"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: salesValue"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: ListPrice"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: ContractPrice"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: CostPrice"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: Margin"></span>
                                     </td>
                                 </tr>
                             </tbody>
                             <tbody class="virtual-spacing">
                                 <tr class="final-row">
-                                    <td colspan="300" style="height: 0px;" data-bind="style: { height: `${gridScrollBottomPadding()}px` }"></td>
+                                    <td colspan="9" style="height: 0px;" data-bind="style: { height: `${gridScrollBottomPadding()}px` }"></td>
                                 </tr>
                             </tbody>
                         </table>

@@ -110,7 +110,6 @@ body {
 
 .date-ranges-wrapper.accordion,
 .deal-types.accordion {
-  margin-bottom: 0.5rem;
   border-radius: 0;
   border: 0;
 }
@@ -351,6 +350,25 @@ body {
   border-bottom: 0;
 }
 
+#trade-account-deals {
+  position: fixed;
+  width: calc(45% - 26px);
+  overflow-y: scroll;
+  max-height: 1024px;
+  padding-right: 0.25rem;
+}
+
+#impact {
+  position: relative;
+  left: calc(45% + 17px);
+}
+#impact .impact-wrapper {
+  z-index: 1;
+  padding-bottom: 11px;
+  position: fixed;
+  width: calc(55% - 31px);
+  background-color: #f3f1ed;
+}
 #impact .nav-pills {
   border-bottom: 0;
 }
@@ -361,6 +379,30 @@ body {
 }
 #impact .impact-result + .impact-result {
   border-top: 1px solid #ced4da;
+}
+#impact .tab-content {
+  padding: 100px 0 1rem 0;
+  width: calc(100% - 1rem - 2px);
+}
+
+#impact-table-all {
+  border-top: none;
+}
+#impact-table-all thead tr {
+  border-top: none;
+}
+#impact-table-all thead tr th {
+  position: sticky;
+  top: 254px;
+  background-color: #b4c6e7;
+  color: #343a40;
+  border-width: 0;
+  border-top-width: 0;
+}
+#impact-table-all tbody tr td {
+  height: 60px;
+  vertical-align: middle;
+  background: #fff;
 }
 
 #branch-totals,

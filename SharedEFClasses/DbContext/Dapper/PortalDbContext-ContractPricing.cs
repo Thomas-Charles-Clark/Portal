@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using SharedEFClasses.Models.ContractPricing;
 using System.Data;
 using Dapper;
+using Newtonsoft.Json;
 
 namespace SharedEFClasses.Models
 {
@@ -40,6 +41,22 @@ namespace SharedEFClasses.Models
             return new ContractManagement_ContractImpact_SelectResult()
             {
                 Results = results.Read<ContractManagement_ContractImpact_Result>()
+            };
+        }
+
+        public async Task<ContractManagement_SalesData_SelectResult> ContractManagement_SalesData_Select(ContractPricingSalesDataDto objDto)
+        {
+            var results = await this.Database.Connection.QueryMultipleAsync("[portal].[ContractManagement_SalesData_Select]", new
+            {
+                objDto.tradeAccountId,
+                productListJson = JsonConvert.SerializeObject(new { objDto.productId }),
+                qualityListJson = JsonConvert.SerializeObject(new { objDto.qualityId })
+            }, null, 60, CommandType.StoredProcedure);
+
+            return new ContractManagement_SalesData_SelectResult()
+            {
+                ProductResults = results.Read<ContractManagement_SalesData_ProductResult>(),
+                QualityResults = results.Read<ContractManagement_SalesData_QualityResult>()
             };
         }
     }

@@ -12,7 +12,7 @@ const contractPricingViewModel = ({ } = {}) => {
 
     // impossible virtual scrolling property madness
 
-    self.rowHeight = 80;
+    self.rowHeight = 60;
 
     self.scrollY = ko.observable(0);
 
@@ -32,7 +32,7 @@ const contractPricingViewModel = ({ } = {}) => {
 
     self.finalRowVisible = ko.observable(false);
 
-    self.gridPositionTop = 158;
+    self.gridPositionTop = 252;
 
     ///
 
@@ -897,7 +897,34 @@ const contractPricingViewModel = ({ } = {}) => {
                 if (data.Results.length > 1)
                     self.haveImpactResults(true);
 
-                self.impactResults(data.Results);
+                // the height of the table's thead element
+                let startingOffset = self.gridPositionTop + self.gridHeaderHeight;
+
+                // we can only really do this if we're working with *exact* known heights.
+                // otherwise all bets are off.
+                // therefore let us achieve the knowing of the heights.
+                let additionalOffset = startingOffset;
+
+                let cumulativeHeight = 0;
+
+                let results = data.Results.map((impactResult, impactResultIndex) => {
+
+                    impactResult.offsetY = (((impactResultIndex) * self.rowHeight) + additionalOffset);
+
+                    //console.log(impactResult.offsetY);
+
+                    cumulativeHeight += self.rowHeight;
+
+                    impactResult.runningHeight = cumulativeHeight;
+
+                    return impactSearchResult({
+                        rec: impactResult
+                    });
+                });
+
+                self.gridTotalHeight(cumulativeHeight - self.rowHeight - 1);
+
+                self.impactResults(results);
 
             })
             .catch(err => {
@@ -1042,7 +1069,8 @@ const contractPricingViewModel = ({ } = {}) => {
 
     self.fetchDeals = ko.computed(() => {
 
-            //self.filledRecords([]);
+        self.filledRecords([]);
+        self.recordsToDataFetch([]);
 
         //self.clearAddGridData();
 
@@ -1119,11 +1147,21 @@ const contractPricingViewModel = ({ } = {}) => {
         }
     }, self);
 
-    self.unfilledRecordProductIds = ko.computed(() => {
+    self.unfilledRecords = ko.computed(() => {
         let results = Array.from(new Set(self.recordsToDataFetch().filter(vr => {
-            let r = self.filledRecords().find(fr => fr.ProductID == vr.ProductID);
+            let r = self.filledRecords().find(fr =>
+                fr.ProductOrQuality == vr.ProductOrQuality &&
+                fr.ProductID == vr.ProductID &&
+                fr.QualityID == vr.QualityID
+            );
             return (r == null || r && r.loaded() == false);
-        }).map(cr => cr.ProductID)));
+        }).map((cr) => {
+            return {
+                productId: cr.ProductID,
+                qualityId: cr.QualityID,
+                productOrQuality: cr.ProductOrQuality
+            }
+        })));
         return results;
     }, self).extend({
         rateLimit: {
@@ -1133,29 +1171,34 @@ const contractPricingViewModel = ({ } = {}) => {
     });
 
     self.fetchSalesData = ko.computed(() => {
-        let urpids = self.unfilledRecordProductIds();
+
+        let urpids = self.unfilledRecords();
+
+        console.log(`self.unfilledRecords()`, urpids);
 
         if (urpids.length) {
 
             window.setTimeout(() => {
-                console.log('fetchSalesData calling with', urpids);
 
                 let callStart = new Date();
 
-                let productIds = [];
-                let qualityIds = [];
+                let productIds = [...new Set(urpids.flatMap(ur => ur.productId ? [ur.productId] : []))];
+                let qualityIds = [...new Set(urpids.flatMap(ur => ur.qualityId ? [ur.qualityId] : []))];
 
                 let data = {
-                    tradeaccountId: self.tradeAccountId(),
-                    productIds: productIds,
-                    qualityIds: qualityIds
+                    tradeAccountId: self.tradeAccountId(),
+                    productId: productIds,
+                    qualityId: qualityIds
                 };
+
+                console.log('fetchSalesData calling with', data);
 
                 let qs = new URLSearchParams(data);
 
-                fetch(`/api/contractpricing/FetchSalesData?${qs}`, {
-                    method: 'GET',
+                fetch(`/api/contractpricing/FetchSalesData`, {
+                    method: 'POST',
                     headers: window.fetchHeaders,
+                    body: JSON.stringify(data)
                 })
                     .then(window.handleFetchResponse)
                     .then(data => {
@@ -1164,125 +1207,83 @@ const contractPricingViewModel = ({ } = {}) => {
 
                         console.log(`FetchSalesData returned in ${callReturn - callStart}ms`, data);
 
-                        //let records = self.impactResults.peek();
-                        //let affectedRecords = [];
-                        //let filledRecords = self.filledRecords.peek();
-                        //let forcedRemovals = [];
+                        let records = self.impactResults.peek();
+                        let affectedRecords = [];
+                        let filledRecords = self.filledRecords.peek();
+                        let forcedRemovals = [];
 
-                        //urpids.forEach(pid => {
+                        urpids.forEach(stub => {
 
-                        //    let record = records.find(p => p.ProductID === pid);
-                        //    // if record is null here, we've fetched data for something which is no longer amongst our search results.
-                        //    // this will readily cause chaos: remove it from the 'to be fetched' collection.
+                            //console.log(stub);
 
-                        //    if (record != null) {
+                            let record = records.find(p => p.ProductID && p.ProductID === stub.productId) ||
+                                records.find(q => q.QualityID && q.QualityID == stub.qualityId);
+                            // if record is null here, we've fetched data for something which is no longer amongst our search results.
+                            // this will readily cause chaos: remove it from the 'to be fetched' collection.
 
-                        //        let dataResult = data.Results.find(p => p.ProductID == pid);
-                        //        let filledRecord = filledRecords.find(p => p.ProductID == pid);
+                            if (record != null) {
 
-                        //        let add = true;
+                                //console.log('record found');
 
-                        //        if (dataResult) {
+                                let dataResult = data.ProductResults.find(p => p.ProductID && p.ProductID == stub.productId) ||
+                                    data.QualityResults.find(q => q.QualityID == stub.qualityId);
 
-                        //            if (filledRecord == null) {
-                        //                record = resultRecord({
-                        //                    branchId: self.branchId(),
-                        //                    rec: record,
-                        //                    fetchBranchBasketsNonce: self.fetchBranchBasketsNonce,
-                        //                    reload: self.reloadRecord
-                        //                });
-                        //            } else {
-                        //                add = false;
-                        //                filledRecord.loaded(true);
-                        //                record = filledRecord;
-                        //            }
+                                let filledRecord = filledRecords.find(p => p.ProductID && p.ProductID == stub.productId) ||
+                                    filledRecords.find(q => q.QualityID && q.QualityID == stub.qualityId);
 
-                        //            record.actionRecommendations = dataResult.Action_Recommendation;
+                                let add = true;
 
-                        //            record.actionTransferToBranchHighlight = dataResult.Action_TransferToBranchHighlight;
+                                if (dataResult) {
 
-                        //            record.actionTransferToBranchQuantityOriginal(dataResult.Action_TransferToBranchQuantity);
-                        //            record.actionTransferToBranchQuantity(dataResult.Action_TransferToBranchQuantity);
-                        //            record.actionTransferToBranchBasketItemId(dataResult.WH2BR_BasketItemID);
-                        //            record.actionTransferToBranchExtantTransferQuantity(dataResult.WH2BR_Quantity);
+                                    if (filledRecord == null) {
+                                        filledRecord = record;
+                                        //record = impactSearchResult({
+                                        //    rec: record
+                                        //});
+                                    } else {
+                                        add = false;
+                                        filledRecord.loaded(true);
+                                        record = filledRecord;
+                                    }
 
-                        //            if (dataResult.WH2BR_BasketItemID) {
-                        //                record.actionTransferToBranchQuantityParams.disable(true);
-                        //            }
+                                    record.salesQuantity(dataResult.SalesQuantity_180Days);
 
-                        //            record.actionTransferToWarehouseHighlight = dataResult.Action_TransferToWarehouseHighlight;
+                                    record.salesValue(dataResult.SalesValue_180Days);
 
-                        //            record.actionTransferToWarehouseQuantityOriginal(dataResult.Action_TransferToWarehouseQuantity);
-                        //            record.actionTransferToWarehouseQuantity(dataResult.Action_TransferToWarehouseQuantity);
-                        //            record.actionTransferToWarehouseBasketItemId(dataResult.BR2WH_BasketItemID);
-                        //            record.actionTransferToWarehouseExtantTransferQuantity(dataResult.BR2WH_Quantity);
+                                    record.busy(false);
 
-                        //            if (dataResult.BR2WH_BasketItemID) {
-                        //                record.actionTransferToWarehouseQuantityParams.disable(true);
-                        //            }
+                                    record.loaded(true);
+                                } else {
+                                    record.loaded = ko.observable(true);
+                                    record.ErrorMessage = `<h5 class="mb-0">[portal].[ContractManagement_SalesData_Select] did not return a result for Product/Quality ${record.ProductID || record.QualityID}</h5>`;
+                                }
 
-                        //            record.notes = dataResult.Action_NoteCount;
+                                if (add) {
+                                    affectedRecords.push(record);
+                                }
+                            } else {
 
-                        //            record.rangeStatus = dataResult.Range_Status;
-                        //            record.rangeActual = dataResult.Range_Actual;
+                                console.log('RECORD NOT FOUND');
 
-                        //            record.rangePlanned(dataResult.Range_Planned);
-                        //            record.rangePlannedOriginal(dataResult.Range_Planned);
+                                forcedRemovals.push(stub);
+                            }
+                        });
 
-                        //            record.rangeInProgress = dataResult.Range_InProgress;
-                        //            record.rangeRequired = dataResult.Range_Required;
+                        ko.ignoreDependencies(() => {
+                            affectedRecords.forEach(ar => {
+                                self.recordsToDataFetch.remove(rtdf => rtdf.ProductOrQuality == ar.ProductOrQuality &&
+                                    rtdf.ProductID === ar.ProductID &&
+                                    rtdf.QualityID === ar.QualityID);
+                            });
 
-                        //            record.sales180DayBranch = dataResult.Sales_180Day_Branch;
-                        //            record.sales180DayFW = dataResult.Sales_180Day_FW;
-                        //            record.sales180DayKR = dataResult.Sales_180Day_KR;
-                        //            record.sales180DayMHS = dataResult.Sales_180Day_MHS;
-                        //            record.sales180DayUKEcommerce = dataResult.Sales_180Day_UKEcommerce;
-                        //            record.sales180DayUKTrade = dataResult.Sales_180Day_UKTrade;
-                        //            record.sales180DayROWTrade = dataResult.Sales_180Day_ROWTrade;
-                        //            record.sales180DayTotal = dataResult.Sales_180Day_Total;
-                        //            record.salesSummary = dataResult.Sales_Summary;
-                        //            record.salesCover = dataResult.Sales_Cover;
+                            forcedRemovals.forEach(fr => {
+                                self.recordsToDataFetch.remove(rtdf => rtdf.ProductOrQuality == fr.ProductOrQuality &&
+                                    rtdf.ProductID === fr.ProductID &&
+                                    rtdf.QualityID === fr.QualityID);
+                            })
 
-                        //            record.stockCover = dataResult.Stock_Cover;
-                        //            record.stockFWFreeStock = dataResult.Stock_FW_FreeStock;
-                        //            record.stockKRFreeStock = dataResult.Stock_KR_FreeStock;
-                        //            record.stockMHSFreeStock = dataResult.Stock_MHS_FreeStock;
-                        //            record.stockWHFreeStock = dataResult.Stock_WH_FreeStock;
-                        //            record.stockWHNextPODueDate = dataResult.Stock_WH_NextPODueDate;
-                        //            record.stockWHNextPOFreeStock = dataResult.Stock_WH_NextPOFreeStock;
-                        //            record.stockSummary = dataResult.Stock_Summary;
-
-                        //            record.unitCostPriceGBP = dataResult.UnitCostPriceGBP;
-
-                        //            record.priceSummary = dataResult.Price_Summary;
-
-                        //            record.busy(false);
-
-                        //            record.loaded(true);
-                        //        } else {
-                        //            record.loaded = ko.observable(true);
-                        //            record.ErrorMessage = `<h5 class="mb-0">portal.RangeManagement_Range_Select did not return a result for ProductID ${record.ProductID}</h5>`;
-                        //        }
-
-                        //        if (add) {
-                        //            affectedRecords.push(record);
-                        //        }
-                        //    } else {
-                        //        forcedRemovals.push(pid);
-                        //    }
-                        //});
-
-                        //ko.ignoreDependencies(() => {
-                        //    affectedRecords.forEach(ar => {
-                        //        self.recordsToDataFetch.remove(rtdf => rtdf.ProductID === ar.ProductID);
-                        //    });
-
-                        //    forcedRemovals.forEach(fr => {
-                        //        self.recordsToDataFetch.remove(rtdf => rtdf.ProductID == fr);
-                        //    })
-
-                        //    ko.utils.arrayPushAll(self.filledRecords, affectedRecords);
-                        //});
+                            ko.utils.arrayPushAll(self.filledRecords, affectedRecords);
+                        });
 
                         let callBound = new Date();
 
@@ -1303,132 +1304,9 @@ const contractPricingViewModel = ({ } = {}) => {
         }
     });
 
-    self.impactResultsDisplay = ko.computed(() => {
-
-        let key = "ProductFilterName";
+    self.finalRowObservationComputer = ko.computed(() => {
 
         if (self.haveImpactResults()) {
-            let results = [];
-
-            // counts the number of *end* product rows we have rendered
-            let runningCount = 0;
-
-            // the height of the table's thead element
-            let startingOffset = self.gridHeaderHeight;
-
-            // we can only really do this if we're working with *exact* known heights.
-            // otherwise all bets are off.
-            // therefore let us achieve the knowing of the heights.
-            let additionalOffset = startingOffset;
-
-            let filledRecords = self.filledRecords.peek();
-
-            let cumulativeHeight = 0;
-
-            self.impactResults().forEach((impactResult, impactResultIndex) => {
-
-                //// if this orderFormGroup has a name, it will have rendered a heading (20px) and we need to account for the height of that heading.
-                //if (impactResult.name != "") {
-                //    additionalOffset += self.orderFormGroupRowHeight;
-                //}
-
-                //let products = ko.unwrap(impactResult.items);
-
-                ////iterate over the products belonging to this order form group
-                //products.forEach((product, productIndex) => {
-
-                //    // each product record has one fundamental height: 80px.
-                //    product.height = self.rowHeight;
-
-                //    // each product is offset from the top by some Y
-                //    product.offsetY = (((runningCount + (productIndex)) * self.rowHeight) + additionalOffset);
-                //})
-
-                impactResult.offsetY = (((runningCount + (impactResultIndex)) * self.rowHeight) + additionalOffset);
-
-                cumulativeHeight += impactResult.offsetY;
-
-                runningCount += 1;
-            });
-
-            self.impactResults.valueHasMutated();
-
-            //let cumulativeHeight = startingOffset;
-
-            //let itemCount = 0;
-
-            //results.forEach((productFilterGroup, pfgi) => {
-            //    // productFilterGroup.name is never null, always add the productFilterGroupRowHeight
-
-            //    productFilterGroup.items.forEach((productPageGroup, ppgi) => {
-
-            //        // productPageGroup.name can be null, test before adding productPageGroupRowHeight
-
-            //        productPageGroup.items.forEach((orderFormGroup, ofgi) => {
-
-            //            // orderFormGroup.name can be null, test before adding orderFormGroupRowHeight
-
-            //            let items = ko.unwrap(orderFormGroup.items);
-
-            //            // this orderFormGroup's height is equal to the number of items it contains by the height of each item, possibly plus its own grouping row height.
-            //            orderFormGroup.height = ((items.length * self.rowHeight) + (orderFormGroup.name == "" ? 0 : self.orderFormGroupRowHeight));
-
-            //            runningOrderFormGroupHeight += orderFormGroup.height;
-
-            //            orderFormGroup.runningHeight = runningOrderFormGroupHeight;
-
-            //            cumulativeHeight += orderFormGroup.height;
-
-            //            orderFormGroup.offsetY = (cumulativeHeight - orderFormGroup.height) + ((pfgi + 1) * self.productFilterGroupRowHeight) + ((ppgi + 1) * self.productPageGroupRowHeight);
-
-            //            orderFormGroup.headerVisible = ko.computed(() => {
-            //                if (orderFormGroup.name && orderFormGroup.offsetY + self.orderFormGroupRowHeight >= self.scrollY() + self.gridHeaderHeight) {
-            //                    return true;
-            //                }
-
-            //                return false;
-            //            }, self);
-            //        });
-
-            //        // this productPageGroup's height is equal to the sum of its orderFormGroup heights, possibly plus its own grouping row height.
-            //        productPageGroup.height = (ko.unwrap(productPageGroup.items).reduce((a, i) => a += i.height, 0) + (productPageGroup.name == "" ? 0 : self.productPageGroupRowHeight));
-
-            //        runningProductPageGroupHeight += productPageGroup.height;
-
-            //        productPageGroup.runningHeight = runningProductPageGroupHeight;
-
-            //        productPageGroup.offsetY = (cumulativeHeight - productPageGroup.height) + ((pfgi + 1) * self.productFilterGroupRowHeight) + ((ppgi + 1) * self.productPageGroupRowHeight);
-
-            //        productPageGroup.headerVisible = ko.computed(() => {
-            //            if (productPageGroup.name && productPageGroup.offsetY + self.productPageGroupRowHeight >= self.scrollY() + self.gridHeaderHeight) {
-            //                return true;
-            //            }
-            //            return false;
-            //        }, self);
-            //    });
-
-            //    // because the height of productPageGroup headings is not catered for in the above...
-            //    cumulativeHeight += productFilterGroup.items.reduce((a, i) => a += i.name === "" ? 0 : self.productPageGroupRowHeight, 0);
-
-            //    // this productFilterGroup's height is equal to the sum of its productPageGroup heights, plus its own grouping row height.
-            //    productFilterGroup.height = (ko.unwrap(productFilterGroup.items).reduce((a, i) => a += i.height, 0) + self.productFilterGroupRowHeight);
-
-            //    runningProductFilterGroupHeight += productFilterGroup.height;
-
-            //    productFilterGroup.runningHeight = runningProductFilterGroupHeight;
-
-            //    productFilterGroup.offsetY = productFilterGroup.runningHeight - productFilterGroup.height + self.gridHeaderHeight;
-
-            //    productFilterGroup.headerVisible = ko.computed(() => {
-            //        if (productFilterGroup.offsetY + self.productFilterGroupRowHeight >= self.scrollY() + self.gridHeaderHeight) {
-            //            return true;
-            //        }
-            //        return false;
-            //    }, self);
-            //});
-
-            self.gridTotalHeight(cumulativeHeight - self.rowHeight - 1);
-            //self.gridTotalHeight((runningCount * self.rowHeight) - 170);
 
             window.setTimeout(() => {
                 document.querySelectorAll(".final-row").forEach(tr => {
@@ -1437,13 +1315,10 @@ const contractPricingViewModel = ({ } = {}) => {
                 })
             }, 0);
 
-            //console.log(results);
-
-            return results;
         } else {
+
             self.gridTotalHeight(0);
 
-            return [];
         }
 
     }, self);
@@ -1454,15 +1329,28 @@ const contractPricingViewModel = ({ } = {}) => {
 
         let filledRecords = self.filledRecords.peek();
 
-        let results = self.impactResults().filter(i => {
+        let results = self.impactResults().filter((i, index) => {
+
+            //if (index < 50 && i.offsetY) {
+            //    console.log(`((${i.offsetY} - ${self.gridHeaderHeight} + ${self.rowHeight}) >= (${self.scrollY()})) && ((${i.offsetY} - ${self.gridHeaderHeight} + ${self.rowHeight}) <= (${self.maxY()}))`)
+            //    console.log(`((${i.offsetY - self.gridHeaderHeight + self.rowHeight}) >= (${self.scrollY()})) && ((${i.offsetY - self.gridHeaderHeight + self.rowHeight}) <= (${self.maxY()}))`)
+            //}
+
             let actuallyVisible = ((i.offsetY - self.gridHeaderHeight + self.rowHeight) >= (self.scrollY())) &&
                 ((i.offsetY - self.gridHeaderHeight + self.rowHeight) <= (self.maxY()));
+
+            //console.log(actuallyVisible);
 
             let dataFetchVisible = actuallyVisible;// ((i.offsetY - self.gridHeaderHeight + self.rowHeight) >= (self.scrollY() - 5000)) &&
             // ((i.offsetY - self.gridHeaderHeight + self.rowHeight) <= (self.maxY() + 5000));
 
-            if (dataFetchVisible && !filledRecords.find(fr => fr.ProductID === i.ProductID))
+            if (dataFetchVisible && !filledRecords.find(fr =>
+                fr.ProductOrQuality == i.ProductOrQuality &&
+                fr.ProductID == i.ProductID &&
+                fr.QualityID == i.QualityID
+            )) {
                 toFetch.push(i);
+            }
 
             return actuallyVisible;
         });
@@ -1475,85 +1363,95 @@ const contractPricingViewModel = ({ } = {}) => {
     self.gridScrollTopPadding = ko.computed(() => {
         let scrollY = self.scrollY();
         let scrollYPlusHeaderHeight = scrollY + self.gridHeaderHeight;
-        let my = self.maxY();
-
         let result = 0;
 
-        ko.ignoreDependencies(() => {
-
-            let searchResults = self.impactResults();
-
-            if (searchResults.length) {
-
-                // you are fully scrolled out of view as soon as scrollY is greater than your height.
-                // gasr.height includes self.productFilterGroupRowHeight
-                let filterGroupsEntirelyAbove = searchResults.filter(sr => {
-                    return scrollY > sr.runningHeight
-                });
-
-                // we consider you partially above when your product filter group row goes out of pane
-                // can more than one productFilterGroup be partially above? no; the next becomes partially above, this becomes fully above.
-
-                let filterGroupPartiallyAbove = searchResults.find(productFilterGroup => {
-                    return ((productFilterGroup.offsetY) <= scrollYPlusHeaderHeight &&
-                        (scrollY <= productFilterGroup.runningHeight))
-                });
-
-                // you must not be able to be both partially and entirely above: one or the other.
-
-                if (filterGroupsEntirelyAbove.length) {
-
-                    let productPageGroupsHeight = filterGroupsEntirelyAbove.flatMap(fgea => fgea.items).reduce((a, i) => a += i.height, 0);
-
-                    //console.log("productPageGroupsHeight", productPageGroupsHeight);
-
-                    result += productPageGroupsHeight;
-
-                    let productPageGroupsHeaderRowsHeight = filterGroupsEntirelyAbove.length * self.productFilterGroupRowHeight
-
-                    //console.log("productPageGroupsHeaderRowsHeight", productPageGroupsHeaderRowsHeight);
-
-                    result += productPageGroupsHeaderRowsHeight; // every filterGroup provides a row
-
-                    // not every productPageGroup provides a row and they're all accounted for elsewhere in the algorithm so remove their height here
-                    //result -= filterGroupsEntirelyAbove.flatMap(fgea => fgea.items).reduce((a, i) => a += i.name == "" ? 0 : self.productPageGroupRowHeight, 0);
-                }
-
-                //console.log("filterGroupsEntirelyAbove", filterGroupsEntirelyAbove);
-
-                if (filterGroupPartiallyAbove) {
-
-                    let additionFromPartiallyAboveGroup = 0;
-
-                    filterGroupPartiallyAbove.items.forEach(ppg => {
-                        if (ppg.name && !ppg.headerVisible()) {
-                            additionFromPartiallyAboveGroup += self.productPageGroupRowHeight;
-                        }
-
-                        ppg.items.forEach(ofg => {
-                            if (ofg.name && !ofg.headerVisible()) {
-                                additionFromPartiallyAboveGroup += self.orderFormGroupRowHeight;
-                            }
-
-                            ko.unwrap(ofg.items).forEach(p => {
-                                if (scrollYPlusHeaderHeight > p.offsetY + self.rowHeight) {
-                                    additionFromPartiallyAboveGroup += p.height;
-                                }
-                            })
-                        })
-                    })
-
-                    if ((scrollYPlusHeaderHeight - filterGroupPartiallyAbove.offsetY) > self.productFilterGroupRowHeight)
-                        additionFromPartiallyAboveGroup += self.productFilterGroupRowHeight;
-
-                    //console.log("additionFromPartiallyAboveGroup", additionFromPartiallyAboveGroup);
-
-                    result += additionFromPartiallyAboveGroup;
-                }
-
-                //console.log("filterGroupPartiallyAbove", filterGroupPartiallyAbove);
+        self.impactResults().forEach(ir => {
+            if (scrollY > ir.runningHeight) {
+                result += self.rowHeight;
             }
         });
+
+        return result;
+
+        //let my = self.maxY();
+
+        //let result = 0;
+
+        //ko.ignoreDependencies(() => {
+
+        //    let searchResults = self.impactResults();
+
+        //    if (searchResults.length) {
+
+        //        // you are fully scrolled out of view as soon as scrollY is greater than your height.
+        //        // gasr.height includes self.productFilterGroupRowHeight
+        //        let filterGroupsEntirelyAbove = searchResults.filter(sr => {
+        //            return scrollY > sr.runningHeight
+        //        });
+
+        //        // we consider you partially above when your product filter group row goes out of pane
+        //        // can more than one productFilterGroup be partially above? no; the next becomes partially above, this becomes fully above.
+
+        //        let filterGroupPartiallyAbove = searchResults.find(productFilterGroup => {
+        //            return ((productFilterGroup.offsetY) <= scrollYPlusHeaderHeight &&
+        //                (scrollY <= productFilterGroup.runningHeight))
+        //        });
+
+        //        // you must not be able to be both partially and entirely above: one or the other.
+
+        //        if (filterGroupsEntirelyAbove.length) {
+
+        //            let productPageGroupsHeight = filterGroupsEntirelyAbove.flatMap(fgea => fgea.items).reduce((a, i) => a += i.height, 0);
+
+        //            //console.log("productPageGroupsHeight", productPageGroupsHeight);
+
+        //            result += productPageGroupsHeight;
+
+        //            let productPageGroupsHeaderRowsHeight = filterGroupsEntirelyAbove.length * self.productFilterGroupRowHeight
+
+        //            //console.log("productPageGroupsHeaderRowsHeight", productPageGroupsHeaderRowsHeight);
+
+        //            result += productPageGroupsHeaderRowsHeight; // every filterGroup provides a row
+
+        //            // not every productPageGroup provides a row and they're all accounted for elsewhere in the algorithm so remove their height here
+        //            //result -= filterGroupsEntirelyAbove.flatMap(fgea => fgea.items).reduce((a, i) => a += i.name == "" ? 0 : self.productPageGroupRowHeight, 0);
+        //        }
+
+        //        //console.log("filterGroupsEntirelyAbove", filterGroupsEntirelyAbove);
+
+        //        if (filterGroupPartiallyAbove) {
+
+        //            let additionFromPartiallyAboveGroup = 0;
+
+        //            filterGroupPartiallyAbove.items.forEach(ppg => {
+        //                if (ppg.name && !ppg.headerVisible()) {
+        //                    additionFromPartiallyAboveGroup += self.productPageGroupRowHeight;
+        //                }
+
+        //                ppg.items.forEach(ofg => {
+        //                    if (ofg.name && !ofg.headerVisible()) {
+        //                        additionFromPartiallyAboveGroup += self.orderFormGroupRowHeight;
+        //                    }
+
+        //                    ko.unwrap(ofg.items).forEach(p => {
+        //                        if (scrollYPlusHeaderHeight > p.offsetY + self.rowHeight) {
+        //                            additionFromPartiallyAboveGroup += p.height;
+        //                        }
+        //                    })
+        //                })
+        //            })
+
+        //            if ((scrollYPlusHeaderHeight - filterGroupPartiallyAbove.offsetY) > self.productFilterGroupRowHeight)
+        //                additionFromPartiallyAboveGroup += self.productFilterGroupRowHeight;
+
+        //            //console.log("additionFromPartiallyAboveGroup", additionFromPartiallyAboveGroup);
+
+        //            result += additionFromPartiallyAboveGroup;
+        //        }
+
+        //        //console.log("filterGroupPartiallyAbove", filterGroupPartiallyAbove);
+        //    }
+        //});
 
         return result;
     }, self);
@@ -1648,13 +1546,15 @@ const contractPricingViewModel = ({ } = {}) => {
     });
 
     window.addEventListener("resize", debounce((event) => {
-        if (self.finalRowVisible()) {
+        //if (self.finalRowVisible()) {
+        //    self.finalRowVisible(false);
+        //}
             if (window.scrollY < self.scrollY()) {
                 self.maxY(self.scrollY() + window.innerHeight);
             }
-        } else {
-            self.maxY(self.scrollY() + window.innerHeight);
-        }
+        //} else {
+        //    self.maxY(self.scrollY() + window.innerHeight);
+        //}
     }, 50));
 
     window.addEventListener("onbeforeunload", (event) => {
@@ -1798,6 +1698,10 @@ const impactSearchResult = ({
     self.busy = ko.observable(false);
 
     self.loaded = ko.observable(false);
+
+    self.salesQuantity = ko.observable();
+
+    self.salesValue = ko.observable();
 
     //#endregion
 
