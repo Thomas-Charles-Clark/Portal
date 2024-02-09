@@ -44,14 +44,14 @@
                 <button type="button" class="btn-close btn-close-white" aria-label="Close" data-bind="click: hideModal"></button>
             </div>
             <div class="modal-body">
-                <ul id="contract-editor-nav" class="nav nav-pills nav-justified" role="tablist">
+                <ul id="contract-editor-nav" class="nav nav-pills" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button id="product-group-item-type-tab-btn" class="nav-link active" data-bs-toggle="tab" data-bs-target="#product-group-item-type-tab" type="button" role="tab">
+                        <button id="product-group-item-type-tab-btn" class="nav-link" data-bs-toggle="tab" data-bs-target="#product-group-item-type-tab" type="button" role="tab">
                             Product Group / Item Type
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button id="quality-tab-btn" class="nav-link" data-bs-toggle="tab" data-bs-target="#quality-tab" type="button" role="tab">
+                        <button id="quality-tab-btn" class="nav-link active" data-bs-toggle="tab" data-bs-target="#quality-tab" type="button" role="tab">
                             Design
                         </button>
                     </li>
@@ -62,7 +62,7 @@
                     </li>
                 </ul>
                 <div id="contract-editor-content" class="tab-content">
-                    <div id="product-group-item-type-tab" class="tab-pane fade show active" role="tabpanel">
+                    <div id="product-group-item-type-tab" class="tab-pane fade" role="tabpanel" data-bind="with: productGroupItemTypeEditor">
                         <table class="table table-condensed table-bordered table-striped product-group-item-type-table mt-3">
                             <colgroup>
                                 <col class="title-column" />
@@ -144,10 +144,105 @@
                         </table>
                         <!-- /ko -->
                     </div>
-                    <div id="quality-tab" class="tab-pane fade" role="tabpanel">
-                        <h2>
-                            Design
-                        </h2>
+                    <div id="quality-tab" class="tab-pane fade show active" role="tabpanel" data-bind="with: qualityEditor">
+                        <div id="quality-wrapper" class="grid">
+                            <div id="quality-search">
+                                <div id="quality-prefilters" class="grid">
+                                    <div id="quality-launch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: launchParams }"></div>
+                                    <div id="quality-brand-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: brandParams }"></div>
+                                    <div id="quality-collection-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: collectionParams }"></div>
+                                    <div id="quality-product-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productGroupParams }"></div>
+                                    <div id="quality-item-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: itemTypeParams }"></div>
+                                    <div id="quality-search-term-prefilter" data-bind="component: { name: 'mdc-text-field-component', params: searchTermParams }"></div>
+                                </div>
+                                <!-- ko with: virtualScroller -->
+                                <div id="quality-results-scroller-container" class="virtual-scroller-container">
+                                    <table id="quality-search-results-table" class="table table-condensed table-bordered table-striped product-group-item-type-table mt-3">
+                                        <colgroup>
+                                            <col class="code-column" />
+                                            <col class="name-column" />
+                                            <col class="checkbox-column" />
+                                            <col class="sales-quantity-column" />
+                                            <col class="sales-value-column" />
+                                            <col class="current-price-column" />
+                                        </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    Design Code
+                                                </th>
+                                                <th>
+                                                    Design Name
+                                                </th>
+                                                <th>
+
+                                                </th>
+                                                <th>
+                                                    Quantity Sold<br />
+                                                    Last 180 Days
+                                                </th>
+                                                <th>
+                                                    Sales Value<br />
+                                                    Last 180 Days
+                                                </th>
+                                                <th>
+                                                    Current Price
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <!-- ko if: visibleItems().length > 0 -->
+                                        <tbody class="virtual-spacing">
+                                            <tr>
+                                                <td colspan="9" style="height: 0px;" data-bind="style: { height: `${gridScrollTopPadding()}px` }"></td>
+                                            </tr>
+                                        </tbody>
+                                        <tbody data-bind="foreach: visibleItems">
+                                            <tr>
+                                                <td>
+                                                    <span data-bind="text: Code"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: Name"></span>
+                                                </td>
+                                                <td>
+                                                    <label class="brand-checkbox-wrapper">
+                                                        <input type="checkbox" data-bind="checked: checked" />
+                                                    </label>
+                                                </td>
+                                                <td class="text-end">
+                                                    <span data-bind="text: salesQuantity"></span>
+                                                </td>
+                                                <td class="text-end">
+                                                    <span data-bind="text: salesValue"></span>
+                                                </td>
+                                                <td class="text-end">
+                                                    <span data-bind="text: currentPrice"></span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                        <tbody class="virtual-spacing">
+                                            <tr class="final-row">
+                                                <td colspan="9" style="height: 0px;" data-bind="style: { height: `${gridScrollBottomPadding()}px` }"></td>
+                                            </tr>
+                                        </tbody>
+                                        <!-- /ko -->
+                                        <!-- ko ifnot: visibleItems().length > 0 -->
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="6">
+                                                    No search results
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                        <!-- /ko -->
+                                    </table>
+                                </div>
+                                <!-- /ko -->
+                            </div>
+                            <div id="quality-specify">
+
+                            </div>
+                        </div>
                     </div>
                     <div id="product-tab" class="tab-pane fade" role="tabpanel">
                         <h2>

@@ -57,6 +57,15 @@ body {
   flex: 0 1 65%;
   min-width: 724px;
 }
+#prefilters-wrapper .mdc-select .k-dropdown-wrap.k-state-default {
+  background-color: #fff;
+}
+#prefilters-wrapper .mdc-select .k-dropdown-wrap.k-state-hover {
+  background-color: #fff;
+}
+#prefilters-wrapper .mdc-validating-field:has(.mdc-select--disabled) {
+  cursor: not-allowed;
+}
 
 #prefilters-wrapper > .grid {
   gap: 0.75rem;
@@ -423,6 +432,10 @@ body {
   background: #fff;
   border-left: none;
   border-right: none;
+}
+#impact-table-all tbody tr.margin-warning td {
+  background-color: #c0555f;
+  color: #fff;
 }
 
 #branch-totals,
@@ -1297,6 +1310,18 @@ tbody.virtual-spacing tr td {
 }
 #contract-pricing-modal .modal-body .nav-pills {
   border-bottom: 0;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+#contract-pricing-modal .modal-body .nav-pills .nav-item {
+  margin: 0;
+  margin-bottom: 0;
+  display: block;
+  float: none;
+}
+#contract-pricing-modal .modal-body .nav-pills .nav-item .nav-link {
+  width: 100%;
 }
 #contract-pricing-modal .modal-body .product-group-item-type-table .checkbox-column {
   width: 50px;
@@ -1340,5 +1365,20 @@ tbody.virtual-spacing tr td {
 }
 #contract-pricing-modal .modal-body .product-group-item-type-table tbody td .mdc-discounter-group .input-group {
   margin-bottom: 0;
+}
+#contract-pricing-modal .modal-body #quality-wrapper {
+  margin-top: 1rem;
+  --bs-columns: 3;
+  gap: 1rem;
+}
+#contract-pricing-modal .modal-body #quality-wrapper #quality-search {
+  --bs-columns: 3;
+  gap: 1rem;
+}
+#contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-prefilters {
+  gap: 1rem;
+}
+#contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-prefilters .mdc-validating-field:has(.mdc-select--disabled) {
+  cursor: not-allowed;
 }
 /*# sourceMappingURL=contract-pricing.css.map */

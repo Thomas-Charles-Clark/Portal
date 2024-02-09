@@ -301,8 +301,13 @@ namespace Portal
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/contract-pricing").Include(
+                        $"{cssPrefix}/mopdels/virtual-scrolling-deferred-data{cssSuffix}",
                         $"{cssPrefix}/lib/tempus-dominus/tempus-dominus{cssSuffix}",
                         $"{cssPrefix}/models/contract-pricing{cssSuffix}"
+                ));
+
+            bundles.Add(new StyleBundle("~/bundles/css/virtual-scrolling-deferred-data").Include(
+                        $"{cssPrefix}/mopdels/virtual-scrolling-deferred-data{cssSuffix}"
                 ));
 
             //  
@@ -710,9 +715,14 @@ namespace Portal
                         $"{jsPrefix}/models/range-management{jsSuffix}"
                 ));
 
-            bundles.Add(new StyleBundle("~/bundles/js/contract-pricing").Include(
+            bundles.Add(new ScriptBundle("~/bundles/js/contract-pricing").Include(
+                        $"{jsPrefix}/models/virtual-scrolling-deferred-data{jsSuffix}",
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/contract-pricing{jsSuffix}"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/virtual-scrolling-deferred-data").Include(
+                        $"{jsPrefix}/models/virtual-scrolling-deferred-data{jsSuffix}"
                 ));
 
             foreach (var b in BundleTable.Bundles)

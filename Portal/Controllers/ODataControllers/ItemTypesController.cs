@@ -41,6 +41,20 @@ namespace Portal.Controllers
             return PortalDb.ItemTypes.AsQueryable();
         }
 
+        // GET: odata/Products
+        [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
+        public IQueryable<ItemType> GetItemTypesForContractPricing()
+        {
+            var itemTypes = PortalDb.ContractProductRestrictions
+                .Where(cpr => cpr.ItemTypeID.HasValue)
+                .Select(cpr => cpr.ItemType)
+                .ToList();
+
+            var results = itemTypes.Distinct(new ItemTypeEqualityComparer());
+
+            return results.AsQueryable();
+        }
+
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
         [HttpGet]
         public IQueryable<ItemType> ItemTypeValueMapper(short? itemTypeId)

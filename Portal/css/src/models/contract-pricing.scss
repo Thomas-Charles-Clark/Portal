@@ -76,6 +76,24 @@ $deal-hover-color: $white;
         flex: 0 1 65%;
         min-width: 724px;
     }
+
+    .mdc-select {
+        .k-dropdown-wrap {
+            &.k-state-default {
+                background-color: $white;
+            }
+
+            &.k-state-hover {
+                background-color: $white;
+            }
+        }
+    }
+
+    .mdc-validating-field {
+        &:has(.mdc-select--disabled) {
+            cursor: not-allowed;
+        }
+    }
 }
 
 #prefilters-wrapper {
@@ -556,14 +574,16 @@ $deal-hover-color: $white;
                 border-left: none;
                 border-right: none;
             }
+
+            &.margin-warning {
+                td {
+                    background-color: tint-color($red-600, 20%);
+                    color: $white;
+                }
+            }
         }
     }
 }
-
-
-
-
-
 
 
 
@@ -1583,6 +1603,20 @@ tbody.virtual-spacing {
     .modal-body {
         .nav-pills {
             border-bottom: 0;
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: 1fr 1fr 1fr;
+
+            .nav-item {
+                margin: 0;
+                margin-bottom: 0;
+                display: block;
+                float: none;
+
+                .nav-link {
+                    width: 100%;
+                }
+            }
         }
 
         .product-group-item-type-table {
@@ -1656,6 +1690,31 @@ tbody.virtual-spacing {
                         }
                     }
                 }
+            }
+        }
+
+        #quality-wrapper {
+            margin-top: $l-gutter;
+            --bs-columns: 3;
+            gap: $l-gutter;
+
+            #quality-search {
+                --bs-columns: 3;
+                gap: $l-gutter;
+
+                #quality-prefilters {
+                    gap: $l-gutter;
+
+                    .mdc-validating-field {
+                        &:has(.mdc-select--disabled) {
+                            cursor: not-allowed;
+                        }
+                    }
+                }
+            }
+
+            #quality-specify {
+
             }
         }
     }

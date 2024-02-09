@@ -1840,6 +1840,7 @@
     <Content Include="css\src\models\fenwick-invoicing.scss" />
     <Content Include="css\src\models\range-management.scss" />
     <Content Include="css\src\models\contract-pricing.scss" />
+    <Content Include="css\src\models\virtual-scrolling-deferred-data.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

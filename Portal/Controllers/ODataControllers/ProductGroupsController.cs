@@ -43,9 +43,15 @@ namespace Portal.Controllers
 
         // GET: odata/Products
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
-        public IQueryable<ProductGroup> GetProductGroupForContractPricing()
+        public IQueryable<ProductGroup> GetProductGroupsForContractPricing()
         {
-            return PortalDb.ContractProductRestrictions.Select(cpr => cpr.ProductGroup).Distinct().AsQueryable();
+            var productGroups = PortalDb.ContractProductRestrictions
+                .Select(cpr => cpr.ProductGroup)
+                .ToList();
+
+            var results = productGroups.Distinct(new ProductGroupEqualityComparer());
+
+            return results.AsQueryable();
         }
 
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]

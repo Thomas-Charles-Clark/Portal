@@ -16,12 +16,6 @@ const contractPricingViewModel = ({ } = {}) => {
 
     self.scrollY = ko.observable(0);
 
-    self.productFilterGroupRowHeight = 30;
-
-    self.productPageGroupRowHeight = 26;
-
-    self.orderFormGroupRowHeight = 22;
-
     self.maxY = ko.observable(window.innerHeight);
 
     self.gridHeaderHeight = 56;
@@ -216,7 +210,7 @@ const contractPricingViewModel = ({ } = {}) => {
             //    default: break;
             //}
 
-            let unsaved = array.find(p => p.unsavedChanges());
+            let unsaved = false;// array.find(p => p.unsavedChanges());
 
             if (unsaved) {
                 window.showConfirm('Unsaved changes', 'You have unsaved changes. If you proceed your changes will be lost. Proceed?', () => {
@@ -642,7 +636,7 @@ const contractPricingViewModel = ({ } = {}) => {
     self.productGroupParams = kendoMDCDropDownList({
         label: 'Product Group',
         odata: true,
-        endPoint: '/odata/ProductGroups',
+        endPoint: '/odata/ProductGroups/Default.GetProductGroupsForContractPricing',
         textField: 'Name',
         valueField: 'ProductGroupID',
         virtual: false,
@@ -657,13 +651,29 @@ const contractPricingViewModel = ({ } = {}) => {
         autoBind: true,
         height: 340,
         select: self.genericUnsavedChangesSelect,
-        clearFunction: self.genericUnsavedChangesClear
+        clearFunction: self.genericUnsavedChangesClear,
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            if (self.itemTypeId()) {
+                d.$filter = `ContractProductRestrictions/any(pg: pg/ItemTypeID eq ${self.itemTypeId()})`
+            }
+
+            return d;
+        }
     });
 
     self.itemTypeParams = kendoMDCDropDownList({
         label: 'Item Type',
         odata: true,
-        endPoint: '/odata/ItemTypes',
+        endPoint: '/odata/ItemTypes/Default.GetItemTypesForContractPricing?$expand=ContractProductRestrictions',
         textField: 'Name',
         valueField: 'ItemTypeID',
         virtual: false,
@@ -678,7 +688,28 @@ const contractPricingViewModel = ({ } = {}) => {
         autoBind: true,
         height: 340,
         select: self.genericUnsavedChangesSelect,
-        clearFunction: self.genericUnsavedChangesClear
+        clearFunction: self.genericUnsavedChangesClear,
+        dataBound: (e) => {
+            console.log('dataBound', e);
+            //e.sender.enable(e.sender.dataSource.data().length != 0);
+            self.itemTypeParams.enable(e.sender.dataSource.data().length != 0);
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            if (self.productGroupId()) {
+                d.$filter = `ContractProductRestrictions/any(pg: pg/ProductGroupID eq ${self.productGroupId()})`
+            }
+
+            return d;
+        }
     });
 
     self.collectionParams = kendoMDCDropDownList({
@@ -1351,7 +1382,7 @@ const contractPricingViewModel = ({ } = {}) => {
         if (self.haveImpactResults()) {
 
             window.setTimeout(() => {
-                document.querySelectorAll(".final-row").forEach(tr => {
+                document.querySelectorAll("#impact-table-all .final-row").forEach(tr => {
                     if (tr)
                         self.intersectionObserver.observe(tr);
                 })
@@ -1418,88 +1449,6 @@ const contractPricingViewModel = ({ } = {}) => {
                 result += self.rowHeight;
             }
         });
-
-        return result;
-
-        //let my = self.maxY();
-
-        //let result = 0;
-
-        //ko.ignoreDependencies(() => {
-
-        //    let searchResults = self.impactResults();
-
-        //    if (searchResults.length) {
-
-        //        // you are fully scrolled out of view as soon as scrollY is greater than your height.
-        //        // gasr.height includes self.productFilterGroupRowHeight
-        //        let filterGroupsEntirelyAbove = searchResults.filter(sr => {
-        //            return scrollY > sr.runningHeight
-        //        });
-
-        //        // we consider you partially above when your product filter group row goes out of pane
-        //        // can more than one productFilterGroup be partially above? no; the next becomes partially above, this becomes fully above.
-
-        //        let filterGroupPartiallyAbove = searchResults.find(productFilterGroup => {
-        //            return ((productFilterGroup.offsetY) <= scrollYPlusHeaderHeight &&
-        //                (scrollY <= productFilterGroup.runningHeight))
-        //        });
-
-        //        // you must not be able to be both partially and entirely above: one or the other.
-
-        //        if (filterGroupsEntirelyAbove.length) {
-
-        //            let productPageGroupsHeight = filterGroupsEntirelyAbove.flatMap(fgea => fgea.items).reduce((a, i) => a += i.height, 0);
-
-        //            //console.log("productPageGroupsHeight", productPageGroupsHeight);
-
-        //            result += productPageGroupsHeight;
-
-        //            let productPageGroupsHeaderRowsHeight = filterGroupsEntirelyAbove.length * self.productFilterGroupRowHeight
-
-        //            //console.log("productPageGroupsHeaderRowsHeight", productPageGroupsHeaderRowsHeight);
-
-        //            result += productPageGroupsHeaderRowsHeight; // every filterGroup provides a row
-
-        //            // not every productPageGroup provides a row and they're all accounted for elsewhere in the algorithm so remove their height here
-        //            //result -= filterGroupsEntirelyAbove.flatMap(fgea => fgea.items).reduce((a, i) => a += i.name == "" ? 0 : self.productPageGroupRowHeight, 0);
-        //        }
-
-        //        //console.log("filterGroupsEntirelyAbove", filterGroupsEntirelyAbove);
-
-        //        if (filterGroupPartiallyAbove) {
-
-        //            let additionFromPartiallyAboveGroup = 0;
-
-        //            filterGroupPartiallyAbove.items.forEach(ppg => {
-        //                if (ppg.name && !ppg.headerVisible()) {
-        //                    additionFromPartiallyAboveGroup += self.productPageGroupRowHeight;
-        //                }
-
-        //                ppg.items.forEach(ofg => {
-        //                    if (ofg.name && !ofg.headerVisible()) {
-        //                        additionFromPartiallyAboveGroup += self.orderFormGroupRowHeight;
-        //                    }
-
-        //                    ko.unwrap(ofg.items).forEach(p => {
-        //                        if (scrollYPlusHeaderHeight > p.offsetY + self.rowHeight) {
-        //                            additionFromPartiallyAboveGroup += p.height;
-        //                        }
-        //                    })
-        //                })
-        //            })
-
-        //            if ((scrollYPlusHeaderHeight - filterGroupPartiallyAbove.offsetY) > self.productFilterGroupRowHeight)
-        //                additionFromPartiallyAboveGroup += self.productFilterGroupRowHeight;
-
-        //            //console.log("additionFromPartiallyAboveGroup", additionFromPartiallyAboveGroup);
-
-        //            result += additionFromPartiallyAboveGroup;
-        //        }
-
-        //        //console.log("filterGroupPartiallyAbove", filterGroupPartiallyAbove);
-        //    }
-        //});
 
         return result;
     }, self);
@@ -1949,7 +1898,8 @@ const dateRangeEditor = ({ parent } = { parent: null }) => {
     if (self.endDate()) {
         self.startDateParams.dateTimePickerOptions.restrictions.maxDate = self.endDate();
     }
-egion
+
+    //#endregion
 
     return self;
 }
@@ -1967,72 +1917,9 @@ const contractPricingEditor = ({
 
     self.busy = ko.observable(false);
 
-    self.contractProductRestrictions = getContractProductRestrictions();
-
-    self.brands = getBrands();
-
     self.editingRecord = ko.observable();
 
     self.loadedJson = ko.observable();
-
-    self.productGroupAllFabric = productGroupItemType({
-        label: "Fabric",
-        productGroupId: 8,
-        productGroupCode: 'FA',
-        itemTypeId: null,
-        itemTypeCode: null,
-        finalPrice: null,
-        discountPercentage: null,
-        status: null
-    });
-
-    self.productGroupAllWallpaper = productGroupItemType({
-        label: "Wallpaper",
-        productGroupId: 16,
-        productGroupCode: 'PA',
-        itemTypeId: null,
-        itemTypeCode: null,
-        finalPrice: null,
-        discountPercentage: null,
-        status: null
-    });
-
-    self.productGroupAllPatternBooks = productGroupItemType({
-        label: "Pattern Books",
-        productGroupId: 17,
-        productGroupCode: 'PB',
-        itemTypeId: null,
-        itemTypeCode: null,
-        finalPrice: null,
-        discountPercentage: null,
-        status: null
-    });
-
-    self.productGroupAllRugs = productGroupItemType({
-        label: "Rugs",
-        productGroupId: 27,
-        productGroupCode: 'RG',
-        itemTypeId: null,
-        itemTypeCode: null,
-        finalPrice: null,
-        discountPercentage: null,
-        status: null
-    });
-
-    self.itemTypes = self.contractProductRestrictions.filter(cpr => cpr.ProductGroupID != null && cpr.ItemTypeID != null).map(cpr => 
-        productGroupItemType({
-            label: `${cpr.ItemType?.Name}`,
-            productGroupId: cpr.ProductGroupID,
-            productGroup: cpr.ProductGroup,
-            itemTypeId: cpr.ItemTypeID,
-            itemType: cpr.ItemType,
-            finalPrice: null,
-            discountPercentage: null,
-            status: null
-        })
-    );
-
-    self.itemTypesByProductGroup = Object.groupBy(self.itemTypes, (it) => it.productGroup.Name);
 
     //#endregion
 
@@ -2041,6 +1928,12 @@ const contractPricingEditor = ({
     self.modalElement = document.getElementById("contract-pricing-modal");
 
     self.modal = bootstrap.Modal.getOrCreateInstance(self.modalElement);
+
+    self.productGroupItemTypeEditor = productGroupItemTypeEditor({});
+
+    self.qualityEditor = qualityEditor({
+        tradeAccountId: self.parent.tradeAccountId
+    });
 
     //#endregion
 
@@ -2106,6 +1999,531 @@ const contractPricingEditor = ({
     return self;
 }
 
+const productGroupItemTypeEditor = ({
+
+} = {
+    
+    }) => {
+
+    let self = {};
+
+    //#region Properties
+
+    self.brands = getBrands();
+
+    self.contractProductRestrictions = getContractProductRestrictions();
+
+    self.productGroupAllFabric = productGroupItemType({
+        label: "Fabric",
+        productGroupId: 8,
+        productGroupCode: 'FA',
+        itemTypeId: null,
+        itemTypeCode: null,
+        finalPrice: null,
+        discountPercentage: null,
+        status: null,
+        permitMonetary: false
+    });
+
+    self.productGroupAllWallpaper = productGroupItemType({
+        label: "Wallpaper",
+        productGroupId: 16,
+        productGroupCode: 'PA',
+        itemTypeId: null,
+        itemTypeCode: null,
+        finalPrice: null,
+        discountPercentage: null,
+        status: null,
+        permitMonetary: false
+    });
+
+    self.productGroupAllPatternBooks = productGroupItemType({
+        label: "Pattern Books",
+        productGroupId: 17,
+        productGroupCode: 'PB',
+        itemTypeId: null,
+        itemTypeCode: null,
+        finalPrice: null,
+        discountPercentage: null,
+        status: null,
+        permitMonetary: false
+    });
+
+    self.productGroupAllRugs = productGroupItemType({
+        label: "Rugs",
+        productGroupId: 27,
+        productGroupCode: 'RG',
+        itemTypeId: null,
+        itemTypeCode: null,
+        finalPrice: null,
+        discountPercentage: null,
+        status: null,
+        permitMonetary: false
+    });
+
+    self.itemTypes = self.contractProductRestrictions.filter(cpr => cpr.ProductGroupID != null && cpr.ItemTypeID != null).map(cpr =>
+        productGroupItemType({
+            label: `${cpr.ItemType?.Name}`,
+            productGroupId: cpr.ProductGroupID,
+            productGroup: cpr.ProductGroup,
+            itemTypeId: cpr.ItemTypeID,
+            itemType: cpr.ItemType,
+            finalPrice: null,
+            discountPercentage: null,
+            status: null,
+            permitMonetary: true
+        })
+    );
+
+    self.itemTypesByProductGroup = Object.groupBy(self.itemTypes, (it) => it.productGroup.Name);
+
+    //#endregion
+
+    //#region Components
+
+
+
+    //#endregion
+
+    //#region Computeds
+
+
+
+    //#endregion
+
+    //#region Methods
+
+
+
+    //#endregion
+
+
+    return self;
+}
+
+const qualityEditor = ({
+    tradeAccountId
+} = {
+        tradeAccountId: null
+    }) => {
+    let self = {
+        tradeAccountId: tradeAccountId
+    };
+
+    //#region Properties
+
+    //#region Prefilters
+
+    self.productGroupId = ko.observable('');
+
+    self.productGroup = ko.observable();
+
+    self.itemTypeId = ko.observable('');
+
+    self.itemType = ko.observable();
+
+    self.brandId = ko.observable('');
+
+    self.brand = ko.observable();
+
+    self.collectionId = ko.observable('');
+
+    self.collection = ko.observable();
+
+    self.launchId = ko.observable('');
+
+    self.launch = ko.observable();
+
+    self.searchTerm = ko.observable();
+
+    //#endregion
+
+
+    //#endregion
+
+
+    //#region Lifted Methods
+
+    self.genericUnsavedChangesSelect = (e) => {
+        e.preventDefault(); // this prevents the Kendo control from actively selecting the thing the user selected
+        self.checkUnsavedChangesThenSelect(e); // this does our check; async promise, confirm dialog, la la la...
+    }
+
+    self.checkUnsavedChangesThenSelect = async (event) => {
+        await self.unsavedChanges().then((d) => {
+            //console.log('go', event.sender.options.dataValueField, event.dataItem[event.sender.options.dataValueField]);
+            event.sender._widgetOptions.value(event.dataItem[event.sender.options.dataValueField]);
+
+        }).catch((e) => { });
+    }
+
+    self.genericUnsavedChangesClear = (e) => {
+        self.checkUnsavedChangesThenClear(e);
+    }
+
+    self.checkUnsavedChangesThenClear = async (options) => {
+        await self.unsavedChanges().then(() => {
+            var self = options; // self is now the params of the control the user just interacted with
+
+            if (ko.isObservableArray(self.observable)) {
+                self.observable([]);
+            } else {
+                self.observable(undefined);
+            }
+            if (self.dropDownListSettings.widget()) {
+                if (ko.isObservableArray(self.observable)) {
+                    self.dropDownListSettings.widget().value([]);
+                } else {
+                    self.dropDownListSettings.widget().value('');
+                }
+                self.dropDownListSettings.widget()._widgetOptions.value.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
+                if (self.dropDownListSettings.widget()._widgetOptions.value.mdcSelect.label_ != null)
+                    self.dropDownListSettings.widget()._widgetOptions.value.mdcSelect.label_.float(false);
+            }
+            if (typeof self.afterClear === 'function') {
+                self.afterClear();
+            }
+        }).catch((e) => { });
+    }
+
+    self.unsavedChanges = () => {
+        return new Promise((resolve, reject) => {
+
+            let array = [];
+
+            //switch (self.view()) {
+            //    case VIEW_MANAGE:
+            //        array = self.filledRecords.peek();
+            //        break;
+            //    case VIEW_ADD:
+            //        array = self.addFilledRecords.peek();
+            //        break;
+            //    default: break;
+            //}
+
+            let unsaved = false;// array.find(p => p.unsavedChanges());
+
+            if (unsaved) {
+                window.showConfirm('Unsaved changes', 'You have unsaved changes. If you proceed your changes will be lost. Proceed?', () => {
+                    resolve();
+                }, () => {
+                    reject();
+                });
+            } else {
+                resolve();
+            }
+        });
+    }
+
+    //#endregion
+
+    //#region Components
+
+    self.primaryFetchParams = ko.computed(() => {
+        let params = {
+            tradeAccountId: self.tradeAccountId(),
+            launchId: self.launchId(),
+            brandId: self.brandId(),
+            collectionId: self.collectionId(),
+            productGroupId: self.productGroupId(),
+            itemTypeId: self.itemTypeId(),
+        };
+
+        if (self.searchTerm()) {
+            params.searchTerm = searchTerm();
+        }
+
+        if (self.tradeAccountId() &&
+            (
+                self.launchId() ||
+                self.brandId() ||
+                self.collectionId() ||
+                self.productGroupId() ||
+                self.itemTypeId() ||
+                self.searchTerm()
+            )
+        ) {
+            return params;
+        }
+
+        return;
+    }, self);
+
+    self.secondaryFetchParams = ko.computed(() => {
+        let params = {
+
+        };
+
+        return params;
+    }, self);
+
+    self.virtualScroller = virtualScrollingDeferredDataFactory({
+        tableSelector: "#quality-search-results-table",
+        rowHeight: 30,
+        primaryFetchParams: self.primaryFetchParams,
+        primaryFetchEndpoint: "/api/contractPricing/FetchImpact",
+        secondaryFetchQueueRecordId: "SomeProperty",
+        secondaryFetchParams: self.secondaryFetchParamsComputer,
+        secondaryFetchEndpoint: "/api/contractPricing/FetchSalesData",
+        secondaryFetchResultProcessingFn: (rec, data) => {
+            // rec is an instance of primaryFetchResultFn, but with the various properties we deferred data fetch for
+            // as yet unfilled
+
+            // data is the record delivered from the deferred fetch carrying the data we wish to fill rec with
+
+            // now is the time to do e.g.
+            // rec.someImportantProperty(data.someImportantProperty);
+
+            rec.loaded(true);
+            rec.busy(false);
+        },
+        container: document.getElementById("quality-results-scroller-container"),
+        gridHeaderHeight: 56,
+        gridPositionTop: 0,
+        unfilledRecordFn: (rec) => {
+            let self = Object.assign({}, rec);
+            return self;
+        }
+    });
+
+    self.launchParams = kendoMDCDropDownList({
+        label: 'Launch',
+        odata: true,
+        endPoint: '/odata/Launches',
+        textField: 'Name',
+        valueField: 'LaunchID',
+        virtual: true,
+        pageSize: 40,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/Launches/Default.LaunchValueMapper(launchId=${options.value})`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        idObservable: self.launchId,
+        objObservable: self.launch,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'desc',
+            field: 'LaunchID'
+        },
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: '#contract-pricing-modal .modal-body'
+        }
+    });
+
+    self.brandParams = kendoMDCDropDownList({
+        label: 'Brand',
+        odata: true,
+        endPoint: '/odata/Brands',
+        textField: 'Name',
+        valueField: 'BrandID',
+        virtual: false,
+        idObservable: self.brandId,
+        objObservable: self.brand,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: '#contract-pricing-modal .modal-body'
+        }
+    });
+
+    self.productGroupParams = kendoMDCDropDownList({
+        label: 'Product Group',
+        odata: true,
+        endPoint: '/odata/ProductGroups/Default.GetProductGroupsForContractPricing',
+        textField: 'Name',
+        valueField: 'ProductGroupID',
+        virtual: false,
+        idObservable: self.productGroupId,
+        objObservable: self.productGroup,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: false,
+        autoBind: true,
+        height: 340,
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear,
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            if (self.itemTypeId()) {
+                d.$filter = `ContractProductRestrictions/any(pg: pg/ItemTypeID eq ${self.itemTypeId()})`
+            }
+
+            return d;
+        }
+    });
+
+    self.itemTypeParams = kendoMDCDropDownList({
+        label: 'Item Type',
+        odata: true,
+        endPoint: '/odata/ItemTypes/Default.GetItemTypesForContractPricing?$expand=ContractProductRestrictions',
+        textField: 'Name',
+        valueField: 'ItemTypeID',
+        virtual: false,
+        idObservable: self.itemTypeId,
+        objObservable: self.itemType,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: false,
+        autoBind: true,
+        height: 340,
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear,
+        dataBound: (e) => {
+            console.log('dataBound', e);
+            e.sender.enable(e.sender.dataSource.data().length != 0);
+            self.itemTypeParams.enable(e.sender.dataSource.data().length != 0);
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            if (self.productGroupId()) {
+                d.$filter = `ContractProductRestrictions/any(pg: pg/ProductGroupID eq ${self.productGroupId()})`
+            }
+
+            return d;
+        }
+    });
+
+    self.collectionParams = kendoMDCDropDownList({
+        label: 'Collection',
+        odata: true,
+        endPoint: '/odata/Collections',
+        textField: 'Name',
+        valueField: 'CollectionID',
+        virtual: true,
+        pageSize: 40,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/Collections/Default.CollectionValueMapper(collectionId=${options.value})`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        idObservable: self.collectionId,
+        objObservable: self.collection,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'desc',
+            field: 'CollectionID'
+        },
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: '#contract-pricing-modal .modal-body'
+        }
+    });
+
+    self.searchTermParams = {
+        label: "Search by Quality or Product",
+        observable: self.searchTerm,
+        focusObservable: ko.observable(),
+        busy: ko.observable(),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            $(self.observable.DOMElement).focus();
+        },
+        useNativeValidation: false, // this feeds through to mdc objects and affects them
+        decorateInputElement: true,
+        insertValidationMessages: false,
+        enterKey: () => {
+            //self.gridSettings.widget().dataSource.read();
+        }
+    }
+
+    //#endregion
+
+    //#region Computeds
+
+
+    //#endregion
+
+    //#region Subscriptions
+
+
+
+    //#endregion
+
+    //#region Methods
+
+
+    //#endregion
+
+    return self;
+}
+
 const productGroupItemType = ({
     label,
     productGroupId,
@@ -2114,7 +2532,8 @@ const productGroupItemType = ({
     itemType,
     finalPrice,
     discountPercentage,
-    status
+    status,
+    permitMonetary
 } = {
     label: null,
     productGroupId: null,
@@ -2123,7 +2542,8 @@ const productGroupItemType = ({
     itemType: null,
     finalPrice: null,
     discountPercentage: null,
-    status: null
+    status: null,
+    permitMonetary: false
 }) => {
 
     let self = {
@@ -2163,7 +2583,7 @@ const productGroupItemType = ({
             Code: 'GBP',
             ISO_4217: 'GBP'
         },
-        permitMonetary: false,
+        permitMonetary: permitMonetary,
         permitPercentage: true,
         initialState: DISCOUNT_STATE_PERCENTAGE
     });
@@ -2377,9 +2797,9 @@ const discounterFactory = ({
         }
     });
     
-    self.selector.disabled = ko.pureComputed(function () {
-        return (self.monetary.readOnly() || self.percentage.readOnly());
-    }, self);
+    //self.selector.disabled = ko.pureComputed(function () {
+    //    return (self.monetary.readOnly() || self.percentage.readOnly());
+    //}, self);
 
     self.subscriptions.push(self.selector.observable.subscribe(function (newValue) {
         switch (newValue) {

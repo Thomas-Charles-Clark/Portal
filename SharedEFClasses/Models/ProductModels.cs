@@ -343,6 +343,22 @@ namespace SharedEFClasses.Models.Products
         public virtual ICollection<ContractProductRestriction> ContractProductRestrictions { get; set; }
     }
 
+    public class ItemTypeEqualityComparer : IEqualityComparer<ItemType>
+    {
+        public bool Equals(ItemType it1, ItemType it2)
+        {
+            if (ReferenceEquals(it1, it2))
+                return true;
+
+            if (it2 is null || it1 is null)
+                return false;
+
+            return it1.ItemTypeID == it2.ItemTypeID;
+        }
+
+        public int GetHashCode(ItemType pg) => pg.ItemTypeID;
+    }
+
     public class ProductGroup
     {
         [Key]
@@ -359,6 +375,22 @@ namespace SharedEFClasses.Models.Products
         [JsonIgnore]
         [InverseProperty("ProductGroup")]
         public virtual ICollection<ContractProductRestriction> ContractProductRestrictions { get; set; }
+    }
+
+    public class ProductGroupEqualityComparer : IEqualityComparer<ProductGroup>
+    {
+        public bool Equals(ProductGroup pg1, ProductGroup pg2)
+        {
+            if (ReferenceEquals(pg1, pg2))
+                return true;
+
+            if (pg2 == null || pg1 == null)
+                return false;
+
+            return pg1.ProductGroupID == pg2.ProductGroupID;
+        }
+
+        public int GetHashCode(ProductGroup pg) => pg.ProductGroupID;
     }
 
     public class Quality

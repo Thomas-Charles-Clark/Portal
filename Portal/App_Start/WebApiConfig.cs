@@ -209,12 +209,24 @@ namespace Portal
 
             productGroupValueMapperFunction.Parameter<byte>("productGroupId");
 
+            var productGroupsForContractPricing = odataBuilder.EntityType<ProductGroup>()
+                .Collection
+                .Function("GetProductGroupsForContractPricing")
+                .ReturnsCollectionFromEntitySet<ProductGroup>("ProductGroups");
+
+
             var itemTypeValueMapperFunction = odataBuilder.EntityType<ItemType>()
                 .Collection
                 .Function("ItemTypeValueMapper")
                 .ReturnsCollectionFromEntitySet<ItemType>("ItemTypes");
 
             itemTypeValueMapperFunction.Parameter<byte>("itemTypeId");
+
+            var itemTypesForContractPricing = odataBuilder.EntityType<ItemType>()
+                .Collection
+                .Function("GetItemTypesForContractPricing")
+                .ReturnsCollectionFromEntitySet<ProductGroup>("ItemType");
+
 
             var productFilterValueMapperFunction = odataBuilder.EntityType<ProductFilter>()
                 .Collection
