@@ -12,7 +12,7 @@ const contractPricingViewModel = ({ } = {}) => {
 
     // impossible virtual scrolling property madness
 
-    self.rowHeight = 60;
+    self.rowHeight = 50;
 
     self.scrollY = ko.observable(0);
 
@@ -32,24 +32,17 @@ const contractPricingViewModel = ({ } = {}) => {
 
     self.finalRowVisible = ko.observable(false);
 
-    self.gridPositionTop = 252;
+    self.gridPositionTop = 206;
 
     ///
 
-
-    self.busy = ko.observable(true);
+    self.busy = ko.observable(false);
 
     self.fetchDataBusy = ko.observable(false);
 
     self.view = ko.observable(VIEW_MANAGE);
 
-    self.modalBusy = ko.observable(false);
-
     self.ready = ko.observable(true);
-
-    self.modalElement = document.getElementById("add-note-modal");
-
-    self.modal = bootstrap.Modal.getOrCreateInstance(self.modalElement);
 
     //self.note = ko.observable();
 
@@ -68,7 +61,7 @@ const contractPricingViewModel = ({ } = {}) => {
     //    decorateInputElement: true,
     //    insertValidationMessages: false,
     //    clearable: true,
-    //    revertable: false,
+    //    revertible: false,
     //    disable: ko.observable(false),
     //    enable: ko.observable(true),
     //    busy: false,
@@ -85,11 +78,15 @@ const contractPricingViewModel = ({ } = {}) => {
     //#region Manage Grid
 
     // this is used to hold the results of the fetchDeals call
+    self.tradeAccountContractJson = ko.observable();
     self.tradeAccountDealDetails = ko.observable();
-
+     
+    self.tradeAccountGroupContractJson = ko.observable();
     self.tradeAccountGroupDealDetails = ko.observable();
 
     self.selectedContractListId = ko.observable();
+
+    self.selectedContractListJson = ko.observable();
 
     self.impactResults = ko.observableArray([]);
 
@@ -104,10 +101,6 @@ const contractPricingViewModel = ({ } = {}) => {
     //// this lets us return the grid to where it was before "refresh" was called
     //// calling refresh is necessary following an endless scrolling paging event because we're grouping
     self.gridScrollRestoration = null;
-
-    //self.productFilterTotals = ko.observableArray([]);
-
-    //self.branchBaskets = ko.observableArray([]);
 
     //#endregion
 
@@ -293,15 +286,17 @@ const contractPricingViewModel = ({ } = {}) => {
 
     //#region Components
 
+    // this governs the edit modal and all editing - fairly important
+    self.contractPricingEditor = contractPricingEditor({
+        parent: self
+    });
+
     self.firstParamsRun = true;
 
     self.prefilterParams = ko.computed(() => {
         console.log('prefilterParams computed');
 
         let props = {
-            salesMarketId: self.salesMarketId(),
-            salesRepresentativeId: self.salesRepresentativeId(),
-            tradeAccountId: self.tradeAccountId(),
             launchId: self.launchId(),
             brandId: self.brandId(),
             productGroupId: self.productGroupId(),
@@ -321,6 +316,9 @@ const contractPricingViewModel = ({ } = {}) => {
             self.firstParamsRun = false;
             return false;
         } else {
+
+            self.fetchImpact();
+
             return props;
         }
     }, self).extend({
@@ -360,7 +358,7 @@ const contractPricingViewModel = ({ } = {}) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         readOnly: false,
         filter: 'contains',
         autoBind: true,
@@ -433,7 +431,7 @@ const contractPricingViewModel = ({ } = {}) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         readOnly: false,
         filter: 'contains',
         autoBind: true,
@@ -496,7 +494,7 @@ const contractPricingViewModel = ({ } = {}) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         readOnly: false,
         filter: false,
         autoBind: true,
@@ -535,7 +533,7 @@ const contractPricingViewModel = ({ } = {}) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         readOnly: false,
         filter: 'contains',
         autoBind: true,
@@ -607,7 +605,7 @@ const contractPricingViewModel = ({ } = {}) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         readOnly: false,
         filter: 'contains',
         autoBind: true,
@@ -632,7 +630,7 @@ const contractPricingViewModel = ({ } = {}) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         readOnly: false,
         filter: 'contains',
         autoBind: true,
@@ -646,14 +644,14 @@ const contractPricingViewModel = ({ } = {}) => {
         odata: true,
         endPoint: '/odata/ProductGroups',
         textField: 'Name',
-        valueField: 'productGroupID',
+        valueField: 'ProductGroupID',
         virtual: false,
         idObservable: self.productGroupId,
         objObservable: self.productGroup,
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         readOnly: false,
         filter: false,
         autoBind: true,
@@ -674,7 +672,7 @@ const contractPricingViewModel = ({ } = {}) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         readOnly: false,
         filter: false,
         autoBind: true,
@@ -713,7 +711,7 @@ const contractPricingViewModel = ({ } = {}) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         readOnly: false,
         filter: 'contains',
         autoBind: true,
@@ -734,7 +732,7 @@ const contractPricingViewModel = ({ } = {}) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         clearFunction: function () {
             var self = this;
             self.observable(undefined);
@@ -753,7 +751,11 @@ const contractPricingViewModel = ({ } = {}) => {
 
     //#region Subscriptions
 
-
+    self.tradeAccountId.subscribe(nv => {
+        if (nv == '') {
+            self.reset();
+        }
+    });
 
     //#endregion
 
@@ -761,131 +763,149 @@ const contractPricingViewModel = ({ } = {}) => {
     //#region Methods
 
     self.fetchImpact = (selection, event) => {
-        self.busy(true);
 
-        //console.log('fetchImpact', selection, event);
+        // this code block only to be executed if method is called as a result of user interaction
+        // e.g. selecting a date range
+        if (selection && event) {
+            //console.log('fetchImpact', selection, event);
 
-        let returnEarly = false;
+            let returnEarly = false;
 
-        /*
+            /*
+    
+            This could become a bit confusing but if we talk it through we'll massively successfulness it.
+            We're clicking on buttons which toggle the expansion of collapsible panels.
+            We can then click on buttons within those which steals "selected" away from the button previously clicked.
+            If we click on an expandy button which is not yet selected, select it. ✔
+            If we click on an expandy button which is already selected, deselect it. ✔
+            If we click on an expandy button, then click on a button within it, deselect the expandy button and select the clicked thing. ✔
+    
+            If we click on an expandy button which is not selected but whose contents are revealed...
+                the accordion wants to collapse the expandy bit
+                the selector wants to select the thing
+                and we end up in a confusing state.
+                What we should actually do is just deselect and collapse.
+    
+            Only bloody done it, haven't we!
+    
+            */
 
-        This could become a bit confusing but if we talk it through we'll massively successfulness it.
-        We're clicking on buttons which toggle the expansion of collapsible panels.
-        We can then click on buttons within those which steals "selected" away from the button previously clicked.
-        If we click on an expandy button which is not yet selected, select it. ✔
-        If we click on an expandy button which is already selected, deselect it. ✔
-        If we click on an expandy button, then click on a button within it, deselect the expandy button and select the clicked thing. ✔
 
-        If we click on an expandy button which is not selected but whose contents are revealed...
-            the accordion wants to collapse the expandy bit
-            the selector wants to select the thing
-            and we end up in a confusing state.
-            What we should actually do is just deselect and collapse.
+            // because we don't want to allow selection if this is the case, but we don't want to CLEAR selection
+            // as is the case when we set returnEarly = true;
+            if (selection.hasOwnProperty('contracts') && selection.contracts.length === 0) {
+                self.busy(false);
+                return;
+            }
 
-        Only bloody done it, haven't we!
-
-        */
-
-
-        // because we don't want to allow selection if this is the case, but we don't want to CLEAR selection
-        // as is the case when we set returnEarly = true;
-        if (selection.hasOwnProperty('contracts') && selection.contracts.length === 0) {
-            self.busy(false);
-            return;
-        }
-
-        if (event.currentTarget.classList.contains('selected')) {
-            returnEarly = true;
-        } else {
-            if (self.selectedContractListId() != null &&
-                (event.currentTarget.classList.contains('accordion-button')) &&
-                (event.currentTarget.classList.contains('collapsed'))) {
-                //(event.currentTarget.parentNode.parentNode.querySelector('.accordion-collapse').classList.contains('show'))) {
+            if (event.currentTarget.classList.contains('selected')) {
                 returnEarly = true;
-            }
-        }
-
-        if (returnEarly) {
-            self.selectedContractListId(undefined);
-            self.impactResults([]);
-            self.haveImpactResults(false);
-            self.busy(false);
-
-            return false;
-        }
-
-        let contractListId = null;
-
-        let contractDiscountTradeAccountGroupIds = [];
-        let contractPriceTradeAccountGroupIds = [];
-        let contractDiscountTradeAccountIds = [];
-        let contractPriceTradeAccountIds = [];
-
-        if (selection.hasOwnProperty('contractLevels')) {
-            contractListId = `contract-levels-${selection.contractLevels.flatMap(function (cl) { return cl.contracts.flatMap(function (c) { return c.contractListId }) }).reduce(function (a, i) { return a = a + i }, 0)}`;
-
-            contractDiscountTradeAccountGroupIds = selection.contractLevels.flatMap(cl => cl.contracts.flatMap(c => c.hasOwnProperty('contractDiscountTradeAccountGroupId') ? [c.contractDiscountTradeAccountGroupId] : []));
-
-            contractPriceTradeAccountGroupIds = selection.contractLevels.flatMap(cl => cl.contracts.flatMap(c => c.hasOwnProperty('contractPriceTradeAccountGroupId') ? [c.contractPriceTradeAccountGroupId] : []));
-
-            contractDiscountTradeAccountIds = selection.contractLevels.flatMap(cl => cl.contracts.flatMap(c => c.hasOwnProperty('contractDiscountTradeAccountId') ? [c.contractDiscountTradeAccountId] : []));
-
-            contractPriceTradeAccountIds = selection.contractLevels.flatMap(cl => cl.contracts.flatMap(c => c.hasOwnProperty('contractPriceTradeAccountId') ? [c.contractPriceTradeAccountId] : []));
-
-        } else if (selection.hasOwnProperty('contracts')) {
-            contractListId = `contracts-${selection.contracts.flatMap(function (c) { return c.contractListId }).reduce(function (a, i) { return a = a + i }, 0)}`;
-
-            contractDiscountTradeAccountGroupIds = selection.contracts.flatMap(c => c.hasOwnProperty('contractDiscountTradeAccountGroupId') ? [c.contractDiscountTradeAccountGroupId] : []);
-
-            contractPriceTradeAccountGroupIds = selection.contracts.flatMap(c => c.hasOwnProperty('contractPriceTradeAccountGroupId') ? [c.contractPriceTradeAccountGroupId] : []);
-
-            contractDiscountTradeAccountIds = selection.contracts.flatMap(c => c.hasOwnProperty('contractDiscountTradeAccountId') ? [c.contractDiscountTradeAccountId] : []);
-
-            contractPriceTradeAccountIds = selection.contracts.flatMap(c => c.hasOwnProperty('contractPriceTradeAccountId') ? [c.contractPriceTradeAccountId] : []);
-
-        } else if (selection.hasOwnProperty('contractListId')) {
-            contractListId = selection.contractListId;
-
-            if (selection.hasOwnProperty('contractDiscountTradeAccountGroupId')) {
-                contractDiscountTradeAccountGroupIds.push(selection.contractDiscountTradeAccountGroupId);
+            } else {
+                if (self.selectedContractListId() != null &&
+                    (event.currentTarget.classList.contains('accordion-button')) &&
+                    (event.currentTarget.classList.contains('collapsed'))) {
+                    //(event.currentTarget.parentNode.parentNode.querySelector('.accordion-collapse').classList.contains('show'))) {
+                    returnEarly = true;
+                }
             }
 
-            if (selection.hasOwnProperty('contractPriceTradeAccountGroupId')) {
-                contractPriceTradeAccountGroupIds.push(selection.contractPriceTradeAccountGroupId);
+            if (returnEarly) {
+                self.selectedContractListId(undefined);
+                self.impactResults([]);
+                self.haveImpactResults(false);
+                self.busy(false);
+
+                return false;
             }
 
-            if (selection.hasOwnProperty('contractDiscountTradeAccountId')) {
-                contractDiscountTradeAccountIds.push(selection.contractDiscountTradeAccountId);
+            let contractListId = null;
+
+            let contractDiscountTradeAccountGroupIds = [];
+            let contractPriceTradeAccountGroupIds = [];
+            let contractDiscountTradeAccountIds = [];
+            let contractPriceTradeAccountIds = [];
+
+            if (selection.hasOwnProperty('contractLevels')) {
+                contractListId = `contract-levels-${selection.contractLevels.flatMap(function (cl) { return cl.contracts.flatMap(function (c) { return c.contractListId }) }).reduce(function (a, i) { return a = a + i }, 0)}`;
+
+                contractDiscountTradeAccountGroupIds = selection.contractLevels.flatMap(cl => cl.contracts.flatMap(c => c.hasOwnProperty('contractDiscountTradeAccountGroupId') ? [c.contractDiscountTradeAccountGroupId] : []));
+
+                contractPriceTradeAccountGroupIds = selection.contractLevels.flatMap(cl => cl.contracts.flatMap(c => c.hasOwnProperty('contractPriceTradeAccountGroupId') ? [c.contractPriceTradeAccountGroupId] : []));
+
+                contractDiscountTradeAccountIds = selection.contractLevels.flatMap(cl => cl.contracts.flatMap(c => c.hasOwnProperty('contractDiscountTradeAccountId') ? [c.contractDiscountTradeAccountId] : []));
+
+                contractPriceTradeAccountIds = selection.contractLevels.flatMap(cl => cl.contracts.flatMap(c => c.hasOwnProperty('contractPriceTradeAccountId') ? [c.contractPriceTradeAccountId] : []));
+
+            } else if (selection.hasOwnProperty('contracts')) {
+                contractListId = `contracts-${selection.contracts.flatMap(function (c) { return c.contractListId }).reduce(function (a, i) { return a = a + i }, 0)}`;
+
+                contractDiscountTradeAccountGroupIds = selection.contracts.flatMap(c => c.hasOwnProperty('contractDiscountTradeAccountGroupId') ? [c.contractDiscountTradeAccountGroupId] : []);
+
+                contractPriceTradeAccountGroupIds = selection.contracts.flatMap(c => c.hasOwnProperty('contractPriceTradeAccountGroupId') ? [c.contractPriceTradeAccountGroupId] : []);
+
+                contractDiscountTradeAccountIds = selection.contracts.flatMap(c => c.hasOwnProperty('contractDiscountTradeAccountId') ? [c.contractDiscountTradeAccountId] : []);
+
+                contractPriceTradeAccountIds = selection.contracts.flatMap(c => c.hasOwnProperty('contractPriceTradeAccountId') ? [c.contractPriceTradeAccountId] : []);
+
+            } else if (selection.hasOwnProperty('contractListId')) {
+                contractListId = selection.contractListId;
+
+                if (selection.hasOwnProperty('contractDiscountTradeAccountGroupId')) {
+                    contractDiscountTradeAccountGroupIds.push(selection.contractDiscountTradeAccountGroupId);
+                }
+
+                if (selection.hasOwnProperty('contractPriceTradeAccountGroupId')) {
+                    contractPriceTradeAccountGroupIds.push(selection.contractPriceTradeAccountGroupId);
+                }
+
+                if (selection.hasOwnProperty('contractDiscountTradeAccountId')) {
+                    contractDiscountTradeAccountIds.push(selection.contractDiscountTradeAccountId);
+                }
+
+                if (selection.hasOwnProperty('contractPriceTradeAccountId')) {
+                    contractPriceTradeAccountIds.push(selection.contractPriceTradeAccountId);
+                }
             }
 
-            if (selection.hasOwnProperty('contractPriceTradeAccountId')) {
-                contractPriceTradeAccountIds.push(selection.contractPriceTradeAccountId);
-            }
-        }
-
-        self.selectedContractListId(contractListId);
-
-        let data = {
-            tradeAccountId: self.tradeAccountId(),
-            contractListJson: JSON.stringify({
+            self.selectedContractListId(contractListId);
+            self.selectedContractListJson(JSON.stringify({
                 contractDiscountTradeAccountGroupId: contractDiscountTradeAccountGroupIds,
                 contractPriceTradeAccountGroupId: contractPriceTradeAccountGroupIds,
                 contractDiscountTradeAccountId: contractDiscountTradeAccountIds,
                 contractPriceTradeAccountId: contractPriceTradeAccountIds
-            })
+            }));
+        } else if (self.selectedContractListJson() == null) {
+            return;
+        }
+
+        self.busy(true);
+
+        let data = {
+            tradeAccountId: self.tradeAccountId(),
+            contractListJson: self.selectedContractListJson(),
+            launchId: self.launchId(),
+            brandId: self.brandId(),
+            productGroupId: self.productGroupId(),
+            itemTypeId: self.itemTypeId(),
+            collectionId: self.collectionId()
         };
+
+        if (self.searchTerm()) {
+            data.searchTerm = self.searchTerm();
+        }
 
         self.impactResults([]);
 
-        self.haveImpactResults(false);
+        self.filledRecords([]);
 
-        let qs = new URLSearchParams(data);
+        self.haveImpactResults(false);
 
         console.log('fetchImpact calling with', data);
 
-        fetch(`/api/contractPricing/FetchImpact?${qs}`, {
-            method: 'GET',
-            headers: window.fetchHeaders
+        fetch(`/api/contractPricing/FetchImpact`, {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            body: JSON.stringify(data)
         })
             .then(window.handleFetchResponse)
             .then(data => {
@@ -894,7 +914,7 @@ const contractPricingViewModel = ({ } = {}) => {
                 //if (data.Results.length === 0)
                 self.clearBusy();
 
-                if (data.Results.length > 1)
+                if (data.Results.length > 0)
                     self.haveImpactResults(true);
 
                 // the height of the table's thead element
@@ -934,22 +954,6 @@ const contractPricingViewModel = ({ } = {}) => {
 
         return true;
     }
-
-    self.showModal = (record) => {
-        /*self.addingNoteToRecord(record);*/
-        self.modal.show();
-        //self.fetchNotes();
-    }
-
-    self.hideModal = () => {
-        //self.note(undefined);
-        self.modal.hide();
-        //self.addingNoteToRecord().busy(true);
-        //self.addingNoteToRecord().loaded(false);
-        //self.reloadRecord(self.addingNoteToRecord());
-        //self.addingNoteToRecord(undefined);
-    }
-
 
     self.setBusy = () => {
         //switch (self.view()) {
@@ -1043,6 +1047,33 @@ const contractPricingViewModel = ({ } = {}) => {
         self.recordsToDataFetch.push(rec);
     }
 
+    self.reset = () => {
+        self.tradeAccountDealDetails(undefined);
+
+        self.tradeAccountGroupDealDetails(undefined);
+
+        self.selectedContractListId(undefined);
+
+        self.tradeAccountContrcatJson(undefined);
+
+        self.tradeAccountGroupContrcatJson(undefined);
+
+        self.selectedContractListJson(undefined);
+
+        self.impactResults([]);
+
+        self.haveImpactResults(false);
+
+        self.recordsToDataFetch([]);
+
+        self.filledRecords([]);
+    }
+
+    self.editContractPrice = (dateRangeRecord, event) => {
+        self.contractPricingEditor.load(dateRangeRecord);
+        event.preventDefault();
+    }
+
     //#endregion
 
 
@@ -1069,8 +1100,11 @@ const contractPricingViewModel = ({ } = {}) => {
 
     self.fetchDeals = ko.computed(() => {
 
-        self.filledRecords([]);
-        self.recordsToDataFetch([]);
+        if (self.filledRecords.peek().length)
+            self.filledRecords([]);
+
+        if (self.recordsToDataFetch.peek().length)
+            self.recordsToDataFetch([]);
 
         //self.clearAddGridData();
 
@@ -1102,21 +1136,29 @@ const contractPricingViewModel = ({ } = {}) => {
                     self.clearBusy();
 
                     if (data.TradeAccountContractJSON) {
+                        // we want to grab a copy of this...
+                        self.tradeAccountContractJson(data.TradeAccountContractJSON);
                         let parsedResult = JSON.parse(data.TradeAccountContractJSON);
                         parsedResult.dateRanges = parsedResult.dateRanges.map(dr => dateRangeRecord({
                             rec: dr,
                             allContractsComputed: self.allContracts
                         }));
-                        self.tradeAccountDealDetails(parsedResult);
+                        self.tradeAccountDealDetails(Object.assign(parsedResult, {
+                            accordionId: 'account-date-ranges'
+                        }));
                     }
 
                     if (data.TradeAccountGroupContractJSON) {
+                        self.tradeAccountGroupContractJSON(data.TradeAccountContractJSON);
                         let parsedResult = JSON.parse(data.TradeAccountGroupContractJSON);
                         parsedResult.dateRanges = parsedResult.dateRanges.map(dr => dateRangeRecord({
                             rec: dr,
                             allContractsComputed: self.allContracts
                         }));
-                        self.tradeAccountGroupDealDetails(parsedResult);
+
+                        self.tradeAccountGroupDealDetails(Object.assign(parsedResult, {
+                            accordionId: 'group-date-ranges'
+                        }));
                     }
 
                     window.setTimeout(() => {
@@ -1136,7 +1178,7 @@ const contractPricingViewModel = ({ } = {}) => {
                                 content: popoverTriggerEl.closest('td').querySelector(".pop-content-conflicts").innerHTML,
                                 container: popoverTriggerEl
                             })
-                        })
+                        });
                     }, 0);
 
                 })
@@ -1148,7 +1190,7 @@ const contractPricingViewModel = ({ } = {}) => {
     }, self);
 
     self.unfilledRecords = ko.computed(() => {
-        let results = Array.from(new Set(self.recordsToDataFetch().filter(vr => {
+        let results = [...new Set(self.recordsToDataFetch().filter(vr => {
             let r = self.filledRecords().find(fr =>
                 fr.ProductOrQuality == vr.ProductOrQuality &&
                 fr.ProductID == vr.ProductID &&
@@ -1161,7 +1203,7 @@ const contractPricingViewModel = ({ } = {}) => {
                 qualityId: cr.QualityID,
                 productOrQuality: cr.ProductOrQuality
             }
-        })));
+        }))];
         return results;
     }, self).extend({
         rateLimit: {
@@ -1231,7 +1273,7 @@ const contractPricingViewModel = ({ } = {}) => {
                                 let filledRecord = filledRecords.find(p => p.ProductID && p.ProductID == stub.productId) ||
                                     filledRecords.find(q => q.QualityID && q.QualityID == stub.qualityId);
 
-                                let add = true;
+                                let add = filledRecord == null;
 
                                 if (dataResult) {
 
@@ -1327,6 +1369,8 @@ const contractPricingViewModel = ({ } = {}) => {
 
         let toFetch = [];
 
+        let alreadyFetching = self.recordsToDataFetch.peek();
+
         let filledRecords = self.filledRecords.peek();
 
         let results = self.impactResults().filter((i, index) => {
@@ -1345,6 +1389,10 @@ const contractPricingViewModel = ({ } = {}) => {
             // ((i.offsetY - self.gridHeaderHeight + self.rowHeight) <= (self.maxY() + 5000));
 
             if (dataFetchVisible && !filledRecords.find(fr =>
+                fr.ProductOrQuality == i.ProductOrQuality &&
+                fr.ProductID == i.ProductID &&
+                fr.QualityID == i.QualityID
+            ) && !alreadyFetching.find(fr =>
                 fr.ProductOrQuality == i.ProductOrQuality &&
                 fr.ProductID == i.ProductID &&
                 fr.QualityID == i.QualityID
@@ -1720,3 +1768,669 @@ const impactSearchResult = ({
     return self;
 }
 
+const dateRangeEditor = ({ parent } = { parent: null }) => {
+    let self = {};
+
+    //#region Properties
+
+    self.busy = ko.observable(false);
+
+    self.startDate = ko.observable(startDate);
+
+    self.endDate = ko.observable(endDate);
+
+    /*
+    
+        <td>
+            <div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: startDateParams }"></div>
+        </td>
+        <td>
+            <div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: endDateParams }"></div>
+        </td>
+    
+    */
+
+    //#endregion
+
+    //#region Components
+
+    self.startDateParams = {
+        observable: self.startDate,
+        originalValue: self.startDate(),
+        displayObservable: ko.observable(),
+        dateTimePickerOptions: {
+            localization: {
+                locale: 'en-GB',
+                format: 'dd/MM/yyyy'
+            },
+            display: {
+                sideBySide: false,
+                components: {
+                    clock: false,
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: false,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false
+                },
+                viewMode: 'months',
+                //cellSize: '4rem'
+            },
+            restrictions: {
+                disabledDates: []
+            },
+            allowInputToggle: true,
+            useCurrent: false,
+            keepInvalid: true,
+            debug: false,
+            eventHandlers: {
+                onChange: (e) => {
+
+                }
+            }
+        },
+        clearable: ko.observable(true),
+        clearFunction: () => {
+            self.startDate(undefined);
+        },
+        revertible: ko.observable(true),
+        revertFunction: () => {
+            self.startDateParams.observable(self.startDateParams.originalValue);
+        },
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true
+    };
+
+    self.endDateParams = {
+        observable: self.endDate,
+        originalValue: self.endDate(),
+        displayObservable: ko.observable(),
+        dateTimePickerOptions: {
+            localization: {
+                locale: 'en-GB',
+                format: 'dd/MM/yyyy'
+            },
+            display: {
+                sideBySide: false,
+                components: {
+                    clock: false,
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: false,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false
+                },
+                viewMode: 'months',
+                //cellSize: '4rem'
+            },
+            restrictions: {
+                disabledDates: []
+            },
+            allowInputToggle: true,
+            useCurrent: false,
+            keepInvalid: true,
+            debug: false,
+            eventHandlers: {
+                onChange: (e) => {
+
+                }
+            }
+        },
+        clearable: ko.observable(true),
+        clearFunction: () => {
+            self.endDate(undefined);
+        },
+        revertible: ko.observable(true),
+        revertFunction: () => {
+            self.endDateParams.observable(self.endDateParams.originalValue);
+        },
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true
+    };
+
+    //#endregion
+
+    //#region Computeds
+
+
+
+    //#endregion
+
+    //#region Subscriptions
+
+    self.startDate.subscribe(nv => {
+        if (nv) {
+            if (self.endDate() && +self.endDate() < nv) {
+                self.endDate(undefined);
+            }
+
+            console.error("you had to add one to minDate");
+            self.endDate.tempusDominus.updateOptions({
+                restrictions: {
+                    minDate: nv
+                }
+            });
+        }
+    });
+
+    self.endDate.subscribe(nv => {
+        if (nv) {
+            if (self.startDate() && +self.startDate() > nv) {
+                self.startDate(undefined);
+            }
+
+            console.error("you had to subtract one from maxDate");
+            self.startDate.tempusDominus.updateOptions({
+                restrictions: {
+                    maxDate: nv
+                }
+            });
+        }
+    });
+
+    //#endregion
+
+    //#region Methods
+
+    if (self.startDate()) {
+        self.endDateParams.dateTimePickerOptions.restrictions.minDate = self.startDate();
+    }
+
+    if (self.endDate()) {
+        self.startDateParams.dateTimePickerOptions.restrictions.maxDate = self.endDate();
+    }
+egion
+
+    return self;
+}
+
+const contractPricingEditor = ({
+    parent
+} = {
+    parent: null
+}) => {
+    let self = {};
+
+    //#region Properties
+
+    self.parent = parent;
+
+    self.busy = ko.observable(false);
+
+    self.contractProductRestrictions = getContractProductRestrictions();
+
+    self.brands = getBrands();
+
+    self.editingRecord = ko.observable();
+
+    self.loadedJson = ko.observable();
+
+    self.productGroupAllFabric = productGroupItemType({
+        label: "Fabric",
+        productGroupId: 8,
+        productGroupCode: 'FA',
+        itemTypeId: null,
+        itemTypeCode: null,
+        finalPrice: null,
+        discountPercentage: null,
+        status: null
+    });
+
+    self.productGroupAllWallpaper = productGroupItemType({
+        label: "Wallpaper",
+        productGroupId: 16,
+        productGroupCode: 'PA',
+        itemTypeId: null,
+        itemTypeCode: null,
+        finalPrice: null,
+        discountPercentage: null,
+        status: null
+    });
+
+    self.productGroupAllPatternBooks = productGroupItemType({
+        label: "Pattern Books",
+        productGroupId: 17,
+        productGroupCode: 'PB',
+        itemTypeId: null,
+        itemTypeCode: null,
+        finalPrice: null,
+        discountPercentage: null,
+        status: null
+    });
+
+    self.productGroupAllRugs = productGroupItemType({
+        label: "Rugs",
+        productGroupId: 27,
+        productGroupCode: 'RG',
+        itemTypeId: null,
+        itemTypeCode: null,
+        finalPrice: null,
+        discountPercentage: null,
+        status: null
+    });
+
+    self.itemTypes = self.contractProductRestrictions.filter(cpr => cpr.ProductGroupID != null && cpr.ItemTypeID != null).map(cpr => 
+        productGroupItemType({
+            label: `${cpr.ItemType?.Name}`,
+            productGroupId: cpr.ProductGroupID,
+            productGroup: cpr.ProductGroup,
+            itemTypeId: cpr.ItemTypeID,
+            itemType: cpr.ItemType,
+            finalPrice: null,
+            discountPercentage: null,
+            status: null
+        })
+    );
+
+    self.itemTypesByProductGroup = Object.groupBy(self.itemTypes, (it) => it.productGroup.Name);
+
+    //#endregion
+
+    //#region Components
+
+    self.modalElement = document.getElementById("contract-pricing-modal");
+
+    self.modal = bootstrap.Modal.getOrCreateInstance(self.modalElement);
+
+    //#endregion
+
+    //#region Computeds
+
+    self.modalTitle = ko.computed(() => {
+        return `<span class="me-5">${self.parent.tradeAccount() && self.parent.tradeAccount().ShortLabel}</span><span>${self.editingRecord() && self.editingRecord().label}</span>`;
+    }, self);
+
+    self.unsavedChanges = ko.computed(() => {
+        return self.loadedJson() && self.loadedJson() != self.toJson();
+    }, self);
+
+    //#endregion
+
+    //#region Methods
+
+    self.showModal = (record) => {
+        self.modal.show();
+    }
+
+    self.hideModal = () => {
+        self.modal.hide();
+    }
+
+    self.load = (dateRangeRecord) => {
+        console.trace(dateRangeRecord);
+
+        if (dateRangeRecord == null) {
+            throw "cannot load a null dateRangeRecord";
+        } else {
+            self.busy(true);
+
+            self.editingRecord(dateRangeRecord);
+
+            self.showModal();
+
+            window.setTimeout(() => {
+                self.busy(false);
+            }, 1000);
+        }
+    }
+
+    self.save = () => {
+        console.trace();
+    }
+
+    self.reset = () => {
+
+        self.loadedJson(undefined);
+
+        self.editingRecord(undefined);
+
+        self.busy(false);
+    }
+
+    self.toJson = () => {
+
+    }
+
+    //#endregion
+
+    return self;
+}
+
+const productGroupItemType = ({
+    label,
+    productGroupId,
+    productGroup,
+    itemTypeId,
+    itemType,
+    finalPrice,
+    discountPercentage,
+    status
+} = {
+    label: null,
+    productGroupId: null,
+    productGroup: null,
+    itemTypeId: null,
+    itemType: null,
+    finalPrice: null,
+    discountPercentage: null,
+    status: null
+}) => {
+
+    let self = {
+        label: label,
+        productGroupId: productGroupId,
+        productGroup: productGroup,
+        itemTypeId: itemTypeId,
+        itemType: itemType,
+        status: status
+    };
+
+    //#region Properties
+
+    self.allBrands = ko.observable(false);
+
+    self.brands = getBrands().map(b => brand({
+        rec: b
+    }));
+
+    //#endregion
+
+    //#region Components
+
+    self.allBrandsParams = {
+        observable: self.allBrands,
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        busy: ko.observable(false)
+    }
+
+    self.discounter = discounterFactory({
+        finalPrice: finalPrice,
+        discountPercentage: discountPercentage,
+        currency: {
+            Symbol: '£',
+            FormattingCulture: 'en-GB',
+            Code: 'GBP',
+            ISO_4217: 'GBP'
+        },
+        permitMonetary: false,
+        permitPercentage: true,
+        initialState: DISCOUNT_STATE_PERCENTAGE
+    });
+
+    //#endregion
+
+    //#region Subscriptions
+
+    self.allBrands.subscribe(nv => {
+        self.brands.forEach(b => b.checked(nv));
+    });
+
+    //#endregion
+
+    //#region Computeds
+
+
+
+    //#endregion
+
+    //#region Methods
+
+
+
+    //#endregion
+
+    return self;
+}
+
+const brand = ({
+    rec,
+    data
+} = {
+    rec: null,
+    data: null
+}) => {
+    let self = Object.assign({}, rec);
+
+    //#region Properties
+
+    self.checked = ko.observable(false);
+
+    //#endregion
+
+    //#region Components
+
+    self.checkedParams = {
+        observable: self.checked,
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        busy: ko.observable(false)
+    }
+
+    //#endregion
+
+    //#region Computeds
+
+
+
+    //#endregion
+
+    //#region Methods
+
+
+
+    //#endregion
+
+    return self;
+}
+
+const DISCOUNT_STATE_PERCENTAGE = 1,
+    DISCOUNT_STATE_MONETARY = 2;
+
+const discounterFactory = ({
+    finalPrice,
+    discountPercentage,
+    currency,
+    permitMonetary,
+    permitPercentage,
+    initialState,
+} = {
+    finalPrice: null,
+    discountPercentage: null,
+    currency: {
+        Symbol: '£',
+        FormattingCulture: 'en-GB',
+        Code: 'GBP',
+        ISO_4217: 'GBP'
+    },
+    permitMonetary: true,
+    permitPercentage: true,
+    initialState: DISCOUNT_STATE_PERCENTAGE
+}) => {
+
+    let self = {
+        debug: false,
+        discountEntryVisible: true,
+        discountReasonRequired: false,
+        increasedValueWarning: false,
+        focAvailable: ko.observable(false),
+        finalPrice,
+        discountPercentage,
+        currency,
+        permitMonetary,
+        permitPercentage,
+        selector: {
+            observable: ko.observable(initialState),
+            options: [{
+                symbol: currency.Symbol,
+                discountState: DISCOUNT_STATE_MONETARY
+            }, {
+                symbol: '%',
+                discountState: DISCOUNT_STATE_PERCENTAGE
+            }],
+            optionsText: 'symbol',
+            optionsValue: 'discountState',
+            optionsCaption: undefined,
+            useNativeValidation: false,
+            insertValidationMessages: false,
+            decorateInputElement: false,
+            enable: ko.observable(permitMonetary && permitPercentage),
+            disable: ko.observable(false),
+            clearable: ko.observable(false),
+            revertible: ko.observable(false)
+        },
+        percentage: {
+            name: 'Percentage',
+            inputType: 'text',
+            minValue: 0,
+            maxValue: 100,
+            step: 1,
+            buttons: false,
+            observable: ko.observable().extend({
+                numberFormatted: {
+                    digits: 0,
+                    currency: {
+                        FormattingCulture: 'en-GB'
+                    },
+                    minValue: 0,
+                    maxValue: 100
+                }
+            }),
+            focusObservable: ko.observable(false),
+            useNativeValidation: false,
+            decorateInputElement: true,
+            insertValidationMessages: false,
+            showClear: false,
+            busy: ko.observable(false),
+            readOnly: ko.observable(false),
+            enable: ko.observable(true),
+            disable: ko.observable(false),
+            clearable: ko.observable(false),
+            revertible: ko.observable(false)
+        },
+        monetary: {
+            name: 'Monetary',
+            inputType: 'text',
+            minValue: 1,
+            maxValue: 1000000000,
+            step: 1,
+            buttons: false,
+            observable: ko.observable().extend({
+                numberFormatted: {
+                    digits: 2,
+                    currency: {
+                        FormattingCulture: currency.FormattingCulture
+                    },
+                    minValue: 0,
+                    maxValue: Number.MAX_VALUE * 0.01
+                }
+            }),
+            focusObservable: ko.observable(false),
+            useNativeValidation: false,
+            decorateInputElement: true,
+            insertValidationMessages: false,
+            showClear: false,
+            busy: ko.observable(false),
+            readOnly: ko.observable(false),
+            enable: ko.observable(true),
+            disable: ko.observable(false),
+            clearable: ko.observable(false),
+            revertible: ko.observable(false)
+        },
+        subscriptions: [],
+        bypassValidation: ko.observable(false)
+    };
+
+    self.percentage.observable.extend({
+        required: {
+            params: true,
+            onlyIf: () => {
+                if (self.bypassValidation())
+                    return false;
+
+                return self.selector.observable() == DISCOUNT_STATE_MONETARY
+            },
+            message: 'You must provide a Discount Percentage'
+        }
+    });
+
+    self.monetary.observable.extend({
+        required: {
+            params: true,
+            onlyIf: function () {
+                if (self.bypassValidation())
+                    return false;
+
+                return self.selector.observable() == DISCOUNT_STATE_MONETARY
+            },
+            message: 'You must provide a Final Price'
+        }
+    });
+    
+    self.selector.disabled = ko.pureComputed(function () {
+        return (self.monetary.readOnly() || self.percentage.readOnly());
+    }, self);
+
+    self.subscriptions.push(self.selector.observable.subscribe(function (newValue) {
+        switch (newValue) {
+            case DISCOUNT_STATE_MONETARY:
+                self.currentState(self.monetary);
+                self.monetary.observable(undefined);
+                break;
+            case DISCOUNT_STATE_PERCENTAGE:
+                self.currentState(self.percentage);
+                self.percentage.observable(undefined);
+                break;
+        }
+    }));
+
+    self.currentState = ko.observable(self.percentage);
+
+    self.currentState.readOnly = ko.observable(false);
+
+    if (discountPercentage != null) {
+        if (discountPercentage > 0) {
+            self.selector.observable(DISCOUNT_STATE_PERCENTAGE);
+            self.currentState(self.percentage);
+        }
+    }
+
+    if (finalPrice != null) {
+        self.selector.observable(DISCOUNT_STATE_MONETARY);
+        self.currentState(self.monetary);
+    }
+
+    self.errors = ko.validation.group([
+
+    ]);
+
+    self.errorables = [
+        self.monetary.observable,
+        self.percentage.observable
+    ];
+
+    self.toJson = () => {
+        return {
+            finalPrice: self.monetary.observable(),
+            discountPercentage: self.percentage.observable()
+        };
+    }
+
+    self.reset = function () {
+        self.selector.observable(DISCOUNT_STATE_PERCENTAGE);
+        self.percentage.observable(undefined);
+        self.monetary.observable(undefined);
+    }
+
+    return self;
+}

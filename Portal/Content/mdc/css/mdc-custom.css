@@ -3242,10 +3242,10 @@ label.mdc-floating-label {
   right: 30px; }
 
 .mdc-validating-field .mdc-select.clearable span.k-input,
-.mdc-validating-field .mdc-select.revertable span.k-input {
+.mdc-validating-field .mdc-select.revertible span.k-input {
   padding-right: 60px; }
 
-.mdc-validating-field .mdc-select.clearable.revertable span.k-input {
+.mdc-validating-field .mdc-select.clearable.revertible span.k-input {
   padding-right: 84px; }
 
 .mdc-text-field__input,
@@ -3450,16 +3450,16 @@ label.mdc-floating-label {
 .mdc-text-field__input.mdc-text-field__numeric.clearable {
   padding-right: 32px; }
 
-.mdc-text-field__input.mdc-text-field__numeric.revertable {
+.mdc-text-field__input.mdc-text-field__numeric.revertible {
   padding-right: 32px; }
 
-.mdc-text-field__input.mdc-text-field__numeric.clearable.revertable {
+.mdc-text-field__input.mdc-text-field__numeric.clearable.revertible {
   padding-right: 60px; }
 
 .mdc-select--outlined.clearable .mdc-select__native-control {
   padding-right: 60px; }
 
-.mdc-select--outlined.clearable.revertable .mdc-select__native-control {
+.mdc-select--outlined.clearable.revertible .mdc-select__native-control {
   padding-right: 84px; }
 
 .mdc-text-field--invalid.mdc-text-field--disabled .mdc-notched-outline .mdc-notched-outline__leading,

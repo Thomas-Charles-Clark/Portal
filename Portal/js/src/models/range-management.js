@@ -82,7 +82,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         decorateInputElement: true,
         insertValidationMessages: false,
         clearable: true,
-        revertable: false,
+        revertible: false,
         disable: ko.observable(false),
         enable: ko.observable(true),
         busy: false,
@@ -601,7 +601,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         readOnly: false,
         filter: 'contains',
         autoBind: true,
@@ -630,7 +630,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         readOnly: false,
         filter: 'contains',
         autoBind: true,
@@ -656,7 +656,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         readOnly: false,
         filter: 'contains',
         autoBind: true,
@@ -705,7 +705,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         readOnly: false,
         filter: 'contains',
         autoBind: true,
@@ -730,7 +730,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         readOnly: false,
         filter: 'contains',
         autoBind: true,
@@ -751,7 +751,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         readOnly: false,
         filter: false,
         autoBind: true,
@@ -777,7 +777,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         readOnly: false,
         filter: false,
         autoBind: true,
@@ -803,7 +803,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         readOnly: false,
         filter: false,
         autoBind: true,
@@ -829,7 +829,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         readOnly: false,
         filter: false,
         autoBind: true,
@@ -846,7 +846,7 @@ const rangeManagementViewModel = ({ } = {}) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         clearFunction: function () {
             var self = this;
             self.observable(undefined);
@@ -2819,7 +2819,7 @@ const resultRecord = function ({
             enable: ko.observable(true),
             disable: ko.observable(false),
             clearable: ko.observable(true),
-            revertable: ko.observable(true),
+            revertible: ko.observable(true),
             revertFunction: function () {
                 let self = this;
                 self.observable(self.originalValue());
@@ -2917,7 +2917,7 @@ const resultRecord = function ({
         0,
         9999);
 
-    self.rangePlannedParams.revertable(false);
+    self.rangePlannedParams.revertible(false);
 
     self.actionTransferToWarehouseQuantityParams = self.buildNumericParams(
         self.actionTransferToWarehouseQuantity,
@@ -3263,7 +3263,7 @@ const addResultRecord = function ({
             enable: ko.observable(true),
             disable: ko.observable(false),
             clearable: ko.observable(true),
-            revertable: ko.observable(true),
+            revertible: ko.observable(true),
             revertFunction: function () {
                 let self = this;
                 self.observable(self.originalValue());
@@ -3317,7 +3317,7 @@ const addResultRecord = function ({
         0,
         9999);
 
-    self.actionAddToRangeQuantityParams.revertable(false);
+    self.actionAddToRangeQuantityParams.revertible(false);
 
     self.actionAddToRangeQuantityParams.enable = self.allowed;
 

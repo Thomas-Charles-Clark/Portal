@@ -3780,6 +3780,7 @@ ul.ui-widget {
                 border-top-left-radius: 0;
                 border-bottom-left-radius: 0;
                 border-left: 0;
+                width: 56px;
             }
 
             > span {
@@ -3798,7 +3799,8 @@ ul.ui-widget {
                 border-width: 2px;
 
                 select {
-                    padding: 3px 32px 4px 10px;
+                    padding: 3px 32px 4px 12px;
+                    //4px 32px 4px 10px;
                 }
             }
         }

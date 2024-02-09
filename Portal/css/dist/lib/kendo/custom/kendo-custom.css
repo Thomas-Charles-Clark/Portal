@@ -2680,7 +2680,7 @@ kendo-sortable {
   color: rgba(0, 0, 0, 0.42);
 }
 
-.clearable.revertable .k-multiselect-wrap .k-i-loading {
+.clearable.revertible .k-multiselect-wrap .k-i-loading {
   right: 74px;
 }
 

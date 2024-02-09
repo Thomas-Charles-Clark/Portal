@@ -1358,7 +1358,7 @@ This customer wishes their deliveries to be consolidated. Please double check th
         label: 'Attachments',
         observable: self.selectedEmailAttachmentId,
         busy: self.busy,
-        revertable: false,
+        revertible: false,
         clearable: true,
         useNativeValidation: false, // this feeds through to mdc objects and affects them
         decorateInputElement: true,

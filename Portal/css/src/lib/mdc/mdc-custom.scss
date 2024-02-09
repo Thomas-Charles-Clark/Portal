@@ -2,8 +2,8 @@
 @import "../bootstrap-5.3.1/scss/functions";
 @import "../bootstrap-5.3.1/scss/variables";
 
-$mdc-theme-primary: #888;
-$mdc-theme-secondary: #a5a5a5;
+$mdc-theme-primary: #3a64b0;
+$mdc-theme-secondary: #6ebe2c;
 $mdc-theme-background: #fff;
 $mdc-theme-error: #db0028;
 
@@ -192,11 +192,11 @@ label.mdc-floating-label {
 }
 
 .mdc-validating-field .mdc-select.clearable span.k-input,
-.mdc-validating-field .mdc-select.revertable span.k-input {
+.mdc-validating-field .mdc-select.revertible span.k-input {
     padding-right: 60px;
 }
 
-.mdc-validating-field .mdc-select.clearable.revertable span.k-input {
+.mdc-validating-field .mdc-select.clearable.revertible span.k-input {
     padding-right: 104px;
 }
 
@@ -306,6 +306,13 @@ label.mdc-floating-label {
     /*position: relative;*/
     /*display: flex;*/
     bottom: 4px;
+}
+
+.mdc-select.mdc-select--focused {
+    .mdc-select__dropdown-icon {
+        bottom: 3px;
+        right: 7px;
+    }
 }
 
 .mdc-select {
@@ -419,7 +426,7 @@ label.mdc-floating-label {
     right: 29px;
 }
 
-.mdc-select.mdc-multiselect.clearable.revertable {
+.mdc-select.mdc-multiselect.clearable.revertible {
     .k-multiselect-clearable {
         .k-multiselect-wrap {
             padding-right: 104px;
@@ -457,11 +464,11 @@ label.mdc-floating-label {
     padding-right: 32px;
 }
 
-.mdc-text-field__input.mdc-text-field__numeric.revertable {
+.mdc-text-field__input.mdc-text-field__numeric.revertible {
     padding-right: 32px;
 }
 
-.mdc-text-field__input.mdc-text-field__numeric.clearable.revertable {
+.mdc-text-field__input.mdc-text-field__numeric.clearable.revertible {
     padding-right: 60px;
 }
 
@@ -471,7 +478,7 @@ label.mdc-floating-label {
 }
 
 
-.mdc-select--outlined.clearable.revertable .mdc-select__native-control {
+.mdc-select--outlined.clearable.revertible .mdc-select__native-control {
     padding-right: 84px;
 }
 

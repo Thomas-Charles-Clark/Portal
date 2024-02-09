@@ -266,6 +266,8 @@ namespace SharedEFClasses.Models.Products
         public string Name { get; set; }
         public byte SeasonID { get; set; }
 
+        public DateTime LaunchDate { get; set; }
+
         public DateTime? TradeLaunchDate { get; set; }
 
         public virtual Season Season { get; set; }
@@ -278,7 +280,7 @@ namespace SharedEFClasses.Models.Products
         {
             get
             {
-                return $"{Season.Code}{TradeLaunchDate?.ToString("yy")}";
+                return $"{Season.Code}{LaunchDate.ToString("yy")}";
             }
         }
 
@@ -335,6 +337,10 @@ namespace SharedEFClasses.Models.Products
         [JsonIgnore]
         [InverseProperty("ItemType")]
         public virtual ICollection<Mertex_ProductType> Mertex_ProductTypes { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("ItemType")]
+        public virtual ICollection<ContractProductRestriction> ContractProductRestrictions { get; set; }
     }
 
     public class ProductGroup
@@ -349,6 +355,10 @@ namespace SharedEFClasses.Models.Products
 
         [JsonIgnore]
         public virtual ICollection<Mertex_ProductType> Mertex_ProductTypes { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("ProductGroup")]
+        public virtual ICollection<ContractProductRestriction> ContractProductRestrictions { get; set; }
     }
 
     public class Quality

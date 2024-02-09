@@ -104,7 +104,7 @@ const productTypeMaintenanceViewModel = (() => {
         originalValue: self.originalProductTypeName,
         enable: ko.observable(true),
         disable: ko.observable(false),
-        revertable: true,
+        revertible: true,
         revertFunction: () => {
             self.productTypeName(self.originalProductTypeName())
         },
@@ -126,7 +126,7 @@ const productTypeMaintenanceViewModel = (() => {
         label: 'Product Type',
         observable: self.productTypeId,
         busy: self.busy,
-        revertable: false,
+        revertible: false,
         clearable: true,
         useNativeValidation: false, // this feeds through to mdc objects and affects them
         decorateInputElement: true,

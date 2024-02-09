@@ -2270,19 +2270,21 @@ ko.bindingHandlers.mdcSelectComponent = {
         }
 
         params.boundTo.subscribe(function (newValue) {
-            if (newValue != null && newValue !== '') {
-                if (!$(params.boundTo.mdcSelect.label_.root_).hasClass('mdc-floating-label--float-above')) {
-                    window.setTimeout(function () {
-                        params.boundTo.mdcSelect.label_.float(true);
-                        params.boundTo.mdcSelect.getDefaultFoundation().adapter_.notchOutline(params.boundTo.mdcSelect.getDefaultFoundation().adapter_.getLabelWidth() * 0.75);
-                    }, 50);
-                }
-            } else {
-                if ($(params.boundTo.mdcSelect.label_.root_).hasClass('mdc-floating-label--float-above')) {
-                    window.setTimeout(function () {
-                        params.boundTo.mdcSelect.label_.float(false);
-                        params.boundTo.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
-                    }, 50);
+            if (params.boundTo.mdcSelect.label_) {
+                if (newValue != null && newValue !== '') {
+                    if (!$(params.boundTo.mdcSelect.label_.root_).hasClass('mdc-floating-label--float-above')) {
+                        window.setTimeout(function () {
+                            params.boundTo.mdcSelect.label_.float(true);
+                            params.boundTo.mdcSelect.getDefaultFoundation().adapter_.notchOutline(params.boundTo.mdcSelect.getDefaultFoundation().adapter_.getLabelWidth() * 0.75);
+                        }, 50);
+                    }
+                } else {
+                    if ($(params.boundTo.mdcSelect.label_.root_).hasClass('mdc-floating-label--float-above')) {
+                        window.setTimeout(function () {
+                            params.boundTo.mdcSelect.label_.float(false);
+                            params.boundTo.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
+                        }, 50);
+                    }
                 }
             }
         });
@@ -2300,21 +2302,23 @@ ko.bindingHandlers.mdcSelectComponent = {
             if (visible) {
                 window.setTimeout(function () {
                     if (params.boundTo() != null && params.boundTo() !== '') {
-                        if (params.boundTo().hasOwnProperty(params.optionsValue)) {
-                            if (params.boundTo()[params.optionsValue] != null) {
-                                params.boundTo.mdcSelect.label_.float(true);
-                                params.boundTo.mdcSelect.getDefaultFoundation().adapter_.notchOutline(params.boundTo.mdcSelect.getDefaultFoundation().adapter_.getLabelWidth() * 0.75);
+                        if (params.boundTo.mdcSelect.label_) {
+                            if (params.boundTo().hasOwnProperty(params.optionsValue)) {
+                                if (params.boundTo()[params.optionsValue] != null) {
+                                    params.boundTo.mdcSelect.label_.float(true);
+                                    params.boundTo.mdcSelect.getDefaultFoundation().adapter_.notchOutline(params.boundTo.mdcSelect.getDefaultFoundation().adapter_.getLabelWidth() * 0.75);
+                                } else {
+                                    params.boundTo.mdcSelect.label_.float(false);
+                                    params.boundTo.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
+                                }
                             } else {
-                                params.boundTo.mdcSelect.label_.float(false);
-                                params.boundTo.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
-                            }
-                        } else {
-                            if (params.boundTo() != null) {
-                                params.boundTo.mdcSelect.label_.float(true);
-                                params.boundTo.mdcSelect.getDefaultFoundation().adapter_.notchOutline(params.boundTo.mdcSelect.getDefaultFoundation().adapter_.getLabelWidth() * 0.75);
-                            } else {
-                                params.boundTo.mdcSelect.label_.float(false);
-                                params.boundTo.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
+                                if (params.boundTo() != null) {
+                                    params.boundTo.mdcSelect.label_.float(true);
+                                    params.boundTo.mdcSelect.getDefaultFoundation().adapter_.notchOutline(params.boundTo.mdcSelect.getDefaultFoundation().adapter_.getLabelWidth() * 0.75);
+                                } else {
+                                    params.boundTo.mdcSelect.label_.float(false);
+                                    params.boundTo.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
+                                }
                             }
                         }
                     }

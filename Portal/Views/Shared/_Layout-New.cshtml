@@ -495,7 +495,7 @@
                        hasFocus: (typeof focusObservable === 'undefined' ? ko.observable() : focusObservable),
                        css: {
                             'clearable': clearable,
-                            'revertable': revertable
+                            'revertible': revertible
                        },
                        class: typeof cssClasses === 'undefined' ? null : cssClasses" />
                 <div class="mdc-notched-outline">
@@ -508,7 +508,7 @@
                     <div class="mdc-notched-outline__trailing"></div>
                 </div>
                 <div class="controls" data-bind="disable: disable">
-                    <!-- ko if: revertable -->
+                    <!-- ko if: revertible -->
                     <div class="close revert" data-bind="click: revertFunction">
                         <i class="material-icons">
                             replay
@@ -551,7 +551,7 @@
                        hasFocus: (typeof focusObservable === 'undefined' ? ko.observable() : focusObservable),
                        css: {
                             'clearable': clearable,
-                            'revertable': revertable
+                            'revertible': revertible
                        }" />
                 <!-- ko if: typeof permitRevert != 'undefined' && permitRevert && typeof revertFunction === 'function' && typeof originalValue != 'undefined' -->
                 <div class="close revert" data-bind="click: revertFunction">
@@ -602,7 +602,7 @@
                         hasFocus: (typeof focusObservable === 'undefined' ? ko.observable() : focusObservable),
                         css: {
                             clearable: clearable,
-                            revertable: revertable
+                            revertible: revertible
                         },
                         class: typeof cssClasses === 'undefined' ? null : cssClasses,
                         attr: {
@@ -626,7 +626,7 @@
                         <div class="mdc-notched-outline__trailing"></div>
                     </div>
                     <div class="controls">
-                        <!-- ko if: revertable -->
+                        <!-- ko if: revertible -->
                         <div class="close revert" data-bind="click: revertFunction, css: { 'disabled': disable() || !enable() }">
                             <i class="material-icons">
                                 replay
@@ -673,7 +673,7 @@
                         'busy': busy,
                         'mdc-text-field--disabled': disable() || !enable(),
                         'clearable': clearable,
-                        'revertable': revertable
+                        'revertible': revertible
                      }">
                     <input class="mdc-text-field__input text-right mdc-text-field__numeric" data-bind="
                         numeric: observable,
@@ -685,7 +685,7 @@
                         hasFocus: (typeof focusObservable === 'undefined' ? ko.observable() : focusObservable),
                         css: {
                             clearable: clearable,
-                            revertable: revertable
+                            revertible: revertible
                         },
                         class: typeof cssClasses === 'undefined' ? null : cssClasses,
                         attr: {
@@ -706,7 +706,7 @@
                         <div class="mdc-notched-outline__trailing"></div>
                     </div>
                     <div class="controls">
-                        <!-- ko if: revertable -->
+                        <!-- ko if: revertible -->
                         <div class="close revert" data-bind="click: revertFunction">
                             <i class="material-icons">
                                 replay
@@ -758,7 +758,7 @@
                         hasFocus: (typeof focusObservable === 'undefined' ? ko.observable() : focusObservable),
                         css: {
                             clearable: clearable,
-                            revertable: revertable
+                            revertible: revertible
                         },
                         class: typeof cssClasses === 'undefined' ? null : cssClasses,
                         attr: {
@@ -768,7 +768,7 @@
                             step: step
                         }" />
                     <div class="controls">
-                        <!-- ko if: revertable -->
+                        <!-- ko if: revertible -->
                         <div class="close revert" data-bind="click: revertFunction">
                             <i class="material-icons">
                                 replay
@@ -877,7 +877,7 @@
                     <div class="mdc-notched-outline__trailing"></div>
                 </div>
                 <div class="controls">
-                    <!-- ko if: revertable -->
+                    <!-- ko if: revertible -->
                     <div class="close revert" data-bind="click: revertFunction">
                         <i class="material-icons">
                             replay
@@ -920,7 +920,7 @@
                         css: {
                             'mdc-text-field--disabled': disable() || !enable(),
                             'clearable': clearable,
-                            'revertable': revertable
+                            'revertible': revertible
                         }" />
                 <div class="mdc-notched-outline">
                     <div class="mdc-notched-outline__leading"></div>
@@ -962,7 +962,7 @@
                     'busy': busy,
                     'mdc-text-field--disabled': disable() || !enable(),
                     'clearable': clearable,
-                    'revertable': revertable
+                    'revertible': revertible
                 }">
                 <input type="text" name="mdc-text-ac-field" autocomplete="off" class="mdc-text-field__input" data-bind="
                     enterKey: typeof enterKeyFunction === 'function' ? enterKeyFunction : function () { },
@@ -976,7 +976,7 @@
                     },
                     css: {
                         clearable: clearable,
-                        revertable: revertable
+                        revertible: revertible
                     }" />
                 <div class="mdc-notched-outline">
                     <div class="mdc-notched-outline__leading"></div>
@@ -986,7 +986,7 @@
                     <div class="mdc-notched-outline__trailing"></div>
                 </div>
                 <div class="controls">
-                    <!-- ko if: revertable -->
+                    <!-- ko if: revertible -->
                     <div class="close revert" data-bind="click: revertFunction">
                         <i class="material-icons">
                             replay
@@ -1081,47 +1081,23 @@
             Final Price: <span style="font-weight: normal" data-bind="text: formatCurrency(originalPriceEx - discountAmount(), 2, currency.FormattingCulture, currency.ISO_4217)"></span>
         </label>
         <!-- /ko -->
-        <!-- ko if: permitPercentage && permitMonetary -->
         <div class="btn-toolbar mdc-discounter-group" data-bind="visible: discountEntryVisible">
             <div class="btn-group" data-bind="css: { 'mdc-warning': increasedValueWarning }, component: { name: 'mdc-text-field-numeric-component', params: currentState }"></div>
             <div class="btn-group" data-bind="component: { name: 'mdc-select-component-no-label', params: selector }"></div>
         </div>
-        <div class="margin-top-15 btn-toolbar mdc-discounter-group" data-bind="visible: discountReasonRequired">
+        <!-- ko if: discountReasonRequired -->
+        <div class="margin-top-15 btn-toolbar mdc-discounter-group">
             <div class="disco-reason" data-bind="visible: !focAvailable(), component: { name: 'mdc-select-component', params: discountReason }"></div>
             <div class="margin-top-15" data-bind="visible: customDiscountReasonRequired, component: { name: 'mdc-text-area-component', params: customDiscountReason }"></div>
             <div class="input-group" data-bind="visible: focAvailable()">
                 <div class="disco-reason" style="width: 400px;" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: focPromoCodeParams }"></div>
                 @*<div class="input-group-btn">
-                        <div style="padding-left: 0;" class="disco-reason" data-bind="component: { name: 'mdc-select-component', params: budgetManager }"></div>
-                    </div>
-                    <div class="disco-reason" data-bind="component: { name: 'mdc-select-component', params: focPromoCode }"></div>*@
+                    <div style="padding-left: 0;" class="disco-reason" data-bind="component: { name: 'mdc-select-component', params: budgetManager }"></div>
+                </div>
+                <div class="disco-reason" data-bind="component: { name: 'mdc-select-component', params: focPromoCode }"></div>*@
             </div>
         </div>
         <!-- /ko -->
-        <!-- ko if: permitPercentage && !permitMonetary -->
-        <div class="btn-toolbar mdc-discounter-group">
-            <div class="btn-group" data-bind="css: { 'mdc-warning': increasedValueWarning }, component: { name: 'mdc-text-field-numeric-component', params: currentState }"></div>
-            <div class="btn-group">
-                <span>
-                    %
-                </span>
-            </div>
-        </div>
-        <div class="margin-top-15 btn-toolbar mdc-discounter-group" data-bind="visible: discountReasonRequired">
-            <div class="disco-reason" data-bind="visible: !focAvailable(), component: { name: 'mdc-select-component', params: discountReason }"></div>
-            <div class="margin-top-15" data-bind="visible: customDiscountReasonRequired, component: { name: 'mdc-text-area-component', params: customDiscountReason }"></div>
-            <div class="input-group" data-bind="visible: focAvailable()">
-                <div class="disco-reason" style="width: 400px;" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: focPromoCodeParams }"></div>
-                @*<div class="input-group-btn">
-                        <div style="padding-left: 0;" class="disco-reason" data-bind="component: { name: 'mdc-select-component', params: budgetManager }"></div>
-                    </div>
-                    <div class="disco-reason" data-bind="component: { name: 'mdc-select-component', params: focPromoCode }"></div>*@
-            </div>
-        </div>
-        <!-- /ko -->
-        @*<!-- ko if: permitMonetary && !permitPercentage -->
-
-            <!-- /ko -->*@
     </script>
 
     <script id="mdc-checkbox-component" type="text/html">
@@ -1137,7 +1113,7 @@
                     checked: $data.observable,
                     checkedValue: typeof checkedValue === 'undefined' ? true : checkedValue,
                     attr: {
-                        id: checkboxId,
+                        id: typeof checkboxId === 'undefined' ? undefined : checkboxId,
                        'disabled': disable() || !enable()
                     },
                     css: {
@@ -1152,7 +1128,7 @@
                 <div class="mdc-checkbox__ripple"></div>
             </div>
             <!-- ko if: typeof label !== 'undefined' && label -->
-            <label class="mdc-checkbox--label" data-bind="html: label, attr: { for: checkboxId }, css: { 'checkbox-label-disabled': (typeof disabled === 'undefined' ? false : disabled) }"></label>
+            <label class="mdc-checkbox--label" data-bind="html: label, attr: { for: typeof checkboxId === 'undefined' ? undefined : checkboxId }, css: { 'checkbox-label-disabled': (typeof disabled === 'undefined' ? false : disabled) }"></label>
             <!-- /ko -->
         </div>
     </script>
@@ -1197,7 +1173,7 @@
                      },
                      css: {
                         'clearable': clearable,
-                        'revertable': revertable,
+                        'revertible': revertible,
                         'mdc-select--disabled': disable() || !enable()
                      }">
                 <i class="mdc-select__dropdown-icon"></i>
@@ -1226,7 +1202,7 @@
                     <div class="mdc-notched-outline__trailing"></div>
                 </div>
                 <div class="controls">
-                    <!-- ko if: revertable -->
+                    <!-- ko if: revertible -->
                     <div class="close revert" data-bind="click: function() { revertFunction() }">
                         <i class="material-icons">
                             replay
@@ -1247,7 +1223,7 @@
     <script id="mdc-select-component-no-label"
             type="text/html">
         <div class="mdc-validating-field" data-bind="style: { 'width': (typeof width === 'undefined') ? 'auto' : width }">
-            <div class="mdc-select mdc-select--outlined" data-bind="mdcSelectComponent: {
+            <div class="mdc-select mdc-select--outlined mdc-force-outline" data-bind="mdcSelectComponent: {
                      boundTo: observable,
                      useNativeValidation: useNativeValidation,
                      disabled: typeof enable === 'undefined' ? false : !enable(),
@@ -1258,7 +1234,7 @@
                      },
                      css: {
                         'clearable': clearable,
-                        'revertable': revertable,
+                        'revertible': revertible,
                         'mdc-select--disabled': disable() || !enable()
                      }">
                 <i class="mdc-select__dropdown-icon"></i>
@@ -1280,7 +1256,7 @@
                         'busy': typeof busy === 'undefined' ? false : busy
                     }"></select>
                 <div class="controls">
-                    <!-- ko if: revertable -->
+                    <!-- ko if: revertible -->
                     <div class="close revert" data-bind="click: function() { revertFunction() }">
                         <i class="material-icons">
                             replay
@@ -1313,7 +1289,7 @@
                  },
                  css: {
                     'clearable': clearable,
-                    'revertable': revertable,
+                    'revertible': revertible,
                     'busy': typeof busy === 'undefined' ? false : busy,
                     'mdc-select--disabled': disable() || !enable()
                 }">
@@ -1327,7 +1303,7 @@
                     <div class="mdc-notched-outline__trailing"></div>
                 </div>
                 <div class="controls">
-                    <!-- ko if: revertable -->
+                    <!-- ko if: revertible -->
                     <div class="close revert" data-bind="click: revertFunction">
                         <i class="material-icons">
                             replay
@@ -1360,14 +1336,14 @@
                  },
                  css: {
                     'clearable': clearable,
-                    'revertable': revertable,
+                    'revertible': revertible,
                     'busy': typeof busy === 'undefined' ? false : busy,
                     'mdc-select--disabled': disable() || !enable()
                 }">
                 <select class="mdc-select__native-control" style="display: none;"></select>
                 <div data-bind="kendoDropDownList: dropDownListSettings, css: controlClass"></div>
                 <div class="controls">
-                    <!-- ko if: revertable -->
+                    <!-- ko if: revertible -->
                     <div class="close revert" data-bind="click: revertFunction">
                         <i class="material-icons">
                             replay
@@ -1401,7 +1377,7 @@
                  },
                  css: {
                     'clearable': clearable,
-                    'revertable': revertable,
+                    'revertible': revertible,
                     'busy': typeof busy === 'undefined' ? false : busy,
                     'mdc-select--disabled': disable() || !enable()
                  }">
@@ -1415,7 +1391,7 @@
                     <div class="mdc-notched-outline__trailing"></div>
                 </div>
                 <div class="controls">
-                    <!-- ko if: revertable -->
+                    <!-- ko if: revertible -->
                     <div class="close revert" data-bind="click: revertFunction">
                         <i class="material-icons">
                             replay
@@ -1468,7 +1444,7 @@
                  },
                  css: {
                     'clearable': clearable,
-                    'revertable': revertable,
+                    'revertible': revertible,
                     'busy': typeof busy === 'undefined' ? false : busy,
                     'mdc-select--disabled': disable() || !enable()
                  }" ">
@@ -1493,7 +1469,7 @@
                     <div class="mdc-notched-outline__trailing"></div>
                 </div>
                 <div class="controls">
-                    <!-- ko if: revertable -->
+                    <!-- ko if: revertible -->
                     <div class="close revert" data-bind="click: revertFunction">
                         <i class="material-icons">
                             replay
@@ -1539,15 +1515,17 @@
                     }" />
                 <div class="mdc-notched-outline">
                     <div class="mdc-notched-outline__leading"></div>
+                    <!-- ko if: typeof label != 'undefined' -->
                     <div class="mdc-notched-outline__notch">
                         <label for="input" class="mdc-floating-label">
                             <span data-bind="text: label"></span>
                         </label>
                     </div>
+                    <!-- /ko -->
                     <div class="mdc-notched-outline__trailing"></div>
                 </div>
                 <div class="controls">
-                    <!-- ko if: revertable -->
+                    <!-- ko if: revertible -->
                     <div class="close revert" data-bind="click: revertFunction">
                         <i class="material-icons">
                             replay

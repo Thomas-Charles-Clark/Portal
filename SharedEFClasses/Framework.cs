@@ -99,6 +99,15 @@ namespace SharedEFClasses.Utilities
                 .SingleOrDefault(a => a.GetName().Name == name);
         }
 
+        public static bool IsDebug() 
+        {
+#if DEBUG
+            return true;
+#else
+            return false;
+#endif
+        }
+
         public static string GetDaySuffix(int day)
         {
             switch (day)
@@ -914,7 +923,7 @@ table > tbody > tr > td {
   width: 100%;
 }
 
-#outlook a {
+# outlook a {
   padding: 0;
 }
 
@@ -943,7 +952,7 @@ body {
   line-height: 100%;
 }
 
-#backgroundTable {
+# backgroundTable {
   margin: 0;
   Margin: 0;
   padding: 0;

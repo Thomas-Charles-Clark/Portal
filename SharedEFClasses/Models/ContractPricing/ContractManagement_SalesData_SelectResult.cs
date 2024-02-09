@@ -8,16 +8,16 @@ namespace SharedEFClasses.Models.ContractPricing
 {
     public class ContractManagement_SalesData_ProductResult
     {
-        public int? ProductID { get; set; }
-        public decimal SalesQuantity_180Days { get; set; }
-        public decimal SalesValue_180Days { get; set; }
+        public int ProductID { get; set; }
+        public string SalesQuantity_180Days { get; set; }
+        public string SalesValue_180Days { get; set; }
     }
 
     public class ContractManagement_SalesData_QualityResult
     {
-        public short? QualityID { get; set; }
-        public decimal SalesQuantity_180Days { get; set; }
-        public decimal SalesValue_180Days { get; set; }
+        public short QualityID { get; set; }
+        public string SalesQuantity_180Days { get; set; }
+        public string SalesValue_180Days { get; set; }
     }
 
     public class ContractManagement_SalesData_SelectResult

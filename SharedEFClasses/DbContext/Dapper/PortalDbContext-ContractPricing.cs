@@ -35,7 +35,13 @@ namespace SharedEFClasses.Models
             var results = await this.Database.Connection.QueryMultipleAsync("[portal].[ContractManagement_ContractImpact_Select]", new
             {
                 objDto.TradeAccountID,
-                objDto.ContractListJSON
+                objDto.ContractListJSON,
+                objDto.LaunchID,
+                objDto.BrandID,
+                objDto.ProductGroupID,
+                objDto.ItemTypeID,
+                objDto.CollectionID,
+                objDto.SearchTerm
             }, null, 60, CommandType.StoredProcedure);
 
             return new ContractManagement_ContractImpact_SelectResult()

@@ -1,6 +1,8 @@
 ﻿using SharedEFClasses;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Components;
+using SharedEFClasses.Models.General;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +14,12 @@ namespace Portal.Areas.Customers.ViewModels
     {
         public TradeAccountNumber_AutocompleteResult PreselectedTradeAccount { get; set; }
 
+        public IEnumerable<ContractProductRestriction> ContractProductRestrictions { get; set; }
+
+        public IEnumerable<Brand> Brands { get; set; }
+
         public ContractPricingViewModel(
+            PortalDbContext portalDb,
             TradeAccountNumber_AutocompleteResult preselectedTradeAccount,
             RoleProperties properties,
             string applicationHeading,
@@ -21,6 +28,8 @@ namespace Portal.Areas.Customers.ViewModels
                    applicationHeading,
                    applicationSubHeading)
         {
+            Brands = portalDb.Brands.Where(b => b.ParentID == null && b.Deleted == false).ToList();
+            ContractProductRestrictions = portalDb.ContractProductRestrictions.Where(cpr => cpr.Deleted == false).ToList();
             PreselectedTradeAccount = preselectedTradeAccount;
         }
     }

@@ -3156,6 +3156,7 @@ ul.ui-widget .ui-menu-item .ui-menu-item-wrapper .tiny-thumb {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   border-left: 0;
+  width: 56px;
 }
 .mdc-discounter-group > div:last-child > span {
   line-height: 34px;
@@ -3172,7 +3173,7 @@ ul.ui-widget .ui-menu-item .ui-menu-item-wrapper .tiny-thumb {
   border-width: 2px;
 }
 .mdc-discounter-group > div:last-child .mdc-select.mdc-select--outlined.mdc-select.mdc-select--focused select {
-  padding: 3px 32px 4px 10px;
+  padding: 3px 32px 4px 12px;
 }
 .mdc-discounter-group > div.disco-reason {
   width: 420px;

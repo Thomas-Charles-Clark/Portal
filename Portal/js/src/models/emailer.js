@@ -59,7 +59,7 @@
             disable: ko.observable(false),
             busy: ko.observable(false),
             clearable: ko.observable(true),
-            revertable: ko.observable(true)
+            revertible: ko.observable(true)
         }
 
         self.subject = ko.observable().extend({
@@ -99,7 +99,7 @@
             disable: ko.observable(false),
             busy: ko.observable(false),
             clearable: ko.observable(true),
-            revertable: ko.observable(true)
+            revertible: ko.observable(true)
         };
 
         self.originalReplyTo = ko.observable(getUserEmail());
@@ -146,7 +146,7 @@
             disable: ko.observable(false),
             busy: ko.observable(false),
             clearable: ko.observable(true),
-            revertable: ko.observable(true)
+            revertible: ko.observable(true)
         }
 
         self.body = ko.observable().extend({
@@ -187,7 +187,7 @@
             disable: ko.observable(false),
             busy: ko.observable(false),
             clearable: ko.observable(true),
-            revertable: ko.observable(true),
+            revertible: ko.observable(true),
             visible: ko.observable(true)
         };
 

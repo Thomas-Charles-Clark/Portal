@@ -75,7 +75,7 @@
         clearFunction: () => {
             self.customerOrderReference(undefined);
         },
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         useNativeValidation: false,
         insertValidationMessages: false,
         decorateInputElement: true
@@ -94,7 +94,7 @@
         clearFunction: () => {
             self.dgOrderNumber(undefined);
         },
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         useNativeValidation: false,
         insertValidationMessages: false,
         decorateInputElement: true,
@@ -140,7 +140,7 @@
         clearFunction: () => {
             self.from(undefined);
         },
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         useNativeValidation: false,
         insertValidationMessages: false,
         decorateInputElement: true
@@ -183,7 +183,7 @@
         clearFunction: () => {
             self.to(undefined);
         },
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         useNativeValidation: false,
         insertValidationMessages: false,
         decorateInputElement: true

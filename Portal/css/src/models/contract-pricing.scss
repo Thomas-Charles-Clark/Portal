@@ -62,19 +62,18 @@ $deal-hover-color: $white;
     }
 }
 
-#prefilters-wrapper,
-#body-wrapper {
+#prefilters-wrapper {
     display: flex;
     gap: $xl-gutter;
 
-    > div:first-of-type {
-        flex: 0 1 45%;
+    #prefilters-deals {
+        flex: 0 1 35%;
         min-width: 482px;
-
+        max-width: 876px;
     }
 
-    > div:last-of-type {
-        flex: 0 1 55%;
+    #prefilters-impact {
+        flex: 0 1 65%;
         min-width: 724px;
     }
 }
@@ -113,9 +112,9 @@ $deal-hover-color: $white;
     }
 
     .deal-group-heading,
-    .impact-heading {
+    #impact-heading {
         display: block;
-        padding: $m-gutter $l-gutter;
+        padding: $l-gutter;
         color: $white;
         display: flex;
         justify-content: space-between;
@@ -127,10 +126,17 @@ $deal-hover-color: $white;
     }
 
     #current-deals,
-    .impact-heading {
+    #impact-heading {
         background-color: $background-color-a;
-        margin-bottom: $sm-gutter;
         font-size: $font-size-lg;
+    }
+
+    #impact-heading {
+        margin-bottom: $sm-gutter; 
+    }
+
+    #current-deals {
+        margin-bottom: $sm-gutter;
     }
 
     .deal-group-heading {
@@ -143,6 +149,7 @@ $deal-hover-color: $white;
 .date-ranges-wrapper,
 .deal-types {
     &.accordion {
+        padding-left: $l-gutter;
         border-radius: 0;
         border: 0;
 
@@ -161,7 +168,7 @@ $deal-hover-color: $white;
                     color: $gray-800;
                     border-radius: 0;
                     border: 0;
-                    padding: $m-gutter $l-gutter;
+                    padding: $l-gutter;
 
                     &::after {
                         width: $l-gutter;
@@ -171,6 +178,17 @@ $deal-hover-color: $white;
                         margin-left: 0;
                         margin-right: 0.5em; // just extra space between text and icon
                     }
+
+                    // this doesn't work with the fixed positioning up the tree
+                    /*
+                    &.selected::before {
+                        content: 'chevron_right';
+                        font-family: 'Material Icons';
+                        position: fixed;
+                        left: calc(35% - 8px);
+                        color: $deal-hover-background;
+                        font-size: 32px;
+                    }*/
 
                     &.selected,
                     &:hover {
@@ -351,6 +369,7 @@ $deal-hover-color: $white;
 
 .deal-types {
     &.accordion {
+        padding-left: 0;
         margin-bottom: 0;
 
         .accordion-item {
@@ -460,21 +479,26 @@ $deal-hover-color: $white;
 
 #trade-account-deals {
     position: fixed;
-    width: calc(45% - 26px);
-    overflow-y: scroll;
+    width: calc(35% - 21px);
+    overflow-y: auto;
     max-height: 1024px;
-    padding-right: $vsm-gutter;
+
+    #trade-account-group-deal-details {
+        & + #trade-account-deal-details {
+            margin-top: $sm-gutter;
+        }
+    }
 }
 
 #impact {
     position: relative;
-    left: calc(45% + 17px);
+    left: calc(35% + 18px);
+    width: calc(65% - 18px);
 
-    .impact-wrapper {
+    #impact-wrapper {
         z-index: 1;
-        padding-bottom: 11px;
         position: fixed;
-        width: calc(55% - 31px);
+        width: calc(65% - 36px);
         background-color: #f3f1ed;
     }
 
@@ -491,15 +515,15 @@ $deal-hover-color: $white;
             border-top: 1px solid $gray-400;
         }
     }
+}
 
-    .tab-content {
-        padding: 100px 0 $l-gutter 0;
-        width: calc(100% - $l-gutter - 2px);
-    }
+#impact-results {
+    padding-top: 61px;
 }
 
 #impact-table-all {
     border-top: none;
+    /*border-collapse: separate;*/
 
     thead {
         tr {
@@ -507,11 +531,18 @@ $deal-hover-color: $white;
 
             th {
                 position: sticky;
-                top: 254px;
+                top: 215px;
                 background-color: $background-color-c;
                 color: $gray-800;
                 border-width: 0;
                 border-top-width: 0;
+                padding: 3.5px 7px;
+
+                &:first-of-type {
+                }
+            }
+
+            td {
             }
         }
     }
@@ -519,9 +550,11 @@ $deal-hover-color: $white;
     tbody {
         tr {
             td {
-                height: 60px;
+                height: 50px;
                 vertical-align: middle;
                 background: $white;
+                border-left: none;
+                border-right: none;
             }
         }
     }
@@ -1530,5 +1563,100 @@ tbody.virtual-spacing {
     &.k-i-collapse,
     &.k-i-expand {
         display: none;
+    }
+}
+
+#contract-pricing-modal {
+    .modal-header {
+        background-color: $background-color-a;
+        border-radius: 0;
+
+        .modal-title {
+            color: $white;
+
+            .btn-close {
+                color: $white;
+            }
+        }
+    }
+
+    .modal-body {
+        .nav-pills {
+            border-bottom: 0;
+        }
+
+        .product-group-item-type-table {
+
+            .title-column {
+            }
+
+            .checkbox-column {
+                width: 50px;
+                padding: 0;
+
+                &.all-brands {
+                    width: 90px;
+                }
+            }
+
+            .discount-column {
+                width: 171px;
+            }
+
+            .date-column {
+                width: 180px;
+            }
+
+            .status-column {
+                width: 160px;
+            }
+
+            thead {
+                th {
+                    height: 50px;
+                    vertical-align: middle;
+                }
+            }
+
+            tbody {
+                th, td {
+                    vertical-align: middle;
+                }
+
+                td {
+                    .brand-checkbox-wrapper {
+                        padding: $l-gutter;
+                        cursor: pointer;
+                        font-size: 0;
+                        width: 100%;
+                        height: 100%;
+
+                        input[type=checkbox] {
+                            width: 16px;
+                            height: 16px;
+                        }
+                    }
+
+                    .mdc-discounter-group {
+                        > div:first-child {
+                            width: 100px;
+                        }
+
+                        .mdc-validating-field {
+                            .mdc-text-field {
+                                background-color: $white;
+                            }
+
+                            .mdc-select {
+                            }
+                        }
+
+                        .input-group {
+                            margin-bottom: 0;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

@@ -41,8 +41,8 @@ namespace Portal.Areas.Customers.Controllers
             return Ok(result);
         }
 
-        [HttpGet]
-        public async Task<IHttpActionResult> FetchImpact([FromUri]ContractPricingImpactDto objDto)
+        [HttpPost]
+        public async Task<IHttpActionResult> FetchImpact([FromBody]ContractPricingImpactDto objDto)
         {
             var result = await PortalDb.ContractManagement_ContractImpact_Select(objDto);
 
@@ -52,25 +52,25 @@ namespace Portal.Areas.Customers.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> FetchSalesData([FromBody]ContractPricingSalesDataDto objDto)
         {
-            //var result = await PortalDb.ContractManagement_SalesData_Select(objDto);
+            var result = await PortalDb.ContractManagement_SalesData_Select(objDto);
 
-            //return Ok(result);
+            return Ok(result);
 
-            return Ok(new ContractManagement_SalesData_SelectResult() 
-            { 
-                ProductResults = objDto.productId.Select((p, i) => new ContractManagement_SalesData_ProductResult() 
-                { 
-                    ProductID = p,
-                    SalesQuantity_180Days = (i * 1) * 10,
-                    SalesValue_180Days = (i + 1) * 1000
-                }),
-                QualityResults = objDto.qualityId.Select((q, i) => new ContractManagement_SalesData_QualityResult()
-                {
-                    QualityID = q,
-                    SalesQuantity_180Days = (i * 1) * 50,
-                    SalesValue_180Days = (i + 1) * 5000
-                })
-            });
+            //return Ok(new ContractManagement_SalesData_SelectResult() 
+            //{ 
+            //    ProductResults = objDto.productId.Select((p, i) => new ContractManagement_SalesData_ProductResult() 
+            //    { 
+            //        ProductID = p,
+            //        SalesQuantity_180Days = (i * 1) * 10,
+            //        SalesValue_180Days = (i + 1) * 1000
+            //    }),
+            //    QualityResults = objDto.qualityId.Select((q, i) => new ContractManagement_SalesData_QualityResult()
+            //    {
+            //        QualityID = q,
+            //        SalesQuantity_180Days = (i * 1) * 50,
+            //        SalesValue_180Days = (i + 1) * 5000
+            //    })
+            //});
         }
 
         //[System.Web.Http.HttpGet]

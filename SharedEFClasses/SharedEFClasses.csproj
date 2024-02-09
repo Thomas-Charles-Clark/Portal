@@ -343,6 +343,7 @@
     <Compile Include="Models\ContractPricing\ContractPricingDealsDto.cs" />
     <Compile Include="Models\ContractPricing\ContractPricingImpactDto.cs" />
     <Compile Include="Models\ContractPricing\ContractPricingSalesDataDto.cs" />
+    <Compile Include="Models\ContractPricing\ContractProductRestriction.cs" />
     <Compile Include="Models\CreditControlRegion.cs" />
     <Compile Include="Models\CreditControlRegion_SalesMarket.cs" />
     <Compile Include="Models\DotDigital\SyncAction.cs" />

@@ -120,7 +120,7 @@
         disable: ko.observable(false),
         permitRevert: true,
         originalValue: self.originalPriceListId,
-        revertable: true,
+        revertible: true,
         revertFunction: () => {
             self.priceListId(self.originalPriceListId())
         },
@@ -211,7 +211,7 @@
         disable: ko.observable(false),
         permitRevert: true,
         originalValue: self.originalMarketingChannelId,
-        revertable: true,
+        revertible: true,
         revertFunction: () => {
             self.marketingChannelId(self.originalMarketingChannelId())
         },
@@ -297,7 +297,7 @@
         clearFunction: () => {
             self.period(undefined);
         },
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         useNativeValidation: false,
         insertValidationMessages: false,
         decorateInputElement: true

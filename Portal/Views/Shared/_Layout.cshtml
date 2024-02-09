@@ -464,7 +464,7 @@
                        charsRemaining: charsRemainingOptions,
                        enable: typeof readOnly == 'undefined' ? true : !readOnly(),
                        hasFocus: (typeof focusObservable === 'undefined' ? ko.observable() : focusObservable),
-                       css: { clearable: typeof clearable === 'undefined' ? showClear : clearable, revertable: typeof revertFunction === 'function' },
+                       css: { clearable: typeof clearable === 'undefined' ? showClear : clearable, revertible: typeof revertFunction === 'function' },
                        class: typeof cssClasses === 'undefined' ? null : cssClasses
                        " />
                 <div class="mdc-notched-outline">
@@ -508,7 +508,7 @@
                        charsRemaining: charsRemainingOptions,
                        enable: typeof readOnly == 'undefined' ? true : !readOnly(),
                        hasFocus: (typeof focusObservable === 'undefined' ? ko.observable() : focusObservable),
-                       css: { clearable: showClear, revertable: typeof revertFunction === 'function' },
+                       css: { clearable: showClear, revertible: typeof revertFunction === 'function' },
                        class: typeof cssClasses === 'undefined' ? null : cssClasses
                        " />
                 <div class="mdc-notched-outline">
@@ -837,7 +837,7 @@
                      validationOptions: {
                         insertMessages: insertValidationMessages,
                         decorateInputElement: decorateInputElement
-                     }, css: { 'clearable': (typeof showClear === 'undefined' ? false : showClear ), 'revertable': typeof revertFunction === 'function', 'mdc-select--disabled': (typeof readOnly === 'undefined' ? false : ko.unwrap(readOnly)) }">
+                     }, css: { 'clearable': (typeof showClear === 'undefined' ? false : showClear ), 'revertible': typeof revertFunction === 'function', 'mdc-select--disabled': (typeof readOnly === 'undefined' ? false : ko.unwrap(readOnly)) }">
                 <i class="mdc-select__dropdown-icon"></i>
                 <select class="mdc-select__native-control" data-bind="keepElement: observable, value: observable, options: options, optionsText: optionsText, optionsValue: (typeof optionsValue === 'undefined' ? $data : optionsValue), optionsCaption: (typeof optionsCaption === 'undefined' ? null : optionsCaption), validationOptions: { decorateInputElement: decorateInputElement }, attr: { 'disabled': (typeof readOnly === 'undefined' ? false : ko.unwrap(readOnly)) }, css: { 'ui-autocomplete-loading': typeof busy === 'undefined' ? false : busy }"></select>
                 <div class="mdc-notched-outline">
@@ -877,7 +877,7 @@
 
     <script id="mdc-kendo-dropdown-component" type="text/html">
         <div class="mdc-validating-field">
-            <div class="mdc-select mdc-select--outlined" data-bind="mdcSelectComponent: { boundTo: observable, useNativeValidation: useNativeValidation, optionsValue: dropDownListSettings.dataValueField, disabled: typeof disabled === 'undefined' ? false : disabled }, validationOptions: { insertMessages: insertValidationMessages, decorateInputElement: decorateInputElement }, css: { 'clearable': (typeof showClear === 'undefined' ? false : showClear ), 'revertable': typeof revertFunction === 'function' }">
+            <div class="mdc-select mdc-select--outlined" data-bind="mdcSelectComponent: { boundTo: observable, useNativeValidation: useNativeValidation, optionsValue: dropDownListSettings.dataValueField, disabled: typeof disabled === 'undefined' ? false : disabled }, validationOptions: { insertMessages: insertValidationMessages, decorateInputElement: decorateInputElement }, css: { 'clearable': (typeof showClear === 'undefined' ? false : showClear ), 'revertible': typeof revertFunction === 'function' }">
                 <select class="mdc-select__native-control" style="display: none;"></select>
                 <div data-bind="kendoDropDownList: dropDownListSettings, css: controlClass"></div>
                 <div class="mdc-notched-outline">
@@ -1305,7 +1305,7 @@
                     <div class="mdc-notched-outline__trailing"></div>
                 </div>
                 <div class="controls">
-                    <!-- ko if: revertable -->
+                    <!-- ko if: revertible -->
                     <div class="close revert" data-bind="click: revertFunction">
                         <i class="material-icons">
                             replay

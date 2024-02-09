@@ -20,6 +20,7 @@ using SharedEFClasses.ReturnModels;
 
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
 
 using DeliveryTerm = SharedEFClasses.Models.Mertexer.DeliveryTerm;
 
@@ -122,6 +123,8 @@ namespace SharedEFClasses.Models
         public DbSet<ProductPage> ProductPages { get; set; }
         public DbSet<ProductFilter> ProductFilters { get; set; }
         public DbSet<ProductFilterGroup> ProductFilterGroups { get; set; }
+
+        public DbSet<ContractProductRestriction> ContractProductRestrictions { get; set; }
 
         #endregion
 

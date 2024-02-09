@@ -169,7 +169,7 @@ const fenwickInvoicingViewModel = (() => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         readOnly: false,
         filter: 'contains',
         autoBind: true,
@@ -200,7 +200,7 @@ const fenwickInvoicingViewModel = (() => {
         enable: ko.observable(true),
         disable: self.signedOff,
         clearable: ko.observable(false),
-        revertable: ko.observable(false)
+        revertible: ko.observable(false)
     }
 
     self.signOffErrors = new ko.validation.group([

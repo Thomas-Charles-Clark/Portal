@@ -46,7 +46,7 @@ const treatmentMaintenanceViewModel = (() => {
         decorateInputElement: false,
         insertValidationMessages: false,
         clearable: true,
-        revertable: false,
+        revertible: false,
         enterKeyFunction: function () {
             $(self.productAutocomplete.observable.DOMElement).autocomplete('search');
         },
@@ -202,7 +202,7 @@ const fabricTreatmentFactory = ({ parent = null } = {}) => {
     self.treatmentProviderParams = {
         observable: self.treatmentProvider,
         clearable: true,
-        revertable: false,
+        revertible: false,
         enable: ko.observable(true),
         disable: ko.observable(false),
         width: 'auto',
@@ -288,7 +288,7 @@ const fabricTreatmentFactory = ({ parent = null } = {}) => {
         decorateInputElement: false,
         insertValidationMessages: false,
         clearable: true,
-        revertable: false,
+        revertible: false,
         enterKeyFunction: function () {
             $(self.qualityAutocomplete.observable.DOMElement).autocomplete('search');
         },
@@ -584,7 +584,7 @@ const fabricTreatmentFactory = ({ parent = null } = {}) => {
             decorateInputElement: true,
             insertValidationMessages: false,
             clearable: true,
-            revertable: false,
+            revertible: false,
             clearFunction: function () {
                 var self = this;
                 self.observable(undefined);
@@ -819,7 +819,7 @@ const treatmentRecord = ((parent, data) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: true,
-        revertable: false,
+        revertible: false,
         observable: self.name,
         useNativeValidation: false,
         decorateInputElement: false,
@@ -842,7 +842,7 @@ const treatmentRecord = ((parent, data) => {
         decorateInputElement: false,
         insertValidationMessages: false,
         clearable: true,
-        revertable: false,
+        revertible: false,
         rows: 3,
         clearFunction: function () {
             var self = this;
@@ -868,7 +868,7 @@ const treatmentRecord = ((parent, data) => {
         optionsCaption: ' ',
         width: 'auto',
         clearable: true,
-        revertable: false,
+        revertible: false,
         onSelect: function () {
 
         },
@@ -892,7 +892,7 @@ const treatmentRecord = ((parent, data) => {
         optionsCaption: ' ',
         width: 'auto',
         clearable: true,
-        revertable: false,
+        revertible: false,
         onSelect: function () {
 
         },
@@ -911,7 +911,7 @@ const treatmentRecord = ((parent, data) => {
         // this is utilised by the mdcSelect component.
         validate: self.countryIds,
         clearable: true,
-        revertable: false,
+        revertible: false,
         width: 'auto',
         label: 'Countries',
         valuePrimitive: false,
@@ -1016,7 +1016,7 @@ const treatmentRecord = ((parent, data) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: true,
-        revertable: false,
+        revertible: false,
         width: 'auto',
         label: 'Product Filter Group',
         valuePrimitive: false,
@@ -1090,7 +1090,7 @@ const treatmentRecord = ((parent, data) => {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: true,
-        revertable: false,
+        revertible: false,
         width: 'auto',
         label: 'Treatment Product Record',
         valuePrimitive: false,

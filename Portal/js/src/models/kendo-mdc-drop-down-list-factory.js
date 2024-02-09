@@ -23,7 +23,7 @@
     disable,
     enable,
     clearable,
-    revertable,
+    revertible,
     readOnly,
     virtual,
     virtualOptions,
@@ -298,8 +298,8 @@
         result.clearable = clearable;
     }
 
-    if (typeof revertable === 'function') {
-        result.revertable = revertable;
+    if (typeof revertible === 'function') {
+        result.revertible = revertible;
     }
 
     return result;

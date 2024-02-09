@@ -225,11 +225,11 @@ textarea.mdc-text-field__input {
 
     .mdc-text-field--outlined {
         .mdc-text-field__input.clearable,
-        .mdc-text-field__input.revertable {
+        .mdc-text-field__input.revertible {
             padding-right: calc($xl-gutter + $vsm-gutter);
         }
 
-        .mdc-text-field__input.clearable.revertable {
+        .mdc-text-field__input.clearable.revertible {
             padding-right: calc(calc($xl-gutter * 2) + $l-gutter);
         }
     }
@@ -245,13 +245,13 @@ textarea.mdc-text-field__input {
     }
 
     .mdc-select--outlined.clearable,
-    .mdc-select--outlined.revertable {
+    .mdc-select--outlined.revertible {
         .mdc-select__native-control {
             padding-right: 70px;
         }
     }
 
-    .mdc-select--outlined.clearable.revertable {
+    .mdc-select--outlined.clearable.revertible {
         .mdc-select__native-control {
             padding-right: 104px;
         }
@@ -284,11 +284,11 @@ textarea.mdc-text-field__input {
 
         .mdc-text-field--outlined {
             .mdc-text-field__input.clearable,
-            .mdc-text-field__input.revertable {
+            .mdc-text-field__input.revertible {
                 padding-right: calc(calc($xl-gutter + $vsm-gutter) + 20px);
             }
 
-            .mdc-text-field__input.clearable.revertable {
+            .mdc-text-field__input.clearable.revertible {
                 padding-right: calc(calc(calc($xl-gutter * 2) + $vsm-gutter) + 20px);
             }
         }
@@ -337,13 +337,13 @@ textarea.mdc-text-field__input {
     }
 
     .mdc-text-field--textarea.clearable,
-    .mdc-text-field--textarea.revertable {
+    .mdc-text-field--textarea.revertible {
         textarea {
             padding-right: 36px;
         }
     }
 
-    .mdc-text-field--textarea.clearable.revertable {
+    .mdc-text-field--textarea.clearable.revertible {
         textarea {
             padding-right: 70px;
         }
@@ -629,5 +629,34 @@ textarea.mdc-text-field__input {
     &:hover {
         background-color: $blue-700;
         color: $white;
+    }
+}
+
+.mdc-discounter-group {
+    .mdc-validating-field {
+        .mdc-text-field {
+            background-color: $white;
+        }
+
+        select {
+            height: 100%;
+        }
+    }
+
+    .btn-group:nth-child(2) {
+
+        .mdc-validating-field {
+            position: relative;
+            right: -1px;
+
+            .mdc-select {
+                background-color: $white;
+            }
+
+            .mdc-select--dropdown-icon {
+                position: relative;
+                z-index: 1;
+            }
+        }
     }
 }

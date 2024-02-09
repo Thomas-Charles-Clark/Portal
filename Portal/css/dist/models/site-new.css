@@ -197,10 +197,10 @@ textarea.mdc-text-field__input {
   padding-right: 1rem;
 }
 .mdc-validating-field .mdc-text-field--outlined .mdc-text-field__input.clearable,
-.mdc-validating-field .mdc-text-field--outlined .mdc-text-field__input.revertable {
+.mdc-validating-field .mdc-text-field--outlined .mdc-text-field__input.revertible {
   padding-right: 2.25rem;
 }
-.mdc-validating-field .mdc-text-field--outlined .mdc-text-field__input.clearable.revertable {
+.mdc-validating-field .mdc-text-field--outlined .mdc-text-field__input.clearable.revertible {
   padding-right: 5rem;
 }
 .mdc-validating-field .mdc-select .controls {
@@ -210,10 +210,10 @@ textarea.mdc-text-field__input {
   padding-right: 0.5rem;
 }
 .mdc-validating-field .mdc-select--outlined.clearable .mdc-select__native-control,
-.mdc-validating-field .mdc-select--outlined.revertable .mdc-select__native-control {
+.mdc-validating-field .mdc-select--outlined.revertible .mdc-select__native-control {
   padding-right: 70px;
 }
-.mdc-validating-field .mdc-select--outlined.clearable.revertable .mdc-select__native-control {
+.mdc-validating-field .mdc-select--outlined.clearable.revertible .mdc-select__native-control {
   padding-right: 104px;
 }
 .mdc-validating-field .mdc-numeric-field:not(.no-buttons) {
@@ -233,10 +233,10 @@ textarea.mdc-text-field__input {
   padding-right: 0.5rem;
 }
 .mdc-validating-field .mdc-numeric-field:not(.no-buttons) .mdc-text-field--outlined .mdc-text-field__input.clearable,
-.mdc-validating-field .mdc-numeric-field:not(.no-buttons) .mdc-text-field--outlined .mdc-text-field__input.revertable {
+.mdc-validating-field .mdc-numeric-field:not(.no-buttons) .mdc-text-field--outlined .mdc-text-field__input.revertible {
   padding-right: calc(2.25rem + 20px);
 }
-.mdc-validating-field .mdc-numeric-field:not(.no-buttons) .mdc-text-field--outlined .mdc-text-field__input.clearable.revertable {
+.mdc-validating-field .mdc-numeric-field:not(.no-buttons) .mdc-text-field--outlined .mdc-text-field__input.clearable.revertible {
   padding-right: calc(4.25rem + 20px);
 }
 
@@ -294,10 +294,10 @@ textarea.mdc-text-field__input {
   pointer-events: none;
 }
 .mdc-validating-field .mdc-text-field--textarea.clearable textarea,
-.mdc-validating-field .mdc-text-field--textarea.revertable textarea {
+.mdc-validating-field .mdc-text-field--textarea.revertible textarea {
   padding-right: 36px;
 }
-.mdc-validating-field .mdc-text-field--textarea.clearable.revertable textarea {
+.mdc-validating-field .mdc-text-field--textarea.clearable.revertible textarea {
   padding-right: 70px;
 }
 .mdc-validating-field .mdc-multiselect.clearable .k-multiselect-wrap .k-clear-value {
@@ -521,5 +521,23 @@ textarea.mdc-text-field__input {
 .btn-blue-active:focus, .btn-blue-active:hover {
   background-color: #084298;
   color: #fff;
+}
+
+.mdc-discounter-group .mdc-validating-field .mdc-text-field {
+  background-color: #fff;
+}
+.mdc-discounter-group .mdc-validating-field select {
+  height: 100%;
+}
+.mdc-discounter-group .btn-group:nth-child(2) .mdc-validating-field {
+  position: relative;
+  right: -1px;
+}
+.mdc-discounter-group .btn-group:nth-child(2) .mdc-validating-field .mdc-select {
+  background-color: #fff;
+}
+.mdc-discounter-group .btn-group:nth-child(2) .mdc-validating-field .mdc-select--dropdown-icon {
+  position: relative;
+  z-index: 1;
 }
 /*# sourceMappingURL=site-new.css.map */

@@ -17155,7 +17155,7 @@ var memberBasketFetcher = function (parent) {
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         readOnly: false,
         filter: 'startswith',
         autoBind: true,

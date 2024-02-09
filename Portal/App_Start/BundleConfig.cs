@@ -301,6 +301,7 @@ namespace Portal
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/contract-pricing").Include(
+                        $"{cssPrefix}/lib/tempus-dominus/tempus-dominus{cssSuffix}",
                         $"{cssPrefix}/models/contract-pricing{cssSuffix}"
                 ));
 
@@ -710,6 +711,7 @@ namespace Portal
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/js/contract-pricing").Include(
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/contract-pricing{jsSuffix}"
                 ));
 

@@ -211,10 +211,10 @@ tr.barber-busy > td {
   padding-right: 1rem;
 }
 .mdc-validating-field .mdc-text-field--outlined .mdc-text-field__input.clearable,
-.mdc-validating-field .mdc-text-field--outlined .mdc-text-field__input.revertable {
+.mdc-validating-field .mdc-text-field--outlined .mdc-text-field__input.revertible {
   padding-right: 2.25rem;
 }
-.mdc-validating-field .mdc-text-field--outlined .mdc-text-field__input.clearable.revertable {
+.mdc-validating-field .mdc-text-field--outlined .mdc-text-field__input.clearable.revertible {
   padding-right: 4.25rem;
 }
 .mdc-validating-field .mdc-select .controls {
@@ -224,10 +224,10 @@ tr.barber-busy > td {
   padding-right: 0.5rem;
 }
 .mdc-validating-field .mdc-select--outlined.clearable .mdc-select__native-control,
-.mdc-validating-field .mdc-select--outlined.revertable .mdc-select__native-control {
+.mdc-validating-field .mdc-select--outlined.revertible .mdc-select__native-control {
   padding-right: 70px;
 }
-.mdc-validating-field .mdc-select--outlined.clearable.revertable .mdc-select__native-control {
+.mdc-validating-field .mdc-select--outlined.clearable.revertible .mdc-select__native-control {
   padding-right: 104px;
 }
 .mdc-validating-field .mdc-numeric-field {
@@ -250,10 +250,10 @@ tr.barber-busy > td {
   padding-right: 0.5rem;
 }
 .mdc-validating-field .mdc-numeric-field .mdc-text-field--outlined .mdc-text-field__input.clearable,
-.mdc-validating-field .mdc-numeric-field .mdc-text-field--outlined .mdc-text-field__input.revertable {
+.mdc-validating-field .mdc-numeric-field .mdc-text-field--outlined .mdc-text-field__input.revertible {
   padding-right: calc(2.25rem + 20px);
 }
-.mdc-validating-field .mdc-numeric-field .mdc-text-field--outlined .mdc-text-field__input.clearable.revertable {
+.mdc-validating-field .mdc-numeric-field .mdc-text-field--outlined .mdc-text-field__input.clearable.revertible {
   padding-right: calc(4.25rem + 20px);
 }
 
@@ -311,10 +311,10 @@ tr.barber-busy > td {
   pointer-events: none;
 }
 .mdc-validating-field .mdc-text-field--textarea.clearable textarea,
-.mdc-validating-field .mdc-text-field--textarea.revertable textarea {
+.mdc-validating-field .mdc-text-field--textarea.revertible textarea {
   padding-right: 36px;
 }
-.mdc-validating-field .mdc-text-field--textarea.clearable.revertable textarea {
+.mdc-validating-field .mdc-text-field--textarea.clearable.revertible textarea {
   padding-right: 70px;
 }
 .mdc-validating-field .mdc-multiselect.clearable .k-multiselect-wrap .k-clear-value {

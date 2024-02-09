@@ -46,6 +46,7 @@ namespace Portal.Areas.Customers.Controllers
             }
 
             var model = new ContractPricingViewModel(
+                PortalDb,
                 preselected,
                 user.GetActiveRoleProperties(),
                 application.Heading,

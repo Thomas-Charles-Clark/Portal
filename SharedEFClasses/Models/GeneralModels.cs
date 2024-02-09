@@ -564,6 +564,7 @@ namespace SharedEFClasses.Models.General
     public class Brand
     {
         public byte BrandID { get; set; }
+        public byte? ParentID { get; set; }
         public string Name { get; set; }
         public byte SortOrder { get; set; }
         public string Code { get; set; }

@@ -38,7 +38,7 @@
 
         // new, modern, shiny properties for use in layout-new.cshtml...
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         enable: ko.observable(true),
         disable: ko.observable(false)
     };
@@ -109,7 +109,7 @@
 
         // new, modern, shiny properties for use in layout-new.cshtml...
         clearable: ko.observable(true),
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         enable: ko.observable(true),
         disable: ko.observable(false),
         busy: ko.observable(false),

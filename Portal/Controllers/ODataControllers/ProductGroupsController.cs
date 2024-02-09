@@ -41,6 +41,13 @@ namespace Portal.Controllers
             return PortalDb.ProductGroups.AsQueryable();
         }
 
+        // GET: odata/Products
+        [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
+        public IQueryable<ProductGroup> GetProductGroupForContractPricing()
+        {
+            return PortalDb.ContractProductRestrictions.Select(cpr => cpr.ProductGroup).Distinct().AsQueryable();
+        }
+
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
         [HttpGet]
         public IQueryable<ProductGroup> ProductGroupValueMapper(byte? productGroupId)

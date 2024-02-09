@@ -571,7 +571,7 @@
                                             clearFunction: () => {
                                                 self.boxCount(undefined);
                                             },
-                                            revertable: ko.observable(false),
+                                            revertible: ko.observable(false),
                                             useNativeValidation: false,
                                             insertValidationMessages: false,
                                             decorateInputElement: true,
@@ -1814,7 +1814,7 @@
         clearFunction: () => {
             self.boxCount(undefined);
         },
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         useNativeValidation: false,
         insertValidationMessages: false,
         decorateInputElement: true,
@@ -1900,7 +1900,7 @@
         clearFunction: () => {
             self.orderHistoryFrom(undefined);
         },
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         useNativeValidation: false,
         insertValidationMessages: false,
         decorateInputElement: true
@@ -1943,7 +1943,7 @@
         clearFunction: () => {
             self.orderHistoryTo(undefined);
         },
-        revertable: ko.observable(false),
+        revertible: ko.observable(false),
         useNativeValidation: false,
         insertValidationMessages: false,
         decorateInputElement: true
@@ -1966,7 +1966,7 @@
         originalValue: ko.observable(),
         enable: ko.observable(true),
         disable: ko.observable(false),
-        revertable: true,
+        revertible: true,
         revertFunction: () => {
             self.orderHistorySearch(self.originalOrderHistorySearch())
         },

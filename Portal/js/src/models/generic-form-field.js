@@ -126,7 +126,7 @@ const fieldViewModel = ((data, parent) => {
         busy: self.busy,
         permitRevert: true,
         originalValue: self.originalValue,
-        revertable: true,
+        revertible: true,
         revertFunction: () => {
             if (self.params.hasOwnProperty('dropDownListSettings')) {
                 self.params.dropDownListSettings.widget().value(self.originalValue());
