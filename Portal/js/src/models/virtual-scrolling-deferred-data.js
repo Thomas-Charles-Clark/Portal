@@ -38,11 +38,15 @@ const virtualScrollingDeferredDataFactory = ({
     tableSelector,
     rowHeight,
     primaryFetchParams,
+    primaryFetchMethod,
     primaryFetchEndpoint,
     primaryFetchResultFn,
+    primaryFetchResultSetName,
     secondaryFetchQueueRecordId,
     secondaryFetchParams,
+    secondaryFetchMethod,
     secondaryFetchEndpoint,
+    secondaryFetchResultSetName,
     secondaryFetchResultProcessingFn,
     container,
     gridHeaderHeight,
@@ -54,6 +58,7 @@ const virtualScrollingDeferredDataFactory = ({
     primaryFetchParams: ko.computed(() => {
         // build some set of parameters required by primaryFetch
     }),
+    primaryFetchMethod: "GET",
     primaryFetchEndpoint: "/api/some-endpoint",
     primaryFetchResultFn: (rec) => {
         return Object.assign({
@@ -61,15 +66,18 @@ const virtualScrollingDeferredDataFactory = ({
             busy: ko.observable(false)
         }, rec);
     },
+    primaryFetchResultSetName: "Results",
     secondaryFetchQueueRecordId: `a-b-c-d`,
     secondaryFetchParams: ko.computed(() => {
         // build some set of params required by the secondaryFetch
     }),
+    secondaryFetchMethod: "POST",
     secondaryFetchEndpoint: "/api/some-other-endpoint",
     secondaryFetchResultProcessingFn: (record, data) => {
         record.loaded(true);
         record.busy(false);
     },
+    secondaryFetchResultSetName: "Results",
     container: window,
     gridHeaderHeight: 56,
     gridPositionTop: 206,
@@ -101,15 +109,15 @@ const virtualScrollingDeferredDataFactory = ({
 
     self.scrollY = ko.observable(0);
 
+    self.tableSelector = tableSelector;
+
     self.container = container;
 
-    self.maxY = ko.observable(self.container.innerHeight);
+    self.maxY = ko.observable(+window.getComputedStyle(self.container)['max-height'].replace(/px/, '') + (self.rowHeight * 5));
 
     self.gridHeaderHeight = gridHeaderHeight;
 
     self.gridTotalHeight = ko.observable();
-
-    self.gridScrollBottomPadding = ko.observable(0);
 
     self.finalRowVisible = ko.observable(false);
 
@@ -119,13 +127,19 @@ const virtualScrollingDeferredDataFactory = ({
 
     self.primaryFetchEndpoint = primaryFetchEndpoint;
 
+    self.primaryFetchResultSetName = primaryFetchResultSetName;
+
     self.primaryFetchResultFn = primaryFetchResultFn;
 
     self.secondaryFetchParams = secondaryFetchParams;
 
     self.secondaryFetchEndpoint = secondaryFetchEndpoint;
 
+    self.secondaryFetchResultSetName = secondaryFetchResultSetName;
+
     self.secondaryFetchQueueRecordId = secondaryFetchQueueRecordId;
+
+    self.secondaryFetchResultProcessingFunction = secondaryFetchResultProcessingFn;
 
     self.searchResults = ko.observableArray([]);
 
@@ -188,7 +202,7 @@ const virtualScrollingDeferredDataFactory = ({
 
     }, self);
 
-    console.warn("next up, we need to continue work on this encapsulation of the concept of virtual scrolling!");
+    console.warn("next up, I need to sort the key comparison behaviour so I'm not writing all sales data to the same record because null == null");
 
     self.visibleItems = ko.computed(() => {
 
@@ -258,80 +272,85 @@ const virtualScrollingDeferredDataFactory = ({
 
     self.primaryFetch = ko.computed(() => {
 
-        self.busy(true);
-
         let data = self.primaryFetchParams();
 
-        self.searchResults([]);
+        if (data) {
 
-        self.haveSearchResults(false);
+            self.busy(true);
 
-        self.secondaryFetchedRecords([]);
+            self.searchResults([]);
 
-        console.log('virtualScrollingDeferredDataFactory primaryFetch calling with', data);
+            self.haveSearchResults(false);
 
-        fetch(self.primaryFetchEndpoint, {
-            method: 'POST',
-            headers: window.fetchHeaders,
-            body: JSON.stringify(data)
-        })
-            .then(window.handleFetchResponse)
-            .then(data => {
-                console.log('virtualScrollingDeferredDataFactory primaryFetch returned', data);
+            self.secondaryFetchedRecords([]);
 
-                self.busy(false);
+            console.log('virtualScrollingDeferredDataFactory primaryFetch calling with', data);
 
-                if (data.Results.length > 0)
+            fetch(self.primaryFetchEndpoint, {
+                method: "POST",
+                headers: window.fetchHeaders,
+                body: JSON.stringify(data)
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    console.log('virtualScrollingDeferredDataFactory primaryFetch returned', data);
+
+                    self.busy(false);
+
+                    if (data[self.primaryFetchResultSetName].length > 0)
+                        self.haveSearchResults(true);
+
+                    let startingOffset = self.gridPositionTop + self.gridHeaderHeight;
+
+                    let additionalOffset = startingOffset;
+
+                    let cumulativeHeight = 0;
+
+                    let results = data[self.primaryFetchResultSetName].map((result, index) => {
+
+                        result.offsetY = (((index) * self.rowHeight) + additionalOffset);
+
+                        cumulativeHeight += self.rowHeight;
+
+                        result.runningHeight = cumulativeHeight;
+
+                        return self.primaryFetchResultFn(result);
+                    });
+
+                    self.gridTotalHeight(cumulativeHeight - self.rowHeight - 1);
+
+                    self.searchResults(results);
+
                     self.haveSearchResults(true);
 
-                let startingOffset = self.gridPositionTop + self.gridHeaderHeight;
-
-                let additionalOffset = startingOffset;
-
-                let cumulativeHeight = 0;
-
-                let results = data.Results.map((result, index) => {
-
-                    result.offsetY = (((index) * self.rowHeight) + additionalOffset);
-
-                    cumulativeHeight += self.rowHeight;
-
-                    result.runningHeight = cumulativeHeight;
-
-                    return self.primaryFetchResultFn(result);
+                })
+                .catch(err => {
+                    self.busy(false);
+                    window.catchFetchError(err);
                 });
-
-                self.gridTotalHeight(cumulativeHeight - self.rowHeight - 1);
-
-                self.searchResults(results);
-
-                self.haveSearchResults(true);
-
-            })
-            .catch(err => {
-                self.busy(false);
-                window.catchFetchError(err);
-            });
+        }
     }, self);
 
     self.secondaryFetch = ko.computed(() => {
 
         let urpids = self.unfilledRecords();
 
-        console.log("virtualScrollingDeferredDataFactory self.unfilledRecords()", urpids);
-
         if (urpids.length) {
+
+            console.log("virtualScrollingDeferredDataFactory self.unfilledRecords()", urpids);
+
+            urpids.forEach(urpid => urpid.busy(true));
 
             window.setTimeout(() => {
 
                 let callStart = new Date();
 
-                let data = self.secondaryFetchParams();
+                let data = self.secondaryFetchParams.call(self, urpids);
 
                 console.log('virtualScrollingDeferredDataFactory self.secondaryFetch calling with', data);
 
                 fetch(self.secondaryFetchEndpoint, {
-                    method: 'POST',
+                    method: "POST",
                     headers: window.fetchHeaders,
                     body: JSON.stringify(data)
                 })
@@ -359,7 +378,7 @@ const virtualScrollingDeferredDataFactory = ({
 
                                 //console.log('virtualScrollingDeferredDataFactory record found');
 
-                                let dataResult = data.Results.find(p => p[self.secondaryFetchQueueRecordId] == stub[self.secondaryFetchQueueRecordId]);
+                                let dataResult = data[self.secondaryFetchResultSetName].find(p => p[self.secondaryFetchQueueRecordId] == stub[self.secondaryFetchQueueRecordId]);
 
                                 let filledRecord = filledRecords.find(p => p[self.secondaryFetchQueueRecordId] == stub[self.secondaryFetchQueueRecordId]);
 
@@ -378,7 +397,7 @@ const virtualScrollingDeferredDataFactory = ({
                                         record = filledRecord;
                                     }
 
-                                    self.secondaryResultProcessingFunction(record, dataResult);
+                                    self.secondaryFetchResultProcessingFunction.call(record, dataResult);
 
                                     record.busy(false);
 
@@ -422,7 +441,7 @@ const virtualScrollingDeferredDataFactory = ({
                         }, 0);
                     })
                     .catch(err => {
-                        self.clearBusy();
+                        self.busy(false);
                         window.catchFetchError(err)
                     });
             }, 300);
@@ -439,7 +458,29 @@ const virtualScrollingDeferredDataFactory = ({
 
     //#region Events
 
+    self.container.addEventListener("scroll", (event) => {
+        if (self.finalRowVisible()) {
+            if (self.container.scrollTop < self.scrollY()) {
+                self.scrollY(self.container.scrollTop);
+                self.maxY(self.scrollY() + +window.getComputedStyle(self.container)['max-height'].replace(/px/, ''));
+            }
+        } else {
+            self.scrollY(self.container.scrollTop);
+            self.maxY(self.scrollY() + +window.getComputedStyle(self.container)['max-height'].replace(/px/, '')); //eh?
+        }
+    });
 
+    window.addEventListener("resize", debounce((event) => {
+        //if (self.finalRowVisible()) {
+        //    self.finalRowVisible(false);
+        //}
+        if (self.container.scrollY < self.scrollY()) {
+            self.maxY(self.scrollY() + +window.getComputedStyle(self.container)['max-height'].replace(/px/, ''));
+        }
+        //} else {
+        //    self.maxY(self.scrollY() + window.innerHeight);
+        //}
+    }, 50));
 
     //#endregion
 

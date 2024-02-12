@@ -1266,8 +1266,6 @@ const contractPricingViewModel = ({ } = {}) => {
 
                 console.log('fetchSalesData calling with', data);
 
-                let qs = new URLSearchParams(data);
-
                 fetch(`/api/contractpricing/FetchSalesData`, {
                     method: 'POST',
                     headers: window.fetchHeaders,
@@ -2101,6 +2099,80 @@ const productGroupItemTypeEditor = ({
     return self;
 }
 
+const qualitySearchRecord = (rec = { }) => {
+    let self = Object.assign({}, rec);
+
+    //#region Properties
+
+    self.loaded = ko.observable(false);
+
+    self.busy = ko.observable(true);
+
+    self.checked = ko.observable(self.checked);
+
+    self.salesQuantity = ko.observable();
+
+    self.salesValue = ko.observable();
+
+    self.currentPrice = ko.observable();
+
+    //#endregion
+
+    //#region Components
+
+    self.discounter = discounterFactory({
+        finalPrice: null,
+        discountPercentage: null,
+        currency: {
+            Symbol: '£',
+            FormattingCulture: 'en-GB',
+            Code: 'GBP',
+            ISO_4217: 'GBP'
+        },
+        permitMonetary: true,
+        permitPercentage: true,
+        initialState: DISCOUNT_STATE_PERCENTAGE
+    });
+
+    //#endregion
+
+    //#region Methods
+
+
+
+    //#endregion
+
+    return self;
+}
+
+const productSearchRecord = (rec = {}) => {
+    let self = Object.assign({}, rec);
+
+    //#region Properties
+
+    self.loaded = ko.observable(false);
+
+    self.busy = ko.observable(false);
+
+    self.checked = ko.observable(false);
+
+    //#endregion
+
+    //#region Computeds
+
+
+
+    //#endregion
+
+    //#region Methods
+
+
+
+    //#endregion
+
+    return self;
+}
+
 const qualityEditor = ({
     tradeAccountId
 } = {
@@ -2138,6 +2210,9 @@ const qualityEditor = ({
 
     //#endregion
 
+    self.selectedQualityIds = ko.observableArray([]);
+
+    self.selectedQualities = ko.observableArray([]);
 
     //#endregion
 
@@ -2230,7 +2305,7 @@ const qualityEditor = ({
         };
 
         if (self.searchTerm()) {
-            params.searchTerm = searchTerm();
+            params.searchTerm = self.searchTerm();
         }
 
         if (self.tradeAccountId() &&
@@ -2249,33 +2324,43 @@ const qualityEditor = ({
         return;
     }, self);
 
-    self.secondaryFetchParams = ko.computed(() => {
-        let params = {
+    // this is called via .apply(,) -- must not be declared with arrow syntax, as they do not get passed
+    // any this value and always use the global scope as their this
+    self.secondaryFetchParams = function(unfilledRecords) {
 
+        let qualityIds = [...new Set(unfilledRecords.flatMap(ur => ur.QualityID ? [ur.QualityID] : []))];
+
+        let data = {
+            tradeAccountId: self.tradeAccountId(),
+            productId: [],
+            qualityId: qualityIds
         };
 
-        return params;
-    }, self);
+        return data;
+    };
 
     self.virtualScroller = virtualScrollingDeferredDataFactory({
         tableSelector: "#quality-search-results-table",
-        rowHeight: 30,
+        rowHeight: 40,
         primaryFetchParams: self.primaryFetchParams,
-        primaryFetchEndpoint: "/api/contractPricing/FetchImpact",
-        secondaryFetchQueueRecordId: "SomeProperty",
-        secondaryFetchParams: self.secondaryFetchParamsComputer,
+        primaryFetchEndpoint: "/api/contractPricing/QualitySearch",
+        primaryFetchResultSetName: "Results",
+        primaryFetchResultFn: (rec) => {
+            Object.assign({
+                checked: (self.selectedQualityIds().find(qid => qid == rec.QualityID))
+            }, rec);
+            return qualitySearchRecord(rec);
+        },
+        secondaryFetchQueueRecordId: "QualityID",
+        secondaryFetchParams: self.secondaryFetchParams,
         secondaryFetchEndpoint: "/api/contractPricing/FetchSalesData",
-        secondaryFetchResultProcessingFn: (rec, data) => {
-            // rec is an instance of primaryFetchResultFn, but with the various properties we deferred data fetch for
-            // as yet unfilled
-
-            // data is the record delivered from the deferred fetch carrying the data we wish to fill rec with
-
-            // now is the time to do e.g.
-            // rec.someImportantProperty(data.someImportantProperty);
-
-            rec.loaded(true);
-            rec.busy(false);
+        secondaryFetchResultSetName: "QualityResults",
+        secondaryFetchResultProcessingFn: function(data) {
+            this.salesQuantity(data.SalesQuantity_180Days);
+            this.salesValue(data.SalesValue_180Days);
+            this.currentPrice("TBC");
+            this.loaded(true);
+            this.busy(false);
         },
         container: document.getElementById("quality-results-scroller-container"),
         gridHeaderHeight: 56,
@@ -2285,6 +2370,10 @@ const qualityEditor = ({
             return self;
         }
     });
+
+    console.warn("global assignment shortcut, remove later");
+    window.qe = self;
+    window.vs = self.virtualScroller;
 
     self.launchParams = kendoMDCDropDownList({
         label: 'Launch',
@@ -2518,6 +2607,17 @@ const qualityEditor = ({
 
     //#region Methods
 
+    self.toggleSelection = (qualitySearchRecord) => {
+        let extant = self.selectedQualityIds().find(qid => qid === qualitySearchRecord.QualityID);
+
+        if (extant) {
+            self.selectedQualityIds.remove(qualitySearchRecord.QualityID);
+            self.selectedQualities.remove(q => q.QualityID == qualitySearchRecord.QualityID);
+        } else {
+            self.selectedQualityIds.push(qualitySearchRecord.QualityID);
+            self.selectedQualities.push(qualitySearchRecord);
+        }
+    }
 
     //#endregion
 

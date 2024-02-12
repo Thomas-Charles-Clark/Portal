@@ -157,7 +157,7 @@
                                 </div>
                                 <!-- ko with: virtualScroller -->
                                 <div id="quality-results-scroller-container" class="virtual-scroller-container">
-                                    <table id="quality-search-results-table" class="table table-condensed table-bordered table-striped product-group-item-type-table mt-3">
+                                    <table id="quality-search-results-table" class="table table-condensed table-striped table-hover product-group-item-type-table">
                                         <colgroup>
                                             <col class="code-column" />
                                             <col class="name-column" />
@@ -177,15 +177,15 @@
                                                 <th>
 
                                                 </th>
-                                                <th>
+                                                <th class="text-end">
                                                     Quantity Sold<br />
                                                     Last 180 Days
                                                 </th>
-                                                <th>
+                                                <th class="text-end">
                                                     Sales Value<br />
                                                     Last 180 Days
                                                 </th>
-                                                <th>
+                                                <th class="text-end">
                                                     Current Price
                                                 </th>
                                             </tr>
@@ -193,20 +193,20 @@
                                         <!-- ko if: visibleItems().length > 0 -->
                                         <tbody class="virtual-spacing">
                                             <tr>
-                                                <td colspan="9" style="height: 0px;" data-bind="style: { height: `${gridScrollTopPadding()}px` }"></td>
+                                                <td colspan="6" style="height: 0px;" data-bind="style: { height: `${gridScrollTopPadding()}px` }"></td>
                                             </tr>
                                         </tbody>
                                         <tbody data-bind="foreach: visibleItems">
-                                            <tr>
+                                            <tr class="search-result" data-bind="css: { 'busy': busy }, click: $parentContext.$parent.toggleSelection">
                                                 <td>
-                                                    <span data-bind="text: Code"></span>
+                                                    <span data-bind="text: QualityCode"></span>
                                                 </td>
                                                 <td>
-                                                    <span data-bind="text: Name"></span>
+                                                    <span data-bind="text: QualityName"></span>
                                                 </td>
-                                                <td>
-                                                    <label class="brand-checkbox-wrapper">
-                                                        <input type="checkbox" data-bind="checked: checked" />
+                                                <td class="text-center">
+                                                    <label class="checkbox-wrapper" tabindex="-1">
+                                                        <input type="checkbox" name="selected-qualities" data-bind="click: (data, event) => { event.preventDefault(); $parentContext.$parent.toggleSelection(data); }, checked: $parentContext.$parent.selectedQualityIds, checkedValue: QualityID" />
                                                     </label>
                                                 </td>
                                                 <td class="text-end">
@@ -222,13 +222,13 @@
                                         </tbody>
                                         <tbody class="virtual-spacing">
                                             <tr class="final-row">
-                                                <td colspan="9" style="height: 0px;" data-bind="style: { height: `${gridScrollBottomPadding()}px` }"></td>
+                                                <td colspan="6" style="height: 0px;" data-bind="style: { height: `${gridScrollBottomPadding()}px` }"></td>
                                             </tr>
                                         </tbody>
                                         <!-- /ko -->
                                         <!-- ko ifnot: visibleItems().length > 0 -->
                                         <tbody>
-                                            <tr>
+                                            <tr class="no-results">
                                                 <td colspan="6">
                                                     No search results
                                                 </td>
@@ -240,7 +240,66 @@
                                 <!-- /ko -->
                             </div>
                             <div id="quality-specify">
-
+                                <!-- ko if: selectedQualityIds().length -->
+                                <h2 id="quality-count">
+                                    <span data-bind="text: `${selectedQualityIds().length} Design${selectedQualityIds().length > 1 ? 's' : ''} selected`"></span>
+                                </h2>
+                                <table id="selected-qualities-table" class="table table-condensed table-striped table-hover product-group-item-type-table">
+                                    <colgroup>
+                                        <col class="discount-column" />
+                                        <col />
+                                        <col class="quantity-break-column" />
+                                        <col class="date-column" />
+                                        <col class="date-column" />
+                                        <col class="status-column" />
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Discount
+                                            </th>
+                                            <th></th>
+                                            <th>
+                                                Quantity Break
+                                            </th>
+                                            <th>
+                                                Start Date
+                                            </th>
+                                            <th>
+                                                End Date
+                                            </th>
+                                            <th>
+                                                Status
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach: selectedQualities">
+                                        <tr>
+                                            <td>
+                                                <div data-bind="component: {  name: 'mdc-discounter-component', params: discounter }"></div>
+                                            </td>
+                                            <td></td>
+                                            <td>
+                                                Qty Break
+                                            </td>
+                                            <td>
+                                                Start Date
+                                            </td>
+                                            <td>
+                                                End Date
+                                            </td>
+                                            <td>
+                                                Status
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!-- /ko -->
+                                <!-- ko ifnot: selectedQualityIds().length -->
+                                <h2 id="quality-count">
+                                    No Designs Specified
+                                </h2>
+                                <!-- /ko -->
                             </div>
                         </div>
                     </div>

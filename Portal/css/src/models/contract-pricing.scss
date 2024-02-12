@@ -1601,6 +1601,17 @@ tbody.virtual-spacing {
     }
 
     .modal-body {
+        display: flex;
+        flex-direction: column;
+
+        #contract-editor-content {
+            flex: 1;
+
+            > .tab-pane {
+                height: 100%;
+            }
+        }
+
         .nav-pills {
             border-bottom: 0;
             display: grid;
@@ -1694,6 +1705,7 @@ tbody.virtual-spacing {
         }
 
         #quality-wrapper {
+            height: 100%;
             margin-top: $l-gutter;
             --bs-columns: 3;
             gap: $l-gutter;
@@ -1704,6 +1716,7 @@ tbody.virtual-spacing {
 
                 #quality-prefilters {
                     gap: $l-gutter;
+                    margin-bottom: $l-gutter;
 
                     .mdc-validating-field {
                         &:has(.mdc-select--disabled) {
@@ -1711,10 +1724,136 @@ tbody.virtual-spacing {
                         }
                     }
                 }
+
+                #quality-results-scroller-container {
+                    max-height: calc(100vh - 293px);
+                    overflow-y: auto;
+                    border-bottom: 1px solid $gray-300;
+                }
+
+                #quality-search-results-table {
+                    table-layout: fixed;
+                    margin-bottom: 0;
+                    position: relative;
+                    border-collapse: separate;
+                    border: none;
+                    border-width: 0;
+                    width: 100%;
+                    border-spacing: 0;
+
+                    .checkbox-column {
+                        width: 64px;
+                    }
+
+                    thead {
+                        border: none;
+                        border-width: 0;
+                        position: relative;
+                        z-index: 1;
+
+                        th {
+                            height: 57px;
+                            position: sticky;
+                            top: 0;
+                            border-left: 1px solid $gray-300;
+                            border-bottom: 1px solid $gray-300;
+                            background-color: $white;
+
+                            &:first-of-type {
+                                border-left: none;
+                            }
+                        }
+                    }
+
+                    tbody {
+                        border: none;
+                        border-width: 0;
+
+                        tr {
+                            border: none;
+                            border-width: 0;
+                            background-color: $white;
+
+                            td {
+                                border-bottom: 1px solid $gray-300;
+                                padding: $sm-gutter;
+                                background-color: transparent;
+
+                                .checkbox-wrapper {
+                                    cursor: pointer;
+                                    pointer-events: none;
+
+                                    input[type=checkbox] {
+                                        cursor: pointer;
+                                        margin-top: 4px;
+                                    }
+                                }
+                            }
+                        }
+
+                        tr.no-results {
+                            td {
+                                padding: $m-gutter;
+                            }
+                        }
+
+                        tr.search-result {
+                            background: transparent;
+
+                            &.busy {
+                                background-image: repeating-linear-gradient(-45deg, rgba(222, 229, 237, 0.75), rgba(248, 249, 250, 0.95) 1rem, transparent 1rem, transparent 2rem);
+                                transition: background-color 300ms ease-in-out;
+                                background-size: 200% 200%;
+                                animation: barberpole 20s linear reverse infinite;
+                            }
+                        }
+
+                        &.virtual-spacing {
+                            tr {
+                                td {
+                                    padding: 0;
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             #quality-specify {
+                grid-column: 2 / 3 span;
 
+                #quality-count {
+                    line-height: 82px;
+                    margin-bottom: $l-gutter;
+                    text-align: center;
+                }
+
+                #selected-qualities-table {
+                    table-layout: fixed;
+
+                    .quantity-break-column {
+                        width: 140px;
+                    }
+
+                    thead {
+                        tr {
+                            th {
+                                height: 57px;
+                                border-bottom: 2px solid $gray-300;
+                            }
+                        }
+                    }
+
+                    tbody {
+                        tr {
+                            td {
+                                height: 40px;
+                                border-bottom: 1px solid $gray-300;
+                                padding: $sm-gutter;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
