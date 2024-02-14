@@ -1250,7 +1250,8 @@
                         decorateInputElement: decorateInputElement
                     },
                     attr: {
-                        'disabled': disable() || !enable()
+                        'disabled': disable() || !enable(),
+                        tabindex: (typeof tabindex === 'undefined' ? '' : tabindex)
                     },
                     css: {
                         'busy': typeof busy === 'undefined' ? false : busy

@@ -2261,8 +2261,10 @@ ko.bindingHandlers.mdcSelectComponent = {
                         params.boundTo.mdcSelect.valid = false;
                         // this works but it looks wrong if the label is already floated...
                         // can we get isFloating?
-                        if (!$(params.boundTo.mdcSelect.label_.root_).hasClass('mdc-floating-label--float-above')) {
-                            params.boundTo.mdcSelect.label_.shake(true);
+                        if (params.boundTo.mdcSelect.label_) {
+                            if (!$(params.boundTo.mdcSelect.label_.root_).hasClass('mdc-floating-label--float-above')) {
+                                params.boundTo.mdcSelect.label_.shake(true);
+                            }
                         }
                     }
                 });
@@ -3178,6 +3180,27 @@ ko.validation.rules['mustBeEmptyArray'] = {
     message: 'Array must be empty'
 };
 ko.validation.addExtender('mustBeEmptyArray');
+
+//Cheeeeers: https://stackoverflow.com/questions/19586182/multiple-email-validation-using-ko-observable#answer-19586586
+ko.validation.rules['mustNotExistIn'] = {
+    validator: function (val, params) {
+
+        let value = ko.unwrap(val);
+
+        let lookIn = ko.unwrap(params.set);
+
+        // chicken and egg problem with this one.
+        // we expect to find precisely one entry in the array with this value: the value itself, 
+        // because it is a property belonging to an entry already in the array.
+        if (lookIn.flatMap(v => ko.unwrap(v[params.propertyName]) == value ? [value] : []).length == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    },
+    message: 'Must not already exist in given array'
+};
+ko.validation.addExtender('mustNotExistIn');
 
 ko.bindingHandlers.remove = {
     init: function (element) {

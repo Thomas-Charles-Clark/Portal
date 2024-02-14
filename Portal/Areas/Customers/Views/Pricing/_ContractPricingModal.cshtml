@@ -45,14 +45,26 @@
             </div>
             <div class="modal-body">
                 <ul id="contract-editor-nav" class="nav nav-pills" role="tablist">
-                    <li class="nav-item" role="presentation">
+                    <li class="nav-item" role="presentation" data-bind="css: { 'errored': productGroupItemTypeEditor.errors().length },
+                        attr: { 'title': productGroupItemTypeEditor.errors().length ? 'Please correct all errors before saving' : '' }">
                         <button id="product-group-item-type-tab-btn" class="nav-link" data-bs-toggle="tab" data-bs-target="#product-group-item-type-tab" type="button" role="tab">
                             Product Group / Item Type
+                            <!-- ko if: productGroupItemTypeEditor.errors().length -->
+                            <span class="material-icons">
+                                warning
+                            </span>
+                            <!-- /ko -->
                         </button>
                     </li>
-                    <li class="nav-item" role="presentation">
+                    <li class="nav-item" role="presentation" data-bind="css: { 'errored': qualityEditor.errors().length },
+                        attr: { 'title': qualityEditor.errors().length ? 'Please correct all errors before saving' : '' }">
                         <button id="quality-tab-btn" class="nav-link active" data-bs-toggle="tab" data-bs-target="#quality-tab" type="button" role="tab">
                             Design
+                            <!-- ko if: qualityEditor.errors().length -->
+                            <span class="material-icons">
+                                warning
+                            </span>
+                            <!-- /ko -->
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
@@ -101,7 +113,7 @@
                                 <!-- ko template: { name: 'product-group-item-type-row', data: productGroupAllRugs } --><!-- /ko -->
                             </tbody>
                         </table>
-                        <!-- ko foreach: Object.keys(itemTypesByProductGroup) -->
+                        <!-- ko foreach: itemTypesByProductGroup -->
                         <table class="table table-condensed table-bordered table-striped product-group-item-type-table mt-5">
                             <colgroup>
                                 <col class="title-column" />
@@ -115,7 +127,7 @@
                             <thead>
                                 <tr>
                                     <th data-bind="attr: { colspan: $parent.brands.length + 4 }">
-                                        <span data-bind="text: $data"></span>
+                                        <span data-bind="text: key"></span>
                                     </th>
                                 </tr>
                                 <tr>
@@ -131,14 +143,14 @@
                                     </th>
                                     <!-- /ko -->
                                     <th>
-                                        Discount
+                                        Discount / Final Price
                                     </th>
                                     <th>
                                         Status
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody data-bind="foreach: $parent.itemTypesByProductGroup[$data]">
+                            <tbody data-bind="foreach: itemTypes">
                                 <!-- ko template: { name: 'product-group-item-type-row' } --><!-- /ko -->
                             </tbody>
                         </table>
@@ -244,29 +256,30 @@
                                 <h2 id="quality-count">
                                     <span data-bind="text: `${selectedQualityIds().length} Design${selectedQualityIds().length > 1 ? 's' : ''} selected`"></span>
                                 </h2>
-                                <table id="selected-qualities-table" class="table table-condensed table-striped table-hover product-group-item-type-table">
+                                <table id="selected-qualities-table" class="table table-condensed table-striped discounter-table">
                                     <colgroup>
-                                        <col class="discount-column" />
-                                        <col />
+                                        <col class="code-column" />
+                                        <col class="name-column" />
                                         <col class="quantity-break-column" />
-                                        <col class="date-column" />
-                                        <col class="date-column" />
+                                        <col class="discounter-column" />
                                         <col class="status-column" />
                                     </colgroup>
                                     <thead>
                                         <tr>
                                             <th>
-                                                Discount
+                                                Design Code
                                             </th>
-                                            <th></th>
+                                            <th>
+                                                Design Name
+                                            </th>
                                             <th>
                                                 Quantity Break
+                                                <a class="small" href="javascript:;" data-bind="click: showSetAllModal">
+                                                    Set All
+                                                </a>
                                             </th>
                                             <th>
-                                                Start Date
-                                            </th>
-                                            <th>
-                                                End Date
+                                                Discount / Final Price
                                             </th>
                                             <th>
                                                 Status
@@ -276,22 +289,40 @@
                                     <tbody data-bind="foreach: selectedQualities">
                                         <tr>
                                             <td>
-                                                <div data-bind="component: {  name: 'mdc-discounter-component', params: discounter }"></div>
-                                            </td>
-                                            <td></td>
-                                            <td>
-                                                Qty Break
+                                                <span data-bind="text: QualityCode"></span>
                                             </td>
                                             <td>
-                                                Start Date
+                                                <span data-bind="text: QualityName"></span>
+                                            </td>
+                                            <td colspan="2">
+                                                <!-- ko foreach: quantityBreaks -->
+                                                <div class="d-flex quantity-break-controls">
+                                                    <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: quantityBreakParams }"></div>
+                                                    <div data-bind="component: {  name: 'mdc-discounter-component', params: discounter }"></div>
+                                                    <!-- ko if: $index() == 0 -->
+                                                    <button class="btn btn-secondary btn-add-quantity-break" data-bind="click: $parent.addQuantityBreak" tabindex="-1">
+                                                        <span class="material-icons">
+                                                            add
+                                                        </span>
+                                                    </button>
+                                                    <!-- /ko -->
+                                                    <!-- ko ifnot: $index() == 0 -->
+                                                    <button class="btn btn-secondary btn-remove-quantity-break" data-bind="click: $parent.removeQuantityBreak" tabindex="-1">
+                                                        <span class="material-icons">
+                                                            remove
+                                                        </span>
+                                                    </button>
+                                                    <!-- /ko -->
+                                                </div>
+                                                <!-- /ko -->
                                             </td>
                                             <td>
-                                                End Date
-                                            </td>
-                                            <td>
-                                                Status
+                                                <span>
+                                                    Status
+                                                </span>
                                             </td>
                                         </tr>
+                                        <!-- ko if: $parent.afterSelectedQualitiesRender($index()) --><!-- /ko -->
                                     </tbody>
                                 </table>
                                 <!-- /ko -->
@@ -311,8 +342,97 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" data-bind="click: hideModal">
+                <!-- ko if: errors().length -->
+                <span class="validation-message">
+                    Please correct all errors before saving.
+                </span>
+                <!-- /ko -->
+                <button class="btn btn-primary" data-bind="click: save">
                     Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="quality-discounter-set-all-modal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content" data-bind="with: contractPricingEditor.qualityEditor">
+            <div class="blocker" data-bind="flexFadeVisible: setAllBusy">
+                <div class="loading-spinner"></div>
+                <h4 class="mt-3">
+                    Please wait...
+                </h4>
+            </div>
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    Set All Quantity Breaks / Discounts
+                </h5>
+                <button type="button" class="btn-close" aria-label="Close" data-bind="click: hideSetAllModal"></button>
+            </div>
+            <div class="modal-body" data-bind="with: setAllRecord">
+                <table id="set-all-qualities-table" class="table table-condensed table-striped discounter-table">
+                    <colgroup>
+                        <col class="quantity-break-column" />
+                        <col class="discounter-column" />
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>
+                                Quantity Break
+                            </th>
+                            <th>
+                                Discount / Final Price
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="2">
+                                <!-- ko foreach: quantityBreaks -->
+                                <div class="d-flex quantity-break-controls">
+                                    <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: quantityBreakParams }"></div>
+                                    <div data-bind="component: {  name: 'mdc-discounter-component', params: discounter }"></div>
+                                    <!-- ko if: $index() == 0 -->
+                                    <button class="btn btn-secondary btn-add-quantity-break" data-bind="click: $parent.addQuantityBreak" tabindex="-1">
+                                        <span class="material-icons">
+                                            add
+                                        </span>
+                                    </button>
+                                    <!-- /ko -->
+                                    <!-- ko ifnot: $index() == 0 -->
+                                    <button class="btn btn-secondary btn-remove-quantity-break" data-bind="click: $parent.removeQuantityBreak" tabindex="-1">
+                                        <span class="material-icons">
+                                            remove
+                                        </span>
+                                    </button>
+                                    <!-- /ko -->
+                                </div>
+                                <!-- ko if: $parentContext.$parent.afterSelectedQualitiesRender($index()) --><!-- /ko -->
+                                <!-- /ko -->
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- ko if: $parent.setAllBusy -->
+                <div class="progress-wrapper">
+                    <progress max="100" value="0" data-bind="attr: { value: $parent.setAllProgress }"></progress>
+
+                    <label data-bind="text: `${Math.round(($parent.setAllProgress() * 10) / 10)}%`"></label>
+                </div>
+                <!-- /ko -->
+            </div>
+            <div class="modal-footer">
+                <!-- ko if: setAllErrors.isAnyMessageShown() -->
+                <span class="validation-message">
+                    Please correct all errors above.
+                </span>
+                <!-- /ko -->
+                <button class="btn btn-secondary" data-bind="click: resetSetAll">
+                    Reset
+                </button>
+                <button class="btn btn-primary" data-bind="click: setAll">
+                    Apply
                 </button>
             </div>
         </div>

@@ -1342,15 +1342,15 @@ const contractPricingViewModel = ({ } = {}) => {
 
                         ko.ignoreDependencies(() => {
                             affectedRecords.forEach(ar => {
-                                self.recordsToDataFetch.remove(rtdf => rtdf.ProductOrQuality == ar.ProductOrQuality &&
-                                    rtdf.ProductID === ar.ProductID &&
-                                    rtdf.QualityID === ar.QualityID);
+                                self.recordsToDataFetch.remove(rtdf => rtdf.ProductOrQuality == ar.productOrQuality &&
+                                    rtdf.ProductID === ar.productId &&
+                                    rtdf.QualityID === ar.qualityId);
                             });
 
                             forcedRemovals.forEach(fr => {
-                                self.recordsToDataFetch.remove(rtdf => rtdf.ProductOrQuality == fr.ProductOrQuality &&
-                                    rtdf.ProductID === fr.ProductID &&
-                                    rtdf.QualityID === fr.QualityID);
+                                self.recordsToDataFetch.remove(rtdf => rtdf.ProductOrQuality == fr.productOrQuality &&
+                                    rtdf.ProductID === fr.productId &&
+                                    rtdf.QualityID === fr.qualityId);
                             })
 
                             ko.utils.arrayPushAll(self.filledRecords, affectedRecords);
@@ -1544,9 +1544,9 @@ const contractPricingViewModel = ({ } = {}) => {
         //if (self.finalRowVisible()) {
         //    self.finalRowVisible(false);
         //}
-            if (window.scrollY < self.scrollY()) {
-                self.maxY(self.scrollY() + window.innerHeight);
-            }
+        if (window.scrollY < self.scrollY()) {
+            self.maxY(self.scrollY() + window.innerHeight);
+        }
         //} else {
         //    self.maxY(self.scrollY() + window.innerHeight);
         //}
@@ -1909,6 +1909,10 @@ const contractPricingEditor = ({
 }) => {
     let self = {};
 
+    console.warn("The contractPricingEditor needs to reset between invocations");
+    console.warn("The contractPricingEditor needs to be able to load details of the selected date range deals");
+    console.warn("Need the ability to CRUD date ranges (separately from the pricing editor modal)");
+
     //#region Properties
 
     self.parent = parent;
@@ -1933,9 +1937,22 @@ const contractPricingEditor = ({
         tradeAccountId: self.parent.tradeAccountId
     });
 
+    self.errorables = ko.observableArray();
+
+    self.errors = ko.validation.group(self.errorables, {
+        live: true
+    });
+
     //#endregion
 
     //#region Computeds
+
+    self.errorableComputer = ko.computed(() => {
+        let pgitee = self.productGroupItemTypeEditor.errorables();
+        let qee = self.qualityEditor.errorables();
+
+        self.errorables(pgitee.concat(qee));
+    }, self);
 
     self.modalTitle = ko.computed(() => {
         return `<span class="me-5">${self.parent.tradeAccount() && self.parent.tradeAccount().ShortLabel}</span><span>${self.editingRecord() && self.editingRecord().label}</span>`;
@@ -1976,7 +1993,15 @@ const contractPricingEditor = ({
     }
 
     self.save = () => {
-        console.trace();
+        self.productGroupItemTypeEditor.validateNow(true);
+        self.qualityEditor.validateNow(true);
+        
+        if (self.errors().length) {
+            self.errors.showAllMessages(true);
+            self.errors.filter(x => {
+                x.isValid.notifySubscribers(x.isValid())
+            });
+        }
     }
 
     self.reset = () => {
@@ -2007,6 +2032,8 @@ const productGroupItemTypeEditor = ({
 
     //#region Properties
 
+    self.validateNow = ko.observable(false);
+
     self.brands = getBrands();
 
     self.contractProductRestrictions = getContractProductRestrictions();
@@ -2020,7 +2047,8 @@ const productGroupItemTypeEditor = ({
         finalPrice: null,
         discountPercentage: null,
         status: null,
-        permitMonetary: false
+        permitMonetary: false,
+        validateNow: self.validateNow
     });
 
     self.productGroupAllWallpaper = productGroupItemType({
@@ -2032,7 +2060,8 @@ const productGroupItemTypeEditor = ({
         finalPrice: null,
         discountPercentage: null,
         status: null,
-        permitMonetary: false
+        permitMonetary: false,
+        validateNow: self.validateNow
     });
 
     self.productGroupAllPatternBooks = productGroupItemType({
@@ -2044,7 +2073,8 @@ const productGroupItemTypeEditor = ({
         finalPrice: null,
         discountPercentage: null,
         status: null,
-        permitMonetary: false
+        permitMonetary: false,
+        validateNow: self.validateNow
     });
 
     self.productGroupAllRugs = productGroupItemType({
@@ -2056,7 +2086,8 @@ const productGroupItemTypeEditor = ({
         finalPrice: null,
         discountPercentage: null,
         status: null,
-        permitMonetary: false
+        permitMonetary: false,
+        validateNow: self.validateNow
     });
 
     self.itemTypes = self.contractProductRestrictions.filter(cpr => cpr.ProductGroupID != null && cpr.ItemTypeID != null).map(cpr =>
@@ -2069,23 +2100,60 @@ const productGroupItemTypeEditor = ({
             finalPrice: null,
             discountPercentage: null,
             status: null,
-            permitMonetary: true
+            permitMonetary: true,
+            validateNow: self.validateNow
         })
     );
 
-    self.itemTypesByProductGroup = Object.groupBy(self.itemTypes, (it) => it.productGroup.Name);
+    let itbpg = Object.groupBy(self.itemTypes, (it) => it.productGroup.Name);
+
+    self.itemTypesByProductGroup = ko.observableArray([...Object.keys(itbpg).map(k => {
+        return {
+            key: k,
+            itemTypes: itbpg[k]
+        }
+    })]);
+
+    self.errorables = ko.observableArray([]);
+
+    self.errors = ko.validation.group(self.errorables, {
+        live: true
+    });
 
     //#endregion
 
     //#region Components
 
-
-
     //#endregion
 
     //#region Computeds
 
+    self.activeComputer = ko.computed(() => {
+        // what do we want
+        // not to be validating all of the observables in the world ever unnecessarily
 
+        let hardcodedErrorables = [];
+
+        if (self.productGroupAllFabric.brands.find(b => b.checked())) {
+            hardcodedErrorables.push(self.productGroupAllFabric.discounter.percentage.observable)
+        }
+        if (self.productGroupAllWallpaper.brands.find(b => b.checked())) {
+            hardcodedErrorables.push(self.productGroupAllWallpaper.discounter.percentage.observable)
+        }
+        if (self.productGroupAllPatternBooks.brands.find(b => b.checked())) {
+            hardcodedErrorables.push(self.productGroupAllPatternBooks.discounter.percentage.observable)
+        }
+        if (self.productGroupAllRugs.brands.find(b => b.checked())) {
+            hardcodedErrorables.push(self.productGroupAllRugs.discounter.percentage.observable)
+        }
+
+        let dynamicErrorables = self.itemTypesByProductGroup().flatMap(pg => {
+            return pg.itemTypes.filter(it => it.brands.find(b => b.checked())).flatMap(it => [it.discounter.percentage.observable, it.discounter.monetary.observable])
+        });
+
+        self.errorables(hardcodedErrorables.concat(dynamicErrorables));
+
+    }, self);
 
     //#endregion
 
@@ -2099,7 +2167,106 @@ const productGroupItemTypeEditor = ({
     return self;
 }
 
-const qualitySearchRecord = (rec = { }) => {
+const quantityBreakRecord = (rec = { }) => {
+    let self = Object.assign({}, rec);
+
+    self.quantityBreak = ko.observable(self.QuantityBreak).extend({
+        required: {
+            params: true,
+            onlyIf: () => {
+                return self.validateNow();
+            },
+            message: 'You must provide a Quantity Break'
+        },
+        numberFormatted: {
+            minValue: 0,
+            maxValue: 999999,
+            digits: 0,
+            currency: {
+                FormattingCulture: 'en-GB'
+            }
+        },
+        numeric: {
+            params: {
+                required: false,
+                numericMin: 1,
+                numericMax: 999999
+            }
+        },
+        mustNotExistIn: {
+            set: self.parent.quantityBreaks,
+            propertyName: "quantityBreak"
+        }
+    });
+
+    self.quantityBreakParams = {
+        label: null,
+        observable: self.quantityBreak,
+        busy: ko.observable(false),
+        permitRevert: true,
+        originalValue: self.QuantityBreak,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(false),
+        revertible: ko.observable(true),
+        revertFunction: function () {
+            let self = this;
+            self.observable(ko.unwrap(self.originalValue));
+        },
+        useNativeValidation: false, // this feeds through to mdc objects and affects them
+        decorateInputElement: true,
+        insertValidationMessages: false,
+        inputType: 'number',
+        small: false,
+        buttons: false,
+        minValue: 1, // don't have productFilter record in time to set this truthfully, sorry
+        maxValue: 999999,
+        step: 1,
+        //cssClasses: null,
+        //incrementAmount: incrementAmount,
+        //increment: function () {
+        //    let self = this;
+
+        //    let v = +self.observable() || 0;
+
+        //    let factor = Math.pow(10, scale);
+
+        //    if ((v + self.incrementAmount) < max)
+        //        self.observable(Math.round((v + self.incrementAmount) * factor) / factor);
+        //},
+        //decrement: function () {
+        //    let self = this;
+
+        //    let v = +self.observable() || 0;
+
+        //    let factor = Math.pow(10, scale);
+
+        //    let diff = Math.round((v - self.incrementAmount) * factor) / factor;
+
+        //    if ((v - self.incrementAmount) > min || diff === 0)
+        //        self.observable(diff);
+        //}
+    };
+
+    self.discounter = discounterFactory({
+        validateNow: self.validateNow,
+        finalPrice: self.FinalPrice,
+        discountPercentage: self.DiscountPercentage,
+        currency: {
+            Symbol: '£',
+            FormattingCulture: 'en-GB',
+            Code: 'GBP',
+            ISO_4217: 'GBP'
+        },
+        permitMonetary: true,
+        permitPercentage: true,
+        initialState: self.FinalPrice == null ? DISCOUNT_STATE_PERCENTAGE : DISCOUNT_STATE_MONETARY
+    });
+
+    return self;
+}
+
+const qualityRecord = (rec = { }) => {
     let self = Object.assign({}, rec);
 
     //#region Properties
@@ -2116,36 +2283,47 @@ const qualitySearchRecord = (rec = { }) => {
 
     self.currentPrice = ko.observable();
 
+    self.validateNow = rec.validateNow;
+
+    self.quantityBreaks = ko.observableArray([]);
+
+    let initialBreak = quantityBreakRecord({
+        parent: self,
+        QuantityBreak: 0,
+        validateNow: self.validateNow
+    });
+
+    self.quantityBreaks([initialBreak]);
+
     //#endregion
 
     //#region Components
 
-    self.discounter = discounterFactory({
-        finalPrice: null,
-        discountPercentage: null,
-        currency: {
-            Symbol: '£',
-            FormattingCulture: 'en-GB',
-            Code: 'GBP',
-            ISO_4217: 'GBP'
-        },
-        permitMonetary: true,
-        permitPercentage: true,
-        initialState: DISCOUNT_STATE_PERCENTAGE
-    });
+
 
     //#endregion
 
     //#region Methods
 
+    self.addQuantityBreak = () => {
+        let qb = self.quantityBreaks().reduce((a, i) => a = a >= i.quantityBreak() ? a : i.quantityBreak(), 0) + 1;
+        self.quantityBreaks.push(quantityBreakRecord({
+            parent: self,
+            QuantityBreak: qb,
+            validateNow: self.validateNow
+        }));
+    }
 
+    self.removeQuantityBreak = (qb) => {
+        self.quantityBreaks.remove(qb);
+    }
 
     //#endregion
 
     return self;
 }
 
-const productSearchRecord = (rec = {}) => {
+const productRecord = (rec = {}) => {
     let self = Object.assign({}, rec);
 
     //#region Properties
@@ -2183,6 +2361,24 @@ const qualityEditor = ({
     };
 
     //#region Properties
+
+    self.busy = ko.observable(false);
+
+    self.validateNow = ko.observable(false);
+
+    self.setAllBusy = ko.observable(false);
+
+    self.setAllProgress = ko.observable(0);
+    
+    self.validateSetAllNow = ko.observable(false);
+
+    self.setAllModalElement = document.querySelector("#quality-discounter-set-all-modal");
+
+    self.setAllModal = bootstrap.Modal.getOrCreateInstance(self.setAllModalElement);
+
+    self.setAllRecord = qualityRecord({
+        validateNow: self.validateSetAllNow
+    });
 
     //#region Prefilters
 
@@ -2326,7 +2522,7 @@ const qualityEditor = ({
 
     // this is called via .apply(,) -- must not be declared with arrow syntax, as they do not get passed
     // any this value and always use the global scope as their this
-    self.secondaryFetchParams = function(unfilledRecords) {
+    self.secondaryFetchParams = function (unfilledRecords) {
 
         let qualityIds = [...new Set(unfilledRecords.flatMap(ur => ur.QualityID ? [ur.QualityID] : []))];
 
@@ -2341,21 +2537,22 @@ const qualityEditor = ({
 
     self.virtualScroller = virtualScrollingDeferredDataFactory({
         tableSelector: "#quality-search-results-table",
-        rowHeight: 40,
+        rowHeight: 50,
         primaryFetchParams: self.primaryFetchParams,
         primaryFetchEndpoint: "/api/contractPricing/QualitySearch",
         primaryFetchResultSetName: "Results",
         primaryFetchResultFn: (rec) => {
-            Object.assign({
-                checked: (self.selectedQualityIds().find(qid => qid == rec.QualityID))
+            rec = Object.assign({
+                checked: (self.selectedQualityIds().find(qid => qid == rec.QualityID)),
+                validateNow: self.validateNow
             }, rec);
-            return qualitySearchRecord(rec);
+            return qualityRecord(rec);
         },
         secondaryFetchQueueRecordId: "QualityID",
         secondaryFetchParams: self.secondaryFetchParams,
         secondaryFetchEndpoint: "/api/contractPricing/FetchSalesData",
         secondaryFetchResultSetName: "QualityResults",
-        secondaryFetchResultProcessingFn: function(data) {
+        secondaryFetchResultProcessingFn: function (data) {
             this.salesQuantity(data.SalesQuantity_180Days);
             this.salesValue(data.SalesValue_180Days);
             this.currentPrice("TBC");
@@ -2363,7 +2560,7 @@ const qualityEditor = ({
             this.busy(false);
         },
         container: document.getElementById("quality-results-scroller-container"),
-        gridHeaderHeight: 56,
+        gridHeaderHeight: 57,
         gridPositionTop: 0,
         unfilledRecordFn: (rec) => {
             let self = Object.assign({}, rec);
@@ -2592,31 +2789,144 @@ const qualityEditor = ({
         }
     }
 
+    self.errorables = ko.observableArray([]);
+
+    self.errors = ko.validation.group(self.errorables, {
+        live: true
+    });
+
+    self.setAllErrors = ko.validation.group([
+        self.setAllRecord
+    ], {
+        deep: true,
+        live: true
+    });
+
     //#endregion
 
     //#region Computeds
 
+    // validation hurrah
+    self.selectedQuantityBreaks = ko.computed(() => {
+        return [...self.selectedQualities().flatMap(sq => sq.quantityBreaks())];
+    }, self);
 
     //#endregion
 
     //#region Subscriptions
 
+    self.selectedQuantityBreaks.subscribe(nv => {
+        self.errorables(nv.flatMap(qb => {
+            return [
+                qb.quantityBreak,
+                qb.discounter.monetary.observable,
+                qb.discounter.percentage.observable
+            ];
+        }));
+    });
 
+    self.setAllProgress.subscribe(nv => {
+        if (nv >= 100)
+            self.hideSetAllModal();
+    });
 
     //#endregion
 
     //#region Methods
 
-    self.toggleSelection = (qualitySearchRecord) => {
-        let extant = self.selectedQualityIds().find(qid => qid === qualitySearchRecord.QualityID);
+    self.toggleSelection = (qualityRecord) => {
+        let extant = self.selectedQualityIds().find(qid => qid === qualityRecord.QualityID);
 
         if (extant) {
-            self.selectedQualityIds.remove(qualitySearchRecord.QualityID);
-            self.selectedQualities.remove(q => q.QualityID == qualitySearchRecord.QualityID);
+            self.selectedQualityIds.remove(qualityRecord.QualityID);
+            self.selectedQualities.remove(q => q.QualityID == qualityRecord.QualityID);
         } else {
-            self.selectedQualityIds.push(qualitySearchRecord.QualityID);
-            self.selectedQualities.push(qualitySearchRecord);
+            self.selectedQualityIds.push(qualityRecord.QualityID);
+            self.selectedQualities.push(qualityRecord);
         }
+    }
+
+    self.afterSelectedQualitiesRender = (i) => {
+        if (i === self.selectedQualities().length - 1) {
+            document.querySelectorAll("#selected-qualities-table .btn-add-quality").forEach(e => {
+                new bootstrap.Ripple(e);
+            });
+        }
+    }
+
+    self.showSetAllModal = () => {
+        self.resetSetAll();
+        self.setAllModal.show();
+    }
+
+    self.hideSetAllModal = () => {
+        self.setAllModal.hide();
+    }
+
+    self.setAll = () => {
+
+        self.validateSetAllNow(true);
+
+        window.setTimeout(() => {
+
+            if (self.setAllErrors().length == 0) {
+
+                self.setAllBusy(true);
+
+                window.setTimeout(() => {
+                    let qbs = self.setAllRecord.quantityBreaks().map(qb => {
+                        return {
+                            quantityBreak: qb.quantityBreak(),
+                            discountPercentage: qb.discounter.percentage.observable(),
+                            finalPrice: qb.discounter.monetary.observable()
+                        }
+                    });
+
+                    let increment = 100 / self.selectedQualities().length;
+
+                    self.selectedQualities().forEach((sq, i) => {
+                        window.setTimeout(() => {
+                            sq.quantityBreaks(qbs.map(qb => quantityBreakRecord({
+                                parent: sq,
+                                QuantityBreak: qb.quantityBreak,
+                                DiscountPercentage: qb.discountPercentage,
+                                FinalPrice: qb.finalPrice,
+                                validateNow: self.validateNow
+                            })));
+
+                            if (i === qbs.length - 1) {
+                                self.setAllProgress(100);
+                            } else {
+                                self.setAllProgress(self.setAllProgress() + increment)
+                            }
+                        }, 0);
+                    });
+                }, 0);
+
+            } else {
+                self.setAllErrors.showAllMessages(true);
+
+                self.setAllErrors.filter(x => {
+                    x.isValid.notifySubscribers(x.isValid());
+                })
+            }
+        }, 0);
+    }
+    
+    self.resetSetAll = () => {
+        let initialBreaks = [
+            quantityBreakRecord({
+                parent: self.setAllRecord,
+                QuantityBreak: 0,
+                validateNow: self.validateSetAllNow
+            })
+        ];
+        self.setAllRecord.quantityBreaks(initialBreaks);
+        self.setAllProgress(0);
+        self.setAllBusy(false);
+
+        self.validateSetAllNow(false);
+        self.setAllErrors.showAllMessages(false);
     }
 
     //#endregion
@@ -2633,7 +2943,8 @@ const productGroupItemType = ({
     finalPrice,
     discountPercentage,
     status,
-    permitMonetary
+    permitMonetary,
+    validateNow
 } = {
     label: null,
     productGroupId: null,
@@ -2643,7 +2954,8 @@ const productGroupItemType = ({
     finalPrice: null,
     discountPercentage: null,
     status: null,
-    permitMonetary: false
+    permitMonetary: false,
+    validateNow: ko.observable(false)
 }) => {
 
     let self = {
@@ -2652,7 +2964,8 @@ const productGroupItemType = ({
         productGroup: productGroup,
         itemTypeId: itemTypeId,
         itemType: itemType,
-        status: status
+        status: status,
+        parentValidateNow: validateNow
     };
 
     //#region Properties
@@ -2662,6 +2975,14 @@ const productGroupItemType = ({
     self.brands = getBrands().map(b => brand({
         rec: b
     }));
+
+    //#endregion
+
+    //#region Computeds
+
+    self.validateNow = ko.computed(() => {
+        return self.brands.find(b => b.checked()) && self.parentValidateNow()
+    }, self);
 
     //#endregion
 
@@ -2675,6 +2996,7 @@ const productGroupItemType = ({
     }
 
     self.discounter = discounterFactory({
+        validateNow: self.validateNow,
         finalPrice: finalPrice,
         discountPercentage: discountPercentage,
         currency: {
@@ -2685,7 +3007,7 @@ const productGroupItemType = ({
         },
         permitMonetary: permitMonetary,
         permitPercentage: true,
-        initialState: DISCOUNT_STATE_PERCENTAGE
+        initialState: DISCOUNT_STATE_PERCENTAGE,
     });
 
     //#endregion
@@ -2698,11 +3020,6 @@ const productGroupItemType = ({
 
     //#endregion
 
-    //#region Computeds
-
-
-
-    //#endregion
 
     //#region Methods
 
@@ -2758,6 +3075,7 @@ const DISCOUNT_STATE_PERCENTAGE = 1,
     DISCOUNT_STATE_MONETARY = 2;
 
 const discounterFactory = ({
+    validateNow,
     finalPrice,
     discountPercentage,
     currency,
@@ -2765,6 +3083,7 @@ const discounterFactory = ({
     permitPercentage,
     initialState,
 } = {
+    validateNow: ko.observable(false),
     finalPrice: null,
     discountPercentage: null,
     currency: {
@@ -2780,6 +3099,7 @@ const discounterFactory = ({
 
     let self = {
         debug: false,
+        validateNow: validateNow,
         discountEntryVisible: true,
         discountReasonRequired: false,
         increasedValueWarning: false,
@@ -2798,6 +3118,7 @@ const discounterFactory = ({
                 symbol: '%',
                 discountState: DISCOUNT_STATE_PERCENTAGE
             }],
+            tabindex: -1,
             optionsText: 'symbol',
             optionsValue: 'discountState',
             optionsCaption: undefined,
@@ -2810,13 +3131,14 @@ const discounterFactory = ({
             revertible: ko.observable(false)
         },
         percentage: {
+            label: 'Discount',
             name: 'Percentage',
             inputType: 'text',
             minValue: 0,
             maxValue: 100,
             step: 1,
             buttons: false,
-            observable: ko.observable().extend({
+            observable: ko.observable(discountPercentage).extend({
                 numberFormatted: {
                     digits: 0,
                     currency: {
@@ -2839,13 +3161,14 @@ const discounterFactory = ({
             revertible: ko.observable(false)
         },
         monetary: {
+            label: 'Final Price',
             name: 'Monetary',
             inputType: 'text',
             minValue: 1,
             maxValue: 1000000000,
             step: 1,
             buttons: false,
-            observable: ko.observable().extend({
+            observable: ko.observable(finalPrice).extend({
                 numberFormatted: {
                     digits: 2,
                     currency: {
@@ -2878,7 +3201,7 @@ const discounterFactory = ({
                 if (self.bypassValidation())
                     return false;
 
-                return self.selector.observable() == DISCOUNT_STATE_MONETARY
+                return self.validateNow() && self.selector.observable() == DISCOUNT_STATE_PERCENTAGE
             },
             message: 'You must provide a Discount Percentage'
         }
@@ -2891,7 +3214,7 @@ const discounterFactory = ({
                 if (self.bypassValidation())
                     return false;
 
-                return self.selector.observable() == DISCOUNT_STATE_MONETARY
+                return self.validateNow() && self.selector.observable() == DISCOUNT_STATE_MONETARY
             },
             message: 'You must provide a Final Price'
         }

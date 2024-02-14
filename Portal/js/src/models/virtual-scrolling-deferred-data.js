@@ -202,14 +202,12 @@ const virtualScrollingDeferredDataFactory = ({
 
     }, self);
 
-    console.warn("next up, I need to sort the key comparison behaviour so I'm not writing all sales data to the same record because null == null");
-
     self.visibleItems = ko.computed(() => {
 
         let toFetch = [];
 
         let alreadyFetching = self.secondaryFetchQueue.peek();
-
+        
         let filledRecords = self.secondaryFetchedRecords.peek();
 
         let results = self.searchResults().filter((i, index) => {

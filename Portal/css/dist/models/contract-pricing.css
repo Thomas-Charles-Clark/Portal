@@ -1298,6 +1298,54 @@ tbody.virtual-spacing tr td {
   display: none;
 }
 
+.product-group-item-type-table {
+  table-layout: fixed;
+  width: auto;
+}
+.product-group-item-type-table .checkbox-column {
+  width: 50px;
+  padding: 0;
+}
+.product-group-item-type-table .checkbox-column.all-brands {
+  width: 90px;
+}
+.product-group-item-type-table .discount-column {
+  width: 171px;
+}
+.product-group-item-type-table .date-column {
+  width: 180px;
+}
+.product-group-item-type-table .status-column {
+  width: 160px;
+}
+.product-group-item-type-table thead th {
+  height: 50px;
+  vertical-align: middle;
+}
+.product-group-item-type-table tbody th, .product-group-item-type-table tbody td {
+  vertical-align: middle;
+}
+.product-group-item-type-table tbody td .brand-checkbox-wrapper {
+  padding: 1rem;
+  cursor: pointer;
+  font-size: 0;
+  width: 100%;
+  height: 100%;
+}
+.product-group-item-type-table tbody td .brand-checkbox-wrapper input[type=checkbox] {
+  width: 16px;
+  height: 16px;
+}
+.product-group-item-type-table tbody td .mdc-discounter-group > div:first-child {
+  width: 100px;
+}
+.product-group-item-type-table tbody td .mdc-discounter-group .mdc-validating-field .mdc-text-field {
+  background-color: #fff;
+}
+.product-group-item-type-table tbody td .mdc-discounter-group .input-group {
+  margin-bottom: 0;
+}
+
 #contract-pricing-modal .modal-header {
   background-color: #1f4e78;
   border-radius: 0;
@@ -1311,6 +1359,17 @@ tbody.virtual-spacing tr td {
 #contract-pricing-modal .modal-body {
   display: flex;
   flex-direction: column;
+}
+#contract-pricing-modal .modal-body #contract-editor-nav .nav-item .material-icons {
+  position: absolute;
+  right: 7px;
+  top: 6px;
+  color: #fff;
+}
+#contract-pricing-modal .modal-body #contract-editor-nav .nav-item.errored .nav-link {
+  background-color: #dc3545;
+  border-color: #842029;
+  color: #fff;
 }
 #contract-pricing-modal .modal-body #contract-editor-content {
   flex: 1;
@@ -1332,49 +1391,6 @@ tbody.virtual-spacing tr td {
 }
 #contract-pricing-modal .modal-body .nav-pills .nav-item .nav-link {
   width: 100%;
-}
-#contract-pricing-modal .modal-body .product-group-item-type-table .checkbox-column {
-  width: 50px;
-  padding: 0;
-}
-#contract-pricing-modal .modal-body .product-group-item-type-table .checkbox-column.all-brands {
-  width: 90px;
-}
-#contract-pricing-modal .modal-body .product-group-item-type-table .discount-column {
-  width: 171px;
-}
-#contract-pricing-modal .modal-body .product-group-item-type-table .date-column {
-  width: 180px;
-}
-#contract-pricing-modal .modal-body .product-group-item-type-table .status-column {
-  width: 160px;
-}
-#contract-pricing-modal .modal-body .product-group-item-type-table thead th {
-  height: 50px;
-  vertical-align: middle;
-}
-#contract-pricing-modal .modal-body .product-group-item-type-table tbody th, #contract-pricing-modal .modal-body .product-group-item-type-table tbody td {
-  vertical-align: middle;
-}
-#contract-pricing-modal .modal-body .product-group-item-type-table tbody td .brand-checkbox-wrapper {
-  padding: 1rem;
-  cursor: pointer;
-  font-size: 0;
-  width: 100%;
-  height: 100%;
-}
-#contract-pricing-modal .modal-body .product-group-item-type-table tbody td .brand-checkbox-wrapper input[type=checkbox] {
-  width: 16px;
-  height: 16px;
-}
-#contract-pricing-modal .modal-body .product-group-item-type-table tbody td .mdc-discounter-group > div:first-child {
-  width: 100px;
-}
-#contract-pricing-modal .modal-body .product-group-item-type-table tbody td .mdc-discounter-group .mdc-validating-field .mdc-text-field {
-  background-color: #fff;
-}
-#contract-pricing-modal .modal-body .product-group-item-type-table tbody td .mdc-discounter-group .input-group {
-  margin-bottom: 0;
 }
 #contract-pricing-modal .modal-body #quality-wrapper {
   height: 100%;
@@ -1418,10 +1434,10 @@ tbody.virtual-spacing tr td {
   z-index: 1;
 }
 #contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-search-results-table thead th {
+  vertical-align: middle;
   height: 57px;
   position: sticky;
   top: 0;
-  border-left: 1px solid #dee2e6;
   border-bottom: 1px solid #dee2e6;
   background-color: #fff;
 }
@@ -1456,6 +1472,10 @@ tbody.virtual-spacing tr td {
 #contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-search-results-table tbody tr.search-result {
   background: transparent;
 }
+#contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-search-results-table tbody tr.search-result td {
+  height: 50px;
+  vertical-align: middle;
+}
 #contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-search-results-table tbody tr.search-result.busy {
   background-image: repeating-linear-gradient(-45deg, rgba(222, 229, 237, 0.75), rgba(248, 249, 250, 0.95) 1rem, transparent 1rem, transparent 2rem);
   transition: background-color 300ms ease-in-out;
@@ -1473,19 +1493,195 @@ tbody.virtual-spacing tr td {
   margin-bottom: 1rem;
   text-align: center;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-specify #selected-qualities-table {
+
+.discounter-table .checkbox-column {
+  width: 50px;
+  padding: 0;
+}
+.discounter-table .checkbox-column.all-brands {
+  width: 90px;
+}
+.discounter-table .discount-column {
+  width: 171px;
+}
+.discounter-table .date-column {
+  width: 180px;
+}
+.discounter-table .status-column {
+  width: auto;
+}
+.discounter-table thead th {
+  height: 57px;
+  vertical-align: middle;
+}
+.discounter-table tbody th, .discounter-table tbody td {
+  vertical-align: middle;
+}
+.discounter-table tbody td .brand-checkbox-wrapper {
+  padding: 1rem;
+  cursor: pointer;
+  font-size: 0;
+  width: 100%;
+  height: 100%;
+}
+.discounter-table tbody td .brand-checkbox-wrapper input[type=checkbox] {
+  width: 16px;
+  height: 16px;
+}
+
+.quantity-break-controls {
+  row-gap: 7px;
+  column-gap: 14px;
+}
+.quantity-break-controls + .quantity-break-controls {
+  margin-top: 7px;
+}
+.quantity-break-controls > div:first-of-type {
+  width: 108px;
+}
+.quantity-break-controls .mdc-text-field {
+  background-color: #fff;
+  border-radius: 0.375rem;
+}
+.quantity-break-controls .mdc-discounter-group > div:first-child {
+  width: 100px;
+}
+.quantity-break-controls .mdc-discounter-group .mdc-validating-field .mdc-text-field {
+  background-color: #fff;
+}
+.quantity-break-controls .mdc-discounter-group .input-group {
+  margin-bottom: 0;
+}
+.quantity-break-controls .btn-add-quantity-break,
+.quantity-break-controls .btn-remove-quantity-break,
+.quantity-break-controls .btn-placeholder {
+  width: 50px;
+  display: block;
+  padding: 0 0.75rem;
+}
+.quantity-break-controls .btn-add-quantity-break .material-icons,
+.quantity-break-controls .btn-remove-quantity-break .material-icons,
+.quantity-break-controls .btn-placeholder .material-icons {
+  display: block;
+}
+.quantity-break-controls .btn-add-quantity-break {
+  vertical-align: middle;
+}
+
+#selected-qualities-table,
+#set-all-qualities-table {
   table-layout: fixed;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-specify #selected-qualities-table .quantity-break-column {
+#selected-qualities-table .code-column,
+#set-all-qualities-table .code-column {
   width: 140px;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-specify #selected-qualities-table thead tr th {
+#selected-qualities-table .name-column,
+#set-all-qualities-table .name-column {
+  width: 180px;
+}
+#selected-qualities-table .quantity-break-column,
+#set-all-qualities-table .quantity-break-column {
+  width: 124px;
+}
+#selected-qualities-table .discounter-column,
+#set-all-qualities-table .discounter-column {
+  width: 260px;
+}
+#selected-qualities-table thead tr th,
+#set-all-qualities-table thead tr th {
+  position: relative;
   height: 57px;
   border-bottom: 2px solid #dee2e6;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-specify #selected-qualities-table tbody tr td {
-  height: 40px;
+#selected-qualities-table thead tr th .small,
+#set-all-qualities-table thead tr th .small {
+  position: absolute;
+  left: 50%;
+  top: 37px;
+  text-align: center;
+  display: block;
+  transform: translateX(-50%);
+}
+#selected-qualities-table tbody tr td,
+#set-all-qualities-table tbody tr td {
+  height: 50px;
   border-bottom: 1px solid #dee2e6;
-  padding: 0.5rem;
+  vertical-align: top;
+}
+#selected-qualities-table tbody tr td > span,
+#set-all-qualities-table tbody tr td > span {
+  line-height: 34px;
+}
+#selected-qualities-table tbody tr td .quantity-break-controls,
+#set-all-qualities-table tbody tr td .quantity-break-controls {
+  row-gap: 7px;
+  column-gap: 14px;
+}
+#selected-qualities-table tbody tr td .quantity-break-controls + .quantity-break-controls,
+#set-all-qualities-table tbody tr td .quantity-break-controls + .quantity-break-controls {
+  margin-top: 7px;
+}
+#selected-qualities-table tbody tr td .quantity-break-controls > div:first-of-type,
+#set-all-qualities-table tbody tr td .quantity-break-controls > div:first-of-type {
+  width: 108px;
+}
+#selected-qualities-table tbody tr td .quantity-break-controls .mdc-text-field,
+#set-all-qualities-table tbody tr td .quantity-break-controls .mdc-text-field {
+  background-color: #fff;
+  border-radius: 0.375rem;
+}
+#selected-qualities-table tbody tr td .quantity-break-controls .btn-add-quantity-break,
+#selected-qualities-table tbody tr td .quantity-break-controls .btn-remove-quantity-break,
+#selected-qualities-table tbody tr td .quantity-break-controls .btn-placeholder,
+#set-all-qualities-table tbody tr td .quantity-break-controls .btn-add-quantity-break,
+#set-all-qualities-table tbody tr td .quantity-break-controls .btn-remove-quantity-break,
+#set-all-qualities-table tbody tr td .quantity-break-controls .btn-placeholder {
+  width: 50px;
+  display: block;
+  padding: 0 0.75rem;
+}
+#selected-qualities-table tbody tr td .quantity-break-controls .btn-add-quantity-break .material-icons,
+#selected-qualities-table tbody tr td .quantity-break-controls .btn-remove-quantity-break .material-icons,
+#selected-qualities-table tbody tr td .quantity-break-controls .btn-placeholder .material-icons,
+#set-all-qualities-table tbody tr td .quantity-break-controls .btn-add-quantity-break .material-icons,
+#set-all-qualities-table tbody tr td .quantity-break-controls .btn-remove-quantity-break .material-icons,
+#set-all-qualities-table tbody tr td .quantity-break-controls .btn-placeholder .material-icons {
+  display: block;
+}
+#selected-qualities-table tbody tr td .quantity-break-controls .btn-add-quantity-break,
+#set-all-qualities-table tbody tr td .quantity-break-controls .btn-add-quantity-break {
+  vertical-align: middle;
+}
+
+#set-all-qualities-table {
+  width: auto;
+  margin: 0 auto;
+}
+#set-all-qualities-table .first-column {
+  width: 140px;
+}
+#set-all-qualities-table .discounter-column {
+  width: auto;
+}
+#set-all-qualities-table thead tr th {
+  height: auto;
+}
+
+#quality-discounter-set-all-modal .progress-wrapper {
+  position: relative;
+}
+#quality-discounter-set-all-modal .progress-wrapper progress {
+  width: 100%;
+  height: 42px;
+  color: #ca6510;
+}
+#quality-discounter-set-all-modal .progress-wrapper label {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  left: 0;
+  top: 10px;
+  color: white;
 }
 /*# sourceMappingURL=contract-pricing.css.map */

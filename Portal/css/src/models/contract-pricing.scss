@@ -1586,6 +1586,82 @@ tbody.virtual-spacing {
     }
 }
 
+.product-group-item-type-table {
+    table-layout: fixed;
+    width: auto;
+
+    .title-column {
+    }
+
+    .checkbox-column {
+        width: 50px;
+        padding: 0;
+
+        &.all-brands {
+            width: 90px;
+        }
+    }
+
+    .discount-column {
+        width: 171px;
+    }
+
+    .date-column {
+        width: 180px;
+    }
+
+    .status-column {
+        width: 160px;
+    }
+
+    thead {
+        th {
+            height: 50px;
+            vertical-align: middle;
+        }
+    }
+
+    tbody {
+        th, td {
+            vertical-align: middle;
+        }
+
+        td {
+            .brand-checkbox-wrapper {
+                padding: $l-gutter;
+                cursor: pointer;
+                font-size: 0;
+                width: 100%;
+                height: 100%;
+
+                input[type=checkbox] {
+                    width: 16px;
+                    height: 16px;
+                }
+            }
+
+            .mdc-discounter-group {
+                > div:first-child {
+                    width: 100px;
+                }
+
+                .mdc-validating-field {
+                    .mdc-text-field {
+                        background-color: $white;
+                    }
+
+                    .mdc-select {
+                    }
+                }
+
+                .input-group {
+                    margin-bottom: 0;
+                }
+            }
+        }
+    }
+}
+
 #contract-pricing-modal {
     .modal-header {
         background-color: $background-color-a;
@@ -1603,6 +1679,25 @@ tbody.virtual-spacing {
     .modal-body {
         display: flex;
         flex-direction: column;
+
+        #contract-editor-nav {
+            .nav-item {
+                .material-icons {
+                    position: absolute;
+                    right: 7px;
+                    top: 6px;
+                    color: $white;
+                }
+
+                &.errored {
+                    .nav-link {
+                        background-color: $red-500;
+                        border-color: $red-700;
+                        color: $white;
+                    }
+                }
+            }
+        }
 
         #contract-editor-content {
             flex: 1;
@@ -1626,80 +1721,6 @@ tbody.virtual-spacing {
 
                 .nav-link {
                     width: 100%;
-                }
-            }
-        }
-
-        .product-group-item-type-table {
-
-            .title-column {
-            }
-
-            .checkbox-column {
-                width: 50px;
-                padding: 0;
-
-                &.all-brands {
-                    width: 90px;
-                }
-            }
-
-            .discount-column {
-                width: 171px;
-            }
-
-            .date-column {
-                width: 180px;
-            }
-
-            .status-column {
-                width: 160px;
-            }
-
-            thead {
-                th {
-                    height: 50px;
-                    vertical-align: middle;
-                }
-            }
-
-            tbody {
-                th, td {
-                    vertical-align: middle;
-                }
-
-                td {
-                    .brand-checkbox-wrapper {
-                        padding: $l-gutter;
-                        cursor: pointer;
-                        font-size: 0;
-                        width: 100%;
-                        height: 100%;
-
-                        input[type=checkbox] {
-                            width: 16px;
-                            height: 16px;
-                        }
-                    }
-
-                    .mdc-discounter-group {
-                        > div:first-child {
-                            width: 100px;
-                        }
-
-                        .mdc-validating-field {
-                            .mdc-text-field {
-                                background-color: $white;
-                            }
-
-                            .mdc-select {
-                            }
-                        }
-
-                        .input-group {
-                            margin-bottom: 0;
-                        }
-                    }
                 }
             }
         }
@@ -1752,10 +1773,10 @@ tbody.virtual-spacing {
                         z-index: 1;
 
                         th {
+                            vertical-align: middle;
                             height: 57px;
                             position: sticky;
                             top: 0;
-                            border-left: 1px solid $gray-300;
                             border-bottom: 1px solid $gray-300;
                             background-color: $white;
 
@@ -1800,6 +1821,11 @@ tbody.virtual-spacing {
                         tr.search-result {
                             background: transparent;
 
+                            td {
+                                height: 50px;
+                                vertical-align: middle;
+                            }
+
                             &.busy {
                                 background-image: repeating-linear-gradient(-45deg, rgba(222, 229, 237, 0.75), rgba(248, 249, 250, 0.95) 1rem, transparent 1rem, transparent 2rem);
                                 transition: background-color 300ms ease-in-out;
@@ -1827,34 +1853,246 @@ tbody.virtual-spacing {
                     margin-bottom: $l-gutter;
                     text-align: center;
                 }
+            }
+        }
+    }
+}
 
-                #selected-qualities-table {
-                    table-layout: fixed;
+.discounter-table {
 
-                    .quantity-break-column {
-                        width: 140px;
+    .title-column {
+    }
+
+    .checkbox-column {
+        width: 50px;
+        padding: 0;
+
+        &.all-brands {
+            width: 90px;
+        }
+    }
+
+    .discount-column {
+        width: 171px;
+    }
+
+    .date-column {
+        width: 180px;
+    }
+
+    .status-column {
+        width: auto;
+    }
+
+    thead {
+        th {
+            height: 57px;
+            vertical-align: middle;
+        }
+    }
+
+    tbody {
+        th, td {
+            vertical-align: middle;
+        }
+
+        td {
+            .brand-checkbox-wrapper {
+                padding: $l-gutter;
+                cursor: pointer;
+                font-size: 0;
+                width: 100%;
+                height: 100%;
+
+                input[type=checkbox] {
+                    width: 16px;
+                    height: 16px;
+                }
+            }
+        }
+    }
+}
+
+
+.quantity-break-controls {
+    row-gap: 7px;
+    column-gap: 14px;
+
+    & + .quantity-break-controls {
+        margin-top: 7px;
+    }
+
+    > div:first-of-type {
+        width: 108px;
+    }
+
+    .mdc-text-field {
+        background-color: $white;
+        border-radius: $border-radius;
+    }
+
+    .mdc-discounter-group {
+        > div:first-child {
+            width: 100px;
+        }
+
+        .mdc-validating-field {
+            .mdc-text-field {
+                background-color: $white;
+            }
+
+            .mdc-select {
+            }
+        }
+
+        .input-group {
+            margin-bottom: 0;
+        }
+    }
+
+    .btn-add-quantity-break,
+    .btn-remove-quantity-break,
+    .btn-placeholder {
+        width: 50px;
+        display: block;
+        padding: 0 $m-gutter;
+
+        .material-icons {
+            display: block;
+        }
+    }
+
+    .btn-add-quantity-break {
+        vertical-align: middle;
+    }
+}
+#selected-qualities-table,
+#set-all-qualities-table {
+    table-layout: fixed;
+
+    .code-column {
+        width: 140px;
+    }
+
+    .name-column {
+        width: 180px;
+    }
+
+    .quantity-break-column {
+        width: 124px;
+    }
+
+    .discounter-column {
+        width: 260px;
+    }
+
+    thead {
+        tr {
+            th {
+                position: relative;
+                height: 57px;
+                border-bottom: 2px solid $gray-300;
+
+                .small {
+                    position: absolute;
+                    left: 50%;
+                    top: 37px;
+                    text-align: center;
+                    display: block;
+                    transform: translateX(-50%);
+                }
+            }
+        }
+    }
+
+    tbody {
+        tr {
+            td {
+                height: 50px;
+                border-bottom: 1px solid $gray-300;
+                vertical-align: top;
+
+                > span {
+                    line-height: 34px;
+                }
+
+                .quantity-break-controls {
+                    row-gap: 7px;
+                    column-gap: 14px;
+
+                    & + .quantity-break-controls {
+                        margin-top: 7px;
                     }
 
-                    thead {
-                        tr {
-                            th {
-                                height: 57px;
-                                border-bottom: 2px solid $gray-300;
-                            }
+                    > div:first-of-type {
+                        width: 108px;
+                    }
+
+                    .mdc-text-field {
+                        background-color: $white;
+                        border-radius: $border-radius;
+                    }
+
+                    .btn-add-quantity-break,
+                    .btn-remove-quantity-break,
+                    .btn-placeholder {
+                        width: 50px;
+                        display: block;
+                        padding: 0 $m-gutter;
+
+                        .material-icons {
+                            display: block;
                         }
                     }
 
-                    tbody {
-                        tr {
-                            td {
-                                height: 40px;
-                                border-bottom: 1px solid $gray-300;
-                                padding: $sm-gutter;
-                            }
-                        }
+                    .btn-add-quantity-break {
+                        vertical-align: middle;
                     }
                 }
             }
+        }
+    }
+}
+
+#set-all-qualities-table {
+    width: auto;
+    margin: 0 auto;
+
+    .first-column {
+        width: 140px;
+    }
+
+    .discounter-column {
+        width: auto;
+    }
+
+    thead {
+        tr {
+            th {
+                height: auto;
+            }
+        }
+    }
+}
+
+#quality-discounter-set-all-modal {
+
+    .progress-wrapper {
+        position: relative;
+
+        progress {
+            width: 100%;
+            height: 42px;
+            color: $orange-600;
+        }
+
+        label {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            left: 0;
+            top: 10px;
+            color: white;
         }
     }
 }
