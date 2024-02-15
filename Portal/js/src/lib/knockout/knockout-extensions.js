@@ -2024,8 +2024,15 @@ ko.bindingHandlers.mdcTextFieldComponent = {
                     }
                     if (newValue === false) {
                         params.boundTo.mdcTextField.valid = false;
-                        if (!$(params.boundTo.mdcTextField.label_.root_).hasClass('mdc-floating-label--float-above')) {
-                            params.boundTo.mdcTextField.label_.shake(true);
+                        if (params.label) {
+                            if (!$(params.boundTo.mdcTextField.label_.root_).hasClass('mdc-floating-label--float-above')) {
+                                params.boundTo.mdcTextField.label_.shake(true);
+                            }
+                        } else {
+                            params.boundTo.mdcTextField.root_.classList.add("shake");
+                            window.setTimeout(() => {
+                                params.boundTo.mdcTextField.root_.classList.remove("shake");
+                            }, 150);
                         }
                     }
                 });

@@ -2559,20 +2559,22 @@ const rangeManagementViewModel = ({ } = {}) => {
     });
 
     self.refreshProductFilterTotal = (productFilterId) => {
-        fetch('/api/rangemanagementapi/RefreshProductFilterTotal', {
-            method: 'POST',
-            headers: window.fetchHeaders,
-            body: JSON.stringify({
-                branchId: self.branchId(),
-                productFilterId: productFilterId
+        if (productFilterId) {
+            fetch('/api/rangemanagementapi/RefreshProductFilterTotal', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                body: JSON.stringify({
+                    branchId: self.branchId(),
+                    productFilterId: productFilterId
+                })
             })
-        })
-            .then(window.handleFetchResponse)
-            .then(data => {
-                self.productFilterTotals.remove(pft => pft.ProductFilterID == productFilterId);
-                self.productFilterTotals.push(data);
-            })
-            .catch(window.catchFetchError);
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    self.productFilterTotals.remove(pft => pft.ProductFilterID == productFilterId);
+                    self.productFilterTotals.push(data);
+                })
+                .catch(window.catchFetchError);
+        }
     }
 
     //#endregion

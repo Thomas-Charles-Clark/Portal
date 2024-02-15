@@ -1298,9 +1298,13 @@ tbody.virtual-spacing tr td {
   display: none;
 }
 
+.product-group-item-type-title {
+  margin: 2rem 0 1rem 0;
+}
+
 .product-group-item-type-table {
   table-layout: fixed;
-  width: auto;
+  max-width: 1024px;
 }
 .product-group-item-type-table .checkbox-column {
   width: 50px;
@@ -1335,6 +1339,9 @@ tbody.virtual-spacing tr td {
 .product-group-item-type-table tbody td .brand-checkbox-wrapper input[type=checkbox] {
   width: 16px;
   height: 16px;
+}
+.product-group-item-type-table tbody td.invalid {
+  box-shadow: inset 0 0 0 9999px #e35d6a;
 }
 .product-group-item-type-table tbody td .mdc-discounter-group > div:first-child {
   width: 100px;
@@ -1374,9 +1381,6 @@ tbody.virtual-spacing tr td {
 #contract-pricing-modal .modal-body #contract-editor-content {
   flex: 1;
 }
-#contract-pricing-modal .modal-body #contract-editor-content > .tab-pane {
-  height: 100%;
-}
 #contract-pricing-modal .modal-body .nav-pills {
   border-bottom: 0;
   display: grid;
@@ -1392,29 +1396,31 @@ tbody.virtual-spacing tr td {
 #contract-pricing-modal .modal-body .nav-pills .nav-item .nav-link {
   width: 100%;
 }
-#contract-pricing-modal .modal-body #quality-wrapper {
+#contract-pricing-modal .modal-body .search-wrapper {
   height: 100%;
   margin-top: 1rem;
   --bs-columns: 3;
   gap: 1rem;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-search {
+#contract-pricing-modal .modal-body .search-wrapper .search {
   --bs-columns: 3;
   gap: 1rem;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-prefilters {
+#contract-pricing-modal .modal-body .search-wrapper .search .prefilters {
   gap: 1rem;
   margin-bottom: 1rem;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-prefilters .mdc-validating-field:has(.mdc-select--disabled) {
+#contract-pricing-modal .modal-body .search-wrapper .search .prefilters .mdc-validating-field:has(.mdc-select--disabled) {
   cursor: not-allowed;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-results-scroller-container {
+#contract-pricing-modal .modal-body .search-wrapper .search #quality-results-scroller-container,
+#contract-pricing-modal .modal-body .search-wrapper .search #product-results-scroller-container {
   max-height: calc(100vh - 293px);
   overflow-y: auto;
   border-bottom: 1px solid #dee2e6;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-search-results-table {
+#contract-pricing-modal .modal-body .search-wrapper .search #quality-search-results-table,
+#contract-pricing-modal .modal-body .search-wrapper .search #product-search-results-table {
   table-layout: fixed;
   margin-bottom: 0;
   position: relative;
@@ -1424,16 +1430,19 @@ tbody.virtual-spacing tr td {
   width: 100%;
   border-spacing: 0;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-search-results-table .checkbox-column {
+#contract-pricing-modal .modal-body .search-wrapper .search #quality-search-results-table .checkbox-column,
+#contract-pricing-modal .modal-body .search-wrapper .search #product-search-results-table .checkbox-column {
   width: 64px;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-search-results-table thead {
+#contract-pricing-modal .modal-body .search-wrapper .search #quality-search-results-table thead,
+#contract-pricing-modal .modal-body .search-wrapper .search #product-search-results-table thead {
   border: none;
   border-width: 0;
   position: relative;
   z-index: 1;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-search-results-table thead th {
+#contract-pricing-modal .modal-body .search-wrapper .search #quality-search-results-table thead th,
+#contract-pricing-modal .modal-body .search-wrapper .search #product-search-results-table thead th {
   vertical-align: middle;
   height: 57px;
   position: sticky;
@@ -1441,54 +1450,69 @@ tbody.virtual-spacing tr td {
   border-bottom: 1px solid #dee2e6;
   background-color: #fff;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-search-results-table thead th:first-of-type {
+#contract-pricing-modal .modal-body .search-wrapper .search #quality-search-results-table thead th:first-of-type,
+#contract-pricing-modal .modal-body .search-wrapper .search #product-search-results-table thead th:first-of-type {
   border-left: none;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-search-results-table tbody {
+#contract-pricing-modal .modal-body .search-wrapper .search #quality-search-results-table tbody,
+#contract-pricing-modal .modal-body .search-wrapper .search #product-search-results-table tbody {
   border: none;
   border-width: 0;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-search-results-table tbody tr {
+#contract-pricing-modal .modal-body .search-wrapper .search #quality-search-results-table tbody tr,
+#contract-pricing-modal .modal-body .search-wrapper .search #product-search-results-table tbody tr {
   border: none;
   border-width: 0;
   background-color: #fff;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-search-results-table tbody tr td {
+#contract-pricing-modal .modal-body .search-wrapper .search #quality-search-results-table tbody tr td,
+#contract-pricing-modal .modal-body .search-wrapper .search #product-search-results-table tbody tr td {
   border-bottom: 1px solid #dee2e6;
   padding: 0.5rem;
   background-color: transparent;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-search-results-table tbody tr td .checkbox-wrapper {
+#contract-pricing-modal .modal-body .search-wrapper .search #quality-search-results-table tbody tr td .checkbox-wrapper,
+#contract-pricing-modal .modal-body .search-wrapper .search #product-search-results-table tbody tr td .checkbox-wrapper {
   cursor: pointer;
   pointer-events: none;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-search-results-table tbody tr td .checkbox-wrapper input[type=checkbox] {
+#contract-pricing-modal .modal-body .search-wrapper .search #quality-search-results-table tbody tr td .checkbox-wrapper input[type=checkbox],
+#contract-pricing-modal .modal-body .search-wrapper .search #product-search-results-table tbody tr td .checkbox-wrapper input[type=checkbox] {
   cursor: pointer;
   margin-top: 4px;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-search-results-table tbody tr.no-results td {
+#contract-pricing-modal .modal-body .search-wrapper .search #quality-search-results-table tbody tr.no-results td,
+#contract-pricing-modal .modal-body .search-wrapper .search #product-search-results-table tbody tr.no-results td {
   padding: 0.75rem;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-search-results-table tbody tr.search-result {
+#contract-pricing-modal .modal-body .search-wrapper .search #quality-search-results-table tbody tr.search-result,
+#contract-pricing-modal .modal-body .search-wrapper .search #product-search-results-table tbody tr.search-result {
   background: transparent;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-search-results-table tbody tr.search-result td {
+#contract-pricing-modal .modal-body .search-wrapper .search #quality-search-results-table tbody tr.search-result td,
+#contract-pricing-modal .modal-body .search-wrapper .search #product-search-results-table tbody tr.search-result td {
   height: 50px;
   vertical-align: middle;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-search-results-table tbody tr.search-result.busy {
+#contract-pricing-modal .modal-body .search-wrapper .search #quality-search-results-table tbody tr.search-result.busy,
+#contract-pricing-modal .modal-body .search-wrapper .search #product-search-results-table tbody tr.search-result.busy {
   background-image: repeating-linear-gradient(-45deg, rgba(222, 229, 237, 0.75), rgba(248, 249, 250, 0.95) 1rem, transparent 1rem, transparent 2rem);
   transition: background-color 300ms ease-in-out;
   background-size: 200% 200%;
   animation: barberpole 20s linear reverse infinite;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-search #quality-search-results-table tbody.virtual-spacing tr td {
+#contract-pricing-modal .modal-body .search-wrapper .search #quality-search-results-table tbody.virtual-spacing tr td,
+#contract-pricing-modal .modal-body .search-wrapper .search #product-search-results-table tbody.virtual-spacing tr td {
   padding: 0;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-specify {
+#contract-pricing-modal .modal-body .search-wrapper #quality-specify,
+#contract-pricing-modal .modal-body .search-wrapper #product-specify {
   grid-column: 2/3 span;
 }
-#contract-pricing-modal .modal-body #quality-wrapper #quality-specify #quality-count {
+#contract-pricing-modal .modal-body .search-wrapper #quality-specify #quality-count,
+#contract-pricing-modal .modal-body .search-wrapper #quality-specify #product-count,
+#contract-pricing-modal .modal-body .search-wrapper #product-specify #quality-count,
+#contract-pricing-modal .modal-body .search-wrapper #product-specify #product-count {
   line-height: 82px;
   margin-bottom: 1rem;
   text-align: center;
@@ -1569,33 +1593,47 @@ tbody.virtual-spacing tr td {
 }
 
 #selected-qualities-table,
-#set-all-qualities-table {
+#selected-products-table,
+#set-all-qualities-table,
+#set-all-products-table {
   table-layout: fixed;
 }
 #selected-qualities-table .code-column,
-#set-all-qualities-table .code-column {
+#selected-products-table .code-column,
+#set-all-qualities-table .code-column,
+#set-all-products-table .code-column {
   width: 140px;
 }
 #selected-qualities-table .name-column,
-#set-all-qualities-table .name-column {
+#selected-products-table .name-column,
+#set-all-qualities-table .name-column,
+#set-all-products-table .name-column {
   width: 180px;
 }
 #selected-qualities-table .quantity-break-column,
-#set-all-qualities-table .quantity-break-column {
+#selected-products-table .quantity-break-column,
+#set-all-qualities-table .quantity-break-column,
+#set-all-products-table .quantity-break-column {
   width: 124px;
 }
 #selected-qualities-table .discounter-column,
-#set-all-qualities-table .discounter-column {
+#selected-products-table .discounter-column,
+#set-all-qualities-table .discounter-column,
+#set-all-products-table .discounter-column {
   width: 260px;
 }
 #selected-qualities-table thead tr th,
-#set-all-qualities-table thead tr th {
+#selected-products-table thead tr th,
+#set-all-qualities-table thead tr th,
+#set-all-products-table thead tr th {
   position: relative;
   height: 57px;
   border-bottom: 2px solid #dee2e6;
 }
 #selected-qualities-table thead tr th .small,
-#set-all-qualities-table thead tr th .small {
+#selected-products-table thead tr th .small,
+#set-all-qualities-table thead tr th .small,
+#set-all-products-table thead tr th .small {
   position: absolute;
   left: 50%;
   top: 37px;
@@ -1604,39 +1642,57 @@ tbody.virtual-spacing tr td {
   transform: translateX(-50%);
 }
 #selected-qualities-table tbody tr td,
-#set-all-qualities-table tbody tr td {
+#selected-products-table tbody tr td,
+#set-all-qualities-table tbody tr td,
+#set-all-products-table tbody tr td {
   height: 50px;
   border-bottom: 1px solid #dee2e6;
   vertical-align: top;
 }
 #selected-qualities-table tbody tr td > span,
-#set-all-qualities-table tbody tr td > span {
+#selected-products-table tbody tr td > span,
+#set-all-qualities-table tbody tr td > span,
+#set-all-products-table tbody tr td > span {
   line-height: 34px;
 }
 #selected-qualities-table tbody tr td .quantity-break-controls,
-#set-all-qualities-table tbody tr td .quantity-break-controls {
+#selected-products-table tbody tr td .quantity-break-controls,
+#set-all-qualities-table tbody tr td .quantity-break-controls,
+#set-all-products-table tbody tr td .quantity-break-controls {
   row-gap: 7px;
   column-gap: 14px;
 }
 #selected-qualities-table tbody tr td .quantity-break-controls + .quantity-break-controls,
-#set-all-qualities-table tbody tr td .quantity-break-controls + .quantity-break-controls {
+#selected-products-table tbody tr td .quantity-break-controls + .quantity-break-controls,
+#set-all-qualities-table tbody tr td .quantity-break-controls + .quantity-break-controls,
+#set-all-products-table tbody tr td .quantity-break-controls + .quantity-break-controls {
   margin-top: 7px;
 }
 #selected-qualities-table tbody tr td .quantity-break-controls > div:first-of-type,
-#set-all-qualities-table tbody tr td .quantity-break-controls > div:first-of-type {
+#selected-products-table tbody tr td .quantity-break-controls > div:first-of-type,
+#set-all-qualities-table tbody tr td .quantity-break-controls > div:first-of-type,
+#set-all-products-table tbody tr td .quantity-break-controls > div:first-of-type {
   width: 108px;
 }
 #selected-qualities-table tbody tr td .quantity-break-controls .mdc-text-field,
-#set-all-qualities-table tbody tr td .quantity-break-controls .mdc-text-field {
+#selected-products-table tbody tr td .quantity-break-controls .mdc-text-field,
+#set-all-qualities-table tbody tr td .quantity-break-controls .mdc-text-field,
+#set-all-products-table tbody tr td .quantity-break-controls .mdc-text-field {
   background-color: #fff;
   border-radius: 0.375rem;
 }
 #selected-qualities-table tbody tr td .quantity-break-controls .btn-add-quantity-break,
 #selected-qualities-table tbody tr td .quantity-break-controls .btn-remove-quantity-break,
 #selected-qualities-table tbody tr td .quantity-break-controls .btn-placeholder,
+#selected-products-table tbody tr td .quantity-break-controls .btn-add-quantity-break,
+#selected-products-table tbody tr td .quantity-break-controls .btn-remove-quantity-break,
+#selected-products-table tbody tr td .quantity-break-controls .btn-placeholder,
 #set-all-qualities-table tbody tr td .quantity-break-controls .btn-add-quantity-break,
 #set-all-qualities-table tbody tr td .quantity-break-controls .btn-remove-quantity-break,
-#set-all-qualities-table tbody tr td .quantity-break-controls .btn-placeholder {
+#set-all-qualities-table tbody tr td .quantity-break-controls .btn-placeholder,
+#set-all-products-table tbody tr td .quantity-break-controls .btn-add-quantity-break,
+#set-all-products-table tbody tr td .quantity-break-controls .btn-remove-quantity-break,
+#set-all-products-table tbody tr td .quantity-break-controls .btn-placeholder {
   width: 50px;
   display: block;
   padding: 0 0.75rem;
@@ -1644,39 +1700,54 @@ tbody.virtual-spacing tr td {
 #selected-qualities-table tbody tr td .quantity-break-controls .btn-add-quantity-break .material-icons,
 #selected-qualities-table tbody tr td .quantity-break-controls .btn-remove-quantity-break .material-icons,
 #selected-qualities-table tbody tr td .quantity-break-controls .btn-placeholder .material-icons,
+#selected-products-table tbody tr td .quantity-break-controls .btn-add-quantity-break .material-icons,
+#selected-products-table tbody tr td .quantity-break-controls .btn-remove-quantity-break .material-icons,
+#selected-products-table tbody tr td .quantity-break-controls .btn-placeholder .material-icons,
 #set-all-qualities-table tbody tr td .quantity-break-controls .btn-add-quantity-break .material-icons,
 #set-all-qualities-table tbody tr td .quantity-break-controls .btn-remove-quantity-break .material-icons,
-#set-all-qualities-table tbody tr td .quantity-break-controls .btn-placeholder .material-icons {
+#set-all-qualities-table tbody tr td .quantity-break-controls .btn-placeholder .material-icons,
+#set-all-products-table tbody tr td .quantity-break-controls .btn-add-quantity-break .material-icons,
+#set-all-products-table tbody tr td .quantity-break-controls .btn-remove-quantity-break .material-icons,
+#set-all-products-table tbody tr td .quantity-break-controls .btn-placeholder .material-icons {
   display: block;
 }
 #selected-qualities-table tbody tr td .quantity-break-controls .btn-add-quantity-break,
-#set-all-qualities-table tbody tr td .quantity-break-controls .btn-add-quantity-break {
+#selected-products-table tbody tr td .quantity-break-controls .btn-add-quantity-break,
+#set-all-qualities-table tbody tr td .quantity-break-controls .btn-add-quantity-break,
+#set-all-products-table tbody tr td .quantity-break-controls .btn-add-quantity-break {
   vertical-align: middle;
 }
 
-#set-all-qualities-table {
+#set-all-qualities-table,
+#set-all-products-table {
   width: auto;
   margin: 0 auto;
 }
-#set-all-qualities-table .first-column {
+#set-all-qualities-table .first-column,
+#set-all-products-table .first-column {
   width: 140px;
 }
-#set-all-qualities-table .discounter-column {
+#set-all-qualities-table .discounter-column,
+#set-all-products-table .discounter-column {
   width: auto;
 }
-#set-all-qualities-table thead tr th {
+#set-all-qualities-table thead tr th,
+#set-all-products-table thead tr th {
   height: auto;
 }
 
-#quality-discounter-set-all-modal .progress-wrapper {
+#quality-discounter-set-all-modal .progress-wrapper,
+#product-discounter-set-all-modal .progress-wrapper {
   position: relative;
 }
-#quality-discounter-set-all-modal .progress-wrapper progress {
+#quality-discounter-set-all-modal .progress-wrapper progress,
+#product-discounter-set-all-modal .progress-wrapper progress {
   width: 100%;
   height: 42px;
   color: #ca6510;
 }
-#quality-discounter-set-all-modal .progress-wrapper label {
+#quality-discounter-set-all-modal .progress-wrapper label,
+#product-discounter-set-all-modal .progress-wrapper label {
   position: absolute;
   width: 100%;
   text-align: center;

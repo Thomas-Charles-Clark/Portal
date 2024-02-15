@@ -204,6 +204,10 @@ const virtualScrollingDeferredDataFactory = ({
 
     self.visibleItems = ko.computed(() => {
 
+        let scrollY = self.scrollY();
+
+        self.maxY(scrollY + +window.getComputedStyle(self.container)['max-height'].replace(/px/, ''));
+
         let toFetch = [];
 
         let alreadyFetching = self.secondaryFetchQueue.peek();
@@ -212,7 +216,7 @@ const virtualScrollingDeferredDataFactory = ({
 
         let results = self.searchResults().filter((i, index) => {
 
-            let actuallyVisible = ((i.offsetY - self.gridHeaderHeight + self.rowHeight) >= (self.scrollY())) &&
+            let actuallyVisible = ((i.offsetY - self.gridHeaderHeight + self.rowHeight) >= (scrollY)) &&
                 ((i.offsetY - self.gridHeaderHeight + self.rowHeight) <= (self.maxY()));
 
             //console.log(virtualScrollingDeferredDataFactory actuallyVisible);

@@ -540,4 +540,32 @@ textarea.mdc-text-field__input {
   position: relative;
   z-index: 1;
 }
+
+.mdc-numeric-field .mdc-text-field:not(.mdc-text-field--disabled).mdc-text-field--invalid .mdc-text-field__numeric {
+  color: #db0028;
+}
+
+.mdc-text-field--invalid.shake .mdc-text-field__input {
+  will-change: transform;
+  transform-origin: left top;
+  transform: 150ms cubic-bezier(0.4, 0, 0.2, 1), color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  animation: mdc-padding-shake-custom 250ms 1;
+}
+
+@keyframes mdc-padding-shake-custom {
+  0% {
+    transform: translateX(0);
+  }
+  33% {
+    animation-timing-function: cubic-bezier(0.5, 0, 0.70173, 0.49582);
+    transform: translateX(6%);
+  }
+  66% {
+    animation-timing-function: cubic-bezier(0.30244, 0.38135, 0.55, 0.95635);
+    transform: translateX(-6%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
 /*# sourceMappingURL=site-new.css.map */

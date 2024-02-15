@@ -16223,11 +16223,11 @@ var bespokeArchitectFolderFactory = function (parent) {
 
     self.selectedFabrics = ko.observableArray([]).extend({
         maxLength: {
-            params: 20,
+            params: 25,
             onlyIf: function () {
                 return self.validateNow();
             },
-            message: 'Please select no more than 20 samples.'
+            message: 'Please select no more than 25 samples.'
         },
         minLength: {
             params: 1,
@@ -16341,7 +16341,7 @@ var bespokeArchitectFolderFactory = function (parent) {
     self.addAllResults = function () {
         ko.utils.arrayForEach(self.fabricAutocompleteResults(), function (item) {
             if (item.value.CuttingProductID != null) {
-                if (self.selectedFabricProductIds().length < 20) {
+                if (self.selectedFabricProductIds().length < 25) {
                     self.selectedFabricProductIds.push(item.productId);
                 }
             }

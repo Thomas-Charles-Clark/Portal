@@ -4194,7 +4194,7 @@
                         <!-- ko if: fabricAutocompleteResults().length || selectedFabrics().length -->
                         <div class="col-xs-6">
                             <ul class="list-group" data-bind="foreach: fabricAutocompleteResults">
-                                <li class="list-group-item" data-bind="css: { 'disabled': ($data.value.CuttingProductID == null) || ($parent.selectedFabrics().length == 20) || ($parent.busy() == true), 'selected': $parent.isProductInRing($data) }">
+                                <li class="list-group-item" data-bind="css: { 'disabled': ($data.value.CuttingProductID == null) || ($parent.selectedFabrics().length == 25) || ($parent.busy() == true), 'selected': $parent.isProductInRing($data) }">
                                     <label class="checkbox-wrapper" data-bind="validationOptions: { insertMessages: false }">
                                         <!-- ko if: value.ImageID -->
                                         <img class="thumb" data-bind="attr: { src: 'https://www.designersguild.com/image/90/' + value.ImageID, title: value.Code }" />
@@ -4228,16 +4228,16 @@
                             </div>
                             <!-- ko if: selectedFabrics().length -->
                             <div class="margin-bottom-15">
-                                <!-- ko if: selectedFabrics().length == 20 -->
+                                <!-- ko if: selectedFabrics().length == 25 -->
                                 <span>
                                     You may not add any more samples to this folder.
                                 </span>
                                 <!-- /ko -->
-                                <!-- ko ifnot: selectedFabrics().length == 20 -->
+                                <!-- ko ifnot: selectedFabrics().length == 25 -->
                                 <span>
                                     You may add a further
-                                    <span data-bind="text: 20 - selectedFabrics().length"></span>
-                                    sample<span data-bind="text: selectedFabrics().length < 19 ? 's' : ''"></span>
+                                    <span data-bind="text: 25 - selectedFabrics().length"></span>
+                                    sample<span data-bind="text: selectedFabrics().length < 24 ? 's' : ''"></span>
                                     to this folder.
                                 </span>
                                 <!-- /ko -->

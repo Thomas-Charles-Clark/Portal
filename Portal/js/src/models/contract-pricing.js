@@ -1937,6 +1937,45 @@ const contractPricingEditor = ({
         tradeAccountId: self.parent.tradeAccountId
     });
 
+    self.productEditor = qualityEditor({
+        tradeAccountId: self.parent.tradeAccountId
+    });
+
+    //#region Product specific changes to qualityEditor
+
+    self.productEditor.setAllModalElement = document.querySelector("#quality-discounter-set-all-modal");
+
+    self.productEditor.setAllModal = bootstrap.Modal.getOrCreateInstance(self.productEditor.setAllModalElement);
+
+    self.productEditor.virtualScroller.primaryFetchEndpoint = "/api/contractPricing/ProductSearch";
+
+    self.productEditor.virtualScroller.primaryFetchResultFn = (rec) => {
+        rec = Object.assign({
+            checked: (self.productEditor.selectedQualityIds().find(qid => qid == rec.QualityID)),
+            validateNow: self.productEditor.validateNow
+        }, rec);
+        return qualityRecord(rec);
+    };
+
+    self.productEditor.virtualScroller.secondaryFetchQueueRecordId = "ProductID";
+    self.productEditor.virtualScroller.secondaryFetchResultSetName = "ProductResults",
+    self.productEditor.virtualScroller.container = document.getElementById("product-results-scroller-container");
+    self.productEditor.virtualScroller.maxY(+window.getComputedStyle(document.getElementById("product-results-scroller-container"))['max-height'].replace(/px/, '') + (self.productEditor.virtualScroller.rowHeight * 5));
+    self.productEditor.virtualScroller.secondaryFetchParams = function(unfilledRecords) {
+
+        let productIds = [...new Set(unfilledRecords.flatMap(ur => ur.ProductID ? [ur.ProductID] : []))];
+
+        let data = {
+            tradeAccountId: self.productEditor.tradeAccountId(),
+            productId: productIds,
+            qualityId: []
+        };
+
+        return data;
+    };
+
+    //#endregion
+
     self.errorables = ko.observableArray();
 
     self.errors = ko.validation.group(self.errorables, {
@@ -1995,13 +2034,17 @@ const contractPricingEditor = ({
     self.save = () => {
         self.productGroupItemTypeEditor.validateNow(true);
         self.qualityEditor.validateNow(true);
-        
-        if (self.errors().length) {
-            self.errors.showAllMessages(true);
-            self.errors.filter(x => {
-                x.isValid.notifySubscribers(x.isValid())
-            });
-        }
+
+        window.setTimeout(() => {
+            if (self.errors().length) {
+                self.errors.showAllMessages(true);
+                self.errors.filter(x => {
+                    x.isValid.notifySubscribers(x.isValid())
+                });
+            } else {
+                window.showInfo("Save", "Validation passed, go ahead and save...");
+            }
+        }, 0);
     }
 
     self.reset = () => {
@@ -2134,25 +2177,44 @@ const productGroupItemTypeEditor = ({
 
         let hardcodedErrorables = [];
 
+        hardcodedErrorables.push(self.productGroupAllFabric.brandSelectionValid);
+        hardcodedErrorables.push(self.productGroupAllWallpaper.brandSelectionValid);
+        hardcodedErrorables.push(self.productGroupAllPatternBooks.brandSelectionValid);
+        hardcodedErrorables.push(self.productGroupAllRugs.brandSelectionValid);
+
         if (self.productGroupAllFabric.brands.find(b => b.checked())) {
-            hardcodedErrorables.push(self.productGroupAllFabric.discounter.percentage.observable)
+            hardcodedErrorables.push(self.productGroupAllFabric.discounter.percentage.observable);
         }
         if (self.productGroupAllWallpaper.brands.find(b => b.checked())) {
-            hardcodedErrorables.push(self.productGroupAllWallpaper.discounter.percentage.observable)
+            hardcodedErrorables.push(self.productGroupAllWallpaper.discounter.percentage.observable);
         }
         if (self.productGroupAllPatternBooks.brands.find(b => b.checked())) {
-            hardcodedErrorables.push(self.productGroupAllPatternBooks.discounter.percentage.observable)
+            hardcodedErrorables.push(self.productGroupAllPatternBooks.discounter.percentage.observable);
         }
         if (self.productGroupAllRugs.brands.find(b => b.checked())) {
-            hardcodedErrorables.push(self.productGroupAllRugs.discounter.percentage.observable)
+            hardcodedErrorables.push(self.productGroupAllRugs.discounter.percentage.observable);
         }
 
         let dynamicErrorables = self.itemTypesByProductGroup().flatMap(pg => {
-            return pg.itemTypes.filter(it => it.brands.find(b => b.checked())).flatMap(it => [it.discounter.percentage.observable, it.discounter.monetary.observable])
+            let discounterObservables = pg.itemTypes.filter(it => it.brands.find(b => b.checked())).flatMap(it => [
+                it.discounter.percentage.observable,
+                it.discounter.monetary.observable
+            ]);
+            let brandObservables = pg.itemTypes.flatMap(it => [
+                it.brandSelectionValid
+            ]);
+
+            return discounterObservables.concat(brandObservables);
         });
 
         self.errorables(hardcodedErrorables.concat(dynamicErrorables));
 
+    }, self);
+
+    self.errorSummaryMessage = ko.computed(() => {
+        let count = self.errorables().filter(e => !e.isValid()).length;
+        if (count)
+            return `${count} error${(count > 1 ? "s" : "")} remain${(count > 1 ? "" : "s")} in the Product Group / Item Types section.`
     }, self);
 
     //#endregion
@@ -2567,11 +2629,7 @@ const qualityEditor = ({
             return self;
         }
     });
-
-    console.warn("global assignment shortcut, remove later");
-    window.qe = self;
-    window.vs = self.virtualScroller;
-
+    
     self.launchParams = kendoMDCDropDownList({
         label: 'Launch',
         odata: true,
@@ -2811,6 +2869,13 @@ const qualityEditor = ({
         return [...self.selectedQualities().flatMap(sq => sq.quantityBreaks())];
     }, self);
 
+
+    self.errorSummaryMessage = ko.computed(() => {
+        let count = self.errorables().filter(e => !e.isValid()).length;
+        if (count)
+            return `${count} error${(count > 1 ? "s" : "")} remain${(count > 1 ? "" : "s")} in the Design section.`
+    }, self);
+
     //#endregion
 
     //#region Subscriptions
@@ -2983,7 +3048,7 @@ const productGroupItemType = ({
     self.validateNow = ko.computed(() => {
         return self.brands.find(b => b.checked()) && self.parentValidateNow()
     }, self);
-
+    
     //#endregion
 
     //#region Components
@@ -3008,6 +3073,20 @@ const productGroupItemType = ({
         permitMonetary: permitMonetary,
         permitPercentage: true,
         initialState: DISCOUNT_STATE_PERCENTAGE,
+    });
+
+    self.brandSelectionValid = ko.computed(() => { 
+
+        if (self.discounter.monetary.observable() || self.discounter.percentage.observable()) {
+            let result = self.brands.find(b => b.checked()) != null;
+
+            if (self.parentValidateNow())
+                return result;
+        }
+
+        return true;
+    }, self).extend({
+        mustEqual: true
     });
 
     //#endregion

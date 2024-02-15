@@ -1586,9 +1586,13 @@ tbody.virtual-spacing {
     }
 }
 
+.product-group-item-type-title {
+    margin: $xl-gutter 0 $l-gutter 0;
+}
+
 .product-group-item-type-table {
     table-layout: fixed;
-    width: auto;
+    max-width: 1024px;
 
     .title-column {
     }
@@ -1638,6 +1642,10 @@ tbody.virtual-spacing {
                     width: 16px;
                     height: 16px;
                 }
+            }
+
+            &.invalid {
+                box-shadow: inset 0 0 0 9999px $red-400;
             }
 
             .mdc-discounter-group {
@@ -1703,7 +1711,7 @@ tbody.virtual-spacing {
             flex: 1;
 
             > .tab-pane {
-                height: 100%;
+
             }
         }
 
@@ -1725,17 +1733,17 @@ tbody.virtual-spacing {
             }
         }
 
-        #quality-wrapper {
+        .search-wrapper {
             height: 100%;
             margin-top: $l-gutter;
             --bs-columns: 3;
             gap: $l-gutter;
 
-            #quality-search {
+            .search {
                 --bs-columns: 3;
                 gap: $l-gutter;
 
-                #quality-prefilters {
+                .prefilters {
                     gap: $l-gutter;
                     margin-bottom: $l-gutter;
 
@@ -1746,13 +1754,15 @@ tbody.virtual-spacing {
                     }
                 }
 
-                #quality-results-scroller-container {
+                #quality-results-scroller-container,
+                #product-results-scroller-container {
                     max-height: calc(100vh - 293px);
                     overflow-y: auto;
                     border-bottom: 1px solid $gray-300;
                 }
 
-                #quality-search-results-table {
+                #quality-search-results-table,
+                #product-search-results-table {
                     table-layout: fixed;
                     margin-bottom: 0;
                     position: relative;
@@ -1845,10 +1855,12 @@ tbody.virtual-spacing {
                 }
             }
 
-            #quality-specify {
+            #quality-specify,
+            #product-specify {
                 grid-column: 2 / 3 span;
 
-                #quality-count {
+                #quality-count,
+                #product-count {
                     line-height: 82px;
                     margin-bottom: $l-gutter;
                     text-align: center;
@@ -1967,7 +1979,9 @@ tbody.virtual-spacing {
     }
 }
 #selected-qualities-table,
-#set-all-qualities-table {
+#selected-products-table,
+#set-all-qualities-table,
+#set-all-products-table {
     table-layout: fixed;
 
     .code-column {
@@ -2054,7 +2068,8 @@ tbody.virtual-spacing {
     }
 }
 
-#set-all-qualities-table {
+#set-all-qualities-table,
+#set-all-products-table {
     width: auto;
     margin: 0 auto;
 
@@ -2075,7 +2090,8 @@ tbody.virtual-spacing {
     }
 }
 
-#quality-discounter-set-all-modal {
+#quality-discounter-set-all-modal,
+#product-discounter-set-all-modal {
 
     .progress-wrapper {
         position: relative;
