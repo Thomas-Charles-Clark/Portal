@@ -58,6 +58,7 @@ const virtualScrollingDeferredDataFactory = ({
     tableSelector: "#virtual-scrolling-table",
     rowHeight: 50,
     primaryFetchParams: ko.computed(() => {
+        //console.trace();
         // build some set of parameters required by primaryFetch
     }),
     primaryFetchMethod: "GET",
@@ -71,6 +72,7 @@ const virtualScrollingDeferredDataFactory = ({
     primaryFetchResultSetName: "Results",
     secondaryFetchQueueRecordId: `a-b-c-d`,
     secondaryFetchParams: ko.computed(() => {
+        //console.trace();
         // build some set of params required by the secondaryFetch
     }),
     secondaryFetchMethod: "POST",
@@ -169,6 +171,7 @@ const virtualScrollingDeferredDataFactory = ({
     //#region Computeds
 
     self.unfilledRecords = ko.computed(() => {
+        //console.trace();
         let results = [...new Set(self.secondaryFetchQueue().filter(vr => {
             let r = self.secondaryFetchedRecords().find(fr =>
                 fr[self.secondaryFetchQueueRecordId] == vr[self.secondaryFetchQueueRecordId]
@@ -186,7 +189,7 @@ const virtualScrollingDeferredDataFactory = ({
     });
 
     self.finalRowObservationComputer = ko.computed(() => {
-
+        //console.trace();
         if (self.haveSearchResults()) {
 
             window.setTimeout(() => {
@@ -205,7 +208,7 @@ const virtualScrollingDeferredDataFactory = ({
     }, self);
 
     self.visibleItems = ko.computed(() => {
-
+        //console.trace();
         let scrollY = self.scrollY();
 
         self.maxY(scrollY + +window.getComputedStyle(self.container)['max-height'].replace(/px/, ''));
@@ -239,6 +242,8 @@ const virtualScrollingDeferredDataFactory = ({
     });
 
     self.gridScrollTopPadding = ko.computed(() => {
+        //console.trace();
+
         let scrollY = self.scrollY();
         let result = 0;
 
@@ -252,6 +257,8 @@ const virtualScrollingDeferredDataFactory = ({
     }, self);
 
     self.gridScrollBottomPadding = ko.computed(() => {
+        //console.trace();
+
         if (self.finalRowVisible()) {
             return 0;
         } else {
@@ -275,6 +282,7 @@ const virtualScrollingDeferredDataFactory = ({
 
 
     self.primaryFetch = ko.computed(() => {
+        //console.trace();
 
         let data = self.primaryFetchParams();
 
@@ -336,6 +344,7 @@ const virtualScrollingDeferredDataFactory = ({
     }, self);
 
     self.secondaryFetch = ko.computed(() => {
+        //console.trace();
 
         let urpids = self.unfilledRecords();
 

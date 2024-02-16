@@ -103,5 +103,54 @@ namespace SharedEFClasses.Models
                 Results = results.Read<ContractManagement_ProductSearch_Result>()
             };
         }
+
+        public async Task<ContractManagement_Contract_MergeResult> ContractManagement_Contract_Merge(ContractPricingMergeDto dto)
+        {
+            var contractDiscounts = new DataTable();
+
+            contractDiscounts.Columns.AddRange([
+                new DataColumn("ProductID", typeof(int)),
+                new DataColumn("QualityID", typeof(short)),
+                new DataColumn("BrandID", typeof(byte)),
+                new DataColumn("ItemTypeID", typeof(short)),
+                new DataColumn("ProductGroupID", typeof(byte)),
+                new DataColumn("QuantityBreak", typeof(decimal)),
+                new DataColumn("Discount", typeof(decimal)),
+            ]);
+
+            foreach (var r in dto.ContractDiscounts)
+            {
+                contractDiscounts.Rows.Add(r.ProductID, r.QualityID, r.BrandID, r.ItemTypeID, r.ProductGroupID, r.QuantityBreak, r.Discount);
+            }
+
+            var contractPrices = new DataTable();
+
+            contractPrices.Columns.AddRange([
+                new DataColumn("ProductID", typeof(int)),
+                new DataColumn("QualityID", typeof(short)),
+                new DataColumn("QuantityBreak", typeof(decimal)),
+                new DataColumn("Price", typeof(decimal))
+            ]);
+
+            foreach (var r in dto.ContractPrices)
+            {
+                contractDiscounts.Rows.Add(r.ProductID, r.QualityID,r.QuantityBreak, r.Price);
+            }
+
+            var results = await this.Database.Connection.QueryMultipleAsync("[portal].[ContractManagement_Product_Search]", new
+            {
+                dto.TradeAccountID,
+                dto.TradeAccountGroupID,
+                dto.MemberID,
+                dto.OnDate,
+                dto.OffDate,
+                contractDiscounts,
+                contractPrices
+            }, null, 60, CommandType.StoredProcedure);
+
+            var result = results.ReadSingle<ContractManagement_Contract_MergeResult>();
+
+            return result;
+        }
     }
 }

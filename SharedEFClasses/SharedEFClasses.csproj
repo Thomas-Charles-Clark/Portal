@@ -339,11 +339,13 @@
     <Compile Include="Models\BasketStatusModels.cs" />
     <Compile Include="Models\ContractPricing\ContractManagement_ContractImpact_SelectResult.cs" />
     <Compile Include="Models\ContractPricing\ContractManagement_ContractList_SelectResult.cs" />
+    <Compile Include="Models\ContractPricing\ContractManagement_Contract_MergeResult.cs" />
     <Compile Include="Models\ContractPricing\ContractManagement_ProductSearch_SelectResult.cs" />
     <Compile Include="Models\ContractPricing\ContractManagement_QualitySearch_SelectResult.cs" />
     <Compile Include="Models\ContractPricing\ContractManagement_SalesData_SelectResult.cs" />
     <Compile Include="Models\ContractPricing\ContractPricingDealsDto.cs" />
     <Compile Include="Models\ContractPricing\ContractPricingImpactDto.cs" />
+    <Compile Include="Models\ContractPricing\ContractPricingMergeDto.cs" />
     <Compile Include="Models\ContractPricing\ContractPricingQualityProductSearchDto.cs" />
     <Compile Include="Models\ContractPricing\ContractPricingSalesDataDto.cs" />
     <Compile Include="Models\ContractPricing\ContractProductRestriction.cs" />

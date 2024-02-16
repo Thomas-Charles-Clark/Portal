@@ -288,7 +288,8 @@ const contractPricingViewModel = ({ } = {}) => {
     self.firstParamsRun = true;
 
     self.prefilterParams = ko.computed(() => {
-        console.log('prefilterParams computed');
+
+        //console.trace();
 
         let props = {
             launchId: self.launchId(),
@@ -783,6 +784,7 @@ const contractPricingViewModel = ({ } = {}) => {
     //#region Subscriptions
 
     self.tradeAccountId.subscribe(nv => {
+        //console.trace();
         if (nv == '') {
             self.reset();
         }
@@ -1111,10 +1113,12 @@ const contractPricingViewModel = ({ } = {}) => {
     //#region Computeds
 
     self.impactVisible = ko.computed(() => {
+        //console.trace();
         return self.tradeAccount() != null;
     }, self);
 
     self.allDateRanges = ko.computed(() => {
+        //console.trace();
         let account = self.tradeAccountDealDetails();
         let group = self.tradeAccountGroupDealDetails();
         let results = [];
@@ -1126,10 +1130,12 @@ const contractPricingViewModel = ({ } = {}) => {
     }, self);
 
     self.allContracts = ko.computed(() => {
+        //console.trace();
         return self.allDateRanges().flatMap(d => d.contractLevels.flatMap(cl => cl.contracts.flatMap(c => c)));
     }, self);
 
     self.fetchDeals = ko.computed(() => {
+        //console.trace();
 
         if (self.filledRecords.peek().length)
             self.filledRecords([]);
@@ -1221,6 +1227,7 @@ const contractPricingViewModel = ({ } = {}) => {
     }, self);
 
     self.unfilledRecords = ko.computed(() => {
+        //console.trace();
         let results = [...new Set(self.recordsToDataFetch().filter(vr => {
             let r = self.filledRecords().find(fr =>
                 fr.ProductOrQuality == vr.ProductOrQuality &&
@@ -1244,6 +1251,7 @@ const contractPricingViewModel = ({ } = {}) => {
     });
 
     self.fetchSalesData = ko.computed(() => {
+        //console.trace();
 
         let urpids = self.unfilledRecords();
 
@@ -1376,6 +1384,7 @@ const contractPricingViewModel = ({ } = {}) => {
     });
 
     self.finalRowObservationComputer = ko.computed(() => {
+        //console.trace();
 
         if (self.haveImpactResults()) {
 
@@ -1395,6 +1404,7 @@ const contractPricingViewModel = ({ } = {}) => {
     }, self);
 
     self.visibleItems = ko.computed(() => {
+        //console.trace();
 
         let toFetch = [];
 
@@ -1438,6 +1448,8 @@ const contractPricingViewModel = ({ } = {}) => {
     });
 
     self.gridScrollTopPadding = ko.computed(() => {
+        //console.trace();
+
         let scrollY = self.scrollY();
         let scrollYPlusHeaderHeight = scrollY + self.gridHeaderHeight;
         let result = 0;
@@ -1452,6 +1464,7 @@ const contractPricingViewModel = ({ } = {}) => {
     }, self);
 
     self.gridScrollBottomPadding = ko.computed(() => {
+        //console.trace();
         if (self.finalRowVisible()) {
             return 0;
         } else {
@@ -1657,6 +1670,7 @@ const contractRecord = ({
     self.allContractsComputed = allContractsComputed;
 
     self.conflicts = ko.computed(() => {
+        //console.trace();
         let allContracts = self.allContractsComputed();
         return (self._conflicts ?? []).map(cf => {
             return allContracts.find(c => c.contractListId == cf.ConflictContractListID);
@@ -1664,6 +1678,7 @@ const contractRecord = ({
     }, self);
 
     self.overrides = ko.computed(() => {
+        //console.trace();
         let allContracts = self.allContractsComputed();
         return (self._overrides ?? []).map(ov => {
             return allContracts.find(c => c.contractListId == ov.OverrideContractListID);
@@ -1856,6 +1871,7 @@ const dateRangeEditor = ({ parent } = { parent: null }) => {
     //#region Subscriptions
 
     self.startDate.subscribe(nv => {
+        //console.trace();
         if (nv) {
             if (self.endDate() && +self.endDate() < nv) {
                 self.endDate(undefined);
@@ -1871,6 +1887,7 @@ const dateRangeEditor = ({ parent } = { parent: null }) => {
     });
 
     self.endDate.subscribe(nv => {
+        //console.trace();
         if (nv) {
             if (self.startDate() && +self.startDate() > nv) {
                 self.startDate(undefined);
@@ -1945,7 +1962,7 @@ const contractPricingEditor = ({
 
     //#region Product specific changes to qualityEditor
 
-    self.productEditor.setAllModalElement = document.querySelector("#quality-discounter-set-all-modal");
+    self.productEditor.setAllModalElement = document.querySelector("#product-discounter-set-all-modal");
 
     self.productEditor.setAllModal = bootstrap.Modal.getOrCreateInstance(self.productEditor.setAllModalElement);
 
@@ -2001,6 +2018,7 @@ const contractPricingEditor = ({
     //#region Computeds
 
     self.errorableComputer = ko.computed(() => {
+        //console.trace();
         let pgitee = self.productGroupItemTypeEditor.errorables();
         let qee = self.qualityEditor.errorables();
         let pee = self.productEditor.errorables();
@@ -2009,10 +2027,12 @@ const contractPricingEditor = ({
     }, self);
 
     self.modalTitle = ko.computed(() => {
+        //console.trace();
         return `<span class="me-5">${self.parent.tradeAccount() && self.parent.tradeAccount().ShortLabel}</span><span>${self.editingRecord() && self.editingRecord().label}</span>`;
     }, self);
 
     self.unsavedChanges = ko.computed(() => {
+        //console.trace();
         return self.loadedJson() && self.loadedJson() != self.toJson();
     }, self);
 
@@ -2029,7 +2049,7 @@ const contractPricingEditor = ({
     }
 
     self.load = (dateRangeRecord) => {
-        console.trace(dateRangeRecord);
+        //console.trace(dateRangeRecord);
 
         if (dateRangeRecord == null) {
             throw "cannot load a null dateRangeRecord";
@@ -2188,6 +2208,7 @@ const productGroupItemTypeEditor = ({
     //#region Computeds
 
     self.activeComputer = ko.computed(() => {
+        //console.trace();
         // what do we want
         // not to be validating all of the observables in the world ever unnecessarily
 
@@ -2228,6 +2249,7 @@ const productGroupItemTypeEditor = ({
     }, self);
 
     self.errorSummaryMessage = ko.computed(() => {
+        //console.trace();
         let count = self.errorables().filter(e => !e.isValid()).length;
         if (count)
             return `${count} error${(count > 1 ? "s" : "")} remain${(count > 1 ? "" : "s")} in the Product Group / Item Types section.`
@@ -2572,6 +2594,7 @@ const qualityEditor = ({
     //#region Components
 
     self.primaryFetchParams = ko.computed(() => {
+        //console.trace();
         let params = {
             tradeAccountId: self.tradeAccountId(),
             launchId: self.launchId(),
@@ -2886,11 +2909,13 @@ const qualityEditor = ({
 
     // validation hurrah
     self.selectedQuantityBreaks = ko.computed(() => {
+        //console.trace();
         return [...self.selectedQualities().flatMap(sq => sq.quantityBreaks())];
     }, self);
 
 
     self.errorSummaryMessage = ko.computed(() => {
+        //console.trace();
         let count = self.errorables().filter(e => !e.isValid()).length;
         if (count)
             return `${count} error${(count > 1 ? "s" : "")} remain${(count > 1 ? "" : "s")} in the Design section.`
@@ -2901,6 +2926,7 @@ const qualityEditor = ({
     //#region Subscriptions
 
     self.selectedQuantityBreaks.subscribe(nv => {
+        //console.trace();
         self.errorables(nv.flatMap(qb => {
             return [
                 qb.quantityBreak,
@@ -2911,6 +2937,7 @@ const qualityEditor = ({
     });
 
     self.setAllProgress.subscribe(nv => {
+        //console.trace();
         if (nv >= 100)
             self.hideSetAllModal();
     });
@@ -3066,6 +3093,7 @@ const productGroupItemType = ({
     //#region Computeds
 
     self.validateNow = ko.computed(() => {
+        //console.trace();
         return self.brands.find(b => b.checked()) && self.parentValidateNow()
     }, self);
     
@@ -3095,7 +3123,8 @@ const productGroupItemType = ({
         initialState: DISCOUNT_STATE_PERCENTAGE,
     });
 
-    self.brandSelectionValid = ko.computed(() => { 
+    self.brandSelectionValid = ko.computed(() => {
+        //console.trace();
 
         if (self.discounter.monetary.observable() || self.discounter.percentage.observable()) {
             let result = self.brands.find(b => b.checked()) != null;
@@ -3114,6 +3143,7 @@ const productGroupItemType = ({
     //#region Subscriptions
 
     self.allBrands.subscribe(nv => {
+        //console.trace();
         self.brands.forEach(b => b.checked(nv));
     });
 
@@ -3324,6 +3354,7 @@ const discounterFactory = ({
     //}, self);
 
     self.subscriptions.push(self.selector.observable.subscribe(function (newValue) {
+        //console.trace();
         switch (newValue) {
             case DISCOUNT_STATE_MONETARY:
                 self.currentState(self.monetary);

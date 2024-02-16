@@ -231,6 +231,17 @@
                                             </tr>
                                         </tbody>
                                         <tbody data-bind="foreach: visibleItems">
+                                            <!-- ko ifnot: $data.hasOwnProperty('busy') -->
+                                            <tr class="search-result busy">
+                                                <td>
+                                                    <span data-bind="text: QualityCode"></span>
+                                                </td>
+                                                <td colspan="5">
+                                                    <span data-bind="text: QualityName"></span>
+                                                </td>
+                                            </tr>
+                                            <!-- /ko -->
+                                            <!-- ko if: $data.hasOwnProperty('busy') -->
                                             <tr class="search-result" data-bind="css: { 'busy': busy }, click: $parentContext.$parent.toggleSelection">
                                                 <td>
                                                     <span data-bind="text: QualityCode"></span>
@@ -253,6 +264,7 @@
                                                     <span data-bind="text: currentPrice"></span>
                                                 </td>
                                             </tr>
+                                            <!-- /ko -->
                                         </tbody>
                                         <tbody class="virtual-spacing">
                                             <tr class="final-row">
@@ -415,6 +427,17 @@
                                             </tr>
                                         </tbody>
                                         <tbody data-bind="foreach: visibleItems">
+                                            <!-- ko ifnot: $data.hasOwnProperty('busy') -->
+                                            <tr class="search-result busy">
+                                                <td>
+                                                    <span data-bind="text: ProductCode"></span>
+                                                </td>
+                                                <td colspan="5">
+                                                    <span data-bind="text: ProductName"></span>
+                                                </td>
+                                            </tr>
+                                            <!-- /ko -->
+                                            <!-- ko if: $data.hasOwnProperty('busy') -->
                                             <tr class="search-result" data-bind="css: { 'busy': busy }, click: $parentContext.$parent.toggleSelection">
                                                 <td>
                                                     <span data-bind="text: ProductCode"></span>
@@ -437,6 +460,7 @@
                                                     <span data-bind="text: currentPrice"></span>
                                                 </td>
                                             </tr>
+                                            <!-- /ko -->
                                         </tbody>
                                         <tbody class="virtual-spacing">
                                             <tr class="final-row">
@@ -460,7 +484,7 @@
                             <div id="product-specify">
                                 <!-- ko if: selectedQualityIds().length -->
                                 <h2 id="product-count">
-                                    <span data-bind="text: `${selectedQualityIds().length} Design${selectedQualityIds().length > 1 ? 's' : ''} selected`"></span>
+                                    <span data-bind="text: `${selectedQualityIds().length} Product${selectedQualityIds().length > 1 ? 's' : ''} selected`"></span>
                                 </h2>
                                 <table id="selected-products-table" class="table table-condensed table-striped discounter-table">
                                     <colgroup>

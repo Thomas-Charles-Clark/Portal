@@ -72,5 +72,12 @@ namespace Portal.Areas.Customers.Controllers
 
             return Ok(result);
         }
+
+        [HttpPost] public async Task<IHttpActionResult> ContractPricingMerge([FromBody]ContractPricingMergeDto dto)
+        {
+            var result = await PortalDb.ContractManagement_Contract_Merge(dto);
+
+            return Ok(result);
+        }
     }
 }
