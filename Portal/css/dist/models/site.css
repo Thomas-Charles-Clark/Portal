@@ -3152,7 +3152,7 @@ ul.ui-widget .ui-menu-item .ui-menu-item-wrapper .tiny-thumb {
   position: relative;
   left: -1px;
 }
-.mdc-discounter-group > div:last-child .mdc-select.mdc-select--outlined {
+.mdc-discounter-group > div:last-child > div:not(.disco-reason) .mdc-select.mdc-select--outlined {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   border-left: 0;

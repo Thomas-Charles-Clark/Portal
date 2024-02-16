@@ -35,6 +35,7 @@
     ... not far off the mark, actually. Even typing this now, I'm not sure how I'm going to get this worked out.
 */
 const virtualScrollingDeferredDataFactory = ({
+    busy,
     tableSelector,
     rowHeight,
     primaryFetchParams,
@@ -53,6 +54,7 @@ const virtualScrollingDeferredDataFactory = ({
     gridPositionTop,
     unfilledRecordFn
 } = {
+    busy: ko.observable(false),
     tableSelector: "#virtual-scrolling-table",
     rowHeight: 50,
     primaryFetchParams: ko.computed(() => {
@@ -103,7 +105,7 @@ const virtualScrollingDeferredDataFactory = ({
 
     //#region Properties
 
-    self.busy = ko.observable(false);
+    self.busy = busy;
 
     self.rowHeight = rowHeight;
 

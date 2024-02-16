@@ -1934,11 +1934,13 @@ const contractPricingEditor = ({
     self.productGroupItemTypeEditor = productGroupItemTypeEditor({});
 
     self.qualityEditor = qualityEditor({
-        tradeAccountId: self.parent.tradeAccountId
+        tradeAccountId: self.parent.tradeAccountId,
+        virtualScrollerContainer: document.getElementById("quality-results-scroller-container")
     });
 
     self.productEditor = qualityEditor({
-        tradeAccountId: self.parent.tradeAccountId
+        tradeAccountId: self.parent.tradeAccountId,
+        virtualScrollerContainer: document.getElementById("product-results-scroller-container")
     });
 
     //#region Product specific changes to qualityEditor
@@ -1958,9 +1960,9 @@ const contractPricingEditor = ({
     };
 
     self.productEditor.virtualScroller.secondaryFetchQueueRecordId = "ProductID";
+
     self.productEditor.virtualScroller.secondaryFetchResultSetName = "ProductResults",
-    self.productEditor.virtualScroller.container = document.getElementById("product-results-scroller-container");
-    self.productEditor.virtualScroller.maxY(+window.getComputedStyle(document.getElementById("product-results-scroller-container"))['max-height'].replace(/px/, '') + (self.productEditor.virtualScroller.rowHeight * 5));
+
     self.productEditor.virtualScroller.secondaryFetchParams = function(unfilledRecords) {
 
         let productIds = [...new Set(unfilledRecords.flatMap(ur => ur.ProductID ? [ur.ProductID] : []))];
@@ -1973,6 +1975,18 @@ const contractPricingEditor = ({
 
         return data;
     };
+
+    self.productEditor.toggleSelection = (qualityRecord) => {
+        let extant = self.productEditor.selectedQualityIds().find(qid => qid === qualityRecord.ProductID);
+
+        if (extant) {
+            self.productEditor.selectedQualityIds.remove(qualityRecord.ProductID);
+            self.productEditor.selectedQualities.remove(q => q.ProductID == qualityRecord.ProductID);
+        } else {
+            self.productEditor.selectedQualityIds.push(qualityRecord.ProductID);
+            self.productEditor.selectedQualities.push(qualityRecord);
+        }
+    }
 
     //#endregion
 
@@ -1989,8 +2003,9 @@ const contractPricingEditor = ({
     self.errorableComputer = ko.computed(() => {
         let pgitee = self.productGroupItemTypeEditor.errorables();
         let qee = self.qualityEditor.errorables();
+        let pee = self.productEditor.errorables();
 
-        self.errorables(pgitee.concat(qee));
+        self.errorables(pgitee.concat(qee).concat(pee));
     }, self);
 
     self.modalTitle = ko.computed(() => {
@@ -2034,6 +2049,7 @@ const contractPricingEditor = ({
     self.save = () => {
         self.productGroupItemTypeEditor.validateNow(true);
         self.qualityEditor.validateNow(true);
+        self.productEditor.validateNow(true);
 
         window.setTimeout(() => {
             if (self.errors().length) {
@@ -2414,12 +2430,15 @@ const productRecord = (rec = {}) => {
 }
 
 const qualityEditor = ({
-    tradeAccountId
+    tradeAccountId,
+    virtualScrollerContainer
 } = {
-        tradeAccountId: null
+        tradeAccountId: null,
+        virtualScrollerContainer: null
     }) => {
     let self = {
-        tradeAccountId: tradeAccountId
+        tradeAccountId: tradeAccountId,
+        virtualScrollerContainer: virtualScrollerContainer
     };
 
     //#region Properties
@@ -2598,6 +2617,7 @@ const qualityEditor = ({
     };
 
     self.virtualScroller = virtualScrollingDeferredDataFactory({
+        busy: self.busy,
         tableSelector: "#quality-search-results-table",
         rowHeight: 50,
         primaryFetchParams: self.primaryFetchParams,
@@ -2621,7 +2641,7 @@ const qualityEditor = ({
             this.loaded(true);
             this.busy(false);
         },
-        container: document.getElementById("quality-results-scroller-container"),
+        container: self.virtualScrollerContainer,
         gridHeaderHeight: 57,
         gridPositionTop: 0,
         unfilledRecordFn: (rec) => {

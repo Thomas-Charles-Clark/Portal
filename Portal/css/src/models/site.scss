@@ -3776,11 +3776,13 @@ ul.ui-widget {
             position: relative;
             left: -1px;
 
-            .mdc-select.mdc-select--outlined {
-                border-top-left-radius: 0;
-                border-bottom-left-radius: 0;
-                border-left: 0;
-                width: 56px;
+            > div:not(.disco-reason) {
+                .mdc-select.mdc-select--outlined {
+                    border-top-left-radius: 0;
+                    border-bottom-left-radius: 0;
+                    border-left: 0;
+                    width: 56px;
+                }
             }
 
             > span {
