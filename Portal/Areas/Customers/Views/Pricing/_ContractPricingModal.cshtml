@@ -47,7 +47,7 @@
                 <ul id="contract-editor-nav" class="nav nav-pills" role="tablist">
                     <li class="nav-item" role="presentation" data-bind="css: { 'errored': productGroupItemTypeEditor.errors().length },
                         attr: { 'title': productGroupItemTypeEditor.errors().length ? 'Please correct all errors before saving' : '' }">
-                        <button id="product-group-item-type-tab-btn" class="nav-link" data-bs-toggle="tab" data-bs-target="#product-group-item-type-tab" type="button" role="tab">
+                        <button id="product-group-item-type-tab-btn" class="nav-link active" data-bs-toggle="tab" data-bs-target="#product-group-item-type-tab" type="button" role="tab">
                             Product Group / Item Type
                             <!-- ko if: productGroupItemTypeEditor.errors().length -->
                             <span class="material-icons">
@@ -58,7 +58,7 @@
                     </li>
                     <li class="nav-item" role="presentation" data-bind="css: { 'errored': qualityEditor.errors().length },
                         attr: { 'title': qualityEditor.errors().length ? 'Please correct all errors before saving' : '' }">
-                        <button id="quality-tab-btn" class="nav-link active" data-bs-toggle="tab" data-bs-target="#quality-tab" type="button" role="tab">
+                        <button id="quality-tab-btn" class="nav-link" data-bs-toggle="tab" data-bs-target="#quality-tab" type="button" role="tab">
                             Design
                             <!-- ko if: qualityEditor.errors().length -->
                             <span class="material-icons">
@@ -80,7 +80,7 @@
                     </li>
                 </ul>
                 <div id="contract-editor-content" class="tab-content">
-                    <div id="product-group-item-type-tab" class="tab-pane fade" role="tabpanel" data-bind="with: productGroupItemTypeEditor">
+                    <div id="product-group-item-type-tab" class="tab-pane fade show active" role="tabpanel" data-bind="with: productGroupItemTypeEditor">
                         <div class="grid">
                             <div>
                                 <h3 class="product-group-item-type-title">
@@ -157,7 +157,7 @@
                                             </th>
                                             <!-- /ko -->
                                             <th>
-                                                Discount / Final Price
+                                                Discount
                                             </th>
                                             <th>
                                                 Status
@@ -172,7 +172,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="quality-tab" class="tab-pane fade show active" role="tabpanel" data-bind="with: qualityEditor">
+                    <div id="quality-tab" class="tab-pane fade" role="tabpanel" data-bind="with: qualityEditor">
                         <div class="blocker" data-bind="flexFadeVisible: busy">
                             <div class="loading-spinner"></div>
                             <h4 class="mt-3">
@@ -313,7 +313,7 @@
                                                 </a>
                                             </th>
                                             <th>
-                                                Discount / Final Price
+                                                Final Price
                                             </th>
                                             <th>
                                                 Status
@@ -509,7 +509,7 @@
                                                 </a>
                                             </th>
                                             <th>
-                                                Discount / Final Price
+                                                Final Price
                                             </th>
                                             <th>
                                                 Status
@@ -610,7 +610,7 @@
                                 Quantity Break
                             </th>
                             <th>
-                                Discount / Final Price
+                                Final Price
                             </th>
                         </tr>
                     </thead>
@@ -694,7 +694,7 @@
                                 Quantity Break
                             </th>
                             <th>
-                                Discount / Final Price
+                                Final Price
                             </th>
                         </tr>
                     </thead>

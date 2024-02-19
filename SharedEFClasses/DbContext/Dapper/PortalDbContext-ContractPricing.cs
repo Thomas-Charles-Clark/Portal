@@ -108,7 +108,7 @@ namespace SharedEFClasses.Models
         {
             var contractDiscounts = new DataTable();
 
-            contractDiscounts.Columns.AddRange([
+            contractDiscounts.Columns.AddRange(new DataColumn[] {
                 new DataColumn("ProductID", typeof(int)),
                 new DataColumn("QualityID", typeof(short)),
                 new DataColumn("BrandID", typeof(byte)),
@@ -116,7 +116,7 @@ namespace SharedEFClasses.Models
                 new DataColumn("ProductGroupID", typeof(byte)),
                 new DataColumn("QuantityBreak", typeof(decimal)),
                 new DataColumn("Discount", typeof(decimal)),
-            ]);
+            });
 
             foreach (var r in dto.ContractDiscounts)
             {
@@ -125,19 +125,19 @@ namespace SharedEFClasses.Models
 
             var contractPrices = new DataTable();
 
-            contractPrices.Columns.AddRange([
+            contractPrices.Columns.AddRange(new DataColumn[] {
                 new DataColumn("ProductID", typeof(int)),
                 new DataColumn("QualityID", typeof(short)),
                 new DataColumn("QuantityBreak", typeof(decimal)),
                 new DataColumn("Price", typeof(decimal))
-            ]);
+            });
 
             foreach (var r in dto.ContractPrices)
             {
-                contractDiscounts.Rows.Add(r.ProductID, r.QualityID,r.QuantityBreak, r.Price);
+                contractPrices.Rows.Add(r.ProductID, r.QualityID,r.QuantityBreak, r.Price);
             }
 
-            var results = await this.Database.Connection.QueryMultipleAsync("[portal].[ContractManagement_Product_Search]", new
+            var results = await this.Database.Connection.QueryMultipleAsync("[portal].[ContractManagement_Contract_Merge]", new
             {
                 dto.TradeAccountID,
                 dto.TradeAccountGroupID,

@@ -640,6 +640,11 @@ textarea.mdc-text-field__input {
 
         select {
             height: 100%;
+
+            &.mdc-select__selected-text,
+            &.mdc-select__native-control {
+                text-indent: 0;
+            }
         }
     }
 
@@ -667,7 +672,7 @@ textarea.mdc-text-field__input {
             color: $mdc-error-color;
         }
     }
-}
+} 
 
 .mdc-text-field--invalid.shake {
     .mdc-text-field__input {

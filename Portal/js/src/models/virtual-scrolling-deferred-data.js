@@ -327,6 +327,7 @@ const virtualScrollingDeferredDataFactory = ({
                         result.runningHeight = cumulativeHeight;
 
                         return self.primaryFetchResultFn(result);
+                        //return result;
                     });
 
                     self.gridTotalHeight(cumulativeHeight - self.rowHeight - 1);
@@ -352,7 +353,7 @@ const virtualScrollingDeferredDataFactory = ({
 
             console.log("virtualScrollingDeferredDataFactory self.unfilledRecords()", urpids);
 
-            urpids.forEach(urpid => urpid.busy(true));
+            //urpids.forEach(urpid => urpid.busy(true));
 
             window.setTimeout(() => {
 
@@ -409,6 +410,12 @@ const virtualScrollingDeferredDataFactory = ({
                                         filledRecord.loaded(true);
                                         record = filledRecord;
                                     }
+
+                                    //let modelledRecord = self.primaryFetchResultFn(record);
+
+                                    //self.searchResults.replace(record, modelledRecord);
+
+                                    //record = modelledRecord;
 
                                     self.secondaryFetchResultProcessingFunction.call(record, dataResult);
 

@@ -18,6 +18,7 @@ using System.IO;
 using SharedEFClasses.Models.ContractPricing;
 using Portal.Utilities.DynamicRoles;
 using System.Collections;
+using Microsoft.AspNet.Identity;
 
 namespace Portal.Areas.Customers.Controllers
 {
@@ -75,6 +76,8 @@ namespace Portal.Areas.Customers.Controllers
 
         [HttpPost] public async Task<IHttpActionResult> ContractPricingMerge([FromBody]ContractPricingMergeDto dto)
         {
+            dto.MemberID = User.Identity.GetUserId<int>();
+
             var result = await PortalDb.ContractManagement_Contract_Merge(dto);
 
             return Ok(result);

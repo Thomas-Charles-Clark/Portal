@@ -587,7 +587,11 @@ $deal-hover-color: $white;
 
 
 
-
+.tempus-dominus-widget {
+    .date-container-days {
+        --td-cell-size: 30px;
+    }
+}
 
 #page-heading-container {
 }
@@ -1599,8 +1603,17 @@ tbody.virtual-spacing {
     margin: $xl-gutter 0 $l-gutter 0;
 }
 
+input[type=number] {
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+}
+
 .product-group-item-type-table {
     table-layout: fixed;
+
+    .title-column {
+        width: 180px;
+    }
 
     .code-column {
         width: 140px;
@@ -1890,7 +1903,7 @@ tbody.virtual-spacing {
 
 .discounter-table {
 
-    .title-column {
+    .p {
     }
 
     .checkbox-column {

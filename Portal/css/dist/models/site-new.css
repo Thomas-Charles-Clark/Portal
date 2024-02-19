@@ -529,6 +529,9 @@ textarea.mdc-text-field__input {
 .mdc-discounter-group .mdc-validating-field select {
   height: 100%;
 }
+.mdc-discounter-group .mdc-validating-field select.mdc-select__selected-text, .mdc-discounter-group .mdc-validating-field select.mdc-select__native-control {
+  text-indent: 0;
+}
 .mdc-discounter-group .btn-group:nth-child(2) .mdc-validating-field {
   position: relative;
   right: -1px;

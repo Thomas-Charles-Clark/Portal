@@ -437,7 +437,7 @@
         <div id="trade-account-group-deal-details" data-bind="with: tradeAccountGroupDealDetails">
             <div id="group-account" class="deal-group-heading">
                 <span data-bind="text: label, title: 'd'"></span>
-                <a href="javascript:;">
+                <a href="javascript:;" data-bind="click: () => { $root.dateRangeEditor.showModal('group') }">
                     [ Add new Date Range ]
                 </a>
             </div>
@@ -453,7 +453,7 @@
                         <span data-bind="text: ` - ${TradePriceList.Code} - ${TradePriceList.Name}`"></span>
                     </span>
                 </span>
-                <a href="javascript:;">
+                <a href="javascript:;" data-bind="click: () => { $root.dateRangeEditor.showModal('single') }">
                     [ Add new Date Range ]
                 </a>
             </div>
@@ -576,5 +576,50 @@
 <!-- /ko -->
 
 @section afterContainer {
+    <div class="modal fade" id="new-date-range-modal" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content" data-bind="with: dateRangeEditor">
+                <div class="blocker" data-bind="flexFadeVisible: busy">
+                    <div class="loading-spinner"></div>
+                    <h4 class="mt-3">
+                        Please wait...
+                    </h4>
+                </div>
+                <div class="modal-header">
+                    <h5 class="modal-title" data-bind="html: modalTitle">
+                        Add New Contract Date Range
+                    </h5>
+                    <button type="button" class="btn-close" aria-label="Close" data-bind="click: hideModal"></button>
+                </div>
+                <div class="modal-body">
+                    <table id="date-range-table" class="table table-condensed table-striped">
+                        <colgroup>
+                            <col class="start-date-column" />
+                            <col class="end-date-column" />
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: startDateParams }"></div>
+                                </td>
+                                <td>
+                                    <div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: endDateParams }"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bind="click: hideModal">
+                        Cancel
+                    </button>
+                    <button class="btn btn-primary" data-bind="click: save">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @Html.Partial("_ContractPricingModal")
 }

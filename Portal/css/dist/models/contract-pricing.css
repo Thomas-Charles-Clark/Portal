@@ -438,6 +438,10 @@ body {
   color: #fff;
 }
 
+.tempus-dominus-widget .date-container-days {
+  --td-cell-size: 30px;
+}
+
 #branch-totals,
 #prefilters-second {
   padding: 0.5rem;
@@ -1309,8 +1313,16 @@ tbody.virtual-spacing tr td {
   margin: 2rem 0 1rem 0;
 }
 
+input[type=number] {
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+}
+
 .product-group-item-type-table {
   table-layout: fixed;
+}
+.product-group-item-type-table .title-column {
+  width: 180px;
 }
 .product-group-item-type-table .code-column {
   width: 140px;
