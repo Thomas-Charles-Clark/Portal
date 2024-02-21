@@ -473,6 +473,16 @@ const virtualScrollingDeferredDataFactory = ({
         }
     });
 
+    self.reset = () => {
+
+        self.searchResults([]);
+
+        self.haveSearchResults(false);
+
+        self.secondaryFetchedRecords([]);
+
+    }
+
     //#endregion
 
 

@@ -1101,13 +1101,19 @@ const contractPricingViewModel = ({ } = {}) => {
 
         self.selectedContractListJson(undefined);
 
-        self.impactResults([]);
-
-        self.haveImpactResults(false);
+        self.clearImpact();
 
         self.recordsToDataFetch([]);
 
         self.filledRecords([]);
+    }
+    
+    self.clearImpact = () => {
+
+        self.haveImpactResults(false);
+
+        self.impactResults([]);
+
     }
 
     self.editContractPrice = (dateRangeRecord, event) => {
@@ -1617,7 +1623,6 @@ const dateRangeRecord = ({
     //#endregion
 
     //#region Methods
-
 
 
     //#endregion
@@ -2206,6 +2211,113 @@ const contractPricingEditor = ({
 
             self.editingRecord(dateRangeRecord);
 
+            let extant = dateRangeRecord.contractLevels.filter(cl => cl.contracts.length);
+
+            extant.forEach(e => {
+                switch (e.label) {
+                    case "Product Group":
+                        e.contracts.forEach(c => {
+                            let b = self.productGroupItemTypeEditor.productGroupAllFabric.brands.find(b => b.BrandID == c.brandId);
+                            b.checked(true);
+                            self.productGroupItemTypeEditor.productGroupAllFabric.discounter.percentage.observable(c.value);
+                        });
+                        break;
+                    case "Item Type":
+                        e.contracts.forEach(c => {
+                            self.productGroupItemTypeEditor.itemTypesByProductGroup().flatMap(itbpg => {
+                                let found = itbpg.itemTypes.find(it => {
+                                    return it.itemTypeId == c.itemTypeId
+                                });
+                                if (found) {
+                                    return [found];
+                                } else {
+                                    return [];
+                                }
+                            }).forEach(it => {
+                                let b = it.brands.find(b => b.BrandID == c.brandId);
+                                if (b) {
+                                    b.checked(true);
+                                    it.discounter.percentage.observable(c.value);
+                                }
+                            });
+                        });
+                        break;
+                    case "Quality":
+                        let groupedByQualityId = Object.groupBy(e.contracts, (c => {
+                            return c.qualityId
+                        }));
+
+                        let selectedQualityIds = [];
+
+                        self.qualityEditor.selectedQualities(Object.keys(groupedByQualityId).map(qualityId => {
+
+                            let q = groupedByQualityId[qualityId][0];
+
+                            selectedQualityIds.push(+qualityId);
+
+                            let qr = qualityRecord({
+                                validateNow: self.qualityEditor.validateNow,
+                                checked: (true),
+                                QualityName: q.qualityName,
+                                QualityCode: q.qualityCode,
+                                QualityID: q.qualityId
+                            });
+
+                            qr.quantityBreaks(groupedByQualityId[qualityId].map(qb => quantityBreakRecord({
+                                    parent: qr,
+                                    validateNow: qr.validateNow,
+                                    QuantityBreak: qb.quantityBreak,
+                                    DiscountPercentage: null,
+                                    FinalPrice: qb.value
+                                })
+                            ));
+
+                            return qr;
+                        }));
+
+                        self.qualityEditor.selectedQualityIds(selectedQualityIds);
+                        
+                        break;
+                    case "Product":
+                        let groupedByProductId = Object.groupBy(e.contracts, (c => {
+                            return c.productId
+                        }));
+
+                        let selectedProductIds = [];
+
+                        self.productEditor.selectedQualities(Object.keys(groupedByProductId).map(productId => {
+
+                            let p = groupedByProductId[productId][0];
+
+                            selectedProductIds.push(+productId);
+
+                            let qr = qualityRecord({
+                                validateNow: self.productEditor.validateNow,
+                                checked: (true),
+                                ProductName: p.productName,
+                                ProductCode: p.productCode,
+                                ProductID: p.productId
+                            });
+
+                            qr.quantityBreaks(groupedByProductId[productId].map(qb => quantityBreakRecord({
+                                    parent: qr,
+                                    validateNow: qr.validateNow,
+                                    QuantityBreak: qb.quantityBreak,
+                                    DiscountPercentage: null,
+                                    FinalPrice: qb.value
+                                })
+                            ))
+
+                            return qr;
+                        }));
+
+                        self.productEditor.selectedQualityIds(selectedProductIds);
+
+                        break;
+                    default: break;
+                }
+            });
+
             self.showModal();
 
             window.setTimeout(() => {
@@ -2347,9 +2459,11 @@ const contractPricingEditor = ({
                         if (data.ErrorMessage) {
                             window.showError("Oops", data.ErrorMessage);
                         } else {
-                            window.showInfo("Success", "This configuration has been saved successfully.");
-
-                            self.parent.tradeAccountId.valueHasMutated();
+                            window.showInfo("Success", "Configuration saved successfully.", () => {
+                                self.reset();
+                                self.parent.tradeAccountId.valueHasMutated();
+                                self.parent.clearImpact();
+                            });
                         }
 
                         self.busy(false);
@@ -2367,6 +2481,12 @@ const contractPricingEditor = ({
         self.loadedJson(undefined);
 
         self.editingRecord(undefined);
+
+        self.productGroupItemTypeEditor.reset();
+
+        self.qualityEditor.reset();
+
+        self.productEditor.reset();
 
         self.busy(false);
     }
@@ -2543,7 +2663,25 @@ const productGroupItemTypeEditor = ({
 
     //#region Methods
 
+    self.reset = () => {
+        self.productGroupAllFabric.brands.forEach(b => b.checked(false));
+        self.productGroupAllFabric.discounter.percentage.observable(null);
+        self.productGroupAllWallpaper.brands.forEach(b => b.checked(false));
+        self.productGroupAllWallpaper.discounter.percentage.observable(null);
+        self.productGroupAllPatternBooks.brands.forEach(b => b.checked(false));
+        self.productGroupAllPatternBooks.discounter.percentage.observable(null);
+        self.productGroupAllRugs.brands.forEach(b => b.checked(false));
+        self.productGroupAllRugs.discounter.percentage.observable(null);
 
+        self.itemTypesByProductGroup().forEach(itbpg => {
+            itbpg.itemTypes.forEach(it => {
+                it.brands.forEach(b => {
+                    b.checked(false);
+                });
+                it.discounter.percentage.observable(null);
+            });
+        });
+    }
 
     //#endregion
 
@@ -2669,15 +2807,17 @@ const qualityRecord = (rec = { }) => {
 
     self.validateNow = rec.validateNow;
 
-    self.quantityBreaks = ko.observableArray([]);
+    self.quantityBreaks = ko.observableArray(rec.quantityBreaks ?? []);
 
-    let initialBreak = quantityBreakRecord({
-        parent: self,
-        validateNow: self.validateNow,
-        QuantityBreak: 0
-    });
+    if (!rec.hasOwnProperty("quantityBreaks")) {
+        let initialBreak = quantityBreakRecord({
+            parent: self,
+            validateNow: self.validateNow,
+            QuantityBreak: 0
+        });
 
-    self.quantityBreaks([initialBreak]);
+        self.quantityBreaks([initialBreak]);
+    }
 
     //#endregion
 
@@ -2758,6 +2898,10 @@ const qualityEditor = ({
     self.setAllProgress = ko.observable(0);
     
     self.validateSetAllNow = ko.observable(false);
+
+    self.modalElement = document.querySelector("#contract-pricing-modal");
+
+    self.modal = bootstrap.Modal.getOrCreateInstance(self.modalElement);
 
     self.setAllModalElement = document.querySelector("#quality-discounter-set-all-modal");
 
@@ -3250,6 +3394,14 @@ const qualityEditor = ({
         }
     }
 
+    self.showModal = () => {
+        self.modal.show();
+    }
+
+    self.hideModal = () => {
+        self.modal.hide();
+    }
+
     self.showSetAllModal = () => {
         self.resetSetAll();
         self.setAllModal.show();
@@ -3323,6 +3475,13 @@ const qualityEditor = ({
 
         self.validateSetAllNow(false);
         self.setAllErrors.showAllMessages(false);
+    }
+
+    self.reset = () => {
+        self.resetSetAll();
+        self.virtualScroller.reset();
+        self.selectedQualities([]);
+        self.hideModal();
     }
 
     //#endregion

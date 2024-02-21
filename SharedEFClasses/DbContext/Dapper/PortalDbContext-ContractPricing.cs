@@ -120,6 +120,11 @@ namespace SharedEFClasses.Models
 
             foreach (var r in dto.ContractDiscounts)
             {
+                if (r.Discount == 100) 
+                {
+                    throw new Exception("Discounts of 100% are not permitted");
+                }
+
                 contractDiscounts.Rows.Add(r.ProductID, r.QualityID, r.BrandID, r.ItemTypeID, r.ProductGroupID, r.QuantityBreak, r.Discount);
             }
 
@@ -134,6 +139,11 @@ namespace SharedEFClasses.Models
 
             foreach (var r in dto.ContractPrices)
             {
+                if (r.Price == 0)
+                {
+                    throw new Exception("FinalPrice values of 0 are not permitted");
+                }
+
                 contractPrices.Rows.Add(r.ProductID, r.QualityID,r.QuantityBreak, r.Price);
             }
 

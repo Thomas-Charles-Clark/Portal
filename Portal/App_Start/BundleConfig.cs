@@ -288,6 +288,10 @@ namespace Portal
                         $"{cssPrefix}/models/retail-store-members{cssSuffix}"
                 ));
 
+            bundles.Add(new StyleBundle("~/bundles/css/press-contacts").Include(
+                        $"{cssPrefix}/models/press-contacts{cssSuffix}"
+                ));
+
             bundles.Add(new StyleBundle("~/bundles/css/stock-management").Include(
                         $"{cssPrefix}/models/stock-management{cssSuffix}"
                 ));
@@ -697,6 +701,12 @@ namespace Portal
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/emailer{jsSuffix}",
                         $"{jsPrefix}/models/retail-store-members{jsSuffix}"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/press-contacts").Include(
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/press-contacts{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/stock-management").Include(

@@ -149,9 +149,9 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult ProductCodeAutocompleteSamples([FromBody] PassProductCodeAutoComplete objAutocomplete)
+        public async Task<IHttpActionResult> ProductCodeAutocompleteSamples([FromBody] PassProductCodeAutoComplete objAutocomplete)
         {
-            var results = PortalDb.ProductCode_Autocomplete_Samples(objAutocomplete).ToList();
+            var results = await PortalDb.ProductCode_Autocomplete_Samples(objAutocomplete);
 
             return Json(results);
         }
@@ -2584,11 +2584,11 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult RefreshTradeAccountEORINumber([FromBody] PassTradeAccountNumber objTradeAccount)
+        public async Task<IHttpActionResult> RefreshTradeAccountEORINumber([FromBody] PassTradeAccountNumber objTradeAccount)
         {
             var tradeDataSourceJson = PortalDb.TradeAccounts.Where(p => p.Code == objTradeAccount.accountNumber).Select(p => p.UniVerseDataSources).Single();
 
-            var result = PortalDb.FetchEORINumber(objTradeAccount.accountNumber);
+            var result = await PortalDb.FetchEORINumber(objTradeAccount.accountNumber);
 
             if (result != null)
             {
@@ -3518,6 +3518,14 @@ namespace Portal.Controllers
         public IHttpActionResult TradeAccountPreBasketNotifications([FromBody] PassTradeAccountID objTradeAccountId)
         {
             return Ok(PortalDb.BasketTradeAccountCheck(objTradeAccountId));
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> DeleteBasketSplitDeliveryService([FromBody] PassBasketSplit objBasketSplit)
+        {
+            _ = await PortalDb.DeleteBasketSplitDeliveryService(objBasketSplit);
+
+            return Ok(new { });
         }
     }
 

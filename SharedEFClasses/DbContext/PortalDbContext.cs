@@ -10,6 +10,7 @@ using SharedEFClasses.Models.Maintenance;
 using SharedEFClasses.Models.Marketing;
 using SharedEFClasses.Models.Mertexer;
 using SharedEFClasses.Models.Orders;
+using SharedEFClasses.Models.Press;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.Retail;
 using SharedEFClasses.Models.Samples;
@@ -510,6 +511,8 @@ namespace SharedEFClasses.Models
         public DbSet<SyncAction> SyncActions { get; set; }
 
         public DbSet<RetailStoreMember> RetailStoreMembers { get; set; }
+
+        public DbSet<PressContact> PressContacts { get; set; }
 
         #endregion
 

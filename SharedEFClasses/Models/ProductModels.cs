@@ -1499,7 +1499,6 @@ namespace SharedEFClasses.Models.Products
     {
         public int BasketID { get; set; }
         public string BasketSplitID { get; set; }
-        public string HaulierCode { get; set; }
     }
 
     public class DeliveryServicesRefreshResult

@@ -2777,8 +2777,7 @@ namespace SharedEFClasses.Models
             var parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@BasketID", objOptions.BasketID),
-                new SqlParameter("@BasketSplitID", objOptions.BasketSplitID),
-                new SqlParameter("@HaulierCode", objOptions.HaulierCode)
+                new SqlParameter("@BasketSplitID", objOptions.BasketSplitID)
             };
 
             // Create a SQL command to execute the sproc
@@ -3820,6 +3819,15 @@ namespace SharedEFClasses.Models
                 r.Name = (string)row.Name;
                 return r;
             });
+        }
+
+        public async Task<int> DeleteBasketSplitDeliveryService(PassBasketSplit objBasketSplit)
+        {
+            return await this.Database.Connection.QuerySingleAsync<int>("[portal].[Basket_DeliveryService_Delete]", new
+            {
+                objBasketSplit.BasketID,
+                objBasketSplit.BasketSplitID
+            }, null, 30, CommandType.StoredProcedure);
         }
     }
 }

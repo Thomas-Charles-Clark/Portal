@@ -814,6 +814,9 @@
                             <!-- ko if: $parentContext.$parentContext.$parent.phase() == ORDERFACTORY_PHASE_DISPATCH -->
                             <a href="javascript:;" data-bind="click: $parent.showDeliveryOptions, css: { 'red-text': !isValid() }, attr: { title: `(${services().length})` }">Change</a>
                             <!-- /ko -->
+                            <!-- ko if: $parentContext.$parentContext.$parent.phase() == ORDERFACTORY_PHASE_DISPATCH -->
+                            <a href="javascript:;" data-bind="click: $parent.resetDeliveryOptions">Reset</a>
+                            <!-- /ko -->
                         </dd>
                         <dt>
                             From:

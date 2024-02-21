@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+﻿using Dapper;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Newtonsoft.Json;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Components;
@@ -21,6 +22,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
 using System.Xml.Linq;
@@ -29,16 +31,24 @@ namespace SharedEFClasses.Models
 {
     public partial class PortalDbContext : IdentityDbContext<Member, Role, int, Member_Login, Member_Role, Member_Claim>
     {
-        public List<ProductCode_Autocomplete_Samples_Result> ProductCode_Autocomplete_Samples(PassProductCodeAutoComplete objAutocomplete)
+        public async Task<IEnumerable<ProductCode_Autocomplete_Samples_Result>> ProductCode_Autocomplete_Samples(PassProductCodeAutoComplete objAutocomplete)
         {
             try
             {
-                SqlParameter term = new SqlParameter("@Term", objAutocomplete.term);
-                SqlParameter priceListId = new SqlParameter("@PriceListID", objAutocomplete.tradePriceListId);
-                SqlParameter exactlyRRP = new SqlParameter("@ExactlyRRP", objAutocomplete.exactlyRRP ?? (object)DBNull.Value);
-                SqlParameter lessThanRRP = new SqlParameter("@LessThanRRP", objAutocomplete.lessThanRRP ?? (object)DBNull.Value);
-                SqlParameter productTypeId = new SqlParameter("@ProductTypeID", objAutocomplete.productTypeId ?? (object)DBNull.Value);
-                var results = this.Database.SqlQuery<ProductCode_Autocomplete_Samples_Result>("portal.ProductCode_Autocomplete_Samples @Term, @PriceListID, @ExactlyRRP, @LessThanRRP, @ProductTypeID", term, priceListId, exactlyRRP, lessThanRRP, productTypeId).ToList();
+                var results = await this.Database.Connection.QueryAsync<ProductCode_Autocomplete_Samples_Result>(
+                    "portal.ProductCode_Autocomplete_Samples",
+                    new {
+                        Term = objAutocomplete.term,
+                        TradePriceListID = objAutocomplete.tradePriceListId,
+                        ExactlyRRP = objAutocomplete.exactlyRRP,
+                        LessThanRRP = objAutocomplete.lessThanRRP,
+                        ProductTypeID = objAutocomplete.productTypeId,
+                        ArchitectFolder = objAutocomplete.architectFolder
+                    },
+                    null,
+                    null,
+                    CommandType.StoredProcedure);
+
                 return results;
             }
             catch (SqlException e)

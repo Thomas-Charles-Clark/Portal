@@ -172,9 +172,10 @@ namespace Portal.EU_EORI_Lookup {
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
     [System.SerializableAttribute()]
+    [XmlRoot("result")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://eori.ws.eos.dds.s/")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://eori.ws.eos.dds.s/")]
     public partial class eoriResponse {
         
         private string eoriField;

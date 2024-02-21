@@ -16284,7 +16284,7 @@ var bespokeArchitectFolderFactory = function (parent) {
                     data: data,
                     success: function (data) {
                         console.log('bespokeArchitectFolderFactory fabricSearchAutocomplete returned', data)
-                        data = data.filter(d => d.ItemTypeID == 49 || d.ItemTypeID == 80); // PLF & WOF
+                        //data = data.filter(d => d.ItemTypeID == 49 || d.ItemTypeID == 80); // PLF & WOF
                         self.fabricAutocompleteResults($.map(data, function (p) {
                             return {
                                 productId: p.ProductID,
@@ -18871,19 +18871,66 @@ var dispatchFactory = function (parent) {
     self.refreshServicesList = function (haulierCode, onComplete) {
         var data = {
             basketId: self.parent.basketId(),
-            basketSplitId: self.selectedOrder().deliveryGroup.basketSplitId,
-            haulierCode: haulierCode
+            basketSplitId: self.selectedOrder().deliveryGroup.basketSplitId
         };
         console.log('a) dispatchFactory refreshServicesList calling with', data);
+
+        // The problem: we have switched from Customer Paying for Transport (within a UPS haulier)
+        // to Designers Guild paying for transport (which being the case means UPS is no longer an available haulier!)
+        // The solution:
+        // if the current haulier of concern is not returned in the response here, we must rebuild the set of availabler hauliers
+        // for the basketSplit -- and adopt as selected the default selected WAIT there isn't one so we need to perform the
+        // complete despatch generate again argh
+
+        /*
+             698851
+
+             go to Basket
+
+            DELETE FROM portal.Basket_DeliveryService WHERE BasketID = 698851
+
+            go to Despatch
+
+            Change
+
+            UPS
+
+            Designers Guild
+
+            PROBLEMS!!!
+        
+        */
+
         $.ajax({
             url: '/api/componentapi/RefreshDeliveryServicesList',
             type: 'POST',
             dataType: 'json',
             data: data,
-            success: function (data) {
-                console.log('a) dispatchFactory refreshServicesList returned', data);
-                if (typeof onComplete === 'function')
-                    onComplete(data);
+            success: function (results) {
+                console.log('a) dispatchFactory refreshServicesList returned', results);
+
+                let proceed = true;
+
+                if (data.basketSplitId) {
+                    if (!results.DeliveryServices.find(r => r.HaulierCode == self.selectedOrder().deliveryService().HaulierCode)) {
+                        // Uh-oh, need to reload the whole kaboodle
+                        proceed = false;
+                        $.info("Notice", "Your change necessitates reloading of the Despatch stage. Please check your delivery configuration carefully once the reload has completed.",
+                            null,
+                            () => {
+                                self.reset();
+                                self.busy(true);
+                                $("#delivery-services-modal").modal("hide");
+                                self.fetchDispatchInfo(null, function () {
+                                    self.parent.fetchBasket(null, false, false);
+                                });
+                            }
+                        );
+                    }
+                }
+                if (proceed && typeof onComplete === 'function') {
+                    onComplete(results);
+                }
             },
             error: function (xhr, s, a) {
                 self.busy(false);
@@ -20752,6 +20799,37 @@ var dispatchFactory = function (parent) {
             self.selectedService().discounter.load();
         }, 300);
         $('#delivery-services-modal').modal('show');
+    }
+
+    self.resetDeliveryOptions = (basketSplit) => {
+        let data = {
+            basketId: self.parent.basketId(),
+            basketSplitId: basketSplit.deliveryService().BasketSplitID
+        }
+
+        $.confirm("Are you sure?", "This will return this Delivery Group to its default configuration.", () => {
+
+            self.busy(true);
+
+            $.ajax({
+                url: "/api/componentapi/DeleteBasketSplitDeliveryService",
+                type: 'POST',
+                dataType: 'json',
+                data: data,
+                success: function (data) {
+                    self.reset();
+                    self.fetchDispatchInfo(null, function () {
+                        self.parent.fetchBasket(null, false, false);
+                    });
+                },
+                errors: function (xhr, s, a) {
+                    self.busy(false);
+                    self.parent.busy(false);
+                    self.busyMessage(undefined);
+                    $.showError(xhr, s, a);
+                }
+            });
+        });
     }
 
     self.closeDeliveryOption = function () {
