@@ -14,8 +14,12 @@ namespace Portal.VAT_Lookup {
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
     [System.Runtime.Serialization.DataContractAttribute(Name="matchCode", Namespace="urn:ec.europa.eu:taxud:vies:services:checkVat:types")]
-    public enum matchCode : int {
-        
+    public enum matchCode : int
+    {
+
+        [System.Runtime.Serialization.EnumMemberAttribute(Value = "0")]
+        _0 = 0,
+
         [System.Runtime.Serialization.EnumMemberAttribute(Value="1")]
         _1 = 0,
         

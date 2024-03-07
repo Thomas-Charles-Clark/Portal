@@ -163,6 +163,8 @@ namespace SharedEFClasses.Models.Components
         public string FreeStock { get; set; }
         public decimal? FreeStockValue { get; set; }
         public string Units { get; set; }
+        public DateTime? CuttingAvailabilityDate { get; set; }
+        public string CuttingAvailabilityMessage { get; set; }
     }
 
     public class ProductCode_Autocomplete_AlternativesReturn

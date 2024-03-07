@@ -383,59 +383,61 @@ const virtualScrollingDeferredDataFactory = ({
                         urpids.forEach(stub => {
 
                             //console.log(virtualScrollingDeferredDataFactory stub);
-
-                            let record = records.find(p => p[self.secondaryFetchQueueRecordId] == stub[self.secondaryFetchQueueRecordId]);
+                            
                             // if record is null here, we've fetched data for something which is no longer amongst our search results.
                             // this will readily cause chaos: remove it from the 'to be fetched' collection.
+                            records.filter(p => p[self.secondaryFetchQueueRecordId] == stub[self.secondaryFetchQueueRecordId])
+                                .forEach(record => {
 
-                            if (record != null) {
+                                    if (record != null) {
 
-                                //console.log('virtualScrollingDeferredDataFactory record found');
+                                        //console.log('virtualScrollingDeferredDataFactory record found');
 
-                                let dataResult = data[self.secondaryFetchResultSetName].find(p => p[self.secondaryFetchQueueRecordId] == stub[self.secondaryFetchQueueRecordId]);
+                                        let dataResult = data[self.secondaryFetchResultSetName].find(p => p[self.secondaryFetchQueueRecordId] == stub[self.secondaryFetchQueueRecordId]);
 
-                                let filledRecord = filledRecords.find(p => p[self.secondaryFetchQueueRecordId] == stub[self.secondaryFetchQueueRecordId]);
+                                        let filledRecord = filledRecords.find(p => p[self.secondaryFetchQueueRecordId] == stub[self.secondaryFetchQueueRecordId]);
 
-                                let add = filledRecord == null;
+                                        let add = filledRecord == null;
 
-                                if (dataResult) {
+                                        if (dataResult) {
 
-                                    if (filledRecord == null) {
-                                        filledRecord = record;
-                                        //record = impactSearchResult({
-                                        //    rec: record
-                                        //});
+                                            if (filledRecord == null) {
+                                                filledRecord = record;
+                                                //record = impactSearchResult({
+                                                //    rec: record
+                                                //});
+                                            } else {
+                                                add = false;
+                                                filledRecord.loaded(true);
+                                                record = filledRecord;
+                                            }
+
+                                            //let modelledRecord = self.primaryFetchResultFn(record);
+
+                                            //self.searchResults.replace(record, modelledRecord);
+
+                                            //record = modelledRecord;
+
+                                            self.secondaryFetchResultProcessingFunction.call(record, dataResult);
+
+                                            record.busy(false);
+
+                                            record.loaded(true);
+                                        } else {
+                                            record.loaded = ko.observable(true);
+                                            record.ErrorMessage = `<h5 class="mb-0">[portal].[ContractManagement_SalesData_Select] did not return a result for Product/Quality ${record.ProductID || record.QualityID}</h5>`;
+                                        }
+
+                                        if (add) {
+                                            affectedRecords.push(record);
+                                        }
                                     } else {
-                                        add = false;
-                                        filledRecord.loaded(true);
-                                        record = filledRecord;
+
+                                        console.log('virtualScrollingDeferredDataFactory RECORD NOT FOUND');
+
+                                        forcedRemovals.push(stub);
                                     }
-
-                                    //let modelledRecord = self.primaryFetchResultFn(record);
-
-                                    //self.searchResults.replace(record, modelledRecord);
-
-                                    //record = modelledRecord;
-
-                                    self.secondaryFetchResultProcessingFunction.call(record, dataResult);
-
-                                    record.busy(false);
-
-                                    record.loaded(true);
-                                } else {
-                                    record.loaded = ko.observable(true);
-                                    record.ErrorMessage = `<h5 class="mb-0">[portal].[ContractManagement_SalesData_Select] did not return a result for Product/Quality ${record.ProductID || record.QualityID}</h5>`;
-                                }
-
-                                if (add) {
-                                    affectedRecords.push(record);
-                                }
-                            } else {
-
-                                console.log('virtualScrollingDeferredDataFactory RECORD NOT FOUND');
-
-                                forcedRemovals.push(stub);
-                            }
+                                });
                         });
 
                         ko.ignoreDependencies(() => {

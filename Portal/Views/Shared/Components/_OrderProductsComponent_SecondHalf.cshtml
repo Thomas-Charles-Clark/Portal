@@ -4204,6 +4204,9 @@
                                         <!-- /ko -->
                                         <input type="checkbox" data-bind="checked: $parent.selectedFabricProductIds, checkedValue: productId" />
                                         <span data-bind="text: $data.value.CuttingProductID ? label : label + ' [Sample Not Available]'"></span>
+                                        <!-- ko if: value.CuttingAvailabilityMessage -->
+                                        <span data-bind="html: value.CuttingAvailabilityMessage"></span>
+                                        <!-- /ko -->
                                     </label>
                                 </li>
                             </ul>
@@ -4252,6 +4255,9 @@
                                         <span class="thumb"></span>
                                         <!-- /ko -->
                                         <span data-bind="text: label"></span>
+                                        <!-- ko if: value.CuttingAvailabilityMessage -->
+                                        <span data-bind="html: value.CuttingAvailabilityMessage"></span>
+                                        <!-- /ko -->
                                         <button type="button" class="close" aria-label="Close" data-bind="click: function (data) { $parent.removeFabric(data) }">
                                             <span aria-hidden="true">
                                                 &times;

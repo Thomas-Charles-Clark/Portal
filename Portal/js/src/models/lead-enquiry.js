@@ -2876,7 +2876,7 @@ This customer wishes their deliveries to be consolidated. Please double check th
 
                 self.availableCreditControllers(data);
                 window.setTimeout(function () {
-                    var defaultCreditController = Enumerable.From(self.availableCreditControllers()).Where("$.DefaultCreditController").SingleOrDefault();
+                    var defaultCreditController = Enumerable.From(self.availableCreditControllers()).Where("$.DefaultCreditController").FirstOrDefault();
                     if (defaultCreditController)
                         self.creditControllerFromList(defaultCreditController);
                 }, 0);

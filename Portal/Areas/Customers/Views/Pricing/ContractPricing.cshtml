@@ -356,13 +356,13 @@
                         css: { 'selected': `contract-levels-${contractLevels.flatMap(function (cl) { return cl.contracts.flatMap(function (c) { return c.contractListId }) }).reduce(function (a, i) { return a = a + i }, 0)}` == $root.selectedContractListId() },
                         click: $root.fetchImpact">
                     <span>
-                        <span data-bind="text: label, title: 'c'"></span>
+                        <span data-bind="text: displayLabel, title: 'c'"></span>
                         <span data-bind="text: `(${contractLevels.reduce((a, i) => a = a + i.contracts.length, 0)} deal${(contractLevels.reduce((a, i) => a = a + i.contracts.length, 0) > 1 ? 's' : '')})`"></span>
                         <span class="bold ms-3" data-bind="text: statusLabel"></span>
                     </span>
-                    <div class="ms-auto">
+                    <div class="ms-auto" data-bind="event: { 'mouseover': (d, e) => { e.currentTarget.parentNode.removeAttribute('data-bs-toggle'); }, 'mouseout': (d, e) => { e.currentTarget.parentNode.setAttribute('data-bs-toggle', 'collapse'); } }">
                         <a href="javascript:;" data-bind="click: $root.editContractPrice">Edit</a>
-                        <a href="javascript:;">Delete</a>
+                        <a href="javascript:;" data-bind="click: $root.deleteDateRange">Delete</a>
                     </div>
                 </div>
             </div>
@@ -614,7 +614,7 @@
                         Cancel
                     </button>
                     <button class="btn btn-primary" data-bind="click: save">
-                        Save
+                        Proceed
                     </button>
                 </div>
             </div>

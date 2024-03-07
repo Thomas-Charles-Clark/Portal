@@ -2663,6 +2663,8 @@ namespace Portal.Controllers
         {
             try
             {
+                throw new Exception("TEST EXCEPTION");
+
                 var response = Portal.Utilities.EU_EORI_Lookup.Validate(objEORINumber.eoriNumber);
 
                 return Ok(new
@@ -2674,6 +2676,20 @@ namespace Portal.Controllers
             catch (Exception ex)
             {
                 PortalFramework.LogErrorToDatabase(ex, User.Identity.GetUserId<int>());
+
+                // market, customer no., name, eori, basketid
+                System.Threading.Tasks.Task.Run(() =>
+                {
+                    PortalDb.QueueAndSendEmail("itsupport@designersguild.com", "EORI Number Validation Skipped", $@"<p>
+    An exception was raised while attempting to validate an EU EORI Number.
+</p>
+<p><strong>Basket ID: </strong>{objEORINumber.basketId}</p>
+<p><strong>Customer: </strong>{objEORINumber.tradeAccountLabel}</p>
+<p><strong>Market: </strong>{objEORINumber.market}</p>
+<p><strong>EORI: </strong>{objEORINumber.eoriNumber}</p>
+<p>Please check the EORI number manually if you can.</p>
+<p>The user has been allowed to proceed with the basket and might have already submitted it to Mertex.</p>", 0);
+                });
 
                 var exceptionResult = new HttpResponseMessage(HttpStatusCode.InternalServerError)
                 {
@@ -2722,6 +2738,22 @@ namespace Portal.Controllers
             }
             catch (Exception)
             {
+                // market, customer no., name, eori, basketid
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                System.Threading.Tasks.Task.Run(() =>
+                {
+                    PortalDb.QueueAndSendEmail("itsupport@designersguild.com", "EORI Number Validation Skipped", $@"<p>
+    An exception was raised while attempting to validate an GB EORI Number.
+</p>
+<p><strong>Basket ID: </strong>{objEORINumber.basketId}</p>
+<p><strong>Customer: </strong>{objEORINumber.tradeAccountLabel}</p>
+<p><strong>Market: </strong>{objEORINumber.market}</p>
+<p><strong>EORI: </strong>{objEORINumber.eoriNumber}</p>
+<p>Please check the EORI number manually if you can.</p>
+<p>The user has been allowed to proceed with the basket and might have already submitted it to Mertex.</p>", 0);
+                });
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+
                 return Ok(new
                 {
                     valid = false,

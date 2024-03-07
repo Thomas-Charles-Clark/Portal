@@ -1808,6 +1808,9 @@ namespace SharedEFClasses.Models.TradeAccounts
 
     public class PassEORINumber
     {
+        public string tradeAccountLabel { get; set; }
+        public string market { get; set; }
+        public long basketId { get; set; }
         public string eoriNumber { get; set; }
     }
 

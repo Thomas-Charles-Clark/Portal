@@ -1117,8 +1117,13 @@ const contractPricingViewModel = ({ } = {}) => {
     }
 
     self.editContractPrice = (dateRangeRecord, event) => {
-        self.contractPricingEditor.load(dateRangeRecord);
         event.preventDefault();
+        event.stopPropagation();
+        self.contractPricingEditor.load(dateRangeRecord);
+    }
+
+    self.deleteDateRange = (dateRangeRecord, event) => {
+        window.showInfo("Notice", "To delete a Date Range, you must choose to Edit, manually remove all price alterations, and save. This is a precaution against accidental deletion.");
     }
 
     //#endregion
@@ -1201,10 +1206,10 @@ const contractPricingViewModel = ({ } = {}) => {
                     }
 
                     if (data.TradeAccountGroupContractJSON) {
-                        self.tradeAccountGroupContractJSON(data.TradeAccountContractJSON);
+                        self.tradeAccountGroupContractJson(data.TradeAccountContractJSON);
                         let parsedResult = JSON.parse(data.TradeAccountGroupContractJSON);
                         parsedResult.dateRanges = parsedResult.dateRanges.map(dr => dateRangeRecord({
-                            singleOrGroupAccount: "groupsa",
+                            singleOrGroupAccount: "group",
                             rec: dr,
                             allContractsComputed: self.allContracts
                         }));
@@ -1618,7 +1623,20 @@ const dateRangeRecord = ({
 
     //#region Computeds
 
+    self.displayLabel = ko.computed(() => {
+        if (self.onDate && self.offDate) {
 
+            let on = new Date(self.onDate);
+            let off = new Date(self.offDate);
+
+            let from = new moment(on);
+            let to = new moment(off);
+            
+            let duration = Math.floor(new Date(off.getTime() - on.getTime()).getTime() / 24 / 60 / 60 / 1000);
+
+            return `${from.format("dddd Do MMM 'YY")} to ${to.format("dddd Do MMM 'YY")} (${duration} day${duration > 1 ? "s" : ""})`;
+        }
+    }, self);
 
     //#endregion
 
@@ -1782,7 +1800,15 @@ const dateRangeEditor = ({
         }
     });
 
-    self.endDate = ko.observable(endDate);
+    self.endDate = ko.observable(endDate).extend({
+        required: {
+            params: true,
+            onlyIf: () => {
+                return self.validateNow();
+            },
+            message: "You must provide an End Date"
+        }
+    });
 
     self.modalElement = document.getElementById("new-date-range-modal");
 
@@ -1914,12 +1940,46 @@ const dateRangeEditor = ({
         self.endDate
     ]);
 
+    self.errorables = ko.observableArray([
+        self.startDate,
+        self.endDate
+    ]);
+
     //#endregion
 
     //#region Computeds
 
     self.modalTitle = ko.computed(() => {
-        return `${self.parent.tradeAccount() && self.parent.tradeAccount().ShortLabel}<br/>New Contract Pricing Date Range`;
+        if (self.parent.hasOwnProperty("tradeAccount")) {
+            return `${self.parent.tradeAccount() && self.parent.tradeAccount().ShortLabel}<br/>New Contract Pricing Date Range`;
+        } else {
+            return null;
+        }
+    }, self);
+
+    self.displayLabel = ko.computed(() => {
+        if (self.startDate() && self.endDate()) {
+
+            let on = new Date(self.startDate());
+            let off = new Date(self.endDate());
+
+            let from = new moment(on);
+            let to = new moment(off);
+
+            let duration = Math.floor(new Date(off.getTime() - on.getTime()).getTime() / 24 / 60 / 60 / 1000);
+
+            return `${from.format("dddd Do MMM 'YY")} to ${to.format("dddd Do MMM 'YY")} (${duration} day${duration > 1 ? "s" : ""})`;
+        }
+    }, self);
+
+    self.errorSummaryMessage = ko.computed(() => {
+        //console.trace();
+        let result = self.errors().join('. ');
+
+        if (result != "")
+            result = `${result}.`
+
+        return result
     }, self);
 
     //#endregion
@@ -1933,15 +1993,18 @@ const dateRangeEditor = ({
                 self.endDate(undefined);
             }
 
+            let oneDayMilliseconds = 1000 * 60 * 60 * 24;
+
             self.endDate.tempusDominus.updateOptions({
                 restrictions: {
-                    minDate: new Date(nv.getDate() + 1)
+                    minDate: new Date(nv.getTime() + oneDayMilliseconds)
                 }
             });
         } else {
 
             self.endDate.tempusDominus.updateOptions({
                 restrictions: {
+                    minDate: undefined
                 }
             });
         }
@@ -1954,15 +2017,17 @@ const dateRangeEditor = ({
                 self.startDate(undefined);
             }
 
+            let oneDayMilliseconds = 1000 * 60 * 60 * 24;
+
             self.startDate.tempusDominus.updateOptions({
                 restrictions: {
-                    maxDate: new Date(nv.getDate() - 1)
+                    maxDate: new Date(nv.getTime() - oneDayMilliseconds)
                 }
             });
         } else {
             self.startDate.tempusDominus.updateOptions({
                 restrictions: {
-
+                    maxDate: undefined
                 }
             });
         }
@@ -1986,6 +2051,8 @@ const dateRangeEditor = ({
 
     self.reset = () => {
 
+        self.busy(false);
+
         self.validateNow(false);
 
         self.startDate(undefined);
@@ -2001,6 +2068,36 @@ const dateRangeEditor = ({
         });
     }
 
+    self.load = ({
+        startDate,
+        endDate
+    } = {
+        startDate: new Date(),
+        endDate: new Date()
+    }) => {
+        self.validateNow(false);
+
+        self.startDate.tempusDominus.updateOptions({
+            restrictions: {
+                maxDate: undefined
+            }
+        });
+
+        self.endDate.tempusDominus.updateOptions({
+            restrictions: {
+                minDate: undefined
+            }
+        });
+
+        self.startDate(new Date(startDate));
+
+        self.startDateParams.originalValue = self.startDate();
+
+        self.endDate(new Date(endDate));
+
+        self.endDateParams.originalValue = self.endDate();
+    }
+
     self.save = () => {
         self.validateNow(true);
 
@@ -2013,8 +2110,8 @@ const dateRangeEditor = ({
                 self.busy(true);
 
                 let data = {
-                    onDate: self.startDate() ? self.startDate().toJSON() : null,
-                    offDate: self.endDate() ? self.endDate().toJSON() : null,
+                    onDate: self.startDate(),
+                    offDate: self.endDate(),
                     contractDiscounts: [],
                     contractPrices: []
                 };
@@ -2029,44 +2126,74 @@ const dateRangeEditor = ({
                     default: break;
                 }
 
-                console.log("ContractPricingMerge calling with", data);
+                let from = new moment(data.onDate);
+                let to = new moment(data.offDate);
 
-                fetch("/api/ContractPricing/ContractPricingMerge", {
-                    method: "POST",
-                    headers: window.fetchHeaders,
-                    body: JSON.stringify(data)
-                })
-                    .then(window.handleFetchResponse)
-                    .then(data => {
+                let duration = Math.floor(new Date(data.offDate.getTime() - data.onDate.getTime()).getTime() / 24 / 60 / 60 / 1000);
 
-                        if (data.ErrorMessage) {
-                            window.showError("Oops", data.ErrorMessage);
-                        } else {
-                            window.showInfo("Success", "Date Range created successfully.");
+                let drr = dateRangeRecord({
+                    singleOrGroupAccount: self.singleOrGroupAccount,
+                    rec: {
+                        onDate: data.onDate,
+                        offDate: data.offDate,
+                        statusLabel: `New`,
+                        label: `${from.format("dddd Do MMM Y'Y")} to ${to.format("dddd Do MMM 'YY")} (${duration} day${duration > 1 ? "s" : ""})`,
+                        contractLevels: []
+                    }
+                });
 
-                            self.reset();
+                self.parent.editContractPrice(drr, new Event("meow"));
 
-                            self.hideModal();
+                self.busy(false);
 
-                            self.parent.tradeAccountId.valueHasMutated();
-                        }
+                self.hideModal();
 
-                        self.busy(false);
-                    })
-                    .catch(err => {
-                        self.reset();
+                //console.log("ContractPricingMerge calling with", data);
 
-                        self.hideModal();
+                //fetch("/api/ContractPricing/ContractPricingMerge", {
+                //    method: "POST",
+                //    headers: window.fetchHeaders,
+                //    body: JSON.stringify(data)
+                //})
+                //    .then(window.handleFetchResponse)
+                //    .then(data => {
 
-                        self.busy(false);
-                        window.catchFetchError(err);
-                    })
+                //        if (data.ErrorMessage) {
+                //            window.showError("Oops", data.ErrorMessage);
+                //        } else {
+                //            window.showInfo("Success", "Date Range created successfully.");
+
+                //            self.reset();
+
+                //            self.hideModal();
+
+                //            self.parent.tradeAccountId.valueHasMutated();
+                //        }
+
+                //        self.busy(false);
+                //    })
+                //    .catch(err => {
+                //        self.reset();
+
+                //        self.hideModal();
+
+                //        self.busy(false);
+                //        window.catchFetchError(err);
+                //    })
             }
         }, 0);
     }
 
     //#endregion
 
+    //#region Events
+
+    self.modalElement.addEventListener("bs.modal.hidden", (e) => {
+        self.reset();
+    });
+
+    //#endregion
+    
     return self;
 }
 
@@ -2094,6 +2221,13 @@ const contractPricingEditor = ({
     //#endregion
 
     //#region Components
+
+    self.dateRangeEditor = dateRangeEditor({
+        parent: self,
+        startDate: self.onDate,
+        endDate: self.offDate,
+        singleOrGroupAccount: "moot"
+    });
 
     self.modalElement = document.getElementById("contract-pricing-modal");
 
@@ -2170,21 +2304,112 @@ const contractPricingEditor = ({
 
     self.errorableComputer = ko.computed(() => {
         //console.trace();
+        let dre = self.dateRangeEditor.errorables();
         let pgitee = self.productGroupItemTypeEditor.errorables();
         let qee = self.qualityEditor.errorables();
         let pee = self.productEditor.errorables();
 
-        self.errorables(pgitee.concat(qee).concat(pee));
+        self.errorables(dre.concat(pgitee.concat(qee).concat(pee)));
     }, self);
 
     self.modalTitle = ko.computed(() => {
-        //console.trace();
-        return `<span class="me-5">${self.parent.tradeAccount() && self.parent.tradeAccount().ShortLabel}</span><span>${self.editingRecord() && self.editingRecord().label}</span>`;
+        return self.parent.tradeAccount() && self.parent.tradeAccount().ShortLabel;
     }, self);
 
     self.unsavedChanges = ko.computed(() => {
         //console.trace();
         return self.loadedJson() && self.loadedJson() != self.toJson();
+    }, self);
+
+    self.getContractDiscounts = ko.computed(() => {
+        return self.productGroupItemTypeEditor.productGroupAllFabric.brands.flatMap(b => b.checked() ? {
+            productId: null,
+            qualityId: null,
+            brandId: b.BrandID,
+            productGroupId: self.productGroupItemTypeEditor.productGroupAllFabric.productGroupId,
+            itemTypeId: null,
+            quantityBreak: null,
+            discount: self.productGroupItemTypeEditor.productGroupAllFabric.discounter.percentage.observable()
+        } : [])
+            .concat(self.productGroupItemTypeEditor.productGroupAllWallpaper.brands.flatMap(b => b.checked() ? {
+                productId: null,
+                qualityId: null,
+                brandId: b.BrandID,
+                productGroupId: self.productGroupItemTypeEditor.productGroupAllWallpaper.productGroupId,
+                itemTypeId: null,
+                quantityBreak: null,
+                discount: self.productGroupItemTypeEditor.productGroupAllWallpaper.discounter.percentage.observable()
+            } : []))
+            .concat(self.productGroupItemTypeEditor.productGroupAllPatternBooks.brands.flatMap(b => b.checked() ? {
+                productId: null,
+                qualityId: null,
+                brandId: b.BrandID,
+                productGroupId: self.productGroupItemTypeEditor.productGroupAllPatternBooks.productGroupId,
+                itemTypeId: null,
+                quantityBreak: null,
+                discount: self.productGroupItemTypeEditor.productGroupAllPatternBooks.discounter.percentage.observable()
+            } : []))
+            .concat(self.productGroupItemTypeEditor.productGroupAllRugs.brands.flatMap(b => b.checked() ? {
+                productId: null,
+                qualityId: null,
+                brandId: b.BrandID,
+                productGroupId: self.productGroupItemTypeEditor.productGroupAllRugs.productGroupId,
+                itemTypeId: null,
+                quantityBreak: null,
+                discount: self.productGroupItemTypeEditor.productGroupAllRugs.discounter.percentage.observable()
+            } : []))
+            .concat(self.productGroupItemTypeEditor.itemTypes.flatMap(it => it.brands.flatMap(b => {
+                return b.checked() ? [{
+                    productId: null,
+                    qualityId: null,
+                    brandId: b.BrandID,
+                    productGroupId: it.productGroupId,
+                    itemTypeId: it.itemTypeId,
+                    quantityBreak: null,
+                    discount: it.discounter.percentage.observable()
+                }] : []
+            })))
+    }, self);
+
+    self.getContractPrices = ko.computed(() => {
+        return self.qualityEditor.selectedQualities().flatMap(q => {
+            return q.quantityBreaks().flatMap(qb => {
+                return {
+                    productId: null,
+                    qualityId: q.QualityID,
+                    brandId: null,
+                    productGroupId: null,
+                    itemTypeId: null,
+                    quantityBreak: qb.quantityBreak(),
+                    price: qb.discounter.monetary.observable()
+                }
+            })
+        }).concat(self.productEditor.selectedQualities().flatMap(p => {
+            return p.quantityBreaks().flatMap(qb => {
+                return {
+                    productId: p.ProductID,
+                    qualityId: null,
+                    brandId: null,
+                    productGroupId: null,
+                    itemTypeId: null,
+                    quantityBreak: qb.quantityBreak(),
+                    price: qb.discounter.monetary.observable()
+                }
+            })
+        }));
+    }, self);
+
+    self.discountCount = ko.computed(() => {
+        return self.getContractDiscounts().length + self.getContractPrices().length;
+    }, self);
+
+    self.discountSummaryMessage = ko.computed(() => {
+        let count = self.discountCount();
+
+        if (count) {
+            return `${count} Pricing alteration${count > 1 ? "s" : ""} specified for this Date Range`
+        }
+
     }, self);
 
     //#endregion
@@ -2211,15 +2436,42 @@ const contractPricingEditor = ({
 
             self.editingRecord(dateRangeRecord);
 
+            self.dateRangeEditor.load({
+                startDate: dateRangeRecord.onDate,
+                endDate: dateRangeRecord.offDate
+            });
+
             let extant = dateRangeRecord.contractLevels.filter(cl => cl.contracts.length);
 
             extant.forEach(e => {
                 switch (e.label) {
                     case "Product Group":
                         e.contracts.forEach(c => {
-                            let b = self.productGroupItemTypeEditor.productGroupAllFabric.brands.find(b => b.BrandID == c.brandId);
-                            b.checked(true);
-                            self.productGroupItemTypeEditor.productGroupAllFabric.discounter.percentage.observable(c.value);
+
+                            let productGroupItemType = null;
+                            
+                            switch (c.productGroupId) {
+                                case 8:
+                                    productGroupItemType = self.productGroupItemTypeEditor.productGroupAllFabric;
+                                    break;
+                                case 16:
+                                    productGroupItemType = self.productGroupItemTypeEditor.productGroupAllWallpaper;
+                                    break;
+                                case 17:
+                                    productGroupItemType = self.productGroupItemTypeEditor.productGroupAllPatternBooks;
+                                    break;
+                                case 27:
+                                    productGroupItemType = self.productGroupItemTypeEditor.productGroupAllRugs;
+                                    break;
+                                default: break;
+                            }
+
+                            let brand = productGroupItemType.brands.find(b => b.BrandID == c.brandId);
+
+                            brand.checked(true);
+
+                            productGroupItemType.discounter.percentage.observable(c.value);
+
                         });
                         break;
                     case "Item Type":
@@ -2327,6 +2579,7 @@ const contractPricingEditor = ({
     }
 
     self.save = () => {
+        self.dateRangeEditor.validateNow(true);
         self.productGroupItemTypeEditor.validateNow(true);
         self.qualityEditor.validateNow(true);
         self.productEditor.validateNow(true);
@@ -2338,142 +2591,71 @@ const contractPricingEditor = ({
                     x.isValid.notifySubscribers(x.isValid())
                 });
             } else {
-                //window.showInfo("Save", "Validation passed, go ahead and save...");
-
-                self.busy(true);
-
-                let data = {
-                    onDate: self.editingRecord().onDate,
-                    offDate: self.editingRecord().offDate,
-                    contractDiscounts: self.productGroupItemTypeEditor.productGroupAllFabric.brands.flatMap(b => b.checked() ? {
-                        productId: null,
-                        qualityId: null,
-                        brandId: b.BrandID,
-                        productGroupId: self.productGroupItemTypeEditor.productGroupAllFabric.productGroupId,
-                        itemTypeId: null,
-                        quantityBreak: null,
-                        discount: self.productGroupItemTypeEditor.productGroupAllFabric.discounter.percentage.observable()
-                    } : [])
-                        .concat(self.productGroupItemTypeEditor.productGroupAllWallpaper.brands.flatMap(b => b.checked() ? {
-                            productId: null,
-                            qualityId: null,
-                            brandId: b.BrandID,
-                            productGroupId: self.productGroupItemTypeEditor.productGroupAllWallpaper.productGroupId,
-                            itemTypeId: null,
-                            quantityBreak: null,
-                            discount: self.productGroupItemTypeEditor.productGroupAllWallpaper.discounter.percentage.observable()
-                        } : []))
-                        .concat(self.productGroupItemTypeEditor.productGroupAllPatternBooks.brands.flatMap(b => b.checked() ? {
-                            productId: null,
-                            qualityId: null,
-                            brandId: b.BrandID,
-                            productGroupId: self.productGroupItemTypeEditor.productGroupAllPatternBooks.productGroupId,
-                            itemTypeId: null,
-                            quantityBreak: null,
-                            discount: self.productGroupItemTypeEditor.productGroupAllPatternBooks.discounter.percentage.observable()
-                        } : []))
-                        .concat(self.productGroupItemTypeEditor.productGroupAllRugs.brands.flatMap(b => b.checked() ? {
-                            productId: null,
-                            qualityId: null,
-                            brandId: b.BrandID,
-                            productGroupId: self.productGroupItemTypeEditor.productGroupAllRugs.productGroupId,
-                            itemTypeId: null,
-                            quantityBreak: null,
-                            discount: self.productGroupItemTypeEditor.productGroupAllRugs.discounter.percentage.observable()
-                        } : []))
-                        .concat(self.productGroupItemTypeEditor.itemTypes.flatMap(it => it.brands.flatMap(b => {
-                            return b.checked() ? [{
-                                productId: null,
-                                qualityId: null,
-                                brandId: b.BrandID,
-                                productGroupId: it.productGroupId,
-                                itemTypeId: it.itemTypeId,
-                                quantityBreak: null,
-                                discount: it.discounter.percentage.observable()
-                            }] : []
-                        }))),
-                    contractPrices: self.qualityEditor.selectedQualities().flatMap(q => {
-                        return q.quantityBreaks().flatMap(qb => {
-                            return {
-                                productId: null,
-                                qualityId: q.QualityID,
-                                brandId: null,
-                                productGroupId: null,
-                                itemTypeId: null,
-                                quantityBreak: qb.quantityBreak(),
-                                price: qb.discounter.monetary.observable()
-                            }
-                        })
-                    }).concat(self.productEditor.selectedQualities().flatMap(p => {
-                        return p.quantityBreaks().flatMap(qb => {
-                            return {
-                                productId: p.ProductID,
-                                qualityId: null,
-                                brandId: null,
-                                productGroupId: null,
-                                itemTypeId: null,
-                                quantityBreak: qb.quantityBreak(),
-                                price: qb.discounter.monetary.observable()
-                            }
-                        })
-                    }))
-                };
-
-                /* 
-                .concat(self.productGroupItemTypeEditor.itemTypes.filter(it => it.brands.find(b => b.checked())).flatMap(it => {
-                            return it.quantityBreaks.flatMap(qb => {
-                                it.brands.filter(b => b.checked()).flatMap(b => {
-                                    return {
-                                        productId: null,
-                                        qualityId: null,
-                                        brandId: b.BrandID,
-                                        itemTypeId: it.ItemTypeID,
-                                        productGroupId: it.ProductGroupID,
-                                        quantityBreak: qb.quantityBreak(),
-                                        discount: qb.discounter.percentage()
-                                    }
-                                })
-                            }))
-                */
-
-                switch (self.editingRecord().singleOrGroupAccount) {
-                    case "single":
-                        data.tradeAccountId = self.parent.tradeAccount().TradeAccountID
-                        break;
-                    case "group":
-                        data.tradeAccountGroupId = self.parent.tradeAccount().TradeAccountGroupID
-                        break;
-                    default: break;
+                
+                if (self.discountCount() == 0) {
+                    window.showInfo("Notice", "No pricing alterations have been specified. This date range will be removed.", () => {
+                        self.merge(true);
+                    })
+                } else {
+                    self.merge(false);
                 }
-
-                console.log("ContractPricingMerge calling with", data);
-
-                fetch("/api/ContractPricing/ContractPricingMerge", {
-                    method: "POST",
-                    headers: window.fetchHeaders,
-                    body: JSON.stringify(data)
-                })
-                    .then(window.handleFetchResponse)
-                    .then(data => {
-
-                        if (data.ErrorMessage) {
-                            window.showError("Oops", data.ErrorMessage);
-                        } else {
-                            window.showInfo("Success", "Configuration saved successfully.", () => {
-                                self.reset();
-                                self.parent.tradeAccountId.valueHasMutated();
-                                self.parent.clearImpact();
-                            });
-                        }
-
-                        self.busy(false);
-                    })
-                    .catch(err => {
-                        self.busy(false);
-                        window.catchFetchError(err);
-                    })
             }
         }, 0);
+    }
+
+    self.merge = (empty) => {
+
+        self.busy(true);
+
+        let data = {
+            onDate: self.editingRecord().onDate,
+            offDate: self.editingRecord().offDate,
+            contractDiscounts: self.getContractDiscounts(),
+            contractPrices: self.getContractPrices()
+        };
+
+        switch (self.editingRecord().singleOrGroupAccount) {
+            case "single":
+                data.tradeAccountId = self.parent.tradeAccount().TradeAccountID
+                break;
+            case "group":
+                data.tradeAccountGroupId = self.parent.tradeAccount().TradeAccountGroupID
+                break;
+            default: break;
+        }
+
+        console.log("ContractPricingMerge calling with", data);
+
+        fetch("/api/ContractPricing/ContractPricingMerge", {
+            method: "POST",
+            headers: window.fetchHeaders,
+            body: JSON.stringify(data)
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+
+                if (data.ErrorMessage) {
+                    window.showError("Oops", data.ErrorMessage);
+                } else {
+                    if (empty) {
+                        self.reset();
+                        self.parent.tradeAccountId.valueHasMutated();
+                        self.parent.clearImpact();
+                    } else {
+                        window.showInfo("Success", "Configuration saved successfully.", () => {
+                            self.reset();
+                            self.parent.tradeAccountId.valueHasMutated();
+                            self.parent.clearImpact();
+                        });
+                    }
+                }
+
+                self.busy(false);
+            })
+            .catch(err => {
+                self.busy(false);
+                window.catchFetchError(err);
+            })
     }
 
     self.reset = () => {
@@ -2481,7 +2663,7 @@ const contractPricingEditor = ({
         self.loadedJson(undefined);
 
         self.editingRecord(undefined);
-
+        
         self.productGroupItemTypeEditor.reset();
 
         self.qualityEditor.reset();
@@ -2664,6 +2846,8 @@ const productGroupItemTypeEditor = ({
     //#region Methods
 
     self.reset = () => {
+        self.validateNow(false);
+
         self.productGroupAllFabric.brands.forEach(b => b.checked(false));
         self.productGroupAllFabric.discounter.percentage.observable(null);
         self.productGroupAllWallpaper.brands.forEach(b => b.checked(false));
@@ -3460,6 +3644,16 @@ const qualityEditor = ({
             }
         }, 0);
     }
+
+    self.removeSelectedQuality = (qualityRecord) => {
+        self.selectedQualities.remove(qualityRecord);
+        self.selectedQualityIds.remove(qualityRecord.ProductID);
+    }
+
+    self.removeSelectedProduct = (productRecord) => {
+        self.selectedQualities.remove(productRecord);
+        self.selectedQualityIds.remove(productRecord.ProductID);
+    }
     
     self.resetSetAll = () => {
         let initialBreaks = [
@@ -3480,6 +3674,7 @@ const qualityEditor = ({
     self.reset = () => {
         self.resetSetAll();
         self.virtualScroller.reset();
+        self.selectedQualityIds([]);
         self.selectedQualities([]);
         self.hideModal();
     }
@@ -3597,7 +3792,10 @@ const productGroupItemType = ({
 
     //#region Methods
 
-
+    self.clear = () => {
+        self.discounter.percentage.observable(undefined);
+        self.brands.forEach(b => b.checked(false));
+    }
 
     //#endregion
 
@@ -3706,7 +3904,7 @@ const discounterFactory = ({
             name: 'Percentage',
             inputType: 'text',
             minValue: 0,
-            maxValue: 100,
+            maxValue: 99,
             step: 1,
             buttons: false,
             observable: ko.observable(discountPercentage).extend({
@@ -3716,7 +3914,7 @@ const discounterFactory = ({
                         FormattingCulture: 'en-GB'
                     },
                     minValue: 0,
-                    maxValue: 100
+                    maxValue: 99
                 }
             }),
             useNativeValidation: false,
@@ -3744,8 +3942,8 @@ const discounterFactory = ({
                     currency: {
                         FormattingCulture: currency.FormattingCulture
                     },
-                    minValue: 0,
-                    maxValue: Number.MAX_VALUE * 0.01
+                    minValue: 1,
+                    maxValue: 1000000000
                 }
             }),
             useNativeValidation: false,

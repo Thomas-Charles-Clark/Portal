@@ -7,14 +7,14 @@
         </th>
         <td class="checkbox-column text-center">
             <label class="brand-checkbox-wrapper">
-                <input type="checkbox" data-bind="checked: allBrands" />
+                <input type="checkbox" data-bind="checked: allBrands" tabindex="-1" />
             </label>
             @*<div data-bind="component: { name: 'mdc-checkbox-component', params: allBrands }"></div>*@
         </td>
         <!-- ko foreach: brands -->
         <td class="checkbox-column text-center" data-bind="css: { 'invalid': !$parent.brandSelectionValid() }">
             <label class="brand-checkbox-wrapper">
-                <input type="checkbox" data-bind="checked: checked" />
+                <input type="checkbox" data-bind="checked: checked" tabindex="-1" />
             </label>
             @*<div data-bind="component: { name: 'mdc-checkbox-component', params: checkedParams }"></div>*@
         </td>
@@ -24,6 +24,9 @@
         </td>
         <td>
             <span data-bind="text: status"></span>
+        </td>
+        <td>
+            <button type="button" class="btn btn-close" data-bind="click: clear"></button>
         </td>
     </tr>
 </script>
@@ -38,9 +41,17 @@
                 </h4>
             </div>
             <div class="modal-header">
-                <h5 class="modal-title" data-bind="html: modalTitle">
-                    Contract Prices
-                </h5>
+                <div class="modal-title">
+                    <div class="d-flex align-items-center gap-5">
+                        <span class="fs-5" data-bind="html: modalTitle"></span>
+                        <span class="fs-5" data-bind="html: dateRangeEditor.displayLabel"></span>
+                        <div class="d-inline-flex gap-3" data-bind="with: dateRangeEditor">
+                            <div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: startDateParams }"></div>
+                            <div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: endDateParams }"></div>
+                        </div>
+                        <span class="fs-5" data-bind="html: discountSummaryMessage"></span>
+                    </div>
+                </div>
                 <button type="button" class="btn-close btn-close-white" aria-label="Close" data-bind="click: hideModal"></button>
             </div>
             <div class="modal-body">
@@ -95,6 +106,7 @@
                                         <!-- /ko -->
                                         <col class="discount-column" />
                                         <col class="status-column" />
+                                        <col class="control-column" />
                                     </colgroup>
                                     <thead>
                                         <tr>
@@ -115,6 +127,7 @@
                                             <th>
                                                 Status
                                             </th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -137,10 +150,11 @@
                                         <!-- /ko -->
                                         <col class="discount-column" />
                                         <col class="status-column" />
+                                        <col class="control-column" />
                                     </colgroup>
                                     <thead>
                                         <tr>
-                                            <th data-bind="attr: { colspan: $parent.brands.length + 4 }">
+                                            <th data-bind="attr: { colspan: $parent.brands.length + 5 }">
                                                 <span data-bind="text: key"></span>
                                             </th>
                                         </tr>
@@ -162,6 +176,7 @@
                                             <th>
                                                 Status
                                             </th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody data-bind="foreach: itemTypes">
@@ -297,6 +312,7 @@
                                         <col class="quantity-break-column" />
                                         <col class="discounter-column" />
                                         <col class="status-column" />
+                                        <col class="control-column" />
                                     </colgroup>
                                     <thead>
                                         <tr>
@@ -318,6 +334,7 @@
                                             <th>
                                                 Status
                                             </th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody data-bind="foreach: selectedQualities">
@@ -354,6 +371,13 @@
                                                 <span>
                                                     Status
                                                 </span>
+                                            </td>
+                                            <td>
+                                                <a href="javascript:;" class="btn btn-outline" data-bind="click: $parentContext.$parent.removeSelectedQuality">
+                                                    <span class="material-icons">
+                                                        close
+                                                    </span>
+                                                </a>
                                             </td>
                                         </tr>
                                         <!-- ko if: $parent.afterSelectedQualitiesRender($index()) --><!-- /ko -->
@@ -493,6 +517,7 @@
                                         <col class="quantity-break-column" />
                                         <col class="discounter-column" />
                                         <col class="status-column" />
+                                        <col class="control-column" />
                                     </colgroup>
                                     <thead>
                                         <tr>
@@ -514,6 +539,7 @@
                                             <th>
                                                 Status
                                             </th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody data-bind="foreach: selectedQualities">
@@ -551,6 +577,11 @@
                                                     Status
                                                 </span>
                                             </td>
+                                            <td>
+                                                <span class="material-icons" data-bind="click: $parentContext.$parent.removeSelectedProduct">
+                                                    close
+                                                </span>
+                                            </td>
                                         </tr>
                                         <!-- ko if: $parent.afterSelectedQualitiesRender($index()) --><!-- /ko -->
                                     </tbody>
@@ -570,6 +601,7 @@
                 <!-- ko if: errors().length -->
                 <span class="validation-message">
                     Please correct all errors before saving.
+                    <span data-bind="text: dateRangeEditor.errorSummaryMessage"></span>
                     <span data-bind="text: productGroupItemTypeEditor.errorSummaryMessage"></span>
                     <span data-bind="text: qualityEditor.errorSummaryMessage"></span>
                     <span data-bind="text: productEditor.errorSummaryMessage"></span>

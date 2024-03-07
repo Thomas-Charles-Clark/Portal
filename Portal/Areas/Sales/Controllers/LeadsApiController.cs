@@ -795,7 +795,7 @@ namespace Portal.Areas.Sales.Controllers
                 (objFilters.SalesAreaID == null || objFilters.SalesAreaID == p.SalesAreaID)
             ).Select(p => p.SalesRepresentativeID).Distinct();
 
-            var reps = portalDb.SalesRepresentatives.Where(p => salesRepresentative.Contains(p.SalesRepresentativeID)).OrderBy(p => p.Name);
+            var reps = portalDb.SalesRepresentatives.Where(p => salesRepresentative.Contains(p.SalesRepresentativeID)).OrderBy(p => p.Name).ToList();
             
             return Ok(reps.AsQueryable().ToDataSourceResult(request));
         }
@@ -818,7 +818,9 @@ namespace Portal.Areas.Sales.Controllers
             [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))]DataSourceRequest request,
             [FromUri]PassSalesRepID objSalesRep)
         {
-            return Ok(portalDb.SalesRepresentatives.Where(p => p.SalesRepresentativeID == objSalesRep.SalesRepID).SelectMany(p => p.MiscTradeAccounts.Select(q => q.TradeAccount)).AsQueryable().ToDataSourceResult(request));
+            var preResults = portalDb.SalesRepresentatives.Where(p => p.SalesRepresentativeID == objSalesRep.SalesRepID).SelectMany(p => p.MiscTradeAccounts).ToList();
+
+            return Ok(preResults.Select(pr => pr.TradeAccount).AsQueryable().ToDataSourceResult(request));
         }
 
         [HttpGet]

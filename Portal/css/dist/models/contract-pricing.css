@@ -1348,6 +1348,9 @@ input[type=number] {
 .product-group-item-type-table .status-column {
   width: 160px;
 }
+.product-group-item-type-table .control-column {
+  width: 40px;
+}
 .product-group-item-type-table thead th {
   height: 50px;
   vertical-align: middle;
@@ -1378,6 +1381,10 @@ input[type=number] {
 .product-group-item-type-table tbody td .mdc-discounter-group .input-group {
   margin-bottom: 0;
 }
+.product-group-item-type-table tbody td .btn-close {
+  cursor: pointer;
+  line-height: 33px;
+}
 
 #contract-pricing-modal .modal-header {
   background-color: #1f4e78;
@@ -1386,8 +1393,11 @@ input[type=number] {
 #contract-pricing-modal .modal-header .modal-title {
   color: #fff;
 }
-#contract-pricing-modal .modal-header .modal-title .btn-close {
-  color: #fff;
+#contract-pricing-modal .modal-header .modal-title .mdc-floating-label {
+  background-color: #fff;
+  padding: 0 4px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
 }
 #contract-pricing-modal .modal-body {
   display: flex;
@@ -1777,5 +1787,13 @@ input[type=number] {
   left: 0;
   top: 10px;
   color: white;
+}
+
+.modal .modal-dialog .modal-content .blocker {
+  border-radius: calc((var(--bs-border-radius-lg) - (var(--bs-border-width))) - 1px) px;
+}
+
+.status-column {
+  width: 80px;
 }
 /*# sourceMappingURL=contract-pricing.css.map */

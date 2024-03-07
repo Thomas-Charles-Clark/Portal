@@ -1649,6 +1649,10 @@ input[type=number] {
         width: 160px;
     }
 
+    .control-column {
+        width: 40px;
+    }
+
     thead {
         th {
             height: 50px;
@@ -1662,6 +1666,7 @@ input[type=number] {
         }
 
         td {
+
             .brand-checkbox-wrapper {
                 padding: $l-gutter;
                 cursor: pointer;
@@ -1697,6 +1702,11 @@ input[type=number] {
                     margin-bottom: 0;
                 }
             }
+
+            .btn-close {
+                cursor: pointer;
+                line-height: 33px; 
+            } 
         }
     }
 }
@@ -1709,8 +1719,11 @@ input[type=number] {
         .modal-title {
             color: $white;
 
-            .btn-close {
-                color: $white;
+            .mdc-floating-label {
+                background-color: $white;
+                padding: 0 4px;
+                border-top-left-radius: 4px;
+                border-top-right-radius: 4px;
             }
         }
     }
@@ -1742,7 +1755,6 @@ input[type=number] {
             flex: 1;
 
             > .tab-pane {
-
             }
         }
 
@@ -2143,4 +2155,18 @@ input[type=number] {
             color: white;
         }
     }
+}
+
+.modal {
+    .modal-dialog {
+        .modal-content {
+            .blocker {
+                border-radius: calc($modal-content-inner-border-radius - 1px)px;
+            }
+        }
+    }
+}
+
+.status-column {
+    width: 80px;
 }

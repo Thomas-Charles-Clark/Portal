@@ -5076,6 +5076,9 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                         endpoint = '/api/componentapi/ValidateEORINumberGB';
                     }
                     var data = {
+                        tradeAccountLabel: `${self.tradeAccount().Code} - ${self.tradeAccount().Name}`,
+                        market: `${self.tradeAccount().SalesMarket.Name}`,
+                        basketId: self.basketId(),
                         eoriNumber: val
                     }
                     console.log(`orderFactory calling "${endpoint}" with`, data);
@@ -5115,7 +5118,11 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                             self.eoriNumberMessage('The EORI Number checking service cannot currently validate this EORI Number.')
                             self.eoriRefreshBusy(false);
                             self.vatCheckBusy(false);
-                            callback(false);
+
+                            // Sarah change 07/03/2024: if an exception was raised, don't prevent them placing an order. Email credit control.
+                            $.info("EORI Problem", "An exception occurred while checking the EORI number for this basket. Credit Control have been notified of the problem. You may continue to process this basket.");
+
+                            callback(true);
                         }
                     });
                 } else {
