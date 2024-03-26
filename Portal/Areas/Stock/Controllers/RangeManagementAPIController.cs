@@ -202,5 +202,25 @@ namespace Portal.Areas.Stock.Controllers
 
             return Ok(results);
         }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> SendNewSeasonNotification([FromBody] RangeManagementNotesDto objDto)
+        {
+            objDto.MemberID = User.Identity.GetUserId<int>();
+
+            var results = await PortalDb.RangeManagementSendNewSeasonNotification(objDto);
+
+            return Ok(results);
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> SendExitingProductsNotification([FromBody] RangeManagementNotesDto objDto)
+        {
+            objDto.MemberID = User.Identity.GetUserId<int>();
+
+            var results = await PortalDb.RangeManagementSendExitingProductsNotification(objDto);
+
+            return Ok(results);
+        }
     }
 }

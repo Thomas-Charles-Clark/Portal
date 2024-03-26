@@ -142,28 +142,27 @@ const contractPricingViewModel = ({ } = {}) => {
         }).catch((e) => { });
     }
 
-    // this led to madness don't do it
-    //self.genericSelectSoleResult = (e, observable) => {
+    self.genericSelectSoleResult = (e, observable) => {
 
-    //    //console.log(self.name, 'dropdown dataBound hit', e);
-    //    var ds = e.sender.dataSource.data();
-    //    if (ds.length == 1 && e.sender.value() != ds[0][e.sender.options.dataValueField]) {
-    //        e.sender.value(ds[0][e.sender.options.dataValueField]);
-    //    }
-    //    if (ds.length == 0) {
-    //        //console.log(self.valueField, 'is setting itself to null');
-    //        observable('');
-    //    }
-    //    if (ds.length > 1) {
-    //        for (var i = 0; i < e.sender.dataSource.view().length; i++) {
-    //            if (e.sender.dataSource.view()[i][e.sender.options.dataValueField] == observable()) {
-    //                return; // we've got our selectedId in the view. No need to clear.
-    //            }
-    //        }
-    //        // we haven't got our selectedId in view. Clear.
-    //        observable('');
-    //    }
-    //};
+        //console.log(self.name, 'dropdown dataBound hit', e);
+        var ds = e.sender.dataSource.data();
+        if (ds.length == 1 && e.sender.value() != ds[0][e.sender.options.dataValueField]) {
+            e.sender.value(ds[0][e.sender.options.dataValueField]);
+        }
+        if (ds.length == 0) {
+            //console.log(observable, 'is setting itself to null');
+            observable('');
+        }
+        if (ds.length > 1) {
+            for (var i = 0; i < e.sender.dataSource.view().length; i++) {
+                if (e.sender.dataSource.view()[i][e.sender.options.dataValueField] == observable()) {
+                    return; // we've got our selectedId in the view. No need to clear.
+                }
+            }
+            // we haven't got our selectedId in view. Clear.
+            observable('');
+        }
+    };
 
     self.genericUnsavedChangesClear = (e) => {
         self.checkUnsavedChangesThenClear(e);
@@ -372,11 +371,27 @@ const contractPricingViewModel = ({ } = {}) => {
         },
         select: self.genericUnsavedChangesSelect,
         clearFunction: self.genericUnsavedChangesClear,
-        //dataBound: function (e) {
-        //    self.genericSelectSoleResult(e, self.salesMarketId)
-        //},
+        dataBound: function (e) {
+            //self.genericSelectSoleResult(e, self.salesMarketId)k
+        },
         parameterMap: (data) => {
             //Generate parameters in odata v4 format
+            if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "Label")) {
+                let f = data.filter.filters.find(f => f.field === "Label");
+                data.filter.filters = data.filter.filters.filter(f => f.field != "Label");
+                data.filter.logic = "or";
+                data.filter.filters = [{
+                    field: "Name",
+                    ignoreCase: true,
+                    operator: "contains",
+                    value: f.value
+                }, {
+                    field: "Code",
+                    ignoreCase: true,
+                    operator: "startswith",
+                    value: f.value
+                }];
+            }
             let d = kendo.data.transports['odata-v4'].parameterMap(data);
 
             delete d.$inlinecount; // <-- remove inlinecount
@@ -445,11 +460,28 @@ const contractPricingViewModel = ({ } = {}) => {
         },
         select: self.genericUnsavedChangesSelect,
         clearFunction: self.genericUnsavedChangesClear,
-        //dataBound: function (e) {
-        //    self.genericSelectSoleResult(e, self.salesRepresentativeId)
-        //}, // this led to madness don't do it
+        dataBound: function (e) {
+            //self.genericSelectSoleResult(e, self.salesRepresentativeId)
+        }, // this led to madness don't do it
         parameterMap: (data) => {
             //Generate parameters in odata v4 format
+            if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "Label")) {
+                let f = data.filter.filters.find(f => f.field === "Label");
+                data.filter.filters = data.filter.filters.filter(f => f.field != "Label");
+                data.filter.logic = "or";
+                data.filter.filters = [{
+                    field: "Name",
+                    ignoreCase: true,
+                    operator: "contains",
+                    value: f.value
+                }, {
+                    field: "Code",
+                    ignoreCase: true,
+                    operator: "startswith",
+                    value: f.value
+                }];
+            }
+
             let d = kendo.data.transports['odata-v4'].parameterMap(data);
 
             delete d.$inlinecount; // <-- remove inlinecount
@@ -563,12 +595,16 @@ const contractPricingViewModel = ({ } = {}) => {
 
             if (self.salesMarketId()) {
                 //Add filter by matching any reference containing value
-                d.$filter = `SalesMarketID eq ${self.salesMarketId()}`;
+                if (d.$filter) {
+                    d.$filter = `(${d.$filter}) and SalesMarketID eq ${self.salesMarketId()}`;
+                } else {
+                    d.$filter = `SalesMarketID eq ${self.salesMarketId()}`;
+                }
             }
 
             if (self.salesRepresentativeId()) {
                 if (d.$filter) {
-                    d.$filter = `${d.$filter} and SalesRepresentativeID eq ${self.salesRepresentativeId()}`;
+                    d.$filter = `(${d.$filter}) and SalesRepresentativeID eq ${self.salesRepresentativeId()}`;
                 } else {
                     d.$filter = `SalesRepresentativeID eq ${self.salesRepresentativeId()}`;
                 }
@@ -795,8 +831,20 @@ const contractPricingViewModel = ({ } = {}) => {
         //console.trace();
         if (nv == '') {
             self.reset();
+        } else {
+            self.clearImpact();
         }
     });
+
+    //self.tradeAccount.subscribe(nv => {
+    //    if (nv) {
+    //        self.salesMarketParams.dropDownListSettings.widget().value(nv.SalesMarketID);
+    //        self.salesMarketParams.dropDownListSettings.widget().trigger("change");
+
+    //        self.salesRepresentativeParams.dropDownListSettings.widget().value(nv.SalesRepresentativeID);
+    //        self.salesRepresentativeParams.dropDownListSettings.widget().trigger("change");
+    //    }
+    //});
 
     //#endregion
 
@@ -1095,9 +1143,9 @@ const contractPricingViewModel = ({ } = {}) => {
 
         self.selectedContractListId(undefined);
 
-        self.tradeAccountContrcatJson(undefined);
+        self.tradeAccountContractJson(undefined);
 
-        self.tradeAccountGroupContrcatJson(undefined);
+        self.tradeAccountGroupContractJson(undefined);
 
         self.selectedContractListJson(undefined);
 
@@ -1278,124 +1326,133 @@ const contractPricingViewModel = ({ } = {}) => {
 
         console.log(`self.unfilledRecords()`, urpids);
 
-        if (urpids.length) {
+        if (self.haveImpactResults()) {
 
-            window.setTimeout(() => {
+            if (urpids.length) {
 
-                let callStart = new Date();
+                window.setTimeout(() => {
 
-                let productIds = [...new Set(urpids.flatMap(ur => ur.productId ? [ur.productId] : []))];
-                let qualityIds = [...new Set(urpids.flatMap(ur => ur.qualityId ? [ur.qualityId] : []))];
+                    let callStart = new Date();
 
-                let data = {
-                    tradeAccountId: self.tradeAccountId(),
-                    productId: productIds,
-                    qualityId: qualityIds
-                };
+                    let productIds = [...new Set(urpids.flatMap(ur => ur.productId ? [ur.productId] : []))];
+                    let qualityIds = [...new Set(urpids.flatMap(ur => ur.qualityId ? [ur.qualityId] : []))];
 
-                console.log('fetchSalesData calling with', data);
+                    let data = {
+                        tradeAccountId: self.tradeAccountId(),
+                        productId: productIds,
+                        qualityId: qualityIds
+                    };
 
-                fetch(`/api/contractpricing/FetchSalesData`, {
-                    method: 'POST',
-                    headers: window.fetchHeaders,
-                    body: JSON.stringify(data)
-                })
-                    .then(window.handleFetchResponse)
-                    .then(data => {
+                    console.log('fetchSalesData calling with', data);
 
-                        let callReturn = new Date();
+                    fetch(`/api/contractpricing/FetchSalesData`, {
+                        method: 'POST',
+                        headers: window.fetchHeaders,
+                        body: JSON.stringify(data)
+                    })
+                        .then(window.handleFetchResponse)
+                        .then(data => {
 
-                        console.log(`FetchSalesData returned in ${callReturn - callStart}ms`, data);
+                            let callReturn = new Date();
 
-                        let records = self.impactResults.peek();
-                        let affectedRecords = [];
-                        let filledRecords = self.filledRecords.peek();
-                        let forcedRemovals = [];
+                            console.log(`FetchSalesData returned in ${callReturn - callStart}ms`, data);
 
-                        urpids.forEach(stub => {
+                            let records = self.impactResults.peek();
+                            let affectedRecords = [];
+                            let filledRecords = self.filledRecords.peek();
+                            let forcedRemovals = [];
 
-                            //console.log(stub);
+                            urpids.forEach(stub => {
 
-                            let record = records.find(p => p.ProductID && p.ProductID === stub.productId) ||
-                                records.find(q => q.QualityID && q.QualityID == stub.qualityId);
-                            // if record is null here, we've fetched data for something which is no longer amongst our search results.
-                            // this will readily cause chaos: remove it from the 'to be fetched' collection.
+                                //console.log(stub);
 
-                            if (record != null) {
+                                let productArray = records.filter(p => p.ProductID && p.ProductID === stub.productId);
+                                let qualityArray = records.filter(q => q.QualityID && q.QualityID === stub.qualityId);
 
-                                //console.log('record found');
+                                let recordArray = productArray.length ? productArray : qualityArray;
 
-                                let dataResult = data.ProductResults.find(p => p.ProductID && p.ProductID == stub.productId) ||
-                                    data.QualityResults.find(q => q.QualityID == stub.qualityId);
+                                // if record is null here, we've fetched data for something which is no longer amongst our search results.
+                                // this will readily cause chaos: remove it from the 'to be fetched' collection.
 
-                                let filledRecord = filledRecords.find(p => p.ProductID && p.ProductID == stub.productId) ||
-                                    filledRecords.find(q => q.QualityID && q.QualityID == stub.qualityId);
+                                recordArray.forEach(record => {
+                                    if (record != null) {
 
-                                let add = filledRecord == null;
+                                        //console.log('record found');
 
-                                if (dataResult) {
+                                        let dataResult = data.ProductResults.find(p => p.ProductID && p.ProductID == stub.productId) ||
+                                            data.QualityResults.find(q => q.QualityID == stub.qualityId);
 
-                                    if (filledRecord == null) {
-                                        filledRecord = record;
-                                        //record = impactSearchResult({
-                                        //    rec: record
-                                        //});
+                                        let filledRecord = filledRecords.find(p => p.ProductID && p.ProductID == stub.productId) ||
+                                            filledRecords.find(q => q.QualityID && q.QualityID == stub.qualityId);
+
+                                        let add = filledRecord == null;
+
+                                        if (dataResult) {
+
+                                            if (filledRecord == null) {
+                                                filledRecord = record;
+                                                //record = impactSearchResult({
+                                                //    rec: record
+                                                //});
+                                            } else {
+                                                add = false;
+                                                filledRecord.loaded(true);
+                                                record = filledRecord;
+                                            }
+
+                                            record.salesQuantity(dataResult.SalesQuantity_180Days);
+
+                                            record.salesValue(dataResult.SalesValue_180Days);
+
+                                            record.busy(false);
+
+                                            record.loaded(true);
+                                        } else {
+                                            record.loaded = ko.observable(true);
+                                            record.ErrorMessage = `<h5 class="mb-0">[portal].[ContractManagement_SalesData_Select] did not return a result for Product/Quality ${record.ProductID || record.QualityID}</h5>`;
+                                        }
+
+                                        if (add) {
+                                            affectedRecords.push(record);
+                                        }
                                     } else {
-                                        add = false;
-                                        filledRecord.loaded(true);
-                                        record = filledRecord;
+
+                                        console.log('RECORD NOT FOUND');
+
+                                        forcedRemovals.push(stub);
                                     }
+                                });
 
-                                    record.salesQuantity(dataResult.SalesQuantity_180Days);
-
-                                    record.salesValue(dataResult.SalesValue_180Days);
-
-                                    record.busy(false);
-
-                                    record.loaded(true);
-                                } else {
-                                    record.loaded = ko.observable(true);
-                                    record.ErrorMessage = `<h5 class="mb-0">[portal].[ContractManagement_SalesData_Select] did not return a result for Product/Quality ${record.ProductID || record.QualityID}</h5>`;
-                                }
-
-                                if (add) {
-                                    affectedRecords.push(record);
-                                }
-                            } else {
-
-                                console.log('RECORD NOT FOUND');
-
-                                forcedRemovals.push(stub);
-                            }
-                        });
-
-                        ko.ignoreDependencies(() => {
-                            affectedRecords.forEach(ar => {
-                                self.recordsToDataFetch.remove(rtdf => rtdf.ProductOrQuality == ar.productOrQuality &&
-                                    rtdf.ProductID === ar.productId &&
-                                    rtdf.QualityID === ar.qualityId);
                             });
 
-                            forcedRemovals.forEach(fr => {
-                                self.recordsToDataFetch.remove(rtdf => rtdf.ProductOrQuality == fr.productOrQuality &&
-                                    rtdf.ProductID === fr.productId &&
-                                    rtdf.QualityID === fr.qualityId);
-                            })
+                            ko.ignoreDependencies(() => {
+                                affectedRecords.forEach(ar => {
+                                    self.recordsToDataFetch.remove(rtdf => rtdf.ProductOrQuality == ar.productOrQuality &&
+                                        rtdf.ProductID === ar.productId &&
+                                        rtdf.QualityID === ar.qualityId);
+                                });
 
-                            ko.utils.arrayPushAll(self.filledRecords, affectedRecords);
+                                forcedRemovals.forEach(fr => {
+                                    self.recordsToDataFetch.remove(rtdf => rtdf.ProductOrQuality == fr.productOrQuality &&
+                                        rtdf.ProductID === fr.productId &&
+                                        rtdf.QualityID === fr.qualityId);
+                                })
+
+                                ko.utils.arrayPushAll(self.filledRecords, affectedRecords);
+                            });
+
+                            let callBound = new Date();
+
+                            window.setTimeout(() => {
+                                console.log(`fetchData bound in ${callBound - callReturn}ms`);
+                            }, 0);
+                        })
+                        .catch(err => {
+                            self.clearBusy();
+                            window.catchFetchError(err)
                         });
-
-                        let callBound = new Date();
-
-                        window.setTimeout(() => {
-                            console.log(`fetchData bound in ${callBound - callReturn}ms`);
-                        }, 0);
-                    })
-                    .catch(err => {
-                        self.clearBusy();
-                        window.catchFetchError(err)
-                    });
-            }, 300);
+                }, 300);
+            }
         }
     }, self).extend({
         rateLimit: {
@@ -1463,7 +1520,9 @@ const contractPricingViewModel = ({ } = {}) => {
             return actuallyVisible;
         });
 
-        ko.utils.arrayPushAll(self.recordsToDataFetch, toFetch);
+        self.recordsToDataFetch(toFetch);
+
+        //ko.utils.arrayPushAll(self.recordsToDataFetch, toFetch);
 
         return results;
     });

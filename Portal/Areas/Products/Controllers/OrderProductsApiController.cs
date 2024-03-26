@@ -160,7 +160,7 @@ namespace Portal.Areas.Products.Controllers
             {
                 var content = new StringContent(inkyMarkup);
 
-                var result = await client.PostAsync("http://vm-web1:8090/inky/inky.js", content);
+                var result = await client.PostAsync(PortalFramework.InkyEndpoint, content);
 
                 inkyMarkup = await result.Content.ReadAsStringAsync();
             }
@@ -278,7 +278,7 @@ namespace Portal.Areas.Products.Controllers
             {
                 var content = new StringContent(inkyMarkup);
 
-                var inkyResult = await client.PostAsync("http://vm-web1:8090/inky/inky.js", content);
+                var inkyResult = await client.PostAsync(PortalFramework.InkyEndpoint, content);
 
                 inkyMarkup = await inkyResult.Content.ReadAsStringAsync();
             }

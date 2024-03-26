@@ -722,7 +722,7 @@ $@"<a href=""{parcel.TrackingURL}"">
                 {
                     var content = new StringContent(inkyMarkup);
 
-                    var inkyResult = await client.PostAsync("http://vm-web1:8090/inkyUpdated/inkyUpdated.js", content);
+                    var inkyResult = await client.PostAsync(PortalFramework.InkyEndpoint, content);
 
                     if (inkyResult.StatusCode != HttpStatusCode.OK)
                     {

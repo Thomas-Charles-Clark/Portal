@@ -113,6 +113,7 @@ namespace SharedEFClasses.Models.Components
         public bool PurchaseOrderLineNumberRequired { get; set; }
 
         public Currency Currency { get; set; }
+        public SalesMarket SalesMarket { get; set; }
     }
 
 

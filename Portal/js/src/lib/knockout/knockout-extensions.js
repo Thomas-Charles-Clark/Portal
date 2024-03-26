@@ -2021,6 +2021,7 @@ ko.bindingHandlers.mdcTextFieldComponent = {
                 params.boundTo.isValid.subscribe(function (newValue) {
                     if (newValue === true) {
                         params.boundTo.mdcTextField.valid = true;
+                        //params.boundTo.mdcTextField.root_.classList.remove("shake");
                     }
                     if (newValue === false) {
                         params.boundTo.mdcTextField.valid = false;
@@ -2029,10 +2030,10 @@ ko.bindingHandlers.mdcTextFieldComponent = {
                                 params.boundTo.mdcTextField.label_.shake(true);
                             }
                         } else {
-                            params.boundTo.mdcTextField.root_.classList.add("shake");
-                            window.setTimeout(() => {
-                                params.boundTo.mdcTextField.root_.classList.remove("shake");
-                            }, 150);
+                            //params.boundTo.mdcTextField.root_.classList.add("shake");
+                            //window.setTimeout(() => {
+                            //    params.boundTo.mdcTextField.root_.classList.remove("shake");
+                            //}, 150);
                         }
                     }
                 });

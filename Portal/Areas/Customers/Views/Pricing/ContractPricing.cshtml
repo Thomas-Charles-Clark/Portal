@@ -40,10 +40,10 @@
 
         ko.applyBindings(viewModel, document.body);
 
-        $(document).ready(() => {
-            viewModel.tradeAccountId(36691);
-            viewModel.busy(false);
-        });
+        //$(document).ready(() => {
+        //    viewModel.tradeAccountId(36691);
+        //    viewModel.busy(false);
+        //});
 
         window.self = viewModel;
 
@@ -379,7 +379,9 @@
                                      type="button"
                                      data-bs-toggle="collapse"
                                      data-bind="attr: { 'data-bs-target': `#${$parentContext.$parent.accordionId}-date-range-${$parentContext.$index()}-contract-level-${$index()}` },
-                                        css: { 'selected': `contracts-${contracts.flatMap(function (c) { return c.contractListId }).reduce(function (a, i) { return a = a + i }, 0)}` == $root.selectedContractListId() },
+                                        css: { 
+                                            'selected':  `contracts-${contracts.flatMap(function (c) { return c.contractListId }).reduce(function (a, i) { return a = a + i }, 0)}` == $root.selectedContractListId()
+                                        },
                                         click: $root.fetchImpact">
                                     <span data-bind="text: `${label} Deals (${contracts.length})`"></span>
                                     @*<div class="ms-auto">
@@ -387,8 +389,12 @@
                                         </div>*@
                                 </div>
                             </div>
-                            <div class="accordion-collapse collapse show"
-                                 data-bind="attr: { id: `${$parentContext.$parent.accordionId}-date-range-${$parentContext.$index()}-contract-level-${$index()}` }">
+                            <div class="accordion-collapse collapse"
+                                 data-bind="attr: { 
+                                    id: `${$parentContext.$parent.accordionId}-date-range-${$parentContext.$index()}-contract-level-${$index()}` 
+                                 }, css: {
+                                    'show': contracts.length
+                                 }">
                                 <div class="deal-types-wrapper">
                                     <!-- ko template: { name: `contract-level-${label.replace(/\s/g, '-').toLowerCase()}-template` } --><!-- /ko -->
                                 </div>
@@ -413,7 +419,7 @@
         <div id="prefilters-deals" class="grid">
             <div id="sales-market-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesMarketParams }"></div>
             <div id="sales-representative-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesRepresentativeParams }"></div>
-            <div id="existing-contracts-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: existingContractsParams }"></div>
+            @*<div id="existing-contracts-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: existingContractsParams }"></div>*@
             <div id="trade-account-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountParams }"></div>
         </div>
         <div id="prefilters-impact" class="grid" style="display: none;" data-bind="visible: impactVisible">
@@ -484,6 +490,7 @@
                     <colgroup>
                         <col />
                         <col style="width: 120px" />
+                        <col style="width: 120px" />
                         <col />
                         <col style="width: 120px" />
                         <col style="width: 120px" />
@@ -496,6 +503,9 @@
                         <tr>
                             <th>
                                 Quality / Product
+                            </th>
+                            <th class="text-end">
+                                Quantity Break
                             </th>
                             <th class="text-end">
                                 Discount
@@ -536,6 +546,9 @@
                         <tr data-bind="css: { 'margin-warning': MarginWarning, 'busy': busy }">
                             <td>
                                 <span data-bind="text: ProductOrQualityLabel"></span>
+                            </td>
+                            <td class="text-end">
+                                <span data-bind="text: QuantityBreak"></span>
                             </td>
                             <td class="text-end">
                                 <span data-bind="text: DiscountLabel"></span>

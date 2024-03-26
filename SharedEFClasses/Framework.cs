@@ -93,6 +93,9 @@ namespace SharedEFClasses.Utilities
 
     public static partial class PortalFramework
     {
+        public static readonly string InkyEndpoint = "https://vm-web2:8091/inkyUpdated/inkyUpdated.js";
+        public static readonly string WebServerHostname = "vm-web2";
+
         public static Assembly GetAssembly(string name) 
         {
             return AppDomain.CurrentDomain.GetAssemblies()

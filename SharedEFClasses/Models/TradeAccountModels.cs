@@ -1799,6 +1799,10 @@ namespace SharedEFClasses.Models.TradeAccounts
 
     public class PassVATNumber
     {
+        public long basketId { get; set; }
+        public string tradeAccountLabel { get; set; }
+        public string market { get; set; }
+
         public string vatNumber { get; set; }
         public string countryCode { get; set; }
 

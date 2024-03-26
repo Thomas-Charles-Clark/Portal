@@ -439,9 +439,19 @@
                                 Transfer Orders - Recall (Branch &raquo; WH)
                             </button>
                         </li>
-                        <li class="nav-item" data-bind="visible: branch"> 
+                        <li class="nav-item" data-bind="visible: branch">
                             <button id="refresh-transfers-btn" class="btn nav-link" data-bind="click: refreshTransferOrders">
                                 Refresh Transfer Orders <i class="material-icons">refresh</i>
+                            </button>
+                        </li>
+                        <li class="nav-item ms-auto" data-bind="visible: branch">
+                            <button id="send-new-season-notice-btn" class="btn nav-link" data-bind="click: sendNewSeasonNotification">
+                                Send "New Season" Notification <i class="material-icons">email</i>
+                            </button>
+                        </li>
+                        <li class="nav-item" data-bind="visible: branch">
+                            <button id="refresh-transfers-btn" class="btn nav-link" data-bind="click: sendExitingProductsNotification">
+                                Send "Exiting Products" Notification <i class="material-icons">email</i>
                             </button>
                         </li>
                     </ul>

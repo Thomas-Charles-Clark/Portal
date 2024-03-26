@@ -1126,7 +1126,13 @@ This customer wishes their deliveries to be consolidated. Please double check th
         let vatCountry = self.vatCountry();
         let currentStage = self.currentStage();
 
-        if (currentStage == 4 && (vatNumber && vatCountry && vatCountry.CountryID != 238)) {
+        if (currentStage == 4 &&
+            (
+                vatNumber &&
+                vatCountry &&
+                vatCountry.CountryID != 238
+            )
+        ) {
             let data = {
                 vatNumber: self.companyVATNumber(),
                 countryCode: self.vatCountry()?.Code

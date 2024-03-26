@@ -222,5 +222,27 @@ namespace SharedEFClasses.Models
 
             return 0;
         }
+
+        public async Task<int> RangeManagementSendNewSeasonNotification(RangeManagementNotesDto dto)
+        {
+            var _ = await this.Database.Connection.QueryAsync("[portal].[RangeManagement_InventoryNotification_NewSeasonProduct]", new
+            {
+                BranchID = dto.BranchID,
+                MemberID = dto.MemberID
+            }, null, null, CommandType.StoredProcedure);
+
+            return 0;
+        }
+
+        public async Task<int> RangeManagementSendExitingProductsNotification(RangeManagementNotesDto dto)
+        {
+            var _ = await this.Database.Connection.QueryAsync("[portal].[RangeManagement_InventoryNotification_ExitingProducts]", new
+            {
+                BranchID = dto.BranchID,
+                MemberID = dto.MemberID
+            }, null, null, CommandType.StoredProcedure);
+
+            return 0;
+        }
     }
 }

@@ -81,11 +81,12 @@ namespace SharedEFClasses.Models
                     tradeAccountIdParam,
                     marketIdParam).ToList();
 
-                results.ForEach(c =>
+                results.ForEach(r =>
                 {
-                    if (c.CurrencyID != null)
+                    if (r.CurrencyID != null)
                     {
-                        c.Currency = this.Currencies.Where(p => p.CurrencyID == c.CurrencyID).SingleOrDefault();
+                        r.Currency = this.Currencies.Where(p => p.CurrencyID == r.CurrencyID).SingleOrDefault();
+                        r.SalesMarket = this.SalesMarkets.Where(p => p.SalesMarketID == r.SalesMarketID).SingleOrDefault();
                     }
                 });
 

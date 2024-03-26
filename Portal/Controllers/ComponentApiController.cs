@@ -1110,7 +1110,7 @@ namespace Portal.Controllers
             {
                 var content = new StringContent(inkyMarkup);
 
-                var result = await client.PostAsync("http://vm-web1:8090/inky/inky.js", content);
+                var result = await client.PostAsync(PortalFramework.InkyEndpoint, content);
 
                 inkyMarkup = await result.Content.ReadAsStringAsync();
             }
@@ -1294,7 +1294,7 @@ namespace Portal.Controllers
                 {
                     var content = new StringContent(inkyMarkup);
 
-                    var result = await client.PostAsync("http://vm-web1:8090/inky/inky.js", content);
+                    var result = await client.PostAsync(PortalFramework.InkyEndpoint, content);
 
                     inkyMarkup = await result.Content.ReadAsStringAsync();
                 }
@@ -1435,7 +1435,7 @@ namespace Portal.Controllers
                 {
                     var content = new StringContent(inkyMarkup);
 
-                    var result = await client.PostAsync("http://vm-web1:8090/inky/inky.js", content);
+                    var result = await client.PostAsync(PortalFramework.InkyEndpoint, content);
 
                     inkyMarkup = await result.Content.ReadAsStringAsync();
                 }
@@ -2648,6 +2648,22 @@ namespace Portal.Controllers
             {
                 PortalFramework.LogErrorToDatabase(ex, User.Identity.GetUserId<int>());
 
+                // market, customer no., name, eori, basketid
+                System.Threading.Tasks.Task.Run(() =>
+                {
+                    PortalDb.QueueAndSendEmail("hhailu@designersguild.com", "VAT Number Validation Exception", $@"<p>
+    An exception was raised while attempting to validate a VAT Number.
+</p>
+<p><strong>Basket ID: </strong>{objVATNumber.basketId}</p>
+<p><strong>Customer: </strong>{objVATNumber.tradeAccountLabel}</p>
+<p><strong>Market: </strong>{objVATNumber.market}</p>
+<p><strong>Requester Country: </strong>{objVATNumber.requesterCountryCode}</p>
+<p><strong>VAT Country: </strong>{objVATNumber.countryCode}</p>
+<p><strong>VAT Number: </strong>{objVATNumber.vatNumber}</p>
+<p>Please check the VAT number manually if you can.</p>
+<p>The user has been allowed to proceed with the basket and might have already submitted it to Mertex.</p>", 0, "itsupport@designersguild.com");
+                });
+
                 var exceptionResult = new HttpResponseMessage(HttpStatusCode.InternalServerError)
                 {
                     Content = new StringContent("The EU VAT site cannot currently validate this VAT registration number. We will assume the number is valid and notify credit control.")
@@ -2663,8 +2679,6 @@ namespace Portal.Controllers
         {
             try
             {
-                throw new Exception("TEST EXCEPTION");
-
                 var response = Portal.Utilities.EU_EORI_Lookup.Validate(objEORINumber.eoriNumber);
 
                 return Ok(new
@@ -3298,7 +3312,7 @@ namespace Portal.Controllers
                                 {
                                     var content = new StringContent(inkyMarkup);
 
-                                    var result = await client.PostAsync("http://vm-web1:8090/inky/inky.js", content);
+                                    var result = await client.PostAsync(PortalFramework.InkyEndpoint, content);
 
                                     inkyMarkup = await result.Content.ReadAsStringAsync();
                                 }

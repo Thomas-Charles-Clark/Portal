@@ -300,7 +300,7 @@ namespace Portal.Utilities.BespokeFurniture
 
                 //        if (Int64.TryParse(product.Element("ImageID").Value, out imageId))
                 //        {
-                //            var filePath = $"\\\\vm-web1\\d$\\wwwroot\\flock\\imagelibrary\\239\\{imageId}.jpeg";
+                //            var filePath = $"\\\\vm-web2\\d$\\wwwroot\\flock\\imagelibrary\\239\\{imageId}.jpeg";
 
                 //            var jpg = Image.GetInstance(filePath);// (new Uri(imageUrl));
 

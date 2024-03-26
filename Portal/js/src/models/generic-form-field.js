@@ -757,7 +757,7 @@ const fieldViewModel = ((data, parent) => {
             fileName: ko.observable(self.fileName),
             fileFullPath: ko.observable(self.fileFullPath), // || 'https://via.placeholder.com/640?text=No+Image+Specified' // 'https://picsum.photos/640'
             accept: 'jpg, .jpeg, .png, .bmp, .tga, .gif',
-            destination: '\\\\vm-web1\\d$\\wwwroot\\dg\\_assets\\product-maintenance\\files\\',
+            destination: '\\\\vm-web2\\d$\\wwwroot\\dg\\_assets\\product-maintenance\\files\\',
             clearFile: () => {
                 //self.params.fileFullPath('https://picsum.photos/640');
                 self.params.fileFullPath(undefined);// 'https://via.placeholder.com/640?text=No+Image+Specified');

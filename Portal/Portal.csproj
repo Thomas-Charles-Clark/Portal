@@ -2432,7 +2432,8 @@
     <Content Include="Areas\Stock\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Stock\Views\RingFence\RingFence.cshtml" />
     <Content Include="Content\fonts\Gill-Sans-MT.TTF" />
-    <None Include="Properties\PublishProfiles\VM-WEB1-DEV.pubxml" />
+    <None Include="Properties\PublishProfiles\VM-WEB2-DEV.pubxml" />
+    <None Include="Properties\PublishProfiles\VM-WEB2.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -2624,7 +2625,6 @@
     </Content>
     <Content Include="NLog.config" />
     <None Include="package.json" />
-    <None Include="Properties\PublishProfiles\VM-WEB1.pubxml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

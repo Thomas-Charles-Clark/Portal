@@ -1,6 +1,7 @@
 ﻿using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Mertexer;
+using SharedEFClasses.Utilities;
 
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace SharedEFClasses.Models
         {
             get
             {
-                return "\\\\vm-web1\\brochures\\trade-account-creation-email";
+                return $"\\\\{PortalFramework.WebServerHostname}\\brochures\\trade-account-creation-email";
             }
         }
 

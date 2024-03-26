@@ -2125,6 +2125,9 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                         val = val.replace('PL', '');
 
                     var data = {
+                        basketId: self.basketId(),
+                        tradeAccountLabel: `${self.tradeAccount().Code} - ${self.tradeAccount().Name}`,
+                        market: `${self.tradeAccount().SalesMarket.Name}`,
                         vatNumber: val,
                         countryCode: self.vatCountryCode()
                     }

@@ -197,6 +197,18 @@ $deal-hover-color: $white;
                         margin-right: 0.5em; // just extra space between text and icon
                     }
 
+                    &:not(.collapsed) {
+                        &::after {
+                            transform: rotate(0deg);
+                        }
+                    }
+
+                    &.collapsed {
+                        &::after {
+                            transform: rotate(-90deg);
+                            /**/
+                        }
+                    }
                     // this doesn't work with the fixed positioning up the tree
                     /*
                     &.selected::before {

@@ -1249,6 +1249,62 @@ const rangeManagementViewModel = ({ } = {}) => {
         }
     }
 
+    self.sendNewSeasonNotification = () => {
+        window.showConfirm("Are you sure?", `This will send the New Season Notification Email to your email address <a href='mailto:${getUserEmail()}'>${getUserEmail()}</a>`, () => {
+
+            self.busy(true);
+
+            fetch('/api/rangeManagementApi/SendNewSeasonNotification', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                body: JSON.stringify({
+                    branchId: self.branchId()
+                })
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    self.busy(false);
+                    if (data == false) {
+                        window.showInfo("Information", "The New Season Notification Email has been sent successfully.");
+                    } else {
+                        window.showError("Something went wrong there, sorry! If problems persist please contact <a href='mailto:itsupport@designersguild.com' target='_blank'>itsupport@designersguild.com</a>.");
+                    }
+                })
+                .catch(err => {
+                    self.busy(false);
+                    window.catchFetchError(err);
+                })
+        })
+    }
+
+    self.sendExitingProductsNotification = () => {
+        window.showConfirm("Are you sure?", `This will send the Exiting Products Notification Email to your email address <a href='mailto:${getUserEmail()}'>${getUserEmail()}</a>`, () => {
+
+            self.busy(true);
+
+            fetch('/api/rangeManagementApi/SendExitingProductsNotification', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                body: JSON.stringify({
+                    branchId: self.branchId()
+                })
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    self.busy(false);
+                    if (data == false) {
+                        window.showInfo("Information", "The Exiting Product Notification Email has been sent successfully.");
+                    } else {
+                        window.showError("Something went wrong there, sorry! If problems persist please contact <a href='mailto:itsupport@designersguild.com' target='_blank'>itsupport@designersguild.com</a>.");
+                    }
+                })
+                .catch(err => {
+                    self.busy(false);
+                    window.catchFetchError(err);
+                })
+        })
+    }
+
     //#region unsaved changes handling
 
     self.checkUnsavedChangesThenSelect = async (event) => {

@@ -164,6 +164,15 @@ body {
   margin-left: 0;
   margin-right: 0.5em;
 }
+.date-ranges-wrapper.accordion .accordion-item .accordion-header .accordion-button:not(.collapsed)::after,
+.deal-types.accordion .accordion-item .accordion-header .accordion-button:not(.collapsed)::after {
+  transform: rotate(0deg);
+}
+.date-ranges-wrapper.accordion .accordion-item .accordion-header .accordion-button.collapsed::after,
+.deal-types.accordion .accordion-item .accordion-header .accordion-button.collapsed::after {
+  transform: rotate(-90deg);
+  /**/
+}
 .date-ranges-wrapper.accordion .accordion-item .accordion-header .accordion-button.selected, .date-ranges-wrapper.accordion .accordion-item .accordion-header .accordion-button:hover,
 .deal-types.accordion .accordion-item .accordion-header .accordion-button.selected,
 .deal-types.accordion .accordion-item .accordion-header .accordion-button:hover {
