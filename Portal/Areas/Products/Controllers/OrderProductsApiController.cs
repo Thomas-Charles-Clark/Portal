@@ -160,6 +160,8 @@ namespace Portal.Areas.Products.Controllers
             {
                 var content = new StringContent(inkyMarkup);
 
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+
                 var result = await client.PostAsync(PortalFramework.InkyEndpoint, content);
 
                 inkyMarkup = await result.Content.ReadAsStringAsync();
@@ -277,6 +279,8 @@ namespace Portal.Areas.Products.Controllers
             using (var client = new HttpClient())
             {
                 var content = new StringContent(inkyMarkup);
+
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 
                 var inkyResult = await client.PostAsync(PortalFramework.InkyEndpoint, content);
 

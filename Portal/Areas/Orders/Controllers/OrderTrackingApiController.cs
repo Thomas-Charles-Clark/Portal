@@ -722,6 +722,8 @@ $@"<a href=""{parcel.TrackingURL}"">
                 {
                     var content = new StringContent(inkyMarkup);
 
+                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+
                     var inkyResult = await client.PostAsync(PortalFramework.InkyEndpoint, content);
 
                     if (inkyResult.StatusCode != HttpStatusCode.OK)

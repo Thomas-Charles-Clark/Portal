@@ -1110,6 +1110,8 @@ namespace Portal.Controllers
             {
                 var content = new StringContent(inkyMarkup);
 
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+
                 var result = await client.PostAsync(PortalFramework.InkyEndpoint, content);
 
                 inkyMarkup = await result.Content.ReadAsStringAsync();
@@ -1294,6 +1296,8 @@ namespace Portal.Controllers
                 {
                     var content = new StringContent(inkyMarkup);
 
+                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+
                     var result = await client.PostAsync(PortalFramework.InkyEndpoint, content);
 
                     inkyMarkup = await result.Content.ReadAsStringAsync();
@@ -1434,6 +1438,8 @@ namespace Portal.Controllers
                 using (var client = new HttpClient())
                 {
                     var content = new StringContent(inkyMarkup);
+
+                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 
                     var result = await client.PostAsync(PortalFramework.InkyEndpoint, content);
 
@@ -2649,20 +2655,20 @@ namespace Portal.Controllers
                 PortalFramework.LogErrorToDatabase(ex, User.Identity.GetUserId<int>());
 
                 // market, customer no., name, eori, basketid
-                System.Threading.Tasks.Task.Run(() =>
-                {
-                    PortalDb.QueueAndSendEmail("hhailu@designersguild.com", "VAT Number Validation Exception", $@"<p>
-    An exception was raised while attempting to validate a VAT Number.
-</p>
-<p><strong>Basket ID: </strong>{objVATNumber.basketId}</p>
-<p><strong>Customer: </strong>{objVATNumber.tradeAccountLabel}</p>
-<p><strong>Market: </strong>{objVATNumber.market}</p>
-<p><strong>Requester Country: </strong>{objVATNumber.requesterCountryCode}</p>
-<p><strong>VAT Country: </strong>{objVATNumber.countryCode}</p>
-<p><strong>VAT Number: </strong>{objVATNumber.vatNumber}</p>
-<p>Please check the VAT number manually if you can.</p>
-<p>The user has been allowed to proceed with the basket and might have already submitted it to Mertex.</p>", 0, "itsupport@designersguild.com");
-                });
+//                System.Threading.Tasks.Task.Run(() =>
+//                {
+//                    PortalDb.QueueAndSendEmail("itsupport@designersguild.com", "VAT Number Validation Exception", $@"<p>
+//    An exception was raised while attempting to validate a VAT Number.
+//</p>
+//<p><strong>Basket ID: </strong>{objVATNumber.basketId}</p>
+//<p><strong>Customer: </strong>{objVATNumber.tradeAccountLabel}</p>
+//<p><strong>Market: </strong>{objVATNumber.market}</p>
+//<p><strong>Requester Country: </strong>{objVATNumber.requesterCountryCode}</p>
+//<p><strong>VAT Country: </strong>{objVATNumber.countryCode}</p>
+//<p><strong>VAT Number: </strong>{objVATNumber.vatNumber}</p>
+//<p>Please check the VAT number manually if you can.</p>
+//<p>The user has been allowed to proceed with the basket and might have already submitted it to Mertex.</p>", 0, null);
+//                });
 
                 var exceptionResult = new HttpResponseMessage(HttpStatusCode.InternalServerError)
                 {
@@ -3311,6 +3317,8 @@ namespace Portal.Controllers
                                 using (var client = new HttpClient())
                                 {
                                     var content = new StringContent(inkyMarkup);
+
+                                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 
                                     var result = await client.PostAsync(PortalFramework.InkyEndpoint, content);
 

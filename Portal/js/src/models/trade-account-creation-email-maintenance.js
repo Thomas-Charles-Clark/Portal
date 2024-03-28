@@ -776,7 +776,7 @@ const emailAttachment = (props, parent) => {
             message: 'Provide a file path'
         },
         pattern: {
-            params: /^\\\\(?:files|vm-web2)/i,
+            params: /^\\\\(?:files|vm-web1|vm-web2)/i,
             message: 'provide a path to a file either on the files server or on our vm-web2 server.'
         },
         rateLimit: {
