@@ -18,7 +18,7 @@
     flex-wrap: wrap;
     align-items: center;
 
-    > div {
+    > div:not(#advanced-collapse) {
         flex: 0 1 auto;
         min-width: 260px;
     }
@@ -206,4 +206,30 @@
             }
         }
     }
+}
+
+#advanced-collapse-btn {
+    display: flex;
+    align-self: stretch;
+    align-items: center;
+    padding-top: 2px;
+    padding-bottom: 2px;
+
+
+    i {
+        line-height: 0;
+    }
+}
+
+#advanced-collapse-inner {
+    display: flex;
+    gap: $l-gutter;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 132px;
+}
+
+.processed-tick {
+    position: relative;
+    right: 2px;
 }

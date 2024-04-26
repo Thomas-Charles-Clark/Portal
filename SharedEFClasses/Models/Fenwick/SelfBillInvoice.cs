@@ -41,7 +41,13 @@ namespace SharedEFClasses.Models.Fenwick
 
         public DateTime? DeletedDT { get; set; }
 
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool? Deleted { get; set; }
+
+        public DateTime? ProcessedDT { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public bool? Processed { get; set; }    
 
         public byte[] InvoicePDF { get; set; }
 

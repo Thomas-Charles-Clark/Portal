@@ -33,7 +33,7 @@
   flex-wrap: wrap;
   align-items: center;
 }
-.prefilters > div {
+.prefilters > div:not(#advanced-collapse) {
   flex: 0 1 auto;
   min-width: 260px;
 }
@@ -168,5 +168,29 @@
 }
 #details-modal .k-grid-content table tbody tr.credit td, #details-modal .k-grid-content table tbody tr.credit th {
   background-color: #e8cccc;
+}
+
+#advanced-collapse-btn {
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+#advanced-collapse-btn i {
+  line-height: 0;
+}
+
+#advanced-collapse-inner {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+  width: 132px;
+}
+
+.processed-tick {
+  position: relative;
+  right: 2px;
 }
 /*# sourceMappingURL=fenwick-invoicing.css.map */

@@ -74,6 +74,19 @@
             Invoice Date:
         </span>
         <div data-bind="component: { name: 'mdc-kendo-dropdown-component-no-outline', params: billingPeriodParams }"></div>
+        <button class="btn btn-secondary ms-auto" data-bind="click: submitSignedOffInvoices">
+            Submit Signed-Off Invoices to Mertex
+        </button>
+        <div id="advanced-collapse" class="collapse collapse-horizontal">
+            <div id="advanced-collapse-inner">
+                <button class="btn btn-danger" data-bind="click: deleteACLSales">
+                    Delete ACL Sales
+                </button>
+            </div>
+        </div>
+        <button id="advanced-collapse-btn" class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#advanced-collapse">
+            <i class="bi bi-gear fs-5 p-0"></i>
+        </button>
     </div>
     <!-- ko if: billingPeriod -->
     <div class="branches">
@@ -85,6 +98,7 @@
                 <col style="width: 160px" />
                 <col style="width: 160px" />
                 <col />
+                <col style="width: 36px" />
             </colgroup>
             <thead>
                 <tr>
@@ -105,6 +119,9 @@
                     </th>
                     <th>
                         Status
+                    </th>
+                    <th>
+
                     </th>
                 </tr>
             </thead>
@@ -129,6 +146,13 @@
                     <td>
                         <span data-bind="html: (SignedOffByMemberFullName ? `Signed off by ${SignedOffByMemberFullName} on ${renderDate(SignedOffDT)}` : null)"></span>
                     </td>
+                    <td class="text-center">
+                        <!-- ko if: Processed -->
+                        <i class="processed-tick fs-6" data-bind="attr: { title: `Processed: ${new moment(ProcessedDT).format('DD/MM/YYYY HH:mm:ss')}` }">
+                            ✔
+                        </i>
+                        <!-- /ko -->
+                    </td>
                 </tr>
                 <!-- /ko -->
                 <tr>
@@ -147,7 +171,7 @@
                     <td class="text-end">
                         <span data-bind="text: formatCurrency(selfBillInvoices().reduce((a, i) => { return a + i.FenwicksVariance }, 0), 2, 'en-GB', 'GBP')"></span>
                     </td>
-                    <td>
+                    <td colspan="2">
                     </td>
                 </tr>
             </tbody>

@@ -11,6 +11,7 @@ using Dapper;
 using System.Data;
 using SharedEFClasses.Models.Fenwick;
 using SharedEFClasses.Models.StockManagement;
+using UPSShippingWebService.Classes;
 
 namespace SharedEFClasses.Models
 {
@@ -39,6 +40,22 @@ namespace SharedEFClasses.Models
             }, null, 300, CommandType.StoredProcedure);
 
             return reply;
+        }
+
+        public async System.Threading.Tasks.Task FenwickInvoiceProcess()
+        {
+            var reply = await this.Database.Connection.QueryAsync("[Fenwicks].[Invoice_Process]", new
+            {
+
+            }, null, 300, CommandType.StoredProcedure);
+        }
+
+        public async System.Threading.Tasks.Task DeleteACLSales()
+        {
+            var reply = await this.Database.Connection.QueryAsync("[Fenwicks].[Invoice_Delete_ACL_Sales]", new
+            {
+
+            }, null, 300, CommandType.StoredProcedure);
         }
     }
 }

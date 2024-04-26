@@ -683,6 +683,52 @@ const fenwickInvoicingViewModel = (() => {
         }
     }
 
+    self.submitSignedOffInvoices = () => {
+        let submit = () => {
+            self.busy(true);
+            fetch("/api/FenwickInvoicingAPI/SubmitSignedOffInvoices", {
+                method: "POST",
+                headers: window.fetchHeaders
+            })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                self.busy(false);
+                window.showInfo("Information", "Signed-off invoices queued for submission to Mertex.");
+            })
+            .catch(err => {
+                self.busy(false);
+                window.catchFetchError(err);
+            });
+        }
+
+        window.showConfirm("Are you sure?", "Submitting signed-off invoices cannot be undone.", () => {
+            submit();
+        }, null);
+    }
+
+    self.deleteACLSales = () => {
+        let submit = () => {
+            self.busy(true);
+            fetch("/api/FenwickInvoicingAPI/DeleteACLSales", {
+                method: "POST",
+                headers: window.fetchHeaders
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    self.busy(false);
+                    window.showInfo("Information", "ACL Sales deleted.");
+                })
+                .catch(err => {
+                    self.busy(false);
+                    window.catchFetchError(err);
+                });
+        }
+
+        window.showConfirm("Are you sure?", "Deleting ACL Sales cannot be undone.", () => {
+            submit();
+        }, null);
+    }
+
     self.reload = () => {
         self.load(() => {
             self.fetchSelfBillInvoicesForDate(self.billingPeriodDate());

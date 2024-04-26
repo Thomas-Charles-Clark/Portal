@@ -102,7 +102,7 @@ namespace Portal.Areas.Fenwick.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> FetchSelfBillInvoicesForDate([FromBody] PassFencwickSelfBillInvoiceDate objDto)
         {
-            var results = PortalDb.FenwickSelfBillInvoices.Where(sbi => sbi.InvoiceDate == objDto.InvoiceDate).Select(sbi => new 
+            var results = PortalDb.FenwickSelfBillInvoices.Where(sbi => sbi.Deleted == false && sbi.InvoiceDate == objDto.InvoiceDate).Select(sbi => new 
             {
                 sbi.BranchID,
                 sbi.CreatedDT,
@@ -117,7 +117,9 @@ namespace Portal.Areas.Fenwick.Controllers
                 SignedOffByMemberFullName = sbi.SignedOffByMember == null ? null : sbi.SignedOffByMember.FullName,
                 sbi.TotalCommission,
                 sbi.TotalGrossSales,
-                sbi.TotalVAT
+                sbi.TotalVAT,
+                sbi.Processed,
+                sbi.ProcessedDT
             });
 
             return Ok(results);
@@ -227,6 +229,22 @@ namespace Portal.Areas.Fenwick.Controllers
 
             PortalDb.SaveChanges();
                 
+            return Ok(new { });
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> SubmitSignedOffInvoices()
+        {
+            await PortalDb.FenwickInvoiceProcess();
+
+            return Ok(new { });
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> DeleteACLSales()
+        {
+            await PortalDb.DeleteACLSales();
+
             return Ok(new { });
         }
     }

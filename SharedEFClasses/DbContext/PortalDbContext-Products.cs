@@ -3126,13 +3126,13 @@ namespace SharedEFClasses.Models
             var parameters = new SqlParameter[]
             {
                 new SqlParameter("@ProductCode", objStock.productCode),
-                new SqlParameter("@StockLocation", objStock.stockLocation),
+                new SqlParameter("@StockLocationCode", objStock.stockLocation),
                 new SqlParameter("@EnquiryType", objStock.enquiryType)
             };
 
             var cmd = this.Database.Connection.CreateCommand();
-            cmd.CommandText = "SELECT * FROM clr.fnc_Mertex_Stock_BatchPiece(@ProductCode, @StockLocation, @EnquiryType)";
-            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "[portal].[Stock_BatchPiece_Singular]";
+            cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddRange(parameters);
 
             try

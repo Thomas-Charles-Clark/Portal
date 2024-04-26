@@ -3197,22 +3197,15 @@ namespace Portal.Controllers
                                 var email = JObject.FromObject(contactDetail.json).SelectToken("$.contactDetails[0].email").Value<string>();
 
                                 string cc = null;
+
 #if DEBUG
                                 email = "tclark@designersguild.com";
                                 cc = "mchristie@designersguild.com";
 #endif
 
                                 var inkyMarkup = $@"
-                <style type=""text/css"">
-                    {PortalFramework.FoundationEmailCSS}
-                </style>
                 <meta name=""x-apple-disable-message-reformatting""/>
                 <container>
-	                <row>
-		                <columns>
-			                <img width=""640"" height=""54"" style=""margin: 15px 0 0 0"" alt='Designers Guild' src='https://www.designersguild.com/_assets/email_images/logos/header-logo.jpg' title='Designers Guild' />
-		                </columns>
-	                </row>
 	                <row>
 		                <columns>
 			                <p class=""text-left"" style=""margin-top: 0"">
@@ -3220,6 +3213,7 @@ namespace Portal.Controllers
 			                </p>
 		                </columns>
 	                </row>
+                    <spacer size=""15""></spacer>
 	                <row>
 		                <columns>
 			                <p>
@@ -3227,6 +3221,7 @@ namespace Portal.Controllers
 			                </p>
                         </columns>
                     </row>
+                    <spacer size=""15""></spacer>
                     <row>
                         <columns>
                             <p>
@@ -3234,7 +3229,7 @@ namespace Portal.Controllers
                             </p>
 		                </columns>
 	                </row>
-	                <spacer size=""10""></spacer>
+	                <spacer size=""15""></spacer>
 	                <row>
 		                <columns small=""12"" large=""12"">
 			                <p>
@@ -3244,6 +3239,7 @@ namespace Portal.Controllers
 			                </p>
 		                </columns>
                     </row>
+                    <spacer size=""5""></spacer>
                     <row>
                         <columns small=""4"" large=""4"">
                             <p class=""text-right"">
@@ -3278,6 +3274,7 @@ namespace Portal.Controllers
 			                </p>
 		                </columns>
                     </row>
+                    <spacer size=""5""></spacer>
                     <row>
                         <columns small=""4"" large=""4"">
                             <p class=""text-right"">
@@ -3303,13 +3300,14 @@ namespace Portal.Controllers
 			                </p>
 		                </columns>
 	                </row>
-<spacer size=""40""></spacer>
+                    <spacer size=""40""></spacer>
 	                <row>
 		                <columns small=""12"">
-			                <p class=""footer text-left small smaller"">
+			                <p class=""footer"">
 				                Thanks,<br/>
                                 Designers Guild Portal
 			                </p>
+                            <spacer size=""15""></spacer>
 		                </columns>
 	                </row>
                 </container>";

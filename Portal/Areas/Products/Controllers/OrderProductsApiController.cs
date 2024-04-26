@@ -262,16 +262,12 @@ namespace Portal.Areas.Products.Controllers
             <container>
 	            <row>
 		            <columns>
-			            <img width=""640"" height=""54"" style=""margin: 15px 0 0 0"" alt='Designers Guild' src='https://www.designersguild.com/_assets/email_images/logos/header-logo.jpg' title='Designers Guild' />
-		            </columns>
-	            </row>
-	            <row>
-		            <columns>
 			            <p class=""text-left"" style=""margin-top: 0"">
 				            {System.Text.RegularExpressions.Regex.Replace(objDoc.body, "\n", "<br/>")}
 			            </p>
 		            </columns>
 	            </row>
+                <spacer size=""15""></spacer>
             </container>";
 
             var emailTo = objDoc.recipient;
