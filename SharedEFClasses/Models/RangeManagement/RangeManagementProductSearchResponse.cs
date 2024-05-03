@@ -19,6 +19,7 @@ namespace SharedEFClasses.Models.RangeManagement
         public string ProductName { get; set; }
         public string ProductStatus { get; set; }
         public string Launch { get; set; }
+        public int ProductPageID { get; set; }
     }
 
     public class RangeManagementProductSearchResponse

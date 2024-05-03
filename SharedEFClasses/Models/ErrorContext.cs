@@ -10,7 +10,7 @@ namespace SharedEFClasses.Models.ErrorContext
     public class ErrorDbContext : DbContext
     {
         public ErrorDbContext()
-            : base("VM-SQL1")
+            : base("vm-sql")
         {
         }
 

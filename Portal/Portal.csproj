@@ -655,6 +655,24 @@
     <Compile Include="UPSTracking\TrackingRequest.cs" />
     <Compile Include="UPSTracking\TrackingReply.cs" />
     <Compile Include="Utilities\EU_EORI_Lookup.cs" />
+    <Compile Include="Utilities\FastExcel\Cell.cs" />
+    <Compile Include="Utilities\FastExcel\CellRange.cs" />
+    <Compile Include="Utilities\FastExcel\Column.cs" />
+    <Compile Include="Utilities\FastExcel\DefinedName.cs" />
+    <Compile Include="Utilities\FastExcel\DefinedNameLoadException.cs" />
+    <Compile Include="Utilities\FastExcel\DefinedNamesExtensions.cs" />
+    <Compile Include="Utilities\FastExcel\ExcelColumnAttribute.cs" />
+    <Compile Include="Utilities\FastExcel\FastExcel.cs" />
+    <Compile Include="Utilities\FastExcel\FastExcel.DefinedName.cs" />
+    <Compile Include="Utilities\FastExcel\FastExcel.Read.cs" />
+    <Compile Include="Utilities\FastExcel\FastExcel.Update.cs" />
+    <Compile Include="Utilities\FastExcel\FastExcel.Worksheets.cs" />
+    <Compile Include="Utilities\FastExcel\FastExcel.Write.cs" />
+    <Compile Include="Utilities\FastExcel\Row.cs" />
+    <Compile Include="Utilities\FastExcel\SharedStrings.cs" />
+    <Compile Include="Utilities\FastExcel\Worksheet.cs" />
+    <Compile Include="Utilities\FastExcel\WorksheetAddSettings.cs" />
+    <Compile Include="Utilities\FastExcel\WorksheetProperties.cs" />
     <Compile Include="Utilities\InMemoryMultipartFormDataStreamProvider\InMemoryMultipartFormDataStreamProvider.cs" />
     <Compile Include="Utilities\NotificationAuthentication.cs" />
     <Compile Include="Web References\EU_EORI_Lookup\Reference.cs">
@@ -2432,8 +2450,8 @@
     <Content Include="Areas\Stock\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Stock\Views\RingFence\RingFence.cshtml" />
     <Content Include="Content\fonts\Gill-Sans-MT.TTF" />
-    <None Include="Properties\PublishProfiles\VM-WEB2-DEV.pubxml" />
-    <None Include="Properties\PublishProfiles\VM-WEB2.pubxml" />
+    <None Include="Properties\PublishProfiles\Development.pubxml" />
+    <None Include="Properties\PublishProfiles\Production.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -2588,6 +2606,7 @@
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
+    <Content Include="Utilities\FastExcel\_Credits.txt" />
     <Content Include="Utilities\wordlist.txt" />
     <Content Include="Views\Shared\Modals\_ImageModal.cshtml" />
     <Content Include="Areas\Products\Views\Shared\Modals\_SuccessModal.cshtml" />
@@ -2627,12 +2646,6 @@
     <None Include="package.json" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Views\Web.config">
       <SubType>Designer</SubType>
@@ -2849,6 +2862,12 @@
     <None Include="Web References\Void\VoidWebServiceSchema.xsd">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Web.Development.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Production.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -2874,6 +2893,7 @@
     <Folder Include="edge\x86\" />
     <Folder Include="FileUploads\" />
     <Folder Include="FurnitureDownloads\projects\temp\" />
+    <Folder Include="Programmatic\ImageDownloads\" />
     <Folder Include="Uploads\" />
     <Folder Include="Views\BaseOData\" />
     <Folder Include="Views\ForceAuth\" />
@@ -3069,6 +3089,43 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Development|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>default</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Development|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Production|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Production|x64'">
     <OutputPath>bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>

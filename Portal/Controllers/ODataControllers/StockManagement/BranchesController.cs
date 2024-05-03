@@ -12,13 +12,17 @@ using SharedEFClasses.Models;
 using Microsoft.AspNet.OData;
 using SharedEFClasses.Models.StockManagement;
 using SharedEFClasses;
+using Portal.Void;
+using System.Web;
+using Microsoft.AspNet.Identity;
+using Kendo.Mvc;
 
 namespace Portal.Controllers
 {
     [System.Web.Http.Authorize]
     public class BranchesController : BaseODataController
     {
-        public BranchesController(PortalDbContext dbContext) : base(dbContext)
+        public BranchesController(ApplicationUserManager userManager,  PortalDbContext dbContext) : base(userManager, dbContext)
         {
 
         }
@@ -27,7 +31,18 @@ namespace Portal.Controllers
         [EnableQuery(MaxNodeCount = 200)] 
         public IQueryable<Branch> GetBranches()
         {
-            return PortalDb.Branches.Where(p => p.Deleted == false).AsQueryable();
+            var user = UserManager.FindById(User.Identity.GetUserId<int>());
+
+            var role = user.Roles.FirstOrDefault(r => r.Role.Id == 107);
+
+            if (role?.Role.Properties?.BranchIDs?.Any() == true) // Range Management (Fenwick Review)
+            {                                                       
+                return PortalDb.Branches.Where(p => p.Deleted == false && role.Role.Properties.BranchIDs.Contains(p.BranchID)).AsQueryable();
+            }
+            else
+            {
+                return PortalDb.Branches.Where(p => p.Deleted == false).AsQueryable();
+            }
         }
 
         [EnableQuery(MaxNodeCount = 200)]

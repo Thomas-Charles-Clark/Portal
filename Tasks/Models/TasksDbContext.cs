@@ -59,7 +59,7 @@ namespace Tasks.Models
     public class TasksDbContext : IdentityDbContext<Member, Role, int, Member_Login, Member_Role, Member_Claim>
     {
         public TasksDbContext()
-            : base("VM-SQL1")
+            : base("vm-sql")
         {
         }
 

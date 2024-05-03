@@ -8,6 +8,7 @@ using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Maintenance;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Products;
+using SharedEFClasses.Models.RangeManagement;
 using SharedEFClasses.Models.Samples;
 using SharedEFClasses.Models.TradeAccounts;
 using SharedEFClasses.Utilities;
@@ -2147,7 +2148,7 @@ namespace SharedEFClasses.Models
 
             try
             {
-                using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["VM-SQL1"].ConnectionString))
+                using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["vm-sql"].ConnectionString))
                 {
                     SqlCommand comm = new SqlCommand("[portal].[Download_Excel_ImageFeed]", conn)
                     {
@@ -2205,7 +2206,7 @@ namespace SharedEFClasses.Models
 
             try
             {
-                using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["VM-SQL1"].ConnectionString))
+                using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["vm-sql"].ConnectionString))
                 {
                     SqlCommand comm = new SqlCommand("portal.Download_Excel_ProductFeed", conn)
                     {
@@ -2263,7 +2264,7 @@ namespace SharedEFClasses.Models
 
         //    try
         //    {
-        //        using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["VM-SQL1"].ConnectionString))
+        //        using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["vm-sql"].ConnectionString))
         //        {
         //            SqlCommand comm = new SqlCommand("portal.Download_Excel_ProductFeed", conn)
         //            {
@@ -2322,7 +2323,7 @@ namespace SharedEFClasses.Models
 
             try
             {
-                using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["VM-SQL1"].ConnectionString))
+                using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["vm-sql"].ConnectionString))
                 {
                     SqlCommand comm = new SqlCommand("portal.Download_Wordpress_XML", conn)
                     {
@@ -2381,7 +2382,7 @@ namespace SharedEFClasses.Models
 
             try
             {
-                using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["VM-SQL1"].ConnectionString))
+                using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["vm-sql"].ConnectionString))
                 {
                     SqlCommand comm = new SqlCommand("portal.Download_Magento_XML", conn)
                     {
@@ -2440,7 +2441,7 @@ namespace SharedEFClasses.Models
 
             try
             {
-                using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["VM-SQL1"].ConnectionString))
+                using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["vm-sql"].ConnectionString))
                 {
                     SqlCommand comm = new SqlCommand("portal.Download_Shopify_CSV", conn)
                     {
@@ -3231,6 +3232,62 @@ namespace SharedEFClasses.Models
             }
 
             return result;
+        }
+
+
+        public List<long> ProductPage_Image_Select(RangeManagementXlsxDto dto)
+        {
+            List<long> results = new List<long>();
+
+            try
+            {
+                var comm = this.Database.Connection.CreateCommand();
+
+                comm.CommandText = "ads.ProductPageFeed_Download_Excel_Image";
+
+                comm.CommandType = System.Data.CommandType.StoredProcedure;
+
+                var ppids = new SqlParameter();
+
+                ppids.ParameterName = "@ProductPageIDs";
+                ppids.TypeName = "ProductPageIDsTableType";
+                ppids.SqlDbType = System.Data.SqlDbType.Structured;
+
+                DataTable dt = new DataTable();
+                dt.Columns.Add("ProductPageID", typeof(int));
+
+                foreach (var i in dto.ProductPageIDs)
+                {
+                    dt.Rows.Add(i);
+                }
+
+                ppids.Value = dt;
+
+                var parameters = new SqlParameter[]
+                {
+                    ppids,
+                    new SqlParameter("@TradeAccountCode", dto.TradeAccountCode)
+                };
+
+                comm.Parameters.AddRange(parameters);
+
+                this.Database.Connection.Open();
+
+                var reader = comm.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    results.Add(reader.GetInt64(0));
+                }
+
+                reader.Close();
+            }
+            finally
+            {
+                this.Database.Connection.Close();
+            }
+
+            return results;
         }
     }
 }

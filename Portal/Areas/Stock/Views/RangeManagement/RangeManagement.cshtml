@@ -13,6 +13,7 @@
     @Scripts.Render("~/bundles/js/components")
     @Scripts.Render("~/bundles/js/datetime-picker")
     @Scripts.Render("~/bundles/js/range-management")
+    @Scripts.Render("~/bundles/js/image-download-tasks")
 
     <script type="text/javascript">
 
@@ -39,6 +40,15 @@
         viewModel.busy(false);
 
         window.self = viewModel;
+
+        var headerController = new HeaderController();
+
+        ko.cleanNode(document.querySelector("#archives-modal"));
+
+        ko.applyBindings(headerController, document.querySelector("#archives-modal"));
+
+        window.downloadTasksViewModel = headerController;
+
 
         //$(document).ready(() => {
 
@@ -81,7 +91,7 @@
                 </div>
             </div>
         </td>
-        <td colspan="200"></td>
+        <td colspan="@(Model.ReadOnlyMode == false ? "16" : "17")"></td>
     </tr>
     <!-- /ko -->
     <!-- ko with: $root.getFilledRecord($data.ProductID) -->
@@ -111,7 +121,14 @@
         <td data-bind="html: priceSummary">
         </td>
         <td class="text-end">
-            <div class="range-planned" data-bind="component: { name: 'mdc-text-field-numeric-component', params: rangePlannedParams }"></div>
+            @if (Model.ReadOnlyMode == false)
+            {
+                <div class="range-planned" data-bind="component: { name: 'mdc-text-field-numeric-component', params: rangePlannedParams }"></div>
+            }
+            else
+            {
+                <span data-bind="text: rangePlanned"></span>
+            }
         </td>
         <td class="text-end">
             <span data-bind="text: rangeActual"></span>
@@ -125,42 +142,45 @@
         <td class="recommendations-container">
             <div data-bind="html: actionRecommendations"></div>
         </td>
-        <td class="text-end" data-bind="style: { 'background-color': actionTransferToBranchHighlight }">
-            <div data-bind="visible: actionTransferToBranchBasketItemId() == null, component: { name: 'mdc-text-field-numeric-component', params: actionTransferToBranchQuantityParams }"></div>
-            <button class="btn btn-sm btn-outline-primary" style="display: none" data-bind="
-                    visible: actionTransferToBranchBasketItemId,
-                    disable: actionTransferToBranchQuantityParams.busy,
-                    click: removeWH2BRFromOrder,
-                    css: { busy: actionTransferToBranchQuantityParams.busy },
-                    attr: { title: `BasketItemID: ${actionTransferToBranchBasketItemId()}` }">
-                Cancel Transfer of <span data-bind="text: actionTransferToBranchExtantTransferQuantity"></span>
-            </button>
-        </td>
-        <td class="text-end" data-bind="style: { 'background-color': actionTransferToWarehouseHighlight }">
-            <div data-bind="visible: actionTransferToWarehouseBasketItemId() == null, component: { name: 'mdc-text-field-numeric-component', params: actionTransferToWarehouseQuantityParams }"></div>
-            <button class="btn btn-sm btn-outline-primary" style="display: none" data-bind="
-                    visible: actionTransferToWarehouseBasketItemId,
-                    disable: actionTransferToWarehouseQuantityParams.busy,
-                    click: removeBR2WHFromOrder,
-                    css: { busy: actionTransferToWarehouseQuantityParams.busy },
-                    attr: { title: `BasketItemID: ${actionTransferToWarehouseBasketItemId()}` }">
-                Cancel Transfer of <span data-bind="text: actionTransferToWarehouseExtantTransferQuantity"></span>
-            </button>
-        </td>
-        <td>
-            <button class="btn btn-secondary btn-sm submit-btn" data-bind="visible: submitVisible(), disable: busy, click: submitTransfers">
-                Submit
-            </button>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: sales180DayBranch"></span>
-        </td>
+        @if (Model.ReadOnlyMode == false)
+        {
+            <td class="text-end" data-bind="style: { 'background-color': actionTransferToBranchHighlight }">
+                <div data-bind="visible: actionTransferToBranchBasketItemId() == null, component: { name: 'mdc-text-field-numeric-component', params: actionTransferToBranchQuantityParams }"></div>
+                <button class="btn btn-sm btn-outline-primary" style="display: none" data-bind="
+                        visible: actionTransferToBranchBasketItemId,
+                        disable: actionTransferToBranchQuantityParams.busy,
+                        click: removeWH2BRFromOrder,
+                        css: { busy: actionTransferToBranchQuantityParams.busy },
+                        attr: { title: `BasketItemID: ${actionTransferToBranchBasketItemId()}` }">
+                    Cancel Transfer of <span data-bind="text: actionTransferToBranchExtantTransferQuantity"></span>
+                </button>
+            </td>
+            <td class="text-end" data-bind="style: { 'background-color': actionTransferToWarehouseHighlight }">
+                <div data-bind="visible: actionTransferToWarehouseBasketItemId() == null, component: { name: 'mdc-text-field-numeric-component', params: actionTransferToWarehouseQuantityParams }"></div>
+                <button class="btn btn-sm btn-outline-primary" style="display: none" data-bind="
+                        visible: actionTransferToWarehouseBasketItemId,
+                        disable: actionTransferToWarehouseQuantityParams.busy,
+                        click: removeBR2WHFromOrder,
+                        css: { busy: actionTransferToWarehouseQuantityParams.busy },
+                        attr: { title: `BasketItemID: ${actionTransferToWarehouseBasketItemId()}` }">
+                    Cancel Transfer of <span data-bind="text: actionTransferToWarehouseExtantTransferQuantity"></span>
+                </button>
+            </td>
+            <td>
+                <button class="btn btn-secondary btn-sm submit-btn" data-bind="visible: submitVisible(), disable: busy, click: submitTransfers">
+                    Submit
+                </button>
+            </td>
+            <td class="text-end">
+                <span data-bind="text: sales180DayBranch"></span>
+            </td>
+        }
         <td class="text-end">
             <span data-bind="text: stockWHFreeStock"></span>
         </td>
         @*<td class="text-end">
-            <span data-bind="text: stockCover"></span>
-        </td>*@
+                <span data-bind="text: stockCover"></span>
+            </td>*@
         <td class="text-end">
             <span data-bind="text: stockWHNextPOFreeStock"></span>
         </td>
@@ -169,12 +189,15 @@
             <span data-bind="text: renderDate(stockWHNextPODueDate.substring(0, 10))"></span>
             <!-- /ko -->
         </td>
-        <td class="text-end">
-            <span data-bind="text: stockKRFreeStock"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: stockMHSFreeStock"></span>
-        </td>
+        @if (Model.ReadOnlyMode == false)
+        {
+            <td class="text-end">
+                <span data-bind="text: stockKRFreeStock"></span>
+            </td>
+            <td class="text-end">
+                <span data-bind="text: stockMHSFreeStock"></span>
+            </td>
+        }
         <td class="text-end">
             <span data-bind="text: stockFWFreeStock"></span>
         </td>
@@ -182,8 +205,8 @@
             <span data-bind="text: stockRingFence"></span>
         </td>
         @*<td>
-            <span data-bind="html: salesSummary"></span>
-        </td>*@
+                <span data-bind="html: salesSummary"></span>
+            </td>*@
         <td class="text-end">
             <span data-bind="text: sales180DayTotal"></span>
         </td>
@@ -202,18 +225,21 @@
         <td class="text-end">
             <span data-bind="text: sales180DayUKTrade"></span>
         </td>
-        <td>
-            <!-- ko if: notes != null && notes.length > 0 -->
-            <button class="add-note-btn btn btn-link btn-sm" data-bind="click: $root.showAddNoteModal">
-                <span data-bind="text: notes"></span>
-            </button>
-            <!-- /ko -->
-            <!-- ko if: notes == null || notes.length == 0 -->
-            <button class="add-note-btn btn btn-sm" data-bind="click: $root.showAddNoteModal">
-                <i class="material-icons">add</i>
-            </button>
-            <!-- /ko -->
-        </td>
+        @if (Model.ReadOnlyMode == false)
+        {
+            <td>
+                <!-- ko if: notes != null && notes.length > 0 -->
+                <button class="add-note-btn btn btn-link btn-sm" data-bind="click: $root.showAddNoteModal">
+                    <span data-bind="text: notes"></span>
+                </button>
+                <!-- /ko -->
+                <!-- ko if: notes == null || notes.length == 0 -->
+                <button class="add-note-btn btn btn-sm" data-bind="click: $root.showAddNoteModal">
+                    <i class="material-icons">add</i>
+                </button>
+                <!-- /ko -->
+            </td>
+        }
     </tr>
     <!-- /ko -->
 </script>
@@ -261,98 +287,98 @@
     <!-- /ko -->
     <!-- ko with: $root.getAddFilledRecord($data.ProductID) -->
     @*<tr class="relative"><td colspan="200"></td></tr>*@
-<tr class="relative" data-bind="css: { busy: typeof busy === 'undefined' ? true : busy }">
-    <td class="k-group-cell product-filter-name-pad"></td>
-    <td class="k-group-cell product-page-name-pad"></td>
-    <td class="k-group-cell order-form-group-pad"></td>
-    <td class="product-card-wrapper" valign="top">
-        <div class="product-card-tooltip card">
-            <div class="pad product-filter-pad"></div>
-            <div class="pad product-name-pad"></div>
-            <div class="pad order-form-group-pad"></div>
-            <div class="card-body">
-                <div class="flex">
-                    <!-- ko if: ImageID -->
-                    <img class="thumb" width="80" height="80" data-bind="attr: { src: `https://www.designersguild.com/image/90/${ImageID}` }" />
-                    <!-- /ko -->
-                    <div>
-                        <span data-bind="text: ProductName, attr: { title: ProductName }"></span>
-                        <span data-bind="text: ProductCode"></span>
-                        <span class="d-flex justify-content-between">
-                            <span data-bind="text: Launch"></span>
-                            <span data-bind="text: ProductStatus"></span>
-                        </span>
+    <tr class="relative" data-bind="css: { busy: typeof busy === 'undefined' ? true : busy }">
+        <td class="k-group-cell product-filter-name-pad"></td>
+        <td class="k-group-cell product-page-name-pad"></td>
+        <td class="k-group-cell order-form-group-pad"></td>
+        <td class="product-card-wrapper" valign="top">
+            <div class="product-card-tooltip card">
+                <div class="pad product-filter-pad"></div>
+                <div class="pad product-name-pad"></div>
+                <div class="pad order-form-group-pad"></div>
+                <div class="card-body">
+                    <div class="flex">
+                        <!-- ko if: ImageID -->
+                        <img class="thumb" width="80" height="80" data-bind="attr: { src: `https://www.designersguild.com/image/90/${ImageID}` }" />
+                        <!-- /ko -->
+                        <div>
+                            <span data-bind="text: ProductName, attr: { title: ProductName }"></span>
+                            <span data-bind="text: ProductCode"></span>
+                            <span class="d-flex justify-content-between">
+                                <span data-bind="text: Launch"></span>
+                                <span data-bind="text: ProductStatus"></span>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </td>
-    <td data-bind="html: priceSummary">
-    </td>
-    <td class="recommendations-container">
-        <div data-bind="html: actionRecommendations"></div>
-    </td>
-    <td class="text-end" data-bind="style: { 'background-color': typeof actionAddToRangeHighlight  === 'undefined' ? 'none' : actionAddToRangeHighlight }">
-        <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: actionAddToRangeQuantityParams }"></div>
-    </td>
-    <td>
-        <!-- ko if: allowed -->
-        <button class="btn btn-secondary btn-sm submit-btn" data-bind="disable: busy() || submitDisabled(), click: submitTransfers">
-            Submit
-        </button>
-        <!-- /ko -->
-    </td>
-    <td class="text-end">
-        <span data-bind="text: stockWHFreeStock"></span>
-    </td>
-    @*<td class="text-end">
-        <span data-bind="text: stockCover"></span>
-    </td>*@
-    <td class="text-end">
-        <span data-bind="text: stockWHNextPOFreeStock"></span>
-    </td>
-    <td>
-        <!-- ko if: stockWHNextPODueDate -->
-        <span data-bind="text: renderDate(stockWHNextPODueDate.substring(0, 10))"></span>
-        <!-- /ko -->
-    </td>
-    <td class="text-end">
-        <span data-bind="text: stockKRFreeStock"></span>
-    </td>
-    <td class="text-end">
-        <span data-bind="text: stockMHSFreeStock"></span>
-    </td>
-    <td class="text-end">
-        <span data-bind="text: stockFWFreeStock"></span>
-    </td>
-    <td class="text-end">
-        <span data-bind="text: stockRingFence"></span>
-    </td>
-    @*<td>
-        <span data-bind="html: salesSummary"></span>
-    </td>*@
-    <td class="text-end">
-        <span data-bind="text: sales180DayTotal"></span>
-    </td>
-    <td class="text-end">
-        <span data-bind="text: sales180DayBranch"></span>
-    </td>
-    <td class="text-end">
-        <span data-bind="text: sales180DayKR"></span>
-    </td>
-    <td class="text-end">
-        <span data-bind="text: sales180DayMHS"></span>
-    </td>
-    <td class="text-end">
-        <span data-bind="text: sales180DayFW"></span>
-    </td>
-    <td class="text-end">
-        <span data-bind="text: sales180DayUKEcommerce"></span>
-    </td>
-    <td class="text-end">
-        <span data-bind="text: sales180DayUKTrade"></span>
-    </td>
-</tr>
+        </td>
+        <td data-bind="html: priceSummary">
+        </td>
+        <td class="recommendations-container">
+            <div data-bind="html: actionRecommendations"></div>
+        </td>
+        <td class="text-end" data-bind="style: { 'background-color': typeof actionAddToRangeHighlight  === 'undefined' ? 'none' : actionAddToRangeHighlight }">
+            <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: actionAddToRangeQuantityParams }"></div>
+        </td>
+        <td>
+            <!-- ko if: allowed -->
+            <button class="btn btn-secondary btn-sm submit-btn" data-bind="disable: busy() || submitDisabled(), click: submitTransfers">
+                Submit
+            </button>
+            <!-- /ko -->
+        </td>
+        <td class="text-end">
+            <span data-bind="text: stockWHFreeStock"></span>
+        </td>
+        @*<td class="text-end">
+                <span data-bind="text: stockCover"></span>
+            </td>*@
+        <td class="text-end">
+            <span data-bind="text: stockWHNextPOFreeStock"></span>
+        </td>
+        <td>
+            <!-- ko if: stockWHNextPODueDate -->
+            <span data-bind="text: renderDate(stockWHNextPODueDate.substring(0, 10))"></span>
+            <!-- /ko -->
+        </td>
+        <td class="text-end">
+            <span data-bind="text: stockKRFreeStock"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: stockMHSFreeStock"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: stockFWFreeStock"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: stockRingFence"></span>
+        </td>
+        @*<td>
+                <span data-bind="html: salesSummary"></span>
+            </td>*@
+        <td class="text-end">
+            <span data-bind="text: sales180DayTotal"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: sales180DayBranch"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: sales180DayKR"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: sales180DayMHS"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: sales180DayFW"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: sales180DayUKEcommerce"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: sales180DayUKTrade"></span>
+        </td>
+    </tr>
     <!-- /ko -->
 </script>
 
@@ -384,8 +410,8 @@
             <span data-bind="text: OrderLineID"></span>
         </td>
         @*<td class="text-center">
-            <span data-bind="text: Type"></span>
-        </td>*@
+                <span data-bind="text: Type"></span>
+            </td>*@
     </tr>
 </script>
 
@@ -421,45 +447,60 @@
                         </li>
                         <li class="nav-item" data-bind="visible: branch">
                             <button id="range-tab-btn" class="btn nav-link active" data-bs-target="#range-tab" data-bs-toggle="tab">
-                                Manage Range
+                                @(Model.ReadOnlyMode == false ? "Manage Range" : "Review Range")
                             </button>
                         </li>
-                        <li class="nav-item" data-bind="visible: branch">
-                            <button id="add-to-range-btn" class="btn nav-link" data-bs-target="#add-tab" data-bs-toggle="tab">
-                                Add to Range
-                            </button>
-                        </li>
-                        <li class="nav-item" data-bind="visible: branch">
-                            <button id="restock-tab-btn" href="#restock-tab" data-bs-toggle="tab" class="btn nav-link">
-                                Transfer Orders - Restock (WH &raquo; Branch)
-                            </button>
-                        </li>
-                        <li class="nav-item" data-bind="visible: branch">
-                            <button id="recall-tab-btn" href="#recall-tab" data-bs-toggle="tab" class="btn nav-link">
-                                Transfer Orders - Recall (Branch &raquo; WH)
-                            </button>
-                        </li>
-                        <li class="nav-item" data-bind="visible: branch">
-                            <button id="refresh-transfers-btn" class="btn nav-link" data-bind="click: refreshTransferOrders">
-                                Refresh Transfer Orders <i class="material-icons">refresh</i>
-                            </button>
-                        </li>
-                        <li class="nav-item ms-auto" data-bind="visible: branch">
-                            <button id="send-new-season-notice-btn" class="btn nav-link" data-bind="click: sendNewSeasonNotification">
-                                Send "New Season" Notification <i class="material-icons">email</i>
-                            </button>
-                        </li>
-                        <li class="nav-item" data-bind="visible: branch">
-                            <button id="refresh-transfers-btn" class="btn nav-link" data-bind="click: sendExitingProductsNotification">
-                                Send "Exiting Products" Notification <i class="material-icons">email</i>
-                            </button>
-                        </li>
+                        @if (Model.ReadOnlyMode == false)
+                        {
+                            <li class="nav-item" data-bind="visible: branch">
+                                <button id="add-to-range-btn" class="btn nav-link" data-bs-target="#add-tab" data-bs-toggle="tab">
+                                    Add to Range
+                                </button>
+                            </li>
+                            <li class="nav-item" data-bind="visible: branch">
+                                <button id="restock-tab-btn" href="#restock-tab" data-bs-toggle="tab" class="btn nav-link">
+                                    Transfer Orders - Restock (WH &raquo; Branch)
+                                </button>
+                            </li>
+                            <li class="nav-item" data-bind="visible: branch">
+                                <button id="recall-tab-btn" href="#recall-tab" data-bs-toggle="tab" class="btn nav-link">
+                                    Transfer Orders - Recall (Branch &raquo; WH)
+                                </button>
+                            </li>
+                            <li class="nav-item" data-bind="visible: branch">
+                                <button id="refresh-transfers-btn" class="btn nav-link" data-bind="click: refreshTransferOrders">
+                                    Refresh Transfer Orders <i class="material-icons">refresh</i>
+                                </button>
+                            </li>
+                            <li class="nav-item dropdown ms-auto align-self-stretch" data-bind="visible: branch">
+                                <button class="btn btn-secondary dropdown-toggle align-self-stretch" href="#" role="button" id="send-email-dropdown-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Send Email
+                                    <i class="material-icons">email</i>
+                                </button>
+                                <ul id="send-email-dropdown" class="dropdown-menu" aria-labelledby="send-email-dropdown">
+                                    <li>
+                                        <button id="send-new-season-notice-btn" class="dropdown-item" data-bind="click: sendNewSeasonNotification">
+                                            Send "New Season" Notification
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button id="refresh-transfers-btn" class="dropdown-item" data-bind="click: sendExitingProductsNotification">
+                                            Send "Exiting Products" Notification
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button id="carry-forward-btn" class="dropdown-item" data-bind="click: sendCarryForwardProductsNotification">
+                                            Send "Carry Forward Products" Notification
+                                        </button>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
         </div>
     </div>
-
     <div id="prefilters-second" class="prefilters" style="display: none" data-bind="visible: branch() && [VIEW_MANAGE, VIEW_ADD].indexOf(view()) > -1">
         <div class="flex">
             <div id="product-filter-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productFilterGroupParams }"></div>
@@ -470,11 +511,11 @@
             <div id="sale-status-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: saleStatusParams }"></div>
             @*<div id="status-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statusGroupParams }"></div>*@
             @*<div id="buyer-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: buyerParams }"></div>
-        <div id="supplier-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
-        <div id="launch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: launchParams }"></div>
-        <div id="product-colour-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productColourParams }"></div>
-        <div id="stock-level-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: stockLevelParams }"></div>
-        <div id="collection-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: collectionParams }"></div>*@
+                <div id="supplier-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+                <div id="launch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: launchParams }"></div>
+                <div id="product-colour-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productColourParams }"></div>
+                <div id="stock-level-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: stockLevelParams }"></div>
+                <div id="collection-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: collectionParams }"></div>*@
         </div>
         <div class="flex prefilters">
             <div id="stock-status-prefilter" data-bind="visible: view() == VIEW_MANAGE, component: { name: 'mdc-kendo-dropdown-component', params: stockStatusParams }"></div>
@@ -484,71 +525,96 @@
             <a id="clear-all-filters-anchor" class="btn btn-blue-active" data-bind="click: clearAllFilters">
                 Clear all Filters
             </a>
-            <!-- ko if: view() == VIEW_MANAGE && branchBaskets() -->
-            <div class="dropdown">
-                <a id="branch-baskets-anchor" class="btn btn-blue-active dropdown-toggle me-auto" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside">
-                    Baskets
-                </a>
-                <div id="baskets-dropdown" class="dropdown-menu">
-                    <table class="table table-condensed">
-                        <colgroup></colgroup>
-                        <tbody>
-                            <!-- ko foreach: branchBaskets -->
-                            <tr data-bind="attr: { title: `BasketID: ${BasketID}, Created ${renderDate(BasketCreatedDT)}` }">
-                                <td>
-                                    <span data-bind="text: TradeAccountCode"></span>
-                                </td>
-                                <td>
-                                    <span data-bind="text: TradeAccountName"></span>
-                                </td>
-                                <td class="text-end">
-                                    <span class="badge rounded-pill bg-primary" data-bind="text: LineCount"></span>
-                                </td>
-                            </tr>
-                            <!-- /ko -->
-                        </tbody>
-                    </table>
-                    <!-- ko if: branchBaskets().length -->
-                    <button class="btn btn-success" data-bind="click: releaseBranchBaskets">
-                        Submit
-                    </button>
-                    <!-- /ko -->
-                    <!-- ko ifnot: branchBaskets().length -->
-                    <p class="mb-0">
-                        No baskets exist for this branch
-                    </p>
-                    <!-- /ko -->
+            @if (Model.ReadOnlyMode == false)
+            {
+                <!-- ko if: view() == VIEW_MANAGE && branchBaskets() -->
+                <div class="dropdown">
+                    <a id="branch-baskets-anchor" class="btn btn-blue-active dropdown-toggle me-auto" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                        Baskets
+                    </a>
+                    <div id="baskets-dropdown" class="dropdown-menu">
+                        <table class="table table-condensed">
+                            <colgroup></colgroup>
+                            <tbody>
+                                <!-- ko foreach: branchBaskets -->
+                                <tr data-bind="attr: { title: `BasketID: ${BasketID}, Created ${renderDate(BasketCreatedDT)}` }">
+                                    <td>
+                                        <span data-bind="text: TradeAccountCode"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: TradeAccountName"></span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span class="badge rounded-pill bg-primary" data-bind="text: LineCount"></span>
+                                    </td>
+                                </tr>
+                                <!-- /ko -->
+                            </tbody>
+                        </table>
+                        <!-- ko if: branchBaskets().length -->
+                        <button class="btn btn-success" data-bind="click: releaseBranchBaskets">
+                            Submit
+                        </button>
+                        <!-- /ko -->
+                        <!-- ko ifnot: branchBaskets().length -->
+                        <p class="mb-0">
+                            No baskets exist for this branch
+                        </p>
+                        <!-- /ko -->
+                    </div>
                 </div>
-            </div>
-            <!-- /ko -->
+                <!-- /ko -->
+            }
         </div>
     </div>
-
     <div id="branch-totals" class="prefilters" style="display: none" data-bind="visible: branch() && [VIEW_MANAGE, VIEW_RECALL, VIEW_RESTOCK, VIEW_ADD].indexOf(view()) > -1">
         <h4>
-            <span data-bind="text: branch() && branch().Name"></span> Totals
+            <span data-bind="text: branch() && branch().Name"></span> @(Model.ReadOnlyMode == false ? "Totals" : "")
         </h4>
-        <label>
-            <span>
-                Planned
-            </span>
-            <span data-bind="text: branchTotalPlannedValue"></span>
-            <span data-bind="text: branchTotalPlannedCount"></span>
-        </label>
-        <label>
-            <span>
-                Actual
-            </span>
-            <span data-bind="text: branchTotalActualValue"></span>
-            <span data-bind="text: branchTotalActualCount"></span>
-        </label>
-        <label>
-            <span>
-                In Progress
-            </span>
-            <span data-bind="text: branchTotalInProgressValue"></span>
-            <span data-bind="text: branchTotalInProgressCount"></span>
-        </label>
+        @if (Model.ReadOnlyMode == false)
+        {
+            <label>
+                <span>
+                    Planned
+                </span>
+                <span data-bind="text: branchTotalPlannedValue"></span>
+                <span data-bind="text: branchTotalPlannedCount"></span>
+            </label>
+            <label>
+                <span>
+                    Actual
+                </span>
+                <span data-bind="text: branchTotalActualValue"></span>
+                <span data-bind="text: branchTotalActualCount"></span>
+            </label>
+            <label>
+                <span>
+                    In Progress
+                </span>
+                <span data-bind="text: branchTotalInProgressValue"></span>
+                <span data-bind="text: branchTotalInProgressCount"></span>
+            </label>
+        }
+        <button type="button" class="btn btn-secondary p-0 px-3 ms-3 align-self-stretch d-flex align-items-center gap-2" data-bind="click: refresh" title="Refresh">
+            Refresh
+            <i class="bi bi-arrow-clockwise fs-5"></i>
+        </button>
+        @if (Model.ReadOnlyMode == false)
+        {
+            <button type="button" class="btn btn-secondary p-0 px-3 ms-3 align-self-stretch d-flex align-items-center gap-3" data-bind="click: downloadRangeDataXlsx" title="Refresh">
+                Download Range Info XLSX
+                <i class="bi bi-download fs-5"></i>
+            </button>
+        }
+        <button type="button" class="btn btn-secondary p-0 px-3 ms-3 align-self-stretch d-flex align-items-center gap-3" data-bind="click: downloadProductDataXlsx" title="Refresh">
+            Download Product Data XLSX
+            <i class="bi bi-download fs-5"></i>
+        </button>
+        <button type="button" class="btn btn-secondary p-0 px-3 ms-3 align-self-stretch d-flex align-items-center gap-3" data-bind="click: downloadProductImages" title="Refresh">
+            Download Product Images
+            <i class="bi bi-image fs-5"></i>
+            <i class="bi bi-download fs-5"></i>
+        </button>
     </div>
 </div>
 
@@ -582,16 +648,22 @@
                                 <col style="width:120px" />
                                 <col style="width:80px" />
                                 <col style="width:260px" />
-                                <col style="width:160px" />
-                                <col style="width:160px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
+                                @if (Model.ReadOnlyMode == false)
+                                {
+                                    <col style="width:160px" />
+                                    <col style="width:160px" />
+                                    <col style="width:100px" />
+                                    <col style="width:100px" />
+                                }
                                 <col style="width:100px" />
                                 @*<col style="width:100px" />*@
                                 <col style="width:100px" />
                                 <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
+                                @if (Model.ReadOnlyMode == false)
+                                {
+                                    <col style="width:100px" />
+                                    <col style="width:100px" />
+                                }
                                 <col style="width:100px" />
                                 <col style="width:100px" />
                                 @*<col style="width:200px" />*@
@@ -601,7 +673,10 @@
                                 <col style="width:100px" />
                                 <col style="width:100px" />
                                 <col style="width:100px" />
-                                <col style="width:50px" />
+                                @if (Model.ReadOnlyMode == false)
+                                {
+                                    <col style="width:50px" />
+                                }
                             </colgroup>
                             <thead role="rowgroup">
                                 <tr role="row">
@@ -612,13 +687,13 @@
                                     <th scope="col" role="columnheader" colspan="5" class="k-header">
                                         Range
                                     </th>
-                                    <th scope="col" role="columnheader" colspan="5" class="k-header">
+                                    <th scope="col" role="columnheader" colspan="@(Model.ReadOnlyMode ? "1" : "5")" class="k-header">
                                         Actions
                                     </th>
-                                    <th scope="col" role="columnheader" colspan="7" class="k-header">
+                                    <th scope="col" role="columnheader" colspan="@(Model.ReadOnlyMode ? "5" : "7")" class="k-header">
                                         Stock
                                     </th>
-                                    <th scope="col" role="columnheader" colspan="7" class="k-header">
+                                    <th scope="col" role="columnheader" colspan="@(Model.ReadOnlyMode ? "6" : "7")" class="k-header">
                                         Sales - Last 180 Days
                                     </th>
                                 </tr>
@@ -641,36 +716,42 @@
                                     <th scope="col" role="columnheader" class="k-header">
                                         Recommendations
                                     </th>
-                                    <th scope="col" role="columnheader" class="text-end k-header">
-                                        Qty to Branch
-                                    </th>
-                                    <th scope="col" role="columnheader" class="text-end k-header">
-                                        Qty to WH
-                                    </th>
-                                    <th scope="col" role="columnheader" class="k-header">
+                                    @if (Model.ReadOnlyMode == false)
+                                    {
+                                        <th scope="col" role="columnheader" class="text-end k-header">
+                                            Qty to Branch
+                                        </th>
+                                        <th scope="col" role="columnheader" class="text-end k-header">
+                                            Qty to WH
+                                        </th>
+                                        <th scope="col" role="columnheader" class="k-header">
 
-                                    </th>
-                                    <th scope="col" role="columnheader" class="text-end k-header">
-                                        180 Day Sales Branch
-                                    </th>
+                                        </th>
+                                        <th scope="col" role="columnheader" class="text-end k-header">
+                                            180 Day Sales Branch
+                                        </th>
+                                    }
                                     <th scope="col" role="columnheader" class="text-end k-header">
                                         Warehouse
                                     </th>
                                     @*<th scope="col" role="columnheader" class="text-end k-header">
-                                        Cover
-                                    </th>*@
+                                            Cover
+                                        </th>*@
                                     <th scope="col" role="columnheader" class="text-end k-header">
                                         PO Quantity
                                     </th>
                                     <th scope="col" role="columnheader" class="k-header">
                                         PO Due Date
                                     </th>
-                                    <th scope="col" role="columnheader" class="text-end k-header">
-                                        King's Road
-                                    </th>
-                                    <th scope="col" role="columnheader" class="text-end k-header">
-                                        Marylebone
-                                    </th>
+                                    @if (Model.ReadOnlyMode == false)
+                                    {
+                                        <th scope="col" role="columnheader" class="text-end k-header">
+                                            King's Road
+                                        </th>
+                                        <th scope="col" role="columnheader" class="text-end k-header">
+                                            Marylebone
+                                        </th>
+                                    }
                                     <th scope="col" role="columnheader" class="text-end k-header">
                                         Fenwick (All)
                                     </th>
@@ -678,8 +759,8 @@
                                         Ring Fenced
                                     </th>
                                     @*<th scope="col" role="columnheader" class="k-header">
-                                        Summary
-                                    </th>*@
+                                            Summary
+                                        </th>*@
                                     <th scope="col" role="columnheader" class="text-end k-header">
                                         Total Worldwide
                                     </th>
@@ -698,42 +779,48 @@
                                     <th scope="col" role="columnheader" class="text-end k-header">
                                         UK Trade
                                     </th>
-                                    <th scope="col" role="columnheader" class="k-header">
-                                        Notes
-                                    </th>
+                                    @if (Model.ReadOnlyMode == false)
+                                    {
+                                        <th scope="col" role="columnheader" class="k-header">
+                                            Notes
+                                        </th>
+                                    }
                                 </tr>
                             </thead>
                             <tbody class="virtual-spacing">
                                 <tr>
-                                    <td colspan="300" data-bind="style: { height: `${gridScrollTopPadding()}px` }">
+                                    <td colspan="@(Model.ReadOnlyMode ? "21" : "300")" data-bind="style: { height: `${gridScrollTopPadding()}px` }">
                                     </td>
                                 </tr>
                             </tbody>
                             <tbody role="rowgroup" data-bind="foreach: groupedSearchResults">
                                 <!-- ko if: headerVisible -->
                                 <tr role="row" class="k-grouping-row product-filter-name-row">
-                                    <td aria-expanded="true" colspan="300" class="relative">
+                                    <td aria-expanded="true" colspan="@(Model.ReadOnlyMode ? "21" : "300")" class="relative">
                                         <p class="k-reset">
                                             <span class="group-heading bold" data-bind="text: name"></span>
                                         </p>
-                                        <span class="range-total range-planned bold">
-                                            <span data-bind="text: formatCurrency(plannedValue(), 0, 'en-GB', 'GBP')"></span>
-                                            <!-- ko if: plannedCount -->
-                                            (Q. <span data-bind="text: plannedCount"></span>)
-                                            <!-- /ko -->
-                                        </span>
-                                        <span class="range-total range-actual bold">
-                                            <span data-bind="text: formatCurrency(actualValue(), 0, 'en-GB', 'GBP')"></span>
-                                            <!-- ko if: actualCount -->
-                                            (Q. <span data-bind="text: actualCount"></span>)
-                                            <!-- /ko -->
-                                        </span>
-                                        <span class="range-total range-in-progress bold">
-                                            <span data-bind="text: formatCurrency(inProgressValue(), 0, 'en-GB', 'GBP')"></span>
-                                            <!-- ko if: inProgressCount -->
-                                            (Q. <span data-bind="text: inProgressCount"></span>)
-                                            <!-- /ko -->
-                                        </span>
+                                        @if (Model.ReadOnlyMode == false)
+                                        {
+                                            <span class="range-total range-planned bold">
+                                                <span data-bind="text: formatCurrency(plannedValue(), 0, 'en-GB', 'GBP')"></span>
+                                                <!-- ko if: plannedCount -->
+                                                (Q. <span data-bind="text: plannedCount"></span>)
+                                                <!-- /ko -->
+                                            </span>
+                                            <span class="range-total range-actual bold">
+                                                <span data-bind="text: formatCurrency(actualValue(), 0, 'en-GB', 'GBP')"></span>
+                                                <!-- ko if: actualCount -->
+                                                (Q. <span data-bind="text: actualCount"></span>)
+                                                <!-- /ko -->
+                                            </span>
+                                            <span class="range-total range-in-progress bold">
+                                                <span data-bind="text: formatCurrency(inProgressValue(), 0, 'en-GB', 'GBP')"></span>
+                                                <!-- ko if: inProgressCount -->
+                                                (Q. <span data-bind="text: inProgressCount"></span>)
+                                                <!-- /ko -->
+                                            </span>
+                                        }
                                     </td>
                                 </tr>
                                 <!-- /ko -->
@@ -741,7 +828,7 @@
                                 <!-- ko if: headerVisible -->
                                 <tr role="row" class="k-grouping-row product-page-name-row">
                                     <td class="k-group-cell"></td>
-                                    <td colspan="300" aria-expanded="true">
+                                    <td colspan="@(Model.ReadOnlyMode ? "20" : "300")" aria-expanded="true">
                                         <p class="k-reset">
                                             <a class="k-icon k-i-collapse" href="#" tabindex="-1" aria-label="Collapse"></a>
                                             <span class="group-heading" style="transform: translateX(0px);" data-bind="text: name"></span>
@@ -754,7 +841,7 @@
                                 <tr role="row" class="k-grouping-row order-form-group-row">
                                     <td class="k-group-cell"></td>
                                     <td class="k-group-cell"></td>
-                                    <td colspan="300" aria-expanded="true">
+                                    <td colspan="@(Model.ReadOnlyMode ? "19" : "300")" aria-expanded="true">
                                         <p class="k-reset">
                                             <a class="k-icon k-i-collapse" href="#" tabindex="-1" aria-label="Collapse"></a>
                                             <span class="group-heading" data-bind="text: `${name}`"></span>
@@ -768,7 +855,7 @@
                             </tbody>
                             <tbody style="display: none" data-bind="visible: groupedSearchResults().length === 0 && manageBusy() == false">
                                 <tr class="no-results">
-                                    <td colspan="300">
+                                    <td colspan="@(Model.ReadOnlyMode ? "22" : "300")">
                                         <h4 class="mb-0">
                                             No Results
                                         </h4>
@@ -777,7 +864,7 @@
                             </tbody>
                             <tbody class="virtual-spacing">
                                 <tr class="final-row">
-                                    <td colspan="300" data-bind="style: { height: `${gridScrollBottomPadding()}px` }">
+                                    <td colspan="@(Model.ReadOnlyMode ? "22" : "300")" data-bind="style: { height: `${gridScrollBottomPadding()}px` }">
                                     </td>
                                 </tr>
                             </tbody>
@@ -835,7 +922,7 @@
                                     <th class="k-group-cell k-header sticky-heading" scope="col" rowspan="2">
                                         <div class="sticky-heading-block"></div>
                                     </th>
-                                    <th scope="col" role="columnheader" colspan="4" class="k-header">
+                                    <th scope="col" role="columnheader" colspan="@(Model.ReadOnlyMode ? "1" : "4")" class="k-header">
                                         Actions
                                     </th>
                                     <th scope="col" role="columnheader" colspan="7" class="k-header">
@@ -862,8 +949,8 @@
                                         Warehouse
                                     </th>
                                     @*<th scope="col" role="columnheader" class="text-end k-header">
-                                        Cover
-                                    </th>*@
+                                            Cover
+                                        </th>*@
                                     <th scope="col" role="columnheader" class="text-end k-header">
                                         PO Quantity
                                     </th>
@@ -883,8 +970,8 @@
                                         Ring Fenced
                                     </th>
                                     @*<th scope="col" role="columnheader" class="k-header">
-                                        Summary
-                                    </th>*@
+                                            Summary
+                                        </th>*@
                                     <th scope="col" role="columnheader" class="text-end k-header">
                                         Total Worldwide
                                     </th>
@@ -1032,6 +1119,52 @@
                     <button class="btn btn-primary" data-bind="click: saveNote">
                         Save
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div data-bind="stopBinding">
+        <div id="archives-modal" class="modal fade" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            Download Images
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" aria-label="Close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div id="archives-modal-body" class="modal-body">
+                        <p id="archives-leading-text">
+                            To make it easier for you to download, we are consolidating the {COUNT} image(s) you requested into zip file(s). Each zip file will be limited to 2GB. If you request more images than fit in 2GB, additional sequentially numbered zip files will be generated for you as necessary.
+                        </p>
+                        <p id="archives-leading-text-2">
+                            You may begin downloading your zip files as they become available by clicking the green download button(s).
+                        </p>
+                        <div class="list-group" style="margin-bottom: 0;" data-bind="foreach: tasks">
+                            <!-- ko foreach: createdArchiveFiles -->
+                            <a href="#" data-bind="attr: { href: `/stock/range-management/DownloadImageArchive?archiveName=${FileName}` }" class="list-group-item complete d-flex justify-content-between align-items-center">
+                                <span data-bind="text: FileName"></span>
+                                <span class="download-display">
+                                    <span class="badge bg-primary badge-pill" data-bind="text: FileSize"></span>
+                                    <span class="btn btn-success btn-sm">
+                                        Download
+                                    </span>
+                                </span>
+                            </a>
+                            <!-- /ko -->
+                            <!-- ko ifnot: complete -->
+                            <div class="list-group-item list-group-item-action" role="menuitem">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" data-bind="style: { '--clip-width': taskPercentCss }, css: barCss"></div>
+                                <span data-bind="text: ArchiveBaseName"></span>
+                                <span class="text-center" data-bind="text: taskPercentCss"></span>
+                            </div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="margin-top: 0">
+                        <button id="archives-modal-close" type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                    </div>
                 </div>
             </div>
         </div>

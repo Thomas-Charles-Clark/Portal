@@ -56,7 +56,7 @@ namespace GDPR.Models
     public class GDPRDbContext : IdentityDbContext<Member, Role, int, Member_Login, Member_Role, Member_Claim>
     {
         public GDPRDbContext()
-            : base("VM-SQL1")
+            : base("vm-sql")
         {
         }
 

@@ -19,7 +19,7 @@ namespace NotificationsCLRTester
 
             Console.WriteLine("Testing Notification CLR");
 
-            var notice = new PortalDbContext("VM-SQL1").Notifications.FirstOrDefault();
+            var notice = new PortalDbContext("vm-sql").Notifications.FirstOrDefault();
 
             var serialized = JsonConvert.SerializeObject(notice, Formatting.Indented);
 

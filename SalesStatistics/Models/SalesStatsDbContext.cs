@@ -60,7 +60,7 @@ namespace SalesStatistics.Models
     public class SalesStatsDbContext : IdentityDbContext<Member, Role, int, Member_Login, Member_Role, Member_Claim>
     {
         public SalesStatsDbContext()
-            : base("VM-SQL1")
+            : base("vm-sql")
         {
         }
 

@@ -735,6 +735,13 @@ namespace Portal
                         $"{jsPrefix}/models/virtual-scrolling-deferred-data{jsSuffix}"
                 ));
 
+            bundles.Add(new ScriptBundle("~/bundles/js/image-download-tasks").Include(
+                    $"{jsPrefix}/models/image-download-tasks/controllers/image-download-task-header-controller{jsSuffix}",
+                    $"{jsPrefix}/models/image-download-tasks/controllers/image-download-tasks-controller{jsSuffix}",
+                    $"{jsPrefix}/models/image-download-tasks/models/image-download-task-model{jsSuffix}",
+                    $"{jsPrefix}/models/image-download-tasks/models/image-download-task-progress-model{jsSuffix}"
+                ));
+
             foreach (var b in BundleTable.Bundles)
             {
                 b.Transforms.Clear();

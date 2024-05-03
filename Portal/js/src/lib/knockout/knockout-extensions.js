@@ -3539,3 +3539,24 @@ ko.bindingHandlers.virtualScrollComponent = {
 
     }
 }
+
+// cheers: https://stackoverflow.com/questions/51368941/using-css3-variables-in-knockout-style-binding
+ko.bindingHandlers['style'] = {
+    'update': function (element, valueAccessor) {
+        var value = ko.utils.unwrapObservable(valueAccessor() || {});
+        ko.utils.objectForEach(value, function (styleName, styleValue) {
+            styleValue = ko.utils.unwrapObservable(styleValue);
+
+            if (styleValue === null || styleValue === undefined || styleValue === false) {
+                // Empty string removes the value, whereas null/undefined have no effect
+                styleValue = "";
+            }
+
+            if (styleName.substring(0, 2) === "--") {
+                element.style.setProperty(styleName, styleValue);
+            } else {
+                element.style[styleName] = styleValue;
+            }
+        });
+    }
+};

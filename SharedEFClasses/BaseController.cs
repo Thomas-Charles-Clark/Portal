@@ -23,8 +23,16 @@ namespace SharedEFClasses
     public class BaseODataController : ODataController
     {
         protected static Logger logger = LogManager.GetCurrentClassLogger();
-        
+
+        protected ApplicationUserManager UserManager;
+
         protected PortalDbContext PortalDb;
+
+        public BaseODataController(ApplicationUserManager userManager, PortalDbContext portalDbContext)
+        {
+            this.UserManager = userManager;
+            this.PortalDb = portalDbContext;
+        }
 
         public BaseODataController(PortalDbContext portalDbContext)
         {

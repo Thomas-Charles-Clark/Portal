@@ -12,8 +12,11 @@ namespace Portal.Areas.Stock.ViewModels
     {
         public IEnumerable<StockLocation> StockLocations { get; set; }
 
+        public bool ReadOnlyMode { get; set; }
+
         public RangeManagementViewModel(
             List<StockLocation> sls,
+            bool readOnlyMode,
             RoleProperties properties,
             string applicationHeading,
             string applicationSubHeading)
@@ -22,6 +25,7 @@ namespace Portal.Areas.Stock.ViewModels
                    applicationSubHeading)
         {
             StockLocations = sls;
+            ReadOnlyMode = readOnlyMode;
         }
     }
 }

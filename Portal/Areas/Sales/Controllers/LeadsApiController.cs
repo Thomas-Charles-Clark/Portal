@@ -390,9 +390,9 @@ namespace Portal.Areas.Sales.Controllers
         }
 
     [HttpPost]
-    public async Task<IHttpActionResult> OpenTradeAccount([FromBody]PassLeadID objLeadId)
+    public IHttpActionResult OpenTradeAccount([FromBody]PassLeadID objLeadId)
     {
-      var result = await portalDb.OpenTradeAccount(objLeadId);
+      var result = portalDb.OpenTradeAccount(objLeadId);
 
       return Ok(new { tradeAccountCode = result.TradeAccountCode });
     }

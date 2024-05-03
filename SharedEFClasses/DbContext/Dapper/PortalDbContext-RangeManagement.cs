@@ -8,7 +8,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace SharedEFClasses.Models
 {
@@ -243,6 +245,42 @@ namespace SharedEFClasses.Models
             }, null, null, CommandType.StoredProcedure);
 
             return 0;
+        }
+
+        public async Task<int> RangeManagementSendCarryForwardsProductsNotification(RangeManagementNotesDto dto)
+        {
+            var _ = await this.Database.Connection.QueryAsync("[portal].[RangeManagement_InventoryNotification_CarryForwardProduct]", new
+            {
+                BranchID = dto.BranchID,
+                MemberID = dto.MemberID
+            }, null, null, CommandType.StoredProcedure);
+
+            return 0;
+        }
+
+        public async Task<XDocument> RangeManagementProductPageFeedExcelXML(RangeManagementXlsxDto dto)
+        {
+            var productPageIds = new DataTable();
+
+            productPageIds.Columns.Add("ProductPageID", typeof(int));
+
+            foreach (var p in dto.ProductPageIDs.Distinct())
+            {
+                productPageIds.Rows.Add(p);
+            }
+
+            var results = await this.Database.Connection.QueryAsync<string>("[ads].[ProductPageFeed_Download_Excel_Product]", new
+            {
+                dto.CountryID,
+                dto.LanguageID,
+                dto.DisplayPrices,
+                dto.UserID,
+                dto.DisplayClearance,
+                dto.TradeAccountCode,
+                productPageIds
+            }, null, null, CommandType.StoredProcedure);
+
+            return XDocument.Parse(String.Concat(results));
         }
     }
 }

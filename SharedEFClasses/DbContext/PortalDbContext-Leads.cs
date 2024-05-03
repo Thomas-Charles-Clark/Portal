@@ -5,12 +5,19 @@ using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Utilities;
 
+using SimpleImpersonation;
+
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Security.Principal;
+
+using static Kendo.Mvc.UI.UIPrimitives;
 
 using CreditController = SharedEFClasses.Models.General.CreditController;
 
@@ -351,301 +358,308 @@ namespace SharedEFClasses.Models
 
         public LeadUpsertResult LeadUpsert(PassLeadUpsert objLeadUpsert, int _sourceMemberId, bool shouldNotify = true)
         {
-            if (objLeadUpsert.TradeAccountCreationEmail_Attachments?.Any() == true)
-            {
-                this.CreationEmailAttachments.RemoveRange(this.CreationEmailAttachments.Where(cea => cea.LeadID == objLeadUpsert.LeadID));
-
-                foreach(var tacea in objLeadUpsert.TradeAccountCreationEmail_Attachments)
-                {
-                    var attachment = this.TradeAccountCreationEmailAttachments.SingleOrDefault(p => p.TradeAccountCreationEmailAttachmentID == tacea.TradeAccountCreationEmailAttachmentID);
-
-                    if (attachment == null)
-                    {
-                        attachment = new TradeAccountCreationEmailAttachment()
-                        {
-                            Name = tacea.name,
-                            FilePath = tacea.FinalFilePath,
-                            FileSizeBytes = tacea.fileSizeBytes,
-                            CreatedDT = DateTime.Now
-                        };
-
-                        this.TradeAccountCreationEmailAttachments.Add(attachment);
-
-                        this.SaveChanges();
-
-                        tacea.TradeAccountCreationEmailAttachmentID = attachment.TradeAccountCreationEmailAttachmentID;
-                    }
-
-                    this.CreationEmailAttachments.Add(new Lead_TradeAccountCreationEmailAttachment()
-                    {
-                        LeadID = objLeadUpsert.LeadID.Value,
-                        TradeAccountCreationEmailAttachmentID = tacea.TradeAccountCreationEmailAttachmentID,
-                        SortOrder = tacea.sortOrder
-                    });
-                }
-
-                this.SaveChanges();
-            }
-
-            var objParams = new List<SqlParameter>()
-            {
-                new SqlParameter("@LeadStatusID", objLeadUpsert.LeadStatusID ?? (object)DBNull.Value),
-                new SqlParameter("@LeadStatusReason", objLeadUpsert.LeadStatusReason ?? (object)DBNull.Value),
-                new SqlParameter("@LeadSourceID", objLeadUpsert.LeadSourceID ?? (object)DBNull.Value),
-                new SqlParameter("@StarRating", objLeadUpsert.StarRating ?? (object)DBNull.Value),
-                new SqlParameter("@LeadMagnitudeID", objLeadUpsert.LeadMagnitudeID ?? (object)DBNull.Value),
-                new SqlParameter("@LeadTypeID", objLeadUpsert.LeadTypeID ?? (object)DBNull.Value),
-                new SqlParameter("@SourceMemberID", _sourceMemberId),
-                new SqlParameter("@OwnerMemberID", objLeadUpsert.OwnerMemberID ?? (object)DBNull.Value),
-                new SqlParameter("@ChannelID", objLeadUpsert.ChannelID),
-                new SqlParameter("@Description", objLeadUpsert.Description ?? (object)DBNull.Value),
-                new SqlParameter("@AnnualRevenue", objLeadUpsert.AnnualRevenue ?? (object)DBNull.Value),
-                new SqlParameter("@CurrencyID", objLeadUpsert.CompanyCurrency?.CurrencyID ?? (object)DBNull.Value),
-                new SqlParameter("@CompanyName", objLeadUpsert.CompanyName ?? (object)DBNull.Value),
-                new SqlParameter("@CountryID", objLeadUpsert.CountryID),
-                new SqlParameter("@LanguageID", objLeadUpsert.LanguageID),
-                new SqlParameter("@VATNumber", objLeadUpsert.CompanyVATNumber ?? (object)DBNull.Value),
-                new SqlParameter("@VATCountryID", objLeadUpsert.VATCountryID ?? (object)DBNull.Value),
-                new SqlParameter("@VATNumberDisplay", objLeadUpsert.VATNumberDisplay ?? (object)DBNull.Value),
-                new SqlParameter("@EORINumber", objLeadUpsert.EORINumber ?? (object)DBNull.Value),
-                new SqlParameter("@CompanyNumber", objLeadUpsert.CompanyRegistration ?? (object)DBNull.Value),
-                new SqlParameter("@CompanyTypeID", objLeadUpsert.CompanyTypeID ?? (object)DBNull.Value),
-                new SqlParameter("@WillBuyPatternBooks", objLeadUpsert.WillBuyPatternBooks ?? (object)DBNull.Value),
-                new SqlParameter("@BankName", objLeadUpsert.BankName ?? (object)DBNull.Value),
-                new SqlParameter("@BankAddressLine1", objLeadUpsert.BankAddressLine1 ?? (object)DBNull.Value),
-                new SqlParameter("@BankAddressLine2", objLeadUpsert.BankAddressLine2 ?? (object)DBNull.Value),
-                new SqlParameter("@BankTown", objLeadUpsert.BankTown ?? (object)DBNull.Value),
-                new SqlParameter("@BankCounty", objLeadUpsert.BankCounty ?? (object)DBNull.Value),
-                new SqlParameter("@BankPostcode", objLeadUpsert.BankPostcode ?? (object)DBNull.Value),
-                new SqlParameter("@BankCountryID", objLeadUpsert.BankCountryID ?? (object)DBNull.Value),
-                new SqlParameter("@BankAccountNumber", objLeadUpsert.BankAccountNumber ?? (object)DBNull.Value),
-                new SqlParameter("@BankSortCode", objLeadUpsert.BankSortCode ?? (object)DBNull.Value),
-                new SqlParameter("@BankIBAN", objLeadUpsert.BankIBAN ?? (object)DBNull.Value),
-                new SqlParameter("@PaymentTermsID", objLeadUpsert.PaymentTermsID ?? (object)DBNull.Value),
-                new SqlParameter("@PaymentOptionID", objLeadUpsert.PaymentOptionID ?? (object)DBNull.Value),
-                new SqlParameter("@CreditLimit", objLeadUpsert.CreditLimit ?? (object)DBNull.Value),
-                new SqlParameter("@RequestedCreditLimit", objLeadUpsert.RequestedCreditLimit ?? (object)DBNull.Value),
-                new SqlParameter("@CompanyLetterHeadChecked", objLeadUpsert.CompanyLetterHeadChecked),
-                new SqlParameter("@SalesMarketID", objLeadUpsert.SalesMarketID ?? (object)DBNull.Value),
-                new SqlParameter("@SalesRepresentativeID", objLeadUpsert.SalesRepresentativeID ?? (object)DBNull.Value),
-                new SqlParameter("@SaleAgentID", objLeadUpsert.SalesAgentID ?? (object)DBNull.Value),
-                new SqlParameter("@SalesAreaID", objLeadUpsert.SalesAreaID ?? (object)DBNull.Value),
-                new SqlParameter("@TradePriceListID", objLeadUpsert.TradePriceListID ?? (object)DBNull.Value),
-                new SqlParameter("@AccountTypeID", objLeadUpsert.AccountTypeID ?? (object)DBNull.Value),
-                new SqlParameter("@CustomerTypeID", objLeadUpsert.CustomerTypeID ?? (object)DBNull.Value),
-                new SqlParameter("@HasPatternBookLibrary", objLeadUpsert.HasPatternBookLibrary ?? (object)DBNull.Value),
-                new SqlParameter("@HasShowroom", objLeadUpsert.HasShowroom ?? (object)DBNull.Value),
-                new SqlParameter("@ShowroomByAppointmentOnly", objLeadUpsert.ShowroomByAppointmentOnly ?? (object)DBNull.Value),
-                new SqlParameter("@SellOnline", objLeadUpsert.SellOnline),
-                new SqlParameter("@NumberOfPatternBooksPurchased", objLeadUpsert.NumberOfPatternBooksPurchased ?? (object)DBNull.Value),
-                new SqlParameter("@FirstOrderValue", objLeadUpsert.FirstOrderValue ?? (object)DBNull.Value),
-                new SqlParameter("@JoinedPatternBookScheme", objLeadUpsert.JoinedPatternBookScheme ?? (object)DBNull.Value),
-                new SqlParameter("@PaymentTermsNotes", objLeadUpsert.paymentTermsNotes ?? (object)DBNull.Value),
-                new SqlParameter("@Notify", shouldNotify),
-                new SqlParameter("@TradeAccountClassCode", objLeadUpsert.TradeAccountClass ?? (object)DBNull.Value),
-                new SqlParameter("@CreditControllerCode", objLeadUpsert.CreditController ?? (object)DBNull.Value),
-                new SqlParameter("@BankCode", objLeadUpsert.BankCode ?? (object)DBNull.Value),
-                new SqlParameter("@InsuredCreditLimit", objLeadUpsert.InsuredCreditLimit ?? (object)DBNull.Value),
-                new SqlParameter("@PurchaseOrderRequired", objLeadUpsert.PurchaseOrderRequired ?? (object)DBNull.Value),
-                new SqlParameter("@TradeAccountGroupCode", objLeadUpsert.TradeAccountGroup ?? (object)DBNull.Value),
-                new SqlParameter("@SalesDivisionCode", objLeadUpsert.SalesDivision ?? (object)DBNull.Value),
-                new SqlParameter("@DeliveryTermCode", objLeadUpsert.DeliveryTerms ?? (object)DBNull.Value),
-                new SqlParameter("@TaxID", objLeadUpsert.TaxID ?? (object)DBNull.Value),
-                new SqlParameter("@MertexLanguageCode", objLeadUpsert.MertexLanguageCode ?? (object)DBNull.Value),
-                
-                new SqlParameter("@ShouldSendTradeAccountCreationEmail", objLeadUpsert.ShouldSendTradeAccountCreationEmail ?? (object)DBNull.Value),
-                new SqlParameter("@TradeAccountCreationEmail_DisplayAccountManager", objLeadUpsert.TradeAccountCreationEmail_DisplayAccountManager ?? (object)DBNull.Value),
-                new SqlParameter("@TradeAccountCreationEmail_DisplayCustomerService", objLeadUpsert.TradeAccountCreationEmail_DisplayCustomerService ?? (object)DBNull.Value),
-                new SqlParameter("@TradeAccountCreationEmail_DisplayCreditControl", objLeadUpsert.TradeAccountCreationEmail_DisplayCreditControl ?? (object)DBNull.Value),
-                new SqlParameter("@TradeAccountCreationEmail_DisplayB2BRegistration", objLeadUpsert.TradeAccountCreationEmail_DisplayB2BRegistration ?? (object)DBNull.Value),
-                new SqlParameter("@TradeAccountCreationEmail_DisplayLookbook", objLeadUpsert.TradeAccountCreationEmail_DisplayLookbook ?? (object) DBNull.Value),
-
-                new SqlParameter("@ShouldSendPricelists", objLeadUpsert.ShouldSendPricelists ?? (object)DBNull.Value),
-                new SqlParameter("@BelongToGroupAccount", objLeadUpsert.BelongToGroupAccount ?? (object)DBNull.Value),
-            };
-
-            if (objLeadUpsert.OrderDocument != null &&
-                objLeadUpsert.OrderDocument.Length > 0)
-            {
-                var orderDocParam = new SqlParameter("@OrderDocument", SqlDbType.VarBinary, objLeadUpsert.OrderDocument.Length);
-                orderDocParam.Value = objLeadUpsert.OrderDocument;
-
-                objParams.Add(orderDocParam);
-                objParams.Add(new SqlParameter("@OrderDocumentFileType", objLeadUpsert.OrderDocumentFileType ?? (object)DBNull.Value));
-            }
-
-            /*
-             cmd.Parameters.Add(tradeAccountClass);
-            cmd.Parameters.Add(creditController);
-            cmd.Parameters.Add(bankCode);
-            cmd.Parameters.Add(insuredCreditLimit);
-            cmd.Parameters.Add(purchaseOrderRequired);
-            cmd.Parameters.Add(tradeAccountGroup);
-            cmd.Parameters.Add(salesDivision);
-            cmd.Parameters.Add(deliveryTerms);
-             */
-
-            var tradingSince = new SqlParameter("@TradingSince", DBNull.Value);
-            var leadId = new SqlParameter("@LeadID", objLeadUpsert.LeadID ?? (object)DBNull.Value);
-            
-            leadId.Direction = ParameterDirection.InputOutput;
-            leadId.Size = 8;
-            leadId.SqlDbType = SqlDbType.BigInt;
-            
-            // tradingSince is an interesting one: it'll hold 01/02/2016 and I have to calculate an ID from that
-            // based on how long ago it is in years
-            // so if they select < 1 year, what date should we record?
-            // just... yesterday? a month ago? six months ago, benefit of the doubt?
-            // it'll mean that they will appear to have been trading 1 year after 6 months, so... err away from
-            // giving the benefit of the doubt in this case?
-
-            // tradingSince, when loaded out, will be 0 to 5.
-            // if this has been changed from what it was loaded out to be, THEN update the lead record.
-            // if it has not been changed, do not change the datetime recorded.
-
-            // < 1 year = 0
-            // 1 to < 2 years = 1
-            // 2 to < 3 years = 2
-            // 3 to < 4 years = 3
-            // 4 to < 5 years = 4
-            // 5 to > 5 years = 5
-
-            if (objLeadUpsert.ShouldUpdateTradingSince)
-            {
-                DateTime? tradingSinceDT = null;
-
-                if (objLeadUpsert.TradingSinceID.HasValue)
-                {
-                    DateTime adjust = DateTime.Now;
-
-                    switch (objLeadUpsert.TradingSinceID.Value)
-                    {
-                        case 0:
-                            adjust = DateTime.Now.AddMonths(3);
-                            tradingSinceDT = new DateTime(adjust.Year, adjust.Month, 1);
-                            break;
-                        case 1:
-                            adjust = DateTime.Now.AddMonths(-6);
-                            tradingSinceDT = new DateTime(adjust.Year, adjust.Month, 1);
-                            break;
-                        case 2:
-                            adjust = DateTime.Now.AddYears(-1);
-                            tradingSinceDT = new DateTime(adjust.Year, adjust.Month, 1);
-                            break;
-                        case 3:
-                            adjust = DateTime.Now.AddYears(-2);
-                            tradingSinceDT = new DateTime(adjust.Year, adjust.Month, 1);
-                            break;
-                        case 4:
-                            adjust = DateTime.Now.AddYears(-3);
-                            tradingSinceDT = new DateTime(adjust.Year, adjust.Month, 1);
-                            break;
-                        case 5:
-                            adjust = DateTime.Now.AddYears(-4);
-                            tradingSinceDT = new DateTime(adjust.Year, adjust.Month, 1);
-                            break;
-                        case 6:
-                            adjust = DateTime.Now.AddYears(-5);
-                            tradingSinceDT = new DateTime(adjust.Year, adjust.Month, 1);
-                            break;
-                    }
-
-                    tradingSince.Value = tradingSinceDT;
-                }
-            }
-            
             var result = new LeadUpsertResult();
 
-            var cmd = this.Database.Connection.CreateCommand();
-            cmd.CommandText = "[portal].[Lead_Upsert]";
-            cmd.CommandType = CommandType.StoredProcedure;
+            // you *have* to use an Integrated Security connection to send emails with attachments
+            var credentials = new UserCredentials("DESIGNERSGUILD\\SQLAgentFileAccess", "34949C02-4677-4711-999C-8E038E26B10F");
 
-            cmd.Parameters.Add(leadId);
-            cmd.Parameters.Add(tradingSince);
-            cmd.Parameters.AddRange(objParams.ToArray());
+            var token = credentials.LogonUser(LogonType.Interactive);
 
-            try
+            WindowsIdentity.RunImpersonated(token, () =>
             {
-                this.Database.Connection.Open();
-
-                cmd.ExecuteNonQuery();
-                
-                this.Database.Connection.Close();
-                
-                result.LeadID = cmd.Parameters["@LeadID"].Value as long?;
-                
-                List<LeadInterest> interests = new List<LeadInterest>();
-                
-                if (objLeadUpsert.LeadInterests != null)
+                using (var conn = new SqlConnection(ConfigurationManager.ConnectionStrings["VM-SQL-IntegratedConnectionString"].ConnectionString))
                 {
-                    foreach (var i in objLeadUpsert.LeadInterests)
+                    if (objLeadUpsert.TradeAccountCreationEmail_Attachments?.Any() == true)
                     {
-                        if (i != null)
+                        this.CreationEmailAttachments.RemoveRange(this.CreationEmailAttachments.Where(cea => cea.LeadID == objLeadUpsert.LeadID));
+
+                        foreach (var tacea in objLeadUpsert.TradeAccountCreationEmail_Attachments)
                         {
-                            interests.Add(new LeadInterest()
+                            var attachment = this.TradeAccountCreationEmailAttachments.SingleOrDefault(p => p.TradeAccountCreationEmailAttachmentID == tacea.TradeAccountCreationEmailAttachmentID);
+
+                            if (attachment == null)
                             {
-                                LeadID = objLeadUpsert.LeadID ?? result.LeadID.Value,
-                                BrandID = i.brandId,
-                                ProductTypeGroupID = i.productTypeGroupId
+                                attachment = new TradeAccountCreationEmailAttachment()
+                                {
+                                    Name = tacea.name,
+                                    FilePath = tacea.FinalFilePath,
+                                    FileSizeBytes = tacea.fileSizeBytes,
+                                    CreatedDT = DateTime.Now
+                                };
+
+                                this.TradeAccountCreationEmailAttachments.Add(attachment);
+
+                                this.SaveChanges();
+
+                                tacea.TradeAccountCreationEmailAttachmentID = attachment.TradeAccountCreationEmailAttachmentID;
+                            }
+
+                            this.CreationEmailAttachments.Add(new Lead_TradeAccountCreationEmailAttachment()
+                            {
+                                LeadID = objLeadUpsert.LeadID.Value,
+                                TradeAccountCreationEmailAttachmentID = tacea.TradeAccountCreationEmailAttachmentID,
+                                SortOrder = tacea.sortOrder
                             });
                         }
+
+                        this.SaveChanges();
                     }
-                }
 
-                var l = this.Leads.Where(p => p.LeadID == (objLeadUpsert.LeadID ?? result.LeadID.Value)).Single();
-
-                l.LeadInterests.Clear();
-
-                l.LeadInterests = interests;
-
-                List<Lead_Competitor> competitors = new List<Lead_Competitor>();
-
-                if (objLeadUpsert.BrandsWorkedWith != null)
+                    var objParams = new List<SqlParameter>()
                 {
-                    foreach (var i in objLeadUpsert.BrandsWorkedWith)
+                    new SqlParameter("@LeadStatusID", objLeadUpsert.LeadStatusID ?? (object)DBNull.Value),
+                    new SqlParameter("@LeadStatusReason", objLeadUpsert.LeadStatusReason ?? (object)DBNull.Value),
+                    new SqlParameter("@LeadSourceID", objLeadUpsert.LeadSourceID ?? (object)DBNull.Value),
+                    new SqlParameter("@StarRating", objLeadUpsert.StarRating ?? (object)DBNull.Value),
+                    new SqlParameter("@LeadMagnitudeID", objLeadUpsert.LeadMagnitudeID ?? (object)DBNull.Value),
+                    new SqlParameter("@LeadTypeID", objLeadUpsert.LeadTypeID ?? (object)DBNull.Value),
+                    new SqlParameter("@SourceMemberID", _sourceMemberId),
+                    new SqlParameter("@OwnerMemberID", objLeadUpsert.OwnerMemberID ?? (object)DBNull.Value),
+                    new SqlParameter("@ChannelID", objLeadUpsert.ChannelID),
+                    new SqlParameter("@Description", objLeadUpsert.Description ?? (object)DBNull.Value),
+                    new SqlParameter("@AnnualRevenue", objLeadUpsert.AnnualRevenue ?? (object)DBNull.Value),
+                    new SqlParameter("@CurrencyID", objLeadUpsert.CompanyCurrency?.CurrencyID ?? (object)DBNull.Value),
+                    new SqlParameter("@CompanyName", objLeadUpsert.CompanyName ?? (object)DBNull.Value),
+                    new SqlParameter("@CountryID", objLeadUpsert.CountryID),
+                    new SqlParameter("@LanguageID", objLeadUpsert.LanguageID),
+                    new SqlParameter("@VATNumber", objLeadUpsert.CompanyVATNumber ?? (object)DBNull.Value),
+                    new SqlParameter("@VATCountryID", objLeadUpsert.VATCountryID ?? (object)DBNull.Value),
+                    new SqlParameter("@VATNumberDisplay", objLeadUpsert.VATNumberDisplay ?? (object)DBNull.Value),
+                    new SqlParameter("@EORINumber", objLeadUpsert.EORINumber ?? (object)DBNull.Value),
+                    new SqlParameter("@CompanyNumber", objLeadUpsert.CompanyRegistration ?? (object)DBNull.Value),
+                    new SqlParameter("@CompanyTypeID", objLeadUpsert.CompanyTypeID ?? (object)DBNull.Value),
+                    new SqlParameter("@WillBuyPatternBooks", objLeadUpsert.WillBuyPatternBooks ?? (object)DBNull.Value),
+                    new SqlParameter("@BankName", objLeadUpsert.BankName ?? (object)DBNull.Value),
+                    new SqlParameter("@BankAddressLine1", objLeadUpsert.BankAddressLine1 ?? (object)DBNull.Value),
+                    new SqlParameter("@BankAddressLine2", objLeadUpsert.BankAddressLine2 ?? (object)DBNull.Value),
+                    new SqlParameter("@BankTown", objLeadUpsert.BankTown ?? (object)DBNull.Value),
+                    new SqlParameter("@BankCounty", objLeadUpsert.BankCounty ?? (object)DBNull.Value),
+                    new SqlParameter("@BankPostcode", objLeadUpsert.BankPostcode ?? (object)DBNull.Value),
+                    new SqlParameter("@BankCountryID", objLeadUpsert.BankCountryID ?? (object)DBNull.Value),
+                    new SqlParameter("@BankAccountNumber", objLeadUpsert.BankAccountNumber ?? (object)DBNull.Value),
+                    new SqlParameter("@BankSortCode", objLeadUpsert.BankSortCode ?? (object)DBNull.Value),
+                    new SqlParameter("@BankIBAN", objLeadUpsert.BankIBAN ?? (object)DBNull.Value),
+                    new SqlParameter("@PaymentTermsID", objLeadUpsert.PaymentTermsID ?? (object)DBNull.Value),
+                    new SqlParameter("@PaymentOptionID", objLeadUpsert.PaymentOptionID ?? (object)DBNull.Value),
+                    new SqlParameter("@CreditLimit", objLeadUpsert.CreditLimit ?? (object)DBNull.Value),
+                    new SqlParameter("@RequestedCreditLimit", objLeadUpsert.RequestedCreditLimit ?? (object)DBNull.Value),
+                    new SqlParameter("@CompanyLetterHeadChecked", objLeadUpsert.CompanyLetterHeadChecked),
+                    new SqlParameter("@SalesMarketID", objLeadUpsert.SalesMarketID ?? (object)DBNull.Value),
+                    new SqlParameter("@SalesRepresentativeID", objLeadUpsert.SalesRepresentativeID ?? (object)DBNull.Value),
+                    new SqlParameter("@SaleAgentID", objLeadUpsert.SalesAgentID ?? (object)DBNull.Value),
+                    new SqlParameter("@SalesAreaID", objLeadUpsert.SalesAreaID ?? (object)DBNull.Value),
+                    new SqlParameter("@TradePriceListID", objLeadUpsert.TradePriceListID ?? (object)DBNull.Value),
+                    new SqlParameter("@AccountTypeID", objLeadUpsert.AccountTypeID ?? (object)DBNull.Value),
+                    new SqlParameter("@CustomerTypeID", objLeadUpsert.CustomerTypeID ?? (object)DBNull.Value),
+                    new SqlParameter("@HasPatternBookLibrary", objLeadUpsert.HasPatternBookLibrary ?? (object)DBNull.Value),
+                    new SqlParameter("@HasShowroom", objLeadUpsert.HasShowroom ?? (object)DBNull.Value),
+                    new SqlParameter("@ShowroomByAppointmentOnly", objLeadUpsert.ShowroomByAppointmentOnly ?? (object)DBNull.Value),
+                    new SqlParameter("@SellOnline", objLeadUpsert.SellOnline),
+                    new SqlParameter("@NumberOfPatternBooksPurchased", objLeadUpsert.NumberOfPatternBooksPurchased ?? (object)DBNull.Value),
+                    new SqlParameter("@FirstOrderValue", objLeadUpsert.FirstOrderValue ?? (object)DBNull.Value),
+                    new SqlParameter("@JoinedPatternBookScheme", objLeadUpsert.JoinedPatternBookScheme ?? (object)DBNull.Value),
+                    new SqlParameter("@PaymentTermsNotes", objLeadUpsert.paymentTermsNotes ?? (object)DBNull.Value),
+                    new SqlParameter("@Notify", shouldNotify),
+                    new SqlParameter("@TradeAccountClassCode", objLeadUpsert.TradeAccountClass ?? (object)DBNull.Value),
+                    new SqlParameter("@CreditControllerCode", objLeadUpsert.CreditController ?? (object)DBNull.Value),
+                    new SqlParameter("@BankCode", objLeadUpsert.BankCode ?? (object)DBNull.Value),
+                    new SqlParameter("@InsuredCreditLimit", objLeadUpsert.InsuredCreditLimit ?? (object)DBNull.Value),
+                    new SqlParameter("@PurchaseOrderRequired", objLeadUpsert.PurchaseOrderRequired ?? (object)DBNull.Value),
+                    new SqlParameter("@TradeAccountGroupCode", objLeadUpsert.TradeAccountGroup ?? (object)DBNull.Value),
+                    new SqlParameter("@SalesDivisionCode", objLeadUpsert.SalesDivision ?? (object)DBNull.Value),
+                    new SqlParameter("@DeliveryTermCode", objLeadUpsert.DeliveryTerms ?? (object)DBNull.Value),
+                    new SqlParameter("@TaxID", objLeadUpsert.TaxID ?? (object)DBNull.Value),
+                    new SqlParameter("@MertexLanguageCode", objLeadUpsert.MertexLanguageCode ?? (object)DBNull.Value),
+
+                    new SqlParameter("@ShouldSendTradeAccountCreationEmail", objLeadUpsert.ShouldSendTradeAccountCreationEmail ?? (object)DBNull.Value),
+                    new SqlParameter("@TradeAccountCreationEmail_DisplayAccountManager", objLeadUpsert.TradeAccountCreationEmail_DisplayAccountManager ?? (object)DBNull.Value),
+                    new SqlParameter("@TradeAccountCreationEmail_DisplayCustomerService", objLeadUpsert.TradeAccountCreationEmail_DisplayCustomerService ?? (object)DBNull.Value),
+                    new SqlParameter("@TradeAccountCreationEmail_DisplayCreditControl", objLeadUpsert.TradeAccountCreationEmail_DisplayCreditControl ?? (object)DBNull.Value),
+                    new SqlParameter("@TradeAccountCreationEmail_DisplayB2BRegistration", objLeadUpsert.TradeAccountCreationEmail_DisplayB2BRegistration ?? (object)DBNull.Value),
+                    new SqlParameter("@TradeAccountCreationEmail_DisplayLookbook", objLeadUpsert.TradeAccountCreationEmail_DisplayLookbook ?? (object) DBNull.Value),
+
+                    new SqlParameter("@ShouldSendPricelists", objLeadUpsert.ShouldSendPricelists ?? (object)DBNull.Value),
+                    new SqlParameter("@BelongToGroupAccount", objLeadUpsert.BelongToGroupAccount ?? (object)DBNull.Value),
+                };
+
+                    if (objLeadUpsert.OrderDocument != null &&
+                        objLeadUpsert.OrderDocument.Length > 0)
                     {
-                        competitors.Add(new Lead_Competitor()
+                        var orderDocParam = new SqlParameter("@OrderDocument", SqlDbType.VarBinary, objLeadUpsert.OrderDocument.Length);
+                        orderDocParam.Value = objLeadUpsert.OrderDocument;
+
+                        objParams.Add(orderDocParam);
+                        objParams.Add(new SqlParameter("@OrderDocumentFileType", objLeadUpsert.OrderDocumentFileType ?? (object)DBNull.Value));
+                    }
+
+                    /*
+                        cmd.Parameters.Add(tradeAccountClass);
+                    cmd.Parameters.Add(creditController);
+                    cmd.Parameters.Add(bankCode);
+                    cmd.Parameters.Add(insuredCreditLimit);
+                    cmd.Parameters.Add(purchaseOrderRequired);
+                    cmd.Parameters.Add(tradeAccountGroup);
+                    cmd.Parameters.Add(salesDivision);
+                    cmd.Parameters.Add(deliveryTerms);
+                        */
+
+                    var tradingSince = new SqlParameter("@TradingSince", DBNull.Value);
+                    var leadId = new SqlParameter("@LeadID", objLeadUpsert.LeadID ?? (object)DBNull.Value);
+
+                    leadId.Direction = ParameterDirection.InputOutput;
+                    leadId.Size = 8;
+                    leadId.SqlDbType = SqlDbType.BigInt;
+
+                    // tradingSince is an interesting one: it'll hold 01/02/2016 and I have to calculate an ID from that
+                    // based on how long ago it is in years
+                    // so if they select < 1 year, what date should we record?
+                    // just... yesterday? a month ago? six months ago, benefit of the doubt?
+                    // it'll mean that they will appear to have been trading 1 year after 6 months, so... err away from
+                    // giving the benefit of the doubt in this case?
+
+                    // tradingSince, when loaded out, will be 0 to 5.
+                    // if this has been changed from what it was loaded out to be, THEN update the lead record.
+                    // if it has not been changed, do not change the datetime recorded.
+
+                    // < 1 year = 0
+                    // 1 to < 2 years = 1
+                    // 2 to < 3 years = 2
+                    // 3 to < 4 years = 3
+                    // 4 to < 5 years = 4
+                    // 5 to > 5 years = 5
+
+                    if (objLeadUpsert.ShouldUpdateTradingSince)
+                    {
+                        DateTime? tradingSinceDT = null;
+
+                        if (objLeadUpsert.TradingSinceID.HasValue)
                         {
-                            LeadID = objLeadUpsert.LeadID ?? result.LeadID.Value,
-                            CompetitorID = i.CompetitorID
-                        });
+                            DateTime adjust = DateTime.Now;
+
+                            switch (objLeadUpsert.TradingSinceID.Value)
+                            {
+                                case 0:
+                                    adjust = DateTime.Now.AddMonths(3);
+                                    tradingSinceDT = new DateTime(adjust.Year, adjust.Month, 1);
+                                    break;
+                                case 1:
+                                    adjust = DateTime.Now.AddMonths(-6);
+                                    tradingSinceDT = new DateTime(adjust.Year, adjust.Month, 1);
+                                    break;
+                                case 2:
+                                    adjust = DateTime.Now.AddYears(-1);
+                                    tradingSinceDT = new DateTime(adjust.Year, adjust.Month, 1);
+                                    break;
+                                case 3:
+                                    adjust = DateTime.Now.AddYears(-2);
+                                    tradingSinceDT = new DateTime(adjust.Year, adjust.Month, 1);
+                                    break;
+                                case 4:
+                                    adjust = DateTime.Now.AddYears(-3);
+                                    tradingSinceDT = new DateTime(adjust.Year, adjust.Month, 1);
+                                    break;
+                                case 5:
+                                    adjust = DateTime.Now.AddYears(-4);
+                                    tradingSinceDT = new DateTime(adjust.Year, adjust.Month, 1);
+                                    break;
+                                case 6:
+                                    adjust = DateTime.Now.AddYears(-5);
+                                    tradingSinceDT = new DateTime(adjust.Year, adjust.Month, 1);
+                                    break;
+                            }
+
+                            tradingSince.Value = tradingSinceDT;
+                        }
+                    }
+
+                    var cmd = conn.CreateCommand();
+
+                    cmd.CommandText = "[portal].[Lead_Upsert]";
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add(leadId);
+                    cmd.Parameters.Add(tradingSince);
+                    cmd.Parameters.AddRange(objParams.ToArray());
+
+                    try
+                    {
+                        conn.Open();
+
+                        cmd.ExecuteNonQuery();
+
+                        conn.Close();
+
+                        result.LeadID = cmd.Parameters["@LeadID"].Value as long?;
+
+                        List<LeadInterest> interests = new List<LeadInterest>();
+
+                        if (objLeadUpsert.LeadInterests != null)
+                        {
+                            foreach (var i in objLeadUpsert.LeadInterests)
+                            {
+                                if (i != null)
+                                {
+                                    interests.Add(new LeadInterest()
+                                    {
+                                        LeadID = objLeadUpsert.LeadID ?? result.LeadID.Value,
+                                        BrandID = i.brandId,
+                                        ProductTypeGroupID = i.productTypeGroupId
+                                    });
+                                }
+                            }
+                        }
+
+                        var l = this.Leads.Where(p => p.LeadID == (objLeadUpsert.LeadID ?? result.LeadID.Value)).Single();
+
+                        l.LeadInterests.Clear();
+
+                        l.LeadInterests = interests;
+
+                        List<Lead_Competitor> competitors = new List<Lead_Competitor>();
+
+                        if (objLeadUpsert.BrandsWorkedWith != null)
+                        {
+                            foreach (var i in objLeadUpsert.BrandsWorkedWith)
+                            {
+                                competitors.Add(new Lead_Competitor()
+                                {
+                                    LeadID = objLeadUpsert.LeadID ?? result.LeadID.Value,
+                                    CompetitorID = i.CompetitorID
+                                });
+                            }
+                        }
+
+                        l.BrandsWorkedWith.Clear();
+
+                        l.BrandsWorkedWith = competitors;
+
+                        List<Lead_Tag> tags = new List<Lead_Tag>();
+
+                        if (objLeadUpsert.Tags != null)
+                        {
+                            foreach (var i in objLeadUpsert.Tags)
+                            {
+                                tags.Add(new Lead_Tag()
+                                {
+                                    LeadID = objLeadUpsert.LeadID ?? result.LeadID.Value,
+                                    TagID = i.TagID
+                                });
+                            }
+                        }
+
+                        l.Tags.Clear();
+
+                        l.Tags = tags;
+
+                        this.SaveChanges();
+                    }
+                    catch (SqlException e)
+                    {
+                        PortalFramework.LogErrorToDatabase(e);
+                        throw e;
                     }
                 }
-
-                l.BrandsWorkedWith.Clear();
-                
-                l.BrandsWorkedWith = competitors;
-                
-                List<Lead_Tag> tags = new List<Lead_Tag>();
-
-                if (objLeadUpsert.Tags != null)
-                {
-                    foreach (var i in objLeadUpsert.Tags)
-                    {
-                        tags.Add(new Lead_Tag()
-                        {
-                            LeadID = objLeadUpsert.LeadID ?? result.LeadID.Value,
-                            TagID = i.TagID
-                        });
-                    }
-                }
-
-                l.Tags.Clear();
-
-                l.Tags = tags;
-
-                this.SaveChanges();
-            }
-            catch (SqlException e)
-            {
-                PortalFramework.LogErrorToDatabase(e);
-                throw e;
-            }
-            finally
-            {
-                if(this.Database.Connection.State != ConnectionState.Closed)
-                    this.Database.Connection.Close();
-            }
+            });
 
             return result;
         }

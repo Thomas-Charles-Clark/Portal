@@ -409,6 +409,7 @@ namespace SharedEFClasses.Models
         public string Application_PanelClass { get; set; }
         public string OrderEntry_DefaultMode { get; set; }
         public LeadsPermissions LeadsPermissions { get; set; }
+        public IEnumerable<int> BranchIDs { get; set; }
     }
 
     public class LeadsPermissions

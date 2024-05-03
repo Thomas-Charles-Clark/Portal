@@ -460,7 +460,7 @@ namespace SharedEFClasses.Models.Pricing
         { 
             var results = new List<SlicerProduct>();
             
-            using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["VM-SQL1"].ConnectionString))
+            using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["vm-sql"].ConnectionString))
             {
                 var comm = conn.CreateCommand();
                 comm.CommandType = System.Data.CommandType.Text;
@@ -567,7 +567,7 @@ namespace SharedEFClasses.Models.Pricing
         {
             var spResults = new List<PriceCheckerSlicerValue>();
 
-            using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["VM-SQL1"].ConnectionString))
+            using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["vm-sql"].ConnectionString))
             {
                 var comm = conn.CreateCommand();
                 comm.CommandType = System.Data.CommandType.StoredProcedure;

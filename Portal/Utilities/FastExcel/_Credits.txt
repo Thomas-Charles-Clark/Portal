@@ -1,0 +1,3 @@
+﻿Gratitude to https://github.com/ahmedwalid05/FastExcel
+
+from whom I adapted the contents of /FastExcel

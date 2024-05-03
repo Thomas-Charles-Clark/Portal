@@ -940,21 +940,10 @@ const rangeManagementViewModel = ({ } = {}) => {
             .then(data => {
                 switch (self.view()) {
                     case VIEW_MANAGE:
-                        self.filledRecords().forEach(fr => {
-                            fr.loaded(false);
-                            fr.busy(true);
-                        });
-                        self.recordsToDataFetch(self.filledRecords().map((fr) => { return { ProductID: fr.ProductID } }));
+                        self.refresh();
                         break;
                     case VIEW_ADD:
-                        self.addFilledRecords().forEach(fr => {
-                            fr.loaded(false);
-                            fr.busy(true);
-                        });
-                        self.addRecordsToDataFetch(self.addFilledRecords().map((fr) => { return { ProductID: fr.ProductID } }));
-                        self.addFilledRecords([]);
-                        self.addRecordsToDataFetch.valueHasMutated(); // this extra shenanigans necessary because look at the 
-                        // computed for the add to grid unfilledrecordproductids 
+                        self.refreshAdd();
                         break;
                     case VIEW_RESTOCK:
                         self.transferOrdersWH2BRGridSettings.widget().dataSource.read();
@@ -1294,6 +1283,34 @@ const rangeManagementViewModel = ({ } = {}) => {
                     self.busy(false);
                     if (data == false) {
                         window.showInfo("Information", "The Exiting Product Notification Email has been sent successfully.");
+                    } else {
+                        window.showError("Something went wrong there, sorry! If problems persist please contact <a href='mailto:itsupport@designersguild.com' target='_blank'>itsupport@designersguild.com</a>.");
+                    }
+                })
+                .catch(err => {
+                    self.busy(false);
+                    window.catchFetchError(err);
+                })
+        })
+    }
+
+    self.sendCarryForwardProductsNotification = () => {
+        window.showConfirm("Are you sure?", `This will send the Carry Forward Product Email to your email address <a href='mailto:${getUserEmail()}'>${getUserEmail()}</a>`, () => {
+
+            self.busy(true);
+
+            fetch('/api/rangeManagementApi/CarryForwardProductsNotification', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                body: JSON.stringify({
+                    branchId: self.branchId()
+                })
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    self.busy(false);
+                    if (data == false) {
+                        window.showInfo("Information", "The Carry Forward Product Notification Email has been sent successfully.");
                     } else {
                         window.showError("Something went wrong there, sorry! If problems persist please contact <a href='mailto:itsupport@designersguild.com' target='_blank'>itsupport@designersguild.com</a>.");
                     }
@@ -2633,12 +2650,152 @@ const rangeManagementViewModel = ({ } = {}) => {
         }
     }
 
+    self.refresh = () => {
+        self.filledRecords().forEach(fr => {
+            fr.loaded(false);
+            fr.busy(true);
+        });
+        self.recordsToDataFetch(self.filledRecords().map((fr) => { return { ProductID: fr.ProductID } }));
+    }
+
+    self.refreshAdd = () => {
+        self.addFilledRecords().forEach(fr => {
+            fr.loaded(false);
+            fr.busy(true);
+        });
+        self.addRecordsToDataFetch(self.addFilledRecords().map((fr) => { return { ProductID: fr.ProductID } }));
+        self.addFilledRecords([]);
+
+        // this extra shenanigans necessary because look at the
+        // computed for the add to grid unfilledrecordproductids 
+        self.addRecordsToDataFetch.valueHasMutated();
+    }
+
+    self.downloadRangeDataXlsx = () => {
+        self.setBusy();
+
+        let productPageIds = Array.from(new Set([...self.searchResults().map(sr => sr.ProductPageID)]));
+
+        fetch('/api/rangemanagementapi/DownloadRangeDataXlsx', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.BearerToken
+            },
+            body: JSON.stringify({
+                tradeAccountId: self.branch().TradeAccountID,
+                countryId: 81,
+                languageId: 1,
+                productPageIds: productPageIds
+            })
+        })
+            .then(response => response.blob())
+            .then(blob => {
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = 'Designers-Guild-Products.xlsx';
+                link.click();
+                self.clearBusy();
+                link.remove();
+            })
+            .catch(err => {
+                window.catchFetchError(err);
+                self.clearBusy();
+            });
+    }
+
+
+    self.downloadProductDataXlsx = () => {
+        self.setBusy();
+
+        let productPageIds = Array.from(new Set([...self.searchResults().map(sr => sr.ProductPageID)]));
+
+        fetch('/api/rangemanagementapi/DownloadProductDataXlsx', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.BearerToken
+            },
+            body: JSON.stringify({
+                tradeAccountId: self.branch().TradeAccountID,
+                countryId: 81,
+                languageId: 1,
+                productPageIds: productPageIds
+            })
+        })
+            .then(response => response.blob())
+            .then(blob => {
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = 'Designers-Guild-Products.xlsx';
+                link.click();
+                self.clearBusy();
+                link.remove();
+            })
+            .catch(err => {
+                window.catchFetchError(err);
+                self.clearBusy();
+            });
+    }
+
+    self.downloadProductImages = () => {
+        self.setBusy();
+
+        let productPageIds = Array.from(new Set([...self.searchResults().map(sr => sr.ProductPageID)]));
+
+        fetch('/stock/range-management/ProductImagesDownload', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.BearerToken
+            },
+            body: JSON.stringify({
+                tradeAccountId: self.branch().TradeAccountID,
+                countryId: 81,
+                languageId: 1,
+                productPageIds: productPageIds
+            })
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+
+                document.getElementById('archives-leading-text').innerHTML = document.getElementById('archives-leading-text').innerHTML.replace('{COUNT}', data.imageCount);
+
+                bootstrap.Modal.getOrCreateInstance(document.querySelector('#archives-modal')).show();
+
+                self.clearBusy();
+
+            })
+
+    }
+
+    self.downloadArchive = () => {
+
+
+        let id = new Date().getTime();
+
+        fetch(`/stock/range-management/DownloadImageArchive?id=${id}`, {
+            method: 'GET',
+            headers: window.fetchHeaders
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+
+
+                bootstrap.Modal.getOrCreateInstance(document.querySelector('#archives-modal')).show();
+
+            })
+            .catch(window.catchFetchError)
+    }
+
     //#endregion
 
 
     //#region Events
 
-    document.getElementById("range-tab-btn").addEventListener('show.bs.tab', (e) => {
+    var rangeTabBtn = document.getElementById("range-tab-btn");
+
+    rangeTabBtn && rangeTabBtn.addEventListener('show.bs.tab', (e) => {
 
         if (self.view() != VIEW_MANAGE) {
             e.preventDefault();
@@ -2655,7 +2812,9 @@ const rangeManagementViewModel = ({ } = {}) => {
         }
     });
 
-    document.getElementById("add-to-range-btn").addEventListener('show.bs.tab', (e) => {
+    var addToRangeBtn = document.getElementById("add-to-range-btn");
+
+    addToRangeBtn && addToRangeBtn.addEventListener('show.bs.tab', (e) => {
 
         if (self.view() != VIEW_ADD) {
             e.preventDefault();
@@ -2672,7 +2831,9 @@ const rangeManagementViewModel = ({ } = {}) => {
         }
     });
 
-    document.getElementById("restock-tab-btn").addEventListener('show.bs.tab', (e) => {
+    var restockTabBtn = document.getElementById("restock-tab-btn");
+
+    restockTabBtn && restockTabBtn.addEventListener('show.bs.tab', (e) => {
         if (self.view() != VIEW_RESTOCK) {
             e.preventDefault();
             self.branchCheck({
@@ -2687,7 +2848,9 @@ const rangeManagementViewModel = ({ } = {}) => {
         }
     });
 
-    document.getElementById("recall-tab-btn").addEventListener('show.bs.tab', (e) => {
+    var recallTabBtn = document.getElementById("recall-tab-btn");
+
+    recallTabBtn && recallTabBtn.addEventListener('show.bs.tab', (e) => {
         if (self.view() != VIEW_RECALL) {
             e.preventDefault();
             self.branchCheck({

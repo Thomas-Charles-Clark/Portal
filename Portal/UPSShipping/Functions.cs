@@ -304,7 +304,7 @@ namespace Portal.UPS
 
 //            if (!String.IsNullOrEmpty(result.CountryCodeISOAlpha2))
 //            {
-//                using (var conn = new SqlConnection("Data Source=vm-sql1.designersguild.com;Initial Catalog=Flock;Integrated Security=False;Persist Security Info=True;User ID=dg;Password=mattm00;MultipleActiveResultSets=true"))
+//                using (var conn = new SqlConnection("Data Source=vm-sql.designersguild.com;Initial Catalog=Flock;Integrated Security=False;Persist Security Info=True;User ID=dg;Password=mattm00;MultipleActiveResultSets=true"))
 //                {
 //                    var comm = conn.CreateCommand();
 
@@ -975,7 +975,7 @@ namespace Portal.UPS
         {
             var result = new Address();
 
-            using (var conn = new SqlConnection("Data Source=vm-sql1.designersguild.com;Initial Catalog=Flock;Integrated Security=False;Persist Security Info=True;User ID=dg;Password=mattm00;MultipleActiveResultSets=true"))
+            using (var conn = new SqlConnection("Data Source=vm-sql.designersguild.com;Initial Catalog=Flock;Integrated Security=False;Persist Security Info=True;User ID=dg;Password=mattm00;MultipleActiveResultSets=true"))
             {
                 var comm = conn.CreateCommand();
                 comm.CommandType = CommandType.Text;

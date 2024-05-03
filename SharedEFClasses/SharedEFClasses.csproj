@@ -64,6 +64,42 @@
   <PropertyGroup>
     <ProjectConfigFileName>App.config</ProjectConfigFileName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Development|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Development\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>default</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Development|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Development\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Production|AnyCPU'">
+    <OutputPath>bin\Production\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Production|x64'">
+    <OutputPath>bin\x64\Production\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="BouncyCastle.Crypto, Version=1.8.9.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
       <HintPath>..\packages\BouncyCastle.1.8.9\lib\BouncyCastle.Crypto.dll</HintPath>
@@ -334,6 +370,7 @@
     <Compile Include="DbContext\PortalDbContext-Invoices.cs" />
     <Compile Include="DbContext\PortalDbContext-Product-Maintenance.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Models\ArchiveResponse.cs" />
     <Compile Include="Models\Attribute\Attribute.cs" />
     <Compile Include="Models\AttributeGroup\AttributeGroup.cs" />
     <Compile Include="Models\BasketStatusModels.cs" />
@@ -365,6 +402,7 @@
     <Compile Include="Models\Fenwick\SelfBillInvoice.cs" />
     <Compile Include="Models\Fenwick\SelfBillInvoiceDocumentUpsertDto.cs" />
     <Compile Include="Models\GenericFormModels.cs" />
+    <Compile Include="Models\ImageDownloadTask.cs" />
     <Compile Include="Models\InvoiceModels.cs" />
     <Compile Include="Models\DocumentModels.cs" />
     <Compile Include="Models\FurnitureModels.cs" />
@@ -454,6 +492,7 @@
     <Compile Include="Models\RangeManagement\RangeManagementTransferOrdersResponse.cs" />
     <Compile Include="Models\RangeManagement\RangeManagementTransferResponse.cs" />
     <Compile Include="Models\RangeManagement\RangeManagementUpsertDto.cs" />
+    <Compile Include="Models\RangeManagement\RangeManagementXlsxDto.cs" />
     <Compile Include="Models\RangeManagement\RangeMangementNote.cs" />
     <Compile Include="Models\ResourceModels.cs" />
     <Compile Include="Models\DeliveryModels.cs" />
@@ -484,7 +523,9 @@
     <Compile Include="Models\TradeAccountCreationEmail_TradeAccountCreationEmailAttachment.cs" />
     <Compile Include="Models\TuffnellsModels.cs" />
     <Compile Include="Models\UPSModels.cs" />
+    <Compile Include="Models\ZipTask.cs" />
     <Compile Include="SignalR\Hubs\BasketLockHub.cs" />
+    <Compile Include="SignalR\Hubs\ImageDownloadHub.cs" />
     <Compile Include="SignalR\Hubs\NotificationHub.cs" />
     <Compile Include="Utilities\BouncyCastle\BouncyCastleHelper.cs" />
     <Compile Include="Utilities\ClassIdentifierAttribute.cs" />

@@ -15,7 +15,7 @@ namespace Portal.UPSShipping
             {
                 var userId = "";
 
-                using (var conn = new SqlConnection("Data Source=vm-sql1;Initial Catalog=Flock;Integrated Security=True"))
+                using (var conn = new SqlConnection("Data Source=vm-sql;Initial Catalog=Flock;Integrated Security=True"))
                 {
                     if (conn.State != ConnectionState.Open)
                         conn.Open();
@@ -50,7 +50,7 @@ namespace Portal.UPSShipping
             {
                 var password = "";
 
-                using (var conn = new SqlConnection("Data Source=vm-sql1;Initial Catalog=Flock;Integrated Security=True"))
+                using (var conn = new SqlConnection("Data Source=vm-sql;Initial Catalog=Flock;Integrated Security=True"))
                 {
                     if (conn.State != ConnectionState.Open)
                         conn.Open();

@@ -18,6 +18,14 @@ using Newtonsoft.Json.Linq;
 using Microsoft.AspNet.Identity;
 using SharedEFClasses.Models.RangeManagement;
 using SharedEFClasses.Models.Orders;
+using System.IO;
+using System.Web;
+using System.Xml.Linq;
+using Portal.Utilities;
+using System.Net.Http.Headers;
+using SharedEFClasses.SignalR.Hubs;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.AspNet.SignalR;
 
 namespace Portal.Areas.Stock.Controllers
 {
@@ -221,6 +229,72 @@ namespace Portal.Areas.Stock.Controllers
             var results = await PortalDb.RangeManagementSendExitingProductsNotification(objDto);
 
             return Ok(results);
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> CarryForwardProductsNotification([FromBody] RangeManagementNotesDto objDto)
+        {
+            objDto.MemberID = User.Identity.GetUserId<int>();
+
+            var results = await PortalDb.RangeManagementSendCarryForwardsProductsNotification(objDto);
+
+            return Ok(results);
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> DownloadProductDataXlsx([FromBody]RangeManagementXlsxDto objDto)
+        {
+            objDto.UserID = $"736faa9e-05a8-46ae-816e-fc658358732b";
+
+            objDto.TradeAccountCode = PortalDb.TradeAccounts.Single(ta => ta.TradeAccountID == objDto.TradeAccountID).Code;
+
+            var data = await PortalDb.RangeManagementProductPageFeedExcelXML(objDto);
+
+            var unique = Guid.NewGuid().ToString();
+
+            var dirPath = HttpContext.Current.Server.MapPath("~/ExcelSpreadsheets/");
+
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath);
+            }
+
+            var filePath = HttpContext.Current.Server.MapPath("~/ExcelSpreadsheets/" + unique + ".xlsx");
+
+            var products = data.Elements().Where(p => p.Name == "Products").Elements().Where(p => p.Name == "Product").ToList();
+
+            //SpreadsheetHelper.WriteSpreadsheet(user.DisplayClearance, filePath, products);
+
+            //var f = System.IO.File.OpenRead(filePath);
+
+            using (var fs = new System.IO.FileStream(filePath, System.IO.FileMode.OpenOrCreate))
+            {
+                using (var ts = new System.IO.MemoryStream(Framework.StringToByteArray(Framework.XlsxTemplateHex)))
+                {
+                    using (var fastExcel = new FastExcel.FastExcel(ts, fs))
+                    {
+                        fastExcel.Write(
+                            rows: products,
+                            sheetName: "Sheet1",
+                            uppercaseHeadings: true,
+                            autoWidthColumns: true,
+                            headingStyleId: (byte?)null,
+                            standardStyleId: (byte?)null,
+                            indentedHeadingStyleId: (byte?)null,
+                            indentedStyleId: (byte?)null);
+                    }
+                }
+            }
+
+            var f = System.IO.File.OpenRead(filePath);
+
+            var resultMessage = new HttpResponseMessage(HttpStatusCode.OK);
+
+            resultMessage.Content = new StreamContent(f);
+
+            resultMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+
+            return ResponseMessage(resultMessage);
         }
     }
 }
