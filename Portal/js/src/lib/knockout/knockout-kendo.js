@@ -388,6 +388,7 @@ var CLICK = "click",
     COLLAPSE = "collapse",
     CONTENT = "content",
     DATA = "data",
+    DATAITEM = "dataItem", // weeeeeeee!
     DATE = "date",
     DISABLE = "disable",
     ENABLE = "enable",

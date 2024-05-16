@@ -35,6 +35,8 @@ namespace SharedEFClasses.Models.MertexLive
         [StringLength(3)]
         public string CountryCode { get; set; }
 
+        public short? CountryID { get; set; }
+
         [Column("CreatedDT")]
         public DateTime CreatedDT { get; set; }
 

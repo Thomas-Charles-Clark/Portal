@@ -341,17 +341,17 @@ namespace Portal.Controllers
         [ValidateInput(false)]
         public ActionResult LeadOwnerSearch(PassMemberSearch objMemberSearch)
         {
-            var results = PortalDb.Users.Where(p => p.Roles.Where(q => q.RoleId == 1 || q.RoleId == 25).Any() &&
-                                                    
-                                                    (p.FullName.StartsWith(objMemberSearch.term) || p.Email.StartsWith(objMemberSearch.term))
-                                                    
-                                                    ).ToList();
+            var results = PortalDb.Users.Where(p => p.Deleted == false &&    
+                p.Roles.Where(q => q.RoleId == 1 || q.RoleId == 25).Any() &&
+                (p.FullName.StartsWith(objMemberSearch.term) || p.Email.StartsWith(objMemberSearch.term))                                
+            ).ToList();
 
             if (results.Count == 0)
             {
-                results = PortalDb.Users.Where(p => p.Roles.Where(q => q.RoleId == 1 || q.RoleId == 25).Any() &&
-                                                    (p.FullName.Contains(objMemberSearch.term) || p.Email.Contains(objMemberSearch.term))
-                                                    ).ToList();
+                results = PortalDb.Users.Where(p => p.Deleted == false && 
+                    p.Roles.Where(q => q.RoleId == 1 || q.RoleId == 25).Any() &&
+                    (p.FullName.Contains(objMemberSearch.term) || p.Email.Contains(objMemberSearch.term))
+                ).ToList();
             }
 
             var result = new MemberSearchViewResult()

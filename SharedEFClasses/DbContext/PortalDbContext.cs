@@ -462,7 +462,7 @@ namespace SharedEFClasses.Models
 
         #region Tasks
 
-        public DbSet<Task> Tasks { get; set; }
+        public DbSet<PortalTask> Tasks { get; set; }
         public DbSet<TaskType> TaskTypes { get; set; }
         public DbSet<TaskStatus> TaskStatuses { get; set; }
         public DbSet<TaskStatusGroup> TaskStatusGroups { get; set; }
@@ -1179,7 +1179,7 @@ namespace SharedEFClasses.Models
 
             #region Task Models
 
-            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<Task> task = modelBuilder.Entity<Task>();
+            System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<PortalTask> task = modelBuilder.Entity<PortalTask>();
             System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<TaskAssignmentHistory> taskAssignmentHistory = modelBuilder.Entity<TaskAssignmentHistory>();
             System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<ExternalStatus> externalStatus = modelBuilder.Entity<ExternalStatus>();
 

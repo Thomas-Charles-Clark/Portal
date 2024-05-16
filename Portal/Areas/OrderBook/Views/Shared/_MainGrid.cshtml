@@ -1,0 +1,80 @@
+﻿@model Portal.Areas.Orders.ViewModels.OrderBookSummaryViewModel
+<div id="main-grid-container"
+     style="display: none"
+     class="main-grid"
+     data-bind="fadeVisible: true">
+    <div class="main-grid column-headings"
+         data-bind="style: { '--grid-column-count': orderStatuses().length + 2 }">
+
+        <div class="th"></div>
+        <!-- ko foreach: columnHeadings -->
+        <div class="th span-x" data-bind="style: { '--colspan': orderStatuses.length }">
+            <span data-bind="text: orderStatusGroupName"></span>
+        </div>
+        <!-- /ko -->
+        <div class="th"></div>
+
+        <div class="th"></div>
+        <!-- ko foreach: columnHeadings -->
+        <!-- ko foreach: orderStatuses -->
+        <div class="th">
+            <span data-bind="text: orderStatusName"></span>
+        </div>
+        <!-- /ko -->
+        <!-- /ko -->
+        <div class="th">
+            Grand Total
+        </div>
+
+        <div class="th justify-content-end">
+            Subtotals
+        </div>
+        <!-- ko foreach: columnHeadings -->
+        <!-- ko foreach: orderStatuses -->
+        <div class="main-cell" data-bind="with: $root.getCell($data, $parent)">
+            <p class="values-display" data-bind="html: display"></p>
+        </div>
+        <!-- /ko -->
+        <!-- /ko -->
+        <div class="main-cell" data-bind="with: $root.getCell($data, null)">
+            <p class="values-display" data-bind="html: display"></p>
+        </div>
+
+    </div>
+    <!-- ko foreach: rowHeadings -->
+    <div class="main-grid"
+         data-bind="style: { '--grid-column-count': $parent.orderStatuses().length + 2 }">
+
+        <div class="order-group-heading order-group-row" data-bs-toggle="collapse" data-bind="attr: {
+            'data-bs-target': `.order-group-${$data.orderGroupId}`
+            }">
+            <span data-bind="text: orderGroupName"></span>
+        </div>
+        <!-- ko foreach: $parent.orderStatuses -->
+        <div class="main-cell subtotal-cell order-group-row" data-bind="with: $root.getCell($data, { orderGroupId: $parent.orderGroupId })">
+            <p class="values-display" data-bind="html: display"></p>
+        </div>
+        <!-- /ko -->
+        <div class="main-cell order-group-row" data-bind="with: $root.getCell({}, { orderGroupId: $data.orderGroupId })">
+            <p class="values-display" data-bind="html: display"></p>
+        </div>
+
+        <div class="main-grid span-n collapse show" data-bind="class: `order-group-${orderGroupId}`">
+            <!-- ko foreach: stockLocationGroups -->
+            <div class="th">
+                <span data-bind="text: stockLocationGroupName"></span>
+            </div>
+            <!-- ko foreach: $parentContext.$parent.orderStatuses -->
+            <div class="main-cell" data-bind="with: $root.getCell($data, $parent)">
+                <p class="values-display" data-bind="html: display">
+                </p>
+            </div>
+            <!-- /ko -->
+            <div class="main-cell" data-bind="with: $root.getCell({}, $data)">
+                <p class="values-display" data-bind="html: display"></p>
+            </div>
+            <!-- /ko -->
+        </div>
+    </div>
+    <!-- /ko -->
+</div>

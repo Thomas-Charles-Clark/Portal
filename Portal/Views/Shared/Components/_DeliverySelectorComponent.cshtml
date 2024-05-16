@@ -1016,12 +1016,12 @@
         // this is... not ideal, see callee: sample-request-dg.js:1149
         self.selectDefaultDespatch = function () {
 
-            if (self.address().CountryID() === 106) {
-                self.defaultDespatch({
-                    HAULCODE: "FL",
-                    CARRCODE: "PO855"
-                })                
-            }
+            //if (self.address().CountryID() === 106) {
+            //    self.defaultDespatch({
+            //        HAULCODE: "FL",
+            //        CARRCODE: "PO855"
+            //    })                
+            //}
 
             if (self.defaultDespatch().HAULCODE != null && self.defaultDespatch().CARRCODE != null) {
 

@@ -207,7 +207,8 @@ namespace Portal
                         $"{cssPrefix}/lib/bootstrap-3.3.7/bootstrap-3.3.7{cssSuffix}",
                         $"{cssPrefix}/lib/bootstrap-switch/bootstrap-switch{cssSuffix}",
                         $"{cssPrefix}/models/site{cssSuffix}",
-                        $"{cssPrefix}/models/css-shake{cssSuffix}"
+                        $"{cssPrefix}/models/css-shake{cssSuffix}",
+                        $"{cssPrefix}/fonts/fonts{cssSuffix}"
                 ).Include($"{cssPrefix}/lib/bootstrap-icons/bootstrap-icons{cssSuffix}", new CssRewriteUrlTransform()));
 
             bundles.Add(new StyleBundle("~/bundles/css/master-5.3.1").Include(
@@ -216,7 +217,8 @@ namespace Portal
                         $"{cssPrefix}/lib/bootstrap-switch/bootstrap-switch{cssSuffix}",
                         $"{cssPrefix}/models/site{cssSuffix}",
                         $"{cssPrefix}/models/site-new{cssSuffix}",
-                        $"{cssPrefix}/models/css-shake{cssSuffix}"
+                        $"{cssPrefix}/models/css-shake{cssSuffix}",
+                        $"{cssPrefix}/fonts/fonts{cssSuffix}"
                 ).Include($"{cssPrefix}/lib/bootstrap-icons/bootstrap-icons{cssSuffix}", new CssRewriteUrlTransform()));
 
             bundles.Add(new StyleBundle("~/bundles/css/kendo-custom").Include(
@@ -301,8 +303,9 @@ namespace Portal
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/range-management").Include(
-                        $"{cssPrefix}/models/range-management{cssSuffix}"
-                ));
+                $"{cssPrefix}/models/full-width-app{cssSuffix}",
+                $"{cssPrefix}/models/range-management{cssSuffix}"
+            ));
 
             bundles.Add(new StyleBundle("~/bundles/css/contract-pricing").Include(
                         $"{cssPrefix}/mopdels/virtual-scrolling-deferred-data{cssSuffix}",
@@ -313,6 +316,15 @@ namespace Portal
             bundles.Add(new StyleBundle("~/bundles/css/virtual-scrolling-deferred-data").Include(
                         $"{cssPrefix}/mopdels/virtual-scrolling-deferred-data{cssSuffix}"
                 ));
+
+            bundles.Add(new StyleBundle("~/bundles/css/order-book").Include(
+                $"{cssPrefix}/models/full-width-app{cssSuffix}",
+                $"{cssPrefix}/lib/tempus-dominus/tempus-dominus{cssSuffix}",
+                $"{cssPrefix}/models/order-book-user-defined-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book-date-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book-pre-defined-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book{cssSuffix}"
+            ));
 
             //  
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -740,6 +752,17 @@ namespace Portal
                     $"{jsPrefix}/models/image-download-tasks/controllers/image-download-tasks-controller{jsSuffix}",
                     $"{jsPrefix}/models/image-download-tasks/models/image-download-task-model{jsSuffix}",
                     $"{jsPrefix}/models/image-download-tasks/models/image-download-task-progress-model{jsSuffix}"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/order-book").Include(
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-summary-filter{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-user-defined-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-date-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-pre-defined-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-main-cell{jsSuffix}",
+                        $"{jsPrefix}/models/order-book{jsSuffix}"
                 ));
 
             foreach (var b in BundleTable.Bundles)

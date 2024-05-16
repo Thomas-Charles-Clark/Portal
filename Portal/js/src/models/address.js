@@ -988,8 +988,10 @@
             self.town.observable(address.Town);
             self.county.observable(address.County);
             self.postcode.observable(address.Postcode);
-            self.phone.observable(address.PhoneNumber);
-            self.phone.visible(true);
+            if (address.PhoneNumber) {
+                self.phone.observable(address.PhoneNumber);
+                self.phone.visible(true);
+            }
             self.email.observable(address.Email);
 
             if (self.countryWidget()) {

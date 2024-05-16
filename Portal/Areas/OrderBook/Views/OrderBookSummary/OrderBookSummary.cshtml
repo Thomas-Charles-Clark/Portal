@@ -1,0 +1,109 @@
+﻿@model Portal.Areas.Orders.ViewModels.OrderBookSummaryViewModel
+@{
+    ViewBag.Title = "Order Book";
+    Layout = "~/Views/Shared/_Layout-New.cshtml";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/components")
+    @Styles.Render("~/bundles/css/kendo-custom")
+    @Styles.Render("~/bundles/css/order-book")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/components")
+    @Scripts.Render("~/bundles/js/tempus-dominus")
+    @Scripts.Render("~/bundles/js/order-book")
+
+    <script type="text/javascript">
+
+        window.getMainResult = () => {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.MainResult));
+        }
+
+        var viewModel = orderBookViewModel();
+
+        ko.options.deferUpdates = true;
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        ko.applyBindings(viewModel, document.body);
+
+        viewModel.busy(false);
+
+        window.self = viewModel;
+
+    </script>
+}
+@section modals {
+    @Html.Partial("Modals/_ImageModalNew")
+}
+@section navbarTitle {
+    <div class="d-flex gap-3 align-items-center">
+        <h2>
+            Order Book Summary
+        </h2>
+    </div>
+}
+
+<div class="blocker" data-bind="flexFadeVisible: busy">
+    <div class="loading-spinner"></div>
+    <h4 class="mt-3">
+        Please wait...
+    </h4>
+</div>
+
+@*<div id="filters-offcanvas" class="offcanvas offcanvas-start" tabindex="-1" data-bs-scroll="true" data-bs-backdrop="false">
+    <div class="offcanvas-header justify-content-end">
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        @Html.Partial("_UserDefinedFilters")
+    </div>
+</div>
+
+<main id="order-book-main">
+    @Html.Partial("_DateFilters")
+    @Html.Partial("_PreDefinedFilters")
+    <div class="d-flex justify-content-center align-items-center mb-3">
+        <button class="btn btn-success btn-lg" data-bs-toggle="offcanvas" data-bs-target="#filters-offcanvas">
+            Filters (0 selected)
+        </button>
+    </div>
+    @Html.Partial("_MainGrid")
+</main>*@
+
+<div class="d-flex align-items-start w-100">
+    <sidebar id="filters-sidebar" class="collapse collapse-horizontal show sidebar sticky-top pinned">
+        <div class="sidebar-inner">
+            <div class="sidebar-header">
+                <button type="button"
+                        class="btn btn-light"
+                        data-bind="click: userDefinedFilters.togglePinning"
+                        title="Toggle Pinning">
+                    <i class="bi bi-pin-angle-fill fs-5"></i>
+                </button>
+            </div>
+            <div id="sidebar-collapse" class="sidebar-body">
+                @Html.Partial("_UserDefinedFilters")
+            </div>
+        </div>
+    </sidebar>
+    <main id="order-book-main">
+        <p>
+            Sort the Product Autocomplete by ProductFilterGroup or other such usefulness<br/>
+            Center align the numbers<br/>
+            Subtotal to just "Total" on the left there<br/>
+            Some sort of separation between the main column sections<br/>
+            Some sort of improved separation between Order Group columns: Held Orders | Reserves | Back Orders all the way down <br/>
+            Display last data pull -- proc to execute TBC
+        </p>
+
+        @Html.Partial("_DateFilters")
+        @Html.Partial("_PreDefinedFilters")
+        @Html.Partial("_MainGrid")
+    </main>
+</div>

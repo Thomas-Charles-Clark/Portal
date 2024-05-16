@@ -29,5 +29,14 @@ namespace SharedEFClasses.Models.MertexLive
         public DateTime? DeletedDT { get; set; }
 
         public bool? Deleted { get; set; }
+
+        [NotMapped]
+        public string ShortLabel
+        {
+            get
+            {
+                return $"{Code} - {Name}";
+            }
+        }
     }
 }

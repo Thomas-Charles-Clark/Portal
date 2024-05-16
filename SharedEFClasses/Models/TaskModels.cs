@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace SharedEFClasses.Models
 {
     [Table("Task", Schema = "portal")]
-    public class Task
+    public class PortalTask
     {
         [Key]
         public int TaskID { get; set; }
@@ -114,7 +114,7 @@ namespace SharedEFClasses.Models
         public string Name { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<Task> Tasks { get; set; }
+        public virtual ICollection<PortalTask> Tasks { get; set; }
     }
 
     [Table("TaskStatus", Schema = "portal")]
@@ -159,7 +159,7 @@ namespace SharedEFClasses.Models
         public virtual ExternalCompany Company { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<Task> Tasks { get; set; }
+        public virtual ICollection<PortalTask> Tasks { get; set; }
     }
 
     [Table("ExternalCompany", Schema = "portal")]
@@ -181,7 +181,7 @@ namespace SharedEFClasses.Models
         public virtual ICollection<ExternalStatus> Statuses { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<Task> CurrentlyAssignedTasks { get; set; }
+        public virtual ICollection<PortalTask> CurrentlyAssignedTasks { get; set; }
     }
 
     [Table("TaskAssignmentHistory", Schema = "portal")]
@@ -195,7 +195,7 @@ namespace SharedEFClasses.Models
         public int AssignedByMemberID { get; set; }
 
         [JsonIgnore]
-        public virtual Task Task { get; set; }
+        public virtual PortalTask Task { get; set; }
 
         [ForeignKey("AssignedToMemberID")]
         public virtual Member AssignedToMember { get; set; }
@@ -318,7 +318,7 @@ namespace SharedEFClasses.Models
 
         [ForeignKey("TaskID")]
         [JsonIgnore]
-        public virtual Task Task { get; set; }
+        public virtual PortalTask Task { get; set; }
 
         [ForeignKey("CreatedMemberID")]
         public virtual Member CreatedBy { get; set; }
@@ -366,7 +366,7 @@ namespace SharedEFClasses.Models
         public bool Deleted { get; set; }
 
         [ForeignKey("TaskID")]
-        public virtual Task Task { get; set; }
+        public virtual PortalTask Task { get; set; }
 
         [NotMapped]
         public object Project
@@ -400,7 +400,7 @@ namespace SharedEFClasses.Models
 
         [ForeignKey("TaskID")]
         [JsonIgnore]
-        public virtual Task Task { get; set; }
+        public virtual PortalTask Task { get; set; }
 
         [ForeignKey("CreatedMemberID")]
         [JsonIgnore]
@@ -414,7 +414,7 @@ namespace SharedEFClasses.Models
     public class GridTaskDue
     {
         public TaskDue TaskDue { get; set; }
-        public Task Task { get; set; }
+        public PortalTask Task { get; set; }
 
         public GridTaskDue(TaskDue taskDue)
         {
@@ -493,7 +493,7 @@ namespace SharedEFClasses.Models
         public bool Deleted { get; set; }
 
         [JsonIgnore]
-        public virtual Task Task { get; set; }
+        public virtual PortalTask Task { get; set; }
 
         [ForeignKey("UploadedByMemberID")]
         public virtual Member UploadedByMember { get; set; }

@@ -510,3 +510,14 @@ label.mdc-floating-label {
     border-bottom: 1px solid;
     pointer-events: none;
 }
+
+.mdc-validating-field {
+    .mdc-select:not(.mdc-select--disabled) {
+        &.mdc-select--selected {
+            .k-dropdown-wrap.k-state-default {
+                background-color: tint-color($blue-100, 40%);
+            }
+        }
+    }
+}
+

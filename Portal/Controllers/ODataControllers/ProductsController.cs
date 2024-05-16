@@ -49,6 +49,14 @@ namespace Portal.Controllers
                 (p.ProductGroupID == 2 || p.ProductGroupID == 8 || p.ProductGroupID == 16)).AsQueryable();
         }
 
+        // GET: odata/Products
+        [EnableQuery(MaxNodeCount = 200)]
+        public IQueryable<Product> GetProductsForOrderBookSummary()
+        {
+            // Who cares about samples anyway?
+            return PortalDb.Products.Where(p => p.ProductTypeID != 55 && p.ProductTypeID != 56).AsQueryable();
+        }
+
         [EnableQuery(MaxNodeCount = 200)]
         [HttpGet]
         public IQueryable<Product> ProductValueMapper(int? productId)

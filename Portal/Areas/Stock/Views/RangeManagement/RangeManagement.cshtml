@@ -91,7 +91,7 @@
                 </div>
             </div>
         </td>
-        <td colspan="@(Model.ReadOnlyMode == false ? "16" : "17")"></td>
+        <td colspan="@(Model.ReadOnlyMode == false ? "4" : "300")"></td>
     </tr>
     <!-- /ko -->
     <!-- ko with: $root.getFilledRecord($data.ProductID) -->
@@ -118,10 +118,9 @@
                 </div>
             </div>
         </td>
-        <td data-bind="html: priceSummary">
-        </td>
+        <td data-bind="html: priceSummary"></td>
         <td class="text-end">
-            @if (Model.ReadOnlyMode == false)
+           @if (Model.ReadOnlyMode == false)
             {
                 <div class="range-planned" data-bind="component: { name: 'mdc-text-field-numeric-component', params: rangePlannedParams }"></div>
             }
@@ -136,14 +135,14 @@
         <td class="text-end">
             <span data-bind="text: rangeInProgress"></span>
         </td>
-        <td class="text-end">
-            <span data-bind="text: rangeRequired"></span>
-        </td>
-        <td class="recommendations-container">
-            <div data-bind="html: actionRecommendations"></div>
-        </td>
-        @if (Model.ReadOnlyMode == false)
+       @if (Model.ReadOnlyMode == false)
         {
+            <td class="text-end">
+                <span data-bind="text: rangeRequired"></span>
+            </td>
+            <td class="recommendations-container">
+                <div data-bind="html: actionRecommendations"></div>
+            </td>
             <td class="text-end" data-bind="style: { 'background-color': actionTransferToBranchHighlight }">
                 <div data-bind="visible: actionTransferToBranchBasketItemId() == null, component: { name: 'mdc-text-field-numeric-component', params: actionTransferToBranchQuantityParams }"></div>
                 <button class="btn btn-sm btn-outline-primary" style="display: none" data-bind="
@@ -174,59 +173,50 @@
             <td class="text-end">
                 <span data-bind="text: sales180DayBranch"></span>
             </td>
-        }
-        <td class="text-end">
-            <span data-bind="text: stockWHFreeStock"></span>
-        </td>
-        @*<td class="text-end">
-                <span data-bind="text: stockCover"></span>
-            </td>*@
-        <td class="text-end">
-            <span data-bind="text: stockWHNextPOFreeStock"></span>
-        </td>
-        <td>
-            <!-- ko if: stockWHNextPODueDate -->
-            <span data-bind="text: renderDate(stockWHNextPODueDate.substring(0, 10))"></span>
-            <!-- /ko -->
-        </td>
-        @if (Model.ReadOnlyMode == false)
-        {
+            <td class="text-end">
+                <span data-bind="text: stockWHFreeStock"></span>
+            </td>
+            <td class="text-end">
+                <span data-bind="text: stockWHNextPOFreeStock"></span>
+            </td>
+            <td>
+                <!-- ko if: stockWHNextPODueDate -->
+                <span data-bind="text: renderDate(stockWHNextPODueDate.substring(0, 10))"></span>
+                <!-- /ko -->
+            </td>
             <td class="text-end">
                 <span data-bind="text: stockKRFreeStock"></span>
             </td>
             <td class="text-end">
                 <span data-bind="text: stockMHSFreeStock"></span>
             </td>
-        }
-        <td class="text-end">
-            <span data-bind="text: stockFWFreeStock"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: stockRingFence"></span>
-        </td>
-        @*<td>
+            <td class="text-end">
+                <span data-bind="text: stockFWFreeStock"></span>
+            </td>
+            <td class="text-end">
+                <span data-bind="text: stockRingFence"></span>
+            </td>
+            <td>
                 <span data-bind="html: salesSummary"></span>
-            </td>*@
-        <td class="text-end">
-            <span data-bind="text: sales180DayTotal"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: sales180DayKR"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: sales180DayMHS"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: sales180DayFW"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: sales180DayUKEcommerce"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: sales180DayUKTrade"></span>
-        </td>
-        @if (Model.ReadOnlyMode == false)
-        {
+            </td>
+            <td class="text-end">
+                <span data-bind="text: sales180DayTotal"></span>
+            </td>
+            <td class="text-end">
+                <span data-bind="text: sales180DayKR"></span>
+            </td>
+            <td class="text-end">
+                <span data-bind="text: sales180DayMHS"></span>
+            </td>
+            <td class="text-end">
+                <span data-bind="text: sales180DayFW"></span>
+            </td>
+            <td class="text-end">
+                <span data-bind="text: sales180DayUKEcommerce"></span>
+            </td>
+            <td class="text-end">
+                <span data-bind="text: sales180DayUKTrade"></span>
+            </td>
             <td>
                 <!-- ko if: notes != null && notes.length > 0 -->
                 <button class="add-note-btn btn btn-link btn-sm" data-bind="click: $root.showAddNoteModal">
@@ -458,24 +448,49 @@
                                 </button>
                             </li>
                             <li class="nav-item" data-bind="visible: branch">
-                                <button id="restock-tab-btn" href="#restock-tab" data-bs-toggle="tab" class="btn nav-link">
-                                    Transfer Orders - Restock (WH &raquo; Branch)
+                                <button id="restock-tab-btn" class="btn nav-link" href="#restock-tab" data-bs-toggle="tab">
+                                    Transfers - Restock (WH &raquo; Branch)
                                 </button>
                             </li>
                             <li class="nav-item" data-bind="visible: branch">
-                                <button id="recall-tab-btn" href="#recall-tab" data-bs-toggle="tab" class="btn nav-link">
-                                    Transfer Orders - Recall (Branch &raquo; WH)
+                                <button id="recall-tab-btn" class="btn nav-link" href="#recall-tab" data-bs-toggle="tab">
+                                    Transfers - Recall (Branch &raquo; WH)
                                 </button>
                             </li>
-                            <li class="nav-item" data-bind="visible: branch">
-                                <button id="refresh-transfers-btn" class="btn nav-link" data-bind="click: refreshTransferOrders">
-                                    Refresh Transfer Orders <i class="material-icons">refresh</i>
+                            <li class="nav-item" data-bind="visible: branch() && [VIEW_RECALL, VIEW_RESTOCK].indexOf(view()) > -1">
+                                <button id="refresh-transfers-btn" class="btn nav-link d-flex gap-2 align-items-center" data-bind="click: refreshTransferOrders">
+                                    Refresh Transfers
+                                    <i class="bi bi-arrow-clockwise"></i>
                                 </button>
                             </li>
+                            @*<li class="nav-item dropdown align-self-stretch" data-bind="visible: branch">
+                                <button class="btn btn-secondary dropdown-toggle align-self-stretch d-flex gap-2 align-items-center" href="#" role="button" id="transfers-dropdown-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Transfers
+                                    <i class="bi bi-arrow-left-right"></i>
+                                </button>
+                                <ul id="transfers-dropdown" class="dropdown-menu" aria-labelledby="send-email-dropdown">
+                                    <li>
+                                        <button id="restock-tab-btn" class="dropdown-item" href="#restock-tab" data-bs-toggle="tab">
+                                            Transfer Orders - Restock (WH &raquo; Branch)
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button id="recall-tab-btn" class="dropdown-item" href="#recall-tab" data-bs-toggle="tab">
+                                            Transfer Orders - Recall (Branch &raquo; WH)
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button id="refresh-transfers-btn" class="dropdown-item d-flex gap-2 align-items-center" data-bind="click: refreshTransferOrders">
+                                            Refresh Transfer Orders
+                                            <i class="bi bi-arrow-clockwise"></i>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </li>*@
                             <li class="nav-item dropdown ms-auto align-self-stretch" data-bind="visible: branch">
-                                <button class="btn btn-secondary dropdown-toggle align-self-stretch" href="#" role="button" id="send-email-dropdown-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="btn btn-secondary dropdown-toggle align-self-stretch d-flex gap-2 align-items-center" href="#" role="button" id="send-email-dropdown-btn" data-bs-toggle="dropdown" aria-expanded="false">
                                     Send Email
-                                    <i class="material-icons">email</i>
+                                    <i class="bi bi-send"></i>
                                 </button>
                                 <ul id="send-email-dropdown" class="dropdown-menu" aria-labelledby="send-email-dropdown">
                                     <li>
@@ -508,7 +523,6 @@
             <div id="brand-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: brandParams }"></div>
             <div id="launch-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: launchParams }"></div>
             <div id="status-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statusGroupParams }"></div>
-            <div id="sale-status-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: saleStatusParams }"></div>
             @*<div id="status-group-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statusGroupParams }"></div>*@
             @*<div id="buyer-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: buyerParams }"></div>
                 <div id="supplier-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
@@ -518,6 +532,7 @@
                 <div id="collection-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: collectionParams }"></div>*@
         </div>
         <div class="flex prefilters">
+            <div id="sale-status-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: saleStatusParams }"></div>
             <div id="stock-status-prefilter" data-bind="visible: view() == VIEW_MANAGE, component: { name: 'mdc-kendo-dropdown-component', params: stockStatusParams }"></div>
             <div id="add-stock-status-prefilter" data-bind="visible: view() == VIEW_ADD, component: { name: 'mdc-kendo-dropdown-component', params: addStockStatusParams }"></div>
             <div id="search-term-prefilter" data-bind="component: { name: 'mdc-text-field-component', params: searchTermParams }"></div>
@@ -597,24 +612,37 @@
         }
         <button type="button" class="btn btn-secondary p-0 px-3 ms-3 align-self-stretch d-flex align-items-center gap-2" data-bind="click: refresh" title="Refresh">
             Refresh
-            <i class="bi bi-arrow-clockwise fs-5"></i>
+            <i class="bi bi-arrow-clockwise"></i>
         </button>
-        @if (Model.ReadOnlyMode == false)
-        {
-            <button type="button" class="btn btn-secondary p-0 px-3 ms-3 align-self-stretch d-flex align-items-center gap-3" data-bind="click: downloadRangeDataXlsx" title="Refresh">
-                Download Range Info XLSX
-                <i class="bi bi-download fs-5"></i>
+        <div class="dropdown ms-auto align-self-stretch">
+            <button class="btn btn-secondary dropdown-toggle align-self-stretch d-flex gap-2 align-items-center" href="#" role="button" id="send-email-dropdown-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                Downloads
+                <i class="bi bi-download fs-6"></i>
             </button>
-        }
-        <button type="button" class="btn btn-secondary p-0 px-3 ms-3 align-self-stretch d-flex align-items-center gap-3" data-bind="click: downloadProductDataXlsx" title="Refresh">
-            Download Product Data XLSX
-            <i class="bi bi-download fs-5"></i>
-        </button>
-        <button type="button" class="btn btn-secondary p-0 px-3 ms-3 align-self-stretch d-flex align-items-center gap-3" data-bind="click: downloadProductImages" title="Refresh">
-            Download Product Images
-            <i class="bi bi-image fs-5"></i>
-            <i class="bi bi-download fs-5"></i>
-        </button>
+            <ul id="send-email-dropdown" class="dropdown-menu" aria-labelledby="send-email-dropdown">
+                @*@if (Model.ReadOnlyMode == false)
+                {
+                    <li>
+                        <button type="button" class="dropdown-item align-self-stretch d-flex align-items-center gap-3" data-bind="click: downloadRangeDataXlsx" title="Refresh">
+                            Download Range Info XLSX
+                            <i class="bi bi-filetype-xlsx"></i>
+                        </button>
+                    </li>
+                }*@
+                <li>
+                    <button type="button" class="dropdown-item align-self-stretch d-flex align-items-center gap-3" data-bind="click: downloadProductDataXlsx" title="Refresh">
+                        Product Data
+                        <i class="bi bi-filetype-xlsx"></i>
+                    </button>
+                </li>
+                <li>
+                    <button type="button" class="dropdown-item align-self-stretch d-flex align-items-center gap-3" data-bind="click: downloadProductImages" title="Refresh">
+                        Product Images
+                        <i class="bi bi-images"></i>
+                    </button>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
 
@@ -646,35 +674,27 @@
                                 <col style="width:145px" />
                                 <col style="width:120px" />
                                 <col style="width:120px" />
-                                <col style="width:80px" />
-                                <col style="width:260px" />
-                                @if (Model.ReadOnlyMode == false)
+                               @if (Model.ReadOnlyMode == false)
                                 {
+                                    <col style="width:80px" />
+                                    <col style="width:260px" />
                                     <col style="width:160px" />
                                     <col style="width:160px" />
                                     <col style="width:100px" />
                                     <col style="width:100px" />
-                                }
-                                <col style="width:100px" />
-                                @*<col style="width:100px" />*@
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                @if (Model.ReadOnlyMode == false)
-                                {
                                     <col style="width:100px" />
                                     <col style="width:100px" />
-                                }
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                @*<col style="width:200px" />*@
-                                <col style="width:140px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                <col style="width:100px" />
-                                @if (Model.ReadOnlyMode == false)
-                                {
+                                    <col style="width:100px" />
+                                    <col style="width:100px" />
+                                    <col style="width:100px" />
+                                    <col style="width:100px" />
+                                    <col style="width:100px" />
+                                    <col style="width:140px" />
+                                    <col style="width:100px" />
+                                    <col style="width:100px" />
+                                    <col style="width:100px" />
+                                    <col style="width:100px" />
+                                    <col style="width:100px" />
                                     <col style="width:50px" />
                                 }
                             </colgroup>
@@ -684,18 +704,21 @@
                                     <th class="k-group-cell k-header sticky-heading" scope="col" rowspan="2">
                                         <div class="sticky-heading-block"></div>
                                     </th>
-                                    <th scope="col" role="columnheader" colspan="5" class="k-header">
+                                    <th scope="col" role="columnheader" colspan="@(Model.ReadOnlyMode ? "4" : "5")" class="k-header">
                                         Range
                                     </th>
-                                    <th scope="col" role="columnheader" colspan="@(Model.ReadOnlyMode ? "1" : "5")" class="k-header">
-                                        Actions
-                                    </th>
-                                    <th scope="col" role="columnheader" colspan="@(Model.ReadOnlyMode ? "5" : "7")" class="k-header">
-                                        Stock
-                                    </th>
-                                    <th scope="col" role="columnheader" colspan="@(Model.ReadOnlyMode ? "6" : "7")" class="k-header">
-                                        Sales - Last 180 Days
-                                    </th>
+                                   @if (Model.ReadOnlyMode == false)
+                                    {
+                                        <th scope="col" role="columnheader" colspan="5" class="k-header">
+                                            Actions
+                                        </th>
+                                        <th scope="col" role="columnheader" colspan="7" class="k-header">
+                                            Stock
+                                        </th>
+                                        <th scope="col" role="columnheader" colspan="7" class="k-header">
+                                            Sales - Last 180 Days
+                                        </th>
+                                    }
                                 </tr>
                                 <tr role="row">
                                     <th scope="col" role="columnheader" class="k-header k-first">
@@ -710,14 +733,14 @@
                                     <th scope="col" role="columnheader" class="text-end k-header">
                                         In Progress
                                     </th>
-                                    <th scope="col" role="columnheader" class="text-end k-header">
-                                        Required
-                                    </th>
-                                    <th scope="col" role="columnheader" class="k-header">
-                                        Recommendations
-                                    </th>
-                                    @if (Model.ReadOnlyMode == false)
+                                   @if (Model.ReadOnlyMode == false)
                                     {
+                                        <th scope="col" role="columnheader" class="text-end k-header">
+                                            Required
+                                        </th>
+                                        <th scope="col" role="columnheader" class="k-header">
+                                            Recommendations
+                                        </th>
                                         <th scope="col" role="columnheader" class="text-end k-header">
                                             Qty to Branch
                                         </th>
@@ -730,57 +753,45 @@
                                         <th scope="col" role="columnheader" class="text-end k-header">
                                             180 Day Sales Branch
                                         </th>
-                                    }
-                                    <th scope="col" role="columnheader" class="text-end k-header">
-                                        Warehouse
-                                    </th>
-                                    @*<th scope="col" role="columnheader" class="text-end k-header">
-                                            Cover
-                                        </th>*@
-                                    <th scope="col" role="columnheader" class="text-end k-header">
-                                        PO Quantity
-                                    </th>
-                                    <th scope="col" role="columnheader" class="k-header">
-                                        PO Due Date
-                                    </th>
-                                    @if (Model.ReadOnlyMode == false)
-                                    {
+                                        <th scope="col" role="columnheader" class="text-end k-header">
+                                            Warehouse
+                                        </th>
+                                        <th scope="col" role="columnheader" class="text-end k-header">
+                                            PO Quantity
+                                        </th>
+                                        <th scope="col" role="columnheader" class="k-header">
+                                            PO Due Date
+                                        </th>
                                         <th scope="col" role="columnheader" class="text-end k-header">
                                             King's Road
                                         </th>
                                         <th scope="col" role="columnheader" class="text-end k-header">
                                             Marylebone
                                         </th>
-                                    }
-                                    <th scope="col" role="columnheader" class="text-end k-header">
-                                        Fenwick (All)
-                                    </th>
-                                    <th scope="col" role="columnheader" class="text-end k-header">
-                                        Ring Fenced
-                                    </th>
-                                    @*<th scope="col" role="columnheader" class="k-header">
-                                            Summary
-                                        </th>*@
-                                    <th scope="col" role="columnheader" class="text-end k-header">
-                                        Total Worldwide
-                                    </th>
-                                    <th scope="col" role="columnheader" class="text-end k-header">
-                                        King's Road
-                                    </th>
-                                    <th scope="col" role="columnheader" class="text-end k-header">
-                                        Marylebone
-                                    </th>
-                                    <th scope="col" role="columnheader" class="text-end k-header">
-                                        Fenwick (All)
-                                    </th>
-                                    <th scope="col" role="columnheader" class="text-end k-header">
-                                        UK eComm
-                                    </th>
-                                    <th scope="col" role="columnheader" class="text-end k-header">
-                                        UK Trade
-                                    </th>
-                                    @if (Model.ReadOnlyMode == false)
-                                    {
+                                        <th scope="col" role="columnheader" class="text-end k-header">
+                                            Fenwick (All)
+                                        </th>
+                                        <th scope="col" role="columnheader" class="text-end k-header">
+                                            Ring Fenced
+                                        </th>
+                                        <th scope="col" role="columnheader" class="text-end k-header">
+                                            Total Worldwide
+                                        </th>
+                                        <th scope="col" role="columnheader" class="text-end k-header">
+                                            King's Road
+                                        </th>
+                                        <th scope="col" role="columnheader" class="text-end k-header">
+                                            Marylebone
+                                        </th>
+                                        <th scope="col" role="columnheader" class="text-end k-header">
+                                            Fenwick (All)
+                                        </th>
+                                        <th scope="col" role="columnheader" class="text-end k-header">
+                                            UK eComm
+                                        </th>
+                                        <th scope="col" role="columnheader" class="text-end k-header">
+                                            UK Trade
+                                        </th>
                                         <th scope="col" role="columnheader" class="k-header">
                                             Notes
                                         </th>
@@ -789,18 +800,17 @@
                             </thead>
                             <tbody class="virtual-spacing">
                                 <tr>
-                                    <td colspan="@(Model.ReadOnlyMode ? "21" : "300")" data-bind="style: { height: `${gridScrollTopPadding()}px` }">
-                                    </td>
+                                    <td colspan="@(Model.ReadOnlyMode ? "8" : "300")" data-bind="style: { height: `${gridScrollTopPadding()}px` }"></td>
                                 </tr>
                             </tbody>
                             <tbody role="rowgroup" data-bind="foreach: groupedSearchResults">
                                 <!-- ko if: headerVisible -->
                                 <tr role="row" class="k-grouping-row product-filter-name-row">
-                                    <td aria-expanded="true" colspan="@(Model.ReadOnlyMode ? "21" : "300")" class="relative">
+                                    <td aria-expanded="true" colspan="@(Model.ReadOnlyMode ? "8" : "300")" class="relative">
                                         <p class="k-reset">
                                             <span class="group-heading bold" data-bind="text: name"></span>
                                         </p>
-                                        @if (Model.ReadOnlyMode == false)
+                                       @if (Model.ReadOnlyMode == false)
                                         {
                                             <span class="range-total range-planned bold">
                                                 <span data-bind="text: formatCurrency(plannedValue(), 0, 'en-GB', 'GBP')"></span>
@@ -828,7 +838,7 @@
                                 <!-- ko if: headerVisible -->
                                 <tr role="row" class="k-grouping-row product-page-name-row">
                                     <td class="k-group-cell"></td>
-                                    <td colspan="@(Model.ReadOnlyMode ? "20" : "300")" aria-expanded="true">
+                                    <td colspan="@(Model.ReadOnlyMode ? "7" : "300")" aria-expanded="true">
                                         <p class="k-reset">
                                             <a class="k-icon k-i-collapse" href="#" tabindex="-1" aria-label="Collapse"></a>
                                             <span class="group-heading" style="transform: translateX(0px);" data-bind="text: name"></span>
@@ -841,7 +851,7 @@
                                 <tr role="row" class="k-grouping-row order-form-group-row">
                                     <td class="k-group-cell"></td>
                                     <td class="k-group-cell"></td>
-                                    <td colspan="@(Model.ReadOnlyMode ? "19" : "300")" aria-expanded="true">
+                                    <td colspan="@(Model.ReadOnlyMode ? "6" : "300")" aria-expanded="true">
                                         <p class="k-reset">
                                             <a class="k-icon k-i-collapse" href="#" tabindex="-1" aria-label="Collapse"></a>
                                             <span class="group-heading" data-bind="text: `${name}`"></span>
@@ -855,7 +865,7 @@
                             </tbody>
                             <tbody style="display: none" data-bind="visible: groupedSearchResults().length === 0 && manageBusy() == false">
                                 <tr class="no-results">
-                                    <td colspan="@(Model.ReadOnlyMode ? "22" : "300")">
+                                    <td colspan="@(Model.ReadOnlyMode ? "8" : "300")">
                                         <h4 class="mb-0">
                                             No Results
                                         </h4>
@@ -864,7 +874,7 @@
                             </tbody>
                             <tbody class="virtual-spacing">
                                 <tr class="final-row">
-                                    <td colspan="@(Model.ReadOnlyMode ? "22" : "300")" data-bind="style: { height: `${gridScrollBottomPadding()}px` }">
+                                    <td colspan="@(Model.ReadOnlyMode ? "8" : "300")" data-bind="style: { height: `${gridScrollBottomPadding()}px` }">
                                     </td>
                                 </tr>
                             </tbody>
@@ -900,13 +910,11 @@
                                 <col style="width:200px" />
                                 <col style="width:140px" />
                                 <col style="width:100px" />
-                                @*<col style="width:100px" />*@
                                 <col style="width:100px" />
                                 <col style="width:100px" />
                                 <col style="width:100px" />
                                 <col style="width:100px" />
                                 <col style="width:100px" />
-                                @*<col style="width:200px" />*@
                                 <col style="width:100px" />
                                 <col style="width:140px" />
                                 <col style="width:100px" />
@@ -922,7 +930,7 @@
                                     <th class="k-group-cell k-header sticky-heading" scope="col" rowspan="2">
                                         <div class="sticky-heading-block"></div>
                                     </th>
-                                    <th scope="col" role="columnheader" colspan="@(Model.ReadOnlyMode ? "1" : "4")" class="k-header">
+                                    <th scope="col" role="columnheader" colspan="4" class="k-header">
                                         Actions
                                     </th>
                                     <th scope="col" role="columnheader" colspan="7" class="k-header">
@@ -948,9 +956,6 @@
                                     <th scope="col" role="columnheader" class="text-end k-header">
                                         Warehouse
                                     </th>
-                                    @*<th scope="col" role="columnheader" class="text-end k-header">
-                                            Cover
-                                        </th>*@
                                     <th scope="col" role="columnheader" class="text-end k-header">
                                         PO Quantity
                                     </th>
@@ -969,9 +974,6 @@
                                     <th scope="col" role="columnheader" class="text-end k-header">
                                         Ring Fenced
                                     </th>
-                                    @*<th scope="col" role="columnheader" class="k-header">
-                                            Summary
-                                        </th>*@
                                     <th scope="col" role="columnheader" class="text-end k-header">
                                         Total Worldwide
                                     </th>
@@ -1007,7 +1009,6 @@
                                     <td aria-expanded="true" colspan="300" class="relative">
                                         <p class="k-reset">
                                             <span class="group-heading bold" data-bind="text: name"></span>
-                                            @*<span data-bind="text: `{ h: ${height}px; y: ${offsetY}px, rh: ${runningHeight}px }`"></span>*@
                                         </p>
                                     </td>
                                 </tr>
@@ -1020,7 +1021,6 @@
                                         <p class="k-reset">
                                             <a class="k-icon k-i-collapse" href="#" tabindex="-1" aria-label="Collapse"></a>
                                             <span class="group-heading" style="transform: translateX(0px);" data-bind="text: name"></span>
-                                            @*<span data-bind="text: `{ h: ${height}px; y: ${offsetY}px }`"></span>*@
                                         </p>
                                     </td>
                                 </tr>
@@ -1034,7 +1034,6 @@
                                         <p class="k-reset">
                                             <a class="k-icon k-i-collapse" href="#" tabindex="-1" aria-label="Collapse"></a>
                                             <span class="group-heading" data-bind="text: `${name}`"></span>
-                                            @*<span data-bind="text: `{ h: ${height}px }`"></span>*@
                                         </p>
                                     </td>
                                 </tr>
@@ -1061,7 +1060,6 @@
                         </table>
                     </div>
                 </div>
-                @*<div id="add-results-grid" data-bind="kendoGrid: addGridSettings"></div>*@
             </div>
         </div>
         <div id="restock-tab" class="tab-pane">

@@ -97,7 +97,7 @@ namespace SharedEFClasses.Models
         [ForeignKey("TradeMarketID")]
         public virtual TradeMarket TradeMarket { get; set; }
         
-        public virtual ICollection<Task> Tasks { get; set; }
+        public virtual ICollection<PortalTask> Tasks { get; set; }
         
         [NotMapped]
         public List<TaskDue> TaskDues

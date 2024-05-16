@@ -10169,6 +10169,7 @@ var searchResult = function (data, parent, patternBookSaturation) {
     self.selectedSupplier.subscribe(function (newValue) {
         //set the country
         if (newValue) {
+            newValue.addressToLoad.CompanyName = newValue.addressToLoad.Name; 
             self.selectedSupplier().address.loadBasketMiscAddress(newValue.addressToLoad);
             window.setTimeout(function () { // give it some time to get the address sorted out...
                 self.supplierErrors = ko.validation.group([

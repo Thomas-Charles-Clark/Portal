@@ -357,6 +357,7 @@
     <Compile Include="DbContext\Dapper\PortalDbContext-ContractPricing.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-Fenwick.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-RangeManagement.cs" />
+    <Compile Include="DbContext\Dapper\PortalDbContext-OrderBook.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-StockManagement.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-TradeAccount.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-Leads.cs" />
@@ -469,6 +470,12 @@
     <Compile Include="Models\Mertex\TradeAccountContactLive.cs" />
     <Compile Include="Models\Mertex\TradeAccountContactType.cs" />
     <Compile Include="Models\Mertex\TradeAccountInvoiceAccount.cs" />
+    <Compile Include="Models\OrderBook\OrderBook_MainSummary_DataRow.cs" />
+    <Compile Include="Models\OrderBook\OrderBook_MainSummary_OrderGroupStockLocation.cs" />
+    <Compile Include="Models\OrderBook\OrderBook_MainSummary_OrderStatusOrderStatusGroup.cs" />
+    <Compile Include="Models\OrderBook\OrderBook_MainSummary_SelectResult.cs" />
+    <Compile Include="Models\OrderBook\OrderBook_PreDefinedSummary_SelectResult.cs" />
+    <Compile Include="Models\OrderBook\PassOrderBookMainParams.cs" />
     <Compile Include="Models\PaintModels.cs" />
     <Compile Include="Models\Press\PressContact.cs" />
     <Compile Include="Models\ProductFilterGroup\ProductFilterGroup.cs" />
@@ -542,7 +549,7 @@
     <Compile Include="Models\TaskModels.cs" />
     <Compile Include="DbContext\PortalDbContext-Trade.cs" />
     <Compile Include="DbContext\PortalDbContext.cs" />
-    <Compile Include="DynamiceRolesAuthorise.cs" />
+    <Compile Include="DynamicRoleAuthorise.cs" />
     <Compile Include="Framework.cs" />
     <Compile Include="IdentityConfig.cs" />
     <Compile Include="IdentityExtensions.cs" />

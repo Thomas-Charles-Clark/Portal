@@ -1,0 +1,16 @@
+﻿@model Portal.Areas.Orders.ViewModels.OrderBookSummaryViewModel
+<script type="text/javascript">
+    window.getDateSummaries = () => {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.DateFilters))
+    }
+</script>
+<div id="date-filters" data-bind="with: dateFilters">
+    <div class="pre-defined-filter-list" data-bind="foreach: summaries">
+        <div class="card filter-card alert alert-light" data-bind="css: AlertClass">
+            <div class="card-body">
+                <h5 class="card-title" data-bind="html: Label"></h5>
+                <p class="card-text" data-bind="html: display"></p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -167,7 +167,7 @@ namespace Tasks.Controllers
 
             var creationDt = DateTime.Now;
 
-            var newTask = portalDb.Tasks.Add(new SharedEFClasses.Models.Task()
+            var newTask = portalDb.Tasks.Add(new SharedEFClasses.Models.PortalTask()
             {
                 Urgent = objSave.Urgent,
                 Core = objSave.Core,

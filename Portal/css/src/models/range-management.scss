@@ -1,23 +1,19 @@
 ﻿@import "common.scss";
 
-body {
-    min-width: 1170px;
-}
-
-$grid-position-top: 210px;
-
 .navbar.navbar-default.navbar-expand {
     position: fixed;
     z-index: 1;
     width: 100%;
 
-    .container {
-        max-width: unset !important;
-        width: 100% !important;
-        padding-left: 5em;
-        padding-right: 5em;
-    }
 }
+.container.body-content {
+    position: relative;
+    top: 52px;
+    z-index: 0;
+}
+
+
+$grid-position-top: 210px;
 
 #upper-section {
     min-width: 1260px;
@@ -111,43 +107,6 @@ $grid-position-top: 210px;
 body {
     padding-bottom: 0;
     overflow-x: auto;
-}
-
-.container.body-content {
-    max-width: unset !important;
-    width: unset !important;
-    padding-left: 0;
-    padding-right: 0;
-    padding-top: 8px;
-    padding-top: 0;
-    position: relative;
-    top: 52px;
-    z-index: 0;
-}
-
-.container {
-
-}
-
-@media (min-width: 1320px) {
-    .container {
-        width: unset !important;
-    }
-}
-
-.page-heading-logo {
-    top: -26px;
-    height: 80px;
-}
-
-.content-container {
-    background-color: white;
-    padding: $sm-gutter;
-    border: 1px solid #ddd;
-    border-radius: $border-radius;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
 }
 
 .main-heading {
@@ -1046,7 +1005,10 @@ tbody.virtual-spacing {
     gap: $m-gutter;
 }
 
-#send-email-dropdown {
+#send-email-dropdown,
+#transfers-dropdown {
+    overflow-y: hidden;
+
     li {
         & + li {
             margin-left: 0;

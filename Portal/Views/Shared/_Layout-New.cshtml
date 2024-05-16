@@ -10,9 +10,11 @@
     @Styles.Render("~/bundles/css/mdc-custom")
 
     @Scripts.Render("~/bundles/js/kendo-modernizr")
+
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Material+Icons|Material+Icons+Sharp|Material+Icons+Outlined|Maven+Pro:400,500,700" rel="stylesheet">
     <script src="https://kit.fontawesome.com/f14d33a7ec.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+    
     @Scripts.Render("~/bundles/js/jquery")
     @Scripts.Render("~/bundles/js/popper")
     @Scripts.Render("~/bundles/js/global-new")
@@ -28,9 +30,11 @@
     <script src="https://kendo.cdn.telerik.com/2018.3.1017/js/kendo.aspnetmvc.min.js"></script>
     <script src="https://kendo.cdn.telerik.com/2018.3.1017/js/cultures/kendo.culture.en-GB.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/material-components-web/3.2.0/material-components-web.min.js"></script>
+    
     <script type="text/javascript">
         kendo.culture("en-GB");
     </script>
+
     @Styles.Render("~/bundles/css/generic-forms")
     @Scripts.Render("~/bundles/js/kendo-modernizr")
     @RenderSection("styles", required: false)
@@ -157,6 +161,9 @@
                         <li>
                             <!-- ko component: { name: 'alerting-component' }  -->
                             <!-- /ko -->
+                        </li>
+                        <li class="app-title">
+                            @RenderSection("navbarTitle", required: false)
                         </li>
                     </ul>
                     @Html.Partial("_LoginPartial")
@@ -1314,7 +1321,8 @@
                     'clearable': clearable,
                     'revertible': revertible,
                     'busy': typeof busy === 'undefined' ? false : busy,
-                    'mdc-select--disabled': disable() || !enable()
+                    'mdc-select--disabled': disable() || !enable(),
+                    'mdc-select--selected': observable()
                 }">
                 <select class="mdc-select__native-control" style="display: none;"></select>
                 <div data-bind="kendoDropDownList: dropDownListSettings, css: controlClass"></div>

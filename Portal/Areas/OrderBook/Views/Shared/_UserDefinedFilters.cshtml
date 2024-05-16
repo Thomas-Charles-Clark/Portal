@@ -1,0 +1,87 @@
+﻿@model Portal.Areas.Orders.ViewModels.OrderBookSummaryViewModel
+
+<div id="user-defined-filters" data-bind="css: 'd-flex', with: userDefinedFilters">
+    <div>
+        <h5 class="sidebar-heading">
+            Customers
+        </h5>
+        <div id="sales-market-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesMarketParams }"></div>
+        <div id="trade-account-type-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountTypeParams }"></div>
+        <div id="trade-account-group-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountGroupParams }"></div>
+        <div id="trade-account-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountParams }"></div>
+    </div>
+    <div>
+        <h5 class="sidebar-heading">
+            Orders
+        </h5>
+        <div id="order-search-term-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-text-field-component', params: orderSearchTermParams }"></div>
+        <div id="from-date-prefilter" class="user-defined-filter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: fromDateParams }"></div>
+        <div id="to-date-prefilter" class="user-defined-filter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: toDateParams }"></div>
+        <div id="haulier-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: haulierParams }"></div>
+    </div>
+    <div>
+        <h5 class="sidebar-heading">
+            Products
+        </h5>
+        <div id="product-group-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productGroupParams }"></div>
+        <div id="item-type-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: itemTypeParams }"></div>
+        <div id="brand-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: brandParams }"></div>
+        <div id="collection-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: collectionParams }"></div>
+        <div id="launch-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: launchParams }"></div>
+        <div id="quality-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: qualityParams }"></div>
+        <div id="product-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productParams }"></div>
+    </div>
+    <div class="relative">
+        <h5 class="sidebar-heading">
+            Display
+        </h5>
+        <p>
+            Doesn't need to be a drop down!
+        </p>
+        <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="display-mode-dropdown-btn" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" data-bind="text: parent.displayModeDisplay">
+            Values
+        </button>
+        <ul id="display-mode-dropdown-menu" class="dropdown-menu w-100" aria-labelledby="display-mode-dropdown-btn">
+            <li>
+                <label class="dropdown-item form-check">
+                    <input class="form-check-input" type="checkbox" id="display-mode-value" data-bind="checked: parent.displayModes, checkedValue: 1">
+                    <span>
+                        Order Value £
+                    </span>
+                </label>
+            </li>
+            <li>
+                <label class="dropdown-item form-check">
+                    <input class="form-check-input" type="checkbox" id="display-mode-quantity" data-bind="checked: parent.displayModes, checkedValue: 2">
+                    <span>
+                        Order Quantity
+                    </span>
+                </label>
+            </li>
+            <li>
+                <label class="dropdown-item form-check">
+                    <input class="form-check-input" type="checkbox" id="display-mode-line-count" data-bind="checked: parent.displayModes, checkedValue: 3">
+                    <span>
+                        No. of Lines
+                    </span>
+                </label>
+            </li>
+            <li>
+                <label class="dropdown-item form-check">
+                    <input class="form-check-input" type="checkbox" id="display-mode-order-count" data-bind="checked: parent.displayModes, checkedValue: 4">
+                    <span>
+                        No. of Orders
+                    </span>
+                </label>
+            </li>
+        </ul>
+    </div>
+    <div class="relative">
+        <h5 class="sidebar-heading">
+            Basis
+        </h5>
+        <p>
+            Select DateOnFile / ReleasedDT
+        </p>
+    </div>
+</div>

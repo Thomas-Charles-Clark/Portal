@@ -14,6 +14,7 @@ using SharedEFClasses.Models.Products;
 using SharedEFClasses;
 using Microsoft.AspNet.OData.Query;
 using SharedEFClasses.Models.Leads;
+using Microsoft.Ajax.Utilities;
 
 namespace Portal.Controllers
 {
@@ -48,6 +49,20 @@ namespace Portal.Controllers
         {
             return PortalDb.SalesMarkets.Where(p =>
                 p.SalesMarketID == salesMarketId
+            ).AsQueryable();
+        }
+
+        [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
+        [HttpGet]
+        public IQueryable<SalesMarket> SalesMarketOrderBookFilter(
+            int? tradeAccountId = null,
+            short? tradeAccountTypeId = null,
+            int? tradeAccountGroupId = null)
+        {
+            return PortalDb.SalesMarkets.Where(sa => 
+                (tradeAccountId == null || sa.TradeAccounts.Any(ta => ta.TradeAccountID == tradeAccountId.Value)) &&
+                (tradeAccountGroupId == null || sa.TradeAccounts.Any(ta => ta.TradeAccountGroupID == tradeAccountGroupId.Value)) &&
+                (tradeAccountTypeId == null || sa.TradeAccounts.Any(ta => ta.TradeAccountTypeID == tradeAccountTypeId.Value))
             ).AsQueryable();
         }
     }

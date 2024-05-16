@@ -1,0 +1,15 @@
+@import "common.scss";
+
+#date-filters {
+    margin-bottom: $l-gutter;
+    position: sticky;
+    left: 0;
+}
+
+.date-container-months {
+    --td-cell-size: 5rem;
+}
+
+.date-container-days {
+    --td-cell-size: 3rem !important;
+}

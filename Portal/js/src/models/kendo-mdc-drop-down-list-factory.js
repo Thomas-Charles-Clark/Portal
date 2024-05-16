@@ -44,7 +44,9 @@
     cascade,
     parameterMap,
     select,
-    aggregate
+    aggregate,
+    requestStart,
+    requestEnd
 } = {
         widget: ko.observable(),
         endPoint: null,
@@ -74,9 +76,6 @@
         optionLabelTemplate: null,
         sort: [],
         schema: {},
-        dataBound: function (e) {
-
-        },
         permitRevert: false,
         popupSettings: {
             appendTo: null
@@ -89,8 +88,11 @@
         pageSize: null,
         method: "GET",
         parameterMap: null,
-        select: null,
-        aggregate: null
+        aggregate: null,
+        select: (e) => { },
+        dataBound: (e) => { },
+        requestStart: (e) => { },
+        requestEnd: (e) => { }
     }) {
 
     if (endPoint == null && data == null) {
@@ -183,6 +185,10 @@
             }
         });
     }
+
+    dataSource.requestStart = requestStart;
+
+    dataSource.requestEnd = requestEnd;
 
     var result = {
         originalValue: ko.unwrap(idObservable),

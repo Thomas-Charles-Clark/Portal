@@ -58,6 +58,7 @@ namespace Portal
             odataBuilder.EntitySet<ProductColour>("ProductColours");
             odataBuilder.EntitySet<ProductGroup>("ProductGroups");
             odataBuilder.EntitySet<ItemType>("ItemTypes");
+            odataBuilder.EntitySet<Haulier>("Hauliers");
             odataBuilder.EntitySet<ProductFilter>("ProductFilters");
             odataBuilder.EntitySet<ProductFilterGroup>("ProductFilterGroups");
             odataBuilder.EntitySet<Collection>("Collections");
@@ -66,6 +67,7 @@ namespace Portal
             odataBuilder.EntitySet<SharedEFClasses.Models.Maintenance.MaintenanceSupplier>("Suppliers");
             odataBuilder.EntitySet<Launch>("Launches");
             odataBuilder.EntitySet<ProductType>("ProductTypes");
+            odataBuilder.EntitySet<Quality>("Qualities");
             odataBuilder.EntitySet<SalesMarket>("SalesMarkets");
             odataBuilder.EntitySet<Mertex_ProductType>("Mertex_ProductTypes");
             odataBuilder.EntitySet<Product>("Products");
@@ -76,6 +78,7 @@ namespace Portal
             odataBuilder.EntitySet<Range>("Ranges");
             odataBuilder.EntitySet<BranchStockLocation>("BranchStockLocations");
             odataBuilder.EntitySet<TradeAccount>("TradeAccounts");
+            odataBuilder.EntitySet<TradeAccountType>("TradeAccountTypes");
             odataBuilder.EntitySet<TradeAccountGroup>("TradeAccountGroups");
             odataBuilder.EntitySet<StockLocation>("StockLocations");
             odataBuilder.EntitySet<StockStatus>("StockStatuses");
@@ -105,6 +108,12 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SalesMarket)).AddProperty(typeof(SalesMarket).GetProperty("Label"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SalesRepresentative)).AddProperty(typeof(SalesRepresentative).GetProperty("Label"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccount)).AddProperty(typeof(TradeAccount).GetProperty("ShortLabel"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccountGroup)).AddProperty(typeof(TradeAccountGroup).GetProperty("ShortLabel"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccountType)).AddProperty(typeof(TradeAccountType).GetProperty("ShortLabel"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Haulier)).AddProperty(typeof(Haulier).GetProperty("ShortLabel"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Product)).AddProperty(typeof(Product).GetProperty("ShortLabel"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Quality)).AddProperty(typeof(Quality).GetProperty("ShortLabel"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Collection)).AddProperty(typeof(Collection).GetProperty("ShortLabel"));
 
             odataBuilder.EntityType<Resource_Language>().HasKey(p => new { p.ResourceID, p.LanguageID });
 
@@ -116,6 +125,19 @@ namespace Portal
             ringFencePreAllocationsFilterFunction.Parameter<int?>("TradeAccountGroupID");
             ringFencePreAllocationsFilterFunction.Parameter<int?>("TradeAccountID");
             ringFencePreAllocationsFilterFunction.Parameter<int?>("ProductID");
+
+            var productValueMapperFunction = odataBuilder.EntityType<Product>()
+                .Collection
+                .Function("ProductValueMapper")
+                .ReturnsCollectionFromEntitySet<Product>("Products");
+
+            productValueMapperFunction.Parameter<int?>("productId");
+
+            var productOrderBookSummaryFilterFunction = odataBuilder.EntityType<Product>()
+                .Collection
+                .Function("GetProductsForOrderBookSummary")
+                .ReturnsCollectionFromEntitySet<Product>("Products");
+
 
             var ringFenceableProductsFilterFunction = odataBuilder.EntityType<Product>()
                 .Collection
@@ -137,12 +159,74 @@ namespace Portal
 
             tradeAccountGroupFilterFunction.Parameter<int?>("tradeAccountGroupId");
 
+            var tradeAccountOrderBookFilterFunction = odataBuilder.EntityType<TradeAccount>()
+                .Collection
+                .Function("TradeAccountOrderBookFilter")
+                .ReturnsCollectionFromEntitySet<TradeAccount>("TradeAccounts");
+
+            tradeAccountOrderBookFilterFunction.Parameter<byte?>("salesMarketId");
+            tradeAccountOrderBookFilterFunction.Parameter<short?>("tradeAccountTypeId");
+            tradeAccountOrderBookFilterFunction.Parameter<int?>("tradeAccountGroupId");
+
+
+
+
+
+            var tradeAccountTypeFilterFunction = odataBuilder.EntityType<TradeAccount>()
+                .Collection
+                .Function("TradeAccountTypeFilter")
+                .ReturnsCollectionFromEntitySet<TradeAccount>("TradeAccounts");
+
+            tradeAccountTypeFilterFunction.Parameter<short?>("tradeAccountTypeId");
+
+
+
+
+            var tradeAccountTypeOrderBookFilterFunction = odataBuilder.EntityType<TradeAccountType>()
+                .Collection
+                .Function("TradeAccountTypeOrderBookFilter")
+                .ReturnsCollectionFromEntitySet<TradeAccountType>("TradeAccountTypes");
+
+            tradeAccountTypeOrderBookFilterFunction.Parameter<byte?>("salesMarketId");
+            tradeAccountTypeOrderBookFilterFunction.Parameter<int?>("tradeAccountGroupId");
+            tradeAccountTypeOrderBookFilterFunction.Parameter<int?>("tradeAccountId");
+
+
+
+
+            var tradeAccountTypeValueMapperFunction = odataBuilder.EntityType<TradeAccountType>()
+                .Collection
+                .Function("TradeAccountTypeValueMapper")
+                .ReturnsCollectionFromEntitySet<TradeAccountType>("TradeAccountTypes");
+
+            tradeAccountTypeValueMapperFunction.Parameter<short?>("tradeAccountTypeId");
+
+
+
+
+
+
             var tradeAccountGroupValueMapperFunction = odataBuilder.EntityType<TradeAccountGroup>()
                 .Collection
                 .Function("TradeAccountGroupValueMapper")
                 .ReturnsCollectionFromEntitySet<TradeAccountGroup>("TradeAccountGroups");
 
             tradeAccountGroupValueMapperFunction.Parameter<int?>("tradeAccountGroupId");
+
+
+            var tradeAccountGroupOrderBookFilterFunction = odataBuilder.EntityType<TradeAccountGroup>()
+                .Collection
+                .Function("TradeAccountGroupOrderBookFilter")
+                .ReturnsCollectionFromEntitySet<TradeAccountGroup>("TradeAccountGroups");
+
+            tradeAccountGroupOrderBookFilterFunction.Parameter<byte?>("salesMarketId");
+            tradeAccountGroupOrderBookFilterFunction.Parameter<int?>("tradeAccountId");
+            tradeAccountGroupOrderBookFilterFunction.Parameter<short?>("tradeAccountTypeId");
+
+
+
+
+
 
 
             var memberFilterFunction = odataBuilder.EntityType<TradeAccount>()
@@ -194,6 +278,15 @@ namespace Portal
             colourValueMapperFunction.Parameter<byte?>("colourId");
 
 
+            var qualityValueMapperFunction = odataBuilder.EntityType<Quality>()
+                .Collection
+                .Function("QualityValueMapper")
+                .ReturnsCollectionFromEntitySet<Quality>("Quality");
+
+            qualityValueMapperFunction.Parameter<string>("name");
+
+
+
             var productColourValueMapperFunction = odataBuilder.EntityType<ProductColour>()
                 .Collection
                 .Function("ProductColourValueMapper")
@@ -226,6 +319,15 @@ namespace Portal
                 .Collection
                 .Function("GetItemTypesForContractPricing")
                 .ReturnsCollectionFromEntitySet<ProductGroup>("ItemType");
+
+
+
+            var haulierValueMapperFunction = odataBuilder.EntityType<Haulier>()
+                .Collection
+                .Function("HaulierValueMapper")
+                .ReturnsCollectionFromEntitySet<Haulier>("Hauliers");
+
+            haulierValueMapperFunction.Parameter<string>("haulierCode");
 
 
             var productFilterValueMapperFunction = odataBuilder.EntityType<ProductFilter>()
@@ -276,14 +378,6 @@ namespace Portal
                 .ReturnsCollectionFromEntitySet<StockStatus>("StockStatuses");
 
             stockStatusValueMapperFunction.Parameter<byte?>("stockStatusId");
-
-
-            var productValueMapperFunction = odataBuilder.EntityType<Product>()
-                .Collection
-                .Function("ProductValueMapper")
-                .ReturnsCollectionFromEntitySet<Product>("Products");
-
-            productValueMapperFunction.Parameter<int?>("productId");
 
 
             var tradeDeliveryContractPriceFilterFunction = odataBuilder
@@ -365,12 +459,29 @@ namespace Portal
 
             attributeValueMapperFunction.Parameter<short?>("attributeId");
 
+
+
+
             var salesMarketValueMapperFunction = odataBuilder.EntityType<SalesMarket>()
                 .Collection
                 .Function("SalesMarketValueMapper")
                 .ReturnsCollectionFromEntitySet<SalesMarket>("SalesMarket");
 
             salesMarketValueMapperFunction.Parameter<byte?>("salesMarketId");
+
+
+
+            var salesMarketOrderBookFilterFunction = odataBuilder.EntityType<SalesMarket>()
+                .Collection
+                .Function("SalesMarketOrderBookFilter")
+                .ReturnsCollectionFromEntitySet<SalesMarket>("SalesMarkets");
+
+            salesMarketOrderBookFilterFunction.Parameter<int?>("tradeAccountId");
+            salesMarketOrderBookFilterFunction.Parameter<short?>("tradeAccountTypeId");
+            salesMarketOrderBookFilterFunction.Parameter<int?>("tradeAccountGroupId");
+
+
+
 
 
             var salesRepresentativeValueMapperFunction = odataBuilder.EntityType<SalesRepresentative>()

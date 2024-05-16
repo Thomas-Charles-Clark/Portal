@@ -181,6 +181,15 @@ namespace SharedEFClasses.Models.Products
                 return DeliveryGroupID == 13 || DeliveryGroupID == 14 || DeliveryGroupID == 15;
             }
         }
+        
+        [NotMapped]
+        public string ShortLabel
+        {
+            get
+            {
+                return $"{Code} - {OrderFormName}";
+            }
+        }
 
         [ForeignKey("ProductPageID")]
         public virtual ProductPage ProductPage { get; set; }
@@ -303,8 +312,19 @@ namespace SharedEFClasses.Models.Products
     {
         [Key]
         public short CollectionID { get; set; }
+        public string Code { get; set; }
         public string Name { get; set; }
         public string Heading { get; set; }
+        public string SubHeading { get; set; }
+
+        [NotMapped]
+        public string ShortLabel
+        {
+            get
+            {
+                return $"{Code} - {Name}";
+            }
+        }
 
         [JsonIgnore]
         public virtual ICollection<Product_Collection> Products { get; set; }
@@ -399,6 +419,15 @@ namespace SharedEFClasses.Models.Products
         public short QualityID { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+
+        [NotMapped]
+        public string ShortLabel
+        {
+            get
+            {
+                return $"{Code} - {Name}";
+            }
+        }
 
         [JsonIgnore]
         public virtual ICollection<Product> Products { get; set; }

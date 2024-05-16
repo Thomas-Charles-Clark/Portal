@@ -105,10 +105,10 @@ namespace SharedEFClasses.Models
         public virtual ICollection<LeadNote> LeadNotes { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<Task> AuthoredTasks { get; set; }
+        public virtual ICollection<PortalTask> AuthoredTasks { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<Task> CurrentlyAssignedTasks { get; set; }
+        public virtual ICollection<PortalTask> CurrentlyAssignedTasks { get; set; }
 
         [JsonIgnore]
         [InverseProperty("AssignedToMember")]

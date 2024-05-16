@@ -441,6 +441,15 @@ namespace SharedEFClasses.Models.TradeAccounts
         public string Code { get; set; }
         public string Name { get; set; }
 
+        [NotMapped]
+        public string ShortLabel
+        {
+            get
+            {
+                return $"{Code} - {Name}";
+            }
+        }
+
         [JsonIgnore]
         public virtual ICollection<TradeAccount> TradeAccounts { get; set; }
 
@@ -544,6 +553,15 @@ namespace SharedEFClasses.Models.TradeAccounts
         public short TradeAccountTypeID { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+
+        [NotMapped]
+        public string ShortLabel
+        {
+            get
+            {
+                return $"{Code} - {Name}";
+            }
+        }
 
         [JsonIgnore]
         public virtual ICollection<TradeAccount> TradeAccounts { get; set; }

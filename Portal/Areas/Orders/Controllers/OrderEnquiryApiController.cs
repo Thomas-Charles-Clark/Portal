@@ -1,6 +1,8 @@
 ﻿using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using Portal.Models;
+using Portal.Utilities.DynamicRoles;
+
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Components;
 using System;
@@ -13,6 +15,7 @@ using System.Web.Http.ModelBinding;
 
 namespace Portal.Areas.Sales.Controllers
 {
+    [DynamicRoleAuthorize]
     public class OrderEnquiryController : ApiController
     {
         private PortalDbContext portalDb { get; set; }
