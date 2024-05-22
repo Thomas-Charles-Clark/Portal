@@ -91,7 +91,7 @@
                 </div>
             </div>
         </td>
-        <td colspan="@(Model.ReadOnlyMode == false ? "4" : "300")"></td>
+        <td colspan="@(Model.ReadOnlyMode ? "4" : "300")"></td>
     </tr>
     <!-- /ko -->
     <!-- ko with: $root.getFilledRecord($data.ProductID) -->

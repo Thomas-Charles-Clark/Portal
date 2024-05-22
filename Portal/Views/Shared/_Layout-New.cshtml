@@ -491,7 +491,8 @@
                  },
                  css: {
                     'busy': busy,
-                    'mdc-text-field--disabled': disable() || !enable()
+                    'mdc-text-field--disabled': disable() || !enable(),
+                    'mdc-text-field--selected': observable()
                  }">
                 <input type="search" autocomplete="off" class="mdc-text-field__input" data-bind="
                        keepElement: observable,
@@ -1532,7 +1533,8 @@
                  },
                  css: {
                     'busy': typeof busy === 'undefined' ? false : busy,
-                    'mdc-text-field--disabled': typeof disabled == 'undefined' ? false : disabled
+                    'mdc-text-field--disabled': typeof disabled == 'undefined' ? false : disabled,
+                    'date-select--selected': observable()
                  }">
                 <input type="text" class="mdc-text-field__input" data-bind="
                     tempusDominus: observable,

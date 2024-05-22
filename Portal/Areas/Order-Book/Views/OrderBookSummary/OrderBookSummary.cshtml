@@ -42,14 +42,14 @@
     @Html.Partial("Modals/_ImageModalNew")
 }
 @section navbarTitle {
-    <div class="d-flex gap-3 align-items-center">
-        <h2>
+    <div>
+        <h2 class="d-flex gap-3 align-items-center">
             Order Book Summary
         </h2>
     </div>
 }
 
-<div class="blocker" data-bind="flexFadeVisible: busy">
+<div class="blocker" style="display: flex; opacity: 1" data-bind="flexFadeVisible: busy">
     <div class="loading-spinner"></div>
     <h4 class="mt-3">
         Please wait...
@@ -57,29 +57,32 @@
 </div>
 
 @*<div id="filters-offcanvas" class="offcanvas offcanvas-start" tabindex="-1" data-bs-scroll="true" data-bs-backdrop="false">
-    <div class="offcanvas-header justify-content-end">
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        <div class="offcanvas-header justify-content-end">
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            @Html.Partial("_UserDefinedFilters")
+        </div>
     </div>
-    <div class="offcanvas-body">
-        @Html.Partial("_UserDefinedFilters")
-    </div>
-</div>
 
-<main id="order-book-main">
-    @Html.Partial("_DateFilters")
-    @Html.Partial("_PreDefinedFilters")
-    <div class="d-flex justify-content-center align-items-center mb-3">
-        <button class="btn btn-success btn-lg" data-bs-toggle="offcanvas" data-bs-target="#filters-offcanvas">
-            Filters (0 selected)
-        </button>
-    </div>
-    @Html.Partial("_MainGrid")
-</main>*@
+    <main id="order-book-main">
+        @Html.Partial("_DateFilters")
+        @Html.Partial("_PreDefinedFilters")
+        <div class="d-flex justify-content-center align-items-center mb-3">
+            <button class="btn btn-success btn-lg" data-bs-toggle="offcanvas" data-bs-target="#filters-offcanvas">
+                Filters (0 selected)
+            </button>
+        </div>
+        @Html.Partial("_MainGrid")
+    </main>*@
 
-<div class="d-flex align-items-start w-100">
+<div id="main-summary-container" class="d-flex align-items-start w-100" style="opacity: 0" data-bind="flexFadeVisible: true">
     <sidebar id="filters-sidebar" class="collapse collapse-horizontal show sidebar sticky-top pinned">
         <div class="sidebar-inner">
             <div class="sidebar-header">
+                <a class="btn btn-dark btn-reset" data-bind="click: reset">
+                    Reset
+                </a>
                 <button type="button"
                         class="btn btn-light"
                         data-bind="click: userDefinedFilters.togglePinning"
@@ -93,17 +96,24 @@
         </div>
     </sidebar>
     <main id="order-book-main">
-        <p>
-            Sort the Product Autocomplete by ProductFilterGroup or other such usefulness<br/>
-            Center align the numbers<br/>
-            Subtotal to just "Total" on the left there<br/>
-            Some sort of separation between the main column sections<br/>
-            Some sort of improved separation between Order Group columns: Held Orders | Reserves | Back Orders all the way down <br/>
-            Display last data pull -- proc to execute TBC
-        </p>
-
         @Html.Partial("_DateFilters")
         @Html.Partial("_PreDefinedFilters")
         @Html.Partial("_MainGrid")
     </main>
+</div>
+
+<div id="order-book-detail-modal" class="modal fade">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="order-book-detail-modal-title" class="modal-title">
+                    Order Book Detail
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="order-book-detail-modal-body" class="modal-body">
+
+            </div>
+        </div>
+    </div>
 </div>

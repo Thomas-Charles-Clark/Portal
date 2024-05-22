@@ -75,12 +75,16 @@ namespace Portal
             odataBuilder.EntitySet<Branch>("Branches");
             odataBuilder.EntitySet<BranchGroup>("BranchGroups");
             odataBuilder.EntitySet<StatusGroup>("StatusGroups");
+            odataBuilder.EntitySet<OrderLineDetailedStatus>("OrderLineDetailedStatus");
+            odataBuilder.EntitySet<OrderLineDetailedStatusGroup>("OrderLineDetailedStatusGroups");
             odataBuilder.EntitySet<Range>("Ranges");
             odataBuilder.EntitySet<BranchStockLocation>("BranchStockLocations");
             odataBuilder.EntitySet<TradeAccount>("TradeAccounts");
             odataBuilder.EntitySet<TradeAccountType>("TradeAccountTypes");
             odataBuilder.EntitySet<TradeAccountGroup>("TradeAccountGroups");
             odataBuilder.EntitySet<StockLocation>("StockLocations");
+            odataBuilder.EntitySet<StockLocationGroup>("StockLocationGroups");
+            odataBuilder.EntitySet<StockLocationOrderBookGroup>("StockLocationOrderBookGroups");
             odataBuilder.EntitySet<StockStatus>("StockStatuses");
             odataBuilder.EntitySet<ApplicationGroup>("ApplicationGroups");
             odataBuilder.EntitySet<Resource>("Resources");
@@ -98,6 +102,8 @@ namespace Portal
             odataBuilder.EntitySet<MarketingBudget>("MarketingBudgets");
             odataBuilder.EntitySet<SelfBillInvoice>("SelfBillInvoices");
             odataBuilder.EntitySet<SalesRepresentative>("SalesRepresentatives");
+            odataBuilder.EntitySet<OrderHeadLive>("Orders");
+            odataBuilder.EntitySet<OrderGroup>("OrderGroups");
 
             // This because it's not mapped to SQL and has the [NotMapped] attribute
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_ProductType)).AddProperty(typeof(Mertex_ProductType).GetProperty("Label"));
@@ -114,6 +120,63 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Product)).AddProperty(typeof(Product).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Quality)).AddProperty(typeof(Quality).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Collection)).AddProperty(typeof(Collection).GetProperty("ShortLabel"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(OrderHeadLive)).AddProperty(typeof(OrderHeadLive).GetProperty("ShortLabel"));
+
+
+            var orderGroupValueMapperFunction = odataBuilder.EntityType<OrderGroup>()
+                .Collection
+                .Function("OrderGroupValueMapper")
+                .ReturnsCollectionFromEntitySet<OrderGroup>("OrderGroups");
+
+            orderGroupValueMapperFunction.Parameter<byte?>("orderGroupId");
+
+
+            var stockLocationGroupValueMapperFunction = odataBuilder.EntityType<StockLocationGroup>()
+                .Collection
+                .Function("StockLocationGroupValueMapper")
+                .ReturnsCollectionFromEntitySet<StockLocationGroup>("StockLocationGroups");
+
+            stockLocationGroupValueMapperFunction.Parameter<byte?>("stockLocationGroupId");
+
+
+            var stockLocationOrderBookGroupValueMapperFunction = odataBuilder.EntityType<StockLocationOrderBookGroup>()
+                .Collection
+                .Function("StockLocationOrderBookGroupValueMapper")
+                .ReturnsCollectionFromEntitySet<StockLocationOrderBookGroup>("StockLocationOrderBookGroups");
+
+            stockLocationOrderBookGroupValueMapperFunction.Parameter<byte?>("stockLocationOrderBookGroupId");
+
+
+            var orderLineDetailedStatusValueMapperFunction = odataBuilder.EntityType<OrderLineDetailedStatus>()
+                .Collection
+                .Function("OrderLineDetailedStatusValueMapper")
+                .ReturnsCollectionFromEntitySet<OrderLineDetailedStatus>("OrderLineDetailedStatuses");
+
+            orderLineDetailedStatusValueMapperFunction.Parameter<byte?>("orderLineDetailedStatusId");
+
+
+            var orderLineDetailedStatusGroupValueMapperFunction = odataBuilder.EntityType<OrderLineDetailedStatusGroup>()
+                .Collection
+                .Function("OrderLineDetailedStatusGroupValueMapper")
+                .ReturnsCollectionFromEntitySet<OrderLineDetailedStatusGroup>("OrderLineDetailedStatusGroups");
+
+            orderLineDetailedStatusGroupValueMapperFunction.Parameter<byte?>("orderLineDetailedStatusGroupId");
+
+
+
+
+            var orderValueMapper = odataBuilder.EntityType<OrderHeadLive>()
+                .Collection
+                .Function("OrderValueMapper")
+                .ReturnsCollectionFromEntitySet<OrderHeadLive>("Orders");
+
+            orderValueMapper.Parameter<string>("orderId");
+
+            var orderOrderBookSummaryFilterFunction = odataBuilder.EntityType<OrderHeadLive>()
+                .Collection
+                .Function("GetOrdersForOrderBookSummary")
+                .ReturnsCollectionFromEntitySet<OrderHeadLive>("Orders");
+
 
             odataBuilder.EntityType<Resource_Language>().HasKey(p => new { p.ResourceID, p.LanguageID });
 

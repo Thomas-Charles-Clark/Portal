@@ -249,11 +249,11 @@
 <script type="text/javascript">
 
     function getAllHauliers() {
-        return @Html.Raw(JsonConvert.SerializeObject(Model.Hauliers.Where(p => p.HAULCODE == "RM" || p.HAULCODE == "CC" || p.HAULCODE == "VAN" || p.HAULCODE == "FL").OrderBy(p => p.Name).ToList()));
+        return @Html.Raw(JsonConvert.SerializeObject(Model.Hauliers.Where(p => p.HAULCODE == "RM" || p.HAULCODE == "CC" || p.HAULCODE == "VAN").OrderBy(p => p.Name).ToList()));
     }
 
     function getAllCarriages() {
-        return @Html.Raw(JsonConvert.SerializeObject(Model.CarriageServices.Where(p => (p.HAULCODE == "RM" || p.HAULCODE == "CC" || p.HAULCODE == "VAN" || p.HAULCODE == "FL") && validCarriageCodes.Contains(p.CARRCODE)).OrderBy(p => p.Description).ToList()));
+        return @Html.Raw(JsonConvert.SerializeObject(Model.CarriageServices.Where(p => (p.HAULCODE == "RM" || p.HAULCODE == "CC" || p.HAULCODE == "VAN") && validCarriageCodes.Contains(p.CARRCODE)).OrderBy(p => p.Description).ToList()));
     }
 
     function getAvailableDeliveryTypes() {

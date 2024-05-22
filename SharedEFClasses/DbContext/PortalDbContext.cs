@@ -119,7 +119,6 @@ namespace SharedEFClasses.Models
         public DbSet<TreatmentType> TreatmentTypes { get; set; }
         public DbSet<TreatmentStatus> TreatmentStatuses { get; set; }
         public DbSet<TreatmentProvider> TreatmentProviders { get; set; }
-        public DbSet<StockLocation> StockLocations { get; set; }
         public DbSet<Mertex_ProductType> Mertex_ProductTypes { get; set; }
         public DbSet<ProductPage> ProductPages { get; set; }
         public DbSet<ProductFilter> ProductFilters { get; set; }
@@ -255,7 +254,10 @@ namespace SharedEFClasses.Models
         public DbSet<ProductRangeButton> ProductRangeButtons { get; set; }
         public DbSet<OrderLineStatus> OrderLineStatuses { get; set; }
         public DbSet<OrderLineStatusGroup> OrderLineStatusGroups { get; set; }
+        public DbSet<OrderLineDetailedStatus> OrderLineDetailedStatuses { get; set; }
+        public DbSet<OrderLineDetailedStatusGroup> OrderLineDetailedStatusGroups { get; set; }
         public DbSet<TradePromotionCode> TradePromotionCodes { get; set; }
+        public DbSet<OrderGroup> OrderGroups { get; set; }
 
         public DbSet<Member_Basket> MemberBaskets { get; set; }
         public DbSet<Basket> Baskets { get; set; }
@@ -525,6 +527,9 @@ namespace SharedEFClasses.Models
         public DbSet<Range> Ranges { get; set; }
         public DbSet<StockManagementProduct> StockManagementProducts { get; set; }
         public DbSet<StatusGroup> StatusGroups { get; set; }
+        public DbSet<StockLocation> StockLocations { get; set; }
+        public DbSet<StockLocationGroup> StockLocationGroups { get; set; }
+        public DbSet<StockLocationOrderBookGroup> StockLocationOrderBookGroups { get; set; }
 
         #endregion
 

@@ -12,11 +12,11 @@ namespace Portal.Areas.OrderBook
             }
         }
 
-        public override void RegisterArea(AreaRegistrationContext context) 
+        public override void RegisterArea(AreaRegistrationContext context)
         {
             context.MapRoute(
                 "OrderBook_default",
-                "OrderBook/{controller}/{action}/{id}",
+                "order-book/{controller}/{action}/{id}",
                 new { action = "Index", id = UrlParameter.Optional }
             );
         }

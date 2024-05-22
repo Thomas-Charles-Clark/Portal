@@ -54,7 +54,11 @@ namespace Portal.Controllers
         public IQueryable<Product> GetProductsForOrderBookSummary()
         {
             // Who cares about samples anyway?
-            return PortalDb.Products.Where(p => p.ProductTypeID != 55 && p.ProductTypeID != 56).AsQueryable();
+            return PortalDb.Products
+                .OrderBy(p => p.ProductFilterID == null ? p.ProductTypeID : p.ProductFilter.ProductFilterGroup.SortOrder)
+                .ThenBy(p => p.ProductFilterID == null ? 0 : p.ProductFilter.SortOrder)
+                .ThenBy(p => p.BasketName)
+                .AsQueryable();
         }
 
         [EnableQuery(MaxNodeCount = 200)]

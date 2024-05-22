@@ -519,5 +519,18 @@ label.mdc-floating-label {
             }
         }
     }
-}
 
+    .date-select--selected {
+        input {
+            z-index: 0;
+            background: tint-color($blue-100, 40%);
+        }
+    }
+
+    .mdc-text-field--selected {
+        input {
+            z-index: 0;
+            background: tint-color($blue-100, 40%);
+        }
+    }
+}

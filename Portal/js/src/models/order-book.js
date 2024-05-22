@@ -11,9 +11,13 @@ const orderBookViewModel = (() => {
 
     self.busy = ko.observable(false);
 
-    self.displayModes = ko.observableArray([DISPLAY_MODE_VALUE_SUM]);
+    self.displayModes = ko.observableArray([DISPLAY_MODE_VALUE_SUM, DISPLAY_MODE_QUANTITY_SUM]);
 
-    self.userDefinedFilters = orderBookUserDefinedFiltersViewModel(self);
+    let emptyParams = {
+        dateBasis: 'O'
+    };
+
+    self.userDefinedFilters = orderBookUserDefinedFiltersViewModel({ parent: self, params: emptyParams });
 
     self.dateFilters = orderBookDateFiltersViewModel(self);
 
@@ -24,6 +28,16 @@ const orderBookViewModel = (() => {
     self.rowHeadings = ko.observableArray([]);
 
     self.results = ko.observableArray([]);
+
+    self.accurateAsOfDateTime = ko.observable();
+
+    self.detailModalElement = document.querySelector("#order-book-detail-modal");
+
+    self.detailModalTitleElement = document.querySelector("#order-book-detail-modal-title");
+
+    self.detailModalBodyElement = document.querySelector("#order-book-detail-modal-body");
+
+    self.detailModal = bootstrap.Modal.getOrCreateInstance(self.detailModalElement);
 
     //#endregion
 
@@ -84,6 +98,8 @@ const orderBookViewModel = (() => {
     } 
 
     self.parse = (result) => {
+
+        self.accurateAsOfDateTime(result.AccurateAsOfDT);
 
         self.results(result.Data.map(d => orderBookMainCell({
             parent: self,
@@ -177,7 +193,7 @@ const orderBookViewModel = (() => {
 
         console.log("FetchMain calling with", JSON.parse(params));
 
-        fetch("/api/orderbook/FetchMainSummary", {
+        fetch("/api/orderbook/Refresh", {
             method: "POST",
             headers: window.fetchHeaders,
             cache: 'no-store',
@@ -187,7 +203,9 @@ const orderBookViewModel = (() => {
             .then(window.handleFetchResponse)
             .then(data => {
                 console.log("FetchMain returned", data);
-                self.parse(data);
+                self.dateFilters.parse(data.dateFilters);
+                self.preDefinedFilters.parse(data.preDefinedFilters);
+                self.parse(data.mainResult);
                 self.busy(false);
             })
             .catch((err) => {
@@ -197,9 +215,39 @@ const orderBookViewModel = (() => {
     }
 
     self.reset = () => {
-        self.userDefinedFilters.reset();
-        self.fetch();
+        window.showConfirm("Are you sure?", "This will clear all current filters and reset the Order Book display to defaults.", () => {
+            self.userDefinedFilters.reset();
+        }, null);
     };
+
+    self.showDetail = (cell) => {
+        let iFrame = document.createElement("iframe");
+
+        let params = JSON.parse(self.userDefinedFilters.json());
+
+        let preDefinedFilterCriteria = {
+            orderLineDetailedStatusGroupId: cell.orderStatusGroupId,
+            orderLineDetailedStatusId: cell.orderStatusId,
+            stockLocationGroupId: cell.stockLocationGroupId,
+            orderGroupId: cell.orderGroupId
+        };
+
+        Object.assign(params, preDefinedFilterCriteria);
+
+        self.detailModalTitleElement.innerHTML = "";
+
+        let qs = new URLSearchParams(params).toString();
+
+        let src = `/order-book/detail/back-orders?partial=true&${qs}`;
+
+        console.log(src);
+
+        iFrame.src = src;
+
+        self.detailModalBodyElement.replaceChildren(iFrame);
+
+        self.detailModal.show();
+    }
 
     //#endregion
 

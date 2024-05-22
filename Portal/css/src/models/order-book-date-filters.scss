@@ -1,9 +1,29 @@
 @import "common.scss";
 
+$blue-background: $blue-700;
+
 #date-filters {
     margin-bottom: $l-gutter;
     position: sticky;
     left: 0;
+
+    .pre-defined-filter-list {
+        display: flex;
+
+        .card {
+            &.ui-selecting,
+            &.ui-selected {
+                color: $white;
+                background-color: $blue-background;
+            }
+
+            &:focus,
+            &:focus-within,
+            &:hover {
+                filter: brightness(98%);
+            }
+        }
+    }
 }
 
 .date-container-months {

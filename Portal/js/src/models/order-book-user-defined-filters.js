@@ -1,4 +1,34 @@
-﻿const orderBookUserDefinedFiltersViewModel = ((parent) => {
+﻿// many observables start as and reset to the empty string
+// this is for very good reason, don't go trying to change it
+// related to the filter components behaving in the same way as native <select> components
+// in that the value presented when an empty option is selected (selects always have a selected option), even if they don't appear to
+// is the empty string.
+const EMPTY_STRING = '';
+
+const orderBookUserDefinedFiltersViewModel = ({
+    parent,
+    params
+} = {
+    parent: { },
+    params: {
+        salesMarketId: '',
+        tradeAccountTypeId: '',
+        tradeAccountGroupId: '',
+        tradeAccountId: '',
+        orderId: '',
+        fromDate: undefined,
+        toDate: undefined,
+        haulierId: '',
+        productGroupId: '',
+        itemTypeId: '',
+        brandId: '',
+        collectionId: '',
+        launchId: '',
+        qualityId: '',
+        productId: '',
+        dateBasisId: 'O'
+    }
+}) => {
 
     //#region Properties
 
@@ -8,65 +38,68 @@
 
     self.busy = self.parent.busy;
 
-    self.cascadeEnabled = true;
+    self.cascadeEnabled = true; // this is defunct, remove it entirely 20/05/2024
+
+    self.permitJsonComputation = ko.observable(true);
 
     self.sidebarElement = document.getElementById('filters-sidebar');
 
     self.sidebarCollapseElement = document.getElementById('sidebar-collapse');
     self.sidebarCollapse = bootstrap.Collapse.getOrCreateInstance(self.sidebarCollapseElement);
 
-    self.salesMarketId = ko.observable('');
+    self.salesMarketId = ko.observable(params.salesMarketId ?? '');
     self.salesMarket = ko.observable();
 
-    self.tradeAccountTypeId = ko.observable('');
+    self.tradeAccountTypeId = ko.observable(params.tradeAccountTypeId ?? '');
     self.tradeAccountType = ko.observable();
 
-    self.tradeAccountGroupId = ko.observable('');
+    self.tradeAccountGroupId = ko.observable(params.tradeAccountGroupId ?? '');
     self.tradeAccountGroup = ko.observable();
 
-    self.tradeAccountId = ko.observable('');
+    self.tradeAccountId = ko.observable(params.tradeAccountId ?? '');
     self.tradeAccount = ko.observable();
 
-
-
-
-    self.orderSearchTerm = ko.observable().extend({
-        rateLimit: {
-            timeout: 500,
-            method: 'notifyWhenChangesStop'
-        }
-    });
+    self.orderId = ko.observable(params.orderId ?? '');
+    self.order = ko.observable();
 
     self.fromDate = ko.observable();
 
     self.toDate = ko.observable();
 
-    self.haulierId = ko.observable('');
+    self.haulierId = ko.observable(params.haulierId ?? '');
     self.haulier = ko.observable();
 
-
-
-
-    self.productGroupId = ko.observable('');
+    self.productGroupId = ko.observable(params.productGroupId ?? '');
     self.productGroup = ko.observable();
 
-    self.itemTypeId = ko.observable('');
+    self.itemTypeId = ko.observable(params.itemTypeId ?? '');
     self.itemType = ko.observable();
 
-    self.brandId = ko.observable('');
+    self.brandId = ko.observable(params.brandId ?? '');
     self.brand = ko.observable();
 
-    self.collectionId = ko.observable('');
+    self.collectionId = ko.observable(params.collectionId ?? '');
     self.collection = ko.observable();
 
-    self.launchId = ko.observable('');
+    self.launchId = ko.observable(params.launchId ?? '');
     self.launch = ko.observable();
 
-    self.qualityId = ko.observable('');
+    self.qualityId = ko.observable(params.qualityId ?? '');
     self.quality = ko.observable();
 
-    self.productId = ko.observable('');
+    self.productId = ko.observable(params.productId ?? '');
     self.product = ko.observable();
+
+    self.availableDateBases = [{
+        Name: 'Order Date',
+        Value: 'O'
+    }, {
+        Name: 'Release Date',
+        Value: 'R'
+    }];
+
+    self.dateBasisId = ko.observable(params.dateBasis ?? ''); // 'O' == OrderDate; 'R' = ReleaseDate
+    self.dateBasis = ko.observable();
 
     //#endregion
 
@@ -109,7 +142,7 @@
             if (ko.isObservableArray(self.observable)) {
                 self.observable([]);
             } else {
-                self.observable('');
+                self.observable(EMPTY_STRING);
             }
 
             if (self.dropDownListSettings.widget()) {
@@ -117,7 +150,7 @@
                 if (ko.isObservableArray(self.observable)) {
                     self.dropDownListSettings.widget().value([]);
                 } else {
-                    self.dropDownListSettings.widget().value('');
+                    self.dropDownListSettings.widget().value(EMPTY_STRING);
                 }
 
                 self.dropDownListSettings.widget()._widgetOptions.value.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
@@ -172,7 +205,7 @@
     //    }
     //    if (ds.length == 0) {
     //        //console.log(observable, 'is setting itself to null');
-    //        observable('');
+    //        observable(EMPTY_STRING);
     //    }
     //    if (ds.length > 1) {
     //        for (var i = 0; i < e.sender.dataSource.view().length; i++) {
@@ -181,7 +214,7 @@
     //            }
     //        }
     //        // we haven't got our selectedId in view. Clear.
-    //        observable('');
+    //        observable(EMPTY_STRING);
     //    }
     //};
 
@@ -193,9 +226,9 @@
         label: 'Market',
         odata: true,
         endPoint: () => {
-            let tradeAccountId = self.tradeAccountId() == '' ? 'null' : self.tradeAccountId(),
-                tradeAccountTypeId = self.tradeAccountTypeId() == '' ? 'null' : self.tradeAccountTypeId(),
-                tradeAccountGroupId = self.tradeAccountGroupId() == '' ? 'null' : self.tradeAccountGroupId();
+            let tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId(),
+                tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
+                tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId();
 
             let computation = self.tradeAccountComputer();
 
@@ -285,9 +318,9 @@
         label: 'Trade Account',
         odata: true,
         endPoint: () => {
-            let salesMarketId = self.salesMarketId() == '' ? 'null' : self.salesMarketId(),
-                tradeAccountTypeId = self.tradeAccountTypeId() == '' ? 'null' : self.tradeAccountTypeId(),
-                tradeAccountGroupId = self.tradeAccountGroupId() == '' ? 'null' : self.tradeAccountGroupId();
+            let salesMarketId = self.salesMarketId() == EMPTY_STRING ? 'null' : self.salesMarketId(),
+                tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
+                tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId();
 
             let computation = self.tradeAccountComputer();
 
@@ -368,9 +401,9 @@
         label: 'Trade Account Type',
         odata: true,
         endPoint: () => {
-            let salesMarketId = self.salesMarketId() == '' ? 'null' : self.salesMarketId(),
-                tradeAccountGroupId = self.tradeAccountGroupId() == '' ? 'null' : self.tradeAccountGroupId(),
-                tradeAccountId = self.tradeAccountId() == '' ? 'null' : self.tradeAccountId();
+            let salesMarketId = self.salesMarketId() == EMPTY_STRING ? 'null' : self.salesMarketId(),
+                tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId(),
+                tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId();
 
             let computation = self.tradeAccountComputer();
 
@@ -455,9 +488,9 @@
         label: 'Trade Account Group',
         odata: true,
         endPoint: () => {
-            let salesMarketId = self.salesMarketId() == '' ? 'null' : self.salesMarketId(),
-                tradeAccountTypeId = self.tradeAccountTypeId() == '' ? 'null' : self.tradeAccountTypeId(),
-                tradeAccountId = self.tradeAccountId() == '' ? 'null' : self.tradeAccountId();
+            let salesMarketId = self.salesMarketId() == EMPTY_STRING ? 'null' : self.salesMarketId(),
+                tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
+                tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId();
 
             let computation = self.tradeAccountComputer();
 
@@ -580,6 +613,12 @@
         clearable: ko.observable(true),
         clearFunction: () => {
             self.fromDate(undefined);
+            self.fromDateParams.observable.tempusDominus.clear();
+            self.fromDateParams.observable.tempusDominus.updateOptions({
+                display: {
+                    viewMode: 'months'
+                }
+            })
         },
         revertible: ko.observable(false),
         revertFunction: () => {
@@ -637,33 +676,84 @@
         revertible: ko.observable(false),
         revertFunction: () => {
             self.toDateParams.observable(self.toDateParams.originalValue);
+            self.toDateParams.observable.tempusDominus.clear();
+            self.toDateParams.observable.tempusDominus.updateOptions({
+                display: {
+                    viewMode: 'months'
+                }
+            })
         },
         useNativeValidation: false,
         insertValidationMessages: false,
         decorateInputElement: true
     };
 
-    self.orderSearchTermParams = {
-        label: "Order ID / Customer Reference",
-        observable: self.orderSearchTerm,
-        focusObservable: ko.observable(),
-        busy: ko.observable(),
+    self.orderParams = kendoMDCDropDownList({
+        label: 'Order ID / Order Reference',
+        odata: true,
+        endPoint: `/odata/Orders/Default.GetOrdersForOrderBookSummary`,
+        textField: 'ShortLabel',
+        valueField: 'OrderID',
+        virtual: true,
+        pageSize: 40,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/Orders/Default.OrderValueMapper(orderId=${options.value})`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        template: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        idObservable: self.orderId,
+        objObservable: self.order,
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
         revertible: ko.observable(false),
-        clearFunction: function () {
-            var self = this;
-            self.observable(undefined);
-            $(self.observable.DOMElement).focus();
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'desc',
+            field: 'OrderHeadID'
         },
-        useNativeValidation: false, // this feeds through to mdc objects and affects them
-        decorateInputElement: true,
-        insertValidationMessages: false,
-        enterKey: () => {
-            //self.gridSettings.widget().dataSource.read();
+        clearFunction: self.genericUnsavedChangesClear,
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
+                d.$filter = `${d.$filter.replace("ShortLabel", "CustomerOrderReference")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "OrderID")}`;
+            }
+
+            return d;
+        },
+        popupSettings: {
+            appendTo: document.getElementById('order-prefilter')
         }
-    }
+    });
 
     self.launchParams = kendoMDCDropDownList({
         label: 'Launch',
@@ -1019,7 +1109,7 @@
     });
 
     self.productParams = kendoMDCDropDownList({
-        label: 'Product (Excludes /C, /R)',
+        label: 'Product',
         odata: true,
         endPoint: '/odata/Products/GetProductsForOrderBookSummary',
         textField: 'ShortLabel',
@@ -1059,10 +1149,13 @@
         filter: 'contains',
         autoBind: true,
         height: 340,
-        sort: {
+        sort: [{
             dir: 'desc',
-            field: 'ProductID'
-        },
+            field: 'ProductFilter.ProductFilterGroup.SortOrder'
+        }, {
+            dir: 'desc',
+            field: 'ProductFilter.SortOrder'
+        }],
         select: self.genericUnsavedChangesSelect,
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
@@ -1098,6 +1191,26 @@
         }
     });
 
+    self.dateBasisParams = kendoMDCDropDownList({
+        label: 'Date Basis',
+        data: self.availableDateBases,
+        textField: 'Name',
+        valueField: 'Value',
+        idObservable: self.dateBasisId,
+        objObservable: self.dateBasis,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(false),
+        revertible: ko.observable(false),
+        readOnly: false,
+        autoBind: true,
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: document.getElementById('date-basis-prefilter')
+        }
+    });
+
     //#endregion
 
 
@@ -1111,19 +1224,19 @@
         //    if (nv.SalesMarketID) {
         //        self.salesMarketParams.dropDownListSettings.widget().value(nv.SalesMarketID);
         //    } else {
-        //        self.salesMarketParams.dropDownListSettings.widget().value('');
+        //        self.salesMarketParams.dropDownListSettings.widget().value(EMPTY_STRING);
         //    }
 
         //    if (nv.TradeAccountTypeID) {
         //        self.tradeAccountTypeParams.dropDownListSettings.widget().value(nv.TradeAccountTypeID);
         //    } else {
-        //        self.tradeAccountTypeParams.dropDownListSettings.widget().value('');
+        //        self.tradeAccountTypeParams.dropDownListSettings.widget().value(EMPTY_STRING);
         //    }
 
         //    if (nv.TradeAccountGroupID) {
         //        self.tradeAccountGroupParams.dropDownListSettings.widget().value(nv.TradeAccountGroupID);
         //    } else {
-        //        self.tradeAccountGroupParams.dropDownListSettings.widget().value('');
+        //        self.tradeAccountGroupParams.dropDownListSettings.widget().value(EMPTY_STRING);
         //    }
 
         //    self.cascadeEnabled = false;
@@ -1203,48 +1316,54 @@
 
     //#region Functions
 
+    // these id observables start as and reset to the empty string value intentionally
+    // should probably set that as a constant
     self.reset = () => {
-        self.salesMarketId('');
+        self.salesMarketId(EMPTY_STRING);
         self.salesMarket(undefined);
 
-        self.tradeAccountTypeId('');
+        self.tradeAccountTypeId(EMPTY_STRING);
         self.tradeAccountType(undefined);
 
-        self.tradeAccountGroupId('');
+        self.tradeAccountGroupId(EMPTY_STRING);
         self.tradeAccountGroup(undefined);
 
-        self.tradeAccountId('');
+        self.tradeAccountId(EMPTY_STRING);
         self.tradeAccount(undefined);
 
-        self.orderSearchTerm(undefined);
+        self.orderId(EMPTY_STRING);
+        self.order(undefined);
 
         self.fromDate(undefined);
 
         self.toDate(undefined);
 
-        self.haulierId('');
+        self.haulierId(EMPTY_STRING);
         self.haulier(undefined);
 
-        self.productGroupId('');
+        self.productGroupId(EMPTY_STRING);
         self.productGroup(undefined);
 
-        self.itemTypeId('');
+        self.itemTypeId(EMPTY_STRING);
         self.itemType(undefined);
 
-        self.brandId('');
+        self.brandId(EMPTY_STRING);
         self.brand(undefined);
 
-        self.collectionId('');
+        self.collectionId(EMPTY_STRING);
         self.collection(undefined);
 
-        self.launchId('');
+        self.launchId(EMPTY_STRING);
         self.launch(undefined);
 
-        self.qualityId('');
+        self.qualityId(EMPTY_STRING);
         self.quality(undefined);
 
-        self.productId('');
+        self.productId(EMPTY_STRING);
         self.product(undefined);
+
+        self.dateBasisId('O')
+        self.dateBasis(undefined);
     }
 
     self.togglePinning = (data, event) => {
@@ -1258,18 +1377,23 @@
             tradeAccountTypeId: self.tradeAccountTypeId() || null,
             tradeAccountGroupId: self.tradeAccountGroupId() || null,
             tradeAccountId: self.tradeAccountId() || null,
-            orderSearchTerm: self.orderSearchTerm() || null,
-            fromDate: self.fromDate() || null,
-            toDate: self.toDate() || null,
-            haulierCode: self.haulierId() || null,
+            endDate: self.toDate() ? moment(self.toDate()).format('YYYY/MM/DD') : null,
+            startDate: self.fromDate() ? moment(self.fromDate()).format('YYYY/MM/DD') : null,
             productGroupId: self.productGroupId() || null,
             itemTypeId: self.itemTypeId() || null,
             brandId: self.brandId() || null,
             collectionId: self.collectionId() || null,
             launchId: self.launchId() || null,
             qualityId: self.qualityId() || null,
-            productId: self.productId() || null
+            productId: self.productId() || null,
+            dateBasis: self.dateBasisId()
         };
+
+        if (self.orderId())
+            result.orderId = self.orderId();
+
+        if (self.haulierId())
+            result.haulierCode = self.haulierId();
 
         return JSON.stringify(result);
     }).extend({
@@ -1289,4 +1413,4 @@
     //#endregion
 
     return self;
-});
+};

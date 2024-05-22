@@ -1,0 +1,38 @@
+﻿@model SharedEFClasses.BaseViewModel
+<div id="order-book-detail-scroller-container" class="virtual-scroller-container" data-bind="with: virtualScroller">
+    <table id="order-book-detail-table" class="table table-condensed table-striped table-hover order-book-detail-table">
+        <colgroup>
+            <!-- ko foreach: $parent.columns -->
+            <col style="width: 240px;"/>
+            <!-- /ko -->
+        </colgroup>
+        <thead>
+            <tr>
+                <!-- ko foreach: $parent.columns -->
+                <th>
+                    <span data-bind="text: $data.replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5')"></span>
+                </th>
+                <!-- /ko -->
+            </tr>
+        </thead>
+        <tbody class="virtual-spacing">
+            <tr>
+                <td colspan="500" style="height: 0px;" data-bind="style: { height: `${gridScrollTopPadding()}px` }"></td>
+            </tr>
+        </tbody>
+        <tbody data-bind="foreach: visibleItems">
+            <tr>
+                <!-- ko foreach: $parentContext.$parent.columns -->
+                <td>
+                    <span data-bind="text: $parent[$data]"></span>
+                </td>
+                <!-- /ko -->
+            </tr>
+        </tbody>
+        <tbody class="virtual-spacing">
+            <tr class="final-row">
+                <td colspan="500" style="height: 0px;" data-bind="style: { height: `${gridScrollBottomPadding()}px` }"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

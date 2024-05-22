@@ -6,7 +6,7 @@
 
     The crux of the approach is thus: we assume we have some large number of search results, say 20k.
     We need to display useful interactive content foreach row. 
-    The data behind each row can be prohibitively time consuming to query for all at once: we need to defer the 
+    The data behind each row can be prohibitively time consuming to query for all at once: we may need to defer the 
     secondary data fetch and execute it only for "visible" rows: those that are actually on the screen now.
 
     <table>
@@ -33,6 +33,8 @@
 
     If that sounds extremely difficult and specific and like it'd be impossible to build a general solution, you're...
     ... not far off the mark, actually. Even typing this now, I'm not sure how I'm going to get this worked out.
+
+    For uses, see ContractPricing and Order Book Detail
 */
 const virtualScrollingDeferredDataFactory = ({
     busy,
@@ -178,7 +180,9 @@ const virtualScrollingDeferredDataFactory = ({
             );
             return (r == null || r && r.loaded() == false);
         }).map((cr) => {
-            return self.unfilledRecordFn(cr)
+            return typeof self.unfilledRecordFn === 'function'
+                ? self.unfilledRecordFn(cr)
+                : cr;
         }))];
         return results;
     }, self).extend({
@@ -208,7 +212,7 @@ const virtualScrollingDeferredDataFactory = ({
     }, self);
 
     self.visibleItems = ko.computed(() => {
-        //console.trace();
+
         let scrollY = self.scrollY();
 
         self.maxY(scrollY + +window.getComputedStyle(self.container)['max-height'].replace(/px/, ''));
@@ -347,127 +351,130 @@ const virtualScrollingDeferredDataFactory = ({
     self.secondaryFetch = ko.computed(() => {
         //console.trace();
 
-        let urpids = self.unfilledRecords();
+        if (self.secondaryFetchEndpoint) {
+            let urpids = self.unfilledRecords();
 
-        if (urpids.length) {
+            if (urpids.length) {
 
-            console.log("virtualScrollingDeferredDataFactory self.unfilledRecords()", urpids);
+                console.log("virtualScrollingDeferredDataFactory self.unfilledRecords()", urpids);
 
-            //urpids.forEach(urpid => urpid.busy(true));
+                //urpids.forEach(urpid => urpid.busy(true));
 
-            window.setTimeout(() => {
+                window.setTimeout(() => {
 
-                let callStart = new Date();
+                    let callStart = new Date();
 
-                let data = self.secondaryFetchParams.call(self, urpids);
+                    let data = self.secondaryFetchParams.call(self, urpids);
 
-                console.log('virtualScrollingDeferredDataFactory self.secondaryFetch calling with', data);
+                    console.log('virtualScrollingDeferredDataFactory self.secondaryFetch calling with', data);
 
-                fetch(self.secondaryFetchEndpoint, {
-                    method: "POST",
-                    headers: window.fetchHeaders,
-                    body: JSON.stringify(data)
-                })
-                    .then(window.handleFetchResponse)
-                    .then(data => {
+                    fetch(self.secondaryFetchEndpoint, {
+                        method: "POST",
+                        headers: window.fetchHeaders,
+                        body: JSON.stringify(data)
+                    })
+                        .then(window.handleFetchResponse)
+                        .then(data => {
 
-                        let callReturn = new Date();
+                            let callReturn = new Date();
 
-                        console.log(`virtualScrollingDeferredDataFactory self.secondaryFetch returned in ${callReturn - callStart}ms`, data);
+                            console.log(`virtualScrollingDeferredDataFactory self.secondaryFetch returned in ${callReturn - callStart}ms`, data);
 
-                        let records = self.searchResults.peek();
-                        let affectedRecords = [];
-                        let filledRecords = self.secondaryFetchedRecords.peek();
-                        let forcedRemovals = [];
+                            let records = self.searchResults.peek();
+                            let affectedRecords = [];
+                            let filledRecords = self.secondaryFetchedRecords.peek();
+                            let forcedRemovals = [];
 
-                        urpids.forEach(stub => {
+                            urpids.forEach(stub => {
 
-                            //console.log(virtualScrollingDeferredDataFactory stub);
-                            
-                            // if record is null here, we've fetched data for something which is no longer amongst our search results.
-                            // this will readily cause chaos: remove it from the 'to be fetched' collection.
-                            records.filter(p => p[self.secondaryFetchQueueRecordId] == stub[self.secondaryFetchQueueRecordId])
-                                .forEach(record => {
+                                //console.log(virtualScrollingDeferredDataFactory stub);
 
-                                    if (record != null) {
+                                // if record is null here, we've fetched data for something which is no longer amongst our search results.
+                                // this will readily cause chaos: remove it from the 'to be fetched' collection.
+                                records.filter(p => p[self.secondaryFetchQueueRecordId] == stub[self.secondaryFetchQueueRecordId])
+                                    .forEach(record => {
 
-                                        //console.log('virtualScrollingDeferredDataFactory record found');
+                                        if (record != null) {
 
-                                        let dataResult = data[self.secondaryFetchResultSetName].find(p => p[self.secondaryFetchQueueRecordId] == stub[self.secondaryFetchQueueRecordId]);
+                                            //console.log('virtualScrollingDeferredDataFactory record found');
 
-                                        let filledRecord = filledRecords.find(p => p[self.secondaryFetchQueueRecordId] == stub[self.secondaryFetchQueueRecordId]);
+                                            let dataResult = data[self.secondaryFetchResultSetName].find(p => p[self.secondaryFetchQueueRecordId] == stub[self.secondaryFetchQueueRecordId]);
 
-                                        let add = filledRecord == null;
+                                            let filledRecord = filledRecords.find(p => p[self.secondaryFetchQueueRecordId] == stub[self.secondaryFetchQueueRecordId]);
 
-                                        if (dataResult) {
+                                            let add = filledRecord == null;
 
-                                            if (filledRecord == null) {
-                                                filledRecord = record;
-                                                //record = impactSearchResult({
-                                                //    rec: record
-                                                //});
+                                            if (dataResult) {
+
+                                                if (filledRecord == null) {
+                                                    filledRecord = record;
+                                                    //record = impactSearchResult({
+                                                    //    rec: record
+                                                    //});
+                                                } else {
+                                                    add = false;
+                                                    filledRecord.loaded(true);
+                                                    record = filledRecord;
+                                                }
+
+                                                //let modelledRecord = self.primaryFetchResultFn(record);
+
+                                                //self.searchResults.replace(record, modelledRecord);
+
+                                                //record = modelledRecord;
+
+                                                self.secondaryFetchResultProcessingFunction.call(record, dataResult);
+
+                                                record.busy(false);
+
+                                                record.loaded(true);
                                             } else {
-                                                add = false;
-                                                filledRecord.loaded(true);
-                                                record = filledRecord;
+                                                record.loaded = ko.observable(true);
+                                                record.ErrorMessage = `<h5 class="mb-0">[portal].[ContractManagement_SalesData_Select] did not return a result for Product/Quality ${record.ProductID || record.QualityID}</h5>`;
                                             }
 
-                                            //let modelledRecord = self.primaryFetchResultFn(record);
-
-                                            //self.searchResults.replace(record, modelledRecord);
-
-                                            //record = modelledRecord;
-
-                                            self.secondaryFetchResultProcessingFunction.call(record, dataResult);
-
-                                            record.busy(false);
-
-                                            record.loaded(true);
+                                            if (add) {
+                                                affectedRecords.push(record);
+                                            }
                                         } else {
-                                            record.loaded = ko.observable(true);
-                                            record.ErrorMessage = `<h5 class="mb-0">[portal].[ContractManagement_SalesData_Select] did not return a result for Product/Quality ${record.ProductID || record.QualityID}</h5>`;
+
+                                            console.log('virtualScrollingDeferredDataFactory RECORD NOT FOUND');
+
+                                            forcedRemovals.push(stub);
                                         }
-
-                                        if (add) {
-                                            affectedRecords.push(record);
-                                        }
-                                    } else {
-
-                                        console.log('virtualScrollingDeferredDataFactory RECORD NOT FOUND');
-
-                                        forcedRemovals.push(stub);
-                                    }
-                                });
-                        });
-
-                        ko.ignoreDependencies(() => {
-                            affectedRecords.forEach(ar => {
-                                self.secondaryFetchQueue.remove(rtdf => rtdf.ProductOrQuality == ar.ProductOrQuality &&
-                                    rtdf.ProductID === ar.ProductID &&
-                                    rtdf.QualityID === ar.QualityID);
+                                    });
                             });
 
-                            forcedRemovals.forEach(fr => {
-                                self.secondaryFetchQueue.remove(rtdf => rtdf.ProductOrQuality == fr.ProductOrQuality &&
-                                    rtdf.ProductID === fr.ProductID &&
-                                    rtdf.QualityID === fr.QualityID);
-                            })
+                            ko.ignoreDependencies(() => {
+                                affectedRecords.forEach(ar => {
+                                    self.secondaryFetchQueue.remove(rtdf => rtdf.ProductOrQuality == ar.ProductOrQuality &&
+                                        rtdf.ProductID === ar.ProductID &&
+                                        rtdf.QualityID === ar.QualityID);
+                                });
 
-                            ko.utils.arrayPushAll(self.secondaryFetchedRecords, affectedRecords);
+                                forcedRemovals.forEach(fr => {
+                                    self.secondaryFetchQueue.remove(rtdf => rtdf.ProductOrQuality == fr.ProductOrQuality &&
+                                        rtdf.ProductID === fr.ProductID &&
+                                        rtdf.QualityID === fr.QualityID);
+                                })
+
+                                ko.utils.arrayPushAll(self.secondaryFetchedRecords, affectedRecords);
+                            });
+
+                            let callBound = new Date();
+
+                            window.setTimeout(() => {
+                                console.log(`virtualScrollingDeferredDataFactory secondaryFetch bound in ${callBound - callReturn}ms`);
+                            }, 0);
+                        })
+                        .catch(err => {
+                            self.busy(false);
+                            window.catchFetchError(err)
                         });
-
-                        let callBound = new Date();
-
-                        window.setTimeout(() => {
-                            console.log(`virtualScrollingDeferredDataFactory secondaryFetch bound in ${callBound - callReturn}ms`);
-                        }, 0);
-                    })
-                    .catch(err => {
-                        self.busy(false);
-                        window.catchFetchError(err)
-                    });
-            }, 300);
+                }, 300);
+            }
         }
+
     }, self).extend({
         rateLimit: {
             timeout: 100,
@@ -506,9 +513,9 @@ const virtualScrollingDeferredDataFactory = ({
         //if (self.finalRowVisible()) {
         //    self.finalRowVisible(false);
         //}
-        if (self.container.scrollY < self.scrollY()) {
+        //if (self.container.scrollY < self.scrollY()) {
             self.maxY(self.scrollY() + +window.getComputedStyle(self.container)['max-height'].replace(/px/, ''));
-        }
+        //}
         //} else {
         //    self.maxY(self.scrollY() + window.innerHeight);
         //}

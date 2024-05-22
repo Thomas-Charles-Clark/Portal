@@ -67,7 +67,7 @@ namespace SharedEFClasses.Models.Products
 
         [JsonIgnore]
         [InverseProperty("ProductType")]
-        public virtual IEnumerable<ProductFilter> ProductFilters { get; set; }
+        public virtual ICollection<ProductFilter> ProductFilters { get; set; }
     }
 
     public class Product
@@ -97,6 +97,11 @@ namespace SharedEFClasses.Models.Products
         public byte? DeliveryGroupID { get; set; }
 
         public int? ProductPageID { get; set; }
+
+        public byte? ProductFilterID { get; set; }
+
+        [InverseProperty("Products")]
+        public virtual ProductFilter ProductFilter { get; set; }
 
         public virtual ProductType ProductType { get; set; }
         public virtual ItemType ItemType { get; set; }
@@ -1802,6 +1807,7 @@ namespace SharedEFClasses.Models.Products
     {
         [Key]
         public short StockLocationID { get; set; }
+        public byte? StockLocationOrderBookGroupID { get; set; }
         public string Name { get; set; }
         public string Code { get; set; }
 
@@ -1815,6 +1821,9 @@ namespace SharedEFClasses.Models.Products
         [JsonIgnore]
         [InverseProperty("WarehouseStockLocation")]
         public virtual ICollection<BranchStockLocation> WarehouseStockLocations { get; set; }
+
+        [ForeignKey("StockLocationOrderBookGroupID")]
+        public virtual StockLocationGroup StockLocationGroup { get; set; }
     }
 
     [Table("RingFencePreAllocation", Schema = "portal")]

@@ -10,6 +10,8 @@ namespace SharedEFClasses.Models.OrderBook
 {
     public class OrderBook_MainSummary_SelectResult
     {
+        public DateTime AccurateAsOfDT { get; set; }
+
         public IEnumerable<OrderBook_MainSummary_OrderGroupStockLocation> RowHeadings { get; set; }
 
         public IEnumerable<OrderBook_MainSummary_OrderStatusOrderStatusGroup> ColumnHeadings { get; set; }

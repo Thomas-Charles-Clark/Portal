@@ -11,9 +11,12 @@ using SharedEFClasses.Models.OrderBook;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Razor.Generator;
 
 using Unity.Interception.Utilities;
 
@@ -36,29 +39,71 @@ namespace SharedEFClasses.Models
 
     public partial class PortalDbContext : IdentityDbContext<Member, Role, int, Member_Login, Member_Role, Member_Claim>
     {
-        public async Task<IEnumerable<OrderBook_PreDefinedSummary_SelectResult>> FetchOrderBookDateSummaries(PassOrderBookMainParams dto)
+        public async Task<IEnumerable<OrderBook_PreDefinedSummary_SelectResult>> FetchOrderBookDateSummaries(PassOrderBookBaseParams dto)
         {
             var results = await this.Database.Connection.QueryAsync<OrderBook_PreDefinedSummary_SelectResult>("[portal].[OrderBook_DateSummary_Select]", dto, null, 30, CommandType.StoredProcedure);
 
             return results;
         }
         
-        public async Task<string> FetchOrderBookPreDefinedSummaries(PassOrderBookMainParams dto)
+        public async Task<string> FetchOrderBookPreDefinedSummaries(PassOrderBookBaseParams dto)
         {
-            var result = await this.Database.Connection.QuerySingleAsync<string>("[portal].[OrderBook_ProblemSummary_Select]", dto, null, 30, CommandType.StoredProcedure);
+            var results = await this.Database.Connection.QueryAsync<string>("[portal].[OrderBook_ProblemSummary_Select]", dto, null, 30, CommandType.StoredProcedure);
 
-            return result;
+            var sb = new StringBuilder();
+
+            foreach(var part in results)
+            {
+                sb.Append(part);
+            }
+
+            return sb.ToString();
         }
 
-        public async Task<OrderBook_MainSummary_SelectResult> FetchOrderBookMainSummary(PassOrderBookMainParams dto)
+        public async Task<OrderBook_MainSummary_SelectResult> FetchOrderBookMainSummary(PassOrderBookBaseParams dto)
         {
             var reader = await this.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_MainSummary_Select]", dto, null, 30, CommandType.StoredProcedure);
 
             return new OrderBook_MainSummary_SelectResult()
             {
+                AccurateAsOfDT = await reader.ReadSingleAsync<DateTime>(),
                 RowHeadings = await reader.ReadAsync<OrderBook_MainSummary_OrderGroupStockLocation>(),
                 ColumnHeadings = await reader.ReadAsync<OrderBook_MainSummary_OrderStatusOrderStatusGroup>(),
                 Data = await reader.ReadAsync<OrderBook_MainSummary_DataRow>()
+            };
+        }
+
+        public async Task<OrderBook_DetailView_SelectResult> FetchOrderBookDetailBackOrders(ExpandoObject dto)
+        {
+            var dynParams = new DynamicParameters();
+
+            dto.ToList().ForEach(kvp =>
+            {
+                var key = kvp.Key;
+
+                if (key.EndsWith("Id"))
+                {
+                    key = System.Text.RegularExpressions.Regex.Replace(key, "(\\w)(.*)(\\w)$", m =>
+                    {
+                        return $"{m.Groups[1].Value.ToUpperInvariant()}{m.Groups[2].Value}{m.Groups[3].Value.ToUpperInvariant()}";
+                    });
+                }
+                else
+                {
+                    key = System.Text.RegularExpressions.Regex.Replace(key, "^(\\w)(.*)", m =>
+                    {
+                        return $"{m.Groups[1].Value.ToUpperInvariant()}{m.Groups[2].Value}";
+                    });
+                }
+
+                dynParams.Add(key, kvp.Value);
+            });
+
+            var reader = await this.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_DetailView_BackOrders]", dynParams, null, 30, CommandType.StoredProcedure);
+
+            return new OrderBook_DetailView_SelectResult()
+            {
+                Data = await reader.ReadAsync<OrderBook_DetailView_DataRow>()
             };
         }
     }

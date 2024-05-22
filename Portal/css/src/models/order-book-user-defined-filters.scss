@@ -19,6 +19,15 @@ $light-blue-bg: tint-color($blue-100, 80%);
         overflow: hidden;
     }
 
+    .btn-reset {
+        width: 0;
+        opacity: 0;
+        padding-left: 0;
+        padding-right: 0;
+        will-change: width, opacity, padding;
+        transition: all 150ms ease-in-out;
+    }
+
     #sidebar-collapse {
         opacity: 0;
         transition: opacity 150ms ease-in-out;
@@ -27,7 +36,7 @@ $light-blue-bg: tint-color($blue-100, 80%);
     .sidebar-heading {
         font-family: "Trixie", "Open Sans", Arial;
         font-weight: 800;
-        font-size: 1.75rem;
+        font-size: 1.5rem;
     }
 
     .mdc-validating-field,
@@ -72,6 +81,13 @@ $light-blue-bg: tint-color($blue-100, 80%);
             opacity: 1;
         }
 
+        .btn-reset {
+            width: 60px;
+            padding-left: $btn-padding-x;
+            padding-right: $btn-padding-x;
+            opacity: 1;
+        }
+
         .dropdown-toggle {
             display: flex;
         }
@@ -89,15 +105,16 @@ $light-blue-bg: tint-color($blue-100, 80%);
         background-color: $light;
         display: flex;
         flex-direction: column;
+        gap: $l-gutter;
     }
 
     .sidebar-header {
         display: flex;
         align-items: center;
-        justify-content: flex-end;
+        justify-content: space-between;
         padding-bottom: 0;
 
-        .btn {
+        .btn:not(.btn-reset) {
             padding: 0;
         }
     }
@@ -107,11 +124,11 @@ $light-blue-bg: tint-color($blue-100, 80%);
     }
 }
 
-#user-defined-filters {
+#user-defined-filters,
+#advanced-filters {
     display: none;
     gap: $xl-gutter;
     flex-direction: column;
-    margin-bottom: $xl-gutter;
 
     > div {
         display: flex;
@@ -191,11 +208,19 @@ $light-blue-bg: tint-color($blue-100, 80%);
         position: relative;
     }
 
-    #display-mode-dropdown-menu {
+    #display-mode-list {
         cursor: pointer;
 
         li {
-            .dropdown-item {
+            padding: 0;
+
+            &.disabled {
+                filter: brightness(95%);
+            }
+
+            .form-check {
+                cursor: pointer;
+                padding: $list-group-item-padding-y $list-group-item-padding-x;
                 padding-left: calc($xl-gutter + $sm-gutter);
                 display: flex;
                 align-items: center;

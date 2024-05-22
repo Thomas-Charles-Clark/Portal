@@ -1,0 +1,86 @@
+﻿@model Portal.Areas.Orders.ViewModels.OrderBookDetailBackOrdersViewModel
+@{
+    ViewBag.Title = "Order Book Detail";
+    Layout = "~/Views/Shared/_Layout-New.cshtml";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/components")
+    @Styles.Render("~/bundles/css/kendo-custom")
+    @Styles.Render("~/bundles/css/order-book-detail")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/components")
+    @Scripts.Render("~/bundles/js/tempus-dominus")
+    @Scripts.Render("~/bundles/js/order-book-detail")
+
+    <script type="text/javascript">
+        window.getDetailParameters = () => {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Parameters));
+        }
+    </script>
+
+    <script type="text/javascript">
+
+        var viewModel = orderBookDetailViewModel();
+
+        ko.options.deferUpdates = true;
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        ko.applyBindings(viewModel, document.body);
+
+        viewModel.busy(false);
+
+        window.self = viewModel;
+
+    </script>
+}
+
+@if (ViewBag.Partial != true)
+{
+<style type="text/css">
+    #order-book-detail-scroller-container {
+        max-height: calc(100vh - 50px);
+    }
+</style>
+}
+
+<div class="blocker" style="display: flex; opacity: 1" data-bind="flexFadeVisible: busy">
+    <div class="loading-spinner"></div>
+    <h4 class="mt-3">
+        Please wait...
+    </h4>
+</div>
+
+<div id="main-summary-container" class="d-flex align-items-start w-100" style="opacity: 0" data-bind="flexFadeVisible: true">
+    <sidebar id="filters-sidebar" class="collapse collapse-horizontal show sidebar sticky-top pinned">
+        <div class="sidebar-inner">
+            <div class="sidebar-header">
+                <a class="btn btn-dark btn-reset" data-bind="click: reset">
+                    Reset
+                </a>
+                <button type="button"
+                        class="btn btn-light"
+                        data-bind="click: userDefinedFilters.togglePinning"
+                        title="Toggle Pinning">
+                    <i class="bi bi-pin-angle-fill fs-5"></i>
+                </button>
+            </div>
+            <div id="sidebar-collapse" class="sidebar-body">
+                <div id="sidebar-collapse-inner">
+                    @Html.Partial("_UserDefinedFilters")
+                    <div class="vr"></div>
+                    @Html.Partial("_AdvancedFilters")
+                </div>
+            </div>
+        </div>
+    </sidebar>
+    <main id="order-book-main">
+        @Html.Partial("_DetailGrid")
+    </main>
+</div>

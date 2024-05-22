@@ -84,6 +84,8 @@ namespace Portal.Controllers
             int? tradeAccountGroupId = null)
         {
             return PortalDb.TradeAccounts.Where(ta =>
+                ta.Deleted == false &&
+                ta.Status == "O" &&
                 (salesMarketId == null || ta.SalesMarketID == salesMarketId.Value) &&
                 (tradeAccountGroupId == null || ta.TradeAccountGroupID == tradeAccountGroupId.Value) &&
                 (tradeAccountTypeId == null || ta.TradeAccountTypeID == tradeAccountTypeId.Value)

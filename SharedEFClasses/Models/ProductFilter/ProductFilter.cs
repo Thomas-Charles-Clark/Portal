@@ -1,4 +1,6 @@
-﻿using SharedEFClasses.Models.Products;
+﻿using Newtonsoft.Json;
+
+using SharedEFClasses.Models.Products;
 
 using System;
 using System.Collections.Generic;
@@ -44,5 +46,8 @@ namespace SharedEFClasses.Models
 
         [ForeignKey("ProductTypeID")]
         public virtual ProductType ProductType { get; set; }
+
+        [JsonIgnore]
+        public virtual ICollection<Product> Products { get; set; }
     }
 }

@@ -82,3 +82,13 @@ h2.trixie {
     font-weight: 400;
     src: url("/css/dist/fonts/src/wash-care-symbols-m54.woff2") format("woff2");
 }
+
+.courier-new {
+    font-family: "Courier New", Courier, monospace;
+    font-display: swap;
+    font-weight: 400;
+
+    &.bold {
+        font-weight: bold;
+    }
+}

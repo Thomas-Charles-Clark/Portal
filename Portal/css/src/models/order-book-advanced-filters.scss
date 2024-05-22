@@ -1,0 +1,31 @@
+@import "common.scss";
+
+#filters-sidebar {
+
+    &:hover,
+    &:focus,
+    &:focus-within,
+    &.pinned {
+        width: 560px;
+    }
+
+    align-self: stretch;
+}
+
+/* Only exists in the detailed view */
+#sidebar-collapse-inner {
+    display: flex;
+    flex-direction: row;
+    gap: $l-gutter;
+    justify-self: stretch;
+
+    #user-defined-filters {
+        flex: 1;
+    }
+
+    #advanced-filters {
+        flex: 1;
+        border: 0;
+        padding: 0;
+    }
+}

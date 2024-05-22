@@ -20,6 +20,16 @@
   position: sticky;
   left: 0;
 }
+#date-filters .pre-defined-filter-list {
+  display: flex;
+}
+#date-filters .pre-defined-filter-list .card.ui-selecting, #date-filters .pre-defined-filter-list .card.ui-selected {
+  color: #fff;
+  background-color: #084298;
+}
+#date-filters .pre-defined-filter-list .card:focus, #date-filters .pre-defined-filter-list .card:focus-within, #date-filters .pre-defined-filter-list .card:hover {
+  filter: brightness(98%);
+}
 
 .date-container-months {
   --td-cell-size: 5rem;

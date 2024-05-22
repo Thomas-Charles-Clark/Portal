@@ -159,8 +159,10 @@ namespace SharedEFClasses.Models.TradeAccounts
 
 
 
+        public DateTime? DeletedDT { get; set; }
 
-
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public bool Deleted { get; set; }
 
         [NotMapped]
         public string Label

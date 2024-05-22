@@ -1,0 +1,17 @@
+﻿@model SharedEFClasses.BaseViewModel
+
+<div id="advanced-filters" data-bind="css: 'd-flex', with: advancedFilters">
+    <div>
+        <h5 class="sidebar-heading">
+            Advanced
+        </h5>
+        <div id="product-status-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productStatusParams }"></div>
+        <div id="order-line-detailed-status-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: orderLineDetailedStatusParams }"></div>
+        <div id="order-group-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: orderGroupParams }"></div>
+        <div id="stock-location-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: stockLocationGroupParams }"></div>
+        <div id="order-status-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: orderStatusParams }"></div>
+        <div id="order-status-group-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: orderStatusGroupParams }"></div>
+        <div id="has-linked-po-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-checkbox-component', params: hasLinkedPOParams }"></div>
+        <div id="linked-po-delayed-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-checkbox-component', params: linkedPODelayedParams }"></div>
+    </div>
+</div>

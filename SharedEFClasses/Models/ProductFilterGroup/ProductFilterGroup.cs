@@ -24,7 +24,7 @@ namespace SharedEFClasses.Models
 
         [JsonIgnore]
         [InverseProperty("ProductFilterGroup")]
-        public virtual IEnumerable<ProductFilter> ProductFilters { get; set; }
+        public virtual ICollection<ProductFilter> ProductFilters { get; set; }
 
         [JsonIgnore]
         [InverseProperty("ProductFilterGroup")]

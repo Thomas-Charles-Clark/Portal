@@ -1,0 +1,40 @@
+:root {
+  --vsm-gutter: 0.25rem;
+  --sm-gutter: 0.5rem;
+  --m-gutter: 0.75rem;
+  --l-gutter: 1rem;
+  --mxl-gutter: 1.5rem;
+  --xl-gutter: 2rem;
+  --xxl-gutter: 3rem;
+  --disco-color: #e51f7c;
+  --letter-spacing-slight: 0.05rem;
+  --page-heading-colour: #44546b;
+}
+
+.input-group-lg .btn {
+  font-size: 1rem;
+}
+
+#filters-sidebar {
+  align-self: stretch;
+}
+#filters-sidebar:hover, #filters-sidebar:focus, #filters-sidebar:focus-within, #filters-sidebar.pinned {
+  width: 560px;
+}
+
+/* Only exists in the detailed view */
+#sidebar-collapse-inner {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  justify-self: stretch;
+}
+#sidebar-collapse-inner #user-defined-filters {
+  flex: 1;
+}
+#sidebar-collapse-inner #advanced-filters {
+  flex: 1;
+  border: 0;
+  padding: 0;
+}
+/*# sourceMappingURL=order-book-advanced-filters.css.map */

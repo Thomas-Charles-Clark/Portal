@@ -223,5 +223,14 @@ namespace SharedEFClasses.Models.MertexLive
                 return new PortalDbContext().DespatchHeads.Where(p => uniqueDespatchHeadIds.Contains(p.DespatchHeadID)).ToList();
             }
         }
+
+        [NotMapped]
+        public string ShortLabel 
+        { 
+            get
+            {
+                return $"{OrderID} - {CustomerOrderReference}";
+            }
+        }
     }
 }

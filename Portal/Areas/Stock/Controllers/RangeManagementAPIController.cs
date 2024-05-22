@@ -83,7 +83,8 @@ namespace Portal.Areas.Stock.Controllers
                         ProductTypeID = l.ProductTypeID,
                         ProductFilterGroupID = l.ProductFilterGroupID,
                         IsProduct = l.IsProduct
-                    }).OrderBy(pf => pf.Name),
+                    }).OrderBy(pf => pf.Name)
+                    .ToList(),
                 SortOrder = g.Key.ProductFilterGroupSortOrder
             })
             .OrderBy(pfg => pfg.Name);

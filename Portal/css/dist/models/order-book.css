@@ -36,6 +36,24 @@ html body > nav.navbar-default h1, html body > nav.navbar-default h2, html body 
   font-family: "Trixie", "Open Sans", Arial;
   font-weight: 800;
 }
+html body > nav.navbar-default h1 span, html body > nav.navbar-default h2 span, html body > nav.navbar-default h3 span, html body > nav.navbar-default h4 span, html body > nav.navbar-default h5 span, html body > nav.navbar-default h6 span {
+  font-family: Courier New, Courier, monospace;
+  font-weight: 400;
+}
+html body > nav.navbar-default .nav.navbar-nav {
+  flex-wrap: nowrap;
+}
+html body > nav.navbar-default .nav.navbar-nav .app-title h2 {
+  flex-wrap: nowrap;
+}
+html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
+  white-space: nowrap;
+}
+
+#main-summary-container {
+  will-change: opacity;
+  transition: opacity 300ms ease-in-out;
+}
 
 .container.body-content {
   padding: 0;
@@ -46,18 +64,50 @@ html body > nav.navbar-default h1, html body > nav.navbar-default h2, html body 
   overflow-x: auto;
 }
 
+#order-book-main-wrapper {
+  overflow-x: hidden;
+}
+
 #display-mode-dropdown-menu {
   overflow-y: auto;
 }
 
+/* If we can somehow identify which column indices form the boundaries between order groups ... */
+#main-grid-container-wrapper {
+  overflow-x: hidden;
+}
+#main-grid-container-wrapper #main-grid-container {
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+#main-grid-container-wrapper #main-grid-container .main-grid:not(.column-headings) .main-grid.show {
+  border-bottom: 1px solid #084298;
+}
+
 .main-grid {
   display: grid;
-  grid-template-columns: 240px repeat(calc(var(--grid-column-count) - 1), minmax(140px, 1fr));
-  grid-gap: 1px;
+  grid-template-columns: 240px repeat(calc(var(--grid-column-count) - 1), minmax(138px, 1fr));
+  grid-row-gap: 1px;
+}
+.main-grid .main-cell {
+  text-align: right;
+  border-bottom: 1px solid #e9ecef;
+}
+.main-grid .intersectable {
+  cursor: pointer;
+  will-change: background-color, color;
+  transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
+}
+.main-grid .intersectable:hover, .main-grid .intersectable:focus, .main-grid .intersectable:focus-within {
+  background-color: #495057;
+  color: #fff;
+}
+.main-grid .border-bottom-0 {
+  border-bottom: 0;
 }
 .main-grid .main-grid {
   border: 0;
-  grid-gap: 1px;
+  grid-row-gap: 0;
   background-color: #e9ecef;
 }
 .main-grid + .main-grid {
@@ -79,7 +129,10 @@ html body > nav.navbar-default h1, html body > nav.navbar-default h2, html body 
 .main-grid .spacer,
 .main-grid .order-group-heading,
 .main-grid .main-cell {
-  padding: 0.25rem 0.5rem;
+  padding: calc(0.25rem + 1px) 0.5rem 0.25rem 0.5rem;
+}
+.main-grid .alternate-row {
+  background-color: #fafbfb;
 }
 .main-grid.column-headings .th {
   display: flex;
@@ -89,6 +142,48 @@ html body > nav.navbar-default h1, html body > nav.navbar-default h2, html body 
 }
 .main-grid .th {
   font-size: 1.1rem;
+}
+.main-grid .first-column {
+  position: sticky;
+  z-index: 1;
+  left: 0;
+  border-right: 1px solid #084298;
+  /* &:not(.order-group-heading) {
+      &::after {
+          content: " ";
+          position: absolute;
+          right: -1rem;
+          width: 1rem;
+          height: 100%;
+          top: 0;
+          z-index: 50;
+          background: linear-gradient(90deg, rgba(0, 0, 0, 0.04), transparent);
+      }
+  }*/
+}
+.main-grid .order-status,
+.main-grid .order-status-group-heading,
+.main-grid .order-status-total,
+.main-grid .order-group-total-row {
+  border-bottom: 1px solid #084298;
+}
+.main-grid .order-status-group-heading {
+  border-left: 1px solid #084298;
+}
+.main-grid .order-group-total-row {
+  border-top: 1px solid #084298;
+}
+.main-grid .order-status-group-start,
+.main-grid .grand-total-column {
+  border-left: 1px solid #084298;
+}
+.main-grid .grand-total-column {
+  border-right: 1px solid #084298;
+}
+.main-grid .order-status-total,
+.main-grid .grand-total-column,
+.main-grid .subtotal-cell {
+  background: #f5f9ff;
 }
 .main-grid .spacer {
   height: 1rem;
@@ -124,16 +219,27 @@ html body > nav.navbar-default h1, html body > nav.navbar-default h2, html body 
 .main-grid .order-group-heading:focus, .main-grid .order-group-heading:hover {
   filter: brightness(110%);
 }
-.main-grid .main-cell {
-  text-align: right;
-}
 .main-grid .values-display {
   margin-bottom: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 .main-grid .values-display span {
   display: block;
+}
+
+#order-book-detail-modal .modal-content .modal-header {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+#order-book-detail-modal .modal-content #order-book-detail-modal-body {
+  padding: 0;
+  display: flex;
+}
+#order-book-detail-modal .modal-content #order-book-detail-modal-body iframe {
+  flex: 1;
+  align-self: stretch;
 }
 /*# sourceMappingURL=order-book.css.map */

@@ -13,7 +13,7 @@ using System.Web.Mvc;
 namespace Portal.Areas.Orders.Controllers
 {
     [DynamicRoleAuthorize]
-    [RouteArea("orderbook")]
+    [RouteArea("order-book")]
     [RoutePrefix("summary")]
     [Route("{action=index}")]
     public class OrderBookSummaryController : BaseController
@@ -26,7 +26,7 @@ namespace Portal.Areas.Orders.Controllers
         // GET: OrderBook/Summary
         public async Task<ActionResult> Index()
         {
-            var application = PortalDb.Applications.Where(p => p.ControllerName == "summary" && p.AreaName == "orderbook" && p.ActionName == "index").Single();
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "OrderBookSummary" && p.AreaName == "order-book" && p.ActionName == "index").Single();
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 

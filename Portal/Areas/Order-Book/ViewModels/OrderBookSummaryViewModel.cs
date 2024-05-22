@@ -40,11 +40,11 @@ namespace Portal.Areas.Orders.ViewModels
 
             using (var db = new PortalDbContext())
             {
-                var parameters = new PassOrderBookMainParams();
+                var objParams = new PassOrderBookBaseParams();
 
-                result.DateFilters = await db.FetchOrderBookDateSummaries(parameters);
-                result.PreDefinedFilters = JArray.Parse(await db.FetchOrderBookPreDefinedSummaries(parameters));
-                result.MainResult = await db.FetchOrderBookMainSummary(parameters);
+                result.DateFilters = await db.FetchOrderBookDateSummaries(objParams);
+                result.PreDefinedFilters = JArray.Parse(await db.FetchOrderBookPreDefinedSummaries(objParams));
+                result.MainResult = await db.FetchOrderBookMainSummary(objParams);
             }
 
             return result;
