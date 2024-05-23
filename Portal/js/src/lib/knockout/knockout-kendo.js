@@ -575,7 +575,7 @@ createBinding({
             // seriously, don't mess with this one if you can help it.
             if (ko.isWriteableObservable(options.dataItem)) {
                 var list = e.sender;
-                if (e.sender.value()) {
+                if (e.sender.value() || e.sender.value() === 0) {
                     if (typeof options.virtual === 'undefined') {
                         options.dataItem(list.dataItem(list.selectedIndex));
                     } else {
@@ -609,7 +609,7 @@ createBinding({
             }
             if (ko.isWriteableObservable(options.value)) {
                 var list = e.sender;
-                if (e.sender.value()) {
+                if (e.sender.value() || e.sender.value() === 0) {
                     options.value(e.sender.value());
                 }
                 //else

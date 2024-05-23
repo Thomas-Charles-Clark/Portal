@@ -165,7 +165,7 @@
 
         let selectedLength = selected.length;
 
-        let deselection = false;
+        let deselection = event.currentTarget.classList.contains('ui-selected');
 
         selected.forEach(e => {
             e.classList.remove('ui-selected');

@@ -14,9 +14,11 @@
 
     self.detailModalTitleElement = document.querySelector("#order-book-detail-modal-title");
 
-    self.detailModalBodyElement = document.querySelector("#order-book-detail-modal-body");
+    self.detailModaliFrameTargetElement = document.querySelector("#order-book-detail-iframe-target");
 
     self.detailModal = bootstrap.Modal.getOrCreateInstance(self.detailModalElement);
+
+    self.detailModalBusy = ko.observable(false);
 
     //#endregion
 
@@ -69,7 +71,12 @@
 
         let params = JSON.parse(self.parent.userDefinedFilters.json());
 
-        let preDefinedFilterCriteria = {};
+        let preDefinedFilterCriteria = {
+            displayModes: self.parent.displayModes(),
+            accurateAsOfDateTime: self.parent.accurateAsOfDateTime(),
+            title: preDefinedFilter.Label,
+            procedure: preDefinedFilter.Procedure
+        };
 
         preDefinedFilter.Criteria.forEach(c => {
             preDefinedFilterCriteria[c[0]] = c[1];
@@ -81,13 +88,19 @@
 
         let qs = new URLSearchParams(params).toString();
 
-        let src = `/order-book/detail/back-orders?partial=true&${qs}`;
+        let src = `/order-book/detail/${preDefinedFilter.View}?partial=true&${qs}`;
 
         console.log(src);
 
         iFrame.src = src;
-        
-        self.detailModalBodyElement.replaceChildren(iFrame);
+
+        self.detailModalBusy(true);
+
+        iFrame.onload = () => {
+            self.detailModalBusy(false);
+        }
+
+        self.detailModaliFrameTargetElement.replaceChildren(iFrame);
 
         self.detailModal.show();
     }

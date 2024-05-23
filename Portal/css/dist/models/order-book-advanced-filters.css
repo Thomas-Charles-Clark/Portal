@@ -26,6 +26,7 @@
 #sidebar-collapse-inner {
   display: flex;
   flex-direction: row;
+  flex-wrap: nowrap;
   gap: 1rem;
   justify-self: stretch;
 }

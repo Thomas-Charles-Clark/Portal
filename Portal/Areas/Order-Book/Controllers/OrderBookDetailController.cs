@@ -40,6 +40,8 @@ namespace Portal.Areas.Orders.Controllers
                 ViewBag.Partial = true;
             }
 
+            ViewBag.HideSidebar = true;
+
             var objParams = new ExpandoObject();
 
             var objParamsDict = objParams as IDictionary<string, object>;
@@ -56,13 +58,162 @@ namespace Portal.Areas.Orders.Controllers
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
-            var model = await OrderBookDetailBackOrdersViewModel.CreateAsync(
+            var model = await OrderBookDetailViewModel.CreateAsync(
+                "BackOrders",
                 objParams,
                 user.GetActiveRoleProperties(),
                 application.Heading,
                 application.SubHeading);
 
-            return View("OrderBookDetail_BackOrders", model);
+            return View("OrderBookDetail", model);
+        }
+
+        // GET: OrderBook/Summary
+        [Route("view-one")]
+        public async Task<ActionResult> ViewOne()
+        {
+            if (Request.QueryString.HasKeys() && Request.QueryString.AllKeys.Contains("partial"))
+            {
+                ViewBag.Partial = true;
+            }
+
+            ViewBag.HideSidebar = true;
+
+            var objParams = new ExpandoObject();
+
+            var objParamsDict = objParams as IDictionary<string, object>;
+
+            Request.QueryString.AllKeys.ForEach(key =>
+            {
+                if (key != "partial" && Request.QueryString[key] != "null")
+                {
+                    objParamsDict.Add(key, Request.QueryString[key]);
+                }
+            });
+
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "detail" && p.AreaName == "order-book" && p.ActionName == "view-one").Single();
+
+            var user = UserManager.FindById(User.Identity.GetUserId<int>());
+
+            var model = await OrderBookDetailViewModel.CreateAsync(
+                "ViewOne",
+                objParams,
+                user.GetActiveRoleProperties(),
+                application.Heading,
+                application.SubHeading);
+
+            return View("OrderBookDetail", model);
+        }
+
+        // GET: OrderBook/Summary
+        [Route("view-two")]
+        public async Task<ActionResult> ViewTwo()
+        {
+            if (Request.QueryString.HasKeys() && Request.QueryString.AllKeys.Contains("partial"))
+            {
+                ViewBag.Partial = true;
+            }
+
+            ViewBag.HideSidebar = true;
+
+            var objParams = new ExpandoObject();
+
+            var objParamsDict = objParams as IDictionary<string, object>;
+
+            Request.QueryString.AllKeys.ForEach(key =>
+            {
+                if (key != "partial" && Request.QueryString[key] != "null")
+                {
+                    objParamsDict.Add(key, Request.QueryString[key]);
+                }
+            });
+
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "detail" && p.AreaName == "order-book" && p.ActionName == "view-one").Single();
+
+            var user = UserManager.FindById(User.Identity.GetUserId<int>());
+
+            var model = await OrderBookDetailViewModel.CreateAsync(
+                "ViewTwo",
+                objParams,
+                user.GetActiveRoleProperties(),
+                application.Heading,
+                application.SubHeading);
+
+            return View("OrderBookDetail", model);
+        }
+
+        // GET: OrderBook/Summary
+        [Route("view-three")]
+        public async Task<ActionResult> ViewThree()
+        {
+            if (Request.QueryString.HasKeys() && Request.QueryString.AllKeys.Contains("partial"))
+            {
+                ViewBag.Partial = true;
+            }
+
+            ViewBag.HideSidebar = true;
+
+            var objParams = new ExpandoObject();
+
+            var objParamsDict = objParams as IDictionary<string, object>;
+
+            Request.QueryString.AllKeys.ForEach(key =>
+            {
+                if (key != "partial" && Request.QueryString[key] != "null")
+                {
+                    objParamsDict.Add(key, Request.QueryString[key]);
+                }
+            });
+
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "detail" && p.AreaName == "order-book" && p.ActionName == "view-one").Single();
+
+            var user = UserManager.FindById(User.Identity.GetUserId<int>());
+
+            var model = await OrderBookDetailViewModel.CreateAsync(
+                "ViewThree",
+                objParams,
+                user.GetActiveRoleProperties(),
+                application.Heading,
+                application.SubHeading);
+
+            return View("OrderBookDetail", model);
+        }
+
+        // GET: OrderBook/Summary
+        [Route("view-four")]
+        public async Task<ActionResult> ViewFour()
+        {
+            if (Request.QueryString.HasKeys() && Request.QueryString.AllKeys.Contains("partial"))
+            {
+                ViewBag.Partial = true;
+            }
+
+            ViewBag.HideSidebar = true;
+
+            var objParams = new ExpandoObject();
+
+            var objParamsDict = objParams as IDictionary<string, object>;
+
+            Request.QueryString.AllKeys.ForEach(key =>
+            {
+                if (key != "partial" && Request.QueryString[key] != "null")
+                {
+                    objParamsDict.Add(key, Request.QueryString[key]);
+                }
+            });
+
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "detail" && p.AreaName == "order-book" && p.ActionName == "view-one").Single();
+
+            var user = UserManager.FindById(User.Identity.GetUserId<int>());
+
+            var model = await OrderBookDetailViewModel.CreateAsync(
+                "ViewFour",
+                objParams,
+                user.GetActiveRoleProperties(),
+                application.Heading,
+                application.SubHeading);
+
+            return View("OrderBookDetail", model);
         }
     }
 }

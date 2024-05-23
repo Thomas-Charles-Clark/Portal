@@ -234,11 +234,24 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
-#order-book-detail-modal .modal-content #order-book-detail-modal-body {
+#order-book-detail-modal .modal-content .modal-header .modal-title #order-book-detail-modal-title {
+  display: flex;
+  gap: 0.75rem;
+}
+#order-book-detail-modal .modal-content .modal-header .modal-title #order-book-detail-modal-title span + span {
+  padding-left: 0.75rem;
+  border-left: 1px solid #adb5bd;
+}
+#order-book-detail-modal .modal-content .modal-body {
   padding: 0;
   display: flex;
 }
-#order-book-detail-modal .modal-content #order-book-detail-modal-body iframe {
+#order-book-detail-modal .modal-content #order-book-detail-iframe-target {
+  flex: 1;
+  padding: 0;
+  display: flex;
+}
+#order-book-detail-modal .modal-content #order-book-detail-iframe-target iframe {
   flex: 1;
   align-self: stretch;
 }

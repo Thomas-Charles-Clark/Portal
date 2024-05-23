@@ -1,11 +1,17 @@
-﻿const orderBookAdvancedFiltersViewModel = ({
+﻿const yesNoOptions = [{
+    Name: 'Yes',
+    Value: true
+}, {
+    Name: 'No',
+    Value: false
+}]
+
+const orderBookAdvancedFiltersViewModel = ({
     parent,
     params
 } = {
     parent: {},
-    params: {
-        productStatusId: ''
-    }
+    params: {}
 }) => {
 
     //#region Properties
@@ -18,32 +24,46 @@
 
     self.productStatusId = ko.observable(params.productStatus ?? '');
     self.productStatus = ko.observable();
+    self.productStatusAwaitingBinding = ko.observable(params.productStatus != null && params.productStatus != '');
 
     self.orderGroupId = ko.observable(params.orderGroupId ?? '');
     self.orderGroup = ko.observable();
+    self.orderGroupAwaitingBinding = ko.observable(params.orderGroupId != null && params.orderGroupId != '');
 
     self.stockLocationGroupId = ko.observable(params.stockLocationGroupId ?? '');
     self.stockLocationGroup = ko.observable();
+    self.stockLocationGroupAwaitingBinding = ko.observable(params.stockLocationGroupId != null && params.stockLocationGroupId != '');
 
+    // THIS is the one, get rid of
+    // and orderLineDetailedStatusId will be named orderStatusId 
     self.orderStatusId = ko.observable(params.orderStatusId ?? '');
     self.orderStatus = ko.observable();
+    self.orderStatusAwaitingBinding = ko.observable(params.orderStatusId != null && params.orderStatusId != '');
 
     self.orderStatusGroupId = ko.observable(params.orderStatusGroupId ?? '');
     self.orderStatusGroup = ko.observable();
+    self.orderStatusGroupAwaitingBinding = ko.observable(params.orderStatusGroupId != null && params.orderStatusGroupId != '');
 
-    self.orderLineDetailedStatusId = ko.observable(params.orderLineDetailedStatusId ?? '');
-    self.orderLineDetailedStatus = ko.observable();
+    self.hasLinkedPOId = ko.observable(params.hasLinkedPO == "1" ? true : params.hasLinkedPO == "0" ? false : '');
+    self.hasLinkedPO = ko.observable();
 
-    self.hasLinkedPO = ko.observable(params.hasLinkedPO ?? false);
+    self.linkedPODelayedId = ko.observable(params.linkedPODelayed == "1" ? true : params.linkedPODelayed == "0" ? false : '');
+    self.linkedPODelayed = ko.observable();
 
-    self.linkedPODelayed = ko.observable(params.linkedPODelayed ?? false);
+    self.loadedWithTitle = ko.observable(params.title);
 
     //#endregion
 
 
     //#region Computeds
 
-
+    self.allBound = ko.computed(() => {
+        return (self.productStatusAwaitingBinding() == false &&
+            self.orderGroupAwaitingBinding() == false &&
+            self.stockLocationGroupAwaitingBinding() == false &&
+            self.orderStatusAwaitingBinding() == false &&
+            self.orderStatusGroupAwaitingBinding() == false)
+    }, self);
 
     //#endregion
 
@@ -158,6 +178,7 @@
             Name: "X - Dropped",
             Value: "X"
         }],
+        dataBound: (e) => self.productStatusAwaitingBinding(false),
         textField: 'Name',
         valueField: 'Value',
         idObservable: self.productStatusId,
@@ -182,36 +203,11 @@
         }
     });
 
-    self.orderLineDetailedStatusParams = kendoMDCDropDownList({
-        label: 'Order Line Detailed Status',
-        odata: true,
-        endPoint: '/odata/OrderLineDetailedStatuses',
-        textField: 'Name',
-        valueField: 'OrderLineDetailedStatusID',
-        idObservable: self.orderLineDetailedStatusId,
-        objObservable: self.orderLineDetailedStatus,
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertible: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        autoBind: true,
-        height: 340,
-        sort: {
-            dir: 'asc',
-            field: 'OrderLineDetailedStatusID'
-        },
-        clearFunction: self.genericUnsavedChangesClear,
-        popupSettings: {
-            appendTo: document.getElementById('order-line-detailed-status-prefilter')
-        }
-    });
-
     self.orderGroupParams = kendoMDCDropDownList({
         label: 'Order Group',
         odata: true,
         endPoint: '/odata/OrderGroups',
+        dataBound: (e) => self.orderGroupAwaitingBinding(false),
         textField: 'Name',
         valueField: 'OrderGroupID',
         idObservable: self.orderGroupId,
@@ -238,8 +234,9 @@
         label: 'Stock Location Group',
         odata: true,
         endPoint: '/odata/stockLocationOrderBookGroups',
+        dataBound: (e) => self.stockLocationGroupAwaitingBinding(false),
         textField: 'Name',
-        valueField: 'stockLocationOrderBookGroupID',
+        valueField: 'StockLocationOrderBookGroupID',
         idObservable: self.stockLocationGroupId,
         objObservable: self.stockLocationGroup,
         enable: ko.observable(true),
@@ -252,7 +249,7 @@
         height: 340,
         sort: {
             dir: 'asc',
-            field: 'stockLocationOrderBookGroupID'
+            field: 'StockLocationOrderBookGroupID'
         },
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
@@ -264,6 +261,7 @@
         label: 'Order Status',
         odata: true,
         endPoint: '/odata/OrderLineDetailedStatuses',
+        dataBound: (e) => self.orderStatusAwaitingBinding(false),
         textField: 'Name',
         valueField: 'OrderLineDetailedStatusID',
         idObservable: self.orderStatusId,
@@ -290,6 +288,7 @@
         label: 'Order Status Group',
         odata: true,
         endPoint: '/odata/OrderLineDetailedStatusGroups',
+        dataBound: (e) => self.orderStatusGroupAwaitingBinding(false),
         textField: 'Name',
         valueField: 'OrderLineDetailedStatusGroupID',
         idObservable: self.orderStatusGroupId,
@@ -312,27 +311,59 @@
         }
     });
 
-    self.hasLinkedPOParams = {
-        label: 'Has Linked PO?',
-        checkboxId: `has-linked-po`,
-        observable: self.hasLinkedPO,
-        originalValue: false,
-        useNativeValidation: false,
-        disable: ko.observable(false),
+    self.hasLinkedPOParams = kendoMDCDropDownList({
+        label: 'Has Linked PO',
+        data: yesNoOptions,
+        textField: 'Name',
+        valueField: 'Value',
+        idObservable: self.hasLinkedPOId,
+        objObservable: ko.hasLinkedPO,
         enable: ko.observable(true),
-        busy: ko.observable(false)
-    };
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        popupSettings: {
+            appendTo: document.getElementById('has-linked-po-prefilter')
+        }
+    });
 
-    self.linkedPODelayedParams = {
-        label: 'Linked PO Delayed?',
-        checkboxId: `linked-po-delayed`,
-        observable: self.linkedPODelayed,
-        originalValue: false,
-        useNativeValidation: false,
-        disable: ko.observable(false),
+    self.linkedPODelayedParams = kendoMDCDropDownList({
+        label: 'Has Linked PO',
+        data: yesNoOptions,
+        textField: 'Name',
+        valueField: 'Value',
+        idObservable: self.linkedPODelayedId,
+        objObservable: ko.linkedPODelayed,
         enable: ko.observable(true),
-        busy: ko.observable(false)
-    }
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        popupSettings: {
+            appendTo: document.getElementById('linked-po-delayed-prefilter')
+        }
+    });
 
     //#endregion
 
@@ -357,9 +388,6 @@
         self.productStatusId(EMPTY_STRING);
         self.productStatus(undefined);
 
-        self.orderLineDetailedStatusId(EMPTY_STRING);
-        self.orderLineDetailedStatus(undefined);
-
         self.orderGroupId(EMPTY_STRING);
         self.orderGroup(undefined);
 
@@ -372,24 +400,57 @@
         self.orderStatusGroupId(EMPTY_STRING);
         self.orderStatusGroup(undefined);
 
-        self.hasLinkedPO(false);
+        self.hasLinkedPOId(EMPTY_STRING);
+        self.hasLinkedPO(undefined);
 
-        self.linkedPODelayed(false);
+        self.linkedPODelayedId(EMPTY_STRING);
+        self.linkedPODelayed(undefined);
     }
 
     self.json = ko.computed(() => {
-        let result = {
-            productStatus: self.productStatusId() || null,
-            orderLineDetailedStatusId: self.orderLineDetailedStatusId() || null,
-            orderGroupId: self.orderGroupId() || null,
-            stockLocationGroupId: self.stockLocationGroupId() || null,
-            orderStatusId: self.orderStatusId() || null,
-            orderStatusGroupId: self.orderStatusGroupId() || null,
-            hasLinkedPO: self.hasLinkedPO(),
-            linkedPODelayed: self.linkedPODelayed()
-        };
+        if (self.allBound()) {
+            let result = {
+                productStatus: self.productStatusId() || null,
+                orderGroupId: self.orderGroupId() || null,
+                stockLocationGroupId: self.stockLocationGroupId() || null,
+                orderStatusId: self.orderStatusId() || null,
+                orderStatusGroupId: self.orderStatusGroupId() || null,
+                hasLinkedPO: self.hasLinkedPOId() == '' ? null : self.hasLinkedPOId(),
+                linkedPODelayed: self.linkedPODelayedId() == '' ? null : self.linkedPODelayedId()
+            };
 
-        return JSON.stringify(result);
+            let title = []
+
+            if (self.orderStatusGroup())
+                title.push(`<span data-bind="OrderStatusGroupID: ${self.orderStatusGroupId()} - ${self.orderStatusGroup().Name}">Order Status Group: ${self.orderStatusGroup().Name}</span>`);
+
+            if (self.orderStatus())
+                title.push(`<span data-bind="OrderStatusID: ${self.orderStatusId()} - ${self.orderStatus().Name}">Order Status: ${self.orderStatus().Name}</span>`);
+
+            if (self.orderGroup())
+                title.push(`<span data-bind="OrderGroupID: ${self.orderGroupId()} - ${self.orderGroup().Name}">Order Group: ${self.orderGroup().Name}</span>`);
+
+            if (self.stockLocationGroup())
+                title.push(`<span data-bind="StockLocationGroupID: ${self.stockLocationGroupId()} - ${self.stockLocationGroup().Name}">Stock Location Group: ${self.stockLocationGroup().Name}</span>`);
+
+            // this because predefinedfilter pods land you here with a particular title
+            // which we want to hold onto through the first bind
+            // any subsequent filter changes should update the title
+            if (self.loadedWithTitle()) {
+                self.loadedWithTitle(false);
+            } else {
+
+                let event = new CustomEvent('setDetailModalTitle', {
+                    detail: title
+                });
+
+                window.parent.document.dispatchEvent(event)
+            }
+
+            return JSON.stringify(result);
+        } else {
+            return undefined;
+        }
     }).extend({
         rateLimit: {
             timeout: 100,

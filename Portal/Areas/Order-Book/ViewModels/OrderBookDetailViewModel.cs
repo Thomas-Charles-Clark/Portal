@@ -16,12 +16,13 @@ using System.Web;
 
 namespace Portal.Areas.Orders.ViewModels
 {
-    public class OrderBookDetailBackOrdersViewModel : BaseViewModel
+    public class OrderBookDetailViewModel : BaseViewModel
     {
+        public string ProcedureName { get; set; }
         public ExpandoObject Parameters { get; set; }
         //public OrderBook_DetailView_SelectResult DetailResult { get; set; }
 
-        public OrderBookDetailBackOrdersViewModel(ExpandoObject parameters, RoleProperties properties, string applicationHeading, string applicationSubHeading)
+        public OrderBookDetailViewModel(ExpandoObject parameters, RoleProperties properties, string applicationHeading, string applicationSubHeading)
             : base(properties,
                    applicationHeading,
                    applicationSubHeading)
@@ -29,17 +30,19 @@ namespace Portal.Areas.Orders.ViewModels
             Parameters = parameters;
         }
 
-        public static async Task<OrderBookDetailBackOrdersViewModel> CreateAsync(
+        public static async Task<OrderBookDetailViewModel> CreateAsync(
+            string procedureName,
             ExpandoObject objParams,
             RoleProperties properties,
             string applicationHeading,
             string applicationSubHeading)
         {
-            var result = new OrderBookDetailBackOrdersViewModel(objParams, properties, applicationHeading, applicationSubHeading);
+            var result = new OrderBookDetailViewModel(objParams, properties, applicationHeading, applicationSubHeading);
 
+            //if (!String.IsNullOrEmpty(procedureName))
             //using (var db = new PortalDbContext())
             //{
-            //    result.DetailResult = await db.FetchOrderBookDetailBackOrders(objParams);
+            //    result.DetailResult = await db.FetchOrderBookDetail(procedureName, objParams);
             //}
 
             return result;

@@ -573,7 +573,7 @@
     <Compile Include="Areas\Order-Book\OrderBookAreaRegistration.cs" />
     <Compile Include="Areas\Order-Book\Controllers\OrderBookApiController.cs" />
     <Compile Include="Areas\Order-Book\Controllers\OrderBookSummaryController.cs" />
-    <Compile Include="Areas\Order-Book\ViewModels\OrderBookDetailBackOrdersViewModel.cs" />
+    <Compile Include="Areas\Order-Book\ViewModels\OrderBookDetailViewModel.cs" />
     <Compile Include="Areas\Orders\Controllers\OrderImportAPIController.cs" />
     <Compile Include="Areas\Orders\Controllers\OrderTrackingApiController.cs" />
     <Compile Include="Areas\Orders\Controllers\OrderTrackingController.cs" />
@@ -1873,7 +1873,7 @@
     <Content Include="Areas\Order-Book\Views\Shared\_UserDefinedFilters.cshtml" />
     <Content Include="Areas\Order-Book\Views\Shared\_DateFilters.cshtml" />
     <Content Include="Areas\Order-Book\Views\Shared\_PreDefinedFilters.cshtml" />
-    <Content Include="Areas\Order-Book\Views\OrderBookDetail\OrderBookDetail_BackOrders.cshtml" />
+    <Content Include="Areas\Order-Book\Views\OrderBookDetail\OrderBookDetail.cshtml" />
     <Content Include="Areas\Order-Book\Views\Shared\_DetailGrid.cshtml" />
     <Content Include="Areas\Order-Book\Views\Shared\_AdvancedFilters.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />

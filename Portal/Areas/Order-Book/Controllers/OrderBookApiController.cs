@@ -52,7 +52,7 @@ namespace Portal.Areas.Sales.Controllers
 
         public async Task<IHttpActionResult> DetailRefresh([FromBody]ExpandoObject dto)
         {
-            var mainResult = await PortalDB.FetchOrderBookDetailBackOrders(dto);
+            var mainResult = await PortalDB.FetchOrderBookDetail((string)dto.FirstOrDefault(kvp => kvp.Key == "procedure").Value, dto);
 
             return Ok(mainResult);
         }

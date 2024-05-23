@@ -10,6 +10,7 @@ namespace SharedEFClasses.Models.OrderBook
 {
     public class OrderBook_DetailView_SelectResult
     {
-        public IEnumerable<OrderBook_DetailView_DataRow> Data { get; set; }
+        public DateTime AccurateAsOfDT { get; set; }
+        public object Data { get; set; }
     }
 }

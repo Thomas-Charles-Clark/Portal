@@ -11,7 +11,7 @@ const orderBookViewModel = (() => {
 
     self.busy = ko.observable(false);
 
-    self.displayModes = ko.observableArray([DISPLAY_MODE_VALUE_SUM, DISPLAY_MODE_QUANTITY_SUM]);
+    self.displayModes = ko.observableArray([DISPLAY_MODE_VALUE_SUM]);
 
     let emptyParams = {
         dateBasis: 'O'
@@ -35,9 +35,11 @@ const orderBookViewModel = (() => {
 
     self.detailModalTitleElement = document.querySelector("#order-book-detail-modal-title");
 
-    self.detailModalBodyElement = document.querySelector("#order-book-detail-modal-body");
+    self.detailModaliFrameTargetElement = document.querySelector("#order-book-detail-iframe-target");
 
     self.detailModal = bootstrap.Modal.getOrCreateInstance(self.detailModalElement);
+
+    self.detailModalBusy = ko.observable(false);
 
     //#endregion
 
@@ -113,7 +115,8 @@ const orderBookViewModel = (() => {
                     stockLocationGroupId: current.StockLocationGroupID,
                     stockLocationGroupName: current.StockLocationGroupName,
                     stockLocationGroupSortOrder: current.StockLocationGroupSortOrder,
-                    orderGroupId: current.OrderGroupID
+                    orderGroupId: current.OrderGroupID,
+                    potato: 'a'
                 })
             } else {
                 array.push({
@@ -121,11 +124,13 @@ const orderBookViewModel = (() => {
                     orderGroupName: current.OrderGroupName,
                     orderGroupSortOrder: current.OrderGroupSortOrder,
                     stockLocationGroupId: current.StockLocationGroupID,
+                    potato: 'b',
                     stockLocationGroups: [{
                         stockLocationGroupId: current.StockLocationGroupID,
                         stockLocationGroupName: current.StockLocationGroupName,
                         stockLocationGroupSortOrder: current.StockLocationGroupSortOrder,
-                        orderGroupId: current.OrderGroupID
+                        orderGroupId: current.OrderGroupID,
+                        potato: 'c'
                     }]
                 })
             }
@@ -149,18 +154,21 @@ const orderBookViewModel = (() => {
                     orderStatusId: current.OrderStatusID,
                     orderStatusName: current.OrderStatusName,
                     orderStatusSortOrder: current.OrderStatusSortOrder,
-                    orderStatusGroupId: current.OrderStatusGroupID
+                    orderStatusGroupId: current.OrderStatusGroupID,
+                    banana: 'a'
                 })
             } else {
                 array.push({
                     orderStatusGroupId: current.OrderStatusGroupID,
                     orderStatusGroupName: current.OrderStatusGroupName,
                     orderStatusGroupSortOrder: current.OrderStatusGroupSortOrder,
+                    banana: 'b',
                     orderStatuses: [{
                         orderStatusId: current.OrderStatusID,
                         orderStatusName: current.OrderStatusName,
                         orderStatusSortOrder: current.OrderStatusSortOrder,
-                        orderStatusGroupId: current.OrderStatusGroupID
+                        orderStatusGroupId: current.OrderStatusGroupID,
+                        banana: 'c'
                     }]
                 })
             }
@@ -225,26 +233,60 @@ const orderBookViewModel = (() => {
 
         let params = JSON.parse(self.userDefinedFilters.json());
 
+        let view = 'back-orders';
+        let procedure = 'BackOrders';
+
         let preDefinedFilterCriteria = {
-            orderLineDetailedStatusGroupId: cell.orderStatusGroupId,
-            orderLineDetailedStatusId: cell.orderStatusId,
-            stockLocationGroupId: cell.stockLocationGroupId,
-            orderGroupId: cell.orderGroupId
+            displayModes: self.displayModes(),
+            accurateAsOfDateTime: self.accurateAsOfDateTime(),
+            procedure: procedure
         };
+
+        if (cell.hasOwnProperty('orderGroupId'))
+            preDefinedFilterCriteria.orderGroupId = cell.orderGroupId;
+
+        if (cell.hasOwnProperty('orderStatusGroupId'))
+            preDefinedFilterCriteria.orderStatusGroupId = cell.orderStatusGroupId;
+
+        if (cell.hasOwnProperty('orderStatusId'))
+            preDefinedFilterCriteria.orderStatusId = cell.orderStatusId;
+
+        if (cell.hasOwnProperty('stockLocationGroupId'))
+            preDefinedFilterCriteria.stockLocationGroupId = cell.stockLocationGroupId;
 
         Object.assign(params, preDefinedFilterCriteria);
 
-        self.detailModalTitleElement.innerHTML = "";
+        let title = [];
+
+        if (cell.orderStatusGroupName)
+            title.push(`<span data-bind="attr: { title: 'OrderStatusGroupID: ${cell.orderStatusGroupId} - ${cell.orderStatusGroupName}' }">Order Status Group: ${cell.orderStatusGroupName}</span>`);
+
+        if (cell.orderStatusName)
+            title.push(`<span data-bind="attr: { title: 'OrderStatusID: ${cell.orderStatus} - ${cell.orderStatusName}' }">Order Status: ${cell.orderStatusName}</span>`);
+
+        if (cell.orderGroupName)
+            title.push(`<span data-bind="attr: { title: 'OrderGroupID: ${cell.orderGroupId} - ${cell.orderGroupName}' }">Order Group: ${cell.orderGroupName}</span>`);
+
+        if (cell.stockLocationGroupName)
+            title.push(`<span data-bind="attr: { title: 'StockLocationGroupID: ${cell.stockLocationGroupId} - ${cell.stockLocationGroupName}' }">Stock Location Group: ${cell.stockLocationGroupName}</span>`);
+
+        self.detailModalTitleElement.innerHTML = title.join("");
 
         let qs = new URLSearchParams(params).toString();
 
-        let src = `/order-book/detail/back-orders?partial=true&${qs}`;
+        let src = `/order-book/detail/${view}?partial=true&${qs}`;
 
         console.log(src);
 
         iFrame.src = src;
 
-        self.detailModalBodyElement.replaceChildren(iFrame);
+        self.detailModalBusy(true);
+
+        iFrame.onload = () => {
+            self.detailModalBusy(false);
+        }
+
+        self.detailModaliFrameTargetElement.replaceChildren(iFrame);
 
         self.detailModal.show();
     }
@@ -255,6 +297,10 @@ const orderBookViewModel = (() => {
     //#region Events
 
     self.parse(window.getMainResult());
+
+    document.addEventListener('setDetailModalTitle', (e) => {
+        self.detailModalTitleElement.innerHTML = e.detail.join("");
+    }, false);
 
     //#endregion
 

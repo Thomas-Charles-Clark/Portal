@@ -20,6 +20,10 @@
   padding: 0;
 }
 
+.blocker {
+  border-radius: 0;
+}
+
 #order-book-detail-scroller-container {
   /*max-height: calc(100vh - 57px);*/
   max-height: 100vh;
@@ -69,7 +73,7 @@
   border-width: 0;
 }
 #order-book-detail-scroller-container #order-book-detail-table tbody tr td {
-  height: 72px;
+  height: 36px;
   overflow-x: hidden;
   border-bottom: 1px solid #ced4da;
 }
@@ -81,5 +85,9 @@
 }
 #order-book-detail-scroller-container .virtual-spacing tr th, #order-book-detail-scroller-container .virtual-spacing tr td {
   padding: 0;
+}
+
+#accurate-as-of {
+  display: none;
 }
 /*# sourceMappingURL=order-book-detail.css.map */

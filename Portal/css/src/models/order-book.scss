@@ -287,9 +287,30 @@ $heading-font-size: 1.1rem;
         .modal-header {
             border-bottom-left-radius: 0;
             border-bottom-right-radius: 0;
+
+            .modal-title {
+
+                #order-book-detail-modal-title {
+                    display: flex;
+                    gap: $m-gutter;
+
+                    span {
+                        + span {
+                            padding-left: $m-gutter;
+                            border-left: 1px solid $gray-500;
+                        }
+                    }
+                }
+            }
         }
 
-        #order-book-detail-modal-body {
+        .modal-body {
+            padding: 0;
+            display: flex;
+        }
+
+        #order-book-detail-iframe-target {
+            flex: 1;
             padding: 0;
             display: flex;
 

@@ -3,6 +3,7 @@
 using Microsoft.AspNet.Identity.EntityFramework;
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Mertexer;
@@ -73,8 +74,17 @@ namespace SharedEFClasses.Models
             };
         }
 
-        public async Task<OrderBook_DetailView_SelectResult> FetchOrderBookDetailBackOrders(ExpandoObject dto)
+        public async Task<OrderBook_DetailView_SelectResult> FetchOrderBookDetail(string procedureName,  ExpandoObject dto)
         {
+            var exclusions = new List<string>()
+            {
+                "accurateAsOfDateTime",
+                "procedure",
+                "displayModes",
+                "Title",
+                "title"
+            };
+
             var dynParams = new DynamicParameters();
 
             dto.ToList().ForEach(kvp =>
@@ -96,15 +106,30 @@ namespace SharedEFClasses.Models
                     });
                 }
 
-                dynParams.Add(key, kvp.Value);
+                if (!exclusions.Contains(kvp.Key))
+                {
+                    dynParams.Add(key, kvp.Value);
+                }
             });
 
-            var reader = await this.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_DetailView_BackOrders]", dynParams, null, 30, CommandType.StoredProcedure);
+            //var results = await this.Database.Connection.QueryAsync<string>("[portal].[OrderBook_DetailView_BackOrders]", dynParams, null, 30, CommandType.StoredProcedure);
+
+            //var sb = new StringBuilder();
+
+            //foreach (var part in results)
+            //{
+            //    sb.Append(part);
+            //}
+
+            var reader = await this.Database.Connection.QueryMultipleAsync($"[portal].[OrderBook_DetailView_{procedureName}]", dynParams, null, 30, CommandType.StoredProcedure);
 
             return new OrderBook_DetailView_SelectResult()
             {
-                Data = await reader.ReadAsync<OrderBook_DetailView_DataRow>()
+                AccurateAsOfDT = await reader.ReadSingleAsync<DateTime>(),
+                Data = JArray.Parse(String.Join("", await reader.ReadAsync<string>()))
             };
+
+            //return sb.ToString();
         }
     }
 }

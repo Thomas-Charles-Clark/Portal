@@ -47,48 +47,61 @@ const orderBookUserDefinedFiltersViewModel = ({
     self.sidebarCollapseElement = document.getElementById('sidebar-collapse');
     self.sidebarCollapse = bootstrap.Collapse.getOrCreateInstance(self.sidebarCollapseElement);
 
-    self.salesMarketId = ko.observable(params.salesMarketId ?? '');
+    self.salesMarketId = ko.observable(params.marketId ?? '');
     self.salesMarket = ko.observable();
+    self.salesMarketAwaitingBinding = ko.observable(params.marketId != null && params.marketId != '');
 
     self.tradeAccountTypeId = ko.observable(params.tradeAccountTypeId ?? '');
     self.tradeAccountType = ko.observable();
+    self.tradeAccountTypeAwaitingBinding = ko.observable(params.tradeAccountTypeId != null && params.tradeAccountTypeId != '');
 
     self.tradeAccountGroupId = ko.observable(params.tradeAccountGroupId ?? '');
     self.tradeAccountGroup = ko.observable();
+    self.tradeAccountGroupAwaitingBinding = ko.observable(params.tradeAccountGroupId != null && params.tradeAccountGroupId != '');
 
     self.tradeAccountId = ko.observable(params.tradeAccountId ?? '');
     self.tradeAccount = ko.observable();
+    self.tradeAccountAwaitingBinding = ko.observable(params.tradeAccountId != null && params.tradeAccountId != '');
 
     self.orderId = ko.observable(params.orderId ?? '');
     self.order = ko.observable();
+    self.orderAwaitingBinding = ko.observable(params.orderId != null && params.orderId != '');
 
-    self.fromDate = ko.observable();
+    self.fromDate = ko.observable(params.startDate ?? undefined);
 
-    self.toDate = ko.observable();
+    self.toDate = ko.observable(params.endDate ?? undefined);
 
     self.haulierId = ko.observable(params.haulierId ?? '');
     self.haulier = ko.observable();
+    self.haulierAwaitingBinding = ko.observable(params.haulierId != null && params.haulierId != '');
 
     self.productGroupId = ko.observable(params.productGroupId ?? '');
     self.productGroup = ko.observable();
+    self.productGroupAwaitingBinding = ko.observable(params.productGroupId != null && params.productGroupId != '');
 
     self.itemTypeId = ko.observable(params.itemTypeId ?? '');
     self.itemType = ko.observable();
+    self.itemTypeAwaitingBinding = ko.observable(params.itemTypeId != null && params.itemTypeId != '');
 
     self.brandId = ko.observable(params.brandId ?? '');
     self.brand = ko.observable();
+    self.brandAwaitingBinding = ko.observable(params.brandId != null && params.brandId != '');
 
     self.collectionId = ko.observable(params.collectionId ?? '');
     self.collection = ko.observable();
+    self.collectionAwaitingBinding = ko.observable(params.collectionId != null && params.collectionId != '');
 
     self.launchId = ko.observable(params.launchId ?? '');
     self.launch = ko.observable();
+    self.launchAwaitingBinding = ko.observable(params.launchId != null && params.launchId != '');
 
     self.qualityId = ko.observable(params.qualityId ?? '');
     self.quality = ko.observable();
+    self.qualityAwaitingBinding = ko.observable(params.qualityId != null && params.qualityId != '');
 
     self.productId = ko.observable(params.productId ?? '');
     self.product = ko.observable();
+    self.productAwaitingBinding = ko.observable(params.productId != null && params.productId != '');
 
     self.availableDateBases = [{
         Name: 'Order Date',
@@ -105,6 +118,22 @@ const orderBookUserDefinedFiltersViewModel = ({
 
 
     //#region Computeds
+
+    self.allBound = ko.computed(() => {
+        return (self.salesMarketAwaitingBinding() == false &&
+            self.tradeAccountTypeAwaitingBinding() == false &&
+            self.tradeAccountGroupAwaitingBinding() == false &&
+            self.tradeAccountAwaitingBinding() == false &&
+            self.orderAwaitingBinding() == false &&
+            self.haulierAwaitingBinding() == false &&
+            self.productGroupAwaitingBinding() == false &&
+            self.itemTypeAwaitingBinding() == false &&
+            self.brandAwaitingBinding() == false &&
+            self.collectionAwaitingBinding() == false &&
+            self.launchAwaitingBinding() == false &&
+            self.qualityAwaitingBinding() == false &&
+            self.productAwaitingBinding() == false)
+    }, self);
 
     self.tradeAccountComputer = ko.observable(true).extend({
         rateLimit: {
@@ -278,9 +307,7 @@ const orderBookUserDefinedFiltersViewModel = ({
                 e.preventDefault();
         },
         clearFunction: self.genericUnsavedChangesClear,
-        //dataBound: function (e) {
-        //    self.genericSelectSoleResult(e, self.salesMarketId);
-        //},
+        dataBound: (e) => self.salesMarketAwaitingBinding(false),
         parameterMap: (data) => {
             //Generate parameters in odata v4 format
             if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "Label")) {
@@ -375,6 +402,7 @@ const orderBookUserDefinedFiltersViewModel = ({
             if (!self.cascadeEnabled)
                 e.preventDefault();
         },
+        dataBound: (e) => self.tradeAccountAwaitingBinding(false),
         clearFunction: self.genericUnsavedChangesClear,
         parameterMap: (data) => {
             //Generate parameters in odata v4 format
@@ -459,9 +487,7 @@ const orderBookUserDefinedFiltersViewModel = ({
                 e.preventDefault();
         },
         clearFunction: self.genericUnsavedChangesClear,
-        //dataBound: function (e) {
-        //    self.genericSelectSoleResult(e, self.tradeAccountTypeId);
-        //},
+        dataBound: (e) => self.tradeAccountTypeAwaitingBinding(false),
         parameterMap: (data) => {
 
             //Generate parameters in odata v4 format
@@ -546,9 +572,7 @@ const orderBookUserDefinedFiltersViewModel = ({
                 e.preventDefault();
         },
         clearFunction: self.genericUnsavedChangesClear,
-        //dataBound: function (e) {
-        //    self.genericSelectSoleResult(e, self.tradeAccountGroupId);
-        //},
+        dataBound: (e) => self.tradeAccountGroupAwaitingBinding(false),
         parameterMap: (data) => {
             //Generate parameters in odata v4 format
             let d = kendo.data.transports['odata-v4'].parameterMap(data);
@@ -702,7 +726,7 @@ const orderBookUserDefinedFiltersViewModel = ({
             valueMapper: function (options) {
                 if (options.value) {
                     $.ajax({
-                        url: `/odata/Orders/Default.OrderValueMapper(orderId=${options.value})`,
+                        url: `/odata/Orders/Default.OrderValueMapper(orderId='${options.value}')`,
                         type: 'GET',
                         success: function (data) {
                             options.success(data.value);
@@ -733,6 +757,7 @@ const orderBookUserDefinedFiltersViewModel = ({
             dir: 'desc',
             field: 'OrderHeadID'
         },
+        dataBound: (e) => self.orderAwaitingBinding(false),
         clearFunction: self.genericUnsavedChangesClear,
         parameterMap: (data) => {
             //Generate parameters in odata v4 format
@@ -795,6 +820,7 @@ const orderBookUserDefinedFiltersViewModel = ({
             field: 'LaunchID'
         },
         select: self.genericUnsavedChangesSelect,
+        dataBound: (e) => self.launchAwaitingBinding(false),
         clearFunction: self.genericUnsavedChangesClear
     });
 
@@ -816,6 +842,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         autoBind: true,
         height: 340,
         select: self.genericUnsavedChangesSelect,
+        dataBound: (e) => self.brandAwaitingBinding(false),
         clearFunction: self.genericUnsavedChangesClear
     });
 
@@ -837,6 +864,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         autoBind: true,
         height: 340,
         select: self.genericUnsavedChangesSelect,
+        dataBound: (e) => self.haulierAwaitingBinding(false),
         clearFunction: self.genericUnsavedChangesClear,
         template: (e) => {
             return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
@@ -880,6 +908,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         autoBind: true,
         height: 340,
         select: self.genericUnsavedChangesSelect,
+        dataBound: (e) => self.productGroupAwaitingBinding(false),
         clearFunction: self.genericUnsavedChangesClear,
         parameterMap: (data) => {
             //Generate parameters in odata v4 format
@@ -922,8 +951,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         select: self.genericUnsavedChangesSelect,
         clearFunction: self.genericUnsavedChangesClear,
         dataBound: (e) => {
-            console.log('dataBound', e);
-            //e.sender.enable(e.sender.dataSource.data().length != 0);
+            self.itemTypeAwaitingBinding(false);
             self.itemTypeParams.enable(e.sender.dataSource.data().length != 0);
         },
         parameterMap: (data) => {
@@ -993,6 +1021,7 @@ const orderBookUserDefinedFiltersViewModel = ({
             field: 'CollectionID'
         },
         select: self.genericUnsavedChangesSelect,
+        dataBound: (e) => self.collectionAwaitingBinding(false),
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
             appendTo: document.getElementById('collection-prefilter')
@@ -1074,6 +1103,7 @@ const orderBookUserDefinedFiltersViewModel = ({
             field: 'QualityID'
         },
         select: self.genericUnsavedChangesSelect,
+        dataBound: (e) => self.qualityAwaitingBinding(false),
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
             appendTo: document.getElementById('quality-prefilter')
@@ -1157,6 +1187,7 @@ const orderBookUserDefinedFiltersViewModel = ({
             field: 'ProductFilter.SortOrder'
         }],
         select: self.genericUnsavedChangesSelect,
+        dataBound: (e) => self.productAwaitingBinding(false),
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
             appendTo: document.getElementById('product-prefilter')
@@ -1372,30 +1403,30 @@ const orderBookUserDefinedFiltersViewModel = ({
     }
 
     self.json = ko.computed(() => {
-        let result = {
-            marketId: self.salesMarketId() || null,
-            tradeAccountTypeId: self.tradeAccountTypeId() || null,
-            tradeAccountGroupId: self.tradeAccountGroupId() || null,
-            tradeAccountId: self.tradeAccountId() || null,
-            endDate: self.toDate() ? moment(self.toDate()).format('YYYY/MM/DD') : null,
-            startDate: self.fromDate() ? moment(self.fromDate()).format('YYYY/MM/DD') : null,
-            productGroupId: self.productGroupId() || null,
-            itemTypeId: self.itemTypeId() || null,
-            brandId: self.brandId() || null,
-            collectionId: self.collectionId() || null,
-            launchId: self.launchId() || null,
-            qualityId: self.qualityId() || null,
-            productId: self.productId() || null,
-            dateBasis: self.dateBasisId()
-        };
+        if (self.allBound()) {
+            let result = {
+                marketId: self.salesMarketId() || null,
+                tradeAccountTypeId: self.tradeAccountTypeId() || null,
+                tradeAccountGroupId: self.tradeAccountGroupId() || null,
+                tradeAccountId: self.tradeAccountId() || null,
+                orderId: self.orderId() || null,
+                startDate: self.fromDate() ? moment(self.fromDate()).format('YYYY/MM/DD') : null,
+                endDate: self.toDate() ? moment(self.toDate()).format('YYYY/MM/DD') : null,
+                haulierCode: self.haulierId() || null,
+                productGroupId: self.productGroupId() || null,
+                itemTypeId: self.itemTypeId() || null,
+                brandId: self.brandId() || null,
+                collectionId: self.collectionId() || null,
+                launchId: self.launchId() || null,
+                qualityId: self.qualityId() || null,
+                productId: self.productId() || null,
+                dateBasis: self.dateBasisId()
+            };
 
-        if (self.orderId())
-            result.orderId = self.orderId();
-
-        if (self.haulierId())
-            result.haulierCode = self.haulierId();
-
-        return JSON.stringify(result);
+            return JSON.stringify(result);
+        } else {
+            return undefined;
+        }
     }).extend({
         rateLimit: {
             timeout: 100,

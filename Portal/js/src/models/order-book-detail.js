@@ -7,13 +7,18 @@ const orderBookDetailViewModel = (() => {
 
     //#region Properties
 
+    let params = window.getDetailParameters();
+
     let self = {};
+
+    self.procedure = params.procedure;
 
     self.busy = ko.observable(false);
 
-    self.displayModes = ko.observableArray([DISPLAY_MODE_VALUE_SUM, DISPLAY_MODE_QUANTITY_SUM]);
-
-    let params = window.getDetailParameters();
+    self.displayModes = ko.observableArray(params.displayModes && params.displayModes.length > 0
+        ? params.displayModes.split(',').map(dm => +dm)
+        : [DISPLAY_MODE_VALUE_SUM]
+    );
 
     self.userDefinedFilters = orderBookUserDefinedFiltersViewModel({ parent: self, params: params });
 
@@ -21,7 +26,7 @@ const orderBookDetailViewModel = (() => {
 
     self.results = ko.observableArray([]);
 
-    self.accurateAsOfDateTime = ko.observable();
+    self.accurateAsOfDateTime = ko.observable(params.accurateAsOfDateTime ?? undefined);
 
     self.columns = ko.observableArray([]);
 
@@ -40,10 +45,29 @@ const orderBookDetailViewModel = (() => {
     }, self);
 
     self.primaryFetchParams = ko.computed(() => {
-        let udf = JSON.parse(self.userDefinedFilters.json());
-        let adv = JSON.parse(self.advancedFilters.json());
-        return Object.assign(udf, adv);
-    }, self);
+
+        let udf = null;
+
+        if (self.userDefinedFilters.json()) {
+            udf = JSON.parse(self.userDefinedFilters.json());
+        }
+
+        let adv = null;
+
+        if (self.advancedFilters.json()) {
+            adv = JSON.parse(self.advancedFilters.json());
+        }
+
+        if (udf && adv) {
+            self.columns([]);
+            return JSON.stringify(Object.assign(udf, adv, { procedure: self.procedure }, window.getDetailParameters()));
+        }
+    }, self).extend({
+        rateLimit: {
+            timeout: 100,
+            method: 'notifyWhenChangesStop'
+        }
+    });
 
     //#endregion
 
@@ -55,21 +79,22 @@ const orderBookDetailViewModel = (() => {
     self.virtualScroller = virtualScrollingDeferredDataFactory({
         busy: self.busy,
         tableSelector: "#order-book-detail-table",
-        rowHeight: 72,
+        rowHeight: 36,
         primaryFetchParams: self.primaryFetchParams,
         primaryFetchEndpoint: "/api/orderbook/DetailRefresh",
         primaryFetchResultSetName: "Data",
         primaryFetchResultFn: (rec) => {
 
             if (self.columns().length == 0) {
-                self.columns(Object.keys(rec));
+                self.columns(Object.keys(rec).filter(k => ["offsetY", "runningHeight"].indexOf(k) == -1));
             }
 
             return orderBookMainCell({ parent: self, data: rec })
         },
         container: self.virtualScrollerContainer,
         gridHeaderHeight: 57,
-        gridPositionTop: 0
+        gridPositionTop: 0,
+        maxYMultiplier: 1
     });
 
     //#endregion

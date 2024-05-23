@@ -5,6 +5,10 @@
     padding: 0;
 }
 
+.blocker {
+    border-radius: 0;
+}
+
 #order-book-detail-scroller-container {
     /*max-height: calc(100vh - 57px);*/
     max-height: 100vh;
@@ -64,7 +68,7 @@
                 border-width: 0;
 
                 td {
-                    height: 72px;
+                    height: 36px;
                     overflow-x: hidden;
                     border-bottom: 1px solid $gray-400;
 
@@ -88,3 +92,6 @@
     }
 }
 
+#accurate-as-of {
+    display: none;
+}

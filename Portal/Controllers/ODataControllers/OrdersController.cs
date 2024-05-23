@@ -47,7 +47,7 @@ namespace Portal.Controllers
         {
             // Who cares about samples anyway?
             return PortalDb.OrderHeads_Live
-                .Where(p => p.Deleted == false)
+                .Where(p => p.Deleted == false && p.Completed == false)
                 .AsQueryable();
         }
 

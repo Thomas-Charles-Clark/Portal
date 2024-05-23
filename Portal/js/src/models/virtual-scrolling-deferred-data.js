@@ -54,49 +54,51 @@ const virtualScrollingDeferredDataFactory = ({
     container,
     gridHeaderHeight,
     gridPositionTop,
-    unfilledRecordFn
+    unfilledRecordFn,
+    maxYMultiplier
 } = {
-    busy: ko.observable(false),
-    tableSelector: "#virtual-scrolling-table",
-    rowHeight: 50,
-    primaryFetchParams: ko.computed(() => {
-        //console.trace();
-        // build some set of parameters required by primaryFetch
-    }),
-    primaryFetchMethod: "GET",
-    primaryFetchEndpoint: "/api/some-endpoint",
-    primaryFetchResultFn: (rec) => {
-        return Object.assign({
-            loaded: ko.observable(false),
-            busy: ko.observable(false)
-        }, rec);
-    },
-    primaryFetchResultSetName: "Results",
-    secondaryFetchQueueRecordId: `a-b-c-d`,
-    secondaryFetchParams: ko.computed(() => {
-        //console.trace();
-        // build some set of params required by the secondaryFetch
-    }),
-    secondaryFetchMethod: "POST",
-    secondaryFetchEndpoint: "/api/some-other-endpoint",
-    secondaryFetchResultProcessingFn: (record, data) => {
-        record.loaded(true);
-        record.busy(false);
-    },
-    secondaryFetchResultSetName: "Results",
-    container: window,
-    gridHeaderHeight: 56,
-    gridPositionTop: 206,
-    unfilledRecordFn: (rec = {
+        busy: ko.observable(false),
+        tableSelector: "#virtual-scrolling-table",
+        rowHeight: 50,
+        primaryFetchParams: ko.computed(() => {
+            //console.trace();
+            // build some set of parameters required by primaryFetch
+        }),
+        primaryFetchMethod: "GET",
+        primaryFetchEndpoint: "/api/some-endpoint",
+        primaryFetchResultFn: (rec) => {
+            return Object.assign({
+                loaded: ko.observable(false),
+                busy: ko.observable(false)
+            }, rec);
+        },
+        primaryFetchResultSetName: "Results",
+        secondaryFetchQueueRecordId: `a-b-c-d`,
+        secondaryFetchParams: ko.computed(() => {
+            //console.trace();
+            // build some set of params required by the secondaryFetch
+        }),
+        secondaryFetchMethod: "POST",
+        secondaryFetchEndpoint: "/api/some-other-endpoint",
+        secondaryFetchResultProcessingFn: (record, data) => {
+            record.loaded(true);
+            record.busy(false);
+        },
+        secondaryFetchResultSetName: "Results",
+        container: window,
+        gridHeaderHeight: 56,
+        gridPositionTop: 206,
+        unfilledRecordFn: (rec = {
 
+        }) => {
+            let self = {};
+
+            self.id = "id";
+
+            return self;
+        },
+        maxYMultiplier: 1
     }) => {
-        let self = {};
-
-        self.id = "id";
-
-        return self;
-    }
-}) => {
     let self = {};
 
     // the question is this: how can I provide bare-bones fetches which just know about the endpoint...
@@ -119,7 +121,9 @@ const virtualScrollingDeferredDataFactory = ({
 
     self.container = container;
 
-    self.maxY = ko.observable(+window.getComputedStyle(self.container)['max-height'].replace(/px/, '') + (self.rowHeight * 5));
+    self.maxYMultiplier = maxYMultiplier ?? 1;
+
+    self.maxY = ko.observable(+window.getComputedStyle(self.container)['max-height'].replace(/px/, '') + (self.rowHeight * 5) * self.maxYMultiplier);
 
     self.gridHeaderHeight = gridHeaderHeight;
 
@@ -211,39 +215,49 @@ const virtualScrollingDeferredDataFactory = ({
 
     }, self);
 
-    self.visibleItems = ko.computed(() => {
+    if (self.secondaryFetchEndpoint) {
+        self.visibleItems = ko.computed(() => {
 
-        let scrollY = self.scrollY();
+            let scrollY = self.scrollY();
 
-        self.maxY(scrollY + +window.getComputedStyle(self.container)['max-height'].replace(/px/, ''));
+            let toFetch = [];
 
-        let toFetch = [];
+            let filledRecords = self.secondaryFetchedRecords.peek();
 
-        let alreadyFetching = self.secondaryFetchQueue.peek();
+            let results = [];
+
+            results = self.searchResults().filter((i, index) => {
+
+                let actuallyVisible = (i.offsetY) >= (scrollY) && (i.offsetY) <= (self.maxY());
+
+                let dataFetchVisible = actuallyVisible;
+
+                if (dataFetchVisible && !filledRecords.find(fr => fr[self.secondaryFetchQueueRecordId] == i[self.secondaryFetchQueueRecordId])) {
+                    toFetch.push(i);
+                }
+
+                return actuallyVisible;
+            });
+
+            if (toFetch.length)
+                ko.utils.arrayPushAll(self.secondaryFetchQueue, toFetch);
         
-        let filledRecords = self.secondaryFetchedRecords.peek();
-
-        let results = self.searchResults().filter((i, index) => {
-
-            let actuallyVisible = ((i.offsetY - self.gridHeaderHeight + self.rowHeight) >= (scrollY)) &&
-                ((i.offsetY - self.gridHeaderHeight + self.rowHeight) <= (self.maxY()));
-
-            //console.log(virtualScrollingDeferredDataFactory actuallyVisible);
-
-            let dataFetchVisible = actuallyVisible;
-
-            if (dataFetchVisible && !filledRecords.find(fr => fr[self.secondaryFetchQueueRecordId] == i[self.secondaryFetchQueueRecordId])) {
-                toFetch.push(i);
-            }
-
-            return actuallyVisible;
+            return results;
         });
+    }
+    else {
+        self.visibleItems = ko.computed(() => {
 
-        if (toFetch.length)
-            ko.utils.arrayPushAll(self.secondaryFetchQueue, toFetch);
+            let scrollY = self.scrollY();
 
-        return results;
-    });
+            return self.searchResults().filter(i => {
+
+                let actuallyVisible = (i.offsetY) >= (scrollY) && (i.offsetY) <= (self.maxY());
+
+                return actuallyVisible;
+            });
+        });
+    }
 
     self.gridScrollTopPadding = ko.computed(() => {
         //console.trace();
@@ -292,6 +306,10 @@ const virtualScrollingDeferredDataFactory = ({
 
         if (data) {
 
+            if (typeof data === 'string') {
+                data = JSON.parse(data);
+            }
+
             self.busy(true);
 
             self.searchResults([]);
@@ -324,7 +342,7 @@ const virtualScrollingDeferredDataFactory = ({
 
                     let results = data[self.primaryFetchResultSetName].map((result, index) => {
 
-                        result.offsetY = (((index) * self.rowHeight) + additionalOffset);
+                        result.offsetY = (((index) * self.rowHeight) + additionalOffset) - self.gridHeaderHeight + self.rowHeight;
 
                         cumulativeHeight += self.rowHeight;
 
@@ -501,11 +519,11 @@ const virtualScrollingDeferredDataFactory = ({
         if (self.finalRowVisible()) {
             if (self.container.scrollTop < self.scrollY()) {
                 self.scrollY(self.container.scrollTop);
-                self.maxY(self.scrollY() + +window.getComputedStyle(self.container)['max-height'].replace(/px/, ''));
+                self.maxY(self.scrollY() + +window.getComputedStyle(self.container)['max-height'].replace(/px/, '') * self.maxYMultiplier);
             }
         } else {
             self.scrollY(self.container.scrollTop);
-            self.maxY(self.scrollY() + +window.getComputedStyle(self.container)['max-height'].replace(/px/, '')); //eh?
+            self.maxY(self.scrollY() + +window.getComputedStyle(self.container)['max-height'].replace(/px/, '') * self.maxYMultiplier); //eh?
         }
     });
 
@@ -514,7 +532,7 @@ const virtualScrollingDeferredDataFactory = ({
         //    self.finalRowVisible(false);
         //}
         //if (self.container.scrollY < self.scrollY()) {
-            self.maxY(self.scrollY() + +window.getComputedStyle(self.container)['max-height'].replace(/px/, ''));
+        self.maxY(self.scrollY() + +window.getComputedStyle(self.container)['max-height'].replace(/px/, '') * self.maxYMultiplier);
         //}
         //} else {
         //    self.maxY(self.scrollY() + window.innerHeight);

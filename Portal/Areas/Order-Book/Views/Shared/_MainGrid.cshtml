@@ -8,21 +8,29 @@
              data-bind="style: { '--grid-column-count': orderStatuses().length + 2 }">
             <div class="th first-column"></div>
             <!-- ko foreach: columnHeadings -->
-            <div class="th intersectable span-x" data-bind="css: { 'order-status-group-heading': $index() > 0 }, style: { '--colspan': orderStatuses.length }, click: (data) => { $root.showDetail(data) }">
+            <div class="th intersectable span-x" data-bind="css: { 'order-status-group-heading': $index() > 0 }, style: { '--colspan': orderStatuses.length }, click: () => { $root.showDetail($data) }">
                 <span data-bind="text: orderStatusGroupName"></span>
             </div>
             <!-- /ko -->
             <div class="th grand-total-column"></div>
 
-            <div class="th order-status first-column"></div>
+            <div class="th order-status first-column">
+                @*<button class="btn btn-lg btn-dark">
+                    <span>
+                        Export to Excel
+                    </span>
+                    <i class="bi bi-download"></i>
+                    <i class="bi bi-filetype-xlsx"></i>
+                </button>*@
+            </div>
             <!-- ko foreach: columnHeadings -->
             <!-- ko foreach: orderStatuses -->
-            <div class="th intersectable order-status" data-bind="css: { 'order-status-group-start': $parentContext.$index() > 0 && $index() == 0 }, click: (data) => { $root.showDetail(data) }">
+            <div class="th intersectable order-status" data-bind="css: { 'order-status-group-start': $parentContext.$index() > 0 && $index() == 0 }, click: () => { $root.showDetail(Object.assign($data, $parentContext.$data)) }">
                 <span data-bind="text: orderStatusName"></span>
             </div>
             <!-- /ko -->
             <!-- /ko -->
-            <div class="th order-status-group-heading grand-total-column">
+            <div class="th intersectable order-status-group-heading grand-total-column" data-bind="click: () => { $root.showDetail({}) }">
                 Grand Total
             </div>
 
@@ -31,12 +39,12 @@
             </div>
             <!-- ko foreach: columnHeadings -->
             <!-- ko foreach: orderStatuses -->
-            <div class="main-cell intersectable order-status-total" data-bind="css: { 'order-status-group-start': $parentContext.$index() > 0 && $index() == 0 }, with: $root.getCell($data, {}), click: (data) => { $root.showDetail(data) }">
+            <div class="main-cell intersectable order-status-total" data-bind="css: { 'order-status-group-start': $parentContext.$index() > 0 && $index() == 0 }, with: $root.getCell($data, {}), click: () => { $root.showDetail($data) }">
                 <p class="values-display" data-bind="html: display"></p>
             </div>
             <!-- /ko -->
             <!-- /ko -->
-            <div class="main-cell intersectable order-status-total grand-total-column" data-bind="with: $root.getCell($data, null), click: (data) => { $root.showDetail(data) }">
+            <div class="main-cell intersectable order-status-total grand-total-column" data-bind="with: $root.getCell($data, null), click: () => { $root.showDetail({}) }">
                 <p class="values-display" data-bind="html: display"></p>
             </div>
 
@@ -45,7 +53,7 @@
         <div class="main-grid"
              data-bind="style: { '--grid-column-count': $parent.orderStatuses().length + 2 }">
 
-            <div class="order-group-heading order-group-row first-column intersectable" data-bs-toggle="collapse" data-bind="attr: { 'data-bs-target': `.order-group-${$data.orderGroupId}` }, click: (data) => { showDetail(data) }">
+            <div class="order-group-heading order-group-row first-column intersectable" data-bs-toggle="collapse" data-bind="attr: { 'data-bs-target': `.order-group-${$data.orderGroupId}` }, click: () => { $root.showDetail(Object.assign($data, $parentContext.$data)) }">
                 <span data-bind="text: orderGroupName"></span>
             </div>
             <!-- ko foreach: $parent.columnHeadings -->
@@ -53,7 +61,7 @@
             <div class="main-cell subtotal-cell order-group-row order-group-total-row intersectable" data-bind="css: { 
                         'order-status-group-start': $parentContext.$index() > 0 && $index() == 0 
                     }, 
-                    click: (data) => { $root.showDetail(Object.assign(data, { orderGroupId: $parentContext.$parent.orderGroupId })) },
+                    click: () => { $root.showDetail(Object.assign($data, { orderGroupId: $parentContext.$parent.orderGroupId })) },
                     with: $root.getCell($data, { orderGroupId: $parentContext.$parent.orderGroupId })">
                 <p class="values-display" data-bind="html: display"></p>
             </div>
@@ -72,7 +80,16 @@
                 </div>
                 <!-- ko foreach: $parentContext.$parent.columnHeadings -->
                 <!-- ko foreach: orderStatuses -->
-                <div class="main-cell intersectable" data-bind="css: { 'order-status-group-start':  $parentContext.$index() > 0 && $index() == 0, 'border-bottom-0': $parentContext.$parentContext.$index() == $parentContext.$parentContext.$parent.stockLocationGroups.length - 1, 'alternate-row': ($parentContext.$parentContext.$index() + 1) % 2 == 0 }, with: $root.getCell($data, $parentContext.$parent), click: () => { $root.showDetail(Object.assign($data, $parentContext.$parent)) }">
+                <div class="main-cell intersectable"
+                     data-bind="css: {
+                     'order-status-group-start' : $parentContext.$index()>
+                    0 && $index() == 0,
+                    'border-bottom-0': $parentContext.$parentContext.$index() == $parentContext.$parentContext.$parent.stockLocationGroups.length - 1,
+                    'alternate-row': ($parentContext.$parentContext.$index() + 1) % 2 == 0 },
+                    with: $root.getCell($data, $parentContext.$parent),
+                    click: () => {
+                    $root.showDetail(Object.assign($data, $parentContext.$parent, { orderStatusGroupName: $parentContext.$data.orderStatusGroupName, orderGroupName: $parentContext.$parentContext.$parentContext.$data.orderGroupName, }))
+                    }">
                     <p class="values-display" data-bind="html: display">
                     </p>
                 </div>

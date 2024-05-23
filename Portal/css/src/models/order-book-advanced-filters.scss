@@ -16,6 +16,7 @@
 #sidebar-collapse-inner {
     display: flex;
     flex-direction: row;
+    flex-wrap: nowrap;
     gap: $l-gutter;
     justify-self: stretch;
 

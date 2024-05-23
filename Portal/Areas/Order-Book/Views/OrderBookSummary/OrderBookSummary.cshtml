@@ -106,13 +106,23 @@
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 id="order-book-detail-modal-title" class="modal-title">
-                    Order Book Detail
+                <h5 class="modal-title">
+                    <span id="order-book-detail-modal-title" class="order-book-detail-modal-title">
+                        Order Book Detail
+                    </span>
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div id="order-book-detail-modal-body" class="modal-body">
+            <div class="modal-body">
+                <div class="blocker" style="display: flex; opacity: 1" data-bind="flexFadeVisible: detailModalBusy">
+                    <div class="loading-spinner"></div>
+                    <h4 class="mt-3">
+                        Please wait...
+                    </h4>
+                </div>
+                <div id="order-book-detail-iframe-target">
 
+                </div>
             </div>
         </div>
     </div>
