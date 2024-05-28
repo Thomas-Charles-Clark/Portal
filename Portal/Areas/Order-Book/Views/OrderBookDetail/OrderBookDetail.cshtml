@@ -62,8 +62,13 @@
                 <a class="btn btn-dark btn-reset" data-bind="click: reset">
                     Reset
                 </a>
+                <a class="btn btn-dark btn-export" data-bind="click: exportDetail">
+                    Export to Excel
+                    <i class="bi bi-download"></i>
+                    <i class="bi bi-filetype-xlsx"></i>
+                </a>
                 <button type="button"
-                        class="btn btn-light"
+                        class="btn btn-light ms-auto"
                         data-bind="click: userDefinedFilters.togglePinning"
                         title="Toggle Pinning">
                     <i class="bi bi-pin-angle-fill fs-5"></i>

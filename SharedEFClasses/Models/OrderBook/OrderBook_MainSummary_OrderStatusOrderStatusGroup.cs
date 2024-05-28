@@ -14,5 +14,7 @@ namespace SharedEFClasses.Models.OrderBook
         public byte OrderStatusGroupID { get; set; }
         public string OrderStatusGroupName { get; set; }
         public byte OrderStatusGroupSortOrder { get; set; }
+        public string View { get; set; }
+        public string Procedure { get; set; }
     }
 }

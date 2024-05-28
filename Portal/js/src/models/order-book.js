@@ -1,7 +1,9 @@
 ﻿const DISPLAY_MODE_VALUE_SUM = 1,
     DISPLAY_MODE_QUANTITY_SUM = 2,
     DISPLAY_MODE_LINE_COUNT = 3,
-    DISPLAY_MODE_ORDER_COUNT = 4
+    DISPLAY_MODE_ORDER_COUNT = 4,
+    DISPLAY_MODE_PERCENTAGE_FULL = 5,
+    DISPLAY_MODE_PERCENTAGE_FILTER = 6
 
 const orderBookViewModel = (() => {
 
@@ -155,20 +157,23 @@ const orderBookViewModel = (() => {
                     orderStatusName: current.OrderStatusName,
                     orderStatusSortOrder: current.OrderStatusSortOrder,
                     orderStatusGroupId: current.OrderStatusGroupID,
-                    banana: 'a'
+                    view: current.View,
+                    procedure: current.Procedure
                 })
             } else {
                 array.push({
                     orderStatusGroupId: current.OrderStatusGroupID,
                     orderStatusGroupName: current.OrderStatusGroupName,
                     orderStatusGroupSortOrder: current.OrderStatusGroupSortOrder,
-                    banana: 'b',
+                    view: current.View,
+                    procedure: current.Procedure,
                     orderStatuses: [{
                         orderStatusId: current.OrderStatusID,
                         orderStatusName: current.OrderStatusName,
                         orderStatusSortOrder: current.OrderStatusSortOrder,
                         orderStatusGroupId: current.OrderStatusGroupID,
-                        banana: 'c'
+                        view: current.View,
+                        procedure: current.Procedure
                     }]
                 })
             }
@@ -183,7 +188,9 @@ const orderBookViewModel = (() => {
                     orderStatusId: null,
                     orderStatusName: "Total",
                     orderStatusSortOrder: ch.orderStatuses.length,
-                    orderStatusGroupId: ch.orderStatusGroupId
+                    orderStatusGroupId: ch.orderStatusGroupId,
+                    view: "view-one",
+                    procedure: "ViewOne"
                 })
             }
 
@@ -229,12 +236,14 @@ const orderBookViewModel = (() => {
     };
 
     self.showDetail = (cell) => {
+        console.log("showDetail called", cell);
+
         let iFrame = document.createElement("iframe");
 
         let params = JSON.parse(self.userDefinedFilters.json());
 
-        let view = 'back-orders';
-        let procedure = 'BackOrders';
+        let view = cell.view ?? 'back-orders';
+        let procedure = cell.procedure ?? 'BackOrders';
 
         let preDefinedFilterCriteria = {
             displayModes: self.displayModes(),

@@ -3,7 +3,14 @@
 // related to the filter components behaving in the same way as native <select> components
 // in that the value presented when an empty option is selected (selects always have a selected option), even if they don't appear to
 // is the empty string.
-const EMPTY_STRING = '';
+const EMPTY_STRING = '',
+    yesNoOptions = [{
+        Name: 'Yes',
+        Value: true
+    }, {
+        Name: 'No',
+        Value: false
+    }]
 
 const orderBookUserDefinedFiltersViewModel = ({
     parent,
@@ -111,8 +118,12 @@ const orderBookUserDefinedFiltersViewModel = ({
         Value: 'R'
     }];
 
+    // defunct 28/05/2024
     self.dateBasisId = ko.observable(params.dateBasis ?? ''); // 'O' == OrderDate; 'R' = ReleaseDate
     self.dateBasis = ko.observable();
+
+    self.allocatedId = ko.observable(params.allocated == "1" ? true : params.allocated == "0" ? false : '');
+    self.allocated = ko.observable();
 
     //#endregion
 
@@ -1242,6 +1253,33 @@ const orderBookUserDefinedFiltersViewModel = ({
         }
     });
 
+    self.allocatedParams = kendoMDCDropDownList({
+        label: 'Allocated',
+        data: yesNoOptions,
+        textField: 'Name',
+        valueField: 'Value',
+        idObservable: self.allocatedId,
+        objObservable: self.allocated,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        popupSettings: {
+            appendTo: document.getElementById('allocated-prefilter')
+        }
+    });
+
     //#endregion
 
 
@@ -1395,6 +1433,9 @@ const orderBookUserDefinedFiltersViewModel = ({
 
         self.dateBasisId('O')
         self.dateBasis(undefined);
+
+        self.allocatedId(EMPTY_STRING);
+        self.allocated(undefined);
     }
 
     self.togglePinning = (data, event) => {
@@ -1420,7 +1461,8 @@ const orderBookUserDefinedFiltersViewModel = ({
                 launchId: self.launchId() || null,
                 qualityId: self.qualityId() || null,
                 productId: self.productId() || null,
-                dateBasis: self.dateBasisId()
+                dateBasis: self.dateBasisId(),
+                allocated: self.allocatedId() || null
             };
 
             return JSON.stringify(result);

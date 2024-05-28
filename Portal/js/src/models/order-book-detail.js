@@ -153,6 +153,31 @@ const orderBookDetailViewModel = (() => {
         }, null);
     };
 
+    self.exportDetail = () => {
+        self.busy(true);
+
+        fetch("/api/orderbook/ExportToExcel", {
+            method: "POST",
+            headers: window.fetchHeaders,
+            cache: 'no-store',
+            credentials: 'same-origin',
+            body: self.primaryFetchParams()
+        })
+            .then(response => response.blob())
+            .then(blob => {
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = 'DG-Order-Book.xlsx';
+                link.click();
+                self.busy(false);
+                link.remove();
+            })
+            .catch((err) => {
+                self.busy(false);
+                window.catchFetchError(err);
+            });
+    }
+
     //#endregion
 
 

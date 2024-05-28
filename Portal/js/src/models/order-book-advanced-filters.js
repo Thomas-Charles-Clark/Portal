@@ -1,12 +1,4 @@
-﻿const yesNoOptions = [{
-    Name: 'Yes',
-    Value: true
-}, {
-    Name: 'No',
-    Value: false
-}]
-
-const orderBookAdvancedFiltersViewModel = ({
+﻿const orderBookAdvancedFiltersViewModel = ({
     parent,
     params
 } = {
@@ -339,12 +331,12 @@ const orderBookAdvancedFiltersViewModel = ({
     });
 
     self.linkedPODelayedParams = kendoMDCDropDownList({
-        label: 'Has Linked PO',
+        label: 'Linked PO Delayed',
         data: yesNoOptions,
         textField: 'Name',
         valueField: 'Value',
         idObservable: self.linkedPODelayedId,
-        objObservable: ko.linkedPODelayed,
+        objObservable: self.linkedPODelayed,
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),

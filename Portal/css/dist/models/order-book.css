@@ -86,7 +86,7 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
 
 .main-grid {
   display: grid;
-  grid-template-columns: 240px repeat(calc(var(--grid-column-count) - 1), minmax(138px, 1fr));
+  grid-template-columns: 240px repeat(calc(var(--grid-column-count) - 1), minmax(80px, 1fr));
   grid-row-gap: 1px;
 }
 .main-grid .main-cell {
@@ -101,9 +101,6 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
 .main-grid .intersectable:hover, .main-grid .intersectable:focus, .main-grid .intersectable:focus-within {
   background-color: #495057;
   color: #fff;
-}
-.main-grid .border-bottom-0 {
-  border-bottom: 0;
 }
 .main-grid .main-grid {
   border: 0;
@@ -179,6 +176,12 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
 }
 .main-grid .grand-total-column {
   border-right: 1px solid #084298;
+}
+.main-grid .border-bottom-0 {
+  border-bottom: 0;
+}
+.main-grid .border-left-0 {
+  border-left: 0;
 }
 .main-grid .order-status-total,
 .main-grid .grand-total-column,

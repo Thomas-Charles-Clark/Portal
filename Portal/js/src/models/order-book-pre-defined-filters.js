@@ -8,7 +8,7 @@
 
     self.busy = self.parent.busy;
 
-    self.summaries = ko.observableArray([]);
+    self.groups = ko.observableArray([]);
 
     self.detailModalElement = document.querySelector("#order-book-detail-modal");
 
@@ -60,10 +60,18 @@
     //#region Functions
 
     self.parse = (preDefinedFilter) => {
-        self.summaries(preDefinedFilter.map(ds => orderBookSummaryFilter({
-            parent: self,
-            data: ds
-        })));
+
+        let groups = preDefinedFilter.map(g => {
+            return {
+                name: g.Name,
+                summaries: ko.observableArray(g.ProblemPods.map(ds => orderBookSummaryFilter({
+                    parent: self,
+                    data: ds
+                })))
+            }
+        });
+        
+        self.groups(groups);
     }
 
     self.showDetail = (preDefinedFilter) => {

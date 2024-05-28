@@ -4,28 +4,14 @@
     margin-bottom: $l-gutter;
     position: sticky;
     left: 0;
-
-    .pre-defined-filter-list {
-        .card-title {
-            font-size: $font-size-md;
-        }
-    }
-}
-
-.pre-defined-filter-list {
     display: grid;
+    /*grid-template-columns: repeat(var(--grid-column-count), minmax(136px, 1fr));*/
     gap: 2px;
     width: 100%;
-    grid-template-columns: repeat(auto-fill, minmax(136px, 1fr));
 
-    > div:first-of-type {
-        border-top-left-radius: $border-radius;
-        border-bottom-left-radius: $border-radius;
-    }
-
-    > div:last-of-type {
-        border-top-right-radius: $border-radius;
-        border-bottom-right-radius: $border-radius;
+    .pre-defined-filter-heading {
+        grid-column: var(--grid-column-start) / var(--grid-column-end);
+        text-align: center;
     }
 
     .card {
@@ -47,6 +33,7 @@
 
             .card-title {
                 text-align: center;
+                font-size: $font-size-md;
             }
 
             label {
@@ -68,6 +55,78 @@
         &:focus-within,
         &:hover {
             filter: brightness(102%);
+        }
+    }
+}
+
+#pre-defined-filters-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $l-gutter;
+    margin-bottom: $l-gutter;
+
+    .pre-defined-filter-group {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+
+        .pre-defined-filter-summaries {
+            display: flex;
+            gap: 2px;
+            height: 100%;
+
+            > div:first-of-type {
+                border-top-left-radius: $border-radius;
+                border-bottom-left-radius: $border-radius;
+            }
+
+            > div:last-of-type {
+                border-top-right-radius: $border-radius;
+                border-bottom-right-radius: $border-radius;
+            }
+
+            .card {
+                border-radius: 0;
+                margin-bottom: 0;
+                cursor: pointer;
+                flex-basis: 180px;
+                min-width: 180px;
+                flex-grow: 1;
+
+                .card-body {
+                    display: flex;
+                    flex-direction: column;
+                    gap: $l-gutter;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 0;
+
+                    .card-title {
+                        text-align: center;
+                        font-size: $font-size-md;
+                    }
+
+                    label {
+                        text-align: center;
+                        margin-bottom: 0;
+                    }
+
+                    p {
+                        margin-bottom: 0;
+                        text-align: center;
+
+                        span {
+                            display: block;
+                        }
+                    }
+                }
+
+                &:focus,
+                &:focus-within,
+                &:hover {
+                    filter: brightness(102%);
+                }
+            }
         }
     }
 }

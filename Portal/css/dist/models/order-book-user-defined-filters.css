@@ -40,8 +40,15 @@
   opacity: 0;
   padding-left: 0;
   padding-right: 0;
+  border-width: 0;
   will-change: width, opacity, padding;
   transition: all 150ms ease-in-out;
+}
+#filters-sidebar .btn-export {
+  display: none;
+  overflow-x: hidden;
+  white-space: nowrap;
+  margin-left: 1rem;
 }
 #filters-sidebar #sidebar-collapse {
   opacity: 0;
@@ -84,6 +91,11 @@
   padding-left: 0.75rem;
   padding-right: 0.75rem;
   opacity: 1;
+  border-width: 1px;
+}
+#filters-sidebar:hover .btn-export, #filters-sidebar:focus-within .btn-export, #filters-sidebar.pinned .btn-export {
+  display: flex;
+  gap: 0.75rem;
 }
 #filters-sidebar:hover .dropdown-toggle, #filters-sidebar:focus-within .dropdown-toggle, #filters-sidebar.pinned .dropdown-toggle {
   display: flex;
@@ -103,7 +115,7 @@
   justify-content: space-between;
   padding-bottom: 0;
 }
-#filters-sidebar .sidebar-header .btn:not(.btn-reset) {
+#filters-sidebar .sidebar-header .btn:not(.btn-reset):not(.btn-export) {
   padding: 0;
 }
 #filters-sidebar .sidebar-body {

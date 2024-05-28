@@ -4,13 +4,53 @@
         return @Html.Raw(JsonConvert.SerializeObject(Model.PreDefinedFilters))
     }
 </script>
-<div id="pre-defined-filters" data-bind="with: preDefinedFilters">
-    <div class="pre-defined-filter-list" data-bind="foreach: summaries">
-        <div class="card filter-card alert" data-bind="css: AlertClass, click: $parent.showDetail">
-            <div class="card-body">
-                <h5 class="card-title" data-bind="html: Label"></h5>
-                <p class="card-text" data-bind="html: display"></p>
+@*<div id="pre-defined-filters" data-bind="with: preDefinedFilters, style: { '--grid-column-count': preDefinedFilters.groups().reduce((a, i) => a += i.summaries().length, 0) }">
+    <!-- ko foreach: groups -->
+    <div class="pre-defined-filter-heading" data-bind="style: {
+         '--grid-column-start' : $parent.groups().reduce((a, i, idx)=>
+        a += (idx < $index() ? i.summaries().length : 0), 0) + 1,
+        '--grid-column-end':  $parent.groups().reduce((a, i, idx) => a += (idx < $index() ? i.summaries().length : 0), 1) + (summaries().length - 1) + 1
+        }">
+        <h5 data-bind="text: name"></h5>
+    </div>
+    <!-- /ko -->
+    <!-- ko foreach: groups -->
+    <!-- ko foreach: summaries -->
+    <div class="card filter-card alert" data-bind="css: AlertClass, click: $parentContext.$parent.showDetail">
+        <div class="card-body">
+            <h5 class="card-title" data-bind="html: Label"></h5>
+            <p class="card-text" data-bind="html: display"></p>
+        </div>
+    </div>
+    <!-- /ko -->
+    <!-- /ko -->
+</div>*@
+
+
+<div id="pre-defined-filters-flex" data-bind="with: preDefinedFilters">
+    <!-- ko foreach: groups -->
+    <div class="pre-defined-filter-group">
+        <div class="pre-defined-filter-heading">
+            <h5 data-bind="text: name"></h5>
+        </div>
+        <div class="pre-defined-filter-summaries" data-bind="foreach: summaries, style: {  '--grid-column-count': summaries().length }">
+            <div class="card filter-card alert" data-bind="css: AlertClass, click: $parentContext.$parent.showDetail">
+                <div class="card-body">
+                    <h5 class="card-title" data-bind="html: Label"></h5>
+                    <p class="card-text" data-bind="html: display"></p>
+                </div>
             </div>
         </div>
     </div>
+    <!-- /ko -->
+    @*<div class="pre-defined-filter-group" data-bind="style: { '--grid-column-count': summaries().length }">
+        <div class="pre-defined-filter-list" data-bind="foreach: summaries">
+            <div class="card filter-card alert" data-bind="css: AlertClass, click: $parent.showDetail">
+                <div class="card-body">
+                    <h5 class="card-title" data-bind="html: Label"></h5>
+                    <p class="card-text" data-bind="html: display"></p>
+                </div>
+            </div>
+        </div>
+    </div>*@
 </div>

@@ -24,8 +24,16 @@ $light-blue-bg: tint-color($blue-100, 80%);
         opacity: 0;
         padding-left: 0;
         padding-right: 0;
+        border-width: 0;
         will-change: width, opacity, padding;
         transition: all 150ms ease-in-out;
+    }
+
+    .btn-export {
+        display: none;
+        overflow-x: hidden;
+        white-space: nowrap;
+        margin-left: $l-gutter;
     }
 
     #sidebar-collapse {
@@ -86,6 +94,12 @@ $light-blue-bg: tint-color($blue-100, 80%);
             padding-left: $btn-padding-x;
             padding-right: $btn-padding-x;
             opacity: 1;
+            border-width: 1px;
+        }
+
+        .btn-export {
+            display: flex;
+            gap: $m-gutter;
         }
 
         .dropdown-toggle {
@@ -114,7 +128,7 @@ $light-blue-bg: tint-color($blue-100, 80%);
         justify-content: space-between;
         padding-bottom: 0;
 
-        .btn:not(.btn-reset) {
+        .btn:not(.btn-reset):not(.btn-export) {
             padding: 0;
         }
     }
