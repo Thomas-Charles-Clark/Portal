@@ -26,8 +26,33 @@
     <!-- /ko -->
 </div>*@
 
+<div id="pre-defined-filters-tab-container" data-bind="with: preDefinedFilters">
+    <ul class="nav nav-tabs">
+        <!-- ko foreach: groups -->
+        <li class="nav-item">
+            <button class="nav-link" type="button" data-bs-toggle="tab" data-bind="attr: { 'data-bs-target': `#pre-defined-tab-${$index()}` }, css: { 'active': $index() == 0 }">
+                <span data-bind="text: name"></span>
+            </button>
+        </li>
+        <!-- /ko -->
+    </ul>
+    <div class="tab-content">
+        <!-- ko foreach: groups -->
+        <div class="tab-pane fade" data-bind="attr: { id: `pre-defined-tab-${$index()}` }, css: { 'show active': $index() == 0 }">
+            <div class="pre-defined-filter-summaries" data-bind="foreach: summaries, style: {  '--grid-column-count': summaries().length }">
+                <div class="card filter-card alert" data-bind="css: AlertClass, click: $parentContext.$parent.showDetail">
+                    <div class="card-body">
+                        <h5 class="card-title" data-bind="html: Label"></h5>
+                        <p class="card-text" data-bind="html: display"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /ko --> 
+    </div>
+</div>
 
-<div id="pre-defined-filters-flex" data-bind="with: preDefinedFilters">
+@*<div id="pre-defined-filters-flex" data-bind="with: preDefinedFilters">
     <!-- ko foreach: groups -->
     <div class="pre-defined-filter-group">
         <div class="pre-defined-filter-heading">
@@ -43,14 +68,4 @@
         </div>
     </div>
     <!-- /ko -->
-    @*<div class="pre-defined-filter-group" data-bind="style: { '--grid-column-count': summaries().length }">
-        <div class="pre-defined-filter-list" data-bind="foreach: summaries">
-            <div class="card filter-card alert" data-bind="css: AlertClass, click: $parent.showDetail">
-                <div class="card-body">
-                    <h5 class="card-title" data-bind="html: Label"></h5>
-                    <p class="card-text" data-bind="html: display"></p>
-                </div>
-            </div>
-        </div>
-    </div>*@
-</div>
+</div>*@

@@ -101,7 +101,7 @@ namespace Portal.Areas.Sales.Controllers
                     return true;
                 };
 
-                var result = await client.PostAsync("https://localhost:44354/api/excel/GetFileStream", content);
+                var result = await client.PostAsync("https://excel.designersguild.com/api/excel/GetFileStream", content);
 
 #else
                 var result = await client.PostAsync("https://excel.designersguild.com/api/excel/GetFileStream", content);

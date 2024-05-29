@@ -55,6 +55,10 @@
                     &:first-of-type {
                         border-left: none;
                     }
+
+                    &.sortable-column {
+                        cursor: pointer;
+                    }
                 }
             }
         }
@@ -90,8 +94,4 @@
             }
         }
     }
-}
-
-#accurate-as-of {
-    display: none;
 }

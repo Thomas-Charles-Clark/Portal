@@ -14,20 +14,33 @@
         <div id="linked-po-delayed-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: linkedPODelayedParams }"></div>
     </div>
     <div>
-        <h5 class="sidebar-heading">
-            Debug
-        </h5>
-        <div class="user-filter">
-            <label>
-                Base Bound:
-                <span data-bind="text: allBound"></span>
-            </label>
-        </div>
-        <div class="user-filter">
-            <label>
-                Advanced Bound:
-                <span data-bind="text: allBound"></span>
-            </label>
+        <div id="accurate-as-of" class="gap-0">
+            <span class="courier-new d-block">
+                Accurate as of
+            </span>
+            <!-- ko if: parent.accurateAsOfDateTime() -->
+            <span class="courier-new" data-bind="html: moment(parent.accurateAsOfDateTime()).format('dddd Do MMMM YYYY<br/>DD/MM/YYYY HH:mm')"></span>
+            <!-- /ko -->
         </div>
     </div>
+   @if (SharedEFClasses.Utilities.Framework.DebugMode)
+    {
+        <div>
+            <h5 class="sidebar-heading">
+                Debug
+            </h5>
+            <div class="user-filter">
+                <label>
+                    Base Bound:
+                    <span data-bind="text: allBound"></span>
+                </label>
+            </div>
+            <div class="user-filter">
+                <label>
+                    Advanced Bound:
+                    <span data-bind="text: allBound"></span>
+                </label>
+            </div>
+        </div>
+    }
 </div>

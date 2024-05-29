@@ -46,6 +46,13 @@
         max-height: calc(100vh - 50px);
     }
 </style>
+} else
+{
+    <style>
+        html {
+            overflow-y: hidden;
+        }
+    </style>
 }
 
 <div class="blocker" style="@(ViewBag.Partial == true ? "display: none; opacity: 0" : "display: flex; opacity: 1")" data-bind="flexFadeVisible: busy">
@@ -61,11 +68,6 @@
             <div class="sidebar-header">
                 <a class="btn btn-dark btn-reset" data-bind="click: reset">
                     Reset
-                </a>
-                <a class="btn btn-dark btn-export" data-bind="click: exportDetail">
-                    Export to Excel
-                    <i class="bi bi-download"></i>
-                    <i class="bi bi-filetype-xlsx"></i>
                 </a>
                 <button type="button"
                         class="btn btn-light ms-auto"

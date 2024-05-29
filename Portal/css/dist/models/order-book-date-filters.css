@@ -38,6 +38,10 @@
   cursor: pointer;
   flex: 1;
 }
+#date-filters .pre-defined-filter-list .card.alert.alert-light {
+  background-color: #fff;
+  border-color: #dee2e6;
+}
 #date-filters .pre-defined-filter-list .card.ui-selecting, #date-filters .pre-defined-filter-list .card.ui-selected {
   color: #fff;
   background-color: #084298;

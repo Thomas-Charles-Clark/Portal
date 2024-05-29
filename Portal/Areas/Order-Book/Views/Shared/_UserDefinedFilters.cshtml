@@ -117,12 +117,15 @@
         </h5>
         <div id="date-basis-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: dateBasisParams }"></div>
     </div>*@
-    <div id="accurate-as-of" class="gap-0">
-        <span class="courier-new d-block">
-            Accurate as of
-        </span>
-        <!-- ko if: parent.accurateAsOfDateTime() -->
-        <span class="courier-new" data-bind="html: moment(parent.accurateAsOfDateTime()).format('dddd Do MMMM YYYY<br/>DD/MM/YYYY HH:mm')"></span>
-        <!-- /ko -->
-    </div>
+    @if (ViewBag.Partial == null)
+    {
+        <div id="accurate-as-of" class="gap-0">
+            <span class="courier-new d-block">
+                Accurate as of
+            </span>
+            <!-- ko if: parent.accurateAsOfDateTime() -->
+            <span class="courier-new" data-bind="html: moment(parent.accurateAsOfDateTime()).format('dddd Do MMMM YYYY<br/>DD/MM/YYYY HH:mm')"></span>
+            <!-- /ko -->
+        </div>
+    }
 </div>

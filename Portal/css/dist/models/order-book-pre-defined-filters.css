@@ -72,28 +72,35 @@
   flex-direction: column;
   flex: 1;
 }
-#pre-defined-filters-flex .pre-defined-filter-group .pre-defined-filter-summaries {
+
+#pre-defined-filters-tab-container .tab-content {
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+  border-top: 0;
+  border-bottom-left-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+  margin-bottom: 1rem;
+  background-color: #fff;
+}
+#pre-defined-filters-tab-container .tab-content .pre-defined-filter-summaries {
   display: flex;
   gap: 2px;
-  height: 100%;
 }
-#pre-defined-filters-flex .pre-defined-filter-group .pre-defined-filter-summaries > div:first-of-type {
+#pre-defined-filters-tab-container .tab-content .pre-defined-filter-summaries > div:first-of-type {
   border-top-left-radius: 0.375rem;
   border-bottom-left-radius: 0.375rem;
 }
-#pre-defined-filters-flex .pre-defined-filter-group .pre-defined-filter-summaries > div:last-of-type {
+#pre-defined-filters-tab-container .tab-content .pre-defined-filter-summaries > div:last-of-type {
   border-top-right-radius: 0.375rem;
   border-bottom-right-radius: 0.375rem;
 }
-#pre-defined-filters-flex .pre-defined-filter-group .pre-defined-filter-summaries .card {
+#pre-defined-filters-tab-container .tab-content .pre-defined-filter-summaries .card {
   border-radius: 0;
   margin-bottom: 0;
   cursor: pointer;
-  flex-basis: 180px;
-  min-width: 180px;
   flex-grow: 1;
 }
-#pre-defined-filters-flex .pre-defined-filter-group .pre-defined-filter-summaries .card .card-body {
+#pre-defined-filters-tab-container .tab-content .pre-defined-filter-summaries .card .card-body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -101,22 +108,22 @@
   align-items: center;
   padding: 0;
 }
-#pre-defined-filters-flex .pre-defined-filter-group .pre-defined-filter-summaries .card .card-body .card-title {
+#pre-defined-filters-tab-container .tab-content .pre-defined-filter-summaries .card .card-body .card-title {
   text-align: center;
   font-size: 1.15rem;
 }
-#pre-defined-filters-flex .pre-defined-filter-group .pre-defined-filter-summaries .card .card-body label {
+#pre-defined-filters-tab-container .tab-content .pre-defined-filter-summaries .card .card-body label {
   text-align: center;
   margin-bottom: 0;
 }
-#pre-defined-filters-flex .pre-defined-filter-group .pre-defined-filter-summaries .card .card-body p {
+#pre-defined-filters-tab-container .tab-content .pre-defined-filter-summaries .card .card-body p {
   margin-bottom: 0;
   text-align: center;
 }
-#pre-defined-filters-flex .pre-defined-filter-group .pre-defined-filter-summaries .card .card-body p span {
+#pre-defined-filters-tab-container .tab-content .pre-defined-filter-summaries .card .card-body p span {
   display: block;
 }
-#pre-defined-filters-flex .pre-defined-filter-group .pre-defined-filter-summaries .card:focus, #pre-defined-filters-flex .pre-defined-filter-group .pre-defined-filter-summaries .card:focus-within, #pre-defined-filters-flex .pre-defined-filter-group .pre-defined-filter-summaries .card:hover {
+#pre-defined-filters-tab-container .tab-content .pre-defined-filter-summaries .card:focus, #pre-defined-filters-tab-container .tab-content .pre-defined-filter-summaries .card:focus-within, #pre-defined-filters-tab-container .tab-content .pre-defined-filter-summaries .card:hover {
   filter: brightness(102%);
 }
 /*# sourceMappingURL=order-book-pre-defined-filters.css.map */

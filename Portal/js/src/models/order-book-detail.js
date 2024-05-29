@@ -3,13 +3,68 @@
     DISPLAY_MODE_LINE_COUNT = 3,
     DISPLAY_MODE_ORDER_COUNT = 4
 
+const detailColumn = ({
+    propertyName
+} = {
+    propertyName: "MarketCode"
+}) => {
+    let self = {};
+
+    self.columnName = propertyName;
+
+    self.columnNameDisplay = propertyName.replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5');
+
+    self.direction = ko.observable(); // undefined / "asc" / "desc"
+
+    return self;
+};
+
 const orderBookDetailViewModel = (() => {
 
-    //#region Properties
+    let self = {};
 
     let params = window.getDetailParameters();
 
-    let self = {};
+    //#region Lifted Methods
+
+    self.generateAscendingSortingOperation = (parameterName) => {
+        return {
+            direction: "asc",
+            propertyName: parameterName,
+            sortingFunction: (a, b) => {
+                if (isNaN(+a[parameterName])) {
+                    return a[parameterName] === b[parameterName] ? 0 : a[parameterName] > b[parameterName] ? 1 : -1;
+                } else {
+                    return +a[parameterName] === +b[parameterName] ? 0 : +a[parameterName] > +b[parameterName] ? 1 : -1;
+                }
+            }
+        } 
+    }
+
+    self.generateDescendingSortingOperation = (parameterName) => {
+        return {
+            direction: "desc",
+            propertyName: parameterName,
+            sortingFunction: (a, b) => {
+                if (isNaN(+a[parameterName])) {
+                    return a[parameterName] === b[parameterName] ? 0 : a[parameterName] < b[parameterName] ? 1 : -1;
+                } else {
+                    return +a[parameterName] === +b[parameterName] ? 0 : +a[parameterName] < +b[parameterName] ? 1 : -1;
+                }
+            }
+        }
+    }
+
+    self.generateSorting = (parameterName) => {
+        return [
+            self.generateAscendingSortingOperation(parameterName),
+            self.generateDescendingSortingOperation(parameterName)
+        ]
+    }
+
+    //#endregion
+
+    //#region Properties
 
     self.procedure = params.procedure;
 
@@ -29,6 +84,33 @@ const orderBookDetailViewModel = (() => {
     self.accurateAsOfDateTime = ko.observable(params.accurateAsOfDateTime ?? undefined);
 
     self.columns = ko.observableArray([]);
+
+    self.allSortingOperations = ko.observableArray([]);
+
+    // if multiple column sort chaining is desired, this must be done by nesting within the one sort function.
+    // suggest allowing sorting by two columns at most.
+    // this would look something like:
+    //
+    /*
+
+    activeSortingOperation = (a, b) => {
+    
+        if (a.prop > b.prop)
+            return 1;
+        if (a.prop < b.prop)
+            return -1;
+    
+        if (a.prop2 < b.prop2)
+            return -1;
+        if (a.prop2 > b.prop2)
+            return 1;
+         
+        return 0;
+
+    }
+    
+    */
+    self.activeSortingOperation = ko.observable();
 
     //#endregion
 
@@ -83,10 +165,24 @@ const orderBookDetailViewModel = (() => {
         primaryFetchParams: self.primaryFetchParams,
         primaryFetchEndpoint: "/api/orderbook/DetailRefresh",
         primaryFetchResultSetName: "Data",
+        primaryFetchSortFn: self.activeSortingOperation,
         primaryFetchResultFn: (rec) => {
 
             if (self.columns().length == 0) {
-                self.columns(Object.keys(rec).filter(k => ["offsetY", "runningHeight"].indexOf(k) == -1));
+                let columnNames = Object.keys(rec).filter(k => {
+                    return ["offsetY", "originalOffsetY", "runningHeight"].indexOf(k) == -1 &&
+                       !k.toLowerCase().endsWith('id')
+                });
+                let sortFunctions = [];
+                columnNames.forEach(cn => {
+                    sortFunctions.push(self.generateSorting(cn));
+                });
+                self.allSortingOperations(sortFunctions.flat());
+                self.columns(columnNames.map(cn => {
+                    return detailColumn({
+                        propertyName: cn
+                    })
+                }));
             }
 
             return orderBookMainCell({ parent: self, data: rec })
@@ -178,12 +274,47 @@ const orderBookDetailViewModel = (() => {
             });
     }
 
+    self.sortByColumn = (detailColumn) => {
+        self.columns().forEach(c => {
+            if (c != detailColumn) {
+                c.direction(undefined);
+            }
+        });
+
+        let direction = detailColumn.direction();
+
+        let newDirection = null;
+
+        switch (direction) {
+            case 'asc':
+                newDirection = 'desc';
+                break;
+            case 'desc':
+                newDirection = undefined;
+                break;
+            default:
+                newDirection = 'asc';
+                break;
+        }
+
+        detailColumn.direction(newDirection);
+
+        let operation = self.allSortingOperations().find(s => s.propertyName == detailColumn.columnName && s.direction == newDirection);
+        
+        if (operation)
+            self.activeSortingOperation(operation.sortingFunction);
+        else
+            self.activeSortingOperation(undefined);
+    }
+
     //#endregion
 
 
     //#region Events
 
-
+    window.addEventListener('message', (e) => {
+        e && e.data && e.data.action && e.data.action == 'exportDetail' && self.exportDetail();
+    }, false);
 
     //#endregion
 

@@ -53,7 +53,7 @@
         <div class="main-grid"
              data-bind="style: { '--grid-column-count': $parent.orderStatuses().length + 2 }">
 
-            <div class="order-group-heading order-group-row first-column intersectable" data-bs-toggle="collapse" data-bind="attr: { 'data-bs-target': `.order-group-${$data.orderGroupId}` }, click: () => { $root.showDetail(Object.assign($data, $parentContext.$data)) }">
+            <div class="order-group-heading order-group-row first-column" data-bs-toggle="collapse" data-bind="attr: { 'data-bs-target': `.order-group-${$data.orderGroupId}` }">
                 <span data-bind="text: orderGroupName"></span>
             </div>
             <!-- ko foreach: $parent.columnHeadings -->

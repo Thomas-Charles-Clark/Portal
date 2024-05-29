@@ -11,6 +11,18 @@ namespace SharedEFClasses.Utilities
 {
     public static class Framework
     {
+        public static bool DebugMode
+        {
+            get
+            {
+#if DEBUG
+                return true;
+#else
+                return false;
+#endif
+            }
+        }
+
         public static string UniVerseDateString(DateTime val)
         {
             return $"{((int)(val - DateTime.ParseExact("31/12/1967", "dd/MM/yyyy", new System.Globalization.CultureInfo("en-GB"))).TotalDays)}";

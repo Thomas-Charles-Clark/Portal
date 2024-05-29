@@ -39,6 +39,8 @@ const orderBookViewModel = (() => {
 
     self.detailModaliFrameTargetElement = document.querySelector("#order-book-detail-iframe-target");
 
+    self.detailModaliFrame = null;
+
     self.detailModal = bootstrap.Modal.getOrCreateInstance(self.detailModalElement);
 
     self.detailModalBusy = ko.observable(false);
@@ -297,7 +299,16 @@ const orderBookViewModel = (() => {
 
         self.detailModaliFrameTargetElement.replaceChildren(iFrame);
 
+        self.detailModaliFrame = iFrame;
+
         self.detailModal.show();
+    }
+
+    self.exportDetail = () => {
+        
+        self.detailModaliFrame.contentWindow.postMessage({
+            action: 'exportDetail'
+        });
     }
 
     //#endregion

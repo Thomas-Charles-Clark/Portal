@@ -27,6 +27,13 @@ $blue-background: $blue-700;
             cursor: pointer;
             flex: 1;
 
+            &.alert {
+                &.alert-light {
+                    background-color: $white;
+                    border-color: $gray-300;
+                }
+            }
+
             &.ui-selecting,
             &.ui-selected {
                 color: $white;

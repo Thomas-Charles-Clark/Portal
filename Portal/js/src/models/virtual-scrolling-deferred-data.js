@@ -55,7 +55,8 @@ const virtualScrollingDeferredDataFactory = ({
     gridHeaderHeight,
     gridPositionTop,
     unfilledRecordFn,
-    maxYMultiplier
+    maxYMultiplier,
+    primaryFetchSortFn,
 } = {
         busy: ko.observable(false),
         tableSelector: "#virtual-scrolling-table",
@@ -97,7 +98,10 @@ const virtualScrollingDeferredDataFactory = ({
 
             return self;
         },
-        maxYMultiplier: 1
+        maxYMultiplier: 1,
+        primaryFetchSortFn: (a, b) => {
+            return 1;
+        }
     }) => {
     let self = {};
 
@@ -140,6 +144,8 @@ const virtualScrollingDeferredDataFactory = ({
     self.primaryFetchResultSetName = primaryFetchResultSetName;
 
     self.primaryFetchResultFn = primaryFetchResultFn;
+
+    self.primaryFetchSortFn = primaryFetchSortFn;
 
     self.secondaryFetchParams = secondaryFetchParams;
 
@@ -290,7 +296,35 @@ const virtualScrollingDeferredDataFactory = ({
 
     //#region Subscriptions
 
+    self.primaryFetchSortFn.subscribe(nv => {
+        let data = self.searchResults();
 
+        let startingOffset = self.gridPositionTop + self.gridHeaderHeight;
+
+        let additionalOffset = startingOffset;
+
+        if (typeof nv === 'function') {
+
+            data.sort(nv);
+
+            data.forEach((result, index) => {
+                result.offsetY = (((index) * self.rowHeight) + additionalOffset) - self.gridHeaderHeight + self.rowHeight;
+            });
+
+            self.searchResults(data);
+        } else {
+
+            data.sort((a, b) => {
+                return a.originalOffsetY > b.originalOffsetY ? 1 : -1;
+            });
+
+            data.forEach((result, index) => {
+                result.offsetY = (((index) * self.rowHeight) + additionalOffset) - self.gridHeaderHeight + self.rowHeight;
+            });
+
+            self.searchResults(data);
+        }
+    });
 
     //#endregion
 
@@ -344,6 +378,8 @@ const virtualScrollingDeferredDataFactory = ({
 
                         result.offsetY = (((index) * self.rowHeight) + additionalOffset) - self.gridHeaderHeight + self.rowHeight;
 
+                        result.originalOffsetY = result.offsetY;
+
                         cumulativeHeight += self.rowHeight;
 
                         result.runningHeight = cumulativeHeight;
@@ -351,6 +387,10 @@ const virtualScrollingDeferredDataFactory = ({
                         return self.primaryFetchResultFn(result);
                         //return result;
                     });
+
+                    if (self.primaryFetchSortFn()) {
+                        results.sort(self.primaryFetchSortFn());
+                    } 
 
                     self.gridTotalHeight(cumulativeHeight - self.rowHeight - 1);
 

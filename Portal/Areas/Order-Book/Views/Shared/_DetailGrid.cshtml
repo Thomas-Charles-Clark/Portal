@@ -9,8 +9,11 @@
         <thead>
             <tr>
                 <!-- ko foreach: $parent.columns -->
-                <th>
-                    <span data-bind="text: $data.replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5')"></span>
+                <th class="sortable-column" data-bind="click: $root.sortByColumn">
+                    <span data-bind="text: columnNameDisplay"></span>
+                    <!-- ko if: direction -->
+                    <i class="bi" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
+                    <!-- /ko -->
                 </th>
                 <!-- /ko -->
             </tr>
@@ -24,7 +27,7 @@
             <tr>
                 <!-- ko foreach: $parentContext.$parent.columns -->
                 <td>
-                    <span data-bind="text: $parent[$data]"></span>
+                    <span data-bind="text: $parent[columnName]"></span>
                 </td>
                 <!-- /ko -->
             </tr>

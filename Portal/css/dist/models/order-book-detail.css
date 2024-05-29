@@ -64,6 +64,9 @@
 #order-book-detail-scroller-container #order-book-detail-table thead tr th:first-of-type {
   border-left: none;
 }
+#order-book-detail-scroller-container #order-book-detail-table thead tr th.sortable-column {
+  cursor: pointer;
+}
 #order-book-detail-scroller-container #order-book-detail-table tbody {
   position: relative;
   z-index: 0;
@@ -85,9 +88,5 @@
 }
 #order-book-detail-scroller-container .virtual-spacing tr th, #order-book-detail-scroller-container .virtual-spacing tr td {
   padding: 0;
-}
-
-#accurate-as-of {
-  display: none;
 }
 /*# sourceMappingURL=order-book-detail.css.map */

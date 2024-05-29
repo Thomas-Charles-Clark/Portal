@@ -29,13 +29,6 @@ $light-blue-bg: tint-color($blue-100, 80%);
         transition: all 150ms ease-in-out;
     }
 
-    .btn-export {
-        display: none;
-        overflow-x: hidden;
-        white-space: nowrap;
-        margin-left: $l-gutter;
-    }
-
     #sidebar-collapse {
         opacity: 0;
         transition: opacity 150ms ease-in-out;
@@ -97,11 +90,6 @@ $light-blue-bg: tint-color($blue-100, 80%);
             border-width: 1px;
         }
 
-        .btn-export {
-            display: flex;
-            gap: $m-gutter;
-        }
-
         .dropdown-toggle {
             display: flex;
         }
@@ -128,7 +116,7 @@ $light-blue-bg: tint-color($blue-100, 80%);
         justify-content: space-between;
         padding-bottom: 0;
 
-        .btn:not(.btn-reset):not(.btn-export) {
+        .btn:not(.btn-reset) {
             padding: 0;
         }
     }
@@ -243,6 +231,12 @@ $light-blue-bg: tint-color($blue-100, 80%);
 
                 .form-check-input {
                     top: 1px;
+                }
+
+                span {
+                    display: inline-block;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
                 }
             }
         }

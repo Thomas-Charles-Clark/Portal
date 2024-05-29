@@ -44,12 +44,6 @@
   will-change: width, opacity, padding;
   transition: all 150ms ease-in-out;
 }
-#filters-sidebar .btn-export {
-  display: none;
-  overflow-x: hidden;
-  white-space: nowrap;
-  margin-left: 1rem;
-}
 #filters-sidebar #sidebar-collapse {
   opacity: 0;
   transition: opacity 150ms ease-in-out;
@@ -93,10 +87,6 @@
   opacity: 1;
   border-width: 1px;
 }
-#filters-sidebar:hover .btn-export, #filters-sidebar:focus-within .btn-export, #filters-sidebar.pinned .btn-export {
-  display: flex;
-  gap: 0.75rem;
-}
 #filters-sidebar:hover .dropdown-toggle, #filters-sidebar:focus-within .dropdown-toggle, #filters-sidebar.pinned .dropdown-toggle {
   display: flex;
 }
@@ -115,7 +105,7 @@
   justify-content: space-between;
   padding-bottom: 0;
 }
-#filters-sidebar .sidebar-header .btn:not(.btn-reset):not(.btn-export) {
+#filters-sidebar .sidebar-header .btn:not(.btn-reset) {
   padding: 0;
 }
 #filters-sidebar .sidebar-body {
@@ -222,6 +212,12 @@
 #user-defined-filters #display-mode-list li .form-check .form-check-input,
 #advanced-filters #display-mode-list li .form-check .form-check-input {
   top: 1px;
+}
+#user-defined-filters #display-mode-list li .form-check span,
+#advanced-filters #display-mode-list li .form-check span {
+  display: inline-block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 #user-defined-filters #display-mode-list li,
 #user-defined-filters #display-mode-list li .dropdown-item,

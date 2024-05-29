@@ -274,7 +274,7 @@ const orderBookUserDefinedFiltersViewModel = ({
 
             return `/odata/SalesMarkets/Default.SalesMarketOrderBookFilter(tradeAccountId=${tradeAccountId},tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId})`;
         },
-        textField: 'Label',
+        textField: 'Name',
         valueField: 'SalesMarketID',
         virtual: true,
         pageSize: 40,
@@ -327,11 +327,6 @@ const orderBookUserDefinedFiltersViewModel = ({
                 data.filter.logic = "or";
                 data.filter.filters = [{
                     field: "Name",
-                    ignoreCase: true,
-                    operator: "contains",
-                    value: f.value
-                }, {
-                    field: "Code",
                     ignoreCase: true,
                     operator: "startswith",
                     value: f.value
@@ -448,7 +443,7 @@ const orderBookUserDefinedFiltersViewModel = ({
 
             return `/odata/TradeAccountTypes/Default.TradeAccountTypeOrderBookFilter(salesMarketId=${salesMarketId},tradeAccountGroupId=${tradeAccountGroupId},tradeAccountId=${tradeAccountId})`;
         },
-        textField: 'ShortLabel',
+        textField: 'Name',
         valueField: 'TradeAccountTypeID',
         virtual: true,
         pageSize: 40,
@@ -470,10 +465,10 @@ const orderBookUserDefinedFiltersViewModel = ({
             }
         },
         template: (e) => {
-            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+            return `<span title="${e.Name}">${e.Name}</span>`
         },
         valueTemplate: (e) => {
-            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+            return `<span title="${e.Name}">${e.Name}</span>`
         },
         idObservable: self.tradeAccountTypeId,
         objObservable: self.tradeAccountType,
@@ -510,9 +505,9 @@ const orderBookUserDefinedFiltersViewModel = ({
 
             d.$count = true;
 
-            if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
-                d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
-            }
+            //if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
+            //    d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
+            //}
 
             return d;
         },
@@ -533,7 +528,7 @@ const orderBookUserDefinedFiltersViewModel = ({
 
             return `/odata/TradeAccountGroups/Default.TradeAccountGroupOrderBookFilter(salesMarketId=${salesMarketId},tradeAccountTypeId=${tradeAccountTypeId},tradeAccountId=${tradeAccountId})`;
         },
-        textField: 'ShortLabel',
+        textField: 'Name',
         valueField: 'TradeAccountGroupID',
         virtual: true,
         pageSize: 40,
@@ -555,10 +550,10 @@ const orderBookUserDefinedFiltersViewModel = ({
             }
         },
         template: (e) => {
-            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+            return `<span title="${e.Name}">${e.Name}</span>`
         },
         valueTemplate: (e) => {
-            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+            return `<span title="${e.Name}">${e.Name}</span>`
         },
         idObservable: self.tradeAccountGroupId,
         objObservable: self.tradeAccountGroup,
@@ -594,9 +589,9 @@ const orderBookUserDefinedFiltersViewModel = ({
 
             d.$count = true;
 
-            if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
-                d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
-            }
+            //if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
+            //    d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
+            //}
 
             return d;
         },
@@ -990,7 +985,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         label: 'Collection',
         odata: true,
         endPoint: '/odata/Collections',
-        textField: 'ShortLabel',
+        textField: 'Name',
         valueField: 'CollectionID',
         virtual: true,
         pageSize: 40,
@@ -1012,10 +1007,10 @@ const orderBookUserDefinedFiltersViewModel = ({
             }
         },
         template: (e) => {
-            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+            return `<span title="${e.Name}">${e.Name}</span>`
         },
         valueTemplate: (e) => {
-            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+            return `<span title="${e.Name}">${e.Name}</span>`
         },
         idObservable: self.collectionId,
         objObservable: self.collection,
@@ -1051,7 +1046,7 @@ const orderBookUserDefinedFiltersViewModel = ({
                 }, {
                     field: "Code",
                     ignoreCase: true,
-                    operator: "startswith",
+                    operator: "equals",
                     value: f.value
                 }];
             }
