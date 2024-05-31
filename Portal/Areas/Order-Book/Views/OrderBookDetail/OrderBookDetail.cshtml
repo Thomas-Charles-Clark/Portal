@@ -46,14 +46,15 @@
         max-height: calc(100vh - 50px);
     }
 </style>
-} else
+}
+@*else
 {
     <style>
         html {
             overflow-y: hidden;
         }
     </style>
-}
+}*@
 
 <div class="blocker" style="@(ViewBag.Partial == true ? "display: none; opacity: 0" : "display: flex; opacity: 1")" data-bind="flexFadeVisible: busy">
     <div class="loading-spinner"></div>
@@ -65,12 +66,9 @@
 <div id="main-summary-container" class="d-flex align-items-start w-100" style="opacity: 0" data-bind="flexFadeVisible: true">
     <sidebar id="filters-sidebar" class="collapse collapse-horizontal sidebar sticky-top @(ViewBag.HideSidebar == true ? "" : "show pinned")">
         <div class="sidebar-inner">
-            <div class="sidebar-header">
-                <a class="btn btn-dark btn-reset" data-bind="click: reset">
-                    Reset
-                </a>
+            <div class="sidebar-header" data-bind="click: userDefinedFilters.togglePinning">
                 <button type="button"
-                        class="btn btn-light ms-auto"
+                        class="btn btn-light"
                         data-bind="click: userDefinedFilters.togglePinning"
                         title="Toggle Pinning">
                     <i class="bi bi-pin-angle-fill fs-5"></i>

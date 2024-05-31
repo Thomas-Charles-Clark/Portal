@@ -19,7 +19,8 @@ $light-blue-bg: tint-color($blue-100, 80%);
         overflow: hidden;
     }
 
-    .btn-reset {
+    .btn-reset,
+    .btn-refresh {
         width: 0;
         opacity: 0;
         padding-left: 0;
@@ -82,8 +83,9 @@ $light-blue-bg: tint-color($blue-100, 80%);
             opacity: 1;
         }
 
-        .btn-reset {
-            width: 60px;
+        .btn-reset,
+        .btn-refresh {
+            width: 251px;
             padding-left: $btn-padding-x;
             padding-right: $btn-padding-x;
             opacity: 1;
@@ -113,10 +115,21 @@ $light-blue-bg: tint-color($blue-100, 80%);
     .sidebar-header {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-end;
         padding-bottom: 0;
+        cursor: pointer;
 
-        .btn:not(.btn-reset) {
+        &:hover,
+        &:focus,
+        &:focus-within {
+            .btn {
+                color: var(--bs-btn-hover-color);
+                background-color: var(--bs-btn-hover-bg);
+                border-color: var(--bs-btn-hover-border-color);
+            }
+        }
+
+        .btn:not(.btn-reset):not(.btn-refresh) {
             padding: 0;
         }
     }

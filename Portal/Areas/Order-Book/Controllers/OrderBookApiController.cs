@@ -88,7 +88,6 @@ namespace Portal.Areas.Sales.Controllers
                     StandardStyleID = (byte?)null
                 }), System.Text.Encoding.UTF8, "application/json");
 
-#if DEBUG
                 // cheers: https://stackoverflow.com/questions/777607/the-remote-certificate-is-invalid-according-to-the-validation-procedure-using#answer-1386568
                 ServicePointManager.ServerCertificateValidationCallback =
                     delegate (
@@ -102,10 +101,6 @@ namespace Portal.Areas.Sales.Controllers
                 };
 
                 var result = await client.PostAsync("https://excel.designersguild.com/api/excel/GetFileStream", content);
-
-#else
-                var result = await client.PostAsync("https://excel.designersguild.com/api/excel/GetFileStream", content);
-#endif
 
                 if (result.StatusCode == System.Net.HttpStatusCode.OK)
                 {

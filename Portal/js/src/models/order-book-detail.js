@@ -1,7 +1,9 @@
 ﻿const DISPLAY_MODE_VALUE_SUM = 1,
     DISPLAY_MODE_QUANTITY_SUM = 2,
     DISPLAY_MODE_LINE_COUNT = 3,
-    DISPLAY_MODE_ORDER_COUNT = 4
+    DISPLAY_MODE_ORDER_COUNT = 4,
+    DISPLAY_MODE_PERCENTAGE_FULL = 5,
+    DISPLAY_MODE_PERCENTAGE_FILTER = 6
 
 const detailColumn = ({
     propertyName
@@ -134,15 +136,16 @@ const orderBookDetailViewModel = (() => {
             udf = JSON.parse(self.userDefinedFilters.json());
         }
 
-        let adv = null;
+        let adv = JSON.parse(self.advancedFilters.json());
 
-        if (self.advancedFilters.json()) {
-            adv = JSON.parse(self.advancedFilters.json());
-        }
+        //if (self.advancedFilters.json()) {
+        //    adv =
+        //}
+
+        console.log('primaryFetchParams computed');
 
         if (udf && adv) {
-            self.columns([]);
-            return JSON.stringify(Object.assign(udf, adv, { procedure: self.procedure }, window.getDetailParameters()));
+            return JSON.stringify(Object.assign(window.getDetailParameters() , udf, adv, { procedure: self.procedure }));
         }
     }, self).extend({
         rateLimit: {
@@ -166,31 +169,48 @@ const orderBookDetailViewModel = (() => {
         primaryFetchEndpoint: "/api/orderbook/DetailRefresh",
         primaryFetchResultSetName: "Data",
         primaryFetchSortFn: self.activeSortingOperation,
-        primaryFetchResultFn: (rec) => {
+        primaryFetchBeforeFn: () => {
+            self.columns([]);
+        },
+        primaryFetchAfterFn: (results) => {
+            let rec = results.Data[0];
+            self.accurateAsOfDateTime(results.AccurateAsOfDT);
+            let columns = [];
 
-            if (self.columns().length == 0) {
+            if (rec) {
+
                 let columnNames = Object.keys(rec).filter(k => {
-                    return ["offsetY", "originalOffsetY", "runningHeight"].indexOf(k) == -1 &&
-                       !k.toLowerCase().endsWith('id')
+                    return ["offsetY", "originalOffsetY", "runningHeight"].indexOf(k) == -1;
                 });
+
                 let sortFunctions = [];
+
                 columnNames.forEach(cn => {
                     sortFunctions.push(self.generateSorting(cn));
                 });
+
                 self.allSortingOperations(sortFunctions.flat());
-                self.columns(columnNames.map(cn => {
+
+                columns = columnNames.map(cn => {
                     return detailColumn({
                         propertyName: cn
                     })
-                }));
+                });
+
+            }
+            else {
+                window.showInfo("Sorry", "No results found");
             }
 
-            return orderBookMainCell({ parent: self, data: rec })
+            console.log("setting columns", columns);
+
+            self.columns(columns);
         },
+        primaryFetchResultFn: (rec) => orderBookMainCell({ parent: self, data: rec }),
         container: self.virtualScrollerContainer,
         gridHeaderHeight: 57,
         gridPositionTop: 0,
-        maxYMultiplier: 1
+        maxYMultiplier: 5
     });
 
     //#endregion

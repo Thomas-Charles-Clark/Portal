@@ -123,10 +123,19 @@ namespace SharedEFClasses.Models
 
             var reader = await this.Database.Connection.QueryMultipleAsync($"[portal].[OrderBook_DetailView_{procedureName}]", dynParams, null, 30, CommandType.StoredProcedure);
 
+            var accurateDt = await reader.ReadSingleAsync<DateTime>();
+
+            var data = String.Join("", await reader.ReadAsync<string>());
+
+            if (String.IsNullOrEmpty(data))
+            {
+                data = "[]";
+            }
+
             return new OrderBook_DetailView_SelectResult()
             {
-                AccurateAsOfDT = await reader.ReadSingleAsync<DateTime>(),
-                Data = JArray.Parse(String.Join("", await reader.ReadAsync<string>()))
+                AccurateAsOfDT = accurateDt,
+                Data = JArray.Parse(data)
             };
 
             //return sb.ToString();

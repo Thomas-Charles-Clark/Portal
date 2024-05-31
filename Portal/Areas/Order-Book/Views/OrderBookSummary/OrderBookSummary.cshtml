@@ -79,13 +79,9 @@
 <div id="main-summary-container" class="d-flex align-items-start w-100" style="opacity: 0" data-bind="flexFadeVisible: true">
     <sidebar id="filters-sidebar" class="collapse collapse-horizontal show sidebar sticky-top pinned">
         <div class="sidebar-inner">
-            <div class="sidebar-header">
-                <a class="btn btn-dark btn-reset" data-bind="click: reset">
-                    Reset
-                </a>
+            <div class="sidebar-header" data-bind="click: userDefinedFilters.togglePinning">
                 <button type="button"
                         class="btn btn-light"
-                        data-bind="click: userDefinedFilters.togglePinning"
                         title="Toggle Pinning">
                     <i class="bi bi-pin-angle-fill fs-5"></i>
                 </button>
@@ -112,12 +108,12 @@
                     </span>
                 </h5>
                 <div class="d-flex gap-5">
-                    <button class="btn btn-dark btn-export" data-bind="click: exportDetail">
+                    <button class="btn btn-light btn-export" data-bind="click: exportDetail">
                         Export to Excel
                         <i class="bi bi-download"></i>
                         <i class="bi bi-filetype-xlsx"></i>
                     </button>
-                    <button class="btn btn-dark d-flex gap-2 align-items-center" data-bs-dismiss="modal" aria-label="Close">
+                    <button class="btn btn-secondary d-flex gap-2 align-items-center" data-bs-dismiss="modal" aria-label="Close">
                         Close and return to Order Book Summary
                         <span class="btn-close btn-close-white">
                     </button>

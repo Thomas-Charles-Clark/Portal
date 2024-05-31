@@ -237,6 +237,10 @@ const orderBookViewModel = (() => {
         }, null);
     };
 
+    self.refresh = () => {
+        self.fetch(self.userDefinedFilters.json());
+    }
+
     self.showDetail = (cell) => {
         console.log("showDetail called", cell);
 

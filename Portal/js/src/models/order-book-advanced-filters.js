@@ -1,4 +1,21 @@
-﻿const orderBookAdvancedFiltersViewModel = ({
+﻿const oneToFiveOptions = [{
+    Name: "1",
+    Value: 1
+}, {
+    Name: "2",
+    Value: 2
+}, {
+    Name: "3",
+    Value: 3
+}, {
+    Name: "4",
+    Value: 4
+}, {
+    Name: "5",
+    Value: 5
+}]
+
+const orderBookAdvancedFiltersViewModel = ({
     parent,
     params
 } = {
@@ -13,6 +30,8 @@
     };
 
     self.busy = self.parent.busy;
+
+    self.loadedWithTitle = ko.observable(params.title);
 
     self.productStatusId = ko.observable(params.productStatus ?? '');
     self.productStatus = ko.observable();
@@ -42,7 +61,41 @@
     self.linkedPODelayedId = ko.observable(params.linkedPODelayed == "1" ? true : params.linkedPODelayed == "0" ? false : '');
     self.linkedPODelayed = ko.observable();
 
-    self.loadedWithTitle = ko.observable(params.title);
+
+
+
+
+    self.couldBeFulfilledFromFreeStockId = ko.observable(params.couldBeFulfilledFromFreeStock == "1" ? true : params.couldBeFulfilledFromFreeStock == "0" ? false : '');
+    self.couldBeFulfilledFromFreeStock = ko.observable();
+
+    self.lineStatusIdGreaterThanId = ko.observable(params.lineStatusIdGreaterThan ?? '');
+    self.lineStatusIdGreaterThan = ko.observable();
+    self.lineStatusIdGreaterThanAwaitingBinding = ko.observable(params.lineStatusIdGreaterThan != null && params.lineStatusIdGreaterThan != '');
+
+    self.lineStatusIdLessThanId = ko.observable(params.lineStatusIdLessThan ?? '');
+    self.lineStatusIdLessThan = ko.observable();
+    self.lineStatusIdLessThanAwaitingBinding = ko.observable(params.lineStatusIdLessThan != null && params.lineStatusIdLessThan != '');
+
+    self.lineStatusChangedTodayId = ko.observable(params.lineStatusChangedToday == "1" ? true : params.lineStatusChangedToday == "0" ? false : '');
+    self.lineStatusChangedToday = ko.observable();
+
+    self.detailedLineStatusIsNullId = ko.observable(params.detailedLineStatusIsNull == "1" ? true : params.detailedLineStatusIsNull == "0" ? false : '');
+    self.detailedLineStatusIsNull = ko.observable();
+
+    self.expressDeliveryId = ko.observable(params.expressDelivery == "1" ? true : params.expressDelivery == "0" ? false : '');
+    self.expressDelivery = ko.observable();
+
+    self.freeDeliveryId = ko.observable(params.freeDelivery == "1" ? true : params.freeDelivery == "0" ? false : '');
+    self.freeDelivery = ko.observable();
+
+    self.reservedId = ko.observable(params.reserved == "1" ? true : params.reserved == "0" ? false : '');
+    self.reserved = ko.observable();
+
+    self.customerHeldForFullDespatchId = ko.observable(params.customerHeldForFullDespatch == "1" ? true : params.customerHeldForFullDespatch == "0" ? false : '');
+    self.customerHeldForFullDespatch = ko.observable();
+
+    self.unpaidProformaId = ko.observable(params.unpaidProforma == "1" ? true : params.unpaidProforma == "0" ? false : '');
+    self.unpaidProforma = ko.observable();
 
     //#endregion
 
@@ -50,11 +103,12 @@
     //#region Computeds
 
     self.allBound = ko.computed(() => {
-        return (self.productStatusAwaitingBinding() == false &&
-            self.orderGroupAwaitingBinding() == false &&
-            self.stockLocationGroupAwaitingBinding() == false &&
-            self.orderStatusAwaitingBinding() == false &&
-            self.orderStatusGroupAwaitingBinding() == false)
+        return true;
+        //(self.productStatusAwaitingBinding() == false &&
+        //    self.orderGroupAwaitingBinding() == false &&
+        //    self.stockLocationGroupAwaitingBinding() == false &&
+        //    self.orderStatusAwaitingBinding() == false &&
+        //    self.orderStatusGroupAwaitingBinding() == false)
     }, self);
 
     //#endregion
@@ -357,6 +411,324 @@
         }
     });
 
+
+
+    self.couldBeFulfilledFromFreeStockParams = kendoMDCDropDownList({
+        label: 'Fulfillable from Free Stock',
+        data: yesNoOptions,
+        textField: 'Name',
+        valueField: 'Value',
+        idObservable: self.couldBeFulfilledFromFreeStockId,
+        objObservable: self.couldBeFulfilledFromFreeStock,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        popupSettings: {
+            appendTo: document.getElementById('fulfilled-from-free-stock-prefilter')
+        }
+    });
+
+    self.lineStatusIdGreaterThanParams = kendoMDCDropDownList({
+        label: 'Line Status ID >',
+        data: oneToFiveOptions,
+        textField: 'Name',
+        valueField: 'Value',
+        idObservable: self.lineStatusIdGreaterThanId,
+        objObservable: self.lineStatusIdGreaterThan,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        popupSettings: {
+            appendTo: document.getElementById('line-status-greater-than-prefilter')
+        }
+    });
+
+
+    self.lineStatusIdLessThanParams = kendoMDCDropDownList({
+        label: 'Line Status ID <',
+        data: oneToFiveOptions,
+        textField: 'Name',
+        valueField: 'Value',
+        idObservable: self.lineStatusIdLessThanId,
+        objObservable: self.lineStatusIdLessThan,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        popupSettings: {
+            appendTo: document.getElementById('line-status-less-than-prefilter')
+        }
+    });
+
+
+    self.lineStatusChangedTodayParams = kendoMDCDropDownList({
+        label: 'Line Status Changed Today',
+        data: yesNoOptions,
+        textField: 'Name',
+        valueField: 'Value',
+        idObservable: self.lineStatusChangedTodayId,
+        objObservable: self.lineStatusChangedToday,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        popupSettings: {
+            appendTo: document.getElementById('line-status-changed-today-prefilter')
+        }
+    });
+
+
+    self.detailedLineStatusIsNullParams = kendoMDCDropDownList({
+        label: 'Detailed Line Status is NULL',
+        data: yesNoOptions,
+        textField: 'Name',
+        valueField: 'Value',
+        idObservable: self.detailedLineStatusIsNullId,
+        objObservable: self.detailedLineStatusIsNull,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        popupSettings: {
+            appendTo: document.getElementById('detailed-line-status-is-null-prefilter')
+        }
+    });
+
+
+    self.expressDeliveryParams = kendoMDCDropDownList({
+        label: 'Express Delivery',
+        data: yesNoOptions,
+        textField: 'Name',
+        valueField: 'Value',
+        idObservable: self.expressDeliveryId,
+        objObservable: self.expressDelivery,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        popupSettings: {
+            appendTo: document.getElementById('express-delivery-prefilter')
+        }
+    });
+
+
+    self.freeDeliveryParams = kendoMDCDropDownList({
+        label: 'Free Delivery',
+        data: yesNoOptions,
+        textField: 'Name',
+        valueField: 'Value',
+        idObservable: self.freeDeliveryId,
+        objObservable: self.freeDelivery,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        popupSettings: {
+            appendTo: document.getElementById('free-delivery-prefilter')
+        }
+    });
+
+
+    self.reservedParams = kendoMDCDropDownList({
+        label: 'Reserved',
+        data: yesNoOptions,
+        textField: 'Name',
+        valueField: 'Value',
+        idObservable: self.reservedId,
+        objObservable: self.reserved,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        popupSettings: {
+            appendTo: document.getElementById('reserved-prefilter')
+        }
+    });
+
+
+    self.customerHeldForFullDespatchParams = kendoMDCDropDownList({
+        label: 'Customer Held for Full Despatch',
+        data: yesNoOptions,
+        textField: 'Name',
+        valueField: 'Value',
+        idObservable: self.customerHeldForFullDespatchId,
+        objObservable: self.customerHeldForFullDespatch,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        popupSettings: {
+            appendTo: document.getElementById('customer-held-for-full-despatch-prefilter')
+        }
+    });
+
+
+    self.unpaidProformaParams = kendoMDCDropDownList({
+        label: 'Unpaid Proforma',
+        data: yesNoOptions,
+        textField: 'Name',
+        valueField: 'Value',
+        idObservable: self.unpaidProformaId,
+        objObservable: self.unpaidProforma,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        popupSettings: {
+            appendTo: document.getElementById('unpaid-proforma-prefilter')
+        }
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     //#endregion
 
 
@@ -397,18 +769,59 @@
 
         self.linkedPODelayedId(EMPTY_STRING);
         self.linkedPODelayed(undefined);
+
+
+        self.couldBeFulfilledFromFreeStockId(EMPTY_STRING);
+        self.couldBeFulfilledFromFreeStock(undefined);
+
+        self.lineStatusIdGreaterThanId(EMPTY_STRING);
+        self.lineStatusIdGreaterThan(undefined);
+
+        self.lineStatusIdLessThanId(EMPTY_STRING);
+        self.lineStatusIdLessThan(undefined);
+
+        self.lineStatusChangedTodayId(EMPTY_STRING);
+        self.lineStatusChangedToday(undefined);
+
+        self.detailedLineStatusIsNullId(EMPTY_STRING);
+        self.detailedLineStatusIsNull(undefined);
+
+        self.expressDeliveryId(EMPTY_STRING);
+        self.expressDelivery(undefined);
+
+        self.freeDeliveryId(EMPTY_STRING);
+        self.freeDelivery(undefined);
+
+        self.reservedId(EMPTY_STRING);
+        self.reserved(undefined);
+
+        self.customerHeldForFullDespatchId(EMPTY_STRING);
+        self.customerHeldForFullDespatch(undefined);
+
+        self.unpaidProformaId(EMPTY_STRING);
+        self.unpaidProforma(undefined);
     }
 
     self.json = ko.computed(() => {
-        if (self.allBound()) {
+        //if (self.allBound()) {
             let result = {
                 productStatus: self.productStatusId() || null,
                 orderGroupId: self.orderGroupId() || null,
                 stockLocationGroupId: self.stockLocationGroupId() || null,
                 orderStatusId: self.orderStatusId() || null,
                 orderStatusGroupId: self.orderStatusGroupId() || null,
-                hasLinkedPO: self.hasLinkedPOId() == '' ? null : self.hasLinkedPOId(),
-                linkedPODelayed: self.linkedPODelayedId() == '' ? null : self.linkedPODelayedId()
+                hasLinkedPO: self.hasLinkedPOId() === '' ? null : self.hasLinkedPOId(),
+                linkedPODelayed: self.linkedPODelayedId() === '' ? null : self.linkedPODelayedId(),
+                couldBeFulfilledFromFreeStock: self.couldBeFulfilledFromFreeStockId() === '' ? null : self.couldBeFulfilledFromFreeStockId(),
+                lineStatusIdGreaterThan: self.lineStatusIdGreaterThanId() === '' ? null : self.lineStatusIdGreaterThanId(),
+                lineStatusIdLessThan: self.lineStatusIdLessThanId() === '' ? null : self.lineStatusIdLessThanId(),
+                lineStatusChangedToday: self.lineStatusChangedTodayId() === '' ? null : self.lineStatusChangedTodayId(),
+                detailedLineStatusIsNull: self.detailedLineStatusIsNullId() === '' ? null : self.detailedLineStatusIsNullId(),
+                expressDelivery: self.expressDeliveryId() === '' ? null : self.expressDeliveryId(),
+                freeDelivery: self.freeDeliveryId() === '' ? null : self.freeDeliveryId(),
+                reserved: self.reservedId() === '' ? null : self.reservedId(),
+                customerHeldForFullDespatch: self.customerHeldForFullDespatchId() === '' ? null : self.customerHeldForFullDespatchId(),
+                unpaidProforma: self.unpaidProformaId() === '' ? null : self.unpaidProformaId()
             };
 
             let title = []
@@ -439,10 +852,12 @@
                 window.parent.document.dispatchEvent(event)
             }
 
+            console.log("advancedFilters.json returning", result);
             return JSON.stringify(result);
-        } else {
-            return undefined;
-        }
+        //} else {
+        //    console.log("advancedFilters.json returning", undefined);
+        //    return undefined;
+        //}
     }).extend({
         rateLimit: {
             timeout: 100,

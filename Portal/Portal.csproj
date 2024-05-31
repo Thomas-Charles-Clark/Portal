@@ -644,6 +644,7 @@
     <Compile Include="Controllers\ODataControllers\MarketingBudgetsController.cs" />
     <Compile Include="Controllers\NotificationController.cs" />
     <Compile Include="Controllers\ODataControllers\StockManagement\BranchesController.cs" />
+    <Compile Include="Controllers\ODataControllers\TransactionTypesController.cs" />
     <Compile Include="Controllers\ODataControllers\TradeAccountTypesController.cs" />
     <Compile Include="Service References\PCAFind_v1_10\Reference.cs">
       <AutoGen>True</AutoGen>

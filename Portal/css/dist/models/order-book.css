@@ -86,7 +86,7 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
 
 .main-grid {
   display: grid;
-  grid-template-columns: 240px repeat(calc(var(--grid-column-count) - 1), minmax(80px, 1fr));
+  grid-template-columns: 240px repeat(calc(var(--grid-column-count) - 1), minmax(94px, 1fr));
   grid-row-gap: 1px;
 }
 .main-grid .main-cell {
@@ -234,8 +234,10 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
 }
 
 #order-book-detail-modal .modal-content .modal-header {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
+  border-radius: 0;
+  color: #fff;
+  background-color: #495057;
+  border-bottom: 1px solid #212529;
 }
 #order-book-detail-modal .modal-content .modal-header .modal-title #order-book-detail-modal-title {
   display: flex;

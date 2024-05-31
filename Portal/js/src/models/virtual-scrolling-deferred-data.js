@@ -43,6 +43,8 @@ const virtualScrollingDeferredDataFactory = ({
     primaryFetchParams,
     primaryFetchMethod,
     primaryFetchEndpoint,
+    primaryFetchBeforeFn,
+    primaryFetchAfterFn,
     primaryFetchResultFn,
     primaryFetchResultSetName,
     secondaryFetchQueueRecordId,
@@ -67,6 +69,8 @@ const virtualScrollingDeferredDataFactory = ({
         }),
         primaryFetchMethod: "GET",
         primaryFetchEndpoint: "/api/some-endpoint",
+        primaryFetchBeforeFn: () => { },
+        primaryFetchAfterFn: () => { },
         primaryFetchResultFn: (rec) => {
             return Object.assign({
                 loaded: ko.observable(false),
@@ -142,6 +146,11 @@ const virtualScrollingDeferredDataFactory = ({
     self.primaryFetchEndpoint = primaryFetchEndpoint;
 
     self.primaryFetchResultSetName = primaryFetchResultSetName;
+
+    self.primaryFetchBeforeFn = primaryFetchBeforeFn;
+
+    self.primaryFetchAfterFn = primaryFetchAfterFn;
+
 
     self.primaryFetchResultFn = primaryFetchResultFn;
 
@@ -344,6 +353,10 @@ const virtualScrollingDeferredDataFactory = ({
                 data = JSON.parse(data);
             }
 
+            if (typeof self.primaryFetchBeforeFn == 'function') {
+                self.primaryFetchBeforeFn();
+            }
+
             self.busy(true);
 
             self.searchResults([]);
@@ -398,6 +411,9 @@ const virtualScrollingDeferredDataFactory = ({
 
                     self.haveSearchResults(true);
 
+                    if (typeof self.primaryFetchAfterFn == 'function') {
+                        self.primaryFetchAfterFn(data);
+                    }
                 })
                 .catch(err => {
                     self.busy(false);

@@ -43,6 +43,14 @@ const orderBookMainCell = ({ parent, data } = {
             result.push(`<span title="Order Count: ${self.OrderCount}">${self.OrderCount}</span>`);
         }
 
+        if (displayModes.indexOf(DISPLAY_MODE_PERCENTAGE_FULL) > -1) {
+            result.push(`<span>${self.PercentageOfFullOrderBook}</span>`);
+        }
+
+        if (displayModes.indexOf(DISPLAY_MODE_PERCENTAGE_FILTER) > -1) {
+            result.push(`<span>${self.PercentageOfFilteredOrderBook}</span>`);
+        }
+
         return result.join('\n');
     }, self);
 

@@ -16,5 +16,7 @@ namespace SharedEFClasses.Models.OrderBook
         public string OrderQuantity { get; set; }
         public string OrderCount { get; set; }
         public string LineCount { get; set; }
+        public string PercentageOfFullOrderBook { get; set; }
+        public string PercentageOfFilteredOrderBook { get; set; }
     }
 }

@@ -31,14 +31,15 @@ $blue-background: $blue-700;
                 &.alert-light {
                     background-color: $white;
                     border-color: $gray-300;
+
+                    &.ui-selecting,
+                    &.ui-selected {
+                        color: $white;
+                        background-color: $blue-background;
+                    }
                 }
             }
 
-            &.ui-selecting,
-            &.ui-selected {
-                color: $white;
-                background-color: $blue-background;
-            }
 
             &:focus,
             &:focus-within,

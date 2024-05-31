@@ -251,7 +251,7 @@ namespace Portal.Controllers
                 Email = null,
                 FullName = "Everyone"
             });
-
+            
             if (user.GetActiveRoleProperties()?.LeadsPermissions == null)
             {
                 clientSideDashboardMembers.RemoveAll(c => c.MemberID != user.Id);

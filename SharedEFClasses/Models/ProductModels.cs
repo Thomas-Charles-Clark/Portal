@@ -999,19 +999,6 @@ namespace SharedEFClasses.Models.Products
         public virtual ICollection<Basket> BasketsSavedForReason { get; set; }
     }
 
-    [Table("TransactionType", Schema = "portal")]
-    public class TransactionType
-    {
-        [Key]
-        public byte TransactionTypeID { get; set; }
-
-        public string Name { get; set; }
-
-        [JsonIgnore]
-        [InverseProperty("TransactionType")]
-        public virtual ICollection<Basket> Baskets { get; set; }
-    }
-
     public class BespokeProductPrice
     {
         public decimal? ListPrice { get; set; }

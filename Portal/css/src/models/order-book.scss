@@ -99,7 +99,7 @@ $heading-font-size: 1.1rem;
 
 .main-grid {
     display: grid;
-    grid-template-columns: 240px repeat($grid-column-count-minus-one, minmax(80px, 1fr));
+    grid-template-columns: 240px repeat($grid-column-count-minus-one, minmax(94px, 1fr));
     grid-row-gap: 1px;
 
     .main-cell {
@@ -289,8 +289,11 @@ $heading-font-size: 1.1rem;
 #order-book-detail-modal {
     .modal-content {
         .modal-header {
-            border-bottom-left-radius: 0;
-            border-bottom-right-radius: 0;
+
+            border-radius: 0;
+            color: $white;
+            background-color: $gray-700;
+            border-bottom: 1px solid $gray-900;
 
             .modal-title {
 

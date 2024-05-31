@@ -104,6 +104,7 @@ namespace Portal
             odataBuilder.EntitySet<SalesRepresentative>("SalesRepresentatives");
             odataBuilder.EntitySet<OrderHeadLive>("Orders");
             odataBuilder.EntitySet<OrderGroup>("OrderGroups");
+            odataBuilder.EntitySet<TransactionType>("TransactionTypes");
 
             // This because it's not mapped to SQL and has the [NotMapped] attribute
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_ProductType)).AddProperty(typeof(Mertex_ProductType).GetProperty("Label"));
@@ -114,13 +115,21 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SalesMarket)).AddProperty(typeof(SalesMarket).GetProperty("Label"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SalesRepresentative)).AddProperty(typeof(SalesRepresentative).GetProperty("Label"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccount)).AddProperty(typeof(TradeAccount).GetProperty("ShortLabel"));
-            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccountGroup)).AddProperty(typeof(TradeAccountGroup).GetProperty("ShortLabel"));
-            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccountType)).AddProperty(typeof(TradeAccountType).GetProperty("ShortLabel"));
+            //odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccountGroup)).AddProperty(typeof(TradeAccountGroup).GetProperty("ShortLabel"));
+            //odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccountType)).AddProperty(typeof(TradeAccountType).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Haulier)).AddProperty(typeof(Haulier).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Product)).AddProperty(typeof(Product).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Quality)).AddProperty(typeof(Quality).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Collection)).AddProperty(typeof(Collection).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(OrderHeadLive)).AddProperty(typeof(OrderHeadLive).GetProperty("ShortLabel"));
+
+            var transactionTypeValueMapperFunction = odataBuilder.EntityType<TransactionType>()
+                .Collection
+                .Function("TransactionTypeValueMapper")
+                .ReturnsCollectionFromEntitySet<TransactionType>("TransactionTypes");
+
+            transactionTypeValueMapperFunction.Parameter<byte?>("transactionTypeId");
+
 
 
             var orderGroupValueMapperFunction = odataBuilder.EntityType<OrderGroup>()

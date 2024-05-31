@@ -19,6 +19,7 @@
         <div id="to-date-prefilter" class="user-defined-filter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: toDateParams }"></div>
         <div id="haulier-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: haulierParams }"></div>
         <div id="allocated-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: allocatedParams }"></div>
+        <div id="transaction-type-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: transactionTypeParams }"></div>
     </div>
     <div>
         <h5 class="sidebar-heading">
@@ -31,6 +32,11 @@
         <div id="launch-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: launchParams }"></div>
         <div id="quality-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: qualityParams }"></div>
         <div id="product-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productParams }"></div>
+    </div>
+    <div>
+        <a class="btn btn-secondary btn-reset" data-bind="click: reset">
+            Reset
+        </a>
     </div>
     <div>
         <h5 class="sidebar-heading">
@@ -110,13 +116,13 @@
                 </label>
             </li>
         </ul>
+        <div id="data-source-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: dataSourceParams }"></div>
     </div>
-    @*<div>
-        <h5 class="sidebar-heading">
-            Basis
-        </h5>
-        <div id="date-basis-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: dateBasisParams }"></div>
-    </div>*@
+    <div>
+        <a class="btn btn-secondary btn-refresh" data-bind="click: $parent.refresh">
+            Refresh
+        </a>
+    </div>
     @if (ViewBag.Partial == null)
     {
         <div id="accurate-as-of" class="gap-0">

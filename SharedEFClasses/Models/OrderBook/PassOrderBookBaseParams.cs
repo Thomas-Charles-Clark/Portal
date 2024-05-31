@@ -25,8 +25,10 @@ namespace SharedEFClasses.Models.OrderBook
         // Order Filters
         public string OrderID { get; set; }
         public string HaulierCode { get; set; }
-        public DateTime? StartDate { get; set; }
+        public DateTime? StartDate { get; set; } 
         public DateTime? EndDate { get; set; }
-        public string DateBasis { get; set; }
+        public string DataSource { get; set; }
+
+        public byte? TransactionTypeID { get; set; }
     }
 }

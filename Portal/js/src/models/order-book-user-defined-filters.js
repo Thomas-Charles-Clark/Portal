@@ -33,7 +33,8 @@ const orderBookUserDefinedFiltersViewModel = ({
         launchId: '',
         qualityId: '',
         productId: '',
-        dateBasisId: 'O'
+        dataSource: '',
+        transactionTypeId: ''
     }
 }) => {
 
@@ -118,12 +119,14 @@ const orderBookUserDefinedFiltersViewModel = ({
         Value: 'R'
     }];
 
-    // defunct 28/05/2024
-    self.dateBasisId = ko.observable(params.dateBasis ?? ''); // 'O' == OrderDate; 'R' = ReleaseDate
-    self.dateBasis = ko.observable();
-
     self.allocatedId = ko.observable(params.allocated == "1" ? true : params.allocated == "0" ? false : '');
     self.allocated = ko.observable();
+
+    self.dataSourceId = ko.observable(params.dataSource ?? '');
+    self.dataSource = ko.observable();
+
+    self.transactionTypeId = ko.observable(params.transactionTypeId ?? '');
+    self.transactionType = ko.observable();
 
     //#endregion
 
@@ -719,7 +722,7 @@ const orderBookUserDefinedFiltersViewModel = ({
     };
 
     self.orderParams = kendoMDCDropDownList({
-        label: 'Order ID / Order Reference',
+        label: 'Order ID / Reference',
         odata: true,
         endPoint: `/odata/Orders/Default.GetOrdersForOrderBookSummary`,
         textField: 'ShortLabel',
@@ -1228,26 +1231,6 @@ const orderBookUserDefinedFiltersViewModel = ({
         }
     });
 
-    self.dateBasisParams = kendoMDCDropDownList({
-        label: 'Date Basis',
-        data: self.availableDateBases,
-        textField: 'Name',
-        valueField: 'Value',
-        idObservable: self.dateBasisId,
-        objObservable: self.dateBasis,
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(false),
-        revertible: ko.observable(false),
-        readOnly: false,
-        autoBind: true,
-        select: self.genericUnsavedChangesSelect,
-        clearFunction: self.genericUnsavedChangesClear,
-        popupSettings: {
-            appendTo: document.getElementById('date-basis-prefilter')
-        }
-    });
-
     self.allocatedParams = kendoMDCDropDownList({
         label: 'Allocated',
         data: yesNoOptions,
@@ -1273,6 +1256,72 @@ const orderBookUserDefinedFiltersViewModel = ({
         popupSettings: {
             appendTo: document.getElementById('allocated-prefilter')
         }
+    });
+
+    self.dataSourceParams = kendoMDCDropDownList({
+        label: 'Data Source',
+        data: [{
+            Name: 'Mertex',
+            Value: 'M'
+        }, {
+            Name: 'Portal',
+            Value: 'P'
+        }, {
+            Name: 'Basket',
+            Value: 'B'
+        }, {
+            Name: 'Transaction',
+            Value: 'T'
+        }, {
+            Name: 'Import Queue',
+            Value: 'I'
+        },],
+        textField: 'Name',
+        valueField: 'Value',
+        idObservable: self.dataSourceId,
+        objObservable: self.dataSource,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        popupSettings: {
+            appendTo: document.getElementById('data-source-prefilter')
+        }
+    });
+
+    self.transactionTypeParams = kendoMDCDropDownList({
+        label: 'Transaction Type',
+        odata: true,
+        endPoint: '/odata/transactionTypes',
+        textField: 'Name',
+        valueField: 'TransactionTypeID',
+        idObservable: self.transactionTypeId,
+        objObservable: self.transactionType,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'desc',
+            field: 'TransactionTypeID'
+        },
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear
     });
 
     //#endregion
@@ -1426,16 +1475,19 @@ const orderBookUserDefinedFiltersViewModel = ({
         self.productId(EMPTY_STRING);
         self.product(undefined);
 
-        self.dateBasisId('O')
-        self.dateBasis(undefined);
-
         self.allocatedId(EMPTY_STRING);
         self.allocated(undefined);
+
+        self.dataSourceId(EMPTY_STRING);
+        self.dataSource(undefined);
+
+        self.transactiojnTypeId(EMPTY_STRING);
+        self.transactiojnType(undefined);
     }
 
     self.togglePinning = (data, event) => {
         self.sidebarElement.classList.toggle('pinned');
-        event.target.closest('button').blur();
+        event.target.closest('button') && event.target.closest('button').blur();
     }
 
     self.json = ko.computed(() => {
@@ -1456,12 +1508,15 @@ const orderBookUserDefinedFiltersViewModel = ({
                 launchId: self.launchId() || null,
                 qualityId: self.qualityId() || null,
                 productId: self.productId() || null,
-                dateBasis: self.dateBasisId(),
-                allocated: self.allocatedId() || null
+                allocated: self.allocatedId() || null,
+                dataSource: self.dataSourceId() || null,
+                transactionTypeId: self.transactionTypeId() || null
             };
 
+            console.log("userDefinedFilters.json returning", result);
             return JSON.stringify(result);
         } else {
+            console.log("userDefinedFilters.json returning", undefined);
             return undefined;
         }
     }).extend({
