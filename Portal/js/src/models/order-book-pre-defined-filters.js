@@ -83,7 +83,9 @@
             displayModes: self.parent.displayModes(),
             accurateAsOfDateTime: self.parent.accurateAsOfDateTime(),
             title: preDefinedFilter.Label,
-            procedure: preDefinedFilter.Procedure
+            procedure: preDefinedFilter.Procedure,
+            view: preDefinedFilter.View,
+            filterable: preDefinedFilter.Filterable
         };
 
         preDefinedFilter.Criteria.forEach(c => {

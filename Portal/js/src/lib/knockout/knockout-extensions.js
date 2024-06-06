@@ -1824,6 +1824,34 @@ ko.bindingHandlers.bootstrapPopover = {
             buildPopover(properties);
         }
     }
+} 
+
+ko.bindingHandlers.actualBootstrapPopover = {
+    init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+        var options = ko.utils.unwrapObservable(valueAccessor());
+
+        var pop = new bootstrap.Popover(element, {
+            element: element,
+            html: true,
+            content: options.content || `<div class="blocker" style="display: flex; opacity: 1">
+                        <div class="loading-spinner"></div>
+                        <h4 class="mt-3">
+                            Please wait...
+                        </h4>
+                    </div>`,
+            trigger: options.trigger || 'hover focus click',
+            container: element.closest(options.container) || element.closest('div'),
+
+        });
+
+        ko.unwrap(valueAccessor()).popover = pop;
+
+        element.addEventListener('show.bs.popover', options.show);
+        element.addEventListener('shown.bs.popover', options.shown);
+        element.addEventListener('hide.bs.popover', options.hide);
+        element.addEventListener('hidden.bs.popover', options.hidden);
+        element.addEventListener('inserted.bs.popover', options.inserted);
+    }
 }
 
 // Ryan, you beautiful person... thank you once more.

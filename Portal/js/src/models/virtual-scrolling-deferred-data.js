@@ -62,7 +62,7 @@ const virtualScrollingDeferredDataFactory = ({
 } = {
         busy: ko.observable(false),
         tableSelector: "#virtual-scrolling-table",
-        rowHeight: 50,
+        rowHeight: ko.observable(50),
         primaryFetchParams: ko.computed(() => {
             //console.trace();
             // build some set of parameters required by primaryFetch
@@ -91,7 +91,7 @@ const virtualScrollingDeferredDataFactory = ({
         },
         secondaryFetchResultSetName: "Results",
         container: window,
-        gridHeaderHeight: 56,
+        gridHeaderHeight: ko.observable(57),
         gridPositionTop: 206,
         unfilledRecordFn: (rec = {
 
@@ -121,7 +121,9 @@ const virtualScrollingDeferredDataFactory = ({
 
     self.busy = busy;
 
-    self.rowHeight = rowHeight;
+    self.rateLimitFactor = 1 / 30;
+
+    self.rowHeight = ko.isObservable(rowHeight) ? rowHeight : ko.observable(rowHeight);
 
     self.scrollY = ko.observable(0);
 
@@ -131,9 +133,9 @@ const virtualScrollingDeferredDataFactory = ({
 
     self.maxYMultiplier = maxYMultiplier ?? 1;
 
-    self.maxY = ko.observable(+window.getComputedStyle(self.container)['max-height'].replace(/px/, '') + (self.rowHeight * 5) * self.maxYMultiplier);
+    self.maxY = ko.observable(+window.getComputedStyle(self.container)['max-height'].replace(/px/, '') + (self.rowHeight() * 5) * self.maxYMultiplier);
 
-    self.gridHeaderHeight = gridHeaderHeight;
+    self.gridHeaderHeight = ko.isObservable(gridHeaderHeight) ? gridHeaderHeight : ko.observable(gridHeaderHeight);
 
     self.gridTotalHeight = ko.observable();
 
@@ -150,7 +152,6 @@ const virtualScrollingDeferredDataFactory = ({
     self.primaryFetchBeforeFn = primaryFetchBeforeFn;
 
     self.primaryFetchAfterFn = primaryFetchAfterFn;
-
 
     self.primaryFetchResultFn = primaryFetchResultFn;
 
@@ -271,9 +272,48 @@ const virtualScrollingDeferredDataFactory = ({
 
                 return actuallyVisible;
             });
+        }).extend({
+            rateLimit: {
+                timeout: self.rateLimitFactor,
+                method: 'notifyAtFixedRate'
+            }
         });
     }
 
+    self.gridScrollTopPadding = ko.computed(() => {
+        //console.trace();
+
+        let scrollY = self.scrollY();
+        let result = 0;
+        let rowHeight = self.rowHeight();
+        let cumulativeHeight = self.searchResults.peek().length * rowHeight;
+
+        self.searchResults.peek().forEach(ir => {
+            if (scrollY > ir.runningHeight) {
+                result += rowHeight;
+            }
+        });
+
+        self.gridTotalHeight(cumulativeHeight);
+
+        return result;
+    }, self);
+
+    self.gridScrollBottomPadding = ko.computed(() => {
+        //console.trace();
+        //let s = self.scrollY();
+
+        if (self.finalRowVisible()) {
+            return 0;
+        } else {
+            return self.gridTotalHeight.peek() - (self.visibleItems().length * self.rowHeight.peek()) - self.gridScrollTopPadding.peek() - self.gridPositionTop;
+        }
+    }, self);
+
+
+    /*
+    
+    
     self.gridScrollTopPadding = ko.computed(() => {
         //console.trace();
 
@@ -300,6 +340,9 @@ const virtualScrollingDeferredDataFactory = ({
     }, self);
 
 
+    */
+
+
     //#endregion
 
 
@@ -308,16 +351,21 @@ const virtualScrollingDeferredDataFactory = ({
     self.primaryFetchSortFn.subscribe(nv => {
         let data = self.searchResults();
 
-        let startingOffset = self.gridPositionTop + self.gridHeaderHeight;
+        let gridHeaderHeight = self.gridHeaderHeight();
+
+        let rowHeight = self.rowHeight();
+
+        let startingOffset = self.gridPositionTop + gridHeaderHeight;
 
         let additionalOffset = startingOffset;
+
 
         if (typeof nv === 'function') {
 
             data.sort(nv);
 
             data.forEach((result, index) => {
-                result.offsetY = (((index) * self.rowHeight) + additionalOffset) - self.gridHeaderHeight + self.rowHeight;
+                result.offsetY = (((index) * rowHeight) + additionalOffset) - gridHeaderHeight + rowHeight;
             });
 
             self.searchResults(data);
@@ -328,7 +376,7 @@ const virtualScrollingDeferredDataFactory = ({
             });
 
             data.forEach((result, index) => {
-                result.offsetY = (((index) * self.rowHeight) + additionalOffset) - self.gridHeaderHeight + self.rowHeight;
+                result.offsetY = (((index) * rowHeight) + additionalOffset) - gridHeaderHeight + rowHeight;
             });
 
             self.searchResults(data);
@@ -381,7 +429,11 @@ const virtualScrollingDeferredDataFactory = ({
                     if (data[self.primaryFetchResultSetName].length > 0)
                         self.haveSearchResults(true);
 
-                    let startingOffset = self.gridPositionTop + self.gridHeaderHeight;
+                    let gridHeaderHeight = self.gridHeaderHeight();
+
+                    let rowHeight = self.rowHeight();
+
+                    let startingOffset = self.gridPositionTop + gridHeaderHeight;
 
                     let additionalOffset = startingOffset;
 
@@ -389,11 +441,11 @@ const virtualScrollingDeferredDataFactory = ({
 
                     let results = data[self.primaryFetchResultSetName].map((result, index) => {
 
-                        result.offsetY = (((index) * self.rowHeight) + additionalOffset) - self.gridHeaderHeight + self.rowHeight;
+                        result.offsetY = (((index) * rowHeight) + additionalOffset) - gridHeaderHeight + rowHeight;
 
                         result.originalOffsetY = result.offsetY;
 
-                        cumulativeHeight += self.rowHeight;
+                        cumulativeHeight += rowHeight;
 
                         result.runningHeight = cumulativeHeight;
 
@@ -405,7 +457,7 @@ const virtualScrollingDeferredDataFactory = ({
                         results.sort(self.primaryFetchSortFn());
                     } 
 
-                    self.gridTotalHeight(cumulativeHeight - self.rowHeight - 1);
+                    self.gridTotalHeight(cumulativeHeight);
 
                     self.searchResults(results);
 

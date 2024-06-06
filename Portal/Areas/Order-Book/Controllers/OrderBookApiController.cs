@@ -117,5 +117,17 @@ namespace Portal.Areas.Sales.Controllers
 
             return httpResponseMessage;
         }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> FetchOrderLinePopoverContents([FromBody]PassOrderBookOrderLinePopoverFetch dto)
+        {
+            return Ok(await PortalDB.FetchOrderBookOrderLineInspect(dto));
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> FetchRingFencePopoverContents([FromBody] PassOrderBookOrderLinePopoverFetch dto)
+        {
+            return Ok(await PortalDB.FetchOrderBookOrderLineInspect(dto));
+        }
     }
 }

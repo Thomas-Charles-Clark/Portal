@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using DocumentFormat.OpenXml.EMMA;
+
+using Newtonsoft.Json.Linq;
 
 using Portal.Areas.Press.ViewModels;
 using Portal.Models;
@@ -20,6 +22,13 @@ namespace Portal.Areas.Orders.ViewModels
     {
         public string ProcedureName { get; set; }
         public ExpandoObject Parameters { get; set; }
+        public bool Filterable 
+        { 
+            get
+            {
+                return Convert.ToBoolean(((IDictionary<string, object>)Parameters)["filterable"]) == true;
+            } 
+        }
         //public OrderBook_DetailView_SelectResult DetailResult { get; set; }
 
         public OrderBookDetailViewModel(ExpandoObject parameters, RoleProperties properties, string applicationHeading, string applicationSubHeading)

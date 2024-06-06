@@ -266,6 +266,7 @@ const orderBookUserDefinedFiltersViewModel = ({
     //#region Components
 
     self.salesMarketParams = kendoMDCDropDownList({
+        skipCascade: true,
         label: 'Market',
         odata: true,
         endPoint: () => {
@@ -273,7 +274,7 @@ const orderBookUserDefinedFiltersViewModel = ({
                 tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
                 tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId();
 
-            let computation = self.tradeAccountComputer();
+            //let computation = self.tradeAccountComputer();
 
             return `/odata/SalesMarkets/Default.SalesMarketOrderBookFilter(tradeAccountId=${tradeAccountId},tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId})`;
         },
@@ -351,6 +352,7 @@ const orderBookUserDefinedFiltersViewModel = ({
     });
 
     self.tradeAccountParams = kendoMDCDropDownList({
+        skipCascade: true,
         label: 'Trade Account',
         odata: true,
         endPoint: () => {
@@ -358,7 +360,7 @@ const orderBookUserDefinedFiltersViewModel = ({
                 tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
                 tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId();
 
-            let computation = self.tradeAccountComputer();
+            //let computation = self.tradeAccountComputer();
 
             return `/odata/TradeAccounts/Default.TradeAccountOrderBookFilter(salesMarketId=${salesMarketId},tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId})?$expand=TradePriceList`;
         },
@@ -435,6 +437,7 @@ const orderBookUserDefinedFiltersViewModel = ({
     });
 
     self.tradeAccountTypeParams = kendoMDCDropDownList({
+        skipCascade: true,
         label: 'Trade Account Type',
         odata: true,
         endPoint: () => {
@@ -442,7 +445,7 @@ const orderBookUserDefinedFiltersViewModel = ({
                 tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId(),
                 tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId();
 
-            let computation = self.tradeAccountComputer();
+            //let computation = self.tradeAccountComputer();
 
             return `/odata/TradeAccountTypes/Default.TradeAccountTypeOrderBookFilter(salesMarketId=${salesMarketId},tradeAccountGroupId=${tradeAccountGroupId},tradeAccountId=${tradeAccountId})`;
         },
@@ -520,6 +523,7 @@ const orderBookUserDefinedFiltersViewModel = ({
     });
 
     self.tradeAccountGroupParams = kendoMDCDropDownList({
+        skipCascade: true,
         label: 'Trade Account Group',
         odata: true,
         endPoint: () => {
@@ -527,7 +531,7 @@ const orderBookUserDefinedFiltersViewModel = ({
                 tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
                 tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId();
 
-            let computation = self.tradeAccountComputer();
+            //let computation = self.tradeAccountComputer();
 
             return `/odata/TradeAccountGroups/Default.TradeAccountGroupOrderBookFilter(salesMarketId=${salesMarketId},tradeAccountTypeId=${tradeAccountTypeId},tradeAccountId=${tradeAccountId})`;
         },
@@ -1335,24 +1339,31 @@ const orderBookUserDefinedFiltersViewModel = ({
 
         //if (nv && self.cascadeEnabled) {
         //    if (nv.SalesMarketID) {
-        //        self.salesMarketParams.dropDownListSettings.widget().value(nv.SalesMarketID);
+        //        self.salesMarketParams.dropDownListSettings.widget().value(nv.SalesMarketID.toString());
         //    } else {
         //        self.salesMarketParams.dropDownListSettings.widget().value(EMPTY_STRING);
         //    }
 
         //    if (nv.TradeAccountTypeID) {
-        //        self.tradeAccountTypeParams.dropDownListSettings.widget().value(nv.TradeAccountTypeID);
+        //        self.tradeAccountTypeParams.dropDownListSettings.widget().value(nv.TradeAccountTypeID.toString());
         //    } else {
         //        self.tradeAccountTypeParams.dropDownListSettings.widget().value(EMPTY_STRING);
         //    }
 
         //    if (nv.TradeAccountGroupID) {
-        //        self.tradeAccountGroupParams.dropDownListSettings.widget().value(nv.TradeAccountGroupID);
+        //        self.tradeAccountGroupParams.dropDownListSettings.widget().value(nv.TradeAccountGroupID.toString());
         //    } else {
         //        self.tradeAccountGroupParams.dropDownListSettings.widget().value(EMPTY_STRING);
         //    }
 
-        //    self.cascadeEnabled = false;
+        //    window.setTimeout(() => {
+        //        self.salesMarketParams.dropDownListSettings.widget().trigger('change');
+        //        self.tradeAccountTypeParams.dropDownListSettings.widget().trigger('change');
+        //        self.tradeAccountGroupParams.dropDownListSettings.widget().trigger('change');
+
+        //        self.cascadeEnabled = false;
+        //    }, 0);
+
         //}
 
         //if (nv == null) {
@@ -1481,8 +1492,8 @@ const orderBookUserDefinedFiltersViewModel = ({
         self.dataSourceId(EMPTY_STRING);
         self.dataSource(undefined);
 
-        self.transactiojnTypeId(EMPTY_STRING);
-        self.transactiojnType(undefined);
+        self.transactionTypeId(EMPTY_STRING);
+        self.transactionType(undefined);
     }
 
     self.togglePinning = (data, event) => {

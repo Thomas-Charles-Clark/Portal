@@ -7,21 +7,24 @@
         <div class="main-grid column-headings"
              data-bind="style: { '--grid-column-count': orderStatuses().length + 2 }">
             <div class="th first-column"></div>
+            <div class="th grand-total-column"></div>
             <!-- ko foreach: columnHeadings -->
             <div class="th intersectable span-x order-status-group-heading" data-bind="css: { 'border-left-0': $index() == 0 }, style: { '--colspan': orderStatuses.length }, click: () => { $root.showDetail($data) }">
                 <span data-bind="text: orderStatusGroupName"></span>
             </div>
             <!-- /ko -->
-            <div class="th grand-total-column"></div>
 
             <div class="th order-status first-column">
                 @*<button class="btn btn-lg btn-dark">
-                    <span>
-                        Export to Excel
-                    </span>
-                    <i class="bi bi-download"></i>
-                    <i class="bi bi-filetype-xlsx"></i>
-                </button>*@
+                <span>
+                    Export to Excel
+                </span>
+                <i class="bi bi-download"></i>
+                <i class="bi bi-filetype-xlsx"></i>
+            </button>*@
+            </div>
+            <div class="th intersectable order-status-group-heading grand-total-column" data-bind="click: () => { $root.showDetail({}) }">
+                Grand Total
             </div>
             <!-- ko foreach: columnHeadings -->
             <!-- ko foreach: orderStatuses -->
@@ -30,12 +33,12 @@
             </div>
             <!-- /ko -->
             <!-- /ko -->
-            <div class="th intersectable order-status-group-heading grand-total-column" data-bind="click: () => { $root.showDetail({}) }">
-                Grand Total
-            </div>
 
             <div class="th order-status-total justify-content-end first-column">
                 Total
+            </div>
+            <div class="main-cell order-status-total grand-total-column" data-bind="css: { 'intersectable': $root.getCell($data, {}) }, with: $root.getCell($data, null), click: () => { if ($root.getCell($data, null)) { $root.showDetail({}); } }">
+                <p class="values-display" data-bind="html: display"></p>
             </div>
             <!-- ko foreach: columnHeadings -->
             <!-- ko foreach: orderStatuses -->
@@ -44,9 +47,6 @@
             </div>
             <!-- /ko -->
             <!-- /ko -->
-            <div class="main-cell order-status-total grand-total-column" data-bind="css: { 'intersectable': $root.getCell($data, {}) }, with: $root.getCell($data, null), click: () => { if ($root.getCell($data, null)) { $root.showDetail({}); } }">
-                <p class="values-display" data-bind="html: display"></p>
-            </div>
 
         </div>
         <!-- ko foreach: rowHeadings -->
@@ -56,10 +56,16 @@
             <div class="order-group-heading order-group-row first-column" data-bs-toggle="collapse" data-bind="attr: { 'data-bs-target': `.order-group-${$data.orderGroupId}` }">
                 <span data-bind="text: orderGroupName"></span>
             </div>
+            <div class="main-cell order-group-row order-group-total-row grand-total-column intersectable" data-bind="with: $root.getCell({}, { orderGroupId: $data.orderGroupId }),
+                 click: (data)=>
+                { $root.showDetail({ orderGroupId: $data.orderGroupId }) }">
+                <p class="values-display" data-bind="html: display"></p>
+            </div>
             <!-- ko foreach: $parent.columnHeadings -->
             <!-- ko foreach: orderStatuses -->
             <div class="main-cell subtotal-cell order-group-row order-group-total-row" data-bind="css: {
-                 'order-status-group-start' : $parentContext.$index() >  0 && $index() == 0,
+                 'order-status-group-start' : $parentContext.$index()>
+                0 && $index() == 0,
                 'intersectable': $root.getCell($data, { orderGroupId: $parentContext.$parent.orderGroupId })
                 },
                 with: $root.getCell($data, { orderGroupId: $parentContext.$parent.orderGroupId }),
@@ -68,40 +74,38 @@
             </div>
             <!-- /ko -->
             <!-- /ko -->
-            <div class="main-cell order-group-row order-group-total-row grand-total-column intersectable" data-bind="with: $root.getCell({}, { orderGroupId: $data.orderGroupId }),
-                    click: (data) => { $root.showDetail({ orderGroupId: $parentContext.$parent.orderGroupId }) }">
-                <p class="values-display" data-bind="html: display"></p>
-            </div>
 
             <div class="main-grid span-n collapse show" data-bind="class: `order-group-${orderGroupId}`">
                 <!-- ko foreach: stockLocationGroups -->
                 <div class="th main-cell first-column intersectable" data-bind="css: { 'border-bottom-0': $index() == $parent.stockLocationGroups.length - 1, 'alternate-row': ($index() + 1) % 2 == 0 },
-                    click: (data) => { showDetail({ stockLocationGroupId: data.stockLocationGroupId }); }">
+                     click: (data)=>
+                    { showDetail({ stockLocationGroupId: data.stockLocationGroupId }); }">
                     <span data-bind="text: stockLocationGroupName"></span>
+                </div>
+                <div class="main-cell grand-total-column intersectable" data-bind="css: { 'border-bottom-0': $index() == $parent.stockLocationGroups.length - 1, 'alternate-row': ($index() + 1) % 2 == 0 }, with: $root.getCell({}, $data), click: (data) => { $root.showDetail(data) }">
+                    <p class="values-display" data-bind="html: display"></p>
                 </div>
                 <!-- ko foreach: $parentContext.$parent.columnHeadings -->
                 <!-- ko foreach: orderStatuses -->
                 <div class="main-cell"
                      data-bind="css: {
-                         'order-status-group-start' : $parentContext.$index() > 0 && $index() == 0,
-                         'intersectable':  $root.getCell($data, $parentContext.$parent),
-                         'border-bottom-0': $parentContext.$parentContext.$index() == $parentContext.$parentContext.$parent.stockLocationGroups.length - 1,
-                         'alternate-row': ($parentContext.$parentContext.$index() + 1) % 2 == 0
-                     },
-                     with: $root.getCell($data, $parentContext.$parent),
-                     click: () => {
-                        if ($root.getCell($data, $parentContext.$parent)) {
-                            $root.showDetail(Object.assign($data, $parentContext.$parent, { orderStatusGroupName: $parentContext.$data.orderStatusGroupName, orderGroupName: $parentContext.$parentContext.$parentContext.$data.orderGroupName, }))
-                        }
-                     }">
+                     'order-status-group-start' : $parentContext.$index()>
+                    0 && $index() == 0,
+                    'intersectable':  $root.getCell($data, $parentContext.$parent),
+                    'border-bottom-0': $parentContext.$parentContext.$index() == $parentContext.$parentContext.$parent.stockLocationGroups.length - 1,
+                    'alternate-row': ($parentContext.$parentContext.$index() + 1) % 2 == 0
+                    },
+                    with: $root.getCell($data, $parentContext.$parent),
+                    click: () => {
+                    if ($root.getCell($data, $parentContext.$parent)) {
+                    $root.showDetail(Object.assign($data, $parentContext.$parent, { orderStatusGroupName: $parentContext.$data.orderStatusGroupName, orderGroupName: $parentContext.$parentContext.$parentContext.$data.orderGroupName, }))
+                    }
+                    }">
                     <p class="values-display" data-bind="html: display">
                     </p>
                 </div>
                 <!-- /ko -->
                 <!-- /ko -->
-                <div class="main-cell grand-total-column intersectable" data-bind="css: { 'border-bottom-0': $index() == $parent.stockLocationGroups.length - 1, 'alternate-row': ($index() + 1) % 2 == 0 }, with: $root.getCell({}, $data), click: (data) => { $root.showDetail(data) }">
-                    <p class="values-display" data-bind="html: display"></p>
-                </div>
                 <!-- /ko -->
             </div>
         </div>

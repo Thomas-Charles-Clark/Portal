@@ -470,6 +470,12 @@
     <Compile Include="Models\Mertex\TradeAccountContactLive.cs" />
     <Compile Include="Models\Mertex\TradeAccountContactType.cs" />
     <Compile Include="Models\Mertex\TradeAccountInvoiceAccount.cs" />
+    <Compile Include="Models\OrderBook\OrderBookRingFenceInspectData.cs" />
+    <Compile Include="Models\OrderBook\OrderBookRingFenceInspectResult.cs" />
+    <Compile Include="Models\OrderBook\OrderBookOrderLineInspectResult.cs" />
+    <Compile Include="Models\OrderBook\OrderBookOrderLineInspectData.cs" />
+    <Compile Include="Models\OrderBook\OrderBookRingFenceInspectTotal.cs" />
+    <Compile Include="Models\OrderBook\OrderBookOrderLineInspectTotal.cs" />
     <Compile Include="Models\OrderBook\OrderBook_DetailView_DataRow.cs" />
     <Compile Include="Models\OrderBook\OrderBook_MainSummary_DataRow.cs" />
     <Compile Include="Models\OrderBook\OrderBook_MainSummary_OrderGroupStockLocation.cs" />
@@ -479,6 +485,8 @@
     <Compile Include="Models\OrderBook\OrderBook_PreDefinedSummary_SelectResult.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookDetailViewParams.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookBaseParams.cs" />
+    <Compile Include="Models\OrderBook\PassOrderBookRingFencePopoverFetch.cs" />
+    <Compile Include="Models\OrderBook\PassOrderBookOrderLinePopoverFetch.cs" />
     <Compile Include="Models\OrderGroup.cs" />
     <Compile Include="Models\OrderLineDetailedStatus.cs" />
     <Compile Include="Models\OrderLineDetailedStatusGroup.cs" />

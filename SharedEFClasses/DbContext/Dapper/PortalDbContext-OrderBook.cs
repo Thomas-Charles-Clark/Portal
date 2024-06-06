@@ -82,7 +82,10 @@ namespace SharedEFClasses.Models
                 "procedure",
                 "displayModes",
                 "Title",
-                "title"
+                "title",
+                "View",
+                "view",
+                "filterable"
             };
 
             var dynParams = new DynamicParameters();
@@ -139,6 +142,17 @@ namespace SharedEFClasses.Models
             };
 
             //return sb.ToString();
+        }
+
+        public async Task<OrderBookOrderLineInspectResult> FetchOrderBookOrderLineInspect(PassOrderBookOrderLinePopoverFetch dto)
+        {
+            var reader = await this.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_MainSummary_Select]", dto, null, 30, CommandType.StoredProcedure);
+
+            return new OrderBookOrderLineInspectResult()
+            {
+                Totals = await reader.ReadSingleAsync<OrderBookOrderLineInspectTotal>(),
+                Data = await reader.ReadAsync<OrderBookOrderLineInspectData>()
+            };
         }
     }
 }

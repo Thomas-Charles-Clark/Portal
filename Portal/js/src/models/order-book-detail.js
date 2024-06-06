@@ -6,9 +6,11 @@
     DISPLAY_MODE_PERCENTAGE_FILTER = 6
 
 const detailColumn = ({
-    propertyName
+    propertyName,
+    dataSet
 } = {
-    propertyName: "MarketCode"
+    propertyName: "MarketCode",
+    dataSet: []
 }) => {
     let self = {};
 
@@ -18,12 +20,33 @@ const detailColumn = ({
 
     self.direction = ko.observable(); // undefined / "asc" / "desc"
 
+    self.isNaN = self.columnName.indexOf("Number") > -1 ||
+        self.columnName.indexOf("ID") > -1 ||
+        dataSet.find(ds => isNaN(ds[self.columnName]));
+
+    if (self.isNaN) {
+        self.total = null;
+    } else {
+
+        self.total = formatNumber(dataSet.reduce((a, i) => {
+
+            let b = +i[self.columnName];
+
+            a = a + b;
+
+            return a;
+
+        }, 0) || null);
+    }
+
     return self;
 };
 
 const orderBookDetailViewModel = (() => {
 
     let self = {};
+
+    self.params = window.getDetailParameters();
 
     let params = window.getDetailParameters();
 
@@ -68,26 +91,28 @@ const orderBookDetailViewModel = (() => {
 
     //#region Properties
 
-    self.procedure = params.procedure;
+    self.procedure = self.params.procedure;
 
     self.busy = ko.observable(false);
 
-    self.displayModes = ko.observableArray(params.displayModes && params.displayModes.length > 0
-        ? params.displayModes.split(',').map(dm => +dm)
+    self.displayModes = ko.observableArray(self.params.displayModes && self.params.displayModes.length > 0
+        ? self.params.displayModes.split(',').map(dm => +dm)
         : [DISPLAY_MODE_VALUE_SUM]
     );
 
-    self.userDefinedFilters = orderBookUserDefinedFiltersViewModel({ parent: self, params: params });
+    self.userDefinedFilters = orderBookUserDefinedFiltersViewModel({ parent: self, params: self.params });
 
-    self.advancedFilters = orderBookAdvancedFiltersViewModel({ parent: self, params: params });
+    self.advancedFilters = orderBookAdvancedFiltersViewModel({ parent: self, params: self.params });
 
     self.results = ko.observableArray([]);
 
-    self.accurateAsOfDateTime = ko.observable(params.accurateAsOfDateTime ?? undefined);
+    self.accurateAsOfDateTime = ko.observable(self.params.accurateAsOfDateTime ?? undefined);
 
     self.columns = ko.observableArray([]);
 
     self.allSortingOperations = ko.observableArray([]);
+
+    self.noResults = ko.observable(false);
 
     // if multiple column sort chaining is desired, this must be done by nesting within the one sort function.
     // suggest allowing sorting by two columns at most.
@@ -136,15 +161,15 @@ const orderBookDetailViewModel = (() => {
             udf = JSON.parse(self.userDefinedFilters.json());
         }
 
-        let adv = JSON.parse(self.advancedFilters.json());
+        let adv = null;
 
-        //if (self.advancedFilters.json()) {
-        //    adv =
-        //}
-
-        console.log('primaryFetchParams computed');
+        if (self.advancedFilters.json()) {
+            adv = JSON.parse(self.advancedFilters.json());
+        }
 
         if (udf && adv) {
+            console.log('primaryFetchParams computed');
+
             return JSON.stringify(Object.assign(window.getDetailParameters() , udf, adv, { procedure: self.procedure }));
         }
     }, self).extend({
@@ -193,13 +218,14 @@ const orderBookDetailViewModel = (() => {
 
                 columns = columnNames.map(cn => {
                     return detailColumn({
-                        propertyName: cn
+                        propertyName: cn,
+                        dataSet: results.Data
                     })
                 });
 
             }
             else {
-                window.showInfo("Sorry", "No results found");
+                self.noResults(true);
             }
 
             console.log("setting columns", columns);
@@ -208,9 +234,9 @@ const orderBookDetailViewModel = (() => {
         },
         primaryFetchResultFn: (rec) => orderBookMainCell({ parent: self, data: rec }),
         container: self.virtualScrollerContainer,
-        gridHeaderHeight: 57,
+        gridHeaderHeight: 83,
         gridPositionTop: 0,
-        maxYMultiplier: 5
+        maxYMultiplier: 1
     });
 
     //#endregion
@@ -266,6 +292,7 @@ const orderBookDetailViewModel = (() => {
     self.reset = () => {
         window.showConfirm("Are you sure?", "This will clear all current filters and reset the Order Book display to defaults.", () => {
             self.userDefinedFilters.reset();
+            self.advancedFilters.reset();
         }, null);
     };
 

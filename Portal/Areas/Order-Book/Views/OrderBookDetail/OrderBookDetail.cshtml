@@ -39,10 +39,13 @@
     </script>
 }
 
-@if (ViewBag.Partial != true)
+@if (ViewBag.Partial == false)
 {
 <style type="text/css">
     #order-book-detail-scroller-container {
+        max-height: calc(100vh - 50px);
+    }
+    #main-summary-container {
         max-height: calc(100vh - 50px);
     }
 </style>
@@ -64,12 +67,11 @@
 </div>
 
 <div id="main-summary-container" class="d-flex align-items-start w-100" style="opacity: 0" data-bind="flexFadeVisible: true">
-    <sidebar id="filters-sidebar" class="collapse collapse-horizontal sidebar sticky-top @(ViewBag.HideSidebar == true ? "" : "show pinned")">
+    <sidebar id="filters-sidebar" class="collapse collapse-horizontal sidebar sticky-top @(ViewBag.HideSidebar == true ? "" : "show pinned") @(Model.Filterable ? "" : "d-none")">
         <div class="sidebar-inner">
             <div class="sidebar-header" data-bind="click: userDefinedFilters.togglePinning">
                 <button type="button"
                         class="btn btn-light"
-                        data-bind="click: userDefinedFilters.togglePinning"
                         title="Toggle Pinning">
                     <i class="bi bi-pin-angle-fill fs-5"></i>
                 </button>

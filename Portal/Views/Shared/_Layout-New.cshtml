@@ -492,7 +492,7 @@
                  css: {
                     'busy': busy,
                     'mdc-text-field--disabled': disable() || !enable(),
-                    'mdc-text-field--selected': observable() || observable() === 0
+                    'mdc-text-field--selected': observable() || observable() === 0 || observable() === false
                  }">
                 <input type="search" autocomplete="off" class="mdc-text-field__input" data-bind="
                        keepElement: observable,
@@ -1323,7 +1323,7 @@
                     'revertible': revertible,
                     'busy': typeof busy === 'undefined' ? false : busy,
                     'mdc-select--disabled': disable() || !enable(),
-                    'mdc-select--selected': observable() || observable() === 0
+                    'mdc-select--selected': observable() || observable() === 0 || observable() === false
                 }">
                 <select class="mdc-select__native-control" style="display: none;"></select>
                 <div data-bind="kendoDropDownList: dropDownListSettings, css: controlClass"></div>
@@ -1534,7 +1534,7 @@
                  css: {
                     'busy': typeof busy === 'undefined' ? false : busy,
                     'mdc-text-field--disabled': typeof disabled == 'undefined' ? false : disabled,
-                    'date-select--selected': observable() || observable() === 0
+                    'date-select--selected': observable() || observable() === 0 || observable() === false
                  }">
                 <input type="text" class="mdc-text-field__input" data-bind="
                     tempusDominus: observable,

@@ -120,7 +120,7 @@
         </td>
         <td data-bind="html: priceSummary"></td>
         <td class="text-end">
-           @if (Model.ReadOnlyMode == false)
+            @if (Model.ReadOnlyMode == false)
             {
                 <div class="range-planned" data-bind="component: { name: 'mdc-text-field-numeric-component', params: rangePlannedParams }"></div>
             }
@@ -135,7 +135,7 @@
         <td class="text-end">
             <span data-bind="text: rangeInProgress"></span>
         </td>
-       @if (Model.ReadOnlyMode == false)
+        @if (Model.ReadOnlyMode == false)
         {
             <td class="text-end">
                 <span data-bind="text: rangeRequired"></span>
@@ -196,9 +196,9 @@
             <td class="text-end">
                 <span data-bind="text: stockRingFence"></span>
             </td>
-            <td>
+            @*<td>
                 <span data-bind="html: salesSummary"></span>
-            </td>
+            </td>*@
             <td class="text-end">
                 <span data-bind="text: sales180DayTotal"></span>
             </td>

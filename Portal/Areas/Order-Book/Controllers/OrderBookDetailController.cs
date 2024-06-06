@@ -105,9 +105,9 @@ namespace Portal.Areas.Orders.Controllers
             return View("OrderBookDetail", model);
         }
 
-        // GET: OrderBook/Summary
-        [Route("view-two")]
-        public async Task<ActionResult> ViewTwo()
+        // GET: order-book/reallocate-stock
+        [Route("reallocate-stock")]
+        public async Task<ActionResult> ReallocateStock()
         {
             if (Request.QueryString.HasKeys() && Request.QueryString.AllKeys.Contains("partial"))
             {
@@ -139,7 +139,7 @@ namespace Portal.Areas.Orders.Controllers
                 application.Heading,
                 application.SubHeading);
 
-            return View("OrderBookDetail", model);
+            return View("ReallocateStock", model);
         }
 
         // GET: OrderBook/Summary

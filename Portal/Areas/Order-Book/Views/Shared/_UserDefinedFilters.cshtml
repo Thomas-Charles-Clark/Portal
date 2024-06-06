@@ -34,7 +34,12 @@
         <div id="product-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productParams }"></div>
     </div>
     <div>
-        <a class="btn btn-secondary btn-reset" data-bind="click: reset">
+        <a class="btn btn-secondary btn-refresh" data-bind="click: parent.refresh">
+            Refresh
+        </a>
+    </div>
+    <div>
+        <a class="btn btn-secondary btn-reset" data-bind="click: parent.reset">
             Reset
         </a>
     </div>
@@ -117,11 +122,6 @@
             </li>
         </ul>
         <div id="data-source-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: dataSourceParams }"></div>
-    </div>
-    <div>
-        <a class="btn btn-secondary btn-refresh" data-bind="click: $parent.refresh">
-            Refresh
-        </a>
     </div>
     @if (ViewBag.Partial == null)
     {

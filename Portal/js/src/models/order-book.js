@@ -250,11 +250,14 @@ const orderBookViewModel = (() => {
 
         let view = cell.view ?? 'back-orders';
         let procedure = cell.procedure ?? 'BackOrders';
+        let filterable = cell.filterable ?? true;
 
         let preDefinedFilterCriteria = {
             displayModes: self.displayModes(),
             accurateAsOfDateTime: self.accurateAsOfDateTime(),
-            procedure: procedure
+            procedure: procedure,
+            view: view,
+            filterable: filterable
         };
 
         if (cell.hasOwnProperty('orderGroupId'))

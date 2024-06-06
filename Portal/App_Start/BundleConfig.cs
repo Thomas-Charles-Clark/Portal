@@ -338,6 +338,18 @@ namespace Portal
                 $"{cssPrefix}/models/order-book-detail{cssSuffix}"
             ));
 
+            bundles.Add(new StyleBundle("~/bundles/css/order-book-reallocate-stock").Include(
+                $"{cssPrefix}/mopdels/virtual-scrolling-deferred-data{cssSuffix}",
+                $"{cssPrefix}/models/full-width-app{cssSuffix}",
+                $"{cssPrefix}/lib/tempus-dominus/tempus-dominus{cssSuffix}",
+                $"{cssPrefix}/models/order-book-user-defined-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book-date-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book-pre-defined-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book-advanced-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book{cssSuffix}",
+                $"{cssPrefix}/models/order-book-reallocate-stock{cssSuffix}"
+            ));
+
             //  
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             //
@@ -789,6 +801,20 @@ namespace Portal
                         $"{jsPrefix}/models/order-book-advanced-filters{jsSuffix}",
                         $"{jsPrefix}/models/order-book-main-cell{jsSuffix}",
                         $"{jsPrefix}/models/order-book-detail{jsSuffix}"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/order-book-reallocate-stock").Include(
+                        $"{jsPrefix}/models/virtual-scrolling-deferred-data{jsSuffix}",
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-advanced-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-summary-filter{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-user-defined-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-date-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-pre-defined-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-advanced-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-main-cell{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-reallocate-stock{jsSuffix}"
                 ));
 
             foreach (var b in BundleTable.Bundles)

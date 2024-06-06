@@ -1877,6 +1877,8 @@
     <Content Include="Areas\Order-Book\Views\OrderBookDetail\OrderBookDetail.cshtml" />
     <Content Include="Areas\Order-Book\Views\Shared\_DetailGrid.cshtml" />
     <Content Include="Areas\Order-Book\Views\Shared\_AdvancedFilters.cshtml" />
+    <Content Include="Areas\Order-Book\Views\OrderBookDetail\ReallocateStock.cshtml" />
+    <Content Include="Areas\Order-Book\Views\Shared\_ReallocateStockGrid.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
     <Content Include="Areas\Stock\Views\RangeManagement\RangeManagement.cshtml" />
     <None Include="compilerconfig.json" />
@@ -1956,6 +1958,7 @@
     <Content Include="css\src\fonts\src\wash-care-symbols-m54.woff2" />
     <Content Include="css\src\models\order-book-detail.scss" />
     <Content Include="css\src\models\order-book-advanced-filters.scss" />
+    <Content Include="css\src\models\order-book-reallocate-stock.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

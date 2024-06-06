@@ -1,4 +1,17 @@
 ﻿@model SharedEFClasses.BaseViewModel
+<!-- ko if: noResults -->
+<div id="no-results">
+    <div class="alert alert-secondary text-center alert-lg px-4 py-3">
+        <h4 class="alert-title mb-3">
+            Sorry
+        </h4>
+        <p>
+            No Results Found
+        </p>
+    </div>
+</div>
+<!-- /ko -->
+<!-- ko ifnot: noResults -->
 <div id="order-book-detail-scroller-container" class="virtual-scroller-container" data-bind="with: virtualScroller">
     <table id="order-book-detail-table" class="table table-condensed table-striped table-hover order-book-detail-table">
         <colgroup>
@@ -15,6 +28,11 @@
                     <i class="bi" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
                     <!-- /ko -->
                 </th>
+                <!-- /ko -->
+            </tr>
+            <tr class="subtotal-row">
+                <!-- ko foreach: $parent.columns -->
+                <th data-bind="text: total"></th>
                 <!-- /ko -->
             </tr>
         </thead>
@@ -39,3 +57,4 @@
         </tbody>
     </table>
 </div>
+<!-- /ko -->

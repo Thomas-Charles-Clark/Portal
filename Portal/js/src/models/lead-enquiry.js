@@ -7031,8 +7031,8 @@ var customerSearchSlicerModel = function (parent) {
     var repLocked = false;
     var areaLocked = false;
 
-    // Stina! (327) Stina is happy.
-    if ([28871].indexOf(userId) > -1) {
+    // Stina! (327) Stina is happy. Also now Lena Eriksson, in the hopes that Stina continues to be happy.
+    if ([28871, 1583702].indexOf(userId) > -1) {
         areaId = salesAreaStina;
         areaLocked = true;
     }
@@ -7051,6 +7051,14 @@ var customerSearchSlicerModel = function (parent) {
         areaLocked = true;
         repId = 42;
         repLocked = true;
+    }
+
+    if ([8, 43438, 1395354].indexOf(userId) > -1) {
+        areaId = null;
+        areaLocked = false;
+        repLocked = false;
+        marketId = 18;
+        marketReadonly = true;
     }
 
     if ([8, 43438, 1395354].indexOf(userId) > -1) {

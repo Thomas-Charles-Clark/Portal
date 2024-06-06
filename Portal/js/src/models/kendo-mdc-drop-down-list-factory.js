@@ -46,7 +46,8 @@
     select,
     aggregate,
     requestStart,
-    requestEnd
+    requestEnd,
+    skipCascade
 } = {
         widget: ko.observable(),
         endPoint: null,
@@ -92,7 +93,8 @@
         select: (e) => { },
         dataBound: (e) => { },
         requestStart: (e) => { },
-        requestEnd: (e) => { }
+        requestEnd: (e) => { },
+        skipCascade: false
     }) {
 
     if (endPoint == null && data == null) {
@@ -233,7 +235,8 @@
                 itemHeight: 34,
                 mapValueTo: 'index',
                 valueMapper: valueMapper
-            } : false
+            } : false,
+            skipCascade: skipCascade
         },
         clearFunction: clearFunction ? function () { clearFunction(this) } : function () {
             var self = this;

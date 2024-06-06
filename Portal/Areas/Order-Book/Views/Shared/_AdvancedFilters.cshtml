@@ -14,6 +14,7 @@
         <div id="linked-po-delayed-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: linkedPODelayedParams }"></div>
 
         <div id="fulfilled-from-free-stock-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: couldBeFulfilledFromFreeStockParams }"></div>
+        <div id="fulfilled-from-another-order-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: couldBeFulfilledFromStockAllocatedToAnotherOrderParams }"></div>
         <div id="line-status-greater-than-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: lineStatusIdGreaterThanParams }"></div>
         <div id="line-status-less-than-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: lineStatusIdLessThanParams }"></div>
         <div id="line-status-changed-today-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: lineStatusChangedTodayParams }"></div>
@@ -44,13 +45,25 @@
             <div class="user-filter">
                 <label>
                     Base Bound:
-                    <span data-bind="text: allBound"></span>
+                    <span data-bind="text: $parent.userDefinedFilters.allBound"></span>
                 </label>
             </div>
             <div class="user-filter">
                 <label>
                     Advanced Bound:
                     <span data-bind="text: allBound"></span>
+                </label>
+            </div>
+            <div class="user-filter">
+                <label>
+                    View:
+                    <span data-bind="text: parent.params.view"></span>
+                </label>
+            </div>
+            <div class="user-filter">
+                <label>
+                    SQL Procedure:
+                    <span data-bind="text: `[portal].[OrderBook_DetailView_${parent.params.procedure}]`"></span>
                 </label>
             </div>
         </div>

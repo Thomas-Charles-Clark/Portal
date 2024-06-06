@@ -1,8 +1,13 @@
 ﻿@import "common.scss";
+$light-blue-background: tint-color($blue-200, 90%);
 
 #order-book-main {
     flex: 1;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+    min-height: 100vh;
 }
 
 .blocker {
@@ -61,6 +66,14 @@
                     }
                 }
             }
+
+            tr.subtotal-row {
+                th {
+                    background-color: $light-blue-background;
+                    height: 26px;
+                    top: 57px;
+                }
+            }
         }
 
         tbody {
@@ -95,3 +108,14 @@
         }
     }
 }
+
+#no-results {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#main-summary-container {
+    max-height: 100vh;
+} 

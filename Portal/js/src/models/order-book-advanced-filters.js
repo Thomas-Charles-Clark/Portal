@@ -68,6 +68,9 @@ const orderBookAdvancedFiltersViewModel = ({
     self.couldBeFulfilledFromFreeStockId = ko.observable(params.couldBeFulfilledFromFreeStock == "1" ? true : params.couldBeFulfilledFromFreeStock == "0" ? false : '');
     self.couldBeFulfilledFromFreeStock = ko.observable();
 
+    self.couldBeFulfilledFromStockAllocatedToAnotherOrderId = ko.observable(params.couldBeFulfilledFromStockAllocatedToAnotherOrder == "1" ? true : params.couldBeFulfilledFromStockAllocatedToAnotherOrder == "0" ? false : '');
+    self.couldBeFulfilledFromStockAllocatedToAnotherOrder = ko.observable();
+
     self.lineStatusIdGreaterThanId = ko.observable(params.lineStatusIdGreaterThan ?? '');
     self.lineStatusIdGreaterThan = ko.observable();
     self.lineStatusIdGreaterThanAwaitingBinding = ko.observable(params.lineStatusIdGreaterThan != null && params.lineStatusIdGreaterThan != '');
@@ -440,6 +443,34 @@ const orderBookAdvancedFiltersViewModel = ({
         }
     });
 
+    self.couldBeFulfilledFromStockAllocatedToAnotherOrderParams = kendoMDCDropDownList({
+        label: 'Fulfillable from another Order',
+        data: yesNoOptions,
+        textField: 'Name',
+        valueField: 'Value',
+        idObservable: self.couldBeFulfilledFromStockAllocatedToAnotherOrderId,
+        objObservable: self.couldBeFulfilledFromStockAllocatedToAnotherOrder,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        popupSettings: {
+            appendTo: document.getElementById('fulfilled-from-another-order-prefilter')
+        }
+    });
+
+
     self.lineStatusIdGreaterThanParams = kendoMDCDropDownList({
         label: 'Line Status ID >',
         data: oneToFiveOptions,
@@ -774,6 +805,9 @@ const orderBookAdvancedFiltersViewModel = ({
         self.couldBeFulfilledFromFreeStockId(EMPTY_STRING);
         self.couldBeFulfilledFromFreeStock(undefined);
 
+        self.couldBeFulfilledFromStockAllocatedToAnotherOrderId(EMPTY_STRING);
+        self.couldBeFulfilledFromStockAllocatedToAnotherOrder(undefined);
+
         self.lineStatusIdGreaterThanId(EMPTY_STRING);
         self.lineStatusIdGreaterThan(undefined);
 
@@ -803,7 +837,7 @@ const orderBookAdvancedFiltersViewModel = ({
     }
 
     self.json = ko.computed(() => {
-        //if (self.allBound()) {
+        if (self.allBound()) {
             let result = {
                 productStatus: self.productStatusId() || null,
                 orderGroupId: self.orderGroupId() || null,
@@ -813,6 +847,7 @@ const orderBookAdvancedFiltersViewModel = ({
                 hasLinkedPO: self.hasLinkedPOId() === '' ? null : self.hasLinkedPOId(),
                 linkedPODelayed: self.linkedPODelayedId() === '' ? null : self.linkedPODelayedId(),
                 couldBeFulfilledFromFreeStock: self.couldBeFulfilledFromFreeStockId() === '' ? null : self.couldBeFulfilledFromFreeStockId(),
+                couldBeFulfilledFromStockAllocatedToAnotherOrder: self.couldBeFulfilledFromStockAllocatedToAnotherOrderId() === '' ? null : self.couldBeFulfilledFromStockAllocatedToAnotherOrderId(),
                 lineStatusIdGreaterThan: self.lineStatusIdGreaterThanId() === '' ? null : self.lineStatusIdGreaterThanId(),
                 lineStatusIdLessThan: self.lineStatusIdLessThanId() === '' ? null : self.lineStatusIdLessThanId(),
                 lineStatusChangedToday: self.lineStatusChangedTodayId() === '' ? null : self.lineStatusChangedTodayId(),
@@ -854,10 +889,10 @@ const orderBookAdvancedFiltersViewModel = ({
 
             console.log("advancedFilters.json returning", result);
             return JSON.stringify(result);
-        //} else {
-        //    console.log("advancedFilters.json returning", undefined);
-        //    return undefined;
-        //}
+        } else {
+            console.log("advancedfilters.json returning", undefined);
+            return undefined;
+        }
     }).extend({
         rateLimit: {
             timeout: 100,
