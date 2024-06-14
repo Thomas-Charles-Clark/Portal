@@ -358,7 +358,7 @@ namespace Tagging.Models
     }
 
     [Table("Filter_Product", Schema = "Portal")]
-    public class ProductFilter
+    public class TaggingProductFilter
     {
         [Key]
         [Column(Order = 1)]

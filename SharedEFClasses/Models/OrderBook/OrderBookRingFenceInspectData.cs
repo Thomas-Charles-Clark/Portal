@@ -8,16 +8,14 @@ namespace SharedEFClasses.Models.OrderBook
 {
     public class OrderBookRingFenceInspectData
     {
-        public string DataSource { get; set; }
-        public string OrderLineID { get; set; }
-        public string MarketCode { get; set; }
+        public short RingFencePreAllocationID { get; set; }
+        public string TradeAccountGroupCode { get; set; }
+        public string TradeAccountGroupName { get; set; }
         public string TradeAccountCode { get; set; }
         public string TradeAccountName { get; set; }
-        public string OrderID { get; set; }
-        public string OrderLineDetailedStatusName { get; set; }
         public string ProductCode { get; set; }
         public string ProductName { get; set; }
-        public decimal? QuantityOrdered { get; set; }
+        public decimal? CurrentQuantity { get; set; }
         public string Piece { get; set; }
         public string Batch { get; set; }
     }

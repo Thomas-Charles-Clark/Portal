@@ -125,9 +125,9 @@ namespace Portal.Areas.Sales.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> FetchRingFencePopoverContents([FromBody] PassOrderBookOrderLinePopoverFetch dto)
+        public async Task<IHttpActionResult> FetchRingFencePopoverContents([FromBody]PassOrderBookRingFencePopoverFetch dto)
         {
-            return Ok(await PortalDB.FetchOrderBookOrderLineInspect(dto));
+            return Ok(await PortalDB.FetchOrderBookRingFenceInspect(dto));
         }
     }
 }

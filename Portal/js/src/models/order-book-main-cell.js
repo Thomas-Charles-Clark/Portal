@@ -74,7 +74,7 @@ const orderBookMainCell = ({ parent, data, grouping } = {
 
     //#region Functions
 
-    self.buildGroupDisplay = (groupName) => {
+    self.buildGroup = (groupName) => {
         self[`${groupName}_Display`] = ko.computed(() => {
             let orderValuePropertyName = `${groupName}_OrderValue`;
             let orderQuantityPropertyName = `${groupName}_OrderQuantity`;
@@ -98,19 +98,19 @@ const orderBookMainCell = ({ parent, data, grouping } = {
             }
 
             if (displayModes.indexOf(DISPLAY_MODE_VALUE_SUM) > -1 && self[orderValuePropertyName] != null) {
-                result.push(`<span title="Order Value: ${self[orderValuePropertyName]}">${self[orderValuePropertyName]}</span>`);
+                result.push(`<span title="Order Value: ${formatCurrency(self[orderValuePropertyName], 2, 'en-GB', 'GBP') }">${formatCurrency(self[orderValuePropertyName], 2, 'en-GB', 'GBP')}</span>`);
             }
 
             if (displayModes.indexOf(DISPLAY_MODE_QUANTITY_SUM) > -1 && self[orderQuantityPropertyName] != null) {
-                result.push(`<span title="Order Quantity: ${self[orderQuantityPropertyName]}">${self[orderQuantityPropertyName]}</span>`);
+                result.push(`<span title="Order Quantity: ${formatNumber(self[orderQuantityPropertyName], 2) }">${formatNumber(self[orderQuantityPropertyName], 2)}</span>`);
             }
 
             if (displayModes.indexOf(DISPLAY_MODE_LINE_COUNT) > -1 && self[lineCountPropertyName] != null) {
-                result.push(`<span title="Line Count: ${self[lineCountPropertyName]}">${self[lineCountPropertyName]}</span>`);
+                result.push(`<span title="Line Count: ${formatNumber(self[lineCountPropertyName], 0) }">${formatNumber(self[lineCountPropertyName], 0)}</span>`);
             }
 
             if (displayModes.indexOf(DISPLAY_MODE_ORDER_COUNT) > -1 && self[orderCountPropertyName] != null) {
-                result.push(`<span title="Order Count: ${self[orderCountPropertyName]}">${self[orderCountPropertyName]}</span>`);
+                result.push(`<span title="Order Count: ${formatNumber(self[orderCountPropertyName], 0)}">${formatNumber(self[orderCountPropertyName], 0)}</span>`);
             }
 
             //if (displayModes.indexOf(DISPLAY_MODE_PERCENTAGE_FULL) > -1) {
@@ -121,31 +121,126 @@ const orderBookMainCell = ({ parent, data, grouping } = {
             //    result.push(`< span title = "Percentage of Filtered Order Book: ${self[percentageFilteredPropertyName]}" > ${self[percentageFilteredPropertyName]}</span>`);
             //}
 
-            return result.join('\n');
+            return result.join('<br/>');
         }, self);
+
+        self[`${groupName}_PopoverDetails`] = {
+            html: true,
+            sanitize: false,
+            busy: ko.observable(true),
+            data: ko.observable(),
+            element: ko.observable(),
+            container: 'div.relative',
+            placement: 'bottom',
+            fallbackPlacements: ['top'],
+            customClass: 'group-cell-popover',
+            content: self.popoverContent,
+            trigger: 'click',
+            //container: 'td',
+            show: null,
+            shown: null,
+            hide: null,
+            hidden: null,
+            inserted: async function (event) {
+                let mainCell = ko.contextFor(event.target).$parent;
+                let data = {
+
+                }
+                let fn = null;
+                if (groupName.indexOf("Ring") == -1) {
+                    data = { OrderLineIDs: mainCell[`${groupName}_OrderLineIDs`] }
+                    fn = self.parent.fetchOrderLinePopoverContents;
+                } else {
+                    data = { RingFenceIDs: mainCell[`${groupName}_OrderLineIDs`] }
+                    fn = self.parent.fetchRingFencePopoverContents;
+                }
+                await fn(data)
+                    .then(data => {
+                        let popEl = self[`${groupName}_PopoverDetails`].popover.tip;
+                        if (popEl) {
+                            ko.cleanNode(popEl);
+                            let vm = self[`${groupName}_PopoverDetails`];
+                            ko.applyBindings(vm, popEl);
+
+                            let dat = ko.dataFor(popEl);
+
+                            dat.data(data);
+                            dat.busy(false);
+                        }
+                    });
+            },
+            popperConfig: function (defaultBsPopperConfig) {
+                return defaultBsPopperConfig;
+            }
+        };
     }
 
-    self.popoverDetails = {
-        html: true,
-        content: `<div class="blocker" style="display: flex; opacity: 1">
-                        <div class="loading-spinner"></div>
-                        <h4 class="mt-3">
-                            Please wait...
-                        </h4>
-                    </div>`,
-        trigger: 'click focus',
-        container: 'td',
-        show: null,
-        shown: null,
-        hide: null,
-        hidden: null,
-        inserted: async(event) => {
-            await self.parent.fetchOrderLinePopoverContents(self.BackOrder_OrderLineIDs)
-            .then(data => {
-                self.popoverDetails.popover._config.contents = 'Potato!';
-            });
-        }
-    };
+    self.popoverContent = `<div class="blocker" style="display: flex; opacity: 1.0" data-bind="flexFadeVisible: busy, click: (data, event) => { event.preventDefault(); }">
+            <div class="loading-spinner"></div>
+            <h4 class="mt-3">
+                Please wait...
+            </h4>
+        </div>
+        <div class="table-container" style="display: none;" data-bind="fadeVisible: !busy()">
+            <div class="d-inline-flex gap-5 mb-3 justify-content-center align-items-center">
+                <table class="totals-table table table-bordered table-condensed mb-0" data-bind="with: data">
+                    <colgroup>
+                        <!-- ko foreach: Object.keys(Totals) -->
+                        <col />
+                        <!-- /ko -->
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <!-- ko foreach: Object.keys(Totals) -->
+                            <th data-bind="attr: { title: $data.replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5') }">
+                                <span data-bind="text: $data.replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5');"></span>
+                            </th>
+                            <!-- /ko -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="subtotal-row">
+                        <th>
+                        Totals
+                        </th>
+                        <!-- ko foreach: Object.keys(Totals) -->
+                        <td>
+                            <span data-bind="text: $parent.Totals[$data]"></span>
+                        </td>
+                        <!-- /ko -->
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <table class="lines-table table table-bordered table-condensed" data-bind="with: data">
+                <colgroup>
+                    <!-- ko foreach: Object.keys(Data[0]) -->
+                    <col />
+                    <!-- /ko -->
+                </colgroup>
+                <thead>
+                    <tr>
+                        <!-- ko foreach: Object.keys(Data[0]) -->
+                        <th data-bind="attr: { title: $data.replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5') }">
+                            <span data-bind="text: $data.replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5');"></span>
+                        </th>
+                        <!-- /ko -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- ko foreach: Data -->
+                    <tr>
+                        <!-- ko foreach: Object.keys($data) -->
+                        <td  data-bind="attr: { title: $parent[$data] }">
+                            <span data-bind="text: $parent[$data]"></span>
+                        </td>
+                        <!-- /ko -->
+                    </tr>
+                    <!-- /ko -->
+                </tbody>
+            </table>
+        </div>`
 
     //self.bootstrapPopoverParams = {
     //    title: 'Order Line Details',
@@ -173,7 +268,7 @@ const orderBookMainCell = ({ parent, data, grouping } = {
         if (columnName.indexOf('RingFence') == -1) {
             self.parent.fetchOrderLinePopoverContents(data[`${columnName}_OrderLineIDs`]);
         } else {
-            self.parent.fetchRingFencedPopoverContents(data[`${columnName}_OrderLineIDs`]);
+            self.parent.fetchRingFencePopoverContents(data[`${columnName}_RingFenceIDs`]);
         }
     }
 
@@ -189,7 +284,7 @@ const orderBookMainCell = ({ parent, data, grouping } = {
         let columnNames = Object.keys(self).filter(k => {
             return ["parent",
                 "display",
-                "buildGroupDisplay",
+                "buildGroup",
                 "columnNameGroupingRegex",
                 "grouping",
                 "offsetY",
@@ -213,7 +308,7 @@ const orderBookMainCell = ({ parent, data, grouping } = {
         });
 
         groupedColumns.forEach(gc => {
-            self.buildGroupDisplay(gc.groupedColumnName);
+            self.buildGroup(gc.groupedColumnName);
         });
     }
 

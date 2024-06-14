@@ -89,3 +89,15 @@
         @Html.Partial("_ReallocateStockGrid")
     </main>
 </div>
+
+<script type="text/javascript">
+    document.body.addEventListener('click', (event) => {
+        if (event.target.closest('.group-cell-popover') == null) {
+            let list = document.querySelectorAll('.popover-cell a').forEach(e => {
+                let pop = bootstrap.Popover.getInstance(e);
+                if (pop)
+                    pop.hide();
+            });
+        }
+    });
+</script>

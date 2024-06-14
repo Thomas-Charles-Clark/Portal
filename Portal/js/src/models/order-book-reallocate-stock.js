@@ -22,7 +22,7 @@ const groupedDetailColumn = ({
         dataSet: [],
         displayModes: [],
         gridHeaderHeightObservable: ko.observable(),
-        originalGridHeaderHeight: 57,
+        originalGridHeaderHeight: 93,
         rowHeightObservable: ko.observable(),
         originalRowHeight: 36,
         rowPaddingY: 14,
@@ -99,54 +99,84 @@ const groupedDetailColumn = ({
         });
     });
 
-    self.displayTotal = ko.computed(() => {
-        let displayModes = self.parent.displayModes();
-
-        let result = [];
-
+    self.orderValue = ko.computed(() => {
         if (self.total()) {
-
-            if (displayModes.indexOf(DISPLAY_MODE_VALUE_SUM) > -1) {
-                let reducer = self.buildTotalReducer("OrderValue");
-                let value = self.detailColumns().reduce(reducer, 0);
-                result.push(`<span>${formatCurrency(value, 0, 'en-GB', 'GBP')}</span>`);
-            }
-
-            if (displayModes.indexOf(DISPLAY_MODE_QUANTITY_SUM) > -1) {
-                let reducer = self.buildTotalReducer("OrderQuantity");
-                let value = self.detailColumns().reduce(reducer, 0);
-                result.push(`<span>${formatNumber(value, 2) }</span>`);
-            }
-
-            if (displayModes.indexOf(DISPLAY_MODE_LINE_COUNT) > -1) {
-                let reducer = self.buildTotalReducer("LineCount");
-                let value = self.detailColumns().reduce(reducer, 0);
-                result.push(`<span>${formatNumber(value, 0) }</span>`);
-            }
-
-            if (displayModes.indexOf(DISPLAY_MODE_ORDER_COUNT) > -1) {
-                let reducer = self.buildTotalReducer("OrderCount");
-                let value = self.detailColumns().reduce(reducer, 0);
-                result.push(`<span>${formatNumber(value, 0) }</span>`);
-            }
+            let reducer = self.buildTotalReducer("OrderValue");
+            let value = self.detailColumns().reduce(reducer, 0);
+            return formatCurrency(value, 0, 'en-GB', 'GBP');
         }
-
-        return result.join('<br/>');
     }, self);
+
+    self.orderQuantity = ko.computed(() => {
+        if (self.total()) {
+            let reducer = self.buildTotalReducer("OrderQuantity");
+            let value = self.detailColumns().reduce(reducer, 0);
+            return formatNumber(value, 2);
+        }
+    }, self);
+
+    self.lineCount = ko.computed(() => {
+        if (self.total()) {
+            let reducer = self.buildTotalReducer("LineCount");
+            let value = self.detailColumns().reduce(reducer, 0);
+            return formatNumber(value, 0);
+        }
+    }, self);
+
+    self.orderCount = ko.computed(() => {
+        if (self.total()) {
+            let reducer = self.buildTotalReducer("OrderCount");
+            let value = self.detailColumns().reduce(reducer, 0);
+            return formatNumber(value, 0);
+        }
+    }, self);
+
+    //self.displayTotal = ko.computed(() => {
+    //    let displayModes = self.parent.displayModes();
+
+    //    let result = [];
+
+    //    if (self.total()) {
+
+    //        if (displayModes.indexOf(DISPLAY_MODE_VALUE_SUM) > -1) {
+    //            result.push(`<span class="sortable-column" data-bind="click: $root.sortByColumn">${}</span>`);
+    //        }
+
+    //        if (displayModes.indexOf(DISPLAY_MODE_QUANTITY_SUM) > -1) {
+    //            result.push(`<span class="sortable-column" data-bind="click: $root.sortByColumn">${ }</span>`);
+    //        }
+
+    //        if (displayModes.indexOf(DISPLAY_MODE_LINE_COUNT) > -1) {
+    //            let reducer = self.buildTotalReducer("LineCount");
+    //            let value = self.detailColumns().reduce(reducer, 0);
+    //            result.push(`<span class="sortable-column" data-bind="click: $root.sortByColumn">${formatNumber(value, 0) }</span>`);
+    //        }
+
+    //        if (displayModes.indexOf(DISPLAY_MODE_ORDER_COUNT) > -1) {
+    //            let reducer = self.buildTotalReducer("OrderCount");
+    //            let value = self.detailColumns().reduce(reducer, 0);
+    //            result.push(`<span class="sortable-column" data-bind="click: $root.sortByColumn">${formatNumber(value, 0) }</span>`);
+    //        }
+    //    }
+
+    //    return result.join('<br/>');
+    //}, self);
 
     //self.display = ko.computed(() => {
 
     //}, self);
 
+    let sortFunctions = [];
 
-    //let sortFunctions = [];
+    self.detailColumns().forEach(dc => {
+        sortFunctions.push(self.parent.generateSorting(dc.columnName));
+    });
 
-    //columnNames.forEach(cn => {
-    //    sortFunctions.push(self.generateSorting(cn));
-    //});
+    let extant = self.parent.allSortingOperations();
 
-    //self.allSortingOperations(sortFunctions.flat());
+    sortFunctions.push(extant);
 
+    self.parent.allSortingOperations(sortFunctions.flat());
 
     return self;
 };
@@ -408,7 +438,6 @@ const orderBookDetailViewModel = (() => {
                         borderWidth: self.borderWidth
                     })
                 });
-
             }
             else {
                 self.noResults(true);
@@ -537,9 +566,11 @@ const orderBookDetailViewModel = (() => {
 
     self.sortByColumn = (detailColumn) => {
         self.columns().forEach(c => {
-            if (c != detailColumn) {
-                c.direction(undefined);
-            }
+            c.detailColumns().forEach(dc => {
+                if (dc != detailColumn) {
+                    dc.direction(undefined);
+                }
+            });
         });
 
         let direction = detailColumn.direction();
@@ -570,7 +601,7 @@ const orderBookDetailViewModel = (() => {
 
     self.fetchOrderLinePopoverContents = (data) => {
         return new Promise((resolve, reject) => {
-            self.busy(true);
+            
             console.log("FetchOrderLinePopoverContents calling with", data);
 
             fetch('/api/orderbook/FetchOrderLinePopoverContents', {
@@ -582,38 +613,38 @@ const orderBookDetailViewModel = (() => {
             })
                 .then(window.handleFetchResponse)
                 .then(data => {
-                    self.busy(false);
                     console.log("FetchOrderLinePopoverContents returned", data);
                     resolve(data);
                 })
                 .catch(err => {
-                    self.busy(false);
                     window.catchFetchError(err);
-                    reject();
+                    reject(err);
                 })
         });
 
     }
 
     self.fetchRingFencePopoverContents = (data) => {
-        self.busy(true);
+        return new Promise((resolve, reject) => {
+            console.log("FetchRingFencePopoverContents calling with", data);
 
-        fetch('/api/orderbook/FetchRingFencePopoverContents', {
-            method: "POST",
-            headers: window.fetchHeaders,
-            cache: 'no-store',
-            credentials: 'same-origin',
-            body: JSON.stringify(data)
-        })
-            .then(window.handleFetchResponse)
-            .then(data => {
-                self.busy(false);
-                console.log("FetchRingFencePopoverContents returned", data);
+            fetch('/api/orderbook/FetchRingFencePopoverContents', {
+                method: "POST",
+                headers: window.fetchHeaders,
+                cache: 'no-store',
+                credentials: 'same-origin',
+                body: JSON.stringify(data)
             })
-            .catch(err => {
-                self.busy(false);
-                window.catchFetchError(err);
-            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    console.log("FetchRingFencePopoverContents returned", data);
+                    resolve(data);
+                })
+                .catch(err => {
+                    window.catchFetchError(err);
+                    reject(err);
+                });
+        });
     }
 
     //#endregion

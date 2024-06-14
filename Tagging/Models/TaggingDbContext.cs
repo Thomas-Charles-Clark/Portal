@@ -81,7 +81,7 @@ namespace Tagging.Models
 
         public DbSet<TradeAccountFilter> TradeAccountFilters { get; set; }
 
-        public DbSet<ProductFilter> ProductFilters { get; set; }
+        public DbSet<TaggingProductFilter> ProductFilters { get; set; }
 
         public SalesStatisticsTaggingResult TagCustomersSearch(PassTagCustomersSearch objFilters)
         {

@@ -16,21 +16,70 @@
     <table id="order-book-detail-table" class="table table-condensed table-striped table-hover order-book-detail-table">
         <colgroup>
             <!-- ko foreach: $parent.columns -->
-            <col style="width: 240px;" />
+            <col />
             <!-- /ko -->
+            <col />
         </colgroup>
         <thead>
             <tr>
                 <!-- ko foreach: $parent.columns -->
-                <th class="sortable-column" data-bind="click: $root.sortByColumn">
+                <th class="sortable-column" data-bind="">
                     <span data-bind="text: columnNameDisplay"></span>
                 </th>
                 <!-- /ko -->
+                <th colspan="500"></th>
             </tr>
             <tr class="subtotal-row">
                 <!-- ko foreach: $parent.columns -->
-                <th data-bind="html: displayTotal"></th>
+                <th>
+                    <!-- ko if: $index() == 1 -->
+                    <span class="d-block text-end">
+                        Totals
+                    </span>
+                    <!-- /ko -->
+                    <!-- ko if: displayModes.indexOf(DISPLAY_MODE_VALUE_SUM) > -1 -->
+                    <span data-bind="with: detailColumns().find(dc => dc.columnName == `${$data.columnName}_OrderValue`)">
+                        <a href="javascript:;" class="sortable-column d-block" data-bind="click: $root.sortByColumn">
+                            <span data-bind="text: formatCurrency(total, 0, 'en-GB', 'GBP'), attr: { title: `${$data.columnName} Order Value: ${formatCurrency(total, 0, 'en-GB', 'GBP')}` }"></span>
+                            <!-- ko if: direction -->
+                            <i class="bi" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
+                            <!-- /ko -->
+                        </a>
+                    </span>
+                    <!-- /ko -->
+                    <!-- ko if: displayModes.indexOf(DISPLAY_MODE_QUANTITY_SUM) > -1 -->
+                    <span data-bind="with: detailColumns().find(dc => dc.columnName == `${$data.columnName}_OrderQuantity`)">
+                        <a href="javascript:;" class="sortable-column d-block" data-bind="click: $root.sortByColumn">
+                            <span data-bind="text: formatNumber(total, 2), attr: { title: `${$data.columnName} Order Quantity: ${formatNumber(total, 2)}` }"></span>
+                            <!-- ko if: direction -->
+                            <i class="bi" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
+                            <!-- /ko -->
+                        </a>
+                    </span>
+                    <!-- /ko -->
+                    <!-- ko if: displayModes.indexOf(DISPLAY_MODE_LINE_COUNT) > -1 -->
+                    <span data-bind="with: detailColumns().find(dc => dc.columnName == `${$data.columnName}_LineCount`)">
+                        <a href="javascript:;" class="sortable-column d-block" data-bind="click: $root.sortByColumn">
+                            <span data-bind="text: formatNumber(total, 0), attr: { title: `${$data.columnName} Line Count: ${formatNumber(total, 2)}` }"></span>
+                            <!-- ko if: direction -->
+                            <i class="bi" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
+                            <!-- /ko -->
+                        </a>
+                    </span>
+                    <!-- /ko -->
+                    <!-- ko if: displayModes.indexOf(DISPLAY_MODE_ORDER_COUNT) > -1 -->
+                    <span data-bind="with: detailColumns().find(dc => dc.columnName == `${$data.columnName}_OrderCount`)">
+                        <a href="javascript:;" class="sortable-column d-block" data-bind="click: $root.sortByColumn">
+                            <span data-bind="text: formatNumber(total, 0), attr: { title: `${$data.columnName} Order Count: ${formatNumber(total, 2)}` }"></span>
+                            <!-- ko if: direction -->
+                            <i class="bi" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
+                            <!-- /ko -->
+                        </a>
+                    </span>
+                    <!-- /ko -->
+                </th>
                 <!-- /ko -->
+                <th colspan="500"></th>
             </tr>
         </thead>
         <tbody class="virtual-spacing">
@@ -41,17 +90,20 @@
         <tbody data-bind="foreach: visibleItems">
             <tr>
                 <!-- ko foreach: $parentContext.$parent.columns -->
-                <!-- ko if: $index() < 5 -->
+                <!-- ko if: $index() < 4 -->
                 <td>
-                    <sapn data-bind="html: $parent[`${columnName}_Display`]"></sapn>
+                    <span data-bind="html: $parent[`${columnName}_Display`]"></span>
                 </td>
                 <!-- /ko -->
-                <!-- ko ifnot: $index() < 5 -->
+                <!-- ko ifnot: $index() < 4 -->
                 <td class="popover-cell">
-                    <a class="btn btn-link" data-bind="html: $parent[`${columnName}_Display`], actualBootstrapPopover: $parent.popoverDetails"></a>
+                    <div class="relative">
+                        <a href="javascript:;" data-bind="html: $parent[`${columnName}_Display`], actualBootstrapPopover: { context: $parent, details: $parent[`${columnName}_PopoverDetails`] }"></a>
+                    </div>
                 </td>
                 <!-- /ko -->
                 <!-- /ko -->
+                <td colspan="500"></td>
             </tr>
         </tbody>
         <tbody class="virtual-spacing">

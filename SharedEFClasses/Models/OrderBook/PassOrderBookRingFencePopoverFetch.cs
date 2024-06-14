@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models.OrderBook
 {
-    internal class PassOrderBookRingFencePopoverFetch
+    public class PassOrderBookRingFencePopoverFetch
     {
-        public IEnumerable<string> RingFenceIDs { get; set; } = Enumerable.Empty<string>();
+        public string RingFenceIDs { get; set; }
     }
 }

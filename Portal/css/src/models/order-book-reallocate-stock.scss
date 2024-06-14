@@ -1,5 +1,7 @@
 ﻿@import "common.scss";
+
 $light-blue-background: tint-color($blue-200, 90%);
+$blue-border: 1px solid $blue-700;
 
 #order-book-main {
     flex: 1;
@@ -13,6 +15,8 @@ $light-blue-background: tint-color($blue-200, 90%);
 .blocker {
     border-radius: 0;
 }
+
+$vertical-border: 1px solid $gray-400;
 
 #order-book-detail-scroller-container {
     /*max-height: calc(100vh - 57px);*/
@@ -30,6 +34,39 @@ $light-blue-background: tint-color($blue-200, 90%);
         width: 100%;
         border-spacing: 0;
         transform: translate3d(0, 0, 0);
+        $col-width: 140px;
+        $col-wider: 280px;
+        $col-narrower: 110px;
+        $col-narrowest: 80px;
+
+        colgroup {
+            col {
+                width: $col-width;
+            }
+
+            col:nth-of-type(2) {
+                width: $col-wider;
+            }
+
+            col:nth-of-type(3) {
+                width: $col-narrowest;
+            }
+
+            col:nth-of-type(4),
+            col:nth-of-type(4) ~ col {
+                width: $col-width;
+            }
+
+            col:nth-of-type(4) ~ col {
+                width: $col-width;
+            }
+        }
+
+        &:has(tr:first-child .group-cell-popover) {
+            thead {
+                z-index: 0;
+            }
+        }
 
         tbody.virtual-spacing {
             tr {
@@ -84,16 +121,297 @@ $light-blue-background: tint-color($blue-200, 90%);
                 border: none;
                 border-width: 0;
 
+
+                &.bg-blue {
+                    th, td {
+                        background-color: $light-blue-background;
+                    }
+                }
+
+                th {
+                    border-left: 0;
+                    border-right: 1px solid $gray-400;
+                    border-bottom: 1px solid $gray-400;
+                }
+
                 td {
                     height: 36px;
                     overflow-x: hidden;
                     border-bottom: 1px solid $gray-400;
+
+                    &:nth-of-type(2) {
+                        text-align: right;
+                    }
+
+                    &:nth-of-type(4) {
+                        text-align: center;
+                    }
 
                     span {
                         display: block;
                         white-space: nowrap;
                         text-overflow: ellipsis;
                         overflow: hidden;
+                    }
+
+                    .group-cell-popover {
+                        z-index: 2;
+                        width: 1240px;
+                        max-width: unset;
+                        box-shadow: 0 0 12px 3px #888;
+
+                        .popover-body {
+                            position: relative;
+                            min-width: 240px;
+                            min-height: 120px;
+                            padding: $xl-gutter;
+
+                            .blocker {
+                                border-radius: $popover-inner-border-radius;
+                            }
+
+                            .table-container {
+                                display: flex;
+                                flex-direction: column;
+
+                                .totals-table,
+                                .lines-table {
+                                    width: 100%;
+                                    max-width: 640px;
+                                    table-layout: fixed;
+                                    margin-bottom: $l-gutter;
+
+                                    colgroup {
+                                        col {
+                                            width: 120px;
+                                        }
+                                    }
+
+                                    thead {
+                                        tr {
+                                            th {
+                                                font-size: $font-size-sm;
+                                                height: auto;
+                                                border-left: 1px solid $gray-400;
+
+                                                &:last-of-type {
+                                                    border-right: none;
+                                                }
+                                            }
+
+                                            td {
+                                                font-weight: $font-weight-bold;
+                                            }
+                                        }
+                                    }
+
+                                    tbody {
+                                        tr {
+                                            td {
+                                                border-left: 1px solid $gray-400;
+
+                                                &:first-of-type {
+                                                    border-left: none;
+                                                }
+
+                                                &:last-of-type {
+                                                    border-right: none;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    thead, tbody {
+                                        td:nth-of-type(1),
+                                        th:nth-of-type(1) {
+                                            display: table-cell;
+                                            border-left: 0;
+                                        }
+
+                                        td:last-of-type {
+                                            border-right: 0;
+                                        }
+
+                                        th:first-of-type {
+                                            border-right: $vertical-border;
+                                        }
+
+
+                                        td {
+                                            border-right: 0;
+                                        }
+                                    }
+                                }
+
+                                .totals-table {
+                                    align-self: flex-start;
+                                    margin-bottom: $xl-gutter;
+
+                                    thead,
+                                    tbody {
+                                        tr {
+                                            th,
+                                            td {
+                                                text-align: right;
+                                                vertical-align: middle;
+                                                font-weight: $font-weight-bold;
+                                            }
+
+                                            &.subtotal-row {
+                                                th, td {
+                                                    background-color: $light-blue-background;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                .lines-table {
+                                    margin-bottom: 0;
+
+                                    thead {
+                                        tr {
+                                            th, td {
+                                                font-size: $font-size-sm;
+                                            }
+                                        }
+                                    }
+
+                                    tbody {
+                                        tr {
+                                            td {
+                                                font-size: $font-size-sm;
+                                                height: $sm-gutter;
+                                                padding: $vsm-gutter;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+        }
+
+        thead,
+        tbody {
+
+            td:nth-of-type(1),
+            th:nth-of-type(1) {
+                display: none;
+            }
+
+            @for $i from 1 through 7 {
+
+                td:nth-of-type(#{$i}) {
+                    background-color: $white;
+                }
+
+                tr.subtotal-row {
+                    th:nth-of-type(#{$i}) {
+                        background-color: $light-blue-background;
+                    }
+                }
+
+                th:nth-of-type(#{$i}),
+                td:nth-of-type(#{$i}) {
+                    z-index: $i;
+                    position: sticky;
+                    left: 0;
+                    border-left: $vertical-border;
+                    //calc($i * $col-width);
+                }
+            }
+
+            @for $j from 7 through 30 {
+
+                td:nth-of-type(#{$j}) {
+                    background-color: $white;
+                    position: relative;
+                    z-index: $j;
+                    top: 0;
+                }
+
+                th:nth-of-type(#{$j}) {
+                    position: relative;
+                    z-index: $j;
+                    top: 0;
+                }
+
+                tr.subtotal-row {
+                    th {
+                        top: 0;
+                        background-color: $light-blue-background;
+                    }
+                }
+            }
+
+            td:nth-of-type(2),
+            th:nth-of-type(2) {
+                border-left: none;
+                z-index: 50;
+                border-right: 1px solid $gray-400;
+            }
+
+            td:nth-of-type(3),
+            th:nth-of-type(3) {
+                border-left: none;
+            }
+
+            td:nth-of-type(4),
+            th:nth-of-type(4) {
+                border-right: $vertical-border;
+                border-left: $vertical-border;
+            }
+
+            td:nth-of-type(4) ~ td,
+            th:nth-of-type(4) ~ th {
+                text-align: right;
+            }
+
+            th:nth-of-type(5),
+            td:nth-of-type(5) {
+                border-left: none;
+                border-right: $vertical-border;
+                position: sticky;
+                z-index: 7;
+                left: $col-width;
+            }
+
+            th:nth-of-type(6),
+            td:nth-of-type(6) {
+                border-left: none;
+                border-right: $vertical-border;
+                position: sticky;
+                z-index: 7;
+                left: calc($col-width * 2);
+            }
+
+            th:nth-of-type(7),
+            td:nth-of-type(7) {
+                border-left: none;
+            }
+
+            th:nth-of-type(7) ~ th,
+            td:nth-of-type(7) ~ td {
+                border-left: $vertical-border;
+            }
+
+            @for $k from 1 through 50 {
+                tr:nth-child(#{$k}) {
+                    z-index: calc(#{$k} * -1);
+
+                    @for $j from 7 through 30 {
+                        th:nth-child(#{$j}),
+                        td:nth-child(#{$j}) {
+                            z-index: calc(#{$j} * -1);
+                        }
                     }
                 }
             }
@@ -120,12 +438,32 @@ $light-blue-background: tint-color($blue-200, 90%);
     max-height: 100vh;
 }
 
-.popover-cell {
-    .popover {
-        .popover-body {
-            position: relative;
-            min-width: 240px;
-            min-height: 120px;
+#order-book-detail-scroller-container {
+    #order-book-detail-table {
+        tbody {
+            tr {
+                td.popover-cell {
+                    overflow: visible;
+
+                    &:has(.group-cell-popover) {
+                        z-index: 10000;
+                    }
+
+                    .popover {
+                        z-index: 1000;
+                    }
+
+                    a {
+                        display: inline-block;
+
+
+
+                        span {
+                            display: inline;
+                        }
+                    }
+                }
+            }
         }
     }
 }

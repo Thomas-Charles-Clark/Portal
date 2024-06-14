@@ -146,12 +146,23 @@ namespace SharedEFClasses.Models
 
         public async Task<OrderBookOrderLineInspectResult> FetchOrderBookOrderLineInspect(PassOrderBookOrderLinePopoverFetch dto)
         {
-            var reader = await this.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_MainSummary_Select]", dto, null, 30, CommandType.StoredProcedure);
+            var reader = await this.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_OrderLine_Inspect]", dto, null, 30, CommandType.StoredProcedure);
 
             return new OrderBookOrderLineInspectResult()
             {
                 Totals = await reader.ReadSingleAsync<OrderBookOrderLineInspectTotal>(),
                 Data = await reader.ReadAsync<OrderBookOrderLineInspectData>()
+            };
+        }
+
+        public async Task<OrderBookRingFenceInspectResult> FetchOrderBookRingFenceInspect(PassOrderBookRingFencePopoverFetch dto)
+        {
+            var reader = await this.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_RingFence_Inspect]", dto, null, 30, CommandType.StoredProcedure);
+
+            return new OrderBookRingFenceInspectResult()
+            {
+                Totals = await reader.ReadSingleAsync<OrderBookRingFenceInspectTotal>(),
+                Data = await reader.ReadAsync<OrderBookRingFenceInspectData>()
             };
         }
     }

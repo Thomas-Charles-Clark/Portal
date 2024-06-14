@@ -112,6 +112,8 @@
 
         self.detailModaliFrameTargetElement.replaceChildren(iFrame);
 
+        self.parent.detailModaliFrame = iFrame;
+
         self.detailModal.show();
     }
 

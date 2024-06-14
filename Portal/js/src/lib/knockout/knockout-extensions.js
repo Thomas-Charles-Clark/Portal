@@ -1828,11 +1828,15 @@ ko.bindingHandlers.bootstrapPopover = {
 
 ko.bindingHandlers.actualBootstrapPopover = {
     init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-        var options = ko.utils.unwrapObservable(valueAccessor());
+        var params = ko.utils.unwrapObservable(valueAccessor());
+
+        var options = params.details;
 
         var pop = new bootstrap.Popover(element, {
             element: element,
-            html: true,
+            html: options.html ?? true,
+            sanitize: options.sanitize ?? false,
+            customClass: options.customClass,
             content: options.content || `<div class="blocker" style="display: flex; opacity: 1">
                         <div class="loading-spinner"></div>
                         <h4 class="mt-3">
@@ -1840,11 +1844,14 @@ ko.bindingHandlers.actualBootstrapPopover = {
                         </h4>
                     </div>`,
             trigger: options.trigger || 'hover focus click',
-            container: element.closest(options.container) || element.closest('div'),
-
+            container: element.closest(options.container) || 'body',
+            placement: options.placement || 'auto',
+            fallbackPlacements: options.fallbackPlacements || ['top', 'right', 'bottom', 'left'],
+            popperConfig: options.popperConfig ?? {}
         });
 
-        ko.unwrap(valueAccessor()).popover = pop;
+        params.details.popover = pop;
+        params.details.popoverElement = element;
 
         element.addEventListener('show.bs.popover', options.show);
         element.addEventListener('shown.bs.popover', options.shown);

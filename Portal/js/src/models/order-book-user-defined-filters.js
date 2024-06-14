@@ -6,10 +6,10 @@
 const EMPTY_STRING = '',
     yesNoOptions = [{
         Name: 'Yes',
-        Value: true
+        Value: 'true'
     }, {
         Name: 'No',
-        Value: false
+        Value: 'false'
     }]
 
 const orderBookUserDefinedFiltersViewModel = ({

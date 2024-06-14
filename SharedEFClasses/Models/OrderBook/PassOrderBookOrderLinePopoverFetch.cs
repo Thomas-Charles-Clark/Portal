@@ -8,6 +8,6 @@ namespace SharedEFClasses.Models.OrderBook
 {
     public class PassOrderBookOrderLinePopoverFetch
     {
-        public IEnumerable<string> OrderLineIDs { get; set; } = Enumerable.Empty<string>();
+        public string OrderLineIDs { get; set; }
     }
 }

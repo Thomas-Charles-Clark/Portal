@@ -678,7 +678,6 @@ var customerTaggingViewModel = function () {
         sortable: {
             initialDirection: "desc"
         },
-        height: 730,
         scrollable: true,
         columns: [
             {

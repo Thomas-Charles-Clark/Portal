@@ -8,9 +8,7 @@ namespace SharedEFClasses.Models.OrderBook
 {
     public class OrderBookRingFenceInspectTotal
     {
-        public decimal OrderValue { get; set; }
-        public decimal OrderQuantity { get; set; }
-        public int OrderCount { get; set; }
-        public int LineCount { get; set; }
+        public int RingFenceCount { get; set; }
+        public decimal RingFenceQuantity { get; set; }
     }
 }

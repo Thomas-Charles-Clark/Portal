@@ -55,20 +55,20 @@ const orderBookAdvancedFiltersViewModel = ({
     self.orderStatusGroup = ko.observable();
     self.orderStatusGroupAwaitingBinding = ko.observable(params.orderStatusGroupId != null && params.orderStatusGroupId != '');
 
-    self.hasLinkedPOId = ko.observable(params.hasLinkedPO == "1" ? true : params.hasLinkedPO == "0" ? false : '');
+    self.hasLinkedPOId = ko.observable(params.hasLinkedPO == "1" ? "true" : params.hasLinkedPO == "0" ? "false" : '');
     self.hasLinkedPO = ko.observable();
 
-    self.linkedPODelayedId = ko.observable(params.linkedPODelayed == "1" ? true : params.linkedPODelayed == "0" ? false : '');
+    self.linkedPODelayedId = ko.observable(params.linkedPODelayed == "1" ? "true" : params.linkedPODelayed == "0" ? "false" : '');
     self.linkedPODelayed = ko.observable();
 
 
 
 
 
-    self.couldBeFulfilledFromFreeStockId = ko.observable(params.couldBeFulfilledFromFreeStock == "1" ? true : params.couldBeFulfilledFromFreeStock == "0" ? false : '');
+    self.couldBeFulfilledFromFreeStockId = ko.observable(params.couldBeFulfilledFromFreeStock == "1" ? "true" : params.couldBeFulfilledFromFreeStock == "0" ? "false" : '');
     self.couldBeFulfilledFromFreeStock = ko.observable();
 
-    self.couldBeFulfilledFromStockAllocatedToAnotherOrderId = ko.observable(params.couldBeFulfilledFromStockAllocatedToAnotherOrder == "1" ? true : params.couldBeFulfilledFromStockAllocatedToAnotherOrder == "0" ? false : '');
+    self.couldBeFulfilledFromStockAllocatedToAnotherOrderId = ko.observable(params.couldBeFulfilledFromStockAllocatedToAnotherOrder == "1" ? "true" : params.couldBeFulfilledFromStockAllocatedToAnotherOrder == "0" ? "false" : '');
     self.couldBeFulfilledFromStockAllocatedToAnotherOrder = ko.observable();
 
     self.lineStatusIdGreaterThanId = ko.observable(params.lineStatusIdGreaterThan ?? '');
@@ -79,25 +79,25 @@ const orderBookAdvancedFiltersViewModel = ({
     self.lineStatusIdLessThan = ko.observable();
     self.lineStatusIdLessThanAwaitingBinding = ko.observable(params.lineStatusIdLessThan != null && params.lineStatusIdLessThan != '');
 
-    self.lineStatusChangedTodayId = ko.observable(params.lineStatusChangedToday == "1" ? true : params.lineStatusChangedToday == "0" ? false : '');
+    self.lineStatusChangedTodayId = ko.observable(params.lineStatusChangedToday == "1" ? "true" : params.lineStatusChangedToday == "0" ? "false" : '');
     self.lineStatusChangedToday = ko.observable();
 
-    self.detailedLineStatusIsNullId = ko.observable(params.detailedLineStatusIsNull == "1" ? true : params.detailedLineStatusIsNull == "0" ? false : '');
+    self.detailedLineStatusIsNullId = ko.observable(params.detailedLineStatusIsNull == "1" ? "true" : params.detailedLineStatusIsNull == "0" ? "false" : '');
     self.detailedLineStatusIsNull = ko.observable();
 
-    self.expressDeliveryId = ko.observable(params.expressDelivery == "1" ? true : params.expressDelivery == "0" ? false : '');
+    self.expressDeliveryId = ko.observable(params.expressDelivery == "1" ? "true" : params.expressDelivery == "0" ? "false" : '');
     self.expressDelivery = ko.observable();
 
-    self.freeDeliveryId = ko.observable(params.freeDelivery == "1" ? true : params.freeDelivery == "0" ? false : '');
+    self.freeDeliveryId = ko.observable(params.freeDelivery == "1" ? "true" : params.freeDelivery == "0" ? "false" : '');
     self.freeDelivery = ko.observable();
 
-    self.reservedId = ko.observable(params.reserved == "1" ? true : params.reserved == "0" ? false : '');
+    self.reservedId = ko.observable(params.reserved == "1" ? "true" : params.reserved == "0" ? "false" : '');
     self.reserved = ko.observable();
 
-    self.customerHeldForFullDespatchId = ko.observable(params.customerHeldForFullDespatch == "1" ? true : params.customerHeldForFullDespatch == "0" ? false : '');
+    self.customerHeldForFullDespatchId = ko.observable(params.customerHeldForFullDespatch == "1" ? "true" : params.customerHeldForFullDespatch == "0" ? "false" : '');
     self.customerHeldForFullDespatch = ko.observable();
 
-    self.unpaidProformaId = ko.observable(params.unpaidProforma == "1" ? true : params.unpaidProforma == "0" ? false : '');
+    self.unpaidProformaId = ko.observable(params.unpaidProforma == "1" ? "true" : params.unpaidProforma == "0" ? "false" : '');
     self.unpaidProforma = ko.observable();
 
     //#endregion
