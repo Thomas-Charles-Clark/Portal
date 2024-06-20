@@ -318,6 +318,14 @@ const orderBookViewModel = (() => {
         });
     }
 
+    self.copyLink = () => {
+
+        self.detailModaliFrame.contentWindow.postMessage({
+            action: 'copyLink'
+        });
+
+    }
+
     //#endregion
 
 
@@ -328,6 +336,34 @@ const orderBookViewModel = (() => {
     document.addEventListener('setDetailModalTitle', (e) => {
         self.detailModalTitleElement.innerHTML = e.detail.join("");
     }, false);
+
+    document.addEventListener('copyLinkToClipboard', async (e) => {
+        await self.writeClipboardText(e.detail.text);
+    }, false);
+
+    document.addEventListener('click', async (e) => {
+        let ele = document.getElementById("copy-to-clipboard-btn");
+        if (ele) {
+            let bstt = bootstrap.Tooltip.getOrCreateInstance(ele);
+            if (bstt) {
+                bstt.hide();
+            }
+        }
+    }, false);
+
+    self.writeClipboardText = async (text) => {
+        try {
+            await navigator.clipboard.writeText(`${window.location.protocol}//${window.location.host}${text}`)
+                .then(ev => {
+                    console.log("copied link to clipboard", text);
+                    let ele = document.getElementById("copy-to-clipboard-btn");
+                    let bstt = bootstrap.Tooltip.getOrCreateInstance(ele);
+                    bstt.show();
+                });
+        } catch (error) {
+            window.showError(error.message);
+        }
+    }
 
     //#endregion
 

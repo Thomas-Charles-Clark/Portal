@@ -7031,13 +7031,20 @@ var customerSearchSlicerModel = function (parent) {
     var repLocked = false;
     var areaLocked = false;
 
-    // Stina! (327) Stina is happy. Also now Lena Eriksson, in the hopes that Stina continues to be happy.
-    if ([28871, 1583702].indexOf(userId) > -1) {
+    // Stina (28871) and Eva Ehlin (1583444) - 19/06/2024.
+    if ([28871, 1583702, 1583444].indexOf(userId) > -1) {
         areaId = salesAreaStina;
         areaLocked = true;
     }
 
-    // Frida! (176) Frida is happy.
+    // Lena Eriksson (1583702) 19/06/2024 should be able to view both Stina and Martina's customers. Market locked, not rep locked.
+    if ([1583702].indexOf(userId) > -1) {
+        areaId = null;
+        areaLocked = false;
+        marketId = 18;
+    }
+
+    // Frida (566864)
     if ([566864].indexOf(userId) > -1) {
         areaId = salesAreaStina;
         areaLocked = true;
@@ -7045,7 +7052,7 @@ var customerSearchSlicerModel = function (parent) {
         repLocked = true;
     }
 
-    // Martina! (108)
+    // Martina (236869)
     if ([236869].indexOf(userId) > -1) {
         areaId = salesAreaMartina;
         areaLocked = true;
@@ -7053,14 +7060,7 @@ var customerSearchSlicerModel = function (parent) {
         repLocked = true;
     }
 
-    if ([8, 43438, 1395354].indexOf(userId) > -1) {
-        areaId = null;
-        areaLocked = false;
-        repLocked = false;
-        marketId = 18;
-        marketReadonly = true;
-    }
-
+    // Me (8), Ida (43438), Lisa Antilla (1395354)
     if ([8, 43438, 1395354].indexOf(userId) > -1) {
         areaId = null;
         areaLocked = false;

@@ -39,42 +39,42 @@
                     <!-- /ko -->
                     <!-- ko if: displayModes.indexOf(DISPLAY_MODE_VALUE_SUM) > -1 -->
                     <span data-bind="with: detailColumns().find(dc => dc.columnName == `${$data.columnName}_OrderValue`)">
-                        <a href="javascript:;" class="sortable-column d-block" data-bind="click: $root.sortByColumn">
-                            <span data-bind="text: formatCurrency(total, 0, 'en-GB', 'GBP'), attr: { title: `${$data.columnName} Order Value: ${formatCurrency(total, 0, 'en-GB', 'GBP')}` }"></span>
+                        <span class="sortable-column d-block" data-bind="click: $root.sortByColumn">
+                            <span data-bind="text: formatCurrency(total, 0, 'en-GB', 'GBP'), attr: { title: `Order Value: ${formatCurrency(total, 0, 'en-GB', 'GBP')} (Click to Sort)` }"></span>
                             <!-- ko if: direction -->
                             <i class="bi" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
                             <!-- /ko -->
-                        </a>
+                        </span>
                     </span>
                     <!-- /ko -->
                     <!-- ko if: displayModes.indexOf(DISPLAY_MODE_QUANTITY_SUM) > -1 -->
                     <span data-bind="with: detailColumns().find(dc => dc.columnName == `${$data.columnName}_OrderQuantity`)">
-                        <a href="javascript:;" class="sortable-column d-block" data-bind="click: $root.sortByColumn">
-                            <span data-bind="text: formatNumber(total, 2), attr: { title: `${$data.columnName} Order Quantity: ${formatNumber(total, 2)}` }"></span>
+                        <span class="sortable-column d-block" data-bind="click: $root.sortByColumn">
+                            <span data-bind="text: formatNumber(total, 2), attr: { title: `Order Quantity: ${formatNumber(total, 2)} (Click to Sort)` }"></span>
                             <!-- ko if: direction -->
                             <i class="bi" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
                             <!-- /ko -->
-                        </a>
+                        </span>
                     </span>
                     <!-- /ko -->
                     <!-- ko if: displayModes.indexOf(DISPLAY_MODE_LINE_COUNT) > -1 -->
                     <span data-bind="with: detailColumns().find(dc => dc.columnName == `${$data.columnName}_LineCount`)">
-                        <a href="javascript:;" class="sortable-column d-block" data-bind="click: $root.sortByColumn">
-                            <span data-bind="text: formatNumber(total, 0), attr: { title: `${$data.columnName} Line Count: ${formatNumber(total, 2)}` }"></span>
+                        <span class="sortable-column d-block" data-bind="click: $root.sortByColumn">
+                            <span data-bind="text: formatNumber(total, 0), attr: { title: `Line Count: ${formatNumber(total, 2)} (Click to Sort)` }"></span>
                             <!-- ko if: direction -->
                             <i class="bi" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
                             <!-- /ko -->
-                        </a>
+                        </span>
                     </span>
                     <!-- /ko -->
                     <!-- ko if: displayModes.indexOf(DISPLAY_MODE_ORDER_COUNT) > -1 -->
                     <span data-bind="with: detailColumns().find(dc => dc.columnName == `${$data.columnName}_OrderCount`)">
-                        <a href="javascript:;" class="sortable-column d-block" data-bind="click: $root.sortByColumn">
-                            <span data-bind="text: formatNumber(total, 0), attr: { title: `${$data.columnName} Order Count: ${formatNumber(total, 2)}` }"></span>
+                        <span class="sortable-column d-block" data-bind="click: $root.sortByColumn">
+                            <span data-bind="text: formatNumber(total, 0), attr: { title: `Order Count: ${formatNumber(total, 2)} (Click to Sort)` }"></span>
                             <!-- ko if: direction -->
                             <i class="bi" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
                             <!-- /ko -->
-                        </a>
+                        </span>
                     </span>
                     <!-- /ko -->
                 </th>
@@ -83,8 +83,8 @@
             </tr>
         </thead>
         <tbody class="virtual-spacing">
-            <tr>
-                <td colspan="500" style="height: 0px;" data-bind="style: { height: `${gridScrollTopPadding()}px` }"></td>
+            <tr style="height: 0px;" data-bind="style: { height: `${gridScrollTopPadding()}px` }">
+                <td colspan="500"></td>
             </tr>
         </tbody>
         <tbody data-bind="foreach: visibleItems">
@@ -107,8 +107,8 @@
             </tr>
         </tbody>
         <tbody class="virtual-spacing">
-            <tr class="final-row">
-                <td colspan="500" style="height: 0px;" data-bind="style: { height: `${gridScrollBottomPadding()}px` }"></td>
+            <tr class="final-row" style="height: 0px;" data-bind="style: { height: `${gridScrollBottomPadding()}px` }">
+                <td colspan="500"></td>
             </tr>
         </tbody>
     </table>

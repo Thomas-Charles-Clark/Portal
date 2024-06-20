@@ -728,7 +728,7 @@ const orderBookUserDefinedFiltersViewModel = ({
     self.orderParams = kendoMDCDropDownList({
         label: 'Order ID / Reference',
         odata: true,
-        endPoint: `/odata/Orders/Default.GetOrdersForOrderBookSummary`,
+        endPoint: `/odata/OrderBooksGrouped/Default.GetOrdersForOrderBookSummary`,
         textField: 'ShortLabel',
         valueField: 'OrderID',
         virtual: true,
@@ -739,7 +739,7 @@ const orderBookUserDefinedFiltersViewModel = ({
             valueMapper: function (options) {
                 if (options.value) {
                     $.ajax({
-                        url: `/odata/Orders/Default.OrderValueMapper(orderId='${options.value}')`,
+                        url: `/odata/OrderBooksGrouped/Default.OrderValueMapper(orderId='${options.value}')`,
                         type: 'GET',
                         success: function (data) {
                             options.success(data.value);
@@ -768,7 +768,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         height: 340,
         sort: {
             dir: 'desc',
-            field: 'OrderHeadID'
+            field: 'OrderID'
         },
         dataBound: (e) => self.orderAwaitingBinding(false),
         clearFunction: self.genericUnsavedChangesClear,

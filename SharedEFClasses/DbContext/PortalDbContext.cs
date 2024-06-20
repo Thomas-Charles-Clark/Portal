@@ -9,6 +9,7 @@ using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Maintenance;
 using SharedEFClasses.Models.Marketing;
 using SharedEFClasses.Models.Mertexer;
+using SharedEFClasses.Models.OrderBook;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Press;
 using SharedEFClasses.Models.Products;
@@ -409,6 +410,8 @@ namespace SharedEFClasses.Models
         public virtual DbSet<MertexLive.ProductColour> ProductColours { get; set; }
 
         public virtual DbSet<MertexLive.CollectionLive> Collections_Live { get; set; }
+
+        public virtual DbSet<OrderBookRecord> OrderBooks { get; set; }
 
         #endregion
 

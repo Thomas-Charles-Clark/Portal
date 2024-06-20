@@ -269,8 +269,6 @@ const orderBookDetailViewModel = (() => {
 
     //#region Properties
 
-    self.procedure = self.params.procedure;
-
     self.busy = ko.observable(false);
 
     //self.displayModes = ko.observableArray(self.params.displayModes && self.params.displayModes.length > 0
@@ -364,7 +362,7 @@ const orderBookDetailViewModel = (() => {
         if (udf && adv) {
             console.log('primaryFetchParams computed');
 
-            return JSON.stringify(Object.assign(window.getDetailParameters() , udf, adv, { procedure: self.procedure }));
+            return JSON.stringify(Object.assign(window.getDetailParameters() , udf, adv, { procedure: self.params.procedure }));
         }
     }, self).extend({
         rateLimit: {
@@ -492,6 +490,12 @@ const orderBookDetailViewModel = (() => {
         //self.fetch(nv);
     });
 
+    self.displayModes.subscribe(nv => {
+        window.setTimeout(() => {
+            self.virtualScroller.maxY.valueHasMutated();
+        }, 0);
+    });
+
     //#endregion
 
 
@@ -562,6 +566,33 @@ const orderBookDetailViewModel = (() => {
                 self.busy(false);
                 window.catchFetchError(err);
             });
+    }
+
+    self.copyLink = () => {
+
+        let params = JSON.parse(self.primaryFetchParams());
+
+        let preDefinedFilterCriteria = {
+            displayModes: self.displayModes(),
+            accurateAsOfDateTime: self.accurateAsOfDateTime(),
+            procedure: self.params.procedure,
+            view: self.params.view,
+            filterable: self.params.filterable
+        };
+
+        Object.assign(params, preDefinedFilterCriteria);
+
+        let qs = new URLSearchParams(params).toString();
+
+        let src = `/order-book/detail/${self.params.view}?${qs}`;
+
+        let event = new CustomEvent('copyLinkToClipboard', {
+            detail: {
+                text: src
+            }
+        });
+
+        window.parent.document.dispatchEvent(event);
     }
 
     self.sortByColumn = (detailColumn) => {
@@ -653,7 +684,18 @@ const orderBookDetailViewModel = (() => {
     //#region Events
 
     window.addEventListener('message', (e) => {
-        e && e.data && e.data.action && e.data.action == 'exportDetail' && self.exportDetail();
+        if (e && e.data && e.data.action) {
+            switch (e.data.action) {
+                case "exportDetail":
+                    self.exportDetail()
+                    break;
+                case "copyLink":
+                    self.copyLink();
+                    break;
+                default: break;
+
+            }
+        }
     }, false);
 
     //#endregion

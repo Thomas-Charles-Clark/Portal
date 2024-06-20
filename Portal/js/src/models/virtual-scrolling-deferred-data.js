@@ -133,9 +133,9 @@ const virtualScrollingDeferredDataFactory = ({
 
     self.maxYMultiplier = maxYMultiplier ?? 1;
 
-    self.maxY = ko.observable(+window.getComputedStyle(self.container)['max-height'].replace(/px/, '') + (self.rowHeight() * 5) * self.maxYMultiplier);
-
     self.gridHeaderHeight = ko.isObservable(gridHeaderHeight) ? gridHeaderHeight : ko.observable(gridHeaderHeight);
+
+    self.maxY = ko.observable(+window.getComputedStyle(self.container)['max-height'].replace(/px/, '') - self.gridHeaderHeight());
 
     self.gridTotalHeight = ko.observable();
 
@@ -236,6 +236,8 @@ const virtualScrollingDeferredDataFactory = ({
 
             let scrollY = self.scrollY();
 
+            let maxY = self.maxY();
+
             let toFetch = [];
 
             let filledRecords = self.secondaryFetchedRecords.peek();
@@ -244,7 +246,7 @@ const virtualScrollingDeferredDataFactory = ({
 
             results = self.searchResults().filter((i, index) => {
 
-                let actuallyVisible = (i.offsetY) >= (scrollY) && (i.offsetY) <= (self.maxY());
+                let actuallyVisible = (i.offsetY) >= (scrollY) && (i.offsetY) <= (maxY);
 
                 let dataFetchVisible = actuallyVisible;
 
@@ -264,11 +266,13 @@ const virtualScrollingDeferredDataFactory = ({
     else {
         self.visibleItems = ko.computed(() => {
 
+            let maxY = self.maxY();
+
             let scrollY = self.scrollY();
 
             return self.searchResults().filter(i => {
 
-                let actuallyVisible = (i.offsetY) >= (scrollY) && (i.offsetY) <= (self.maxY());
+                let actuallyVisible = (i.offsetY) >= (scrollY) && (i.offsetY) <= (maxY);
 
                 return actuallyVisible;
             });
@@ -282,6 +286,8 @@ const virtualScrollingDeferredDataFactory = ({
 
     self.gridScrollTopPadding = ko.computed(() => {
         //console.trace();
+
+        let maxY = self.maxY();
 
         let scrollY = self.scrollY();
         let result = 0;
@@ -302,6 +308,8 @@ const virtualScrollingDeferredDataFactory = ({
     self.gridScrollBottomPadding = ko.computed(() => {
         //console.trace();
         //let s = self.scrollY();
+
+        let maxY = self.maxY();
 
         if (self.finalRowVisible()) {
             return 0;
@@ -365,7 +373,7 @@ const virtualScrollingDeferredDataFactory = ({
             data.sort(nv);
 
             data.forEach((result, index) => {
-                result.offsetY = (((index) * rowHeight) + additionalOffset) - gridHeaderHeight + rowHeight;
+                result.offsetY = (((index) * rowHeight) + additionalOffset) - gridHeaderHeight;
             });
 
             self.searchResults(data);
@@ -376,7 +384,7 @@ const virtualScrollingDeferredDataFactory = ({
             });
 
             data.forEach((result, index) => {
-                result.offsetY = (((index) * rowHeight) + additionalOffset) - gridHeaderHeight + rowHeight;
+                result.offsetY = (((index) * rowHeight) + additionalOffset) - gridHeaderHeight;
             });
 
             self.searchResults(data);
@@ -441,7 +449,7 @@ const virtualScrollingDeferredDataFactory = ({
 
                     let results = data[self.primaryFetchResultSetName].map((result, index) => {
 
-                        result.offsetY = (((index) * rowHeight) + additionalOffset) - gridHeaderHeight + rowHeight;
+                        result.offsetY = (((index) * rowHeight) + additionalOffset) - gridHeaderHeight;
 
                         result.originalOffsetY = result.offsetY;
 

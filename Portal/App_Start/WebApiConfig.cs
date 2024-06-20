@@ -23,6 +23,7 @@ using Attribute = SharedEFClasses.Models.Attributes.Attribute;
 using SharedEFClasses.Models.MertexLive;
 using SharedEFClasses.Models.Fenwick;
 using SharedEFClasses.Models.Maintenance;
+using SharedEFClasses.Models.OrderBook;
 
 namespace Portal
 {
@@ -103,6 +104,7 @@ namespace Portal
             odataBuilder.EntitySet<SelfBillInvoice>("SelfBillInvoices");
             odataBuilder.EntitySet<SalesRepresentative>("SalesRepresentatives");
             odataBuilder.EntitySet<OrderHeadLive>("Orders");
+            odataBuilder.EntitySet<OrderBookGrouped>("OrderBooksGrouped");
             odataBuilder.EntitySet<OrderGroup>("OrderGroups");
             odataBuilder.EntitySet<TransactionType>("TransactionTypes");
 
@@ -122,6 +124,7 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Quality)).AddProperty(typeof(Quality).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Collection)).AddProperty(typeof(Collection).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(OrderHeadLive)).AddProperty(typeof(OrderHeadLive).GetProperty("ShortLabel"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(OrderBookGrouped)).AddProperty(typeof(OrderBookGrouped).GetProperty("ShortLabel"));
 
             var transactionTypeValueMapperFunction = odataBuilder.EntityType<TransactionType>()
                 .Collection
@@ -185,6 +188,27 @@ namespace Portal
                 .Collection
                 .Function("GetOrdersForOrderBookSummary")
                 .ReturnsCollectionFromEntitySet<OrderHeadLive>("Orders");
+
+
+
+
+
+
+            var orderBooksGroupedValueMapper = odataBuilder.EntityType<OrderBookGrouped>()
+                .Collection
+                .Function("OrderValueMapper")
+                .ReturnsCollectionFromEntitySet<OrderBookGrouped>("OrderBooksGrouped");
+
+            orderBooksGroupedValueMapper.Parameter<string>("orderId");
+
+            var orderBooksGroupedSummaryFilterFunction = odataBuilder.EntityType<OrderBookGrouped>()
+                .Collection
+                .Function("GetOrdersForOrderBookSummary")
+                .ReturnsCollectionFromEntitySet<OrderBookGrouped>("OrderBooksGrouped");
+
+
+
+
 
 
             odataBuilder.EntityType<Resource_Language>().HasKey(p => new { p.ResourceID, p.LanguageID });
@@ -355,7 +379,7 @@ namespace Portal
                 .Function("QualityValueMapper")
                 .ReturnsCollectionFromEntitySet<Quality>("Quality");
 
-            qualityValueMapperFunction.Parameter<string>("name");
+            qualityValueMapperFunction.Parameter<short?>("qualityId");
 
 
 

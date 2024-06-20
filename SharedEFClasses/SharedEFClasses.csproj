@@ -470,6 +470,8 @@
     <Compile Include="Models\Mertex\TradeAccountContactLive.cs" />
     <Compile Include="Models\Mertex\TradeAccountContactType.cs" />
     <Compile Include="Models\Mertex\TradeAccountInvoiceAccount.cs" />
+    <Compile Include="Models\OrderBook\OrderBook.cs" />
+    <Compile Include="Models\OrderBook\OrderBookGrouped.cs" />
     <Compile Include="Models\OrderBook\OrderBookRingFenceInspectData.cs" />
     <Compile Include="Models\OrderBook\OrderBookRingFenceInspectResult.cs" />
     <Compile Include="Models\OrderBook\OrderBookOrderLineInspectResult.cs" />

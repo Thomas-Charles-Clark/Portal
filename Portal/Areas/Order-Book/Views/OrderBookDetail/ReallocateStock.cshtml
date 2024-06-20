@@ -38,26 +38,34 @@
 
     </script>
 }
+@if (ViewBag.Partial == null || ViewBag.Partial == false)
+{
+    @section navbarTitle {
+        <div>
+            <h2 class="d-flex gap-3 align-items-center">
+                @(Request.QueryString["title"])
+            </h2>
+        </div>
+    }
+    <style type="text/css">
+        #order-book-detail-scroller-container {
+            max-height: calc(100vh - 50px);
+        }
 
-@if (ViewBag.Partial == false)
-{
-<style type="text/css">
-    #order-book-detail-scroller-container {
-        max-height: calc(100vh - 50px);
-    }
-    #main-summary-container {
-        max-height: calc(100vh - 50px);
-    }
-</style>
-}
-@*else
-{
-    <style>
-        html {
-            overflow-y: hidden;
+        #main-summary-container {
+            max-height: calc(100vh - 50px);
         }
     </style>
-}*@
+}
+
+@*else
+    {
+        <style>
+            html {
+                overflow-y: hidden;
+            }
+        </style>
+    }*@
 
 <div class="blocker" style="@(ViewBag.Partial == true ? "display: none; opacity: 0" : "display: flex; opacity: 1")" data-bind="flexFadeVisible: busy">
     <div class="loading-spinner"></div>

@@ -87,7 +87,7 @@
 #order-book-detail-scroller-container #order-book-detail-table thead tr th:first-of-type {
   border-left: none;
 }
-#order-book-detail-scroller-container #order-book-detail-table thead tr th.sortable-column {
+#order-book-detail-scroller-container #order-book-detail-table thead tr th .sortable-column {
   cursor: pointer;
 }
 #order-book-detail-scroller-container #order-book-detail-table thead tr.subtotal-row th {
