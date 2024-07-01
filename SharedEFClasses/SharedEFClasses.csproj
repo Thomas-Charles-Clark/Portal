@@ -356,6 +356,7 @@
     <Compile Include="BaseViewModel.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-ContractPricing.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-Fenwick.cs" />
+    <Compile Include="DbContext\Dapper\PortalDbContext-Baskets.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-RangeManagement.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-OrderBook.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-StockManagement.cs" />
@@ -375,6 +376,7 @@
     <Compile Include="Models\Attribute\Attribute.cs" />
     <Compile Include="Models\AttributeGroup\AttributeGroup.cs" />
     <Compile Include="Models\BasketStatusModels.cs" />
+    <Compile Include="Models\Basket\BasketItemSplitSelectResult.cs" />
     <Compile Include="Models\ContractPricing\ContractManagement_ContractImpact_SelectResult.cs" />
     <Compile Include="Models\ContractPricing\ContractManagement_ContractList_SelectResult.cs" />
     <Compile Include="Models\ContractPricing\ContractManagement_Contract_MergeResult.cs" />
@@ -433,6 +435,7 @@
     <Compile Include="Models\Mertexer\UniVerse\UniVerseIndex.cs" />
     <Compile Include="Models\Mertexer\UniVerse\UniVerseMultiValue.cs" />
     <Compile Include="Models\Mertexer\UniVerse\UniVerseSerializationBase.cs" />
+    <Compile Include="Models\MertexProductClassificationSuperSet.cs" />
     <Compile Include="Models\Mertex\Carriage.cs" />
     <Compile Include="Models\Mertex\ClaimHead.cs" />
     <Compile Include="Models\Mertex\ClaimLine.cs" />

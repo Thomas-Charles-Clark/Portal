@@ -2809,18 +2809,18 @@ ko.bindingHandlers.matrixLoader = {
         //0x2744 snowflake...?
         self.newCharArray = function () {//U+26F7
             //Spring
-            return [
-                String.fromCodePoint(0x1F490), // Bouquet of flowers
-                String.fromCodePoint(0x1F994), // Hedgehog
-                String.fromCodePoint(0x1F338), // Pink flower
-                String.fromCodePoint(0x1F407), // White rabbit
-                String.fromCodePoint(0x1F33C), // Daisy
-                String.fromCodePoint(0x1F343), // Leaf
-                String.fromCodePoint(0x1F331), // Sprouting seedling
-                String.fromCodePoint(0x1F337), // Tulip
-                String.fromCodePoint(0x1F423), // Chick hatching
-                String.fromCodePoint(0x1F340)  // Four-leaf clover
-            ]
+            //return [
+            //    String.fromCodePoint(0x1F490), // Bouquet of flowers
+            //    String.fromCodePoint(0x1F994), // Hedgehog
+            //    String.fromCodePoint(0x1F338), // Pink flower
+            //    String.fromCodePoint(0x1F407), // White rabbit
+            //    String.fromCodePoint(0x1F33C), // Daisy
+            //    String.fromCodePoint(0x1F343), // Leaf
+            //    String.fromCodePoint(0x1F331), // Sprouting seedling
+            //    String.fromCodePoint(0x1F337), // Tulip
+            //    String.fromCodePoint(0x1F423), // Chick hatching
+            //    String.fromCodePoint(0x1F340)  // Four-leaf clover
+            //]
 
             //Winter
             //return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F343), String.fromCodePoint(0x2614), String.fromCodePoint(0x1F36C), String.fromCodePoint(0x26C4), String.fromCodePoint(0x1F3BF), String.fromCodePoint(0x1F3C2), String.fromCodePoint(0x2B50)]
@@ -2875,27 +2875,28 @@ Lianne's contribution:
 Summer theme
 bg #1ca9c9
 */
-            //return [
-            //    String.fromCodePoint(0x1F60E), //smiling face w / sunglasses
-            //    String.fromCodePoint(0x1F33B), //sunflower
-            //    String.fromCodePoint(0x1F334), //palm tree
-            //    String.fromCodePoint(0x1F34D), //pineapple
-            //    String.fromCodePoint(0x1F965), //coconut
-            //    String.fromCodePoint(0x1F3C4), //person surfing
-            //    String.fromCodePoint(0x1F42C), //dolphin
-            //    String.fromCodePoint(0x1F41A), //spiral seashell
-            //    String.fromCodePoint(0x1F98B), //butterfly
-            //    String.fromCodePoint(0x2708), //aeroplane
-            //    String.fromCodePoint(0x2600), //sun
-            //    String.fromCodePoint(0x1F30A), //cresting wave
-            //    String.fromCodePoint(0x1F453), //glasses
-            //    String.fromCodePoint(0x1F366), //ice cream cone
-            //    String.fromCodePoint(0x1F379), //tropical drink
-            //    String.fromCodePoint(0x1F3D6), //beach w / umbrella
-            //    String.fromCodePoint(0x1F3DD), //desert island
-            //    String.fromCodePoint(0x1F9A9), //flamingo
-            //    String.fromCodePoint(0x1F99C), //parrot
-            //]
+            return [
+                String.fromCodePoint(0x1F60E), //smiling face w / sunglasses
+                String.fromCodePoint(0x1F33B), //sunflower
+                String.fromCodePoint(0x1F334), //palm tree
+                String.fromCodePoint(0x1F34D), //pineapple
+                String.fromCodePoint(0x1F965), //coconut
+                String.fromCodePoint(0x1F3C4), //person surfing
+                String.fromCodePoint(0x1F42C), //dolphin
+                String.fromCodePoint(0x1F41A), //spiral seashell
+                String.fromCodePoint(0x1F98B), //butterfly
+                String.fromCodePoint(0x2708), //aeroplane
+                String.fromCodePoint(0x2600), //sun
+                String.fromCodePoint(0x1F30A), //cresting wave
+                String.fromCodePoint(0x1F453), //glasses
+                String.fromCodePoint(0x1F366), //ice cream cone
+                String.fromCodePoint(0x1F379), //tropical drink
+                String.fromCodePoint(0x1F3D6), //beach w / umbrella
+                String.fromCodePoint(0x1F3DD), //desert island
+                String.fromCodePoint(0x1F9A9), //flamingo
+                String.fromCodePoint(0x1F99C), //parrot
+                String.fromCodePoint(0x1F93F), //snorkel
+            ]
 
             /*
             Jubilee theme
@@ -2946,9 +2947,9 @@ bg #1ca9c9
             //self.ctx.fillStyle = "#66b8ff"; //winter
             //self.ctx.fillStyle = "#ffbbd7"; //valentine's (pink)
             //self.ctx.fillStyle = '#f8c9dd'; // spring (pink)
-            self.ctx.fillStyle = '#53bfea'; // spring (sky blue)
+            //self.ctx.fillStyle = '#53bfea'; // spring (sky blue)
             //self.ctx.fillStyle = '#c1e0ff'; // summer
-            //self.ctx.fillStyle = '#1ca9c9'; // summer, Lianne's Pacific Ocean Blue
+            self.ctx.fillStyle = '#1ca9c9'; // summer, Lianne's Pacific Ocean Blue
 
             self.ctx.clearRect(0, 0, self.cw, self.ch);
             self.ctx.fillRect(0, 0, self.cw, self.ch);

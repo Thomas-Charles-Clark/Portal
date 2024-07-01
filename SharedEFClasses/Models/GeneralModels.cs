@@ -585,6 +585,10 @@ namespace SharedEFClasses.Models.General
         [JsonIgnore]
         [InverseProperty("Brand")]
         public virtual ICollection<ProductPage> ProductPages { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("Brand")]
+        public virtual ICollection<MertexProductClassificationSuperSet> MertexProductClassificationSuperSetRecords { get; set; }
     }
 
     /// <summary>

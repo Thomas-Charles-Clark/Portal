@@ -108,6 +108,8 @@ namespace Portal
             odataBuilder.EntitySet<OrderGroup>("OrderGroups");
             odataBuilder.EntitySet<TransactionType>("TransactionTypes");
 
+            odataBuilder.EntitySet<MertexProductClassificationSuperSet>("MertexProductClassificationSuperSet");
+
             // This because it's not mapped to SQL and has the [NotMapped] attribute
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_ProductType)).AddProperty(typeof(Mertex_ProductType).GetProperty("Label"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_ProductType)).AddProperty(typeof(Mertex_ProductType).GetProperty("PseudoKey"));

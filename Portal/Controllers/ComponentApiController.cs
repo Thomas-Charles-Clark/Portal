@@ -600,6 +600,31 @@ namespace Portal.Controllers
         }
 
         [HttpGet]
+        public IHttpActionResult FetchCustomerHeldBaskets([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request, int? memberId)
+        {
+            var mid = memberId ?? User.Identity.GetUserId<int>();
+
+            var results = PortalDb.FetchMemberBaskets(mid, "CH");
+
+            var response = results.AsQueryable().ToDataSourceResult(request);
+
+            foreach (var v in response.Data.Cast<BasketSelectResult>().ToList())
+            {
+                v.TradeAccount = PortalDb.TradeAccounts.Where(p => p.Code == v.CustomerCode).Single();
+
+                v.BasketItems = PortalDb.BasketItems.Where(p => p.BasketID == v.BasketID && p.Deleted == false).ToList();
+                v.BasketItemLineMemos = PortalDb.BasketItemLineMemos.Where(p => p.BasketItem.BasketID == v.BasketID).ToList();
+
+                v.BasketItemLineMemos.ForEach(d =>
+                {
+                    d.LineMemoType = PortalDb.LineMemoTypes.Where(p => p.LineMemoTypeID == d.LineMemoTypeID).Single();
+                });
+            }
+
+            return Ok(results.AsQueryable().ToDataSourceResult(request));
+        }
+
+        [HttpGet]
         public IHttpActionResult FetchHeldOrdersManagement([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
         {
             var memberId = User.Identity.GetUserId<int>();
@@ -1600,12 +1625,15 @@ namespace Portal.Controllers
 
             var stages = new List<BasketItemAdvancedOrderStepResult>();
 
+            var notifications = new DatabaseJSONResult();
+
             if (addResult.BasketItemID.HasValue)
             {
                 stages = PortalDb.FetchBasketItemStageInformation(addResult.BasketItemID.Value, objAdd.TradeAccountID);
+                notifications = PortalDb.FetchBasketItemNotifications(addResult.BasketItemID.Value);
             }
 
-            return Ok(new { addResult, stages });
+            return Ok(new { addResult, notifications, stages });
         }
 
         [HttpPost]
@@ -2697,19 +2725,21 @@ namespace Portal.Controllers
             {
                 PortalFramework.LogErrorToDatabase(ex, User.Identity.GetUserId<int>());
 
-                // market, customer no., name, eori, basketid
-                System.Threading.Tasks.Task.Run(() =>
-                {
-                    PortalDb.QueueAndSendEmail("itsupport@designersguild.com", "EORI Number Validation Skipped", $@"<p>
-    An exception was raised while attempting to validate an EU EORI Number.
-</p>
-<p><strong>Basket ID: </strong>{objEORINumber.basketId}</p>
-<p><strong>Customer: </strong>{objEORINumber.tradeAccountLabel}</p>
-<p><strong>Market: </strong>{objEORINumber.market}</p>
-<p><strong>EORI: </strong>{objEORINumber.eoriNumber}</p>
-<p>Please check the EORI number manually if you can.</p>
-<p>The user has been allowed to proceed with the basket and might have already submitted it to Mertex.</p>", 0);
-                });
+                // 01/07/2024 - at Sarah's request, this email notification has been disabled
+
+//                // market, customer no., name, eori, basketid
+//                System.Threading.Tasks.Task.Run(() =>
+//                {
+//                    PortalDb.QueueAndSendEmail("itsupport@designersguild.com", "EORI Number Validation Skipped", $@"<p>
+//    An exception was raised while attempting to validate an EU EORI Number.
+//</p>
+//<p><strong>Basket ID: </strong>{objEORINumber.basketId}</p>
+//<p><strong>Customer: </strong>{objEORINumber.tradeAccountLabel}</p>
+//<p><strong>Market: </strong>{objEORINumber.market}</p>
+//<p><strong>EORI: </strong>{objEORINumber.eoriNumber}</p>
+//<p>Please check the EORI number manually if you can.</p>
+//<p>The user has been allowed to proceed with the basket and might have already submitted it to Mertex.</p>", 0);
+//                });
 
                 var exceptionResult = new HttpResponseMessage(HttpStatusCode.InternalServerError)
                 {
@@ -2756,23 +2786,27 @@ namespace Portal.Controllers
                     });
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // market, customer no., name, eori, basketid
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                System.Threading.Tasks.Task.Run(() =>
-                {
-                    PortalDb.QueueAndSendEmail("itsupport@designersguild.com", "EORI Number Validation Skipped", $@"<p>
-    An exception was raised while attempting to validate an GB EORI Number.
-</p>
-<p><strong>Basket ID: </strong>{objEORINumber.basketId}</p>
-<p><strong>Customer: </strong>{objEORINumber.tradeAccountLabel}</p>
-<p><strong>Market: </strong>{objEORINumber.market}</p>
-<p><strong>EORI: </strong>{objEORINumber.eoriNumber}</p>
-<p>Please check the EORI number manually if you can.</p>
-<p>The user has been allowed to proceed with the basket and might have already submitted it to Mertex.</p>", 0);
-                });
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                // 01/07/2024 - at Sarah's request, this email notification has been disabled
+
+                PortalFramework.LogErrorToDatabase(ex, User.Identity.GetUserId<int>());
+
+                //                // market, customer no., name, eori, basketid
+                //#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                //                System.Threading.Tasks.Task.Run(() =>
+                //                {
+                //                    PortalDb.QueueAndSendEmail("itsupport@designersguild.com", "EORI Number Validation Skipped", $@"<p>
+                //    An exception was raised while attempting to validate an GB EORI Number.
+                //</p>
+                //<p><strong>Basket ID: </strong>{objEORINumber.basketId}</p>
+                //<p><strong>Customer: </strong>{objEORINumber.tradeAccountLabel}</p>
+                //<p><strong>Market: </strong>{objEORINumber.market}</p>
+                //<p><strong>EORI: </strong>{objEORINumber.eoriNumber}</p>
+                //<p>Please check the EORI number manually if you can.</p>
+                //<p>The user has been allowed to proceed with the basket and might have already submitted it to Mertex.</p>", 0);
+                //                });
+                //#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
                 return Ok(new
                 {
@@ -3578,6 +3612,22 @@ namespace Portal.Controllers
             _ = await PortalDb.DeleteBasketSplitDeliveryService(objBasketSplit);
 
             return Ok(new { });
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> FetchBasketItemSplitSelect([FromBody] PassBasketID objBasketId)
+        {
+            var results = await PortalDb.FetchBasketItemSplitResults(objBasketId);
+
+            return Ok(results);
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> SplitBasket([FromBody] PassBasketSplitRequest objSplit)
+        {
+            var resultantBasketId = await PortalDb.SplitBasket(objSplit);
+
+            return Ok(resultantBasketId);
         }
     }
 

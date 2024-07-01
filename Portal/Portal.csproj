@@ -617,6 +617,7 @@
     <Compile Include="Controllers\ODataControllers\OrderGroupsController.cs" />
     <Compile Include="Controllers\ODataControllers\OrderLineDetailedStatusGroupsController.cs" />
     <Compile Include="Controllers\ODataControllers\OrderBooksGroupedController.cs" />
+    <Compile Include="Controllers\ODataControllers\MertexProductClassificationSuperSetController.cs" />
     <Compile Include="Controllers\ODataControllers\ProductGroupsController.cs" />
     <Compile Include="Controllers\ODataControllers\OrdersController.cs" />
     <Compile Include="Controllers\ODataControllers\QualitiesController.cs" />

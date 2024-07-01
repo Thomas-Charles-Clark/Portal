@@ -8426,3 +8426,60 @@ td.popover-container {
     margin-bottom: 1rem;
 }
 
+
+#basket-split-modal {
+    .modal-body {
+        > p { 
+            font-size: 1.15rem;
+        }
+    }
+
+    .basket-item-split-list {
+        margin-bottom: 0;
+
+        .list-group-item {
+            cursor: pointer;
+
+            .form-check-label {
+                width: 100%;
+
+                .d-flex {
+                    gap: 15px;
+
+                    div {
+                        flex: 1;
+                    }
+
+                    > div:first-child {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        gap: 15px;
+
+                        img {
+                            width: 90px;
+                            height: 90px;
+                        }
+                    }
+
+                    > div:last-child {
+                        flex: 1;
+
+                        .alert {
+                            padding: 8px;
+                            margin-bottom: 0;
+
+                            & + .alert {
+                                margin-top: 15px;
+                            }
+                        }
+                    }
+                }
+
+                .mdc-form-field {
+                    font-size: 1rem;
+                }
+            }
+        }
+    }
+}

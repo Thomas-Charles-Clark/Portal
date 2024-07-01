@@ -169,7 +169,18 @@ const orderBookUserDefinedFiltersViewModel = ({
     self.checkUnsavedChangesThenSelect = async (event) => {
         await self.unsavedChanges().then((d) => {
             //console.log('go', event.sender.options.dataValueField, event.dataItem[event.sender.options.dataValueField]);
-            event.sender._widgetOptions.value(event.dataItem[event.sender.options.dataValueField]);
+            if (event.sender.options.dataValueField.indexOf('.') === -1) {
+                event.sender._widgetOptions.value(event.dataItem[event.sender.options.dataValueField]);
+            } else {
+                let split = event.sender.options.dataValueField.split('.');
+                let obj = event.dataItem[split.shift()];
+
+                split.forEach(s => {
+                    obj = obj[s];
+                });
+
+                event.sender._widgetOptions.value(obj);
+            }
 
         }).catch((e) => { });
     }
@@ -793,6 +804,61 @@ const orderBookUserDefinedFiltersViewModel = ({
         }
     });
 
+
+
+
+    self.generateSuperSetParameterMap = (defaultGroupBy) => {
+        return (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            d.$apply = defaultGroupBy;
+
+            let filters = [];
+
+            if (self.brandId() != '') {
+                filters.push(`BrandID eq ${self.brandId()}`);
+            }
+
+            if (self.productGroupId() != '') {
+                filters.push(`ProductGroupID eq ${self.productGroupId()}`);
+            }
+
+            if (self.itemTypeId() != '') {
+                filters.push(`ItemTypeID eq ${self.itemTypeId()}`);
+            }
+
+            if (self.collectionId() != '') {
+                filters.push(`CollectionID eq ${self.collectionId()}`);
+            }
+
+            if (self.launchId() != '') {
+                filters.push(`LaunchID eq ${self.launchId()}`);
+            }
+
+            if (self.qualityId() != '') {
+                filters.push(`QualityID eq ${self.qualityId()}`);
+            }
+
+            if (filters.length) {
+                let filterString = filters.join(' and ');
+                d.$apply = `filter(${filterString})/${defaultGroupBy}`
+            }
+            
+            return d;
+        }
+    }
+
+
+
+
+
     self.launchParams = kendoMDCDropDownList({
         label: 'Launch',
         odata: true,
@@ -837,6 +903,8 @@ const orderBookUserDefinedFiltersViewModel = ({
         clearFunction: self.genericUnsavedChangesClear
     });
 
+    self.brandsGroupBy = `groupBy((Brand/BrandID,Brand/Name))`;
+
     self.brandParams = kendoMDCDropDownList({
         label: 'Brand',
         odata: true,
@@ -856,7 +924,10 @@ const orderBookUserDefinedFiltersViewModel = ({
         height: 340,
         select: self.genericUnsavedChangesSelect,
         dataBound: (e) => self.brandAwaitingBinding(false),
-        clearFunction: self.genericUnsavedChangesClear
+        clearFunction: self.genericUnsavedChangesClear,
+        parameterMap: (e) => {
+        
+        }
     });
 
     self.haulierParams = kendoMDCDropDownList({
@@ -903,12 +974,14 @@ const orderBookUserDefinedFiltersViewModel = ({
         },
     });
 
+    self.productGroupGroupBy = `groupby((ProductGroup/ProductGroupID,ProductGroup/Name))`;
+
     self.productGroupParams = kendoMDCDropDownList({
         label: 'Product Group',
         odata: true,
-        endPoint: '/odata/ProductGroups', // /Default.GetProductGroupsForContractPricing
-        textField: 'Name',
-        valueField: 'ProductGroupID',
+        endPoint: '/odata/MertexProductClassificationSuperSet',
+        textField: 'ProductGroup.Name',
+        valueField: 'ProductGroup.ProductGroupID',
         virtual: false,
         idObservable: self.productGroupId,
         objObservable: self.productGroup,
@@ -933,8 +1006,12 @@ const orderBookUserDefinedFiltersViewModel = ({
 
             d.$count = true;
 
-            if (self.itemTypeId()) {
-                d.$filter = `ContractProductRestrictions/any(pg: pg/ItemTypeID eq ${self.itemTypeId()})`
+            d.$apply = self.productGroupGroupBy;
+
+            if (self.itemTypeId() != '') {
+                d.$apply = `filter(ItemTypeID eq ${self.itemTypeId()})/${self.productGroupGroupBy}`
+            } else {
+                d.$apply = self.productGroupGroupBy;
             }
 
             return d;
@@ -944,12 +1021,14 @@ const orderBookUserDefinedFiltersViewModel = ({
         }
     });
 
+    self.itemTypeGroupBy = `groupby((ItemType/ItemTypeID,ItemType/Name))`;
+
     self.itemTypeParams = kendoMDCDropDownList({
         label: 'Item Type',
         odata: true,
-        endPoint: '/odata/ItemTypes', // /Default.GetItemTypesForContractPricing?
-        textField: 'Name',
-        valueField: 'ItemTypeID',
+        endPoint: '/odata/MertexProductClassificationSuperSet', // /Default.GetItemTypesForContractPricing?
+        textField: 'ItemType.Name',
+        valueField: 'ItemType.ItemTypeID',
         virtual: false,
         idObservable: self.itemTypeId,
         objObservable: self.itemType,
@@ -977,8 +1056,12 @@ const orderBookUserDefinedFiltersViewModel = ({
 
             d.$count = true;
 
-            if (self.productGroupId()) {
-                d.$filter = `ContractProductRestrictions/any(pg: pg/ProductGroupID eq ${self.productGroupId()})`
+            d.$apply = self.itemTypeGroupBy;
+
+            if (self.productGroupId() != '') {
+                d.$apply = `filter(ProductGroupID eq ${self.productGroupId()})/${self.itemTypeGroupBy}`
+            } else {
+                d.$apply = self.itemTypeGroupBy;
             }
 
             return d;
@@ -988,12 +1071,14 @@ const orderBookUserDefinedFiltersViewModel = ({
         }
     });
 
+    self.collectionGroupBy = `groupby((Collection/CollectionID,Collection/Name))`;
+
     self.collectionParams = kendoMDCDropDownList({
         label: 'Collection',
         odata: true,
-        endPoint: '/odata/Collections',
-        textField: 'Name',
-        valueField: 'CollectionID',
+        endPoint: '/odata/MertexProductClassificationSuperSet',
+        textField: 'Collection.Name',
+        valueField: 'Collection.CollectionID',
         virtual: true,
         pageSize: 40,
         virtualOptions: {
@@ -1069,13 +1154,14 @@ const orderBookUserDefinedFiltersViewModel = ({
         }
     });
 
+    self.qualityGroupBy = `groupby((Quality/QualityID,Quality/ShortLabel))`;
 
     self.qualityParams = kendoMDCDropDownList({
         label: 'Design',
         odata: true,
-        endPoint: '/odata/Qualities',
-        textField: 'ShortLabel',
-        valueField: 'QualityID',
+        endPoint: '/odata/MertexProductClassificationSuperSet',
+        textField: 'Quality.ShortLabel',
+        valueField: 'Quality.QualityID',
         virtual: true,
         pageSize: 40,
         virtualOptions: {

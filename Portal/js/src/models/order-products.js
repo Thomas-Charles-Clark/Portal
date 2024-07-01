@@ -5159,14 +5159,16 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
 
 
     // This kept for posterity, because it's a useful way to prevent validation crawling touching a particular object.
-    //// This... Is an attempt at magic. It *might* prevent this object from being traveresed by the ko.validation deep 
-    //// scan... However, it could be bad. 
+    //// This... Is an attempt at magic. It *might* prevent this object from being traveresed by the ko.validation deep
+    //// scan... However, it could be bad.
     //// HOWEVER! IT JUST WORKED BECAUSE AWESOMENESS.
     //// The problem being caused was the recursive scan from basketItem to basketItem.parent (which is this object).
     //// Therefore the discountReviewErrors validation group was validating all other validatable observables such as
     //// addresses, which was nothing to do with it. The discountReviewErrors group HAS to be live, deep and observable
     //// because it wants to validate discounts on basket items...
-    //self._destroy = true; 
+    //self._destroy = true;
+
+    self.basketSplitter = basketSplitterViewModel(self);
 
     // #endregion
 
@@ -6138,6 +6140,9 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
     // mechanism to trap double adds
     self.addingBasketItem = ko.observable(false);
 
+    // results from portal.BasketItem_Notification potentially returned from any call to AddBasketItem
+    self.basketItemAddNotifications = ko.observableArray([]);
+
     self.addBasketItem = function (
         searchResult,
         orderTypeId,
@@ -6278,6 +6283,8 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
 
                     console.log('orderFactory addBasketItem calling with', data);
 
+                    self.basketItemAddNotifications([]);
+
                     $.ajax({
                         url: '/api/componentapi/AddBasketItem',
                         type: 'POST',
@@ -6338,6 +6345,24 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                                         self.fetchBasket();
                                     }
                                 }
+
+                                if (data.hasOwnProperty('notifications') && data.notifications != null) {
+                                    let result = data.notifications.json;
+
+                                    ko.utils.arrayForEach(result.notifications, function (n) {
+                                        self.basketItemAddNotifications.push(tradeAccountOrderNotification({ record: n, result: result, parent: self }));
+                                    });
+
+                                    for (var i = 0; i < self.basketItemAddNotifications().length; i++) {
+                                        if (i < self.basketItemAddNotifications().length)
+                                            self.basketItemAddNotifications()[i].nextNotice = self.basketItemAddNotifications()[i + 1];
+                                    }
+
+                                    if (self.basketItemAddNotifications().length) {
+                                        self.basketItemAddNotifications()[0].show();
+                                    }
+                                }
+
                             } else {
                                 $.showError(data.addResult, null, null);
                                 if (typeof onError === 'function')
@@ -8527,6 +8552,8 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
 
         self.addingBasketItem(false);
 
+        self.basketItemAddNotifications([]);
+
         self.validateBasketDetailsNow(false);
         self.validateBasketPhaseNow(false);
         self.validateBasketReviewStageOneNow(false);
@@ -9665,6 +9692,7 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
     }
 
     // End of Retail Functions
+
 
     // #endregion
 
@@ -11743,6 +11771,8 @@ var bespokeFabricShowlengthFactory = function (parent) {
 
             self.busy(true);
 
+            self.parent.basketItemAddNotifications([]);
+
             $.ajax({
                 url: '/api/componentapi/AddBasketItem',
                 type: 'POST',
@@ -11757,6 +11787,24 @@ var bespokeFabricShowlengthFactory = function (parent) {
 
                         self.hide();
                         self.parent.fetchBasket();
+
+
+                        if (data.hasOwnProperty('notifications') && data.notifications != null) {
+                            let result = data.notifications.json;
+
+                            ko.utils.arrayForEach(result.notifications, function (n) {
+                                self.parent.basketItemAddNotifications.push(tradeAccountOrderNotification({ record: n, result: result, parent: self }));
+                            });
+
+                            for (var i = 0; i < self.parent.basketItemAddNotifications().length; i++) {
+                                if (i < self.parent.basketItemAddNotifications().length)
+                                    self.parent.basketItemAddNotifications()[i].nextNotice = self.parent.basketItemAddNotifications()[i + 1];
+                            }
+
+                            if (self.parent.basketItemAddNotifications().length) {
+                                self.parent.basketItemAddNotifications()[0].show();
+                            }
+                        }
 
                     } else {
                         $.showError(data.addResult, null, null);
@@ -12497,6 +12545,8 @@ var bespokeWallpaperShowlengthFactory = function (parent) {
 
             self.busy(true);
 
+            self.parent.basketItemAddNotifications([]);
+
             $.ajax({
                 url: '/api/componentapi/AddBasketItem',
                 type: 'POST',
@@ -12511,6 +12561,23 @@ var bespokeWallpaperShowlengthFactory = function (parent) {
 
                         self.hide();
                         self.parent.fetchBasket();
+
+                        if (data.hasOwnProperty('notifications') && data.notifications != null) {
+                            let result = data.notifications.json;
+
+                            ko.utils.arrayForEach(result.notifications, function (n) {
+                                self.parent.basketItemAddNotifications.push(tradeAccountOrderNotification({ record: n, result: result, parent: self }));
+                            });
+
+                            for (var i = 0; i < self.parent.basketItemAddNotifications().length; i++) {
+                                if (i < self.parent.basketItemAddNotifications().length)
+                                    self.parent.basketItemAddNotifications()[i].nextNotice = self.parent.basketItemAddNotifications()[i + 1];
+                            }
+
+                            if (self.parent.basketItemAddNotifications().length) {
+                                self.parent.basketItemAddNotifications()[0].show();
+                            }
+                        }
 
                     } else {
                         $.showError(data.addResult, null, null);
@@ -13091,6 +13158,8 @@ var bespokeRugFactory = function (parent) {
 
             self.busy(true);
 
+            self.parent.basketItemAddNotifications([]);
+
             $.ajax({
                 url: '/api/componentapi/AddBasketItem',
                 type: 'POST',
@@ -13105,6 +13174,24 @@ var bespokeRugFactory = function (parent) {
 
                         self.hide();
                         self.parent.fetchBasket();
+
+
+                        if (data.hasOwnProperty('notifications') && data.notifications != null) {
+                            let result = data.notifications.json;
+
+                            ko.utils.arrayForEach(result.notifications, function (n) {
+                                self.parent.basketItemAddNotifications.push(tradeAccountOrderNotification({ record: n, result: result, parent: self }));
+                            });
+
+                            for (var i = 0; i < self.parent.basketItemAddNotifications().length; i++) {
+                                if (i < self.parent.basketItemAddNotifications().length)
+                                    self.parent.basketItemAddNotifications()[i].nextNotice = self.parent.basketItemAddNotifications()[i + 1];
+                            }
+
+                            if (self.parent.basketItemAddNotifications().length) {
+                                self.parent.basketItemAddNotifications()[0].show();
+                            }
+                        }
 
                     } else {
                         $.showError(data.addResult, null, null);
@@ -14519,6 +14606,8 @@ var bespokeFurnitureFactory = function (parent) {
 
                 self.busy(true);
 
+                self.parent.basketItemAddNotifications([]);
+
                 $.ajax({
                     url: '/api/componentapi/AddBasketItem',
                     type: 'POST',
@@ -14533,6 +14622,24 @@ var bespokeFurnitureFactory = function (parent) {
 
                             self.hide();
                             self.parent.fetchBasket();
+
+
+                            if (data.hasOwnProperty('notifications') && data.notifications != null) {
+                                let result = data.notifications.json;
+
+                                ko.utils.arrayForEach(result.notifications, function (n) {
+                                    self.parent.basketItemAddNotifications.push(tradeAccountOrderNotification({ record: n, result: result, parent: self }));
+                                });
+
+                                for (var i = 0; i < self.parent.basketItemAddNotifications().length; i++) {
+                                    if (i < self.parent.basketItemAddNotifications().length)
+                                        self.parent.basketItemAddNotifications()[i].nextNotice = self.parent.basketItemAddNotifications()[i + 1];
+                                }
+
+                                if (self.parent.basketItemAddNotifications().length) {
+                                    self.parent.basketItemAddNotifications()[0].show();
+                                }
+                            }
 
                         } else {
                             $.showError(data.addResult, null, null);
@@ -15978,6 +16085,8 @@ var bespokeArchitectRingFactory = function (parent) {
 
             self.busy(true);
 
+            self.parent.basketItemAddNotifications([]);
+
             $.ajax({
                 url: '/api/componentapi/AddBasketItem',
                 type: 'POST',
@@ -15992,6 +16101,24 @@ var bespokeArchitectRingFactory = function (parent) {
                         self.reset();
                         self.hide();
                         self.parent.fetchBasket();
+
+
+                        if (data.hasOwnProperty('notifications') && data.notifications != null) {
+                            let result = data.notifications.json;
+
+                            ko.utils.arrayForEach(result.notifications, function (n) {
+                                self.parent.basketItemAddNotifications.push(tradeAccountOrderNotification({ record: n, result: result, parent: self }));
+                            });
+
+                            for (var i = 0; i < self.parent.basketItemAddNotifications().length; i++) {
+                                if (i < self.parent.basketItemAddNotifications().length)
+                                    self.parent.basketItemAddNotifications()[i].nextNotice = self.parent.basketItemAddNotifications()[i + 1];
+                            }
+
+                            if (self.parent.basketItemAddNotifications().length) {
+                                self.parent.basketItemAddNotifications()[0].show();
+                            }
+                        }
 
                     } else {
                         $.showError(data.addResult, null, null);
@@ -16509,6 +16636,8 @@ var bespokeArchitectFolderFactory = function (parent) {
 
             self.busy(true);
 
+            self.parent.basketItemAddNotifications([]);
+
             $.ajax({
                 url: '/api/componentapi/AddBasketItem',
                 type: 'POST',
@@ -16523,6 +16652,24 @@ var bespokeArchitectFolderFactory = function (parent) {
                         self.reset();
                         self.hide();
                         self.parent.fetchBasket();
+
+
+                        if (data.hasOwnProperty('notifications') && data.notifications != null) {
+                            let result = data.notifications.json;
+
+                            ko.utils.arrayForEach(result.notifications, function (n) {
+                                self.parent.basketItemAddNotifications.push(tradeAccountOrderNotification({ record: n, result: result, parent: self }));
+                            });
+
+                            for (var i = 0; i < self.parent.basketItemAddNotifications().length; i++) {
+                                if (i < self.parent.basketItemAddNotifications().length)
+                                    self.parent.basketItemAddNotifications()[i].nextNotice = self.parent.basketItemAddNotifications()[i + 1];
+                            }
+
+                            if (self.parent.basketItemAddNotifications().length) {
+                                self.parent.basketItemAddNotifications()[0].show();
+                            }
+                        }
 
                     } else {
                         $.showError(data.addResult, null, null);
@@ -16676,6 +16823,8 @@ var memberBasketFetcher = function (parent) {
 
     self.focDeliveryBasketCount = ko.observable();
 
+    self.customerHeldBasketsCount = ko.observable();
+
     self.fetch = function () {
         self.busy(true);
         $.ajax({
@@ -16764,6 +16913,8 @@ var memberBasketFetcher = function (parent) {
 
     self.focDeliveryGridWidget = ko.observable();
 
+    self.customerHeldBasketsGridWidget = ko.observable();
+
     self.statusFilter = function (element) {
 
         var container = $(element).parent().empty();
@@ -16849,6 +17000,12 @@ var memberBasketFetcher = function (parent) {
             });
         }
 
+        if (self.customerHeldBasketsGridWidget()) {
+            self.customerHeldBasketsGridWidget().dataSource.query({
+                page: 1,
+                pageSize: self.customerHeldBasketsGridWidget().dataSource.pageSize()
+            });
+        }
     }
 
     self.cancelRetailPaymentModal = function () {
@@ -18719,6 +18876,140 @@ var memberBasketFetcher = function (parent) {
         //        }
         //    }
         //})
+    };
+
+
+
+
+    self.customerHeldBasketsGridDataSourceRead = function (options) {
+
+        var webapi = new kendo.data.transports.webapi({ prefix: "" });
+        var params = webapi.parameterMap(options.data);
+
+        var data = {
+            memberId: self.memberId(),
+        };
+
+        for (var propertyName in params) {
+            data[propertyName] = params[propertyName];
+        }
+
+        $.ajax({
+            url: '/api/componentapi/FetchCustomerHeldBaskets',
+            type: "GET",
+            dataType: 'json',
+            data: data,
+            success: function (data) {
+                self.focDeliveryBasketCount(data.Total);
+                ko.utils.arrayForEach(data.Data, function (d) {
+                    d.bootstrapPopoverDetails = {
+                        title: 'Status',
+                        label: d.Status,
+                        content: d.BasketItemCustomerLineMemoDisplay,
+                        placement: 'right',
+                        template: self.popoverTemplate()
+                    }
+                });
+                options.success(data);
+            },
+            error: function (xhr, s, a) {
+                $.ajaxSettings.error(xhr, s, a);
+                options.error();
+            }
+        });
+    };
+
+    self.customerHeldBasketsGridDataSource = new kendo.data.DataSource({
+        transport: {
+            read: self.customerHeldBasketsGridDataSourceRead
+        },
+        //pageSize: 0,
+        sortable: true,
+        filterable: true,
+        grouping: false,
+        serverGrouping: false,
+        serverFiltering: false,
+        serverPaging: true,
+        pageSize: 10,
+        schema: $.extend({}, kendo.data.schemas.webapi, {
+            data: "Data",
+            total: "Total",
+            errors: "Errors",
+            aggregates: "Aggregates",
+            model: {
+                id: 'BasketID',
+                fields: {
+                    BasketID: { type: 'number' },
+                    Status: { type: 'string' },
+                    HeldReason: { type: 'string' },
+                    Market: { type: 'string' },
+                    CustomerCode: { type: 'string' },
+                    Customer: { type: 'string' },
+                    OrderReference: { type: 'string' },
+                    BasketValue: { type: 'string' },
+                    HasAllocations: { type: 'string' },
+                    Modified: { type: 'string' },
+                    Expires: { type: 'string' },
+                    DeleteColumn: { type: 'string' },
+                    DeletePermitted: { type: 'string' },
+                    CustomerRequestDeliveryServiceName: { type: 'string' },
+                    CustomerRequestHaulierCode: { type: 'string' },
+                    CustomerRequestServiceCode: { type: 'string' },
+                    CustomerRequestHaulierAccountNumberForShippingCharge: { type: 'string' },
+                    CustomerRequestHaulierAccountNumberForDuty: { type: 'string' },
+                    CustomerRequestDeliveryTerms: { type: 'string' },
+                    CustomerRequestDeliveryType: { type: 'string' },
+                    CustomerRequestsFullDespatch: { type: 'bool' },
+                    Imported: { type: 'bool' },
+                    CreatedDT: { type: 'date' }
+                }
+            }
+        }),
+        sort: {
+            field: 'Expires',
+            dir: 'desc'
+        },
+        //sort: { field: "BasketID", dir: "desc" },
+        requestStart: function (e) {
+            $("#grid-loading").show();
+        },
+        requestEnd: function (e) {
+            $("#grid-loading").hide();
+        }
+    });
+
+
+    self.customerHeldBasketsGridSettings = {
+        autoBind: true,
+        widget: self.customerHeldBasketsGridWidget,
+        columns: self.resultGridColumns,
+        data: self.customerHeldBasketsGridDataSource,
+        useKOTemplates: true,
+        rowTemplate: 'basket-row-template',
+        scrollable: false,
+        sortable: true,
+        filterable: true,
+        reorderable: false,
+        paging: true,
+        pageSize: 10,
+        pageable: {
+            pageSize: 10,
+            pageSizes: [10, 20, 50, 100, 250, 500, 'all']
+        },
+        selectable: "single, row",
+        change: function (e) {
+            if (self.customerHeldBasketsGridWidget().select()) {
+                self.busy(true);
+                var selectedItem = self.customerHeldBasketsGridWidget().dataItem(self.customerHeldBasketsGridWidget().select());
+                if (selectedItem != null) {
+                    self.parent.orderFactory.loadBasket(selectedItem, function () {
+                        self.busy(false);
+                    });
+                } else {
+                    self.busy(false);
+                }
+            }
+        }
     };
 }
 

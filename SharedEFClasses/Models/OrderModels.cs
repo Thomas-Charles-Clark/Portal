@@ -1003,6 +1003,13 @@ namespace SharedEFClasses.Models.Orders
         public long BasketID { get; set; }
     }
 
+
+    public class PassBasketSplitRequest
+    {
+        public long BasketID { get; set; }
+        public IEnumerable<long> BasketItemIDs { get; set; }
+    }
+
     public class PassProductCode
     {
         public string code { get; set; }

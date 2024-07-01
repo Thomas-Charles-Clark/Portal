@@ -617,6 +617,16 @@
             <!-- /ko -->
         </a>
     </li>
+    <li>
+        <a href="#tab-customer-held-baskets" data-toggle="tab" data-bind="click: function() { $('#user-masquerade').hide(); memberBasketFetcher.customerHeldBasketsGridWidget().dataSource.read() }">
+            Customer Held
+            <!-- ko if: memberBasketFetcher.customerHeldBasketsCount() -->
+            <span class="counter" data-bind="with: memberBasketFetcher, visible: true" style="display: none;">
+                <span data-bind="text: customerHeldBasketsCount"></span>
+            </span>
+            <!-- /ko -->
+        </a>
+    </li>
     @if (User.IsInRole("Super Admin") || (User.IsInRole("Order Release - Customer Services")
                                       || User.IsInRole("Order Release - Credit Control")
                                       || User.IsInRole("Order Release - IT")))
@@ -868,6 +878,30 @@
                         <div class="just-my-order" data-bind="component: { name: 'mdc-checkbox-component', params: justMyOrderParams }"></div>
                     </div>
                     <div data-bind="kendoGrid: submittedGridSettings"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="tab-customer-held-baskets" class="tab-pane">
+        <div class="panel panel-primary" data-bind="with: memberBasketFetcher">
+            <div class="panel-heading no-padding">
+                <h4 class="panel-title">
+                    <a style="cursor: default;" data-bind="text: busy() ? 'Loading...' : 'Select a Basket'"></a>
+                </h4>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-collapse">
+                <div class="selector panel-body bg-info">
+                    <div class="blocker" data-bind="visible: busy">
+                        <div class="busy-bars">
+                            <div class="rect1 alert alert-info"></div>
+                            <div class="rect2 alert alert-info"></div>
+                            <div class="rect3 alert alert-info"></div>
+                            <div class="rect4 alert alert-info"></div>
+                            <div class="rect5 alert alert-info"></div>
+                        </div>
+                    </div>
+                    <div data-bind="kendoGrid: customerHeldBasketsGridSettings"></div>
                 </div>
             </div>
         </div>

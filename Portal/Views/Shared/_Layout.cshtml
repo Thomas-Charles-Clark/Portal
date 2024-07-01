@@ -2349,9 +2349,10 @@
 
         window.catchFetchError = (error) => {
             console.error(error);
-            if (error instanceof TypeError)
+            if (error instanceof TypeError) {
                 error = { message: error.message };
-            showError();
+                $.error("Error", error.message);
+            }
             window.logClientSideError(JSON.stringify(error));
         }
 

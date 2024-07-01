@@ -6225,4 +6225,46 @@ td.popover-container {
 .delivery-address-wrapper {
   margin-bottom: 1rem;
 }
+
+#basket-split-modal .modal-body > p {
+  font-size: 1.15rem;
+}
+#basket-split-modal .basket-item-split-list {
+  margin-bottom: 0;
+}
+#basket-split-modal .basket-item-split-list .list-group-item {
+  cursor: pointer;
+}
+#basket-split-modal .basket-item-split-list .list-group-item .form-check-label {
+  width: 100%;
+}
+#basket-split-modal .basket-item-split-list .list-group-item .form-check-label .d-flex {
+  gap: 15px;
+}
+#basket-split-modal .basket-item-split-list .list-group-item .form-check-label .d-flex div {
+  flex: 1;
+}
+#basket-split-modal .basket-item-split-list .list-group-item .form-check-label .d-flex > div:first-child {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 15px;
+}
+#basket-split-modal .basket-item-split-list .list-group-item .form-check-label .d-flex > div:first-child img {
+  width: 90px;
+  height: 90px;
+}
+#basket-split-modal .basket-item-split-list .list-group-item .form-check-label .d-flex > div:last-child {
+  flex: 1;
+}
+#basket-split-modal .basket-item-split-list .list-group-item .form-check-label .d-flex > div:last-child .alert {
+  padding: 8px;
+  margin-bottom: 0;
+}
+#basket-split-modal .basket-item-split-list .list-group-item .form-check-label .d-flex > div:last-child .alert + .alert {
+  margin-top: 15px;
+}
+#basket-split-modal .basket-item-split-list .list-group-item .form-check-label .mdc-form-field {
+  font-size: 1rem;
+}
 /*# sourceMappingURL=order-products.css.map */

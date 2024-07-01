@@ -2,7 +2,7 @@
 
 const WIDE_WIDTH_RESTRICTIONS_ACTIVE = true
 
-// see order-products.js for consts which may be used in this file
+// see order-products.js for other consts which may be used in this file
 
 var orderProductsDrilldownViewModel = function (parent, name) {
     // #region Sanity Checks

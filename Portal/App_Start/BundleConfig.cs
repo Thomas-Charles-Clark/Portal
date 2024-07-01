@@ -217,9 +217,9 @@ namespace Portal
                         $"{cssPrefix}/lib/bootstrap-switch/bootstrap-switch{cssSuffix}",
                         $"{cssPrefix}/models/site{cssSuffix}",
                         $"{cssPrefix}/models/site-new{cssSuffix}",
-                        $"{cssPrefix}/models/css-shake{cssSuffix}",
-                        $"{cssPrefix}/fonts/fonts{cssSuffix}"
-                ).Include($"{cssPrefix}/lib/bootstrap-icons/bootstrap-icons{cssSuffix}", new CssRewriteUrlTransform()));
+                        $"{cssPrefix}/models/css-shake{cssSuffix}"
+                ).Include($"{cssPrefix}/lib/bootstrap-icons/bootstrap-icons{cssSuffix}", new CssRewriteUrlTransform())
+                 .Include($"{cssPrefix}/fonts/fonts{cssSuffix}", new CssRewriteUrlTransform()));
 
             bundles.Add(new StyleBundle("~/bundles/css/kendo-custom").Include(
                         $"{cssPrefix}/lib/kendo/custom/kendo-custom{cssSuffix}"
@@ -418,6 +418,7 @@ namespace Portal
                     $"{jsPrefix}/models/trade-account-selector{jsSuffix}",
                     $"{jsPrefix}/models/product-search{jsSuffix}",
                     $"{jsPrefix}/models/order-search{jsSuffix}",
+                    $"{jsPrefix}/models/order-products-basket-splitter{jsSuffix}",
                     $"{jsPrefix}/models/order-products{jsSuffix}",
                     $"{jsPrefix}/models/order-products-drilldown{jsSuffix}",
                     $"{jsPrefix}/models/care-search{jsSuffix}",

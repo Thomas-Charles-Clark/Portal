@@ -26,6 +26,7 @@ using PassAutocompleteTerm = SharedEFClasses.Models.TradeAccounts.PassAutocomple
 using SharedEFClasses.Models.Mertexer;
 using DeliveryTerm = SharedEFClasses.Models.Mertexer.DeliveryTerm;
 using SharedEFClasses.Models.Mertex;
+using System.Web.Http.Results;
 
 namespace SharedEFClasses.Models
 {
@@ -736,6 +737,50 @@ namespace SharedEFClasses.Models
                 this.Database.Connection.Open();
                 // Run the sproc 
                 result = cmd.ExecuteNonQuery();
+            }
+            catch (SqlException e)
+            {
+                PortalFramework.LogErrorToDatabase(e);
+                throw e;
+            }
+            finally
+            {
+                this.Database.Connection.Close();
+            }
+
+            return result;
+        }
+
+        public DatabaseJSONResult FetchBasketItemNotifications(long basketItemId)
+        {
+            var result = new DatabaseJSONResult();
+
+            var parameters = new List<SqlParameter>()
+            {
+                new SqlParameter("@BasketItemID",  basketItemId)
+            };
+
+            var cmd = this.Database.Connection.CreateCommand();
+
+            cmd.CommandText = "[portal].[BasketItem_Notification]";
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddRange(parameters.ToArray());
+
+            try
+            {
+                this.Database.Connection.Open();
+
+                var reader = cmd.ExecuteReader();
+
+                var sb = new System.Text.StringBuilder();
+
+                while (reader.Read())
+                {
+                    sb.Append(reader.GetString(0));
+                }
+
+                result.JSON = sb.ToString();
             }
             catch (SqlException e)
             {

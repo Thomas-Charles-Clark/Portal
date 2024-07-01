@@ -55,6 +55,18 @@ namespace Portal.Controllers
             return results.AsQueryable();
         }
 
+        // GET: odata/Products
+        [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
+        public IQueryable<ItemType> GetItemTypesForOrderBookSummary()
+        {
+            var itemTypes = PortalDb.ItemTypes
+                .ToList();
+
+            var results = itemTypes.Distinct(new ItemTypeEqualityComparer());
+
+            return results.AsQueryable();
+        }
+
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
         [HttpGet]
         public IQueryable<ItemType> ItemTypeValueMapper(short? itemTypeId)

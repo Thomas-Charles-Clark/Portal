@@ -2717,6 +2717,16 @@
                         </div>
                         <!-- /ko -->
                         <!-- ko template: { name: 'basket-display-template' } --><!-- /ko -->
+                        <!-- ko if: basket().length > 1 -->
+                        <div class="d-flex margin-top-15 k-justify-content-end">
+                            <button class="btn btn-battleship-blue" data-bind="click: basketSplitter.showModal">
+                                <span class="margin-right-5">
+                                    Split this Basket
+                                </span>
+                                <i class="bi bi-layout-split"></i>
+                            </button>
+                        </div>
+                        <!-- /ko -->
                     </div>
                 </div>
                 <div id="shipping-check-phase" class="order-product-phases" style="display: none" data-bind="fadeBetweenMany: { 

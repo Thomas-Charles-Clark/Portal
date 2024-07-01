@@ -127,6 +127,8 @@ namespace SharedEFClasses.Models
 
         public DbSet<ContractProductRestriction> ContractProductRestrictions { get; set; }
 
+        public DbSet<MertexProductClassificationSuperSet> MertexProductClassificationSuperSet { get; set; }
+
         #endregion
 
         #region Maintenance

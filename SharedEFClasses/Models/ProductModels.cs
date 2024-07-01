@@ -301,6 +301,10 @@ namespace SharedEFClasses.Models.Products
         [JsonIgnore]
         [InverseProperty("Launch")]
         public virtual ICollection<ProductPage> ProductPages { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("Launch")]
+        public virtual ICollection<MertexProductClassificationSuperSet> MertexProductClassificationSuperSetRecords { get; set; }
     }
 
     public class Season
@@ -337,6 +341,10 @@ namespace SharedEFClasses.Models.Products
         [JsonIgnore]
         [InverseProperty("CanonicalCollection")]
         public virtual ICollection<ProductPage> CanonForProductPages { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("Collection")]
+        public virtual ICollection<MertexProductClassificationSuperSet> MertexProductClassificationSuperSetRecords { get; set; }
     }
 
     public class Design
@@ -366,6 +374,10 @@ namespace SharedEFClasses.Models.Products
         [JsonIgnore]
         [InverseProperty("ItemType")]
         public virtual ICollection<ContractProductRestriction> ContractProductRestrictions { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("ItemType")]
+        public virtual ICollection<MertexProductClassificationSuperSet> MertexProductClassificationSuperSetRecords { get; set; }
     }
 
     public class ItemTypeEqualityComparer : IEqualityComparer<ItemType>
@@ -400,6 +412,10 @@ namespace SharedEFClasses.Models.Products
         [JsonIgnore]
         [InverseProperty("ProductGroup")]
         public virtual ICollection<ContractProductRestriction> ContractProductRestrictions { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("ProductGroup")]
+        public virtual ICollection<MertexProductClassificationSuperSet> MertexProductClassificationSuperSetRecords { get; set; }
     }
 
     public class ProductGroupEqualityComparer : IEqualityComparer<ProductGroup>
@@ -440,6 +456,10 @@ namespace SharedEFClasses.Models.Products
         [JsonIgnore]
         [InverseProperty("Quality")]
         public virtual ICollection<Treatment_Quality> Treatments { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("Quality")]
+        public virtual ICollection<MertexProductClassificationSuperSet> MertexProductClassificationSuperSetRecords { get; set; }
     }
 
     public class ProductSortOptionResult

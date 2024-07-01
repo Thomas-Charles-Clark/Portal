@@ -3,15 +3,15 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             @*<div class="modal-header grey-blue">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">
-                        &times;
-                    </span>
-                </button>
-                <h4 class="modal-title">
-                    Delivery Service Details
-                </h4>
-            </div>*@
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">
+                            &times;
+                        </span>
+                    </button>
+                    <h4 class="modal-title">
+                        Delivery Service Details
+                    </h4>
+                </div>*@
             <div class="blocker" data-bind="visible: busy">
                 <div class="loading-spinner"></div>
             </div>
@@ -24,7 +24,7 @@
                 <h4 class="blue-heading text-center">
                     Basket Details
                 </h4>
-                <hr/>
+                <hr />
                 <div class="flex-container">
                     <div>
                         <label>
@@ -46,7 +46,7 @@
                 <h4 class="blue-heading text-center">
                     Trade Account Details
                 </h4>
-                <hr/>
+                <hr />
                 <div class="flex-container">
                     <div>
                         <label>
@@ -96,7 +96,7 @@
                 <h4 class="blue-heading text-center">
                     Service Details
                 </h4>
-                <hr/>
+                <hr />
                 <div class="flex-container">
                     <div>
                         <label>
@@ -130,7 +130,7 @@
                             Data Origin:
                         </label>
                         <label>
-                            Haulier Service Code: 
+                            Haulier Service Code:
                         </label>
                         <label>
                             Express Service:
@@ -154,7 +154,7 @@
                 <h4 class="blue-heading text-center">
                     Parcel Details
                 </h4>
-                <hr/>
+                <hr />
                 <div class="flex-container">
                     <div>
                         <label>
@@ -180,7 +180,7 @@
                 <h4 class="blue-heading text-center">
                     Charge Details
                 </h4>
-                <hr/>
+                <hr />
                 <div class="flex-container">
                     <div>
                         <label>
@@ -214,7 +214,7 @@
                             Final Delivery Charging Logic:
                         </label>
                     </div>
-                    <div> 
+                    <div>
                         <span data-bind="text: `${UnitDeliveryChargeEx != null ? formatCurrency(UnitDeliveryChargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}`"></span>
                         <span data-bind="text: `${DeliveryChargingLogicName} (${DeliveryChargingLogicID})`"></span>
                         <span data-bind="text: `${UnitDeliverySurchargeEx != null ? formatCurrency(UnitDeliverySurchargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}`"></span>
@@ -230,7 +230,7 @@
                 <h4 class="blue-heading text-center">
                     Charge Calculation Components
                 </h4>
-                <hr/>
+                <hr />
                 <div class="flex-container">
                     <div>
                         <label>
@@ -258,8 +258,8 @@
                             Delivery Surcharge:
                         </label>
                         @*<label>
-                            Delivery Details JSON:
-                        </label>*@
+                                Delivery Details JSON:
+                            </label>*@
                         <label>
                             Source Currency:
                         </label>
@@ -324,7 +324,7 @@
                 <h4 class="blue-heading text-center">
                     Order Details
                 </h4>
-                <hr/>
+                <hr />
                 <div class="flex-container">
                     <div>
                         <label>
@@ -370,7 +370,7 @@
                 <h4 class="blue-heading text-center">
                     Discount Details
                 </h4>
-                <hr/>
+                <hr />
                 <div class="flex-container">
                     <div>
                         <label>
@@ -392,7 +392,7 @@
                 <h4 class="blue-heading text-center">
                     Estimates
                 </h4>
-                <hr/>
+                <hr />
                 <div class="flex-container">
                     <div>
                         <label>
@@ -410,7 +410,7 @@
                 <h4 class="blue-heading text-center">
                     Controls
                 </h4>
-                <hr/>
+                <hr />
                 <div class="flex-container">
                     <div>
                         <label>
@@ -432,7 +432,7 @@
                 <h4 class="blue-heading text-center">
                     VAT Parameters
                 </h4>
-                <hr/>
+                <hr />
                 <div class="flex-container">
                     <div>
                         <label>
@@ -470,7 +470,7 @@
                 <h4 class="blue-heading text-center">
                     Location Details: Origin
                 </h4>
-                <hr/>
+                <hr />
                 <div class="flex-container">
                     <div>
                         <label>
@@ -483,33 +483,33 @@
                             Origin Stock Location Site ID:
                         </label>
                         @*<label>
-                            Supplier Address Details:
-                        </label>*@
+                                Supplier Address Details:
+                            </label>*@
                     </div>
                     <div>
                         <span data-bind="text: `${From}`"></span>
                         <span data-bind="text: `${OriginStockLocationID}`"></span>
                         <span data-bind="text: `${OriginStockLocationSiteID}`"></span>
                         @*<!-- ko if: SupplierCompanyName -->
-                        <div>
-                            <span class="address-block-span" data-bind="text: `${SupplierCompanyName}`"></span>
-                            <span class="address-block-span" data-bind="text: `${SupplierAddressLine1}`"></span>
-                            <span class="address-block-span" data-bind="text: `${SupplierAddressLine2}`"></span>
-                            <span class="address-block-span" data-bind="text: `${SupplierTown}`"></span>
-                            <span class="address-block-span" data-bind="text: `${SupplierCounty}`"></span>
-                            <span class="address-block-span" data-bind="text: `${SupplierPostcode}`"></span>
-                            <span class="address-block-span" data-bind="text: `${SupplierCountryCode} (CountryID: ${SupplierCountryID})`"></span>
-                        </div>
-                        <!-- /ko -->
-                        <!-- ko ifnot: SupplierCompanyName -->
-                        <span data-bind="text: `Unknown`"></span>
-                        <!-- /ko -->*@
+                            <div>
+                                <span class="address-block-span" data-bind="text: `${SupplierCompanyName}`"></span>
+                                <span class="address-block-span" data-bind="text: `${SupplierAddressLine1}`"></span>
+                                <span class="address-block-span" data-bind="text: `${SupplierAddressLine2}`"></span>
+                                <span class="address-block-span" data-bind="text: `${SupplierTown}`"></span>
+                                <span class="address-block-span" data-bind="text: `${SupplierCounty}`"></span>
+                                <span class="address-block-span" data-bind="text: `${SupplierPostcode}`"></span>
+                                <span class="address-block-span" data-bind="text: `${SupplierCountryCode} (CountryID: ${SupplierCountryID})`"></span>
+                            </div>
+                            <!-- /ko -->
+                            <!-- ko ifnot: SupplierCompanyName -->
+                            <span data-bind="text: `Unknown`"></span>
+                            <!-- /ko -->*@
                     </div>
                 </div>
                 <h4 class="blue-heading text-center">
                     Location Details: Destination
                 </h4>
-                <hr/>
+                <hr />
                 <div class="flex-container">
                     <div>
                         <label>
@@ -554,7 +554,7 @@
                 <h4 class="blue-heading text-center">
                     Customer's Saved Haulier Account Details
                 </h4>
-                <hr/>
+                <hr />
                 <div class="flex-container flex-container-column">
                     <div>
                         <h5 class="blue-heading bold">
@@ -1474,41 +1474,41 @@
                                     </div>
                                 </div>
                                 @*<div class="row" data-bind="visible: patternBookView() == PATTERNBOOK_DISPLAY_LIMITED_DISCO">
-                                    <div class="col-xs-push-4 col-xs-4 text-center">
-                                        <!-- ko if: Enumerable.From(patternBookContents().products).Where(function (x) { return (x.record.Status == 'D') || (x.record.Status == 'L') }).Count() > 0 -->
-                                        <button class="btn btn-success" data-bind="click: function() { patternBookEmailInputVisible(!patternBookEmailInputVisible()); }">
-                                            Email Limited / Discontinued Product Info
-                                        </button>
-                                        <!-- /ko -->
-                                        <div class="pattern-book-email-input-wrapper" data-bind="fadeSlideVisible: patternBookEmailInputVisible">
-                                            <div class="form-group mdc-validating-field margin-bottom-0">
-                                                <div class="mdc-text-field mdc-text-field--outlined" data-bind="keepElement: patternBookEmail, mdcTextField: { boundTo: patternBookEmail, useNativeValidation: false }, validationOptions: { insertMessages: false }">
-                                                    <div class="input-group">
-                                                        <input type="text" class="mdc-text-field__input" data-bind="keepElement: patternBookEmail, textInput: patternBookEmail" />
-                                                        <div class="input-group-btn">
-                                                            <button class="btn btn-success" data-bind="click: function() { emailPatternBookInfo(); }">
-                                                                Send
-                                                                <span class="glyphicon glyphicon-send"></span>
-                                                            </button>
+                                        <div class="col-xs-push-4 col-xs-4 text-center">
+                                            <!-- ko if: Enumerable.From(patternBookContents().products).Where(function (x) { return (x.record.Status == 'D') || (x.record.Status == 'L') }).Count() > 0 -->
+                                            <button class="btn btn-success" data-bind="click: function() { patternBookEmailInputVisible(!patternBookEmailInputVisible()); }">
+                                                Email Limited / Discontinued Product Info
+                                            </button>
+                                            <!-- /ko -->
+                                            <div class="pattern-book-email-input-wrapper" data-bind="fadeSlideVisible: patternBookEmailInputVisible">
+                                                <div class="form-group mdc-validating-field margin-bottom-0">
+                                                    <div class="mdc-text-field mdc-text-field--outlined" data-bind="keepElement: patternBookEmail, mdcTextField: { boundTo: patternBookEmail, useNativeValidation: false }, validationOptions: { insertMessages: false }">
+                                                        <div class="input-group">
+                                                            <input type="text" class="mdc-text-field__input" data-bind="keepElement: patternBookEmail, textInput: patternBookEmail" />
+                                                            <div class="input-group-btn">
+                                                                <button class="btn btn-success" data-bind="click: function() { emailPatternBookInfo(); }">
+                                                                    Send
+                                                                    <span class="glyphicon glyphicon-send"></span>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mdc-notched-outline mdc-notched-outline--notched">
+                                                            <div class="mdc-notched-outline__leading"></div>
+                                                            <div class="mdc-notched-outline__notch">
+                                                                <label for="input" class="col-form-label mdc-floating-label">
+                                                                    Email Address
+                                                                </label>
+                                                            </div>
+                                                            <div class="mdc-notched-outline__trailing"></div>
                                                         </div>
                                                     </div>
-                                                    <div class="mdc-notched-outline mdc-notched-outline--notched">
-                                                        <div class="mdc-notched-outline__leading"></div>
-                                                        <div class="mdc-notched-outline__notch">
-                                                            <label for="input" class="col-form-label mdc-floating-label">
-                                                                Email Address
-                                                            </label>
-                                                        </div>
-                                                        <div class="mdc-notched-outline__trailing"></div>
-                                                    </div>
+                                                    <span class="validation-message text-danger" data-bind="validationMessage: patternBookEmail"></span>
                                                 </div>
-                                                <span class="validation-message text-danger" data-bind="validationMessage: patternBookEmail"></span>
                                             </div>
-                                        </div>
-                                        <span class="tarf-last-send" style="display: none;" data-bind="fadeVisible: showLastSentTo, fadeSpeed: 'slow', text: 'Sent successfully to: ' + patternBookEmail()"></span>
+                                            <span class="tarf-last-send" style="display: none;" data-bind="fadeVisible: showLastSentTo, fadeSpeed: 'slow', text: 'Sent successfully to: ' + patternBookEmail()"></span>
 
-                                    </div>
-                                </div>*@
+                                        </div>
+                                    </div>*@
                                 <!-- /ko -->
                                 <!-- ko if: patternBookContents().products.length == 0 -->
                                 <p>
@@ -1575,8 +1575,8 @@
                             <!-- ko if: existingQualityTreatments() -->
                             <table class="table table-condensed margin-top-15 quality-info-table">
                                 <colgroup>
-                                    <col style="width: 400px"/>
-                                    <col style="width: 33.33%"/>
+                                    <col style="width: 400px" />
+                                    <col style="width: 33.33%" />
                                     <col />
                                 </colgroup>
                                 <thead>
@@ -1599,7 +1599,8 @@
                                             <span class="test-passed display-block">
                                                 <span data-bind="text: CompositionCode"></span>
                                                 -
-                                                <span data-bind="text: CompositionName"></span></span>
+                                                <span data-bind="text: CompositionName"></span>
+                                            </span>
                                             <!-- /ko -->
                                         </td>
                                         <td>
@@ -1663,8 +1664,8 @@
                                                         Supplier
                                                     </th>
                                                     @*<th>
-                                                        Treatment Charge
-                                                    </th>*@
+                                                            Treatment Charge
+                                                        </th>*@
                                                     <th>
                                                         Standard Processing Time
                                                     </th>
@@ -1688,8 +1689,8 @@
                                                         <span data-bind="text: TreatmentProviderName"></span>
                                                     </td>
                                                     @*<td class="text-right">
-                                                        <span data-bind="text: formatCurrency(PriceEx, 2, 'en-GB', 'GBP')"></span>
-                                                    </td>*@
+                                                            <span data-bind="text: formatCurrency(PriceEx, 2, 'en-GB', 'GBP')"></span>
+                                                        </td>*@
                                                     <td class="text-right">
                                                         <span data-bind="text: StandardLeadTimeDays + ' days'"></span>
                                                     </td>
@@ -1699,7 +1700,6 @@
                                                         <!-- /ko -->
                                                     </td>
                                                     <td>
-
                                                     </td>
                                                 </tr>
                                                 <!-- /ko -->
@@ -1839,36 +1839,36 @@
                                 </div>
                                 <div class="flex-container">
                                     @*<div>
-                                        <h4 class="bold text-center">
-                                            Supplier Details
-                                        </h4>
-                                        <dl class="dl-horizontal">
-                                            <dt>
-                                                Name
-                                            </dt>
-                                            <dd>
-                                                <span data-bind="text: name"></span>
-                                            </dd>
-                                            <dt>
-                                                Code
-                                            </dt>
-                                            <dd>
-                                                <span data-bind="text: code"></span>
-                                            </dd>
-                                            <dt>
-                                                Country
-                                            </dt>
-                                            <dd>
-                                                <span data-bind="text: countryName"></span>
-                                            </dd>
-                                            <dt>
-                                                Phone
-                                            </dt>
-                                            <dd>
-                                                <a data-bind="attr: { href: 'tel:' + telephone }, text: telephone"></a>
-                                            </dd>
-                                        </dl>
-                                    </div>*@
+                                            <h4 class="bold text-center">
+                                                Supplier Details
+                                            </h4>
+                                            <dl class="dl-horizontal">
+                                                <dt>
+                                                    Name
+                                                </dt>
+                                                <dd>
+                                                    <span data-bind="text: name"></span>
+                                                </dd>
+                                                <dt>
+                                                    Code
+                                                </dt>
+                                                <dd>
+                                                    <span data-bind="text: code"></span>
+                                                </dd>
+                                                <dt>
+                                                    Country
+                                                </dt>
+                                                <dd>
+                                                    <span data-bind="text: countryName"></span>
+                                                </dd>
+                                                <dt>
+                                                    Phone
+                                                </dt>
+                                                <dd>
+                                                    <a data-bind="attr: { href: 'tel:' + telephone }, text: telephone"></a>
+                                                </dd>
+                                            </dl>
+                                        </div>*@
                                     <div>
                                         <h4 class="bold text-center">
                                             Lead Time Parameters
@@ -1883,14 +1883,14 @@
                                             </dd>
                                             <!-- ko with: parameters -->
                                             <dt>
-                                                Default Lead Time 
+                                                Default Lead Time
                                             </dt>
                                             <dd>
                                                 <span data-bind="text: defaultLeadTimeDays"></span>
                                                 working days
                                             </dd>
                                             <dt>
-                                                Shipping Lead Time 
+                                                Shipping Lead Time
                                             </dt>
                                             <dd>
                                                 <span data-bind="text: shippingLeadTimeDays"></span>
@@ -2002,8 +2002,8 @@
                 </span>
                 <!-- /ko-->
                 @*<!-- ko if: !foldingDisclaimer.isValid() -->
-                <span class="validation-message text-danger" data-bind="validationMessage: foldingDisclaimer"></span>
-                <!-- /ko -->*@
+                    <span class="validation-message text-danger" data-bind="validationMessage: foldingDisclaimer"></span>
+                    <!-- /ko -->*@
             </div>
         </div>
     </div>
@@ -2050,14 +2050,13 @@
                 </button>
                 <!-- /ko-->
                 <!-- /ko-->
-
                 <!-- ko if: ['L', 'Y'].indexOf(addingProductToBasket().record.Status) > -1 -->
                 <p>
                     This is a Limited product.
                 </p>
                 <!-- ko if: Enumerable.From(addingProductAllocationStockData()).Where(function (x) { return x.stockLocation.stockLocationId == allocationStockLocation.observable() }).Select('+$.stockLocation.totalIncludingDue()').Sum() >= +addingProductToBasket().quantity() -->
                 <p>
-                    There appears to be sufficient stock to satisfy your customer's demand. A replenishment task will be raised if you back order this line. This 
+                    There appears to be sufficient stock to satisfy your customer's demand. A replenishment task will be raised if you back order this line. This
                     will instruct the warehouse to move stock to a pickable location to satisfy your order.
                 </p>
                 <button class="btn btn-green" data-bind="click: function() { skipAllocationAndBackOrder(false); }">
@@ -2082,7 +2081,6 @@
                 </button>
                 <!-- /ko -->
                 <!-- /ko -->
-
                 <!-- ko if: ['C', 'Y', 'L'].indexOf(addingProductToBasket().record.Status) == -1 -->
                 <p>
                     This is a discontinued / clearance product and cannot be back ordered.
@@ -2167,7 +2165,9 @@
                 <!-- /ko -->
             </div>
         </div>
+        <!-- ko if: typeof notes != 'undefined' -->
         <div style="margin-bottom: -25px" class="margin-top-0" data-bind="html: notes"></div>
+        <!-- /ko -->
     </div>
 </script>
 
@@ -2187,7 +2187,7 @@
                 <li class="bespoke-waterfall-available list-group-item list-group-item-selected">
                     <label class="checkbox-wrapper">
                         <!-- ko if: value.ImageID -->
-                        <img class="thumb"  data-bind="attr: { src: 'https://www.designersguild.com/image/239/' + value.ImageID, title: value.Code }" />
+                        <img class="thumb" data-bind="attr: { src: 'https://www.designersguild.com/image/239/' + value.ImageID, title: value.Code }" />
                         <!-- /ko -->
                         <span data-bind="text: label"></span>
                         <span class="pull-right close material-icons" data-bind="click: $parent.clearMaterial">
@@ -2205,29 +2205,28 @@
                 </li>
             </ul>
             <!-- ko if: materialTypeId() == 'F' || materialTypeId() == 'L' -->
-                <!-- ko ifnot: selectedMaterial() -->
-                <div class="autocompleter" data-bind="component: { name: 'mdc-text-field-autocomplete-component', params: bespokeFurnitureMaterialAutocomplete }, css: { 'rounded': bespokeMaterialAutocompleteResults().length == 0 }"></div>
-                <!-- ko if: bespokeMaterialAutocompleteResults().length -->
-                <ul class="list-group" data-bind="validationOptions: { insertMessages: false }">
-                    <!-- ko foreach: bespokeMaterialAutocompleteResults() --> @*attr: { tabindex: $index() },  }*@
-                    <li class="bespoke-waterfall-available list-group-item pointer" tabindex="0" data-bind="click: $parent.selectMaterial, event: { 'keypress': function (data, event) { if (event.originalEvent.code == 'Space' || event.originalEvent.code == 'Enter') { $parent.selectMaterial(data); } } }, css: { 'unavailable': !available }">
-                        <label class="checkbox-wrapper">
-                            <!-- ko if: value.ImageID -->
-                            <img class="thumb"  data-bind="attr: { src: 'https://www.designersguild.com/image/239/' + value.ImageID, title: value.Code }" />
-                            <!-- /ko -->
-                            <span data-bind="text: label"></span>
-                            <span class="pull-right" data-bind="text: 'Upholstery Grade: ' + value.UpholsteryGrade"></span>
-                            <!-- ko if: !available -->
-                            <span class="text-danger text-right display-block" data-bind="text: unavailableMessage"></span>
-                            <!-- /ko -->
-                        </label>
-                    </li>
-                    <!-- /ko -->
-                </ul>
+            <!-- ko ifnot: selectedMaterial() -->
+            <div class="autocompleter" data-bind="component: { name: 'mdc-text-field-autocomplete-component', params: bespokeFurnitureMaterialAutocomplete }, css: { 'rounded': bespokeMaterialAutocompleteResults().length == 0 }"></div>
+            <!-- ko if: bespokeMaterialAutocompleteResults().length -->
+            <ul class="list-group" data-bind="validationOptions: { insertMessages: false }">
+                <!-- ko foreach: bespokeMaterialAutocompleteResults() --> @*attr: { tabindex: $index() },  }*@
+                <li class="bespoke-waterfall-available list-group-item pointer" tabindex="0" data-bind="click: $parent.selectMaterial, event: { 'keypress': function (data, event) { if (event.originalEvent.code == 'Space' || event.originalEvent.code == 'Enter') { $parent.selectMaterial(data); } } }, css: { 'unavailable': !available }">
+                    <label class="checkbox-wrapper">
+                        <!-- ko if: value.ImageID -->
+                        <img class="thumb" data-bind="attr: { src: 'https://www.designersguild.com/image/239/' + value.ImageID, title: value.Code }" />
+                        <!-- /ko -->
+                        <span data-bind="text: label"></span>
+                        <span class="pull-right" data-bind="text: 'Upholstery Grade: ' + value.UpholsteryGrade"></span>
+                        <!-- ko if: !available -->
+                        <span class="text-danger text-right display-block" data-bind="text: unavailableMessage"></span>
+                        <!-- /ko -->
+                    </label>
+                </li>
                 <!-- /ko -->
-                <!-- /ko -->
+            </ul>
             <!-- /ko -->
-
+            <!-- /ko -->
+            <!-- /ko -->
             <!-- ko if: materialTypeId() == 'O' -->
             <div data-bind="component: { name: 'mdc-text-field-component', params: customersProductCode }"></div>
             <div class="margin-top-15" data-bind="component: { name: 'mdc-text-field-component', params: customersSupplier }"></div>
@@ -2268,10 +2267,10 @@
         <div class="modal-content">
             <div class="modal-header grey-blue">
                 @*<button type="button" class="close" aria-label="Close" data-dismiss="modal">
-                    <span aria-hidden="true">
-                        &times;
-                    </span>
-                </button>*@
+                        <span aria-hidden="true">
+                            &times;
+                        </span>
+                    </button>*@
                 <h4 class="modal-title">
                     Cut Length Breakdown
                 </h4>
@@ -2324,18 +2323,18 @@
                                                 <span data-bind="text: $parentContext.$parent.addingProductToBasket().record.Units"></span>
                                                 <!-- ko if: !cuts.isValid() -->
                                                 <span class="red-text" data-bind="visible: remainingToCut() > 0">
-                                                    <br/>
+                                                    <br />
                                                     (<span data-bind="text: remainingToCut().toFixed($parentContext.$parent.addingProductToBasket().productFilterOptions().QuantityPrecision) + ' ' + $parentContext.$parent.addingProductToBasket().record.Units"></span> Remaining)
                                                 </span>
                                                 <!-- /ko -->
                                             </td>
                                             <td class="text-right">
-                                                @*<div class="cut-wrapper margin-bottom-10" data-bind="visible: remainingToCut() > 0"> 
-                                                    <input type="text" class="cut-input read-only-cut form-control text-right" data-bind="value: remainingToCut" disabled />
-                                                    <div class="clearfix"></div>
-                                                </div>*@
+                                                @*<div class="cut-wrapper margin-bottom-10" data-bind="visible: remainingToCut() > 0">
+                                                        <input type="text" class="cut-input read-only-cut form-control text-right" data-bind="value: remainingToCut" disabled />
+                                                        <div class="clearfix"></div>
+                                                    </div>*@
                                                 <!-- ko foreach: cuts -->
-                                                <div class="cut-wrapper margin-bottom-10"> 
+                                                <div class="cut-wrapper margin-bottom-10">
                                                     @*<span data-bind="text: 'Cut ' + cutNumber"></span>*@
                                                     <button type="button" class="close" aria-label="Close" data-bind="click: $parent.removeCut">
                                                         <span aria-hidden="true">
@@ -2407,13 +2406,13 @@
                 </button>
             </div>
         </div>
-    </div> 
+    </div>
 </div>
 
 <script id="allocation-pricing-treatments-memos-template" type="text/html">
     <div class="product-progression-stage" data-bind="fadeBetweenMany: {
                 observable: stageInformation().currentStage,
-                visibleWhen: function (stage) { 
+                visibleWhen: function (stage) {
                 return stage.StepID == ADVANCED_STAGE_REVIEW_ALLOCATION
                 },
                 swapWith: typeof alt === 'undefined' ? '.product-progression-stage' : '.alt-progression-stage'
@@ -2439,7 +2438,7 @@
                     </div>
                     <!-- ko if: $root.orderProductsDrilldown.addingProductToBasket() -->
                     <!-- ko if: $root.orderProductsDrilldown.addingProductToBasket().record.BespokeFurnitureJSON -->
-                    <!-- ko if: Enumerable.From(JSON.parse($root.orderProductsDrilldown.addingProductToBasket().record.BespokeFurnitureJSON).specification.materialBreakdown).Where(function (mb) { 
+                    <!-- ko if: Enumerable.From(JSON.parse($root.orderProductsDrilldown.addingProductToBasket().record.BespokeFurnitureJSON).specification.materialBreakdown).Where(function (mb) {
                                 return mb.productId == $data.record.ProductID
                             }).Any() -->
                     <div class="alert alert-info margin-top-15">
@@ -2447,16 +2446,16 @@
                             Component Requirements for this Fabric
                         </h5>
                         <div class="component-requirements">
-                        <!-- ko foreach: Enumerable.From(JSON.parse($root.orderProductsDrilldown.addingProductToBasket().record.BespokeFurnitureJSON).specification.materialBreakdown).Where(function (mb) { 
-                                return mb.productId == $data.record.ProductID
-                            }).ToArray() -->
+                            <!-- ko foreach: Enumerable.From(JSON.parse($root.orderProductsDrilldown.addingProductToBasket().record.BespokeFurnitureJSON).specification.materialBreakdown).Where(function (mb) {
+                                    return mb.productId == $data.record.ProductID
+                                }).ToArray() -->
                             <div>
                                 <label>
                                     <span data-bind="text: key.name"></span>:
                                     <span class="font-normal" data-bind="text: requirementM + 'm'"></span>
                                 </label>
                             </div>
-                        <!-- /ko -->
+                            <!-- /ko -->
                         </div>
                     </div>
                     <!-- /ko -->
@@ -2542,16 +2541,16 @@
                                                 <td class="text-right">
                                                     <input type="text" class="form-control allocation-control" data-bind="
                                                             keepElement: allocationAmount,
-                                                            numeric, 
+                                                            numeric,
                                                             hasFocus: hasFocus,
-                                                            forceNullOnZero: allocationAmount, 
-                                                            value: allocationAmount, 
-                                                            css: { 
+                                                            forceNullOnZero: allocationAmount,
+                                                            value: allocationAmount,
+                                                            css: {
                                                                 'confirmed': confirmed(),
                                                                 'loading-stripes': busy()
                                                             },
                                                             disable: (!Pickable || busy()) || (parent.anyStandardPoleAllocations() && FabricPoleWidth == 'W') || (parent.anyWideWidthPoleAllocations() && FabricPoleWidth == 'S'),
-                                                            attr: { 
+                                                            attr: {
                                                                 title: !Pickable ? 'Non-Pickable Rack' : ''
                                                             }" />
                                                     <span class="unit-display" data-bind="text: parent.addingProductToBasket().record.Units"></span>
@@ -2568,7 +2567,7 @@
                             <!-- ko if: $parentContext.$parent.displayAllocationTotals() -->
                             <tr class="footer-row">
                                 <td colspan="3" class="text-right">
-                                    Total Allocation 
+                                    Total Allocation
                                     <span data-bind="text: $parentContext.$parent.totalAllocatedStockInSelectedLocation"></span>
                                     <span data-bind="text: $parent.record.Units"></span>
                                 </td>
@@ -2624,21 +2623,21 @@
                     </div>
                     <div class="product-allocation-warning-box form-group alert alert-danger" data-bind="validationOptions: { insertMessages: false }, visible: ($parent.wideWidthFabric() && WIDE_WIDTH_RESTRICTIONS_ACTIVE)">
                         <span class="bold" data-bind="html: $parent.wideWidthMessage">
-                            @*This is a wide width fabric. 
-                            This product can be folded in lengths of up to 
-                            <!-- ko if: $parent.shipInABoxOverride() -->
-                            <span data-bind="text: record.MaxFoldLength == 0 ? 10 : record.MaxFoldLength"></span>
-                            <!-- /ko -->
-                            <!-- ko ifnot: $parent.shipInABoxOverride() -->
-                            <span data-bind="text: record.MaxFoldLength"></span>
-                            <!-- /ko -->
-                                m.*@
+                            @*This is a wide width fabric.
+                                This product can be folded in lengths of up to
+                                <!-- ko if: $parent.shipInABoxOverride() -->
+                                <span data-bind="text: record.MaxFoldLength == 0 ? 10 : record.MaxFoldLength"></span>
+                                <!-- /ko -->
+                                <!-- ko ifnot: $parent.shipInABoxOverride() -->
+                                <span data-bind="text: record.MaxFoldLength"></span>
+                                <!-- /ko -->
+                                    m.*@
                         </span>
                         <ul>
                             <!-- ko if: $parent.shipOnAStandardWidthPoleOverride() -->
                             <li>
                                 <label class="pointer font-normal">
-                                    <input type="radio" name="pole-shipping" data-bind="checkedValue: 3, checked: $parent.packingMethodId"/>
+                                    <input type="radio" name="pole-shipping" data-bind="checkedValue: 3, checked: $parent.packingMethodId" />
                                     <span class="bold">
                                         Ship on a Standard Width pole
                                     </span>
@@ -2648,7 +2647,7 @@
                             <!-- ko if: $parent.shipOnAWideWidthPoleOverride() -->
                             <li>
                                 <label class="pointer font-normal">
-                                    <input type="radio" name="pole-shipping" data-bind="checkedValue: 1, checked: $parent.packingMethodId"/>
+                                    <input type="radio" name="pole-shipping" data-bind="checkedValue: 1, checked: $parent.packingMethodId" />
                                     <span class="bold">
                                         Ship on a Wide Width pole
                                     </span> - customer accepts additional per pole shipping charges
@@ -2658,10 +2657,10 @@
                             <!-- ko if: $parent.shipInABoxOverride() -->
                             <li>
                                 <label class="pointer font-normal">
-                                    <input type="radio" name="pole-shipping" data-bind="checkedValue: 2, checked: $parent.packingMethodId"/>
+                                    <input type="radio" name="pole-shipping" data-bind="checkedValue: 2, checked: $parent.packingMethodId" />
                                     <span class="bold">
                                         Ship in a box
-                                    </span> - customer accepts that the product will be folded. Customer must provide a piece breakdown if the quantity exceeds the 
+                                    </span> - customer accepts that the product will be folded. Customer must provide a piece breakdown if the quantity exceeds the
                                     <!-- ko if: $parent.shipInABoxOverride() -->
                                     <span data-bind="text: record.MaxFoldLength == 0 ? 10 : record.MaxFoldLength"></span>
                                     <!-- /ko -->
@@ -2799,110 +2798,110 @@
                                 </td>
                             </tr>
                             <!-- ko foreach: $data -->
-                                <!-- ko if: stockLocation.totalIncludingDue() == 0 -->
-                                    <tr class="stock-location">
-                                        <th>
-                                            <span data-bind="text: `${stockLocation.stockLocationCode} - ${stockLocation.stockLocationName}`"></span>
-                                        </th>
-                                        <th colspan="7">
-                                            <span class="font-normal text-italic">
-                                                No stock available in this location
-                                            </span>
-                                        </th>
-                                    </tr>
-                                <!-- /ko -->
-                                <!-- ko if: stockLocation.totalIncludingDue() > 0 -->
-                                    <tr class="stock-location">
-                                        <th>
-                                            <span data-bind="text: `${stockLocation.stockLocationCode} - ${stockLocation.stockLocationName}`"></span>
-                                        </th>
-                                        <th>
-                                            <span data-bind="text: stockLocation.availableNowTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
-                                        </th>
-                                        <th>
-                                            <span data-bind="text: stockLocation.bulkTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
-                                        </th>
-                                        <th>
-                                            <span data-bind="text: stockLocation.waitingTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
-                                        </th>
-                                        <th>
-                                            <span data-bind="text: stockLocation.ringFencedTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
-                                        </th>
-                                        <th>
-                                            <span data-bind="text: stockLocation.onReserveTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
-                                        </th>
-                                        <th>
-                                            <span data-bind="text: (+stockLocation.totalQuantity()).toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
-                                        </th>
-                                        <th>
-                                            <span data-bind="text: stockLocation.dueInTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
-                                        </th>
-                                    </tr>
-                                    
-                                    <!-- ko foreach: batches -->
-                                        <tr data-bind="css: { 'location-end': $index() == ($parent.batches.length - 1) }">
-                                            <td>
-                                                <span data-bind="text: batch.batchNo"></span>
-                                            </td>
-                                            <td colspan="7" class="no-padding">
-                                                <table class="piece-table table table-condensed">
-                                                    <colgroup>
-                                                        <col style="width: 105px;" />
-                                                        <col style="width: 75px;" />
-                                                        <col style="width: 75px;" />
-                                                        <col style="width: 75px;" />
-                                                        <col style="width: 75px;" />
-                                                        <col style="width: 91px;" />
-                                                        <col style="width: auto" />
-                                                    </colgroup>
-                                                    <tbody>
-                                                        <!-- ko foreach: pieces -->
-                                                        <tr>
-                                                            <td>
-                                                                <span data-bind="text: AvailableNowDisplay"></span>
-                                                            </td>
-                                                            <td>
-                                                                <span data-bind="text: BulkDisplay"></span>
-                                                            </td>
-                                                            <td>
-                                                                <span data-bind="text: WaitingDisplay"></span>
-                                                            </td>
-                                                            <td>
-                                                                <span data-bind="text: RingFencedDisplay"></span>
-                                                            </td>
-                                                            <td>
-                                                                <span data-bind="text: OnReserveDisplay"></span>
-                                                            </td>
-                                                            <td>
-                                                                <span data-bind="text: TotalDisplay"></span>
-                                                            </td>
-                                                            <td>
-                                                                <span data-bind="text: DueInDisplay"></span>
-                                                                <!-- ko if: POOnCallOff -->
-                                                                <span>(call off)</span>
-                                                                <!-- /ko -->
-                                                                <!-- ko ifnot: POOnCallOff -->
-                                                                <!-- ko if: POConfirmed != null -->
-                                                                <span data-bind="text: POConfirmed ? '(confirmed)' : '(unconfirmed)'"></span>
-                                                                <!-- /ko -->
-                                                                <!-- /ko -->
-                                                            </td>
-                                                        </tr>
-                                                        <!-- /ko -->
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                    <!-- /ko -->
-                                <!-- /ko -->
-                                <!-- ko if: $index() != ($parent.length - 1) -->
-                                    <tr>
-                                        <td colspan="6">
-                                            &nbsp;
-                                        </td>
-                                    </tr>
-                                <!-- /ko -->
-                                <!-- /ko -->
+                            <!-- ko if: stockLocation.totalIncludingDue() == 0 -->
+                            <tr class="stock-location">
+                                <th>
+                                    <span data-bind="text: `${stockLocation.stockLocationCode} - ${stockLocation.stockLocationName}`"></span>
+                                </th>
+                                <th colspan="7">
+                                    <span class="font-normal text-italic">
+                                        No stock available in this location
+                                    </span>
+                                </th>
+                            </tr>
+                            <!-- /ko -->
+                            <!-- ko if: stockLocation.totalIncludingDue() > 0 -->
+                            <tr class="stock-location">
+                                <th>
+                                    <span data-bind="text: `${stockLocation.stockLocationCode} - ${stockLocation.stockLocationName}`"></span>
+                                </th>
+                                <th>
+                                    <span data-bind="text: stockLocation.availableNowTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
+                                </th>
+                                <th>
+                                    <span data-bind="text: stockLocation.bulkTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
+                                </th>
+                                <th>
+                                    <span data-bind="text: stockLocation.waitingTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
+                                </th>
+                                <th>
+                                    <span data-bind="text: stockLocation.ringFencedTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
+                                </th>
+                                <th>
+                                    <span data-bind="text: stockLocation.onReserveTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
+                                </th>
+                                <th>
+                                    <span data-bind="text: (+stockLocation.totalQuantity()).toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
+                                </th>
+                                <th>
+                                    <span data-bind="text: stockLocation.dueInTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
+                                </th>
+                            </tr>
+
+                            <!-- ko foreach: batches -->
+                            <tr data-bind="css: { 'location-end': $index() == ($parent.batches.length - 1) }">
+                                <td>
+                                    <span data-bind="text: batch.batchNo"></span>
+                                </td>
+                                <td colspan="7" class="no-padding">
+                                    <table class="piece-table table table-condensed">
+                                        <colgroup>
+                                            <col style="width: 105px;" />
+                                            <col style="width: 75px;" />
+                                            <col style="width: 75px;" />
+                                            <col style="width: 75px;" />
+                                            <col style="width: 75px;" />
+                                            <col style="width: 91px;" />
+                                            <col style="width: auto" />
+                                        </colgroup>
+                                        <tbody>
+                                            <!-- ko foreach: pieces -->
+                                            <tr>
+                                                <td>
+                                                    <span data-bind="text: AvailableNowDisplay"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: BulkDisplay"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: WaitingDisplay"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: RingFencedDisplay"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: OnReserveDisplay"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: TotalDisplay"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: DueInDisplay"></span>
+                                                    <!-- ko if: POOnCallOff -->
+                                                    <span>(call off)</span>
+                                                    <!-- /ko -->
+                                                    <!-- ko ifnot: POOnCallOff -->
+                                                    <!-- ko if: POConfirmed != null -->
+                                                    <span data-bind="text: POConfirmed ? '(confirmed)' : '(unconfirmed)'"></span>
+                                                    <!-- /ko -->
+                                                    <!-- /ko -->
+                                                </td>
+                                            </tr>
+                                            <!-- /ko -->
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <!-- /ko -->
+                            <!-- /ko -->
+                            <!-- ko if: $index() != ($parent.length - 1) -->
+                            <tr>
+                                <td colspan="6">
+                                    &nbsp;
+                                </td>
+                            </tr>
+                            <!-- /ko -->
+                            <!-- /ko -->
                         </tbody>
                     </table>
                     <p>
@@ -2918,9 +2917,9 @@
             </div>
         </div>
     </div>
-    <div class="product-progression-stage" data-bind="fadeBetweenMany: { 
+    <div class="product-progression-stage" data-bind="fadeBetweenMany: {
                 observable: stageInformation().currentStage,
-                visibleWhen: function (stage) { 
+                visibleWhen: function (stage) {
                 return stage.StepID == ADVANCED_STAGE_APPLY_TREATMENT
                 },
                 swapWith: typeof alt === 'undefined' ? '.product-progression-stage' : '.alt-progression-stage'
@@ -2928,9 +2927,9 @@
         <div class="product-treatment-inner">
             <!-- ko if: addingProductToBasket() != null -->
             <!-- ko if: allocationStockLocation != null -->
-            <!-- ko ifnot: allocationStockLocation.observable() == 107 && 
-                (addingProductToBasket().fulfilmentOption().FulfilmentTypeID == 0 || 
-                 addingProductToBasket().fulfilmentOption().FulfilmentTypeID == 1 || 
+            <!-- ko ifnot: allocationStockLocation.observable() == 107 &&
+                (addingProductToBasket().fulfilmentOption().FulfilmentTypeID == 0 ||
+                 addingProductToBasket().fulfilmentOption().FulfilmentTypeID == 1 ||
                  addingProductToBasket().fulfilmentOption().FulfilmentTypeID == 4) -->
             <h4 class="bold blue-heading">
                 Treatments are only available for stock ordered from the Warehouse for Delivery or Customer Collection
@@ -2946,7 +2945,7 @@
                 </div>
                 <!-- /ko -->
             </div>
-            <!-- ko if: selectedTreatments().length --> 
+            <!-- ko if: selectedTreatments().length -->
             <div class="treatments-selected">
                 <h4 class="blue-heading">
                     <span data-bind="text: selectedTreatments()[0].TreatmentProviderName"></span>
@@ -2975,10 +2974,9 @@
                                             <span data-bind="text: TreatmentDescription"></span>
                                         </span>
                                     </span>
-                                </div>  
+                                </div>
                             </td>
                             <td>
-
                             </td>
                             <td class="text-right">
                                 <span data-bind="text: formatCurrency(PriceEx, 2, $parent.addingProductToBasket().record.Currency.FormattingCulture, $parent.addingProductToBasket().record.Currency.ISO_4217)"></span>
@@ -2995,7 +2993,6 @@
                         <!-- ko if: Enumerable.From(selectedTreatments()).Where(function (x) { return x.ExpressPrice != null }).Any() -->
                         <tr class="applied-treatment-spacing-row">
                             <td colspan="3">
-
                             </td>
                         </tr>
                         <tr>
@@ -3011,7 +3008,6 @@
                         <!-- /ko -->
                         <tr class="applied-treatment-spacing-row">
                             <td colspan="3">
-
                             </td>
                         </tr>
                         <tr class="applied-treatment-total-row">
@@ -3035,8 +3031,8 @@
             </div>
             <!-- /ko -->
             <!-- ko if: allocationStockLocation.observable() == 107 &&
-                (addingProductToBasket().fulfilmentOption().FulfilmentTypeID == 0 || 
-                 addingProductToBasket().fulfilmentOption().FulfilmentTypeID == 1 || 
+                (addingProductToBasket().fulfilmentOption().FulfilmentTypeID == 0 ||
+                 addingProductToBasket().fulfilmentOption().FulfilmentTypeID == 1 ||
                  addingProductToBasket().fulfilmentOption().FulfilmentTypeID == 4) -->
             <div class="treatments-container form-group">
                 <ul class="nav nav-pills">
@@ -3151,9 +3147,9 @@
             <!-- /ko -->
         </div>
     </div>
-    <div class="product-progression-stage" data-bind="fadeBetweenMany: { 
-                observable: stageInformation().currentStage, 
-                visibleWhen: function (stage) { 
+    <div class="product-progression-stage" data-bind="fadeBetweenMany: {
+                observable: stageInformation().currentStage,
+                visibleWhen: function (stage) {
                 return stage.StepID == ADVANCED_STAGE_REVIEW_PRICING
                 },
                 swapWith: typeof alt === 'undefined' ? '.product-progression-stage' : '.alt-progression-stage'
@@ -3161,7 +3157,7 @@
         <div class="product-pricing-inner">
             <table class="product-pricing-table form-group table table-condensed">
                 <colgroup>
-                    <col style="width: 35%;"/>
+                    <col style="width: 35%;" />
                     <col />
                 </colgroup>
                 <!-- ko foreach: discounts -->
@@ -3183,7 +3179,7 @@
                                     <col style="width: 150px;" />
                                     <col style="width: 150px;" />
                                     <col style="width: 150px;" />
-                                    <col style="width: 64px;"/>
+                                    <col style="width: 64px;" />
                                     <col />
                                 </colgroup>
                                 <tbody>
@@ -3276,7 +3272,7 @@
                                     </tr>
                                     <tr>
                                         <td class="discount-spacer" colspan="4">
-                                            <hr/>
+                                            <hr />
                                         </td>
                                         <td></td>
                                     </tr>
@@ -3313,7 +3309,7 @@
                     </tr>
                     <tr>
                         <td class="discount-spacer" colspan="4">
-                            <hr/>
+                            <hr />
                         </td>
                     </tr>
                 </tbody>
@@ -3321,9 +3317,9 @@
             </table>
         </div>
     </div>
-    <div class="product-progression-stage" data-bind="fadeBetweenMany: { 
-            observable: stageInformation().currentStage, 
-                visibleWhen: function (stage) { 
+    <div class="product-progression-stage" data-bind="fadeBetweenMany: {
+            observable: stageInformation().currentStage,
+                visibleWhen: function (stage) {
                 return stage.StepID == ADVANCED_STAGE_REVIEW_MEMOS
                 },
             swapWith: typeof alt === 'undefined' ? '.product-progression-stage' : '.alt-progression-stage'
@@ -3360,7 +3356,7 @@
                 <button class="btn btn-green" data-bind="click: addLineMemo">
                     Add Memo
                 </button>
-            </div> 
+            </div>
         </div>
     </div>
 </script>
@@ -3505,27 +3501,27 @@
                             </div>
                             <div class="bespoke-memo" data-bind="component: { name: 'mdc-text-area-component', params: memo }"></div>
                             @*<div>
-                        <ul>
-                            <li>
-                                <label class="checkbox-wrapper">
-                                    <input type="checkbox" data-bind="checked: fullDispatch, checkedValue: true" />
-                                    <span>
-                                        Does your customer request full despatch?
-                                    </span>
-                                </label>
-                            </li>
-                            <!-- ko if: bespokeType() == 'Showlength' -->
-                            <li>
-                                <label class="checkbox-wrapper">
-                                    <input type="checkbox" data-bind="checked: halfWidth, checkedValue: true" />
-                                    <span>
-                                        Half Width required?
-                                    </span>
-                                </label>
-                            </li>
-                            <!-- /ko -->
-                        </ul>
-                    </div>*@
+                                    <ul>
+                                        <li>
+                                            <label class="checkbox-wrapper">
+                                                <input type="checkbox" data-bind="checked: fullDispatch, checkedValue: true" />
+                                                <span>
+                                                    Does your customer request full despatch?
+                                                </span>
+                                            </label>
+                                        </li>
+                                        <!-- ko if: bespokeType() == 'Showlength' -->
+                                        <li>
+                                            <label class="checkbox-wrapper">
+                                                <input type="checkbox" data-bind="checked: halfWidth, checkedValue: true" />
+                                                <span>
+                                                    Half Width required?
+                                                </span>
+                                            </label>
+                                        </li>
+                                        <!-- /ko -->
+                                    </ul>
+                                </div>*@
                             <div class="waterfall-wrapper">
                                 <div class="waterfall-wrapper-inner">
                                     <div class="waterfall">
@@ -3753,13 +3749,13 @@
                                                 </label>
                                             </li>
                                             @*<li>
-                                        <label class="checkbox-wrapper">
-                                            <input type="checkbox" data-bind="checked: directDispatch, checkedValue: true" />
-                                            <span>
-                                                Does your customer request direct despatch from our supplier?
-                                            </span>
-                                        </label>
-                                    </li>*@
+                                                    <label class="checkbox-wrapper">
+                                                        <input type="checkbox" data-bind="checked: directDispatch, checkedValue: true" />
+                                                        <span>
+                                                            Does your customer request direct despatch from our supplier?
+                                                        </span>
+                                                    </label>
+                                                </li>*@
                                         </ul>
                                     </div>
                                     <p>
@@ -4324,7 +4320,7 @@
                 </h4>
                 <p class="alert alert-danger">
                     <span class="bold">WARNING!</span> This will <span class="bold">permanently delete</span> the basket, all its contents
-                    and release all associated stock allocations. Once a basket is deleted it will <span class="bold">not be available</span> for you 
+                    and release all associated stock allocations. Once a basket is deleted it will <span class="bold">not be available</span> for you
                     or anyone else to process later.
                 </p>
                 <button class="btn btn-default" data-bind="click: function() { saveAndCloseFunction = function () {
@@ -4461,8 +4457,8 @@
                     This fabric requires treatment to meet FR regulations. Return to the previous screen and select an FR treatment.
                 </p>
                 @*<ul style="list-style-type: disc; padding-left: 40px;" class="margin-bottom-0" data-bind="foreach: treatmentMandateViolations">
-                    <li data-bind="text: TreatmentTypeName"></li>
-                </ul>*@
+                        <li data-bind="text: TreatmentTypeName"></li>
+                    </ul>*@
                 <i class="display-block margin-top-15 margin-bottom-15 bold">
                     or
                 </i>
@@ -4478,65 +4474,65 @@
 </div>
 
 @*<script type="text/javascript">
-    //$('#order-products-drilldown-modal').on('shown.bs.modal', function () {
-        
-    //    $('a[href="#tab-drilldown-order"]').on('shown.bs.tab', function () {
-    //        $('#tab-drilldown-order .line-reference').each(function (i, ele) {
-    //            var data = ko.contextFor(ele);
-    //            data.$parent.lineReference.observable.mdcTextField.layout();
-    //        })
-    //    });
+        //$('#order-products-drilldown-modal').on('shown.bs.modal', function () {
 
-    //    $('a[href="#tab-drilldown-bespoke"]').on('shown.bs.tab', function () {
-    //        $('#tab-drilldown-bespoke .line-reference').each(function (i, ele) {
-    //            var data = ko.contextFor(ele);
-    //            data.$parent.lineReference.observable.mdcTextField.layout();
-    //        })
-    //    });
+        //    $('a[href="#tab-drilldown-order"]').on('shown.bs.tab', function () {
+        //        $('#tab-drilldown-order .line-reference').each(function (i, ele) {
+        //            var data = ko.contextFor(ele);
+        //            data.$parent.lineReference.observable.mdcTextField.layout();
+        //        })
+        //    });
 
-    //    $('a[href="#tab-drilldown-alas"]').on('shown.bs.tab', function () {
-    //        $('#tab-drilldown-alas .line-reference').each(function (i, ele) {
-    //            var data = ko.contextFor(ele);
-    //            data.$parent.lineReference.observable.mdcTextField.layout();
-    //        })
-    //    });
+        //    $('a[href="#tab-drilldown-bespoke"]').on('shown.bs.tab', function () {
+        //        $('#tab-drilldown-bespoke .line-reference').each(function (i, ele) {
+        //            var data = ko.contextFor(ele);
+        //            data.$parent.lineReference.observable.mdcTextField.layout();
+        //        })
+        //    });
 
-    //    $('a[href="#tab-drilldown-sampling"]').on('shown.bs.tab', function () {
-    //        $('#tab-drilldown-sampling .line-reference').each(function (i, ele) {
-    //            var data = ko.contextFor(ele);
-    //            data.$parent.lineReference.observable.mdcTextField.layout();
-    //        })
-    //    });
+        //    $('a[href="#tab-drilldown-alas"]').on('shown.bs.tab', function () {
+        //        $('#tab-drilldown-alas .line-reference').each(function (i, ele) {
+        //            var data = ko.contextFor(ele);
+        //            data.$parent.lineReference.observable.mdcTextField.layout();
+        //        })
+        //    });
 
-    //    $('a[href="#tab-drilldown-colourways"]').on('shown.bs.tab', function () {
-    //        $('#tab-drilldown-colourways .line-reference').each(function (i, ele) {
-    //            var data = ko.contextFor(ele);
-    //            data.$parent.lineReference.observable.mdcTextField.layout();
-    //        })
-    //    });
-        
-    //    $('a[href="#tab-drilldown-coord"]').on('shown.bs.tab', function () {
-    //        $('#tab-drilldown-coord .line-reference').each(function (i, ele) {
-    //            var data = ko.contextFor(ele);
-    //            data.$parent.lineReference.observable.mdcTextField.layout();
-    //        })
-    //    });
-    //}); 
-    
+        //    $('a[href="#tab-drilldown-sampling"]').on('shown.bs.tab', function () {
+        //        $('#tab-drilldown-sampling .line-reference').each(function (i, ele) {
+        //            var data = ko.contextFor(ele);
+        //            data.$parent.lineReference.observable.mdcTextField.layout();
+        //        })
+        //    });
 
-    //$('#order-products-drilldown-modal').on('hide.bs.modal', function () {
-    //    $('a[href="#tab-drilldown-order"]').off('shown.bs.tab');
-    //    $('a[href="#tab-drilldown-bespoke"]').off('shown.bs.tab');
-    //    $('a[href="#tab-drilldown-alas"]').off('shown.bs.tab');
-    //    $('a[href="#tab-drilldown-sampling"]').off('shown.bs.tab');
-    //    $('a[href="#tab-drilldown-colourways"]').off('shown.bs.tab');
-    //    $('a[href="#tab-drilldown-coord"]').off('shown.bs.tab');
-    //});
-    //$('#supplier-modal').on('shown.bs.modal', function () {
-    //    var data = ko.contextFor($('#supplier-modal-inner')[0]);
-    //    data.$data.availableSuppliersList.observable.mdcSelect.layout();
-    //});
-</script>*@
+        //    $('a[href="#tab-drilldown-colourways"]').on('shown.bs.tab', function () {
+        //        $('#tab-drilldown-colourways .line-reference').each(function (i, ele) {
+        //            var data = ko.contextFor(ele);
+        //            data.$parent.lineReference.observable.mdcTextField.layout();
+        //        })
+        //    });
+
+        //    $('a[href="#tab-drilldown-coord"]').on('shown.bs.tab', function () {
+        //        $('#tab-drilldown-coord .line-reference').each(function (i, ele) {
+        //            var data = ko.contextFor(ele);
+        //            data.$parent.lineReference.observable.mdcTextField.layout();
+        //        })
+        //    });
+        //});
+
+
+        //$('#order-products-drilldown-modal').on('hide.bs.modal', function () {
+        //    $('a[href="#tab-drilldown-order"]').off('shown.bs.tab');
+        //    $('a[href="#tab-drilldown-bespoke"]').off('shown.bs.tab');
+        //    $('a[href="#tab-drilldown-alas"]').off('shown.bs.tab');
+        //    $('a[href="#tab-drilldown-sampling"]').off('shown.bs.tab');
+        //    $('a[href="#tab-drilldown-colourways"]').off('shown.bs.tab');
+        //    $('a[href="#tab-drilldown-coord"]').off('shown.bs.tab');
+        //});
+        //$('#supplier-modal').on('shown.bs.modal', function () {
+        //    var data = ko.contextFor($('#supplier-modal-inner')[0]);
+        //    data.$data.availableSuppliersList.observable.mdcSelect.layout();
+        //});
+    </script>*@
 
 <div id="add-all-modal" class="modal fade" data-backdrop="static" data-keyboard="false" data-bind="with: orderFactory">
     <div id="add-all-modal-inner" class="modal-dialog">
@@ -4634,9 +4630,9 @@
                 </h4>
             </div>
             <div class="modal-body" data-bind="with: deliveryAddress">
-                 @*<p data-bind="with: $parent.parent.tradeAccount">
-                     Would you like to save the changes to the current delivery address record, or create a new entry in the address book for <span data-bind="text: `${Code} - ${Name}`"></span>?
-                 </p>*@
+                @*<p data-bind="with: $parent.parent.tradeAccount">
+                        Would you like to save the changes to the current delivery address record, or create a new entry in the address book for <span data-bind="text: `${Code} - ${Name}`"></span>?
+                    </p>*@
                 <h4 class="alert alert-warning">
                     You are about to overwrite Delivery Address: <span data-bind="text: deliveryReference()"></span>
                 </h4>
@@ -4790,8 +4786,8 @@
                     Save Changes
                 </button>
                 @*<button class="btn btn-blue pull-right" data-bind="click: createNewMertexDeliveryAddress">
-                    Create New
-                </button>*@
+                        Create New
+                    </button>*@
             </div>
         </div>
     </div>
@@ -4845,49 +4841,49 @@
             </div>
             <div class="modal-body">
                 <!-- ko if: finished() -->
-                    <div class="alert alert-success margin-bottom-0">
-                        <h4 class="alert-title margin-bottom-0">
-                            Done!
-                        </h4>
-                    </div>
+                <div class="alert alert-success margin-bottom-0">
+                    <h4 class="alert-title margin-bottom-0">
+                        Done!
+                    </h4>
+                </div>
                 <!-- /ko -->
                 <!-- ko ifnot: finished() -->
-                    <!-- ko if: deniedBasketItems().length -->
-                    <div class="alert alert-warning">
-                        <!-- ko if: permittedBasketItems().length > 0 -->
-                        <h4 class="alert-title">
-                            Warning
-                        </h4>
-                        <p>
-                            The following <span data-bind="text: deniedBasketItems().length == 1 ? 'product is' : 'products are'"></span>
-                            not going to have this discount applied. Please check the reasons for each.
-                        </p>
-                        <!-- /ko -->
-                        <!-- ko if: permittedBasketItems().length == 0 -->
-                        <h4 class="alert-title">
-                            Sorry
-                        </h4>
-                        <p>
-                            None of the products in the group you selected are eligible for bulk discounting. Please check the reasons for each product beneath.
-                        </p>
-                        <!-- /ko -->
-                        <ul class="margin-top-15">
-                            <!-- ko foreach: deniedBasketItems -->
-                            <li>
-                                <label>
-                                    <span data-bind="text: ProductName"></span>
-                                    &times;
-                                    <span data-bind="text: Quantity"></span>
-                                </label>
-                                <span class="margin-left-15" data-bind="text: '- ' + BulkDiscountDeniedReason"></span>
-                            </li>
-                            <!-- /ko -->
-                        </ul>
-                    </div>
-                    <!-- /ko -->
+                <!-- ko if: deniedBasketItems().length -->
+                <div class="alert alert-warning">
                     <!-- ko if: permittedBasketItems().length > 0 -->
-                    <div class="discounter-vertical" data-bind="component: { name: 'mdc-discounter-component', params: discounter }"></div>
+                    <h4 class="alert-title">
+                        Warning
+                    </h4>
+                    <p>
+                        The following <span data-bind="text: deniedBasketItems().length == 1 ? 'product is' : 'products are'"></span>
+                        not going to have this discount applied. Please check the reasons for each.
+                    </p>
                     <!-- /ko -->
+                    <!-- ko if: permittedBasketItems().length == 0 -->
+                    <h4 class="alert-title">
+                        Sorry
+                    </h4>
+                    <p>
+                        None of the products in the group you selected are eligible for bulk discounting. Please check the reasons for each product beneath.
+                    </p>
+                    <!-- /ko -->
+                    <ul class="margin-top-15">
+                        <!-- ko foreach: deniedBasketItems -->
+                        <li>
+                            <label>
+                                <span data-bind="text: ProductName"></span>
+                                &times;
+                                <span data-bind="text: Quantity"></span>
+                            </label>
+                            <span class="margin-left-15" data-bind="text: '- ' + BulkDiscountDeniedReason"></span>
+                        </li>
+                        <!-- /ko -->
+                    </ul>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: permittedBasketItems().length > 0 -->
+                <div class="discounter-vertical" data-bind="component: { name: 'mdc-discounter-component', params: discounter }"></div>
+                <!-- /ko -->
                 <!-- /ko -->
             </div>
             <div class="modal-footer">
@@ -4906,6 +4902,64 @@
                     Finished
                 </button>
                 <!-- /ko -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="basket-split-modal" class="modal fade" data-backdrop="static" data-keyboard="false" data-bind="with: orderFactory">
+    <div id="basket-split-modal-inner" class="modal-dialog modal-lg" data-bind="with: basketSplitter">
+        <div class="modal-content">
+            <div class="blocker" data-bind="visible: busy">
+                <div class="loading-spinner"></div>
+                <h4>
+                    Please Wait...
+                </h4>
+            </div>
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" aria-label="Close" data-bind="click: closeModal">
+                    <span aria-hidden="true">
+                        &times;
+                    </span>
+                </button>
+                <h4 class="modal-title">
+                    Select Basket Items
+                </h4>
+            </div>
+            <div class="modal-body">
+                <!-- ko ifnot: busy -->
+                <p>
+                    Please select the items that you wish to release.<br />
+                    The remaining items (the ones you haven't selected) will be moved to a new basket for you to access later.
+                </p>
+                <!-- /ko -->
+                <ul class="basket-item-split-list list-group">
+                    <!-- ko foreach: fetchResults -->
+                    <li class="list-group-item form-check">
+                        <label class="form-check-label pointer" data-bind="attr: { for: `split-check-${BasketItemID}` }">
+                            <div class="d-flex">
+                                <div>
+                                    <img width="90" height="90" data-bind="attr: { src: `https://www.designersguild.com/image/156/${ProductImageID}` }" />
+                                    <div data-bind="component: { name: 'mdc-checkbox-component', params: checkedParams }"></div>
+                                </div>
+                                <div>
+                                    <!-- ko if: Details -->
+                                    <div data-bind="html: Details"></div>
+                                    <!-- /ko -->
+                                </div>
+                            </div>
+                        </label>
+                    </li>
+                    <!-- /ko -->
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-bind="click: closeModal">
+                    Cancel
+                </button>
+                <button class="btn btn-green" data-bind="click: splitBasket">
+                    Split
+                </button>
             </div>
         </div>
     </div>
