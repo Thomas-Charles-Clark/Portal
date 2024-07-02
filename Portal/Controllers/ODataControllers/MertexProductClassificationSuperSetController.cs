@@ -15,6 +15,7 @@ using SharedEFClasses.Models.MertexLive;
 using SharedEFClasses;
 using SharedEFClasses.Models.Products;
 using Microsoft.AspNet.OData.Extensions;
+using System.Web.Mvc;
 
 namespace Portal.Controllers
 {
@@ -37,6 +38,7 @@ namespace Portal.Controllers
 
         }
 
+        [OutputCache(NoStore = true, Location = System.Web.UI.OutputCacheLocation.None)]
         [EnableQuery]
         public IQueryable<MertexProductClassificationSuperSet> GetMertexProductClassificationSuperSet()
         {

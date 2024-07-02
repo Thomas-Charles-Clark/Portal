@@ -94,7 +94,7 @@ $light-blue-bg: tint-color($blue-100, 80%);
 
         .btn-reset,
         .btn-refresh {
-            width: 251px;
+            width: 233px;
             padding-left: $btn-padding-x;
             padding-right: $btn-padding-x;
             opacity: 1;
@@ -119,6 +119,7 @@ $light-blue-bg: tint-color($blue-100, 80%);
         display: flex;
         flex-direction: column;
         gap: $l-gutter;
+        overflow-y: scroll;
     }
 
     .sidebar-header {
