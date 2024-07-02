@@ -179,7 +179,7 @@ const orderBookUserDefinedFiltersViewModel = ({
                     obj = obj[s];
                 });
 
-                event.sender._widgetOptions.value(obj);
+                event.sender._widgetOptions.value(`${obj}`);
             }
 
         }).catch((e) => { });
@@ -804,132 +804,6 @@ const orderBookUserDefinedFiltersViewModel = ({
         }
     });
 
-
-
-
-    self.generateSuperSetParameterMap = (defaultGroupBy) => {
-        return (data) => {
-            //Generate parameters in odata v4 format
-            let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-            delete d.$inlinecount; // <-- remove inlinecount
-            delete d.$format; // <-- remove format
-            delete d.$callback; // <-- remove callback
-
-            d.$count = true;
-
-            d.$apply = defaultGroupBy;
-
-            let filters = [];
-
-            if (self.brandId() != '') {
-                filters.push(`BrandID eq ${self.brandId()}`);
-            }
-
-            if (self.productGroupId() != '') {
-                filters.push(`ProductGroupID eq ${self.productGroupId()}`);
-            }
-
-            if (self.itemTypeId() != '') {
-                filters.push(`ItemTypeID eq ${self.itemTypeId()}`);
-            }
-
-            if (self.collectionId() != '') {
-                filters.push(`CollectionID eq ${self.collectionId()}`);
-            }
-
-            if (self.launchId() != '') {
-                filters.push(`LaunchID eq ${self.launchId()}`);
-            }
-
-            if (self.qualityId() != '') {
-                filters.push(`QualityID eq ${self.qualityId()}`);
-            }
-
-            if (filters.length) {
-                let filterString = filters.join(' and ');
-                d.$apply = `filter(${filterString})/${defaultGroupBy}`
-            }
-            
-            return d;
-        }
-    }
-
-
-
-
-
-    self.launchParams = kendoMDCDropDownList({
-        label: 'Launch',
-        odata: true,
-        endPoint: '/odata/Launches',
-        textField: 'Name',
-        valueField: 'LaunchID',
-        virtual: true,
-        pageSize: 40,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                if (options.value) {
-                    $.ajax({
-                        url: `/odata/Launches/Default.LaunchValueMapper(launchId=${options.value})`,
-                        type: 'GET',
-                        success: function (data) {
-                            options.success(data.value);
-                        }
-                    });
-                } else {
-                    options.success();
-                }
-            }
-        },
-        idObservable: self.launchId,
-        objObservable: self.launch,
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertible: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        autoBind: true,
-        height: 340,
-        sort: {
-            dir: 'desc',
-            field: 'LaunchID'
-        },
-        select: self.genericUnsavedChangesSelect,
-        dataBound: (e) => self.launchAwaitingBinding(false),
-        clearFunction: self.genericUnsavedChangesClear
-    });
-
-    self.brandsGroupBy = `groupBy((Brand/BrandID,Brand/Name))`;
-
-    self.brandParams = kendoMDCDropDownList({
-        label: 'Brand',
-        odata: true,
-        endPoint: '/odata/Brands',
-        textField: 'Name',
-        valueField: 'BrandID',
-        virtual: false,
-        idObservable: self.brandId,
-        objObservable: self.brand,
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertible: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        autoBind: true,
-        height: 340,
-        select: self.genericUnsavedChangesSelect,
-        dataBound: (e) => self.brandAwaitingBinding(false),
-        clearFunction: self.genericUnsavedChangesClear,
-        parameterMap: (e) => {
-        
-        }
-    });
-
     self.haulierParams = kendoMDCDropDownList({
         label: 'Haulier',
         odata: true,
@@ -974,7 +848,111 @@ const orderBookUserDefinedFiltersViewModel = ({
         },
     });
 
-    self.productGroupGroupBy = `groupby((ProductGroup/ProductGroupID,ProductGroup/Name))`;
+    self.generateAfterClear = (defaultGroupBy) => {
+        return () => {
+            let filters = [];
+
+            if (defaultGroupBy.indexOf('BrandID') == -1) {
+                filters.push(self.brandParams.dropDownListSettings.widget());
+            }
+
+            if (defaultGroupBy.indexOf('ProductGroupID') == -1) {
+                filters.push(self.productGroupParams.dropDownListSettings.widget());
+            }
+
+            if (defaultGroupBy.indexOf('ItemTypeID') == -1) {
+                filters.push(self.itemTypeParams.dropDownListSettings.widget());
+            }
+
+            if (defaultGroupBy.indexOf('CollectionID') == -1) {
+                filters.push(self.collectionParams.dropDownListSettings.widget());
+            }
+
+            if (defaultGroupBy.indexOf('LaunchID') == -1) {
+                filters.push(self.launchParams.dropDownListSettings.widget());
+            }
+
+            if (defaultGroupBy.indexOf('QualityID') == -1) {
+                filters.push(self.qualityParams.dropDownListSettings.widget());
+            }
+
+            filters.forEach(f => {
+                f.dataSource.read();
+            })
+        }
+    }
+
+    self.generateSuperSetParameterMap = (defaultGroupBy) => {
+        return (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            d.$apply = defaultGroupBy;
+
+            let filters = [];
+
+            // is this setting up as a subscription set...
+            // yes, categorically it is. If you .peek all the following observables,
+            // the filters do not affect one another.
+            // so WHY THE FRAK ARE WE GETTING MULTIPLE FIRINGS
+            // because strings vs numbers!
+            // so how do we tell the EDM that they should all be returned as strings?
+
+            let brandId = self.brandId();
+            let productGroupId = self.productGroupId();
+            let itemTypeId = self.itemTypeId();
+            let collectionId = self.collectionId();
+            let launchId = self.launchId();
+            let qualityId = self.qualityId();
+
+            if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "ShortLabel")) {
+                let f = data.filter.filters.find(f => f.field === "ShortLabel");
+                filters.push(`Name contains "${f.value}"`);
+                filters.push(`Code eq "${f.value}"`);
+            }
+
+            if (defaultGroupBy.indexOf('BrandID') == -1 && brandId != '') {
+                filters.push(`BrandID eq ${brandId}`);
+            }
+
+            if (defaultGroupBy.indexOf('ProductGroupID') == -1 && productGroupId != '') {
+                filters.push(`ProductGroupID eq ${productGroupId}`);
+            }
+
+            if (defaultGroupBy.indexOf('ItemTypeID') == -1 && itemTypeId != '') {
+                filters.push(`ItemTypeID eq ${itemTypeId}`);
+            }
+
+            if (defaultGroupBy.indexOf('CollectionID') == -1 && collectionId != '') {
+                filters.push(`CollectionID eq ${collectionId}`);
+            }
+
+            if (defaultGroupBy.indexOf('LaunchID') == -1 && launchId != '') {
+                filters.push(`LaunchID eq ${launchId}`);
+            }
+
+            if (defaultGroupBy.indexOf('QualityID') == -1 && qualityId != '') {
+                filters.push(`QualityID eq ${qualityId}`);
+            }
+
+            if (filters.length) {
+                let filterString = filters.join(' and ');
+                d.$apply = `filter(${filterString})/${defaultGroupBy}`
+            }
+
+            console.log(defaultGroupBy, d);
+            
+            return d;
+        }
+    }
+
+    self.productGroupGroupBy = `groupby((ProductGroup/ProductGroupID,ProductGroup/Name))/filter((ProductGroup/ProductGroupID ne null))`;
 
     self.productGroupParams = kendoMDCDropDownList({
         label: 'Product Group',
@@ -996,32 +974,14 @@ const orderBookUserDefinedFiltersViewModel = ({
         select: self.genericUnsavedChangesSelect,
         dataBound: (e) => self.productGroupAwaitingBinding(false),
         clearFunction: self.genericUnsavedChangesClear,
-        parameterMap: (data) => {
-            //Generate parameters in odata v4 format
-            let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-            delete d.$inlinecount; // <-- remove inlinecount
-            delete d.$format; // <-- remove format
-            delete d.$callback; // <-- remove callback
-
-            d.$count = true;
-
-            d.$apply = self.productGroupGroupBy;
-
-            if (self.itemTypeId() != '') {
-                d.$apply = `filter(ItemTypeID eq ${self.itemTypeId()})/${self.productGroupGroupBy}`
-            } else {
-                d.$apply = self.productGroupGroupBy;
-            }
-
-            return d;
-        },
+        parameterMap: self.generateSuperSetParameterMap(self.productGroupGroupBy),
+        afterClear: self.generateAfterClear(self.productGroupGroupBy),
         popupSettings: {
             appendTo: document.getElementById('product-group-prefilter')
         }
     });
 
-    self.itemTypeGroupBy = `groupby((ItemType/ItemTypeID,ItemType/Name))`;
+    self.itemTypeGroupBy = `groupby((ItemType/ItemTypeID,ItemType/Name))/filter((ItemType/ItemTypeID ne null))`;
 
     self.itemTypeParams = kendoMDCDropDownList({
         label: 'Item Type',
@@ -1046,32 +1006,48 @@ const orderBookUserDefinedFiltersViewModel = ({
             self.itemTypeAwaitingBinding(false);
             self.itemTypeParams.enable(e.sender.dataSource.data().length != 0);
         },
-        parameterMap: (data) => {
-            //Generate parameters in odata v4 format
-            let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-            delete d.$inlinecount; // <-- remove inlinecount
-            delete d.$format; // <-- remove format
-            delete d.$callback; // <-- remove callback
-
-            d.$count = true;
-
-            d.$apply = self.itemTypeGroupBy;
-
-            if (self.productGroupId() != '') {
-                d.$apply = `filter(ProductGroupID eq ${self.productGroupId()})/${self.itemTypeGroupBy}`
-            } else {
-                d.$apply = self.itemTypeGroupBy;
-            }
-
-            return d;
-        },
+        parameterMap: self.generateSuperSetParameterMap(self.itemTypeGroupBy),
+        afterClear: self.generateAfterClear(self.itemTypeGroupBy),
         popupSettings: {
             appendTo: document.getElementById('product-group-prefilter')
         }
     });
 
-    self.collectionGroupBy = `groupby((Collection/CollectionID,Collection/Name))`;
+    self.brandsGroupBy = `groupby((Brand/BrandID,Brand/Name))/filter((Brand/BrandID ne null))`;
+
+    self.brandParams = kendoMDCDropDownList({
+        label: 'Brand',
+        odata: true,
+        endPoint: '/odata/MertexProductClassificationSuperSet',
+        textField: 'Brand.Name',
+        valueField: 'Brand.BrandID',
+        virtual: false,
+        idObservable: self.brandId,
+        objObservable: self.brand,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        select: self.genericUnsavedChangesSelect,
+        dataBound: (e) => self.brandAwaitingBinding(false),
+        clearFunction: self.genericUnsavedChangesClear,
+        parameterMap: self.generateSuperSetParameterMap(self.brandsGroupBy),
+        afterClear: self.generateAfterClear(self.brandsGroupBy)
+    });
+
+    self.collectionGroupBy = `groupby((Collection/CollectionID,Collection/Name,Collection/Code))/filter((Collection/CollectionID ne null))`;
+
+    self.collectionTemplate = (e) => {
+        if (e.Collection && e.Collection.CollectionID && e.Collection.Name) {
+            return `<span title="${e.Collection.Code} - ${e.Collection.Name}">${e.Collection.Code} - ${e.Collection.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
 
     self.collectionParams = kendoMDCDropDownList({
         label: 'Collection',
@@ -1090,7 +1066,9 @@ const orderBookUserDefinedFiltersViewModel = ({
                         url: `/odata/Collections/Default.CollectionValueMapper(collectionId=${options.value})`,
                         type: 'GET',
                         success: function (data) {
-                            options.success(data.value);
+                            options.success([{
+                                Collection: data.value[0]
+                            }]);
                         }
                     });
                 } else {
@@ -1098,12 +1076,8 @@ const orderBookUserDefinedFiltersViewModel = ({
                 }
             }
         },
-        template: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        valueTemplate: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
+        template: self.collectionTemplate,
+        valueTemplate: self.collectionTemplate,
         idObservable: self.collectionId,
         objObservable: self.collection,
         enable: ko.observable(true),
@@ -1116,7 +1090,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         height: 340,
         sort: {
             dir: 'desc',
-            field: 'CollectionID'
+            field: 'Collection.CollectionID'
         },
         select: self.genericUnsavedChangesSelect,
         dataBound: (e) => self.collectionAwaitingBinding(false),
@@ -1124,43 +1098,75 @@ const orderBookUserDefinedFiltersViewModel = ({
         popupSettings: {
             appendTo: document.getElementById('collection-prefilter')
         },
-        parameterMap: (data) => {
-            //Generate parameters in odata v4 format
-            if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "ShortLabel")) {
-                let f = data.filter.filters.find(f => f.field === "ShortLabel");
-                data.filter.filters = data.filter.filters.filter(f => f.field != "ShortLabel");
-                data.filter.logic = "or";
-                data.filter.filters = [{
-                    field: "Name",
-                    ignoreCase: true,
-                    operator: "contains",
-                    value: f.value
-                }, {
-                    field: "Code",
-                    ignoreCase: true,
-                    operator: "equals",
-                    value: f.value
-                }];
-            }
-            let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-            delete d.$inlinecount; // <-- remove inlinecount
-            delete d.$format; // <-- remove format
-            delete d.$callback; // <-- remove callback
-
-            d.$count = true;
-
-            return d;
-        }
+        parameterMap: self.generateSuperSetParameterMap(self.collectionGroupBy),
+        afterClear: self.generateAfterClear(self.collectionGroupBy)
     });
 
-    self.qualityGroupBy = `groupby((Quality/QualityID,Quality/ShortLabel))`;
+    self.launchesGroupBy = `groupby((Launch/LaunchID,Launch/Name))/filter((Launch/LaunchID ne null))`;
+
+    self.launchParams = kendoMDCDropDownList({
+        label: 'Launch',
+        odata: true,
+        endPoint: '/odata/MertexProductClassificationSuperSet',
+        textField: 'Launch.Name',
+        valueField: 'Launch.LaunchID',
+        virtual: true,
+        pageSize: 40,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/Launches/Default.LaunchValueMapper(launchId=${options.value})`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success([{
+                                Launch: data.value[0]
+                            }]);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        idObservable: self.launchId,
+        objObservable: self.launch,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'desc',
+            field: 'Launch.LaunchID'
+        },
+        select: self.genericUnsavedChangesSelect,
+        dataBound: (e) => self.launchAwaitingBinding(false),
+        clearFunction: self.genericUnsavedChangesClear,
+        parameterMap: self.generateSuperSetParameterMap(self.launchesGroupBy),
+        afterClear: self.generateAfterClear(self.launchesGroupBy)
+    });
+
+    self.qualityGroupBy = `groupby((Quality/QualityID,Quality/Code,Quality/Name))/filter((Quality/QualityID ne null))`;
+
+    self.qualityTemplate = (e) => {
+        if (e.Quality && e.Quality.QualityID && e.Quality.Name) {
+            return `<span title="${e.Quality.Code} - ${e.Quality.Name}">${e.Quality.Code} - ${e.Quality.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
 
     self.qualityParams = kendoMDCDropDownList({
         label: 'Design',
         odata: true,
         endPoint: '/odata/MertexProductClassificationSuperSet',
-        textField: 'Quality.ShortLabel',
+        textField: 'Quality.Name',
         valueField: 'Quality.QualityID',
         virtual: true,
         pageSize: 40,
@@ -1173,7 +1179,9 @@ const orderBookUserDefinedFiltersViewModel = ({
                         url: `/odata/Qualities/Default.QualityValueMapper(qualityId=${options.value})`,
                         type: 'GET',
                         success: function (data) {
-                            options.success(data.value);
+                            options.success([{
+                                Quality: data.value[0]
+                            }]);
                         }
                     });
                 } else {
@@ -1181,12 +1189,8 @@ const orderBookUserDefinedFiltersViewModel = ({
                 }
             }
         },
-        template: (e) => {
-            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
-        },
-        valueTemplate: (e) => {
-            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
-        },
+        template: self.qualityTemplate,
+        valueTemplate: self.qualityTemplate,
         idObservable: self.qualityId,
         objObservable: self.quality,
         enable: ko.observable(true),
@@ -1199,7 +1203,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         height: 340,
         sort: {
             dir: 'desc',
-            field: 'QualityID'
+            field: 'Quality.QualityID'
         },
         select: self.genericUnsavedChangesSelect,
         dataBound: (e) => self.qualityAwaitingBinding(false),
@@ -1207,34 +1211,8 @@ const orderBookUserDefinedFiltersViewModel = ({
         popupSettings: {
             appendTo: document.getElementById('quality-prefilter')
         },
-        parameterMap: (data) => {
-            //Generate parameters in odata v4 format
-            if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "ShortLabel")) {
-                let f = data.filter.filters.find(f => f.field === "ShortLabel");
-                data.filter.filters = data.filter.filters.filter(f => f.field != "ShortLabel");
-                data.filter.logic = "or";
-                data.filter.filters = [{
-                    field: "Name",
-                    ignoreCase: true,
-                    operator: "contains",
-                    value: f.value
-                }, {
-                    field: "Code",
-                    ignoreCase: true,
-                    operator: "startswith",
-                    value: f.value
-                }];
-            }
-            let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-            delete d.$inlinecount; // <-- remove inlinecount
-            delete d.$format; // <-- remove format
-            delete d.$callback; // <-- remove callback
-
-            d.$count = true;
-
-            return d;
-        }
+        parameterMap: self.generateSuperSetParameterMap(self.qualityGroupBy),
+        afterClear: self.generateAfterClear(self.qualityGroupBy)
     });
 
     self.productParams = kendoMDCDropDownList({
@@ -1418,6 +1396,30 @@ const orderBookUserDefinedFiltersViewModel = ({
 
 
     //#region Subscriptions
+
+    self.productGroupId.subscribe(nv => {
+        console.log('productGroupId', nv);
+    });
+
+    self.itemTypeId.subscribe(nv => {
+        console.log('itemTypeId', nv);
+    });
+
+    self.brandId.subscribe(nv => {
+        console.log('brandId', nv);
+    });
+
+    self.collectionId.subscribe(nv => {
+        console.log('collectionId', nv);
+    });
+
+    self.launchId.subscribe(nv => {
+        console.log('launchId', nv);
+    });
+
+    self.qualityId.subscribe(nv => {
+        console.log('qualityId', nv);
+    });
 
     self.tradeAccount.subscribe(nv => {
 

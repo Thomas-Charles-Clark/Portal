@@ -14,6 +14,7 @@ using Microsoft.AspNet.OData;
 using SharedEFClasses.Models.MertexLive;
 using SharedEFClasses;
 using SharedEFClasses.Models.Products;
+using Microsoft.AspNet.OData.Extensions;
 
 namespace Portal.Controllers
 {
@@ -39,6 +40,8 @@ namespace Portal.Controllers
         [EnableQuery]
         public IQueryable<MertexProductClassificationSuperSet> GetMertexProductClassificationSuperSet()
         {
+            Request.GetWriterSettings().Validations = Microsoft.OData.ValidationKinds.None;
+
             return PortalDb.MertexProductClassificationSuperSet.AsQueryable();
         }
 

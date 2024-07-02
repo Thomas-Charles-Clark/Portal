@@ -24,6 +24,7 @@ using SharedEFClasses.Models.MertexLive;
 using SharedEFClasses.Models.Fenwick;
 using SharedEFClasses.Models.Maintenance;
 using SharedEFClasses.Models.OrderBook;
+using DocumentFormat.OpenXml.EMMA;
 
 namespace Portal
 {
@@ -686,7 +687,7 @@ namespace Portal
             var sFilter = builder.EntityType<SlicerSeason>().Collection.Function("Filter");
             sFilter.ReturnsCollectionFromEntitySet<SlicerSeason>("SlicerSeasons");
             sFilter.Parameter<PricingQueryFilter>("f1");
-            
+
             return builder.GetEdmModel();
         }
 

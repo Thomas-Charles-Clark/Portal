@@ -82,7 +82,10 @@ namespace Portal.Areas.Products.Controllers
                         Origin: objSearch.origin,
                         Countries: objSearch.countries,
                         Limit: 12,
-                        Language: "en-GB"
+                        Language: "en-GB",
+                        Bias: false,
+                        Filters: null,
+                        GeoFence: null
                     );
 
                     return Json(results, JsonRequestBehavior.DenyGet);

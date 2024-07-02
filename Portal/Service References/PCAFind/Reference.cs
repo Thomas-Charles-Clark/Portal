@@ -168,10 +168,19 @@ namespace Portal.PCAFind {
         [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://services.postcodeanywhere.co.uk/", Order=6)]
         public string Language;
         
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://services.postcodeanywhere.co.uk/", Order=7)]
+        public bool Bias;
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://services.postcodeanywhere.co.uk/", Order=8)]
+        public string Filters;
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://services.postcodeanywhere.co.uk/", Order=9)]
+        public string GeoFence;
+        
         public Capture_Interactive_Find_v1_00Request() {
         }
         
-        public Capture_Interactive_Find_v1_00Request(string Key, string Text, string Container, string Origin, string Countries, int Limit, string Language) {
+        public Capture_Interactive_Find_v1_00Request(string Key, string Text, string Container, string Origin, string Countries, int Limit, string Language, bool Bias, string Filters, string GeoFence) {
             this.Key = Key;
             this.Text = Text;
             this.Container = Container;
@@ -179,6 +188,9 @@ namespace Portal.PCAFind {
             this.Countries = Countries;
             this.Limit = Limit;
             this.Language = Language;
+            this.Bias = Bias;
+            this.Filters = Filters;
+            this.GeoFence = GeoFence;
         }
     }
     
@@ -231,7 +243,7 @@ namespace Portal.PCAFind {
             return base.Channel.Capture_Interactive_Find_v1_00(request);
         }
         
-        public Portal.PCAFind.Capture_Interactive_Find_v1_00_ArrayOfResults Capture_Interactive_Find_v1_00(string Key, string Text, string Container, string Origin, string Countries, int Limit, string Language) {
+        public Portal.PCAFind.Capture_Interactive_Find_v1_00_ArrayOfResults Capture_Interactive_Find_v1_00(string Key, string Text, string Container, string Origin, string Countries, int Limit, string Language, bool Bias, string Filters, string GeoFence) {
             Portal.PCAFind.Capture_Interactive_Find_v1_00Request inValue = new Portal.PCAFind.Capture_Interactive_Find_v1_00Request();
             inValue.Key = Key;
             inValue.Text = Text;
@@ -240,6 +252,9 @@ namespace Portal.PCAFind {
             inValue.Countries = Countries;
             inValue.Limit = Limit;
             inValue.Language = Language;
+            inValue.Bias = Bias;
+            inValue.Filters = Filters;
+            inValue.GeoFence = GeoFence;
             Portal.PCAFind.Capture_Interactive_Find_v1_00Response retVal = ((Portal.PCAFind.PostcodeAnywhere_Soap)(this)).Capture_Interactive_Find_v1_00(inValue);
             return retVal.Capture_Interactive_Find_v1_00_Result;
         }
@@ -249,7 +264,7 @@ namespace Portal.PCAFind {
             return base.Channel.Capture_Interactive_Find_v1_00Async(request);
         }
         
-        public System.Threading.Tasks.Task<Portal.PCAFind.Capture_Interactive_Find_v1_00Response> Capture_Interactive_Find_v1_00Async(string Key, string Text, string Container, string Origin, string Countries, int Limit, string Language) {
+        public System.Threading.Tasks.Task<Portal.PCAFind.Capture_Interactive_Find_v1_00Response> Capture_Interactive_Find_v1_00Async(string Key, string Text, string Container, string Origin, string Countries, int Limit, string Language, bool Bias, string Filters, string GeoFence) {
             Portal.PCAFind.Capture_Interactive_Find_v1_00Request inValue = new Portal.PCAFind.Capture_Interactive_Find_v1_00Request();
             inValue.Key = Key;
             inValue.Text = Text;
@@ -258,6 +273,9 @@ namespace Portal.PCAFind {
             inValue.Countries = Countries;
             inValue.Limit = Limit;
             inValue.Language = Language;
+            inValue.Bias = Bias;
+            inValue.Filters = Filters;
+            inValue.GeoFence = GeoFence;
             return ((Portal.PCAFind.PostcodeAnywhere_Soap)(this)).Capture_Interactive_Find_v1_00Async(inValue);
         }
     }
