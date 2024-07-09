@@ -59,6 +59,14 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
+        public async Task<IHttpActionResult> FetchTradeAccountSampleOrderConfirmationText([FromBody]PassTradeAccountID dto)
+        {
+            var result = await PortalDb.FetchSampleOrderConfirmationTopText(dto);
+
+            return Ok(result);
+        }
+
+        [HttpPost]
         public DataSourceResult VisitSearch(
             [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
             [FromBody] PassVisitSearch objVisitSearch)

@@ -57,7 +57,8 @@ namespace SharedEFClasses.Models.MertexLive
         public decimal? LatestCostPrice { get; set; }
 
         [StringLength(50)]
-        public string DefaultSupplierCode { get; set; }
+        [Column("DefaultSupplierCode")]
+        public string SupplierCode { get; set; }
 
         [Column("CreatedDT")]
         public DateTime CreatedDT { get; set; }
@@ -163,9 +164,9 @@ namespace SharedEFClasses.Models.MertexLive
         [StringLength(200)]
         public string PackagingDescription { get; set; }
 
-        [ForeignKey("DefaultSupplierCode")]
+        [ForeignKey("SupplierCode")]
         [InverseProperty("Products")]
-        public virtual Supplier DefaultSupplierCodeNavigation { get; set; }
+        public virtual SupplierLive DefaultSupplierCodeNavigation { get; set; }
 
         [ForeignKey("FlamCode")]
         public virtual FlamCode FlamCodeObj { get; set; }

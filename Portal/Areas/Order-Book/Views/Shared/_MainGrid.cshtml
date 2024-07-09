@@ -34,15 +34,15 @@
             <!-- /ko -->
             <!-- /ko -->
 
-            <div class="th order-status-total justify-content-end first-column">
+            <div class="th order-status-total justify-content-end first-column grand-total-row">
                 Total
             </div>
-            <div class="main-cell order-status-total grand-total-column" data-bind="css: { 'intersectable': $root.getCell($data, {}) }, with: $root.getCell($data, null), click: () => { if ($root.getCell($data, null)) { $root.showDetail({}); } }">
+            <div class="main-cell order-status-total grand-total-column grand-total-row" data-bind="css: { 'intersectable': $root.getCell($data, {}) }, with: $root.getCell($data, null), click: () => { if ($root.getCell($data, null)) { $root.showDetail({}); } }">
                 <p class="values-display" data-bind="html: display"></p>
             </div>
             <!-- ko foreach: columnHeadings -->
             <!-- ko foreach: orderStatuses -->
-            <div class="main-cell order-status-total" data-bind="css: { 'order-status-group-start': $parentContext.$index() > 0 && $index() == 0, 'intersectable': $root.getCell($data, {}) }, with: $root.getCell($data, {}), click: () => { if ($root.getCell($data, {})) { $root.showDetail($data); } }">
+            <div class="main-cell order-status-total grand-total-row" data-bind="css: { 'order-status-group-start': $parentContext.$index() > 0 && $index() == 0, 'intersectable': $root.getCell($data, {}) }, with: $root.getCell($data, {}), click: () => { if ($root.getCell($data, {})) { $root.showDetail($data); } }">
                 <p class="values-display" data-bind="html: display"></p>
             </div>
             <!-- /ko -->

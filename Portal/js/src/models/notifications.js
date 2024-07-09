@@ -128,7 +128,7 @@
     }
 
     self.receiveNotification = function (incoming) {
-        console.log('notificationsViewModel: received', incoming);
+        //console.log('notificationsViewModel: received', incoming);
 
         self.notifications.remove(n => n.NotificationID == incoming.NotificationID);
 
@@ -140,7 +140,7 @@
     }
 
     self.receiveNotifications = function (incoming) {
-        console.log('notificationsViewModel: received', incoming);
+        //console.log('notificationsViewModel: received', incoming);
 
         let notifications = [];
 

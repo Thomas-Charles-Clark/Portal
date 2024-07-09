@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SharedEFClasses.Models.MertexLive
 {
     [Table("Supplier", Schema = "Mertex")]
-    public partial class Supplier
+    public partial class SupplierLive
     {
         [Key]
         [StringLength(50)]
@@ -34,6 +34,12 @@ namespace SharedEFClasses.Models.MertexLive
 
         [StringLength(3)]
         public string CountryCode { get; set; }
+
+        [StringLength(20)]
+        public string Phone { get; set; }
+
+        [StringLength(254)]
+        public string Email { get; set; }
 
         public short? CountryID { get; set; }
 
@@ -62,5 +68,9 @@ namespace SharedEFClasses.Models.MertexLive
         [JsonIgnore]
         [InverseProperty("SupplierCodeNavigation")]
         public virtual ICollection<PurchasePrice> PurchasePrices { get; set; } = new List<PurchasePrice>();
+
+        [JsonIgnore]
+        [InverseProperty("Supplier")]
+        public virtual ICollection<MertexProductClassificationSuperSet> MertexProductClassificationSuperSetRecords { get; set; }
     }
 }

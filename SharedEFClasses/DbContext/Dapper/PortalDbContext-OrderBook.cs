@@ -70,7 +70,8 @@ namespace SharedEFClasses.Models
                 AccurateAsOfDT = await reader.ReadSingleAsync<DateTime>(),
                 RowHeadings = await reader.ReadAsync<OrderBook_MainSummary_OrderGroupStockLocation>(),
                 ColumnHeadings = await reader.ReadAsync<OrderBook_MainSummary_OrderStatusOrderStatusGroup>(),
-                Data = await reader.ReadAsync<OrderBook_MainSummary_DataRow>()
+                Data = await reader.ReadAsync<OrderBook_MainSummary_DataRow>(),
+                Defaults = await reader.ReadSingleAsync<OrderBook_MainSummary_Defaults>()
             };
         }
 

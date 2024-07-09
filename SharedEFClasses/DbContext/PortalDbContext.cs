@@ -92,6 +92,8 @@ namespace SharedEFClasses.Models
         public DbSet<DocumentResource> DocumentResources { get; set; }
         public DbSet<Image> Images { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Mertex.OrderTaker> OrderTakers { get; set; }
+        public DbSet<Supplier> Suppliers { get; set; }
 
         #endregion
 
@@ -279,6 +281,7 @@ namespace SharedEFClasses.Models
         public DbSet<OrderLine> OrderLines { get; set; }
         public DbSet<OrderImportSource> OrderImportSources { get; set; }
         public DbSet<TransactionHoldReason> TransactionHoldReasons { get; set; }
+        public DbSet<Mertex_DeliveryType> DeliveryTypes { get; set; }
 
         #endregion
 
@@ -399,7 +402,7 @@ namespace SharedEFClasses.Models
 
         public virtual DbSet<MertexLive.Sundry> Sundries { get; set; }
 
-        public virtual DbSet<MertexLive.Supplier> Suppliers { get; set; }
+        public virtual DbSet<MertexLive.SupplierLive> Suppliers_Live { get; set; }
 
         public virtual DbSet<MertexLive.TradeAccountLive> TradeAccounts_Live { get; set; }
 

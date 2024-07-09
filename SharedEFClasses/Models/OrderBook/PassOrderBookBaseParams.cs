@@ -30,5 +30,9 @@ namespace SharedEFClasses.Models.OrderBook
         public string DataSource { get; set; }
 
         public byte? TransactionTypeID { get; set; }
+
+        public bool? Allocated { get; set; }
+
+        public string DeliveryType { get; set; }
     }
 }

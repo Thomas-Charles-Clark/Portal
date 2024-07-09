@@ -98,6 +98,7 @@ namespace SharedEFClasses.Models.Products
 
         public int? ProductPageID { get; set; }
 
+        public int? DefaultSupplierID { get; set; }
         public byte? ProductFilterID { get; set; }
 
         [InverseProperty("Products")]
@@ -198,6 +199,9 @@ namespace SharedEFClasses.Models.Products
 
         [ForeignKey("ProductPageID")]
         public virtual ProductPage ProductPage { get; set; }
+
+        [ForeignKey("DefaultSupplierID")]
+        public virtual Supplier DefaultSupplier  { get; set; }
     }
 
     [Table("Product_Image", Schema = "dbo")]

@@ -47,7 +47,8 @@
     aggregate,
     requestStart,
     requestEnd,
-    skipCascade
+    skipCascade,
+    ignoreCase
 } = {
         widget: ko.observable(),
         endPoint: null,
@@ -94,7 +95,8 @@
         dataBound: (e) => { },
         requestStart: (e) => { },
         requestEnd: (e) => { },
-        skipCascade: false
+        skipCascade: false,
+        ignoreCase: true
     }) {
 
     if (endPoint == null && data == null) {
@@ -310,6 +312,10 @@
     if (typeof revertible === 'function') {
         result.revertible = revertible;
     }
+
+    if (ignoreCase != null) {
+        result.dropDownListSettings.ignoreCase = ignoreCase;
+    } 
 
     return result;
 }

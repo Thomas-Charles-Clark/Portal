@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json.Converters;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -135,6 +137,7 @@ namespace FastExcel
             if (Value != null)
             {
                 bool isString = false;
+                bool isDateTime = false;
                 object value = Value;
 
                 if (Value is int)
@@ -149,6 +152,10 @@ namespace FastExcel
                 {
                     isString = true;
                 }
+                else if (Value is DateTime || Value is DateTime?)
+                {
+                    isDateTime = true;
+                }
 
                 if (isString)
                 {
@@ -157,11 +164,11 @@ namespace FastExcel
 
                 if (StyleIndex.HasValue)
                 {
-                    cell.Append($"<c s=\"{StyleIndex.Value}\" r=\"{GetExcelColumnName(ColumnNumber)}{rowNumber}\"{(isString ? " t=\"s\"" : string.Empty)}>");
+                    cell.Append($"<c s=\"{StyleIndex.Value}\" r=\"{GetExcelColumnName(ColumnNumber)}{rowNumber}\"{(isString ? " t=\"s\"" : isDateTime ? " t=\"d\"" : "")}>");
                 }
                 else
                 {
-                    cell.Append($"<c r=\"{GetExcelColumnName(ColumnNumber)}{rowNumber}\"{(isString ? " t=\"s\"" : string.Empty)}>");
+                    cell.Append($"<c r=\"{GetExcelColumnName(ColumnNumber)}{rowNumber}\"{(isString ? " t=\"s\"" : isDateTime ? " t=\"d\"" : "")}>");
                 }
 
                 cell.AppendFormat("<v>{0}</v>", value);

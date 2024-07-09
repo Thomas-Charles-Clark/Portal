@@ -285,7 +285,7 @@ namespace FastExcel {
 
                 bool update = false;
 
-                RenameAndRebildWorksheetProperties((from sheet in document.Descendants()
+                RenameAndRebuildWorksheetProperties((from sheet in document.Descendants()
                     where sheet.Name.LocalName == "sheet"
                     select sheet).ToArray());
 
@@ -319,7 +319,7 @@ namespace FastExcel {
         /// <summary>
         /// If sheets have been added or deleted, sheets need to be renamed
         /// </summary>
-        private void RenameAndRebildWorksheetProperties(XElement[] sheets) {
+        private void RenameAndRebuildWorksheetProperties(XElement[] sheets) {
             if (!((DeleteWorksheets != null && DeleteWorksheets.Any()) ||
                   (AddWorksheets != null && AddWorksheets.Any()))) {
                 // Nothing to update

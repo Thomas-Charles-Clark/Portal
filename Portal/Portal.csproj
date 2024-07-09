@@ -612,6 +612,8 @@
     <Compile Include="Areas\Stock\ViewModels\StockManagementViewModel.cs" />
     <Compile Include="Controllers\ODataControllers\AttributesController.cs" />
     <Compile Include="Controllers\ODataControllers\AttributeGroupsController.cs" />
+    <Compile Include="Controllers\ODataControllers\DeliveryTypesController.cs" />
+    <Compile Include="Controllers\ODataControllers\OrderTakersController.cs" />
     <Compile Include="Controllers\ODataControllers\HauliersController.cs" />
     <Compile Include="Controllers\ODataControllers\ItemTypesController.cs" />
     <Compile Include="Controllers\ODataControllers\OrderGroupsController.cs" />
@@ -628,6 +630,7 @@
     <Compile Include="Controllers\ODataControllers\StockLocationGroupsController.cs" />
     <Compile Include="Controllers\ODataControllers\StockStatusesController.cs" />
     <Compile Include="Controllers\ODataControllers\StockManagement\StatusGroupsController.cs" />
+    <Compile Include="Controllers\ODataControllers\MertexLiveSuppliersController.cs" />
     <Compile Include="Controllers\ODataControllers\SuppliersController.cs" />
     <Compile Include="Controllers\ODataControllers\BuyersController.cs" />
     <Compile Include="Controllers\ODataControllers\CollectionsController.cs" />

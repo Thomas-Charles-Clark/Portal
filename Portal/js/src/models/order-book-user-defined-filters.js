@@ -26,12 +26,15 @@ const orderBookUserDefinedFiltersViewModel = ({
         fromDate: undefined,
         toDate: undefined,
         haulierId: '',
+        orderTakerId: '',
+        deliveryTypeId: '',
         productGroupId: '',
         itemTypeId: '',
         brandId: '',
         collectionId: '',
         launchId: '',
         qualityId: '',
+        supplierId: '',
         productId: '',
         dataSource: '',
         transactionTypeId: ''
@@ -75,6 +78,10 @@ const orderBookUserDefinedFiltersViewModel = ({
     self.order = ko.observable();
     self.orderAwaitingBinding = ko.observable(params.orderId != null && params.orderId != '');
 
+    self.orderTakerId = ko.observable(params.orderTakerId ?? '');
+    self.orderTaker = ko.observable();
+    self.orderTakerAwaitingBinding = ko.observable(params.orderTakerId != null && params.orderTakerId != '');
+
     self.fromDate = ko.observable(params.startDate ?? undefined);
 
     self.toDate = ko.observable(params.endDate ?? undefined);
@@ -82,6 +89,10 @@ const orderBookUserDefinedFiltersViewModel = ({
     self.haulierId = ko.observable(params.haulierId ?? '');
     self.haulier = ko.observable();
     self.haulierAwaitingBinding = ko.observable(params.haulierId != null && params.haulierId != '');
+
+    self.deliveryTypeId = ko.observable(params.deliveryTypeId ?? '');
+    self.deliveryType = ko.observable();
+    self.deliveryTypeAwaitingBinding = ko.observable(params.deliveryTypeId != null && params.deliveryTypeId != '');
 
     self.productGroupId = ko.observable(params.productGroupId ?? '');
     self.productGroup = ko.observable();
@@ -94,6 +105,10 @@ const orderBookUserDefinedFiltersViewModel = ({
     self.brandId = ko.observable(params.brandId ?? '');
     self.brand = ko.observable();
     self.brandAwaitingBinding = ko.observable(params.brandId != null && params.brandId != '');
+
+    self.supplierId = ko.observable(params.supplierId ?? '');
+    self.supplier = ko.observable();
+    self.supplierAwaitingBinding = ko.observable(params.vId != null && params.supplierId != '');
 
     self.collectionId = ko.observable(params.collectionId ?? '');
     self.collection = ko.observable();
@@ -140,9 +155,11 @@ const orderBookUserDefinedFiltersViewModel = ({
             self.tradeAccountAwaitingBinding() == false &&
             self.orderAwaitingBinding() == false &&
             self.haulierAwaitingBinding() == false &&
+            self.orderTakerAwaitingBinding() == false &&
             self.productGroupAwaitingBinding() == false &&
             self.itemTypeAwaitingBinding() == false &&
             self.brandAwaitingBinding() == false &&
+            self.supplierAwaitingBinding() == false &&
             self.collectionAwaitingBinding() == false &&
             self.launchAwaitingBinding() == false &&
             self.qualityAwaitingBinding() == false &&
@@ -179,7 +196,7 @@ const orderBookUserDefinedFiltersViewModel = ({
                     obj = obj[s];
                 });
 
-                event.sender._widgetOptions.value(`${obj}`);
+                event.sender._widgetOptions.value(obj);
             }
 
         }).catch((e) => { });
@@ -848,12 +865,108 @@ const orderBookUserDefinedFiltersViewModel = ({
         },
     });
 
+    self.deliveryTypeParams = kendoMDCDropDownList({
+        label: 'Delivery Type',
+        odata: true,
+        endPoint: '/odata/DeliveryTypes',
+        textField: 'ShortLabel',
+        valueField: 'Code',
+        virtual: false,
+        idObservable: self.deliveryTypeId,
+        objObservable: self.deliveryType,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'SortOrder'
+        },
+        select: self.genericUnsavedChangesSelect,
+        dataBound: (e) => self.haulierAwaitingBinding(false),
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
+                d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
+            }
+
+            return d;
+        },
+    });
+
+    self.orderTakerParams = kendoMDCDropDownList({
+        label: 'Order Taker',
+        odata: true,
+        endPoint: '/odata/OrderTakers',
+        textField: 'ShortLabel',
+        valueField: 'Code',
+        virtual: false,
+        idObservable: self.orderTakerId,
+        objObservable: self.orderTaker,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        select: self.genericUnsavedChangesSelect,
+        dataBound: (e) => self.orderTakerAwaitingBinding(false),
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
+                d.$filter = `${d.$filter.replace("ShortLabel", "Code")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Name")}`;
+            }
+
+            return d;
+        },
+    });
+
     self.generateAfterClear = (defaultGroupBy) => {
         return () => {
             let filters = [];
 
             if (defaultGroupBy.indexOf('BrandID') == -1) {
                 filters.push(self.brandParams.dropDownListSettings.widget());
+            }
+
+            if (defaultGroupBy.indexOf('SupplierCode') == -1) {
+                filters.push(self.supplierParams.dropDownListSettings.widget());
             }
 
             if (defaultGroupBy.indexOf('ProductGroupID') == -1) {
@@ -877,13 +990,15 @@ const orderBookUserDefinedFiltersViewModel = ({
             }
 
             filters.forEach(f => {
-                f.dataSource.read();
+                //f.dataSource.read();
             })
         }
     }
 
-    self.generateSuperSetParameterMap = (defaultGroupBy) => {
+    self.generateSuperSetParameterMap = (defaultODataOperation) => {
         return (data) => {
+            let defaultOp = defaultODataOperation;
+
             //Generate parameters in odata v4 format
             let d = kendo.data.transports['odata-v4'].parameterMap(data);
 
@@ -893,61 +1008,168 @@ const orderBookUserDefinedFiltersViewModel = ({
 
             d.$count = true;
 
-            d.$apply = defaultGroupBy;
-
             let filters = [];
 
-            // is this setting up as a subscription set...
-            // yes, categorically it is. If you .peek all the following observables,
-            // the filters do not affect one another.
-            // so WHY THE FRAK ARE WE GETTING MULTIPLE FIRINGS
-            // because strings vs numbers!
-            // so how do we tell the EDM that they should all be returned as strings?
+            let brandId = null;
+            let productGroupId = null;
+            let itemTypeId = null;
+            let collectionId = null;
+            let launchId = null;
+            let qualityId = null;
+            let supplierId = null;
 
-            let brandId = self.brandId();
-            let productGroupId = self.productGroupId();
-            let itemTypeId = self.itemTypeId();
-            let collectionId = self.collectionId();
-            let launchId = self.launchId();
-            let qualityId = self.qualityId();
-
-            if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "ShortLabel")) {
-                let f = data.filter.filters.find(f => f.field === "ShortLabel");
-                filters.push(`Name contains "${f.value}"`);
-                filters.push(`Code eq "${f.value}"`);
+            if (defaultOp.indexOf("BrandID") == -1) {
+                brandId = self.brandId();
+            } else {
+                brandId = self.brandId.peek();
             }
 
-            if (defaultGroupBy.indexOf('BrandID') == -1 && brandId != '') {
+            if (defaultOp.indexOf("SupplierCode") == -1) {
+                supplierId = self.supplierId();
+            } else {
+                supplierId = self.supplierId.peek();
+            }
+
+            if (defaultOp.indexOf("ProductGroupID") == -1) {
+                productGroupId = self.productGroupId();
+            } else {
+                productGroupId = self.productGroupId.peek();
+            }
+
+            if (defaultOp.indexOf("ItemTypeID") == -1) {
+                itemTypeId = self.itemTypeId();
+            } else {
+                itemTypeId = self.itemTypeId.peek();
+            }
+
+            if (defaultOp.indexOf("CollectionID") == -1) {
+                collectionId = self.collectionId();
+            } else {
+                collectionId = self.collectionId.peek();
+            }
+
+            if (defaultOp.indexOf("LaunchID") == -1) {
+                launchId = self.launchId();
+            } else {
+                launchId = self.launchId.peek();
+            }
+
+            if (defaultOp.indexOf("QualityID") == -1) {
+                qualityId = self.qualityId();
+            } else {
+                qualityId = self.qualityId.peek();
+            }
+
+            // product table map LatestCollectionID...
+
+            if (defaultOp === 'PRODUCT') {
+                if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "ShortLabel")) {
+                    let f = data.filter.filters.find(f => f.field === "ShortLabel");
+                    filters.push(`(contains(Name,'${f.value}') or startswith(Code,'${f.value}'))`);
+                    //filters.push(`Code eq '${f.value}'`);
+                }
+
+                if (d.$filter) {
+                    delete d.$filter;
+                }
+            }
+
+            // regardless whether or not a filter has a selection it must be refreshed if ANOTHER filter changes.
+            // the implementation beneath is *not quite* sufficient
+
+            if (defaultOp.indexOf('BrandID') == -1 && brandId != '') {
                 filters.push(`BrandID eq ${brandId}`);
             }
 
-            if (defaultGroupBy.indexOf('ProductGroupID') == -1 && productGroupId != '') {
+            if (supplierId != '') {
+                if (defaultOp === 'PRODUCT') {
+                    filters.push(`DefaultSupplier/Code eq '${supplierId}'`);
+                } else {
+                    filters.push(`SupplierCode eq '${supplierId}'`);
+                }
+            } else {
+                if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "Supplier.Name")) {
+                    let f = data.filter.filters.find(f => f.field === "Supplier.Name");
+                    filters.push(`(contains(Supplier/Name, '${f.value}') or startswith(Supplier/Code,'${f.value}'))`);
+
+                    if (d.$filter) {
+                        delete d.$filter;
+                    }
+                }
+            }
+
+            if (defaultOp.indexOf('ProductGroupID') == -1 && productGroupId != '') {
                 filters.push(`ProductGroupID eq ${productGroupId}`);
             }
 
-            if (defaultGroupBy.indexOf('ItemTypeID') == -1 && itemTypeId != '') {
+            if (defaultOp.indexOf('ItemTypeID') == -1 && itemTypeId != '') {
                 filters.push(`ItemTypeID eq ${itemTypeId}`);
             }
 
-            if (defaultGroupBy.indexOf('CollectionID') == -1 && collectionId != '') {
-                filters.push(`CollectionID eq ${collectionId}`);
+            //if (defaultOp.indexOf('CollectionID') == -1 && collectionId != '') {
+            //    if (defaultOp != 'PRODUCT') {
+            //        filters.push(`CollectionID eq ${collectionId}`);
+            //    }
+            //}
+
+            if (collectionId != '') {
+                if (defaultOp != 'PRODUCT') {
+                    filters.push(`CollectionID eq ${CollectionID}`);
+                } else {
+                    filters.push(`CollectionID eq ${CollectionID}`);
+                }
+            } else {
+                if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "Collection.Name")) {
+                    let f = data.filter.filters.find(f => f.field === "Collection.Name");
+                    filters.push(`(contains(Collection/Name, '${f.value}') or startswith(Collection/Code,'${f.value}'))`);
+
+                    if (d.$filter) {
+                        delete d.$filter;
+                    }
+                }
             }
 
-            if (defaultGroupBy.indexOf('LaunchID') == -1 && launchId != '') {
+            if (defaultOp.indexOf('LaunchID') == -1 && launchId != '') {
                 filters.push(`LaunchID eq ${launchId}`);
             }
 
-            if (defaultGroupBy.indexOf('QualityID') == -1 && qualityId != '') {
+            if (qualityId != '') {
                 filters.push(`QualityID eq ${qualityId}`);
+            } else {
+                if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "Quality.Name")) {
+                    let f = data.filter.filters.find(f => f.field === "Quality.Name");
+                    filters.push(`(contains(Quality/Name, '${f.value}') or startswith(Quality/Code,'${f.value}'))`);
+
+                    if (d.$filter) {
+                        delete d.$filter;
+                    }
+                }
             }
+
+            if (defaultOp == 'PRODUCT') {
+                defaultOp = '';
+                if (collectionId != '') {
+                    filters.push(`Collections/any(c: c/CollectionID eq ${collectionId})`)
+                }
+            }
+
+            d.$apply = defaultOp;
 
             if (filters.length) {
                 let filterString = filters.join(' and ');
-                d.$apply = `filter(${filterString})/${defaultGroupBy}`
+                d.$apply = `filter(${filterString})`;
+
+                if (defaultOp) {
+                    d.$apply = `${d.$apply}/${defaultOp}`;
+                }
             }
 
-            console.log(defaultGroupBy, d);
-            
+            if (!d.$apply) {
+                delete d.$apply;
+            } else {
+                console.log(d.$apply);
+            }
+
             return d;
         }
     }
@@ -997,7 +1219,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         readOnly: false,
-        filter: false,
+        filter: 'contains',
         autoBind: true,
         height: 340,
         select: self.genericUnsavedChangesSelect,
@@ -1215,6 +1437,73 @@ const orderBookUserDefinedFiltersViewModel = ({
         afterClear: self.generateAfterClear(self.qualityGroupBy)
     });
 
+
+    self.supplierGroupBy = `groupby((Supplier/Code,Supplier/Name))/filter((Supplier/Code ne null))`;
+
+    self.supplierTemplate = (e) => {
+        if (e.Supplier && e.Supplier.Code && e.Supplier.Name) {
+            return `<span title="${e.Supplier.Code} - ${e.Supplier.Name}">${e.Supplier.Code} - ${e.Supplier.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.supplierParams = kendoMDCDropDownList({
+        label: 'Supplier',
+        odata: true,
+        endPoint: '/odata/MertexProductClassificationSuperSet',
+        textField: 'Supplier.Name',
+        valueField: 'Supplier.Code',
+        virtual: true,
+        pageSize: 40,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/MertexProductClassificationSuperSet?$apply=groupby((Supplier/Code,Supplier/Name))/filter((Supplier/Code eq '${options.value}'))`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success([{
+                                Supplier: data.value[0]
+                            }]);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        template: self.supplierTemplate,
+        valueTemplate: self.supplierTemplate,
+        idObservable: self.supplierId,
+        objObservable: self.supplier,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'Supplier.Code'
+        },
+        ignoreCase: false,
+        select: self.genericUnsavedChangesSelect,
+        dataBound: (e) => self.supplierAwaitingBinding(false),
+        clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: document.getElementById('supplier-prefilter')
+        },
+        parameterMap: self.generateSuperSetParameterMap(self.supplierGroupBy),
+        afterClear: self.generateAfterClear(self.supplierGroupBy)
+    });
+
+    self.productDefault = 'PRODUCT';
+
     self.productParams = kendoMDCDropDownList({
         label: 'Product',
         odata: true,
@@ -1269,34 +1558,35 @@ const orderBookUserDefinedFiltersViewModel = ({
         popupSettings: {
             appendTo: document.getElementById('product-prefilter')
         },
-        parameterMap: (data) => {
-            //Generate parameters in odata v4 format
-            if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "ShortLabel")) {
-                let f = data.filter.filters.find(f => f.field === "ShortLabel");
-                data.filter.filters = data.filter.filters.filter(f => f.field != "ShortLabel");
-                data.filter.logic = "or";
-                data.filter.filters = [{
-                    field: "Name",
-                    ignoreCase: true,
-                    operator: "contains",
-                    value: f.value
-                }, {
-                    field: "Code",
-                    ignoreCase: true,
-                    operator: "startswith",
-                    value: f.value
-                }];
-            }
-            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+        parameterMap: self.generateSuperSetParameterMap(self.productDefault)
+        //    (data) => {
+        //    //Generate parameters in odata v4 format
+        //    if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "ShortLabel")) {
+        //        let f = data.filter.filters.find(f => f.field === "ShortLabel");
+        //        data.filter.filters = data.filter.filters.filter(f => f.field != "ShortLabel");
+        //        data.filter.logic = "or";
+        //        data.filter.filters = [{
+        //            field: "Name",
+        //            ignoreCase: true,
+        //            operator: "contains",
+        //            value: f.value
+        //        }, {
+        //            field: "Code",
+        //            ignoreCase: true,
+        //            operator: "startswith",
+        //            value: f.value
+        //        }];
+        //    }
+        //    let d = kendo.data.transports['odata-v4'].parameterMap(data);
 
-            delete d.$inlinecount; // <-- remove inlinecount
-            delete d.$format; // <-- remove format
-            delete d.$callback; // <-- remove callback
+        //    delete d.$inlinecount; // <-- remove inlinecount
+        //    delete d.$format; // <-- remove format
+        //    delete d.$callback; // <-- remove callback
 
-            d.$count = true;
+        //    d.$count = true;
 
-            return d;
-        }
+        //    return d;
+        //}
     });
 
     self.allocatedParams = kendoMDCDropDownList({
@@ -1398,27 +1688,31 @@ const orderBookUserDefinedFiltersViewModel = ({
     //#region Subscriptions
 
     self.productGroupId.subscribe(nv => {
-        console.log('productGroupId', nv);
+        console.log('productGroupId subscribe hit', nv);
     });
 
     self.itemTypeId.subscribe(nv => {
-        console.log('itemTypeId', nv);
+        console.log('itemTypeId subscribe hit', nv);
     });
 
     self.brandId.subscribe(nv => {
-        console.log('brandId', nv);
+        console.log('brandId subscribe hit', nv);
     });
 
     self.collectionId.subscribe(nv => {
-        console.log('collectionId', nv);
+        console.log('collectionId subscribe hit', nv);
     });
 
     self.launchId.subscribe(nv => {
-        console.log('launchId', nv);
+        console.log('launchId subscribe hit', nv);
     });
 
     self.qualityId.subscribe(nv => {
-        console.log('qualityId', nv);
+        console.log('qualityId subscribe hit', nv);
+    });
+
+    self.supplierId.subscribe(nv => {
+        console.log('supplierId subscribe hit', nv);
     });
 
     self.tradeAccount.subscribe(nv => {
@@ -1553,6 +1847,12 @@ const orderBookUserDefinedFiltersViewModel = ({
         self.haulierId(EMPTY_STRING);
         self.haulier(undefined);
 
+        self.deliveryTypeId(EMPTY_STRING);
+        self.deliveryType(undefined);
+
+        self.orderTakerId(EMPTY_STRING);
+        self.orderTaker(undefined);
+
         self.productGroupId(EMPTY_STRING);
         self.productGroup(undefined);
 
@@ -1570,6 +1870,9 @@ const orderBookUserDefinedFiltersViewModel = ({
 
         self.qualityId(EMPTY_STRING);
         self.quality(undefined);
+
+        self.supplierId(EMPTY_STRING);
+        self.supplier(undefined);
 
         self.productId(EMPTY_STRING);
         self.product(undefined);
@@ -1600,19 +1903,23 @@ const orderBookUserDefinedFiltersViewModel = ({
                 startDate: self.fromDate() ? moment(self.fromDate()).format('YYYY/MM/DD') : null,
                 endDate: self.toDate() ? moment(self.toDate()).format('YYYY/MM/DD') : null,
                 haulierCode: self.haulierId() || null,
+                deliveryType: self.deliveryTypeId() || null,
+                orderTakerCode: self.orderTakerId() || null,
                 productGroupId: self.productGroupId() || null,
                 itemTypeId: self.itemTypeId() || null,
                 brandId: self.brandId() || null,
                 collectionId: self.collectionId() || null,
                 launchId: self.launchId() || null,
                 qualityId: self.qualityId() || null,
+                supplierCode: self.supplierId() || null,
                 productId: self.productId() || null,
                 allocated: self.allocatedId() || null,
                 dataSource: self.dataSourceId() || null,
                 transactionTypeId: self.transactionTypeId() || null
             };
 
-            console.log("userDefinedFilters.json returning", result);
+            //console.log("userDefinedFilters.json returning", result);
+
             return JSON.stringify(result);
         } else {
             console.log("userDefinedFilters.json returning", undefined);

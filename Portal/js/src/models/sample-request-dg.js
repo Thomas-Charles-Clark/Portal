@@ -582,9 +582,11 @@ const sampleBasketItem = ({
 var Account = function (account) {
     var self = this;
 
-    self.SampleOrderConfirmationTopText = account.SampleOrderConfirmationTopText;
+    //account.SampleOrderConfirmationTopText
+    //account.SampleOrderConfirmationTopTextReadOnly
 
-    self.SampleOrderConfirmationTopTextReadOnly = account.SampleOrderConfirmationTopTextReadOnly;
+    self.SampleOrderConfirmationTopText = ko.observable();
+    self.SampleOrderConfirmationTopTextReadOnly = ko.observable();
 
     self.TradeAccountID = account.TradeAccountID;
     self.Label = account.Label;
@@ -743,6 +745,24 @@ var SamplesViewModel = function () {
 
     self.lessThanRRP = ko.observable().extend({ roundedNumeric: 2 });
 
+    self.fetchSampleOrderConfirmationText = (tradeAccountId) => {
+        $.ajax({
+            url: "/api/ComponentAPI/FetchTradeAccountSampleOrderConfirmationText",
+            type: "POST",
+            dataType: "json",
+            data: {
+                tradeAccountId: tradeAccountId
+            },
+            success: function (data) {
+                self.account().SampleOrderConfirmationTopText(data.SampleOrderConfirmationTopText);
+                self.account().SampleOrderConfirmationTopTextReadOnly(data.SampleOrderConfirmationTopTextReadOnly);
+
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                //$.showError(xhr, textStatus, errorThrown);
+            }
+        });
+    }
     self.fetchTradeAccountAddresses = function () {
         $.ajax({
             url: "/Component/FetchAddresses",
@@ -1033,9 +1053,9 @@ var SamplesViewModel = function () {
                 });
             }
 
-            self.fetchTradeAccountAddresses();
+            self.fetchSampleOrderConfirmationText(newValue.TradeAccountID);
 
-            self.extraConfirmationText(newValue.SampleOrderConfirmationTopText);
+            self.fetchTradeAccountAddresses();
 
             self.accountNumber(newValue.AccountNumber);
             self.selectedOrderConfirmationLanguage(newValue.DefaultOrderConfirmationLanguage);
@@ -1195,8 +1215,6 @@ var SamplesViewModel = function () {
     if (getSelectedTradeAccount()) {
 
         //self.deliverySelector().reset();
-
-        self.extraConfirmationText(getSelectedTradeAccount().SampleOrderConfirmationTopText);
 
         self.accountNumber(getSelectedTradeAccount().AccountNumber);
         self.selectedOrderConfirmationLanguage(getSelectedTradeAccount().DefaultOrderConfirmationLanguage);

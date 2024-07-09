@@ -359,6 +359,7 @@
     <Compile Include="DbContext\Dapper\PortalDbContext-Baskets.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-RangeManagement.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-OrderBook.cs" />
+    <Compile Include="DbContext\Dapper\PortalDbContext-SampleOrders.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-StockManagement.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-TradeAccount.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-Leads.cs" />
@@ -456,6 +457,7 @@
     <Compile Include="Models\Mertex\OrderHeadLive.cs" />
     <Compile Include="Models\Mertex\OrderLineLive.cs" />
     <Compile Include="Models\Mertex\OrderSyncReport.cs" />
+    <Compile Include="Models\Mertex\OrderTaker.cs" />
     <Compile Include="Models\Mertex\ParcelHead.cs" />
     <Compile Include="Models\Mertex\ParcelLine.cs" />
     <Compile Include="Models\Mertex\PriceListMap.cs" />
@@ -468,11 +470,12 @@
     <Compile Include="Models\Mertex\PurchasePrice.cs" />
     <Compile Include="Models\Mertex\QualityLive.cs" />
     <Compile Include="Models\Mertex\Sundry.cs" />
-    <Compile Include="Models\Mertex\Supplier.cs" />
+    <Compile Include="Models\Mertex\SupplierLive.cs" />
     <Compile Include="Models\Mertex\TradeAccountLive.cs" />
     <Compile Include="Models\Mertex\TradeAccountContactLive.cs" />
     <Compile Include="Models\Mertex\TradeAccountContactType.cs" />
     <Compile Include="Models\Mertex\TradeAccountInvoiceAccount.cs" />
+    <Compile Include="Models\Mertex_DeliveryType.cs" />
     <Compile Include="Models\OrderBook\OrderBook.cs" />
     <Compile Include="Models\OrderBook\OrderBookGrouped.cs" />
     <Compile Include="Models\OrderBook\OrderBookRingFenceInspectData.cs" />
@@ -483,6 +486,7 @@
     <Compile Include="Models\OrderBook\OrderBookOrderLineInspectTotal.cs" />
     <Compile Include="Models\OrderBook\OrderBook_DetailView_DataRow.cs" />
     <Compile Include="Models\OrderBook\OrderBook_MainSummary_DataRow.cs" />
+    <Compile Include="Models\OrderBook\OrderBook_MainSummary_Defaults.cs" />
     <Compile Include="Models\OrderBook\OrderBook_MainSummary_OrderGroupStockLocation.cs" />
     <Compile Include="Models\OrderBook\OrderBook_MainSummary_OrderStatusOrderStatusGroup.cs" />
     <Compile Include="Models\OrderBook\OrderBook_DetailView_SelectResult.cs" />
@@ -526,6 +530,7 @@
     <Compile Include="Models\MaintenanceModels.cs" />
     <Compile Include="Models\Retail\RetailStoreMember.cs" />
     <Compile Include="Models\ReturnModels.cs" />
+    <Compile Include="Models\SampleOrderConfirmationTextResult.cs" />
     <Compile Include="Models\StockLocationGroup.cs" />
     <Compile Include="Models\StockLocationOrderBookGroup.cs" />
     <Compile Include="Models\StockManagement\Branch.cs" />
@@ -546,6 +551,7 @@
     <Compile Include="Models\StockManagement\StockManagementProductFetchDto.cs" />
     <Compile Include="Models\StockManagement\StockManagementProductSearchResponse.cs" />
     <Compile Include="Models\StockManagement\SupplierInfoResult.cs" />
+    <Compile Include="Models\Supplier.cs" />
     <Compile Include="Models\TradeAccountCreationEmail.cs" />
     <Compile Include="Models\TradeAccountCreationEmailAttachment.cs" />
     <Compile Include="Models\TradeAccountCreationEmail_TradeAccountCreationEmailAttachment.cs" />

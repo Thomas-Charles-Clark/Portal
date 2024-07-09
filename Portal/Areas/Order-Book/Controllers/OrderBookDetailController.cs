@@ -20,7 +20,7 @@ using Unity.Interception.Utilities;
 
 namespace Portal.Areas.Orders.Controllers
 {
-    [DynamicRoleAuthorize]
+    [DynamicRoleAuthorise(actionNameAgnostic: true)]
     [RouteArea("order-book")]
     [RoutePrefix("detail")]
     [Route("{action=index}")]
@@ -54,7 +54,7 @@ namespace Portal.Areas.Orders.Controllers
                 }
             });
             
-            var application = PortalDb.Applications.Where(p => p.ControllerName == "detail" && p.AreaName == "order-book" && p.ActionName == "back-orders").Single();
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "OrderBookDetail" && p.AreaName == "order-book" && p.ActionName == "back-orders").Single();
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
@@ -91,7 +91,7 @@ namespace Portal.Areas.Orders.Controllers
                 }
             });
 
-            var application = PortalDb.Applications.Where(p => p.ControllerName == "detail" && p.AreaName == "order-book" && p.ActionName == "view-one").Single();
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "OrderBookDetail" && p.AreaName == "order-book" && p.ActionName == "view-one").Single();
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
@@ -128,7 +128,7 @@ namespace Portal.Areas.Orders.Controllers
                 }
             });
 
-            var application = PortalDb.Applications.Where(p => p.ControllerName == "detail" && p.AreaName == "order-book" && p.ActionName == "view-one").Single();
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "OrderBookDetail" && p.AreaName == "order-book" && p.ActionName == "view-two").Single();
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
@@ -165,7 +165,7 @@ namespace Portal.Areas.Orders.Controllers
                 }
             });
 
-            var application = PortalDb.Applications.Where(p => p.ControllerName == "detail" && p.AreaName == "order-book" && p.ActionName == "view-one").Single();
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "OrderBookDetail" && p.AreaName == "order-book" && p.ActionName == "view-three").Single();
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
@@ -202,7 +202,7 @@ namespace Portal.Areas.Orders.Controllers
                 }
             });
 
-            var application = PortalDb.Applications.Where(p => p.ControllerName == "detail" && p.AreaName == "order-book" && p.ActionName == "view-one").Single();
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "OrderBookDetail" && p.AreaName == "order-book" && p.ActionName == "view-four").Single();
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 

@@ -13955,7 +13955,7 @@ var bespokeFurnitureFactory = function (parent) {
         valueField: 'value',
         data: self.madeToUKFRStandardsOptions,
         idObservable: self.madeToUKFRStandards,
-        //objObservable: ko.observable,
+        //objObservable: ko.observable(),
         showClear: true,
         permitRevert: false,
         filter: null

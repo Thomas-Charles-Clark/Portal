@@ -25,6 +25,7 @@ using SharedEFClasses.Models.Fenwick;
 using SharedEFClasses.Models.Maintenance;
 using SharedEFClasses.Models.OrderBook;
 using DocumentFormat.OpenXml.EMMA;
+using SharedEFClasses.Models.Mertex;
 
 namespace Portal
 {
@@ -108,8 +109,12 @@ namespace Portal
             odataBuilder.EntitySet<OrderBookGrouped>("OrderBooksGrouped");
             odataBuilder.EntitySet<OrderGroup>("OrderGroups");
             odataBuilder.EntitySet<TransactionType>("TransactionTypes");
+            odataBuilder.EntitySet<OrderTaker>("OrderTakers");
+            odataBuilder.EntitySet<Mertex_DeliveryType>("DeliveryTypes");
 
             odataBuilder.EntitySet<MertexProductClassificationSuperSet>("MertexProductClassificationSuperSet");
+
+            odataBuilder.EntitySet<SharedEFClasses.Models.MertexLive.SupplierLive>("MertexLiveSuppliers");
 
             // This because it's not mapped to SQL and has the [NotMapped] attribute
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_ProductType)).AddProperty(typeof(Mertex_ProductType).GetProperty("Label"));
@@ -128,6 +133,8 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Collection)).AddProperty(typeof(Collection).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(OrderHeadLive)).AddProperty(typeof(OrderHeadLive).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(OrderBookGrouped)).AddProperty(typeof(OrderBookGrouped).GetProperty("ShortLabel"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(OrderTaker)).AddProperty(typeof(OrderTaker).GetProperty("ShortLabel"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_DeliveryType)).AddProperty(typeof(Mertex_DeliveryType).GetProperty("ShortLabel"));
 
             var transactionTypeValueMapperFunction = odataBuilder.EntityType<TransactionType>()
                 .Collection
@@ -135,6 +142,24 @@ namespace Portal
                 .ReturnsCollectionFromEntitySet<TransactionType>("TransactionTypes");
 
             transactionTypeValueMapperFunction.Parameter<byte?>("transactionTypeId");
+
+
+            var orderTakerValueMapperFunction = odataBuilder.EntityType<OrderTaker>()
+                .Collection
+                .Function("OrderTakerValueMapper")
+                .ReturnsCollectionFromEntitySet<OrderTaker>("OrderTakers");
+
+            orderTakerValueMapperFunction.Parameter<string>("orderTakerCode");
+
+
+
+
+            var mertexLiveSupplierValueMapperFunction = odataBuilder.EntityType<SharedEFClasses.Models.MertexLive.SupplierLive>()
+                .Collection
+                .Function("MertexLiveSupplierValueMapper")
+                .ReturnsCollectionFromEntitySet<SharedEFClasses.Models.MertexLive.SupplierLive>("MertexLiveSuppliers");
+
+            mertexLiveSupplierValueMapperFunction.Parameter<string>("supplierCode");
 
 
 

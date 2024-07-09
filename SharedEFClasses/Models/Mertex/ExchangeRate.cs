@@ -25,6 +25,6 @@ namespace SharedEFClasses.Models.MertexLive
 
         [JsonIgnore]
         [InverseProperty("MertexCurrencyCodeNavigation")]
-        public virtual ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
+        public virtual ICollection<SupplierLive> Suppliers { get; set; } = new List<SupplierLive>();
     }
 }

@@ -17,5 +17,7 @@ namespace SharedEFClasses.Models.OrderBook
         public IEnumerable<OrderBook_MainSummary_OrderStatusOrderStatusGroup> ColumnHeadings { get; set; }
 
         public IEnumerable<OrderBook_MainSummary_DataRow> Data { get; set; }
+
+        public OrderBook_MainSummary_Defaults Defaults { get; set; }
     }
 }

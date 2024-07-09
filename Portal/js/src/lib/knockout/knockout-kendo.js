@@ -577,7 +577,7 @@ createBinding({
                 //seriously, don't mess with this one if you can help it.
                 if (ko.isWriteableObservable(options.dataItem)) {
                     var list = e.sender;
-                    if (e.sender.value() || e.sender.value() === 0) {
+                    if (e.sender.value() || e.sender.value() === 0 || e.sender.value() === false) {
                         if (typeof options.virtual === 'undefined') {
                             options.dataItem(list.dataItem(list.selectedIndex));
                         } else {
@@ -612,8 +612,8 @@ createBinding({
                 }
                 if (ko.isWriteableObservable(options.value)) {
                     var list = e.sender;
-                    if (e.sender.value() || e.sender.value() === 0) {
-                        options.value(e.sender.value().toString());
+                    if (e.sender.value() || e.sender.value() === 0 || e.sender.value() === false) {
+                        options.value(e.sender.value());
                     }
                 }
             }
@@ -621,7 +621,7 @@ createBinding({
         change: function (options, e) {
 
             if (ko.isObservable(options.value))
-                options.value(e.sender.value().toString());
+                options.value(e.sender.value());
 
             if (options.skipCascade == true) {
                 console.log('kendoDropDownList change event', options, e);

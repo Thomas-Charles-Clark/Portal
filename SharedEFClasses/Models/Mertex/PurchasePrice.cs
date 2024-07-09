@@ -39,6 +39,6 @@ namespace SharedEFClasses.Models.MertexLive
 
         [ForeignKey("SupplierCode")]
         [InverseProperty("PurchasePrices")]
-        public virtual Supplier SupplierCodeNavigation { get; set; }
+        public virtual SupplierLive SupplierCodeNavigation { get; set; }
     }
 }

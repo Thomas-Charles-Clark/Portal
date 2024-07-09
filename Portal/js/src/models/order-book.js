@@ -21,9 +21,13 @@ const orderBookViewModel = (() => {
 
     self.userDefinedFilters = orderBookUserDefinedFiltersViewModel({ parent: self, params: emptyParams });
 
+    window.udf = self.userDefinedFilters;
+
     self.dateFilters = orderBookDateFiltersViewModel(self);
 
     self.preDefinedFilters = orderBookPreDefinedFiltersViewModel(self);
+
+    window.pdf = self.preDefinedFilters;
 
     self.columnHeadings = ko.observableArray([]);
 
@@ -32,6 +36,10 @@ const orderBookViewModel = (() => {
     self.results = ko.observableArray([]);
 
     self.accurateAsOfDateTime = ko.observable();
+
+    self.defaultView = ko.observable();
+
+    self.defaultProcedure = ko.observable();
 
     self.detailModalElement = document.querySelector("#order-book-detail-modal");
 
@@ -106,6 +114,9 @@ const orderBookViewModel = (() => {
     self.parse = (result) => {
 
         self.accurateAsOfDateTime(result.AccurateAsOfDT);
+
+        self.defaultView(result.Defaults.View);
+        self.defaultProcedure(result.Defaults.Procedure);
 
         self.results(result.Data.map(d => orderBookMainCell({
             parent: self,
@@ -248,8 +259,8 @@ const orderBookViewModel = (() => {
 
         let params = JSON.parse(self.userDefinedFilters.json());
 
-        let view = cell.view ?? 'back-orders';
-        let procedure = cell.procedure ?? 'BackOrders';
+        let view = cell.view ?? self.defaultView();
+        let procedure = cell.procedure ?? self.defaultProcedure();
         let filterable = cell.filterable ?? true;
 
         let preDefinedFilterCriteria = {

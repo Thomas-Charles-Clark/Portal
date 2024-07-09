@@ -43,21 +43,21 @@
             //console.log('create', event, ui);
         },
         start: (event, ui) => {
-            console.log('start', event, ui);
+            //console.log('start', event, ui);
             if (event.originalEvent.ctrlKey)
                 event.originalEvent.ctrlKey = false;
         },
         selecting: (event, ui) => {
-            console.log('selecting', event, ui);
+            //console.log('selecting', event, ui);
         },
         unselecting: (event, ui) => {
-            console.log('unselecting', event, ui);
+            //console.log('unselecting', event, ui);
         },
         selected: (event, ui) => {
-            console.log('selected', event, ui);
+            //console.log('selected', event, ui);
         },
         unselected: (event, ui) => {
-            console.log('selected', event, ui);
+            //console.log('selected', event, ui);
         },
         stop: (event, ui) => {
             let selection = [].slice.call(self.dateFiltersElement.querySelectorAll('.filter-card.ui-selected'), 0),
@@ -174,7 +174,7 @@
                 deselection = true;
         })
 
-        console.log('click', selectedLength);
+        //console.log('click', selectedLength);
 
         if (deselection == false) {
             event.currentTarget.classList.add('ui-selected');
