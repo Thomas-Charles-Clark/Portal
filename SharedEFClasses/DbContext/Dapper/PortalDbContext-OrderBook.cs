@@ -42,14 +42,102 @@ namespace SharedEFClasses.Models
     {
         public async Task<IEnumerable<OrderBook_PreDefinedSummary_SelectResult>> FetchOrderBookDateSummaries(PassOrderBookBaseParams dto)
         {
-            var results = await this.Database.Connection.QueryAsync<OrderBook_PreDefinedSummary_SelectResult>("[portal].[OrderBook_DateSummary_Select]", dto, null, 30, CommandType.StoredProcedure);
+            var MarketIDs = new DataTable();
+
+            MarketIDs.Columns.Add("ID", typeof(byte));
+
+            dto.MarketIDs?.ForEach(mid => MarketIDs.Rows.Add(mid));
+
+            var results = await this.Database.Connection.QueryAsync<OrderBook_PreDefinedSummary_SelectResult>("[portal].[OrderBook_DateSummary_Select]",
+                new
+                {
+                    // Hmmm.
+                    dto.DataSource,
+
+                    // Trade Account Filters
+                    dto.MarketID,
+                    MarketIDs,
+                    dto.TradeAccountID,
+                    dto.TradeAccountGroupID,
+                    dto.TradeAccountTypeID,
+                    dto.SalesRepresentativeID,
+                    dto.SalesAgentID,
+                    dto.SalesAreaID,
+                    dto.CountryID,
+
+                    // Product Filters
+                    dto.ProductGroupID,
+                    dto.ItemTypeID,
+                    dto.BrandID,
+                    dto.CollectionID,
+                    dto.QualityID,
+                    dto.DesignID,
+                    dto.ProductID,
+                    dto.ProductStatus,
+                    dto.LaunchID,
+                    dto.SupplierCode,
+
+                    // Order Filters
+                    dto.OrderID,
+                    dto.HaulierCode,
+                    dto.StartDate,
+                    dto.EndDate,
+                    dto.Allocated,
+                    dto.TransactionTypeID,
+                    dto.OrderTakerCode,
+                    dto.DeliveryType,
+                }, null, 30, CommandType.StoredProcedure);
 
             return results;
         }
         
         public async Task<string> FetchOrderBookPreDefinedSummaries(PassOrderBookBaseParams dto)
         {
-            var results = await this.Database.Connection.QueryAsync<string>("[portal].[OrderBook_ProblemSummary_Select]", dto, null, 30, CommandType.StoredProcedure);
+            var MarketIDs = new DataTable();
+
+            MarketIDs.Columns.Add("ID", typeof(byte));
+
+            dto.MarketIDs?.ForEach(mid => MarketIDs.Rows.Add(mid));
+
+            var results = await this.Database.Connection.QueryAsync<string>("[portal].[OrderBook_ProblemSummary_Select]",
+                new
+                {
+                    // Hmmm.
+                    dto.DataSource,
+
+                    // Trade Account Filters
+                    dto.MarketID,
+                    MarketIDs,
+                    dto.TradeAccountID,
+                    dto.TradeAccountGroupID,
+                    dto.TradeAccountTypeID,
+                    dto.SalesRepresentativeID,
+                    dto.SalesAgentID,
+                    dto.SalesAreaID,
+                    dto.CountryID,
+
+                    // Product Filters
+                    dto.ProductGroupID,
+                    dto.ItemTypeID,
+                    dto.BrandID,
+                    dto.CollectionID,
+                    dto.QualityID,
+                    dto.DesignID,
+                    dto.ProductID,
+                    dto.ProductStatus,
+                    dto.LaunchID,
+                    dto.SupplierCode,
+
+                    // Order Filters
+                    dto.OrderID,
+                    dto.HaulierCode,
+                    dto.StartDate,
+                    dto.EndDate,
+                    dto.Allocated,
+                    dto.TransactionTypeID,
+                    dto.OrderTakerCode,
+                    dto.DeliveryType,
+                }, null, 30, CommandType.StoredProcedure);
 
             var sb = new StringBuilder();
 
@@ -63,7 +151,51 @@ namespace SharedEFClasses.Models
 
         public async Task<OrderBook_MainSummary_SelectResult> FetchOrderBookMainSummary(PassOrderBookBaseParams dto)
         {
-            var reader = await this.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_MainSummary_Select]", dto, null, 30, CommandType.StoredProcedure);
+            var MarketIDs = new DataTable();
+
+            MarketIDs.Columns.Add("ID", typeof(byte));
+
+            dto.MarketIDs?.ForEach(mid => MarketIDs.Rows.Add(mid));
+
+            var reader = await this.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_MainSummary_Select]",
+                new
+                {
+                    // Hmmm.
+                    dto.DataSource,
+
+                    // Trade Account Filters
+                    dto.MarketID,
+                    MarketIDs,
+                    dto.TradeAccountID,
+                    dto.TradeAccountGroupID,
+                    dto.TradeAccountTypeID,
+                    dto.SalesRepresentativeID,
+                    dto.SalesAgentID,
+                    dto.SalesAreaID,
+                    dto.CountryID,
+
+                    // Product Filters
+                    dto.ProductGroupID,
+                    dto.ItemTypeID,
+                    dto.BrandID,
+                    dto.CollectionID,
+                    dto.QualityID,
+                    dto.DesignID,
+                    dto.ProductID,
+                    dto.ProductStatus,
+                    dto.LaunchID,
+                    dto.SupplierCode,
+
+                    // Order Filters
+                    dto.OrderID,
+                    dto.HaulierCode,
+                    dto.StartDate,
+                    dto.EndDate,
+                    dto.Allocated,
+                    dto.TransactionTypeID,
+                    dto.OrderTakerCode,
+                    dto.DeliveryType,
+                }, null, 30, CommandType.StoredProcedure);
 
             return new OrderBook_MainSummary_SelectResult()
             {

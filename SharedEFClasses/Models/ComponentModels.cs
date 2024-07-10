@@ -125,6 +125,7 @@ namespace SharedEFClasses.Models.Components
         public decimal? exactlyRRP { get; set; }
         public decimal? lessThanRRP { get; set; }
         public byte? productTypeId { get; set; }
+        public byte? secondaryProductTypeId { get; set; }
         public bool architectFolder { get; set; }
     }
 

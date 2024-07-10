@@ -19,6 +19,9 @@ const orderBookUserDefinedFiltersViewModel = ({
     parent: { },
     params: {
         salesMarketId: '',
+        salesMarketIds: [],
+        salesRepresentativeId: '',
+        salesAgentId: '',
         tradeAccountTypeId: '',
         tradeAccountGroupId: '',
         tradeAccountId: '',
@@ -61,6 +64,18 @@ const orderBookUserDefinedFiltersViewModel = ({
     self.salesMarketId = ko.observable(params.marketId ?? '');
     self.salesMarket = ko.observable();
     self.salesMarketAwaitingBinding = ko.observable(params.marketId != null && params.marketId != '');
+
+    self.salesMarketIds = ko.observableArray(params.marketIds ?? []);
+    self.salesMarkets = ko.observableArray();
+    self.salesMarketsAwaitingBinding = ko.observable(params.marketIds != null && params.marketIds.length > 0);
+
+    self.salesRepresentativeId = ko.observable(params.salesRepresentativeId ?? '');
+    self.salesRepresentative = ko.observable();
+    self.salesRepresentativeAwaitingBinding = ko.observable(params.salesRepresentativeId != null && params.salesRepresentativeId != '');
+
+    self.salesAgentId = ko.observable(params.salesAgentId ?? '');
+    self.salesAgent = ko.observable();
+    self.salesAgentAwaitingBinding = ko.observable(params.salesAgentId != null && params.salesAgentId != '');
 
     self.tradeAccountTypeId = ko.observable(params.tradeAccountTypeId ?? '');
     self.tradeAccountType = ko.observable();
@@ -300,11 +315,13 @@ const orderBookUserDefinedFiltersViewModel = ({
         endPoint: () => {
             let tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId(),
                 tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
-                tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId();
+                tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId(),
+                salesRepresentativeId = self.salesRepresentativeId() == EMPTY_STRING ? 'null' : self.salesRepresentativeId(),
+                salesAgentId = self.salesAgentId() == EMPTY_STRING ? 'null' : self.salesAgentId();
 
             //let computation = self.tradeAccountComputer();
 
-            return `/odata/SalesMarkets/Default.SalesMarketOrderBookFilter(tradeAccountId=${tradeAccountId},tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId})`;
+            return `/odata/SalesMarkets/Default.SalesMarketOrderBookFilter(tradeAccountId=${tradeAccountId},tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId},salesRepresentativeId=${salesRepresentativeId},salesAgentId=${salesAgentId})`;
         },
         textField: 'Name',
         valueField: 'SalesMarketID',
@@ -379,18 +396,118 @@ const orderBookUserDefinedFiltersViewModel = ({
         }
     });
 
+    self.salesMarketsParams = {
+        observable: self.salesMarkets,
+        validate: self.salesMarketIds,
+        showClear: true,
+        width: 'auto',
+        label: 'Sales Markets',
+        valuePrimitive: false,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        controlClass: 'form-control',
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        multiSelectSettings: {
+            value: self.salesMarketIds,
+            dataItems: self.salesMarkets,
+            dataValueField: 'SalesMarketID',
+            dataTextField: 'Name',
+            height: 300,
+            widget: ko.observable(),
+            open: function (e) {
+                var self = this;
+                $(e.sender._widgetOptions.dataItems.mdcSelect.root_).toggleClass('mdc-select--focused');
+            },
+            close: function (e) {
+                $(e.sender._widgetOptions.dataItems.mdcSelect.root_).toggleClass('mdc-select--focused');
+            },
+            data: new kendo.data.DataSource({
+                serverFiltering: true,
+                serverSorting: true,
+                serverGrouping: true,
+                serverPaging: true,
+                pageSize: Math.floor((300 / 34) * 4),
+                type: 'odata-v4',
+                transport: {
+                    read: {
+                        url: () => {
+                            let tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId(),
+                                tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
+                                tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId(),
+                                salesRepresentativeId = self.salesRepresentativeId() == EMPTY_STRING ? 'null' : self.salesRepresentativeId(),
+                                salesAgentId = self.salesAgentId() == EMPTY_STRING ? 'null' : self.salesAgentId();
+
+                            //let computation = self.tradeAccountComputer();
+
+                            return `/odata/SalesMarkets/Default.SalesMarketOrderBookFilter(tradeAccountId=${tradeAccountId},tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId},salesRepresentativeId=${salesRepresentativeId},salesAgentId=${salesAgentId})`;
+                        }
+                    },
+                    parameterMap: (data) => {
+                        //Generate parameters in odata v4 format
+                        if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "Label")) {
+                            let f = data.filter.filters.find(f => f.field === "Label");
+                            data.filter.filters = data.filter.filters.filter(f => f.field != "Label");
+                            data.filter.logic = "or";
+                            data.filter.filters = [{
+                                field: "Name",
+                                ignoreCase: true,
+                                operator: "startswith",
+                                value: f.value
+                            }];
+                        }
+                        let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+                        delete d.$inlinecount; // <-- remove inlinecount
+                        delete d.$format; // <-- remove format
+                        delete d.$callback; // <-- remove callback
+
+                        d.$count = true;
+
+                        return d;
+                    },
+                    data: {}
+                },
+                sort: {
+                    dir: 'asc',
+                    field: 'SalesMarketID'
+                }
+            }),
+            popup: {
+                appendTo: document.getElementById('sales-markets-prefilter')
+            },
+            valuePrimitive: true,
+            autoWidth: false,
+            autoBind: true,
+            autoClose: false,
+            optionLabel: ' ',
+            filter: 'startswith'
+        },
+        clearFunction: function () {
+            var self = this
+            self.multiSelectSettings.value([]);
+            self.multiSelectSettings.widget().value([]);
+            self.multiSelectSettings.widget().trigger('change');
+        }
+    };
+
     self.tradeAccountParams = kendoMDCDropDownList({
         skipCascade: true,
         label: 'Trade Account',
         odata: true,
         endPoint: () => {
-            let salesMarketId = self.salesMarketId() == EMPTY_STRING ? 'null' : self.salesMarketId(),
+            let salesMarketIds = self.salesMarketIds(),
                 tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
-                tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId();
+                tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId(),
+                salesRepresentativeId = self.salesRepresentativeId() == EMPTY_STRING ? 'null' : self.salesRepresentativeId(),
+                salesAgentId = self.salesAgentId() == EMPTY_STRING ? 'null' : self.salesAgentId();
 
             //let computation = self.tradeAccountComputer();
 
-            return `/odata/TradeAccounts/Default.TradeAccountOrderBookFilter(salesMarketId=${salesMarketId},tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId})?$expand=TradePriceList`;
+            return `/odata/TradeAccounts/Default.TradeAccountOrderBookFilter(salesMarketIds=[${salesMarketIds}],tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId},salesRepresentativeId=${salesRepresentativeId},salesAgentId=${salesAgentId})?$expand=TradePriceList`;
         },
         textField: 'ShortLabel',
         valueField: 'TradeAccountID',
@@ -469,13 +586,15 @@ const orderBookUserDefinedFiltersViewModel = ({
         label: 'Trade Account Type',
         odata: true,
         endPoint: () => {
-            let salesMarketId = self.salesMarketId() == EMPTY_STRING ? 'null' : self.salesMarketId(),
+            let salesMarketIds = self.salesMarketIds(),
                 tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId(),
-                tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId();
+                tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId(),
+                salesRepresentativeId = self.salesRepresentativeId() == EMPTY_STRING ? 'null' : self.salesRepresentativeId(),
+                salesAgentId = self.salesAgentId() == EMPTY_STRING ? 'null' : self.salesAgentId();
 
             //let computation = self.tradeAccountComputer();
 
-            return `/odata/TradeAccountTypes/Default.TradeAccountTypeOrderBookFilter(salesMarketId=${salesMarketId},tradeAccountGroupId=${tradeAccountGroupId},tradeAccountId=${tradeAccountId})`;
+            return `/odata/TradeAccountTypes/Default.TradeAccountTypeOrderBookFilter(salesMarketIds=[${salesMarketIds}],tradeAccountGroupId=${tradeAccountGroupId},tradeAccountId=${tradeAccountId},salesRepresentativeId=${salesRepresentativeId},salesAgentId=${salesAgentId})`;
         },
         textField: 'Name',
         valueField: 'TradeAccountTypeID',
@@ -550,18 +669,196 @@ const orderBookUserDefinedFiltersViewModel = ({
         }
     });
 
+    self.salesRepresentativeParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Sales Representative',
+        odata: true,
+        endPoint: () => {
+            let salesMarketIds = self.salesMarketIds(),
+                tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
+                tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId(),
+                tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId(),
+                salesAgentId = self.salesAgentId() == EMPTY_STRING ? 'null' : self.salesAgentId();
+
+            //let computation = self.tradeAccountComputer();
+
+            return `/odata/SalesRepresentatives/Default.SalesRepresentativesOrderBookFilter(salesMarketIds=[${salesMarketIds}],tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId},tradeAccountId=${tradeAccountId},salesAgentId=${salesAgentId})`;
+        },
+        textField: 'Name',
+        valueField: 'SalesRepresentativeID',
+        virtual: true,
+        pageSize: 40,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/SalesRepresentatives/Default.SalesRepresentativeValueMapper(salesRepresentativeId=${options.value})`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        idObservable: self.salesRepresentativeId,
+        objObservable: self.salesRepresentative,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'Name'
+        },
+        select: function (e) {
+            console.log('tradeAccountTypeParams select', e);
+            self.tradeAccountComputer.valueHasMutated();
+        },
+        requestStart: function (e) {
+            if (!self.cascadeEnabled)
+                e.preventDefault();
+        },
+        clearFunction: self.genericUnsavedChangesClear,
+        dataBound: (e) => self.salesRepresentativeAwaitingBinding(false),
+        parameterMap: (data) => {
+
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            //if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
+            //    d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
+            //}
+
+            return d;
+        },
+        popupSettings: {
+            appendTo: document.getElementById('sales-representative-prefilter')
+        }
+    });
+
+    self.salesAgentParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Sales Agent',
+        odata: true,
+        endPoint: () => {
+            let salesMarketIds = self.salesMarketIds(),
+                tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
+                tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId(),
+                tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId(),
+                salesRepresentativeId = self.salesRepresentativeId() == EMPTY_STRING ? 'null' : self.salesRepresentativeId();
+
+            //let computation = self.tradeAccountComputer();
+
+            return `/odata/SalesAgents/Default.SalesAgentsOrderBookFilter(salesMarketIds=[${salesMarketIds}],tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId},tradeAccountId=${tradeAccountId},salesRepresentativeId=${salesRepresentativeId})`;
+        },
+        textField: 'Name',
+        valueField: 'SalesAgentID',
+        virtual: true,
+        pageSize: 40,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/SalesAgents/Default.SalesAgentsValueMapper(salesAgentId=${options.value})`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        idObservable: self.salesAgentId,
+        objObservable: self.salesAgent,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'Name'
+        },
+        select: function (e) {
+            console.log('salesAgentParams select', e);
+            self.tradeAccountComputer.valueHasMutated();
+        },
+        requestStart: function (e) {
+            if (!self.cascadeEnabled)
+                e.preventDefault();
+        },
+        clearFunction: self.genericUnsavedChangesClear,
+        dataBound: (e) => self.salesAgentAwaitingBinding(false),
+        parameterMap: (data) => {
+
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            //if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
+            //    d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
+            //}
+
+            return d;
+        },
+        popupSettings: {
+            appendTo: document.getElementById('sales-agent-prefilter')
+        }
+    });
+
     self.tradeAccountGroupParams = kendoMDCDropDownList({
         skipCascade: true,
         label: 'Trade Account Group',
         odata: true,
         endPoint: () => {
-            let salesMarketId = self.salesMarketId() == EMPTY_STRING ? 'null' : self.salesMarketId(),
+            let salesMarketIds = self.salesMarketIds(),
                 tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
-                tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId();
+                tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId(),
+                salesRepresentativeId = self.salesRepresentativeId() == EMPTY_STRING ? 'null' : self.salesRepresentativeId(),
+                salesAgentId = self.salesAgentId() == EMPTY_STRING ? 'null' : self.salesAgentId();
 
             //let computation = self.tradeAccountComputer();
 
-            return `/odata/TradeAccountGroups/Default.TradeAccountGroupOrderBookFilter(salesMarketId=${salesMarketId},tradeAccountTypeId=${tradeAccountTypeId},tradeAccountId=${tradeAccountId})`;
+            return `/odata/TradeAccountGroups/Default.TradeAccountGroupOrderBookFilter(salesMarketIds=[${salesMarketIds}],tradeAccountTypeId=${tradeAccountTypeId},tradeAccountId=${tradeAccountId},salesRepresentativeId=${salesRepresentativeId},salesAgentId=${salesAgentId})`;
         },
         textField: 'Name',
         valueField: 'TradeAccountGroupID',
@@ -1719,39 +2016,6 @@ const orderBookUserDefinedFiltersViewModel = ({
 
         console.log("userDefinedFilters.tradeAccount subscribe hit", nv);
 
-        //if (nv && self.cascadeEnabled) {
-        //    if (nv.SalesMarketID) {
-        //        self.salesMarketParams.dropDownListSettings.widget().value(nv.SalesMarketID.toString());
-        //    } else {
-        //        self.salesMarketParams.dropDownListSettings.widget().value(EMPTY_STRING);
-        //    }
-
-        //    if (nv.TradeAccountTypeID) {
-        //        self.tradeAccountTypeParams.dropDownListSettings.widget().value(nv.TradeAccountTypeID.toString());
-        //    } else {
-        //        self.tradeAccountTypeParams.dropDownListSettings.widget().value(EMPTY_STRING);
-        //    }
-
-        //    if (nv.TradeAccountGroupID) {
-        //        self.tradeAccountGroupParams.dropDownListSettings.widget().value(nv.TradeAccountGroupID.toString());
-        //    } else {
-        //        self.tradeAccountGroupParams.dropDownListSettings.widget().value(EMPTY_STRING);
-        //    }
-
-        //    window.setTimeout(() => {
-        //        self.salesMarketParams.dropDownListSettings.widget().trigger('change');
-        //        self.tradeAccountTypeParams.dropDownListSettings.widget().trigger('change');
-        //        self.tradeAccountGroupParams.dropDownListSettings.widget().trigger('change');
-
-        //        self.cascadeEnabled = false;
-        //    }, 0);
-
-        //}
-
-        //if (nv == null) {
-        //    self.cascadeEnabled = true;
-        //}
-
     });
 
     self.fromDate.subscribe(nv => {
@@ -1828,8 +2092,17 @@ const orderBookUserDefinedFiltersViewModel = ({
         self.salesMarketId(EMPTY_STRING);
         self.salesMarket(undefined);
 
+        self.salesMarketIds([]);
+        self.salesMarkets([]);
+
         self.tradeAccountTypeId(EMPTY_STRING);
         self.tradeAccountType(undefined);
+
+        self.salesRepresentativeId(EMPTY_STRING);
+        self.salesRepresentative(undefined);
+
+        self.salesAgentId(EMPTY_STRING);
+        self.salesAgent(undefined);
 
         self.tradeAccountGroupId(EMPTY_STRING);
         self.tradeAccountGroup(undefined);
@@ -1896,7 +2169,10 @@ const orderBookUserDefinedFiltersViewModel = ({
         if (self.allBound()) {
             let result = {
                 marketId: self.salesMarketId() || null,
+                marketIds: self.salesMarketIds(),
                 tradeAccountTypeId: self.tradeAccountTypeId() || null,
+                salesRepresentativeId: self.salesRepresentativeId() || null,
+                salesAgentId: self.salesAgentId() || null,
                 tradeAccountGroupId: self.tradeAccountGroupId() || null,
                 tradeAccountId: self.tradeAccountId() || null,
                 orderId: self.orderId() || null,

@@ -78,17 +78,23 @@ namespace Portal.Controllers
 
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
         [HttpGet]
-        public IQueryable<TradeAccount> tradeAccountOrderBookFilter(
-            byte? salesMarketId = null,
+        public IQueryable<TradeAccount> TradeAccountOrderBookFilter(
+            [FromODataUri] IEnumerable<byte> salesMarketIds = null,
             short? tradeAccountTypeId = null,
-            int? tradeAccountGroupId = null)
+            int? tradeAccountGroupId = null,
+            short? salesRepresentativeId = null,
+            short? salesAgentId = null)
         {
+            salesMarketIds = salesMarketIds ?? new List<byte>();
+
             return PortalDb.TradeAccounts.Where(ta =>
                 ta.Deleted == false &&
                 ta.Status == "O" &&
-                (salesMarketId == null || ta.SalesMarketID == salesMarketId.Value) &&
+                (!salesMarketIds.Any() || ta.SalesMarketID.HasValue && salesMarketIds.Contains(ta.SalesMarketID.Value)) &&
                 (tradeAccountGroupId == null || ta.TradeAccountGroupID == tradeAccountGroupId.Value) &&
-                (tradeAccountTypeId == null || ta.TradeAccountTypeID == tradeAccountTypeId.Value)
+                (tradeAccountTypeId == null || ta.TradeAccountTypeID == tradeAccountTypeId.Value) &&
+                (salesRepresentativeId == null || ta.SalesRepresentativeID == salesRepresentativeId.Value) &&
+                (salesAgentId == null || ta.SalesAgentID == salesAgentId.Value)
             ).AsQueryable();
         }
     }

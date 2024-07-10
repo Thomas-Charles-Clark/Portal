@@ -55,14 +55,20 @@ namespace Portal.Controllers
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
         [HttpGet]
         public IQueryable<TradeAccountGroup> TradeAccountGroupOrderBookFilter(
-            byte? salesMarketId = null,
+            [FromODataUri] IEnumerable<byte> salesMarketIds = null,
             int? tradeAccountId = null,
-            short? tradeAccountTypeId = null)
+            short? tradeAccountTypeId = null,
+            short? salesRepresentativeId = null,
+            short? salesAgentId = null)
         {
+            salesMarketIds = salesMarketIds ?? new List<byte>();
+
             var tradeAccountGroupIds = PortalDb.TradeAccounts.Where(ta =>
-                (salesMarketId == null || ta.SalesMarketID == salesMarketId.Value) &&
+                (!salesMarketIds.Any() || ta.SalesMarketID.HasValue && salesMarketIds.Contains(ta.SalesMarketID.Value)) &&
                 (tradeAccountId == null || ta.TradeAccountID == tradeAccountId.Value) &&
-                (tradeAccountTypeId == null || ta.TradeAccountTypeID == tradeAccountTypeId.Value)
+                (tradeAccountTypeId == null || ta.TradeAccountTypeID == tradeAccountTypeId.Value) &&
+                (salesRepresentativeId == null || ta.SalesRepresentativeID == salesRepresentativeId.Value) &&
+                (salesAgentId == null || ta.SalesAgentID == salesAgentId.Value)
             )
                 .Select(ta => ta.TradeAccountGroupID)
                 .Distinct()

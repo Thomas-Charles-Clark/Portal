@@ -153,6 +153,66 @@
   height: 28px;
   line-height: 1rem;
 }
+#user-defined-filters > div .mdc-multiselect,
+#advanced-filters > div .mdc-multiselect {
+  min-height: 28px;
+  height: 28px;
+  font-size: 0.875rem;
+}
+#user-defined-filters > div .mdc-multiselect .k-multiselect.k-header.k-state-focused,
+#advanced-filters > div .mdc-multiselect .k-multiselect.k-header.k-state-focused {
+  box-shadow: none;
+}
+#user-defined-filters > div .mdc-multiselect :after,
+#advanced-filters > div .mdc-multiselect :after {
+  top: 6px;
+  right: 8px;
+}
+#user-defined-filters > div .mdc-multiselect .k-input,
+#advanced-filters > div .mdc-multiselect .k-input {
+  height: 28px;
+  font-size: 0.875rem;
+}
+#user-defined-filters > div .mdc-multiselect:has(ul.k-reset li.k-button),
+#advanced-filters > div .mdc-multiselect:has(ul.k-reset li.k-button) {
+  height: auto;
+}
+#user-defined-filters > div .mdc-multiselect .k-multiselect-wrap,
+#advanced-filters > div .mdc-multiselect .k-multiselect-wrap {
+  background-color: #fff;
+  line-height: 1rem;
+}
+#user-defined-filters > div .mdc-multiselect .k-multiselect-wrap ul,
+#advanced-filters > div .mdc-multiselect .k-multiselect-wrap ul {
+  gap: 0.25rem;
+  padding: 0.25rem;
+  line-height: 1rem;
+  align-items: center;
+}
+#user-defined-filters > div .mdc-multiselect .k-multiselect-wrap ul li,
+#advanced-filters > div .mdc-multiselect .k-multiselect-wrap ul li {
+  margin: 0;
+}
+#user-defined-filters > div .mdc-multiselect .k-multiselect-wrap .k-button,
+#advanced-filters > div .mdc-multiselect .k-multiselect-wrap .k-button {
+  min-height: 1.6em;
+  line-height: 1.6em;
+  height: 24px;
+  background-color: #084298;
+  color: #fff;
+}
+#user-defined-filters > div .mdc-multiselect .k-multiselect-wrap .k-button .k-select,
+#advanced-filters > div .mdc-multiselect .k-multiselect-wrap .k-button .k-select {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+#user-defined-filters > div .mdc-multiselect .controls,
+#advanced-filters > div .mdc-multiselect .controls {
+  height: 28px;
+}
+#user-defined-filters > div .mdc-multiselect .controls .close.clear,
+#advanced-filters > div .mdc-multiselect .controls .close.clear {
+  line-height: 28px;
+}
 #user-defined-filters > div .mdc-floating-label,
 #advanced-filters > div .mdc-floating-label {
   top: 5px;
@@ -161,6 +221,17 @@
 #user-defined-filters > div .k-dropdown-wrap .k-input,
 #advanced-filters > div .k-dropdown-wrap .k-input {
   padding: 6px 70px 6px 0;
+}
+#user-defined-filters #sales-markets-prefilter .k-animation-container,
+#advanced-filters #sales-markets-prefilter .k-animation-container {
+  font-size: 1rem;
+}
+#user-defined-filters #sales-markets-prefilter .k-animation-container .k-list-container.k-popup li,
+#advanced-filters #sales-markets-prefilter .k-animation-container .k-list-container.k-popup li {
+  height: 34px;
+  min-height: 34px;
+  line-height: 34px;
+  font-size: 1rem !important;
 }
 #user-defined-filters span.k-input,
 #advanced-filters span.k-input {

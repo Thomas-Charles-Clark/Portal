@@ -739,6 +739,8 @@ namespace SharedEFClasses.Models.General
         [JsonIgnore]
         public ICollection<Lead> AgentForLeads { get; internal set; }
 
+        public byte? SalesMarketID { get; set; }
+
         //[JsonIgnore]
         //public virtual SalesMarket SalesMarket { get; set; }
 
@@ -748,9 +750,6 @@ namespace SharedEFClasses.Models.General
         // - Tom, 18-02-20
         [InverseProperty("SalesRepresentative")]
         public virtual ICollection<SalesRepresentative_TradeAccount> MiscTradeAccounts { get; set; }
-
-        [NotMapped]
-        public byte? SalesMarketID { get; set; }
 
         [NotMapped]
         public string Label
@@ -813,6 +812,11 @@ namespace SharedEFClasses.Models.General
         public string Name { get; set; }
         public byte? SalesMarketID { get; set; }
 
+        public DateTime? DeletedDT { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public bool Deleted { get; set; }
+
         [JsonIgnore]
         public ICollection<Lead> Leads { get; internal set; }
 
@@ -822,6 +826,19 @@ namespace SharedEFClasses.Models.General
         [JsonIgnore]
         [InverseProperty("SalesAgent")]
         public virtual ICollection<Basket> Baskets { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("SalesAgent")]
+        public virtual ICollection<TradeAccount> TradeAccounts { get; set; }
+
+        [NotMapped]
+        public string Label
+        {
+            get
+            {
+                return $"{Name} - {Code}";
+            }
+        }
     }
 
     public class SalesArea

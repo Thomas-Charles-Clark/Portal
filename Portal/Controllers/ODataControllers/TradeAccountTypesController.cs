@@ -52,9 +52,14 @@ namespace Portal.Controllers
 
         [EnableQuery(MaxNodeCount = 200)]
         [HttpGet]
-        public IQueryable<TradeAccountType> TradeAccountTypeOrderBookFilter(byte? salesMarketId = null, int? tradeAccountGroupId = null, int? tradeAccountId = null)
+        public IQueryable<TradeAccountType> TradeAccountTypeOrderBookFilter(
+            [FromODataUri] IEnumerable<byte> salesMarketIds = null,
+            int? tradeAccountGroupId = null,
+            int? tradeAccountId = null,
+            short? salesRepresentativeId = null,
+            short? salesAgentId = null)
         {
-            var PortalDb = new PortalDbContext();
+            salesMarketIds = salesMarketIds ?? new List<byte>();
 
             if (tradeAccountId.HasValue)
             {
@@ -72,8 +77,10 @@ namespace Portal.Controllers
             else
             {
                 return PortalDb.TradeAccountTypes.Where(p =>
-                    (salesMarketId == null || p.TradeAccounts.Any(ta => ta.SalesMarketID == salesMarketId)) &&
-                    (tradeAccountGroupId == null || p.TradeAccounts.Any(ta => ta.TradeAccountGroupID == tradeAccountGroupId.Value))
+                    (!salesMarketIds.Any() || (p.TradeAccounts.Any(ta => ta.SalesMarketID.HasValue && salesMarketIds.Contains(ta.SalesMarketID.Value)))) &&
+                    (tradeAccountGroupId == null || p.TradeAccounts.Any(ta => ta.TradeAccountGroupID == tradeAccountGroupId.Value)) &&
+                    (salesRepresentativeId == null || p.TradeAccounts.Any(ta => ta.SalesRepresentativeID == salesRepresentativeId.Value)) &&
+                    (salesAgentId == null || p.TradeAccounts.Any(ta => ta.SalesAgentID == salesAgentId.Value))
                 ).AsQueryable();
             }
         }

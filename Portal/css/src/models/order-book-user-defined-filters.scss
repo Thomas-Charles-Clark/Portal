@@ -170,6 +170,70 @@ $light-blue-bg: tint-color($blue-100, 80%);
             line-height: 1rem;
         }
 
+        .mdc-multiselect {
+            min-height: 28px;
+            height: 28px;
+            font-size: $font-size-sm;
+
+            .k-multiselect {
+                &.k-header {
+                    &.k-state-focused {
+                        box-shadow: none;
+                    }
+                }
+            }
+
+            :after {
+                top: 6px;
+                right: 8px;
+            }
+
+            .k-input {
+                height: 28px;
+                font-size: $font-size-sm;
+            }
+
+            &:has(ul.k-reset li.k-button) {
+                height: auto;
+            }
+
+            .k-multiselect-wrap {
+                background-color: $white;
+                line-height: 1rem;
+
+                ul {
+                    gap: $vsm-gutter;
+                    padding: $vsm-gutter;
+                    line-height: 1rem;
+                    align-items: center;
+
+                    li {
+                        margin: 0;
+                    }
+                }
+
+                .k-button {
+                    min-height: 1.6em;
+                    line-height: 1.6em;
+                    height: 24px;
+                    background-color: $blue-700;
+                    color: $white;
+
+                    .k-select {
+                        background-color: rgba(0, 0, 0, 0.6);
+                    }
+                }
+            }
+
+            .controls {
+                height: 28px;
+
+                .close.clear {
+                    line-height: 28px;
+                }
+            }
+        }
+
         .mdc-floating-label {
             top: 5px;
             font-size: 12px;
@@ -178,6 +242,24 @@ $light-blue-bg: tint-color($blue-100, 80%);
         .k-dropdown-wrap {
             .k-input {
                 padding: 6px 70px 6px 0;
+            }
+        }
+    }
+
+    #sales-markets-prefilter {
+
+        .k-animation-container {
+            font-size: $font-size-base;
+
+            .k-list-container {
+                &.k-popup {
+                    li {
+                        height: 34px;
+                        min-height: 34px;
+                        line-height: 34px;
+                        font-size: $font-size-base !important;
+                    }
+                }
             }
         }
     }

@@ -105,6 +105,7 @@ namespace Portal
             odataBuilder.EntitySet<MarketingBudget>("MarketingBudgets");
             odataBuilder.EntitySet<SelfBillInvoice>("SelfBillInvoices");
             odataBuilder.EntitySet<SalesRepresentative>("SalesRepresentatives");
+            odataBuilder.EntitySet<SalesAgent>("SalesAgents");
             odataBuilder.EntitySet<OrderHeadLive>("Orders");
             odataBuilder.EntitySet<OrderBookGrouped>("OrderBooksGrouped");
             odataBuilder.EntitySet<OrderGroup>("OrderGroups");
@@ -124,6 +125,7 @@ namespace Portal
 
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SalesMarket)).AddProperty(typeof(SalesMarket).GetProperty("Label"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SalesRepresentative)).AddProperty(typeof(SalesRepresentative).GetProperty("Label"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SalesAgent)).AddProperty(typeof(SalesAgent).GetProperty("Label"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccount)).AddProperty(typeof(TradeAccount).GetProperty("ShortLabel"));
             //odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccountGroup)).AddProperty(typeof(TradeAccountGroup).GetProperty("ShortLabel"));
             //odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccountType)).AddProperty(typeof(TradeAccountType).GetProperty("ShortLabel"));
@@ -288,9 +290,11 @@ namespace Portal
                 .Function("TradeAccountOrderBookFilter")
                 .ReturnsCollectionFromEntitySet<TradeAccount>("TradeAccounts");
 
-            tradeAccountOrderBookFilterFunction.Parameter<byte?>("salesMarketId");
+            tradeAccountOrderBookFilterFunction.CollectionParameter<byte>("salesMarketIds");
             tradeAccountOrderBookFilterFunction.Parameter<short?>("tradeAccountTypeId");
             tradeAccountOrderBookFilterFunction.Parameter<int?>("tradeAccountGroupId");
+            tradeAccountOrderBookFilterFunction.Parameter<short?>("salesRepresentativeId");
+            tradeAccountOrderBookFilterFunction.Parameter<short?>("salesAgentId");
 
 
 
@@ -311,9 +315,11 @@ namespace Portal
                 .Function("TradeAccountTypeOrderBookFilter")
                 .ReturnsCollectionFromEntitySet<TradeAccountType>("TradeAccountTypes");
 
-            tradeAccountTypeOrderBookFilterFunction.Parameter<byte?>("salesMarketId");
+            tradeAccountTypeOrderBookFilterFunction.CollectionParameter<byte>("salesMarketIds");
             tradeAccountTypeOrderBookFilterFunction.Parameter<int?>("tradeAccountGroupId");
             tradeAccountTypeOrderBookFilterFunction.Parameter<int?>("tradeAccountId");
+            tradeAccountTypeOrderBookFilterFunction.Parameter<short?>("salesRepresentativeId");
+            tradeAccountTypeOrderBookFilterFunction.Parameter<short?>("salesAgentId");
 
 
 
@@ -343,9 +349,11 @@ namespace Portal
                 .Function("TradeAccountGroupOrderBookFilter")
                 .ReturnsCollectionFromEntitySet<TradeAccountGroup>("TradeAccountGroups");
 
-            tradeAccountGroupOrderBookFilterFunction.Parameter<byte?>("salesMarketId");
+            tradeAccountGroupOrderBookFilterFunction.CollectionParameter<byte>("salesMarketIds");
             tradeAccountGroupOrderBookFilterFunction.Parameter<int?>("tradeAccountId");
             tradeAccountGroupOrderBookFilterFunction.Parameter<short?>("tradeAccountTypeId");
+            tradeAccountGroupOrderBookFilterFunction.Parameter<short?>("salesRepresentativeId");
+            tradeAccountGroupOrderBookFilterFunction.Parameter<short?>("salesAgentId");
 
 
 
@@ -603,6 +611,8 @@ namespace Portal
             salesMarketOrderBookFilterFunction.Parameter<int?>("tradeAccountId");
             salesMarketOrderBookFilterFunction.Parameter<short?>("tradeAccountTypeId");
             salesMarketOrderBookFilterFunction.Parameter<int?>("tradeAccountGroupId");
+            salesMarketOrderBookFilterFunction.Parameter<short?>("salesRepresentativeId");
+            salesMarketOrderBookFilterFunction.Parameter<short?>("salesAgentId");
 
 
 
@@ -614,6 +624,45 @@ namespace Portal
                 .ReturnsCollectionFromEntitySet<SalesRepresentative>("SalesRepresentative");
 
             salesRepresentativeValueMapperFunction.Parameter<short?>("salesRepresentativeId");
+
+
+            var salesRepresentativeOrderBookFilterFunction = odataBuilder.EntityType<SalesRepresentative>()
+                .Collection
+                .Function("SalesRepresentativesOrderBookFilter")
+                .ReturnsCollectionFromEntitySet<SalesRepresentative>("SalesRepresentatives");
+
+            salesRepresentativeOrderBookFilterFunction.CollectionParameter<byte>("salesMarketIds");
+            salesRepresentativeOrderBookFilterFunction.Parameter<int?>("tradeAccountId");
+            salesRepresentativeOrderBookFilterFunction.Parameter<short?>("tradeAccountTypeId");
+            salesRepresentativeOrderBookFilterFunction.Parameter<int?>("tradeAccountGroupId");
+            salesRepresentativeOrderBookFilterFunction.Parameter<short?>("salesAgentId");
+
+
+
+
+
+
+            var salesAgentValueMapperFunction = odataBuilder.EntityType<SalesAgent>()
+                .Collection
+                .Function("SalesAgentValueMapper")
+                .ReturnsCollectionFromEntitySet<SalesAgent>("SalesAgent");
+
+            salesAgentValueMapperFunction.Parameter<short?>("salesAgentId");
+
+
+            var salesAgentOrderBookFilterFunction = odataBuilder.EntityType<SalesAgent>()
+                .Collection
+                .Function("SalesAgentsOrderBookFilter")
+                .ReturnsCollectionFromEntitySet<SalesAgent>("SalesAgents");
+
+            salesAgentOrderBookFilterFunction.CollectionParameter<byte>("salesMarketIds");
+            salesAgentOrderBookFilterFunction.Parameter<int?>("tradeAccountId");
+            salesAgentOrderBookFilterFunction.Parameter<short?>("tradeAccountTypeId");
+            salesAgentOrderBookFilterFunction.Parameter<int?>("tradeAccountGroupId");
+            salesAgentOrderBookFilterFunction.Parameter<short?>("salesRepresentativeId");
+
+
+
 
 
             var productTypeValueMapperFunction = odataBuilder.EntityType<ProductType>()

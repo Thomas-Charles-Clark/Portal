@@ -52,5 +52,25 @@ namespace Portal.Controllers
                 p.SalesRepresentativeID == salesRepresentativeId
             ).AsQueryable();
         }
+
+        [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
+        [HttpGet]
+        public IQueryable<SalesRepresentative> SalesRepresentativesOrderBookFilter(
+            [FromODataUri] IEnumerable<byte> salesMarketIds = null,
+            int? tradeAccountId = null,
+            short? tradeAccountTypeId = null,
+            int? tradeAccountGroupId = null,
+            short? salesAgentId = null)
+        {
+            salesMarketIds = salesMarketIds ?? new List<byte>();
+
+            return PortalDb.SalesRepresentatives.Where(sa =>
+                (tradeAccountId == null || sa.TradeAccounts.Any(ta => ta.TradeAccountID == tradeAccountId.Value)) &&
+                (tradeAccountGroupId == null || sa.TradeAccounts.Any(ta => ta.TradeAccountGroupID == tradeAccountGroupId.Value)) &&
+                (tradeAccountTypeId == null || sa.TradeAccounts.Any(ta => ta.TradeAccountTypeID == tradeAccountTypeId.Value)) &&
+                (!salesMarketIds.Any() || sa.SalesMarketID.HasValue && salesMarketIds.Contains(sa.SalesMarketID.Value) || sa.SalesRepresentative_SalesMarkets.Any(sm => salesMarketIds.Contains(sm.SalesMarketID))) &&
+                (salesAgentId == null || sa.TradeAccounts.Any(ta => ta.SalesAgentID == salesAgentId.Value))
+            ).AsQueryable();
+        }
     }
 }

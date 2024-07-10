@@ -79,6 +79,7 @@ namespace SharedEFClasses.Models.TradeAccounts
         public decimal? SalesTY_CalendarYearToDate { get; set; }
         public decimal? GrowthTY_CalendarYearToDate { get; set; }
         public short? SalesRepresentativeID { get; set; }
+        public short? SalesAgentID { get; set; }
         public DateTime? SalesCurrLastUpdatedDT { get; set; }
         public decimal? SalesCurrLY_FullMonth { get; set; }
         public decimal? GrowthCurrLY_FullMonth { get; set; }
@@ -194,15 +195,27 @@ namespace SharedEFClasses.Models.TradeAccounts
 
         [ForeignKey("TradeAccountGroupID")]
         public virtual TradeAccountGroup TradeAccountGroup { get; set; }
+
         public virtual TradePriceList TradePriceList { get; set; }
+
         public virtual SalesRepresentative SalesRepresentative { get; set; }
+
+        public virtual SalesAgent SalesAgent { get; set; }
+
         public virtual Currency Currency { get; set; }
+
         public virtual TradeArea TradeArea { get; set; }
+
         public virtual Language Language { get; set; }
+
         public virtual TradeAccountType TradeAccountType { get; set; }
+
         public virtual Country Country { get; set; }
+
         public virtual TradeLanguage TradeLanguage { get; set; }
+
         public virtual PaymentTerms PaymentTerms { get; set; }
+
         public virtual SalesMarket SalesMarket { get; set; }
 
         [NotMapped]
