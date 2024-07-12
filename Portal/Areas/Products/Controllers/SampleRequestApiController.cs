@@ -15,6 +15,9 @@ using SharedEFClasses;
 using SharedEFClasses.Models.Samples;
 using SharedEFClasses.Models.Products;
 using System.Web;
+using System.Collections;
+using System.ComponentModel;
+using System.Dynamic;
 
 namespace Portal.Areas.Products.Controllers
 {
@@ -442,6 +445,22 @@ namespace Portal.Utilities
         public static string GetIPAddress()
         {
             return HttpContext.Current.Request.Headers["CF-Connecting-IP"] ?? HttpContext.Current.Request.UserHostAddress;
+        }
+
+        // Cheers, tweaked from https://sebnilsson.com/blog/convert-c-anonymous-or-any-types-into-dynamic-expandoobject/
+        public static ExpandoObject ToExpandoObject(this object obj)
+        {
+            IDictionary<string, object> expando = new ExpandoObject();
+
+            foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(obj.GetType()))
+            {
+                if (!property.PropertyType.FullName.Contains("Newtonsoft"))
+                {
+                    expando.Add(property.Name, property.GetValue(obj));
+                }
+            }
+
+            return (ExpandoObject)expando;
         }
     }
 }

@@ -623,6 +623,7 @@
     <Compile Include="Controllers\ODataControllers\ProductGroupsController.cs" />
     <Compile Include="Controllers\ODataControllers\OrdersController.cs" />
     <Compile Include="Controllers\ODataControllers\QualitiesController.cs" />
+    <Compile Include="Controllers\ODataControllers\SalesAreasController.cs" />
     <Compile Include="Controllers\ODataControllers\SalesAgentsController.cs" />
     <Compile Include="Controllers\ODataControllers\SalesRepresentativesController.cs" />
     <Compile Include="Controllers\ODataControllers\SalesMarketsController.cs" />

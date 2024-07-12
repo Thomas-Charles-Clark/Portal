@@ -48,7 +48,9 @@
     requestStart,
     requestEnd,
     skipCascade,
-    ignoreCase
+    ignoreCase,
+    minLength,
+    enforceMinLength
 } = {
         widget: ko.observable(),
         endPoint: null,
@@ -96,7 +98,9 @@
         requestStart: (e) => { },
         requestEnd: (e) => { },
         skipCascade: false,
-        ignoreCase: true
+        ignoreCase: true,
+        minLength: null,
+        enforceMinLength: false
     }) {
 
     if (endPoint == null && data == null) {
@@ -133,7 +137,7 @@
             serverSorting: true,
             serverGrouping: true,
             serverPaging: true,
-            pageSize: virtual ? pageSize ? pageSize : Math.floor((height / 34) * 4) : undefined,
+            pageSize: virtual ? pageSize ? pageSize : pageSize === 0 ? 0 : Math.floor((height / 34) * 4) : undefined,
             type: 'odata-v4',
             group: grouping,
             aggregate: aggregate,
@@ -316,6 +320,14 @@
     if (ignoreCase != null) {
         result.dropDownListSettings.ignoreCase = ignoreCase;
     } 
+
+    if (minLength != null) {
+        result.dropDownListSettings.minLength = minLength;
+    }
+
+    if (enforceMinLength != null) {
+        result.dropDownListSettings.enforceMinLength = enforceMinLength;
+    }
 
     return result;
 }

@@ -48,7 +48,14 @@ const orderBookDetailViewModel = (() => {
 
     self.params = window.getDetailParameters();
 
-    let params = window.getDetailParameters();
+    Object.keys(self.params).forEach(k => {
+        if (k != 'marketIds') {
+            let parsed = Number.parseInt(self.params[k]);
+            if (!isNaN(parsed)) {
+                self.params[k] = parsed;
+            }
+        }
+    });
 
     //#region Lifted Methods
 
@@ -168,9 +175,11 @@ const orderBookDetailViewModel = (() => {
         }
 
         if (udf && adv) {
-            console.log('primaryFetchParams computed');
+            let result = JSON.stringify(Object.assign(window.getDetailParameters(), udf, adv, { procedure: self.procedure }))
 
-            return JSON.stringify(Object.assign(window.getDetailParameters() , udf, adv, { procedure: self.procedure }));
+            console.log('primaryFetchParams computed', result);
+
+            return result;
         }
     }, self).extend({
         rateLimit: {

@@ -226,7 +226,14 @@ const orderBookDetailViewModel = (() => {
 
     self.params = window.getDetailParameters();
 
-    let params = window.getDetailParameters();
+    Object.keys(self.params).forEach(k => {
+        if (k != 'marketIds') {
+            let parsed = Number.parseInt(self.params[k]);
+            if (!isNaN(parsed)) {
+                self.params[k] = parsed;
+            }
+        }
+    });
 
     //#region Lifted Methods
 

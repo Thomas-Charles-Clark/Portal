@@ -130,8 +130,7 @@ const orderBookViewModel = (() => {
                     stockLocationGroupId: current.StockLocationGroupID,
                     stockLocationGroupName: current.StockLocationGroupName,
                     stockLocationGroupSortOrder: current.StockLocationGroupSortOrder,
-                    orderGroupId: current.OrderGroupID,
-                    potato: 'a'
+                    orderGroupId: current.OrderGroupID
                 })
             } else {
                 array.push({
@@ -139,13 +138,11 @@ const orderBookViewModel = (() => {
                     orderGroupName: current.OrderGroupName,
                     orderGroupSortOrder: current.OrderGroupSortOrder,
                     stockLocationGroupId: current.StockLocationGroupID,
-                    potato: 'b',
                     stockLocationGroups: [{
                         stockLocationGroupId: current.StockLocationGroupID,
                         stockLocationGroupName: current.StockLocationGroupName,
                         stockLocationGroupSortOrder: current.StockLocationGroupSortOrder,
-                        orderGroupId: current.OrderGroupID,
-                        potato: 'c'
+                        orderGroupId: current.OrderGroupID
                     }]
                 })
             }

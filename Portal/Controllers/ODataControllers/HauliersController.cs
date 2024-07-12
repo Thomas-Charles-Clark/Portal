@@ -39,15 +39,16 @@ namespace Portal.Controllers
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
         public IQueryable<Haulier> GetHauliers()
         {
-            return PortalDb.Hauliers.AsQueryable();
+            return PortalDb.Hauliers.Where(h => h.Visible).AsQueryable();
         }
 
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
         [HttpGet]
         public IQueryable<Haulier> HaulierValueMapper(string haulierCode)
         {
-            return PortalDb.Hauliers.Where(p =>
-                p.Code == haulierCode
+            return PortalDb.Hauliers.Where(h =>
+                h.Visible &&
+                h.Code == haulierCode
             ).AsQueryable();
         }
     }

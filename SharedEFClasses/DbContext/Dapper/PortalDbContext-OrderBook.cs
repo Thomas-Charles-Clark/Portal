@@ -207,7 +207,7 @@ namespace SharedEFClasses.Models
             };
         }
 
-        public async Task<OrderBook_DetailView_SelectResult> FetchOrderBookDetail(string procedureName,  ExpandoObject dto)
+        public async Task<OrderBook_DetailView_SelectResult> FetchOrderBookDetail(string procedureName, ExpandoObject dto)
         {
             var exclusions = new List<string>()
             {
@@ -218,9 +218,24 @@ namespace SharedEFClasses.Models
                 "title",
                 "View",
                 "view",
-                "filterable"
+                "filterable",
+                "marketIds"
             };
 
+            var marketIdsDataTable = new DataTable();
+
+            marketIdsDataTable.Columns.Add("ID", typeof(byte));
+
+            var marketIds = ((IDictionary<string, object>)dto)["marketIds"] as List<object>;
+
+            marketIds.ForEach(mid => 
+            {
+                if (Convert.ToByte(mid) != 0)
+                {
+                    marketIdsDataTable.Rows.Add(Convert.ToByte(mid));
+                }
+            });
+            
             var dynParams = new DynamicParameters();
 
             dto.ToList().ForEach(kvp =>
@@ -248,6 +263,11 @@ namespace SharedEFClasses.Models
                 }
             });
 
+            if (marketIdsDataTable.Rows.Count > 0)
+            {
+                dynParams.Add("@MarketIDs", marketIdsDataTable.AsTableValuedParameter("dbo.TinyIntList"));
+            }
+
             //var results = await this.Database.Connection.QueryAsync<string>("[portal].[OrderBook_DetailView_BackOrders]", dynParams, null, 30, CommandType.StoredProcedure);
 
             //var sb = new StringBuilder();
@@ -256,6 +276,8 @@ namespace SharedEFClasses.Models
             //{
             //    sb.Append(part);
             //}
+
+
 
             var reader = await this.Database.Connection.QueryMultipleAsync($"[portal].[OrderBook_DetailView_{procedureName}]", dynParams, null, 30, CommandType.StoredProcedure);
 

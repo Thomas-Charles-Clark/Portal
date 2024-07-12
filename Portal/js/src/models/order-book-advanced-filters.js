@@ -271,7 +271,7 @@ const orderBookAdvancedFiltersViewModel = ({
         height: 340,
         sort: {
             dir: 'asc',
-            field: 'OrderGroupID'
+            field: 'Name'
         },
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
@@ -298,7 +298,7 @@ const orderBookAdvancedFiltersViewModel = ({
         height: 340,
         sort: {
             dir: 'asc',
-            field: 'StockLocationOrderBookGroupID'
+            field: 'Name'
         },
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {

@@ -9,11 +9,13 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using Portal.Models;
+using Portal.Utilities;
 
 using SharedEFClasses;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Components;
 using SharedEFClasses.Models.OrderBook;
+using SharedEFClasses.Models.Products;
 
 using System;
 using System.Collections.Generic;
@@ -27,6 +29,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
+
+using Unity.Interception.Utilities;
 
 namespace Portal.Areas.Sales.Controllers
 {
@@ -100,7 +104,32 @@ namespace Portal.Areas.Sales.Controllers
                     return true;
                 };
 
+                //using (var fs = new System.IO.MemoryStream())
+                //{
+                //    using (var ts = new System.IO.MemoryStream(Framework.StringToByteArray(Framework.XlsxTemplateHex)))
+                //    {
+                //        using (var fastExcel = new FastExcel.FastExcel(ts, fs))
+                //        {
+                //            fastExcel.Write(
+                //                rows: ((JArray)detailResult.Data).ToArray<object>().Select(o => o.ToExpandoObject()),
+                //                sheetName: "Sheet1",
+                //                uppercaseHeadings: false,
+                //                autoWidthColumns: true,
+                //                headingStyleId: (byte?)15,
+                //                standardStyleId: (byte?)null,
+                //                indentedHeadingStyleId: (byte?)null,
+                //                indentedStyleId: (byte?)null);
+                //        }
+                //    }
+
+                //    bytes = fs.GetBuffer();// result.Content.ReadAsByteArrayAsync().Result;
+                //}
+
+#if DEBUG
+                var result = await client.PostAsync("https://localhost:44354/api/excel/GetFileStream", content);
+#else
                 var result = await client.PostAsync("https://excel.designersguild.com/api/excel/GetFileStream", content);
+#endif
 
                 if (result.StatusCode == System.Net.HttpStatusCode.OK)
                 {

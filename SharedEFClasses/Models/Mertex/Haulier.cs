@@ -19,6 +19,8 @@ namespace SharedEFClasses.Models.MertexLive
 
         public bool ExpectParcelData { get; set; }
 
+        public bool Visible { get; set; }
+
         [Column("CreatedDT")]
         public DateTime CreatedDT { get; set; }
 

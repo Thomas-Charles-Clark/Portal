@@ -65,7 +65,7 @@ const orderBookUserDefinedFiltersViewModel = ({
     self.salesMarket = ko.observable();
     self.salesMarketAwaitingBinding = ko.observable(params.marketId != null && params.marketId != '');
 
-    self.salesMarketIds = ko.observableArray(params.marketIds ?? []);
+    self.salesMarketIds = ko.observableArray(params.marketIds?.split(',').map(m => +m) ?? []);
     self.salesMarkets = ko.observableArray();
     self.salesMarketsAwaitingBinding = ko.observable(params.marketIds != null && params.marketIds.length > 0);
 
@@ -308,100 +308,100 @@ const orderBookUserDefinedFiltersViewModel = ({
 
     //#region Components
 
-    self.salesMarketParams = kendoMDCDropDownList({
-        skipCascade: true,
-        label: 'Market',
-        odata: true,
-        endPoint: () => {
-            let tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId(),
-                tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
-                tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId(),
-                salesRepresentativeId = self.salesRepresentativeId() == EMPTY_STRING ? 'null' : self.salesRepresentativeId(),
-                salesAgentId = self.salesAgentId() == EMPTY_STRING ? 'null' : self.salesAgentId();
+    //self.salesMarketParams = kendoMDCDropDownList({
+    //    skipCascade: true,
+    //    label: 'Market',
+    //    odata: true,
+    //    endPoint: () => {
+    //        let tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId(),
+    //            tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
+    //            tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId(),
+    //            salesRepresentativeId = self.salesRepresentativeId() == EMPTY_STRING ? 'null' : self.salesRepresentativeId(),
+    //            salesAgentId = self.salesAgentId() == EMPTY_STRING ? 'null' : self.salesAgentId();
 
-            //let computation = self.tradeAccountComputer();
+    //        //let computation = self.tradeAccountComputer();
 
-            return `/odata/SalesMarkets/Default.SalesMarketOrderBookFilter(tradeAccountId=${tradeAccountId},tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId},salesRepresentativeId=${salesRepresentativeId},salesAgentId=${salesAgentId})`;
-        },
-        textField: 'Name',
-        valueField: 'SalesMarketID',
-        virtual: true,
-        pageSize: 40,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                if (options.value) {
-                    $.ajax({
-                        url: `/odata/SalesMarkets/Default.SalesMarketValueMapper(salesMarketId=${options.value})`,
-                        type: 'GET',
-                        success: function (data) {
-                            options.success(data.value);
-                        }
-                    });
-                } else {
-                    options.success();
-                }
-            }
-        },
-        idObservable: self.salesMarketId,
-        objObservable: self.salesMarket,
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertible: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        autoBind: true,
-        height: 340,
-        sort: {
-            dir: 'asc',
-            field: 'SalesMarketID'
-        },
-        select: function (e) {
-            console.log('salesMarketParams select', e);
-            self.tradeAccountComputer.valueHasMutated();
-        },
-        requestStart: function (e) {
-            if (!self.cascadeEnabled)
-                e.preventDefault();
-        },
-        clearFunction: self.genericUnsavedChangesClear,
-        dataBound: (e) => self.salesMarketAwaitingBinding(false),
-        parameterMap: (data) => {
-            //Generate parameters in odata v4 format
-            if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "Label")) {
-                let f = data.filter.filters.find(f => f.field === "Label");
-                data.filter.filters = data.filter.filters.filter(f => f.field != "Label");
-                data.filter.logic = "or";
-                data.filter.filters = [{
-                    field: "Name",
-                    ignoreCase: true,
-                    operator: "startswith",
-                    value: f.value
-                }];
-            }
-            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+    //        return `/odata/SalesMarkets/Default.SalesMarketOrderBookFilter(tradeAccountId=${tradeAccountId},tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId},salesRepresentativeId=${salesRepresentativeId},salesAgentId=${salesAgentId})`;
+    //    },
+    //    textField: 'Name',
+    //    valueField: 'SalesMarketID',
+    //    virtual: true,
+    //    pageSize: 40,
+    //    virtualOptions: {
+    //        itemHeight: 34,
+    //        mapValueTo: 'dataItem',
+    //        valueMapper: function (options) {
+    //            if (options.value) {
+    //                $.ajax({
+    //                    url: `/odata/SalesMarkets/Default.SalesMarketValueMapper(salesMarketId=${options.value})`,
+    //                    type: 'GET',
+    //                    success: function (data) {
+    //                        options.success(data.value);
+    //                    }
+    //                });
+    //            } else {
+    //                options.success();
+    //            }
+    //        }
+    //    },
+    //    idObservable: self.salesMarketId,
+    //    objObservable: self.salesMarket,
+    //    enable: ko.observable(true),
+    //    disable: ko.observable(false),
+    //    clearable: ko.observable(true),
+    //    revertible: ko.observable(false),
+    //    readOnly: false,
+    //    filter: 'contains',
+    //    autoBind: true,
+    //    height: 340,
+    //    sort: {
+    //        dir: 'asc',
+    //        field: 'Name'
+    //    },
+    //    select: function (e) {
+    //        console.log('salesMarketParams select', e);
+    //        self.tradeAccountComputer.valueHasMutated();
+    //    },
+    //    requestStart: function (e) {
+    //        if (!self.cascadeEnabled)
+    //            e.preventDefault();
+    //    },
+    //    clearFunction: self.genericUnsavedChangesClear,
+    //    dataBound: (e) => self.salesMarketAwaitingBinding(false),
+    //    parameterMap: (data) => {
+    //        //Generate parameters in odata v4 format
+    //        if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "Label")) {
+    //            let f = data.filter.filters.find(f => f.field === "Label");
+    //            data.filter.filters = data.filter.filters.filter(f => f.field != "Label");
+    //            data.filter.logic = "or";
+    //            data.filter.filters = [{
+    //                field: "Name",
+    //                ignoreCase: true,
+    //                operator: "startswith",
+    //                value: f.value
+    //            }];
+    //        }
+    //        let d = kendo.data.transports['odata-v4'].parameterMap(data);
 
-            delete d.$inlinecount; // <-- remove inlinecount
-            delete d.$format; // <-- remove format
-            delete d.$callback; // <-- remove callback
+    //        delete d.$inlinecount; // <-- remove inlinecount
+    //        delete d.$format; // <-- remove format
+    //        delete d.$callback; // <-- remove callback
 
-            d.$count = true;
+    //        d.$count = true;
 
-            return d;
-        },
-        popupSettings: {
-            appendTo: document.getElementById('sales-market-prefilter')
-        }
-    });
+    //        return d;
+    //    },
+    //    popupSettings: {
+    //        appendTo: document.getElementById('sales-market-prefilter')
+    //    }
+    //});
 
     self.salesMarketsParams = {
         observable: self.salesMarkets,
         validate: self.salesMarketIds,
         showClear: true,
         width: 'auto',
-        label: 'Sales Markets',
+        label: 'Market(s)',
         valuePrimitive: false,
         useNativeValidation: false,
         decorateInputElement: false,
@@ -412,6 +412,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         multiSelectSettings: {
+            autoBind: true,
             value: self.salesMarketIds,
             dataItems: self.salesMarkets,
             dataValueField: 'SalesMarketID',
@@ -473,8 +474,8 @@ const orderBookUserDefinedFiltersViewModel = ({
                 },
                 sort: {
                     dir: 'asc',
-                    field: 'SalesMarketID'
-                }
+                    field: 'Name'
+                },
             }),
             popup: {
                 appendTo: document.getElementById('sales-markets-prefilter')
@@ -494,23 +495,23 @@ const orderBookUserDefinedFiltersViewModel = ({
         }
     };
 
-    self.tradeAccountParams = kendoMDCDropDownList({
+    self.salesRepresentativeParams = kendoMDCDropDownList({
         skipCascade: true,
-        label: 'Trade Account',
+        label: 'Representative',
         odata: true,
         endPoint: () => {
             let salesMarketIds = self.salesMarketIds(),
                 tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
                 tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId(),
-                salesRepresentativeId = self.salesRepresentativeId() == EMPTY_STRING ? 'null' : self.salesRepresentativeId(),
+                tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId(),
                 salesAgentId = self.salesAgentId() == EMPTY_STRING ? 'null' : self.salesAgentId();
 
             //let computation = self.tradeAccountComputer();
 
-            return `/odata/TradeAccounts/Default.TradeAccountOrderBookFilter(salesMarketIds=[${salesMarketIds}],tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId},salesRepresentativeId=${salesRepresentativeId},salesAgentId=${salesAgentId})?$expand=TradePriceList`;
+            return `/odata/SalesRepresentatives/Default.SalesRepresentativesOrderBookFilter(salesMarketIds=[${salesMarketIds}],tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId},tradeAccountId=${tradeAccountId},salesAgentId=${salesAgentId})`;
         },
-        textField: 'ShortLabel',
-        valueField: 'TradeAccountID',
+        textField: 'Name',
+        valueField: 'SalesRepresentativeID',
         virtual: true,
         pageSize: 40,
         virtualOptions: {
@@ -519,7 +520,7 @@ const orderBookUserDefinedFiltersViewModel = ({
             valueMapper: function (options) {
                 if (options.value) {
                     $.ajax({
-                        url: `/odata/TradeAccounts/Default.TradeAccountValueMapper(tradeAccountId=${options.value})?$expand=TradePriceList`,
+                        url: `/odata/SalesRepresentatives/Default.SalesRepresentativeValueMapper(salesRepresentativeId=${options.value})`,
                         type: 'GET',
                         success: function (data) {
                             options.success(data.value);
@@ -531,13 +532,13 @@ const orderBookUserDefinedFiltersViewModel = ({
             }
         },
         template: (e) => {
-            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+            return `<span title="${e.Name}">${e.Name}</span>`
         },
         valueTemplate: (e) => {
-            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+            return `<span title="${e.Name}">${e.Name}</span>`
         },
-        idObservable: self.tradeAccountId,
-        objObservable: self.tradeAccount,
+        idObservable: self.salesRepresentativeId,
+        objObservable: self.salesRepresentative,
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -547,20 +548,21 @@ const orderBookUserDefinedFiltersViewModel = ({
         autoBind: true,
         height: 340,
         sort: {
-            dir: 'desc',
-            field: 'TradeAccountID'
+            dir: 'asc',
+            field: 'Name'
         },
         select: function (e) {
-            console.log('tradeAccountParams select', e);
+            console.log('tradeAccountTypeParams select', e);
             self.tradeAccountComputer.valueHasMutated();
         },
         requestStart: function (e) {
             if (!self.cascadeEnabled)
                 e.preventDefault();
         },
-        dataBound: (e) => self.tradeAccountAwaitingBinding(false),
         clearFunction: self.genericUnsavedChangesClear,
+        dataBound: (e) => self.salesRepresentativeAwaitingBinding(false),
         parameterMap: (data) => {
+
             //Generate parameters in odata v4 format
             let d = kendo.data.transports['odata-v4'].parameterMap(data);
 
@@ -570,14 +572,103 @@ const orderBookUserDefinedFiltersViewModel = ({
 
             d.$count = true;
 
-            if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
-                d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
-            }
+            //if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
+            //    d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
+            //}
 
             return d;
         },
         popupSettings: {
-            appendTo: document.getElementById('trade-account-prefilter')
+            appendTo: document.getElementById('sales-representative-prefilter')
+        }
+    });
+
+
+    self.salesAgentParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Agent',
+        odata: true,
+        endPoint: () => {
+            let salesMarketIds = self.salesMarketIds(),
+                tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
+                tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId(),
+                tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId(),
+                salesRepresentativeId = self.salesRepresentativeId() == EMPTY_STRING ? 'null' : self.salesRepresentativeId();
+
+            //let computation = self.tradeAccountComputer();
+
+            return `/odata/SalesAgents/Default.SalesAgentsOrderBookFilter(salesMarketIds=[${salesMarketIds}],tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId},tradeAccountId=${tradeAccountId},salesRepresentativeId=${salesRepresentativeId})`;
+        },
+        textField: 'Name',
+        valueField: 'SalesAgentID',
+        virtual: true,
+        pageSize: 40,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/SalesAgents/Default.SalesAgentsValueMapper(salesAgentId=${options.value})`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        idObservable: self.salesAgentId,
+        objObservable: self.salesAgent,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'Name'
+        },
+        select: function (e) {
+            console.log('salesAgentParams select', e);
+            self.tradeAccountComputer.valueHasMutated();
+        },
+        requestStart: function (e) {
+            if (!self.cascadeEnabled)
+                e.preventDefault();
+        },
+        clearFunction: self.genericUnsavedChangesClear,
+        dataBound: (e) => self.salesAgentAwaitingBinding(false),
+        parameterMap: (data) => {
+
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            //if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
+            //    d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
+            //}
+
+            return d;
+        },
+        popupSettings: {
+            appendTo: document.getElementById('sales-agent-prefilter')
         }
     });
 
@@ -669,182 +760,6 @@ const orderBookUserDefinedFiltersViewModel = ({
         }
     });
 
-    self.salesRepresentativeParams = kendoMDCDropDownList({
-        skipCascade: true,
-        label: 'Sales Representative',
-        odata: true,
-        endPoint: () => {
-            let salesMarketIds = self.salesMarketIds(),
-                tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
-                tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId(),
-                tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId(),
-                salesAgentId = self.salesAgentId() == EMPTY_STRING ? 'null' : self.salesAgentId();
-
-            //let computation = self.tradeAccountComputer();
-
-            return `/odata/SalesRepresentatives/Default.SalesRepresentativesOrderBookFilter(salesMarketIds=[${salesMarketIds}],tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId},tradeAccountId=${tradeAccountId},salesAgentId=${salesAgentId})`;
-        },
-        textField: 'Name',
-        valueField: 'SalesRepresentativeID',
-        virtual: true,
-        pageSize: 40,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                if (options.value) {
-                    $.ajax({
-                        url: `/odata/SalesRepresentatives/Default.SalesRepresentativeValueMapper(salesRepresentativeId=${options.value})`,
-                        type: 'GET',
-                        success: function (data) {
-                            options.success(data.value);
-                        }
-                    });
-                } else {
-                    options.success();
-                }
-            }
-        },
-        template: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        valueTemplate: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        idObservable: self.salesRepresentativeId,
-        objObservable: self.salesRepresentative,
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertible: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        autoBind: true,
-        height: 340,
-        sort: {
-            dir: 'asc',
-            field: 'Name'
-        },
-        select: function (e) {
-            console.log('tradeAccountTypeParams select', e);
-            self.tradeAccountComputer.valueHasMutated();
-        },
-        requestStart: function (e) {
-            if (!self.cascadeEnabled)
-                e.preventDefault();
-        },
-        clearFunction: self.genericUnsavedChangesClear,
-        dataBound: (e) => self.salesRepresentativeAwaitingBinding(false),
-        parameterMap: (data) => {
-
-            //Generate parameters in odata v4 format
-            let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-            delete d.$inlinecount; // <-- remove inlinecount
-            delete d.$format; // <-- remove format
-            delete d.$callback; // <-- remove callback
-
-            d.$count = true;
-
-            //if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
-            //    d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
-            //}
-
-            return d;
-        },
-        popupSettings: {
-            appendTo: document.getElementById('sales-representative-prefilter')
-        }
-    });
-
-    self.salesAgentParams = kendoMDCDropDownList({
-        skipCascade: true,
-        label: 'Sales Agent',
-        odata: true,
-        endPoint: () => {
-            let salesMarketIds = self.salesMarketIds(),
-                tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
-                tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId(),
-                tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId(),
-                salesRepresentativeId = self.salesRepresentativeId() == EMPTY_STRING ? 'null' : self.salesRepresentativeId();
-
-            //let computation = self.tradeAccountComputer();
-
-            return `/odata/SalesAgents/Default.SalesAgentsOrderBookFilter(salesMarketIds=[${salesMarketIds}],tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId},tradeAccountId=${tradeAccountId},salesRepresentativeId=${salesRepresentativeId})`;
-        },
-        textField: 'Name',
-        valueField: 'SalesAgentID',
-        virtual: true,
-        pageSize: 40,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                if (options.value) {
-                    $.ajax({
-                        url: `/odata/SalesAgents/Default.SalesAgentsValueMapper(salesAgentId=${options.value})`,
-                        type: 'GET',
-                        success: function (data) {
-                            options.success(data.value);
-                        }
-                    });
-                } else {
-                    options.success();
-                }
-            }
-        },
-        template: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        valueTemplate: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        idObservable: self.salesAgentId,
-        objObservable: self.salesAgent,
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertible: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        autoBind: true,
-        height: 340,
-        sort: {
-            dir: 'asc',
-            field: 'Name'
-        },
-        select: function (e) {
-            console.log('salesAgentParams select', e);
-            self.tradeAccountComputer.valueHasMutated();
-        },
-        requestStart: function (e) {
-            if (!self.cascadeEnabled)
-                e.preventDefault();
-        },
-        clearFunction: self.genericUnsavedChangesClear,
-        dataBound: (e) => self.salesAgentAwaitingBinding(false),
-        parameterMap: (data) => {
-
-            //Generate parameters in odata v4 format
-            let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-            delete d.$inlinecount; // <-- remove inlinecount
-            delete d.$format; // <-- remove format
-            delete d.$callback; // <-- remove callback
-
-            d.$count = true;
-
-            //if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
-            //    d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
-            //}
-
-            return d;
-        },
-        popupSettings: {
-            appendTo: document.getElementById('sales-agent-prefilter')
-        }
-    });
-
     self.tradeAccountGroupParams = kendoMDCDropDownList({
         skipCascade: true,
         label: 'Trade Account Group',
@@ -898,8 +813,8 @@ const orderBookUserDefinedFiltersViewModel = ({
         autoBind: true,
         height: 340,
         sort: {
-            dir: 'desc',
-            field: 'TradeAccountGroupID'
+            dir: 'asc',
+            field: 'Name'
         },
         select: function (e) {
             console.log('tradeAccountGroup select', e);
@@ -929,6 +844,221 @@ const orderBookUserDefinedFiltersViewModel = ({
         },
         popupSettings: {
             appendTo: document.getElementById('trade-account-group-prefilter')
+        }
+    });
+
+    self.tradeAccountParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Trade Account',
+        odata: true,
+        endPoint: () => {
+            let salesMarketIds = self.salesMarketIds(),
+                tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
+                tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId(),
+                salesRepresentativeId = self.salesRepresentativeId() == EMPTY_STRING ? 'null' : self.salesRepresentativeId(),
+                salesAgentId = self.salesAgentId() == EMPTY_STRING ? 'null' : self.salesAgentId();
+
+            //let computation = self.tradeAccountComputer();
+
+            return `/odata/TradeAccounts/Default.TradeAccountOrderBookFilter(salesMarketIds=[${salesMarketIds}],tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId},salesRepresentativeId=${salesRepresentativeId},salesAgentId=${salesAgentId})?$expand=TradePriceList`;
+        },
+        textField: 'ShortLabel',
+        valueField: 'TradeAccountID',
+        virtual: true,
+        pageSize: 40,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/TradeAccounts/Default.TradeAccountValueMapper(tradeAccountId=${options.value})?$expand=TradePriceList`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        template: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        idObservable: self.tradeAccountId,
+        objObservable: self.tradeAccount,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: [{
+            dir: 'asc',
+            field: 'Code'
+        }, {
+            dir: 'asc',
+            field: 'Name'
+        }],
+        select: function (e) {
+            console.log('tradeAccountParams select', e);
+            self.tradeAccountComputer.valueHasMutated();
+        },
+        requestStart: function (e) {
+            if (!self.cascadeEnabled)
+                e.preventDefault();
+        },
+        dataBound: (e) => self.tradeAccountAwaitingBinding(false),
+        clearFunction: self.genericUnsavedChangesClear,
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
+                d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
+            }
+
+            return d;
+        },
+        popupSettings: {
+            appendTo: document.getElementById('trade-account-prefilter')
+        }
+    });
+
+    self.orderParams = kendoMDCDropDownList({
+        label: 'Order ID / Reference',
+        odata: true,
+        endPoint: `/odata/OrderBooksGrouped/Default.GetOrdersForOrderBookSummary`,
+        textField: 'ShortLabel',
+        valueField: 'OrderID',
+        virtual: true,
+        autoBind: false,
+        minLength: 1,
+        enforceMinLength: true,
+        pageSize: 0,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/OrderBooksGrouped/Default.OrderValueMapper(orderId='${options.value}')`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        template: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        idObservable: self.orderId,
+        objObservable: self.order,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'desc',
+            field: 'OrderID'
+        },
+        dataBound: (e) => self.orderAwaitingBinding(false),
+        clearFunction: self.genericUnsavedChangesClear,
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            if (data && data.filter && data.filter.filters && data.filter.filters.length) {
+                data.pageSize = 40;
+            } else {
+                data.pageSize = 0;
+            }
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
+                d.$filter = `${d.$filter.replace("ShortLabel", "CustomerOrderReference")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "OrderID")}`;
+            }
+
+            return d;
+        },
+        popupSettings: {
+            appendTo: document.getElementById('order-prefilter')
+        }
+    });
+
+    self.orderTakerParams = kendoMDCDropDownList({
+        label: 'Order Taker',
+        odata: true,
+        endPoint: '/odata/OrderTakers',
+        textField: 'ShortLabel',
+        valueField: 'Code',
+        virtual: false,
+        idObservable: self.orderTakerId,
+        objObservable: self.orderTaker,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        select: self.genericUnsavedChangesSelect,
+        dataBound: (e) => self.orderTakerAwaitingBinding(false),
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
+                d.$filter = `${d.$filter.replace("ShortLabel", "Code")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Name")}`;
+            }
+
+            return d;
+        },
+        sort: {
+            dir: 'asc',
+            field: 'Name'
         }
     });
 
@@ -1050,74 +1180,6 @@ const orderBookUserDefinedFiltersViewModel = ({
         decorateInputElement: true
     };
 
-    self.orderParams = kendoMDCDropDownList({
-        label: 'Order ID / Reference',
-        odata: true,
-        endPoint: `/odata/OrderBooksGrouped/Default.GetOrdersForOrderBookSummary`,
-        textField: 'ShortLabel',
-        valueField: 'OrderID',
-        virtual: true,
-        pageSize: 40,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                if (options.value) {
-                    $.ajax({
-                        url: `/odata/OrderBooksGrouped/Default.OrderValueMapper(orderId='${options.value}')`,
-                        type: 'GET',
-                        success: function (data) {
-                            options.success(data.value);
-                        }
-                    });
-                } else {
-                    options.success();
-                }
-            }
-        },
-        template: (e) => {
-            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
-        },
-        valueTemplate: (e) => {
-            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
-        },
-        idObservable: self.orderId,
-        objObservable: self.order,
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertible: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        autoBind: true,
-        height: 340,
-        sort: {
-            dir: 'desc',
-            field: 'OrderID'
-        },
-        dataBound: (e) => self.orderAwaitingBinding(false),
-        clearFunction: self.genericUnsavedChangesClear,
-        parameterMap: (data) => {
-            //Generate parameters in odata v4 format
-            let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-            delete d.$inlinecount; // <-- remove inlinecount
-            delete d.$format; // <-- remove format
-            delete d.$callback; // <-- remove callback
-
-            d.$count = true;
-
-            if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
-                d.$filter = `${d.$filter.replace("ShortLabel", "CustomerOrderReference")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "OrderID")}`;
-            }
-
-            return d;
-        },
-        popupSettings: {
-            appendTo: document.getElementById('order-prefilter')
-        }
-    });
-
     self.haulierParams = kendoMDCDropDownList({
         label: 'Haulier',
         odata: true,
@@ -1160,6 +1222,61 @@ const orderBookUserDefinedFiltersViewModel = ({
 
             return d;
         },
+        sort: {
+            dir: 'asc',
+            field: 'Name'
+        }
+    });
+
+    self.allocatedParams = kendoMDCDropDownList({
+        label: 'Allocated',
+        data: yesNoOptions,
+        textField: 'Name',
+        valueField: 'Value',
+        idObservable: self.allocatedId,
+        objObservable: self.allocated,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        popupSettings: {
+            appendTo: document.getElementById('allocated-prefilter')
+        }
+    });
+
+    self.transactionTypeParams = kendoMDCDropDownList({
+        label: 'Transaction Type',
+        odata: true,
+        endPoint: '/odata/transactionTypes',
+        textField: 'Name',
+        valueField: 'TransactionTypeID',
+        idObservable: self.transactionTypeId,
+        objObservable: self.transactionType,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'desc',
+            field: 'TransactionTypeID'
+        },
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear
     });
 
     self.deliveryTypeParams = kendoMDCDropDownList({
@@ -1209,88 +1326,6 @@ const orderBookUserDefinedFiltersViewModel = ({
             return d;
         },
     });
-
-    self.orderTakerParams = kendoMDCDropDownList({
-        label: 'Order Taker',
-        odata: true,
-        endPoint: '/odata/OrderTakers',
-        textField: 'ShortLabel',
-        valueField: 'Code',
-        virtual: false,
-        idObservable: self.orderTakerId,
-        objObservable: self.orderTaker,
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertible: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        autoBind: true,
-        height: 340,
-        select: self.genericUnsavedChangesSelect,
-        dataBound: (e) => self.orderTakerAwaitingBinding(false),
-        clearFunction: self.genericUnsavedChangesClear,
-        template: (e) => {
-            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
-        },
-        valueTemplate: (e) => {
-            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
-        },
-        parameterMap: (data) => {
-            //Generate parameters in odata v4 format
-            let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-            delete d.$inlinecount; // <-- remove inlinecount
-            delete d.$format; // <-- remove format
-            delete d.$callback; // <-- remove callback
-
-            d.$count = true;
-
-            if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
-                d.$filter = `${d.$filter.replace("ShortLabel", "Code")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Name")}`;
-            }
-
-            return d;
-        },
-    });
-
-    self.generateAfterClear = (defaultGroupBy) => {
-        return () => {
-            let filters = [];
-
-            if (defaultGroupBy.indexOf('BrandID') == -1) {
-                filters.push(self.brandParams.dropDownListSettings.widget());
-            }
-
-            if (defaultGroupBy.indexOf('SupplierCode') == -1) {
-                filters.push(self.supplierParams.dropDownListSettings.widget());
-            }
-
-            if (defaultGroupBy.indexOf('ProductGroupID') == -1) {
-                filters.push(self.productGroupParams.dropDownListSettings.widget());
-            }
-
-            if (defaultGroupBy.indexOf('ItemTypeID') == -1) {
-                filters.push(self.itemTypeParams.dropDownListSettings.widget());
-            }
-
-            if (defaultGroupBy.indexOf('CollectionID') == -1) {
-                filters.push(self.collectionParams.dropDownListSettings.widget());
-            }
-
-            if (defaultGroupBy.indexOf('LaunchID') == -1) {
-                filters.push(self.launchParams.dropDownListSettings.widget());
-            }
-
-            if (defaultGroupBy.indexOf('QualityID') == -1) {
-                filters.push(self.qualityParams.dropDownListSettings.widget());
-            }
-
-            filters.forEach(f => {
-                //f.dataSource.read();
-            })
-        }
-    }
 
     self.generateSuperSetParameterMap = (defaultODataOperation) => {
         return (data) => {
@@ -1403,12 +1438,6 @@ const orderBookUserDefinedFiltersViewModel = ({
                 filters.push(`ItemTypeID eq ${itemTypeId}`);
             }
 
-            //if (defaultOp.indexOf('CollectionID') == -1 && collectionId != '') {
-            //    if (defaultOp != 'PRODUCT') {
-            //        filters.push(`CollectionID eq ${collectionId}`);
-            //    }
-            //}
-
             if (collectionId != '') {
                 if (defaultOp != 'PRODUCT') {
                     filters.push(`CollectionID eq ${CollectionID}`);
@@ -1494,7 +1523,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         dataBound: (e) => self.productGroupAwaitingBinding(false),
         clearFunction: self.genericUnsavedChangesClear,
         parameterMap: self.generateSuperSetParameterMap(self.productGroupGroupBy),
-        afterClear: self.generateAfterClear(self.productGroupGroupBy),
+        //afterClear: self.generateAfterClear(self.productGroupGroupBy),
         popupSettings: {
             appendTo: document.getElementById('product-group-prefilter')
         }
@@ -1526,7 +1555,7 @@ const orderBookUserDefinedFiltersViewModel = ({
             self.itemTypeParams.enable(e.sender.dataSource.data().length != 0);
         },
         parameterMap: self.generateSuperSetParameterMap(self.itemTypeGroupBy),
-        afterClear: self.generateAfterClear(self.itemTypeGroupBy),
+        //afterClear: self.generateAfterClear(self.itemTypeGroupBy),
         popupSettings: {
             appendTo: document.getElementById('product-group-prefilter')
         }
@@ -1555,7 +1584,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         dataBound: (e) => self.brandAwaitingBinding(false),
         clearFunction: self.genericUnsavedChangesClear,
         parameterMap: self.generateSuperSetParameterMap(self.brandsGroupBy),
-        afterClear: self.generateAfterClear(self.brandsGroupBy)
+        //afterClear: self.generateAfterClear(self.brandsGroupBy)
     });
 
     self.collectionGroupBy = `groupby((Collection/CollectionID,Collection/Name,Collection/Code))/filter((Collection/CollectionID ne null))`;
@@ -1618,7 +1647,7 @@ const orderBookUserDefinedFiltersViewModel = ({
             appendTo: document.getElementById('collection-prefilter')
         },
         parameterMap: self.generateSuperSetParameterMap(self.collectionGroupBy),
-        afterClear: self.generateAfterClear(self.collectionGroupBy)
+        //afterClear: self.generateAfterClear(self.collectionGroupBy)
     });
 
     self.launchesGroupBy = `groupby((Launch/LaunchID,Launch/Name))/filter((Launch/LaunchID ne null))`;
@@ -1668,7 +1697,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         dataBound: (e) => self.launchAwaitingBinding(false),
         clearFunction: self.genericUnsavedChangesClear,
         parameterMap: self.generateSuperSetParameterMap(self.launchesGroupBy),
-        afterClear: self.generateAfterClear(self.launchesGroupBy)
+        //afterClear: self.generateAfterClear(self.launchesGroupBy)
     });
 
     self.qualityGroupBy = `groupby((Quality/QualityID,Quality/Code,Quality/Name))/filter((Quality/QualityID ne null))`;
@@ -1682,7 +1711,7 @@ const orderBookUserDefinedFiltersViewModel = ({
     }
 
     self.qualityParams = kendoMDCDropDownList({
-        label: 'Design',
+        label: 'Quality',
         odata: true,
         endPoint: '/odata/MertexProductClassificationSuperSet',
         textField: 'Quality.Name',
@@ -1731,7 +1760,7 @@ const orderBookUserDefinedFiltersViewModel = ({
             appendTo: document.getElementById('quality-prefilter')
         },
         parameterMap: self.generateSuperSetParameterMap(self.qualityGroupBy),
-        afterClear: self.generateAfterClear(self.qualityGroupBy)
+        //afterClear: self.generateAfterClear(self.qualityGroupBy)
     });
 
 
@@ -1796,7 +1825,7 @@ const orderBookUserDefinedFiltersViewModel = ({
             appendTo: document.getElementById('supplier-prefilter')
         },
         parameterMap: self.generateSuperSetParameterMap(self.supplierGroupBy),
-        afterClear: self.generateAfterClear(self.supplierGroupBy)
+        //afterClear: self.generateAfterClear(self.supplierGroupBy)
     });
 
     self.productDefault = 'PRODUCT';
@@ -1856,61 +1885,6 @@ const orderBookUserDefinedFiltersViewModel = ({
             appendTo: document.getElementById('product-prefilter')
         },
         parameterMap: self.generateSuperSetParameterMap(self.productDefault)
-        //    (data) => {
-        //    //Generate parameters in odata v4 format
-        //    if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "ShortLabel")) {
-        //        let f = data.filter.filters.find(f => f.field === "ShortLabel");
-        //        data.filter.filters = data.filter.filters.filter(f => f.field != "ShortLabel");
-        //        data.filter.logic = "or";
-        //        data.filter.filters = [{
-        //            field: "Name",
-        //            ignoreCase: true,
-        //            operator: "contains",
-        //            value: f.value
-        //        }, {
-        //            field: "Code",
-        //            ignoreCase: true,
-        //            operator: "startswith",
-        //            value: f.value
-        //        }];
-        //    }
-        //    let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-        //    delete d.$inlinecount; // <-- remove inlinecount
-        //    delete d.$format; // <-- remove format
-        //    delete d.$callback; // <-- remove callback
-
-        //    d.$count = true;
-
-        //    return d;
-        //}
-    });
-
-    self.allocatedParams = kendoMDCDropDownList({
-        label: 'Allocated',
-        data: yesNoOptions,
-        textField: 'Name',
-        valueField: 'Value',
-        idObservable: self.allocatedId,
-        objObservable: self.allocated,
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertible: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        autoBind: true,
-        height: 340,
-        clearFunction: self.genericUnsavedChangesClear,
-        template: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        valueTemplate: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        popupSettings: {
-            appendTo: document.getElementById('allocated-prefilter')
-        }
     });
 
     self.dataSourceParams = kendoMDCDropDownList({
@@ -1955,34 +1929,21 @@ const orderBookUserDefinedFiltersViewModel = ({
         }
     });
 
-    self.transactionTypeParams = kendoMDCDropDownList({
-        label: 'Transaction Type',
-        odata: true,
-        endPoint: '/odata/transactionTypes',
-        textField: 'Name',
-        valueField: 'TransactionTypeID',
-        idObservable: self.transactionTypeId,
-        objObservable: self.transactionType,
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertible: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        autoBind: true,
-        height: 340,
-        sort: {
-            dir: 'desc',
-            field: 'TransactionTypeID'
-        },
-        select: self.genericUnsavedChangesSelect,
-        clearFunction: self.genericUnsavedChangesClear
-    });
-
     //#endregion
 
 
     //#region Subscriptions
+
+    self.salesMarketsParams.multiSelectSettings.widget.subscribe(nv => {
+        if (self.salesMarketIds()) {
+            window.setTimeout(() => {
+                self.salesMarketsParams.multiSelectSettings.widget().value(self.salesMarketIds());
+                window.setTimeout(() => {
+                    self.salesMarketsParams.multiSelectSettings.widget().trigger('change');
+                }, 10);
+            }, 0);
+        }
+    });
 
     self.productGroupId.subscribe(nv => {
         console.log('productGroupId subscribe hit', nv);
@@ -2194,7 +2155,7 @@ const orderBookUserDefinedFiltersViewModel = ({
                 transactionTypeId: self.transactionTypeId() || null
             };
 
-            //console.log("userDefinedFilters.json returning", result);
+            console.log("userDefinedFilters.json returning", result);
 
             return JSON.stringify(result);
         } else {
@@ -2219,3 +2180,41 @@ const orderBookUserDefinedFiltersViewModel = ({
 
     return self;
 };
+
+//self.generateAfterClear = (defaultGroupBy) => {
+//    return () => {
+//        let filters = [];
+
+//        if (defaultGroupBy.indexOf('BrandID') == -1) {
+//            filters.push(self.brandParams.dropDownListSettings.widget());
+//        }
+
+//        if (defaultGroupBy.indexOf('SupplierCode') == -1) {
+//            filters.push(self.supplierParams.dropDownListSettings.widget());
+//        }
+
+//        if (defaultGroupBy.indexOf('ProductGroupID') == -1) {
+//            filters.push(self.productGroupParams.dropDownListSettings.widget());
+//        }
+
+//        if (defaultGroupBy.indexOf('ItemTypeID') == -1) {
+//            filters.push(self.itemTypeParams.dropDownListSettings.widget());
+//        }
+
+//        if (defaultGroupBy.indexOf('CollectionID') == -1) {
+//            filters.push(self.collectionParams.dropDownListSettings.widget());
+//        }
+
+//        if (defaultGroupBy.indexOf('LaunchID') == -1) {
+//            filters.push(self.launchParams.dropDownListSettings.widget());
+//        }
+
+//        if (defaultGroupBy.indexOf('QualityID') == -1) {
+//            filters.push(self.qualityParams.dropDownListSettings.widget());
+//        }
+
+//        filters.forEach(f => {
+//            //f.dataSource.read();
+//        })
+//    }
+//}
