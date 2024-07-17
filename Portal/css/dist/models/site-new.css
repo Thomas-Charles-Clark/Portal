@@ -184,7 +184,8 @@ textarea.mdc-text-field__input {
   display: flex;
 }
 .mdc-validating-field .controls .close.revert,
-.mdc-validating-field .controls .close.clear {
+.mdc-validating-field .controls .close.clear,
+.mdc-validating-field .controls .close.select-all {
   padding: 0 0.5rem;
   display: inline;
   position: static;

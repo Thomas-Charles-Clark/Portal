@@ -613,6 +613,7 @@
     <Compile Include="Controllers\ODataControllers\AttributesController.cs" />
     <Compile Include="Controllers\ODataControllers\AttributeGroupsController.cs" />
     <Compile Include="Controllers\ODataControllers\DeliveryTypesController.cs" />
+    <Compile Include="Controllers\ODataControllers\MertexTradeAccountClassificationSuperSetController.cs" />
     <Compile Include="Controllers\ODataControllers\OrderTakersController.cs" />
     <Compile Include="Controllers\ODataControllers\HauliersController.cs" />
     <Compile Include="Controllers\ODataControllers\ItemTypesController.cs" />
@@ -620,8 +621,11 @@
     <Compile Include="Controllers\ODataControllers\OrderLineDetailedStatusGroupsController.cs" />
     <Compile Include="Controllers\ODataControllers\OrderBooksGroupedController.cs" />
     <Compile Include="Controllers\ODataControllers\MertexProductClassificationSuperSetController.cs" />
+    <Compile Include="Controllers\ODataControllers\PaymentTermsTypeController.cs" />
+    <Compile Include="Controllers\ODataControllers\PaymentTermsController.cs" />
     <Compile Include="Controllers\ODataControllers\ProductGroupsController.cs" />
     <Compile Include="Controllers\ODataControllers\OrdersController.cs" />
+    <Compile Include="Controllers\ODataControllers\DesignsController.cs" />
     <Compile Include="Controllers\ODataControllers\QualitiesController.cs" />
     <Compile Include="Controllers\ODataControllers\SalesAreasController.cs" />
     <Compile Include="Controllers\ODataControllers\SalesAgentsController.cs" />

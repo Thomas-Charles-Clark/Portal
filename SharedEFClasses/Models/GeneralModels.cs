@@ -520,6 +520,10 @@ namespace SharedEFClasses.Models.General
                 return Continent?.Name;
             }
         }
+
+        [JsonIgnore]
+        [InverseProperty("Country")]
+        public virtual ICollection<MertexTradeAccountClassificationSuperSet> MertexTradeAccountClassificationSuperSetRecords { get; set; }
     }
 
     [Table("Continent", Schema = "dbo")]
@@ -759,6 +763,10 @@ namespace SharedEFClasses.Models.General
                 return $"{Name} - {Code}";
             }
         }
+
+        [JsonIgnore]
+        [InverseProperty("SalesRepresentative")]
+        public virtual ICollection<MertexTradeAccountClassificationSuperSet> MertexTradeAccountClassificationSuperSetRecords { get; set; }
     }
 
     public class SalesRepresentative_SalesMarket
@@ -839,6 +847,10 @@ namespace SharedEFClasses.Models.General
                 return $"{Name} - {Code}";
             }
         }
+
+        [JsonIgnore]
+        [InverseProperty("SalesAgent")]
+        public virtual ICollection<MertexTradeAccountClassificationSuperSet> MertexTradeAccountClassificationSuperSetRecords { get; set; }
     }
 
     public class SalesArea
@@ -852,46 +864,13 @@ namespace SharedEFClasses.Models.General
 
         [JsonIgnore]
         public ICollection<Lead> Leads { get; internal set; }
-        [JsonIgnore]
-        public virtual SalesMarket SalesMarket { get; set; }
-    }
-
-    public class PaymentTerms
-    {
-        [Key]
-        public byte PaymentTermsID { get; set; }
-        public string Code { get; set; }
-        public string Name { get; set; }
-        public string Terms { get; set; }
-        public bool Visible { get; set; }
-        public byte? SalesMarketID { get; set; }
-        public bool RequirePaymentDetails { get; set; }
-
-        [JsonIgnore]
-        public virtual ICollection<Basket> Baskets { get; set; }
 
         [JsonIgnore]
         public virtual SalesMarket SalesMarket { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<Lead> GrantedToLeads { get; set; }
-
-        [JsonIgnore]
-        [InverseProperty("PaymentTerms")]
-        public virtual ICollection<TradeAccount> GrantedToTradeAccounts { get; set; }
-
-        [NotMapped]
-        public string Label
-        {
-            set
-            {
-
-            }
-            get
-            {
-                return $"({Code}) {Name}";
-            }
-        }
+        [InverseProperty("SalesArea")]
+        public virtual ICollection<MertexTradeAccountClassificationSuperSet> MertexTradeAccountClassificationSuperSetRecords { get; set; }
     }
 
     public class PricingQueryFilter

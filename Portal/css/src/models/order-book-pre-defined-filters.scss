@@ -73,6 +73,7 @@
 }
 
 #pre-defined-filters-tab-container {
+    margin-bottom: $l-gutter;
 
     .tab-content {
         padding: $l-gutter;
@@ -80,7 +81,6 @@
         border-top: 0;
         border-bottom-left-radius: $border-radius;
         border-bottom-right-radius: $border-radius;
-        margin-bottom: $l-gutter;
         background-color: $white;
 
         .pre-defined-filter-summaries {

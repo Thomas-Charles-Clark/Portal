@@ -26,4 +26,35 @@ namespace SharedEFClasses.Models
         [InverseProperty("DefaultSupplier")]
         public virtual ICollection<Product> DefaultSupplierForProducts { get; set; }
     }
+
+    public class SupplierSelectResult
+    {
+
+        [Key]
+        public int SupplierID { get; set; }
+
+        public string Code { get; set; }
+
+        public string Name { get; set; }
+
+        public string AddressLine1 { get; set; }
+
+        public string AddressLine2 { get; set; }
+
+        public string Town { get; set; }
+        
+        public string County { get; set; }
+
+        public string Postcode { get; set; }
+
+        public string CountryCode { get; set; }
+
+        public short CountryID { get; set; }
+
+        public string CountryName { get; set; }
+
+        public string PhoneNumber { get; set; }
+
+        public string Email { get; set; }
+    }
 }

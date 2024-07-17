@@ -7,12 +7,16 @@
 
 const detailColumn = ({
     propertyName,
+    width,
     dataSet
 } = {
     propertyName: "MarketCode",
+    width: 240,
     dataSet: []
 }) => {
     let self = {};
+
+    self.width = width;
 
     self.columnName = propertyName;
 
@@ -22,6 +26,8 @@ const detailColumn = ({
 
     self.isNaN = self.columnName.indexOf("Number") > -1 ||
         self.columnName.indexOf("ID") > -1 ||
+        self.columnName.indexOf("Date") > -1 ||
+        self.columnName.indexOf("LineStatus") > -1 ||
         dataSet.find(ds => isNaN(ds[self.columnName]));
 
     if (self.isNaN) {
@@ -48,8 +54,10 @@ const orderBookDetailViewModel = (() => {
 
     self.params = window.getDetailParameters();
 
+    let parseExclusions = ['marketIds', 'startDate', 'endDate'];
+
     Object.keys(self.params).forEach(k => {
-        if (k != 'marketIds') {
+        if (parseExclusions.indexOf(k) === -1) {
             let parsed = Number.parseInt(self.params[k]);
             if (!isNaN(parsed)) {
                 self.params[k] = parsed;
@@ -65,7 +73,16 @@ const orderBookDetailViewModel = (() => {
             propertyName: parameterName,
             sortingFunction: (a, b) => {
                 if (isNaN(+a[parameterName])) {
-                    return a[parameterName] === b[parameterName] ? 0 : a[parameterName] > b[parameterName] ? 1 : -1;
+                    if (isNaN(Date.parse(`${a[parameterName].split('/').reverse().join('-')}T00:00:00.000Z`))) {
+                        return a[parameterName] === b[parameterName] ? 0 : a[parameterName] > b[parameterName] ? 1 : -1;
+                    } else {
+                        let aDate = Date.parse(`${a[parameterName].split('/').reverse().join('-')}T00:00:00.000Z`);
+                        let bDate = Date.parse(`${b[parameterName].split('/').reverse().join('-')}T00:00:00.000Z`);
+
+                        //console.log('performing date sort ascending');
+                        
+                        return aDate === bDate ? 0 : aDate > bDate ? 1 : -1;
+                    }
                 } else {
                     return +a[parameterName] === +b[parameterName] ? 0 : +a[parameterName] > +b[parameterName] ? 1 : -1;
                 }
@@ -79,7 +96,16 @@ const orderBookDetailViewModel = (() => {
             propertyName: parameterName,
             sortingFunction: (a, b) => {
                 if (isNaN(+a[parameterName])) {
-                    return a[parameterName] === b[parameterName] ? 0 : a[parameterName] < b[parameterName] ? 1 : -1;
+                    if (isNaN(Date.parse(`${a[parameterName].split('/').reverse().join('-')}T00:00:00.000Z`))) {
+                        return a[parameterName] === b[parameterName] ? 0 : a[parameterName] < b[parameterName] ? 1 : -1;
+                    } else {
+                        let aDate = Date.parse(`${a[parameterName].split('/').reverse().join('-')}T00:00:00.000Z`);
+                        let bDate = Date.parse(`${b[parameterName].split('/').reverse().join('-')}T00:00:00.000Z`);
+
+                        //console.log('performing date sort descending');
+
+                        return aDate === bDate ? 0 : aDate < bDate ? 1 : -1;
+                    }
                 } else {
                     return +a[parameterName] === +b[parameterName] ? 0 : +a[parameterName] < +b[parameterName] ? 1 : -1;
                 }
@@ -208,6 +234,7 @@ const orderBookDetailViewModel = (() => {
         },
         primaryFetchAfterFn: (results) => {
             let rec = results.Data[0];
+            let cols = results.Columns;
             self.accurateAsOfDateTime(results.AccurateAsOfDT);
             let columns = [];
 
@@ -226,8 +253,13 @@ const orderBookDetailViewModel = (() => {
                 self.allSortingOperations(sortFunctions.flat());
 
                 columns = columnNames.map(cn => {
+                    let specifiedColumn = cols.find(c => c.Name == cn);
+                    if (specifiedColumn == null) {
+                        specifiedColumn = cols.find(c => c.Name == "Default");
+                    }
                     return detailColumn({
                         propertyName: cn,
+                        width: specifiedColumn.Width,
                         dataSet: results.Data
                     })
                 });
@@ -396,6 +428,10 @@ const orderBookDetailViewModel = (() => {
             self.activeSortingOperation(undefined);
     }
 
+    self.toggleFilters = () => {
+        self.userDefinedFilters.togglePinning();
+    }
+
     //#endregion
 
 
@@ -409,6 +445,9 @@ const orderBookDetailViewModel = (() => {
                     break;
                 case "copyLink":
                     self.copyLink();
+                    break;
+                case "toggleFilters":
+                    self.toggleFilters();
                     break;
                 default: break;
 

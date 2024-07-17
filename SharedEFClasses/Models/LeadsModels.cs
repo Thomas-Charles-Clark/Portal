@@ -437,6 +437,10 @@ namespace SharedEFClasses.Models.Leads
                 return $"{Name} - {Code}";
             }
         }
+
+        [JsonIgnore]
+        [InverseProperty("SalesMarket")]
+        public virtual ICollection<MertexTradeAccountClassificationSuperSet> MertexTradeAccountClassificationSuperSetRecords { get; set; }
     }
 
     public class LeadType

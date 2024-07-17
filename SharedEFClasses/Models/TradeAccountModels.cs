@@ -111,6 +111,7 @@ namespace SharedEFClasses.Models.TradeAccounts
         public int? MarketRank { get; set; }
         public int? MarketAccounts { get; set; }
         public byte? SalesMarketID { get; set; }
+        public short? SalesAreaID { get; set; }
         public int? GlobalRank { get; set; }
         public int? GlobalAccounts { get; set; }
         public string Website { get; set; }
@@ -475,6 +476,10 @@ namespace SharedEFClasses.Models.TradeAccounts
         [JsonIgnore]
         [InverseProperty("TradeAccountGroup")]
         public virtual ICollection<RingFencePreAllocation> RingFencePreAllocations { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("TradeAccountGroup")]
+        public virtual ICollection<MertexTradeAccountClassificationSuperSet> MertexTradeAccountClassificationSuperSetRecords { get; set; }
     }
 
     public class TradeAccountVisit
@@ -572,6 +577,10 @@ namespace SharedEFClasses.Models.TradeAccounts
 
         [JsonIgnore]
         public virtual ICollection<TradeAccount> TradeAccounts { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("TradeAccountType")]
+        public virtual ICollection<MertexTradeAccountClassificationSuperSet> MertexTradeAccountClassificationSuperSetRecords { get; set; }
     }
 
     public class TradeArea

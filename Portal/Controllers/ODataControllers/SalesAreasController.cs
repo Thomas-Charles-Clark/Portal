@@ -59,7 +59,8 @@ namespace Portal.Controllers
             int? tradeAccountId = null,
             short? tradeAccountTypeId = null,
             int? tradeAccountGroupId = null,
-            short? salesRepresentativeId = null)
+            short? salesRepresentativeId = null,
+            short? salesAgentId = null)
         {
             salesMarketIds = salesMarketIds ?? new List<byte>();
 

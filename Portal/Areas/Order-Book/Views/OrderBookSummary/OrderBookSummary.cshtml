@@ -48,7 +48,43 @@
         </h2>
     </div>
 }
-
+@section beforeContainer {
+    <div id="accuracy-collapse" class="collapse">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex gap-5 justify-content-center align-items-center">
+                    <div data-bind="html: accuracyMessage"></div>
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-light" data-bind="click: accuracyRefresh">
+                            Refresh
+                            <i class="material-icons">
+                                refresh
+                            </i>
+                        </button>
+                        <button class="btn btn-default-outline" data-bind="click: accuracyPleaseStopRemindingMe">
+                            Don't prompt me again for 24 hours
+                            <i class="material-icons">
+                                block
+                            </i>
+                        </button>
+                        <button class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#accuracy-collapse">
+                            Not Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="accuracy-error-collapse" class="collapse" tabindex="-1">
+        <div class="card">
+            <div class="card-body">
+                <p class="mb-0">
+                    More recent data should be available by now but doesn't appear to be. Please contact <a href='mailto:itsupport@designersguild.com'>itsupport@designersguild.com</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+}
 <div class="blocker" style="display: flex; opacity: 1" data-bind="flexFadeVisible: busy">
     <div class="loading-spinner"></div>
     <h4 class="mt-3">
@@ -77,7 +113,7 @@
     </main>*@
 
 <div id="main-summary-container" class="d-flex align-items-start w-100" style="opacity: 0" data-bind="flexFadeVisible: true">
-    <sidebar id="filters-sidebar" class="collapse collapse-horizontal show sidebar sticky-top pinned">
+    <sidebar id="filters-sidebar" class="collapse collapse-horizontal sidebar sticky-top"> @* show pinned *@
         <div class="sidebar-inner">
             <div class="sidebar-header" data-bind="click: userDefinedFilters.togglePinning">
                 <button type="button"
@@ -92,10 +128,55 @@
         </div>
     </sidebar>
     <main id="order-book-main">
-        @Html.Partial("_DateFilters")
-        @Html.Partial("_PreDefinedFilters")
+        <div class="accordion" id="header-accordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="header-accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#header-accordion-one" aria-expanded="true" aria-controls="header-accordion-one">
+                        Headlines
+                    </button>
+                </h2>
+                <div id="header-accordion-one" class="accordion-collapse collapse show" aria-labelledby="header-accordion-header" data-bs-parent="#header-accordion">
+                    <div class="accordion-body">
+                        @Html.Partial("_DateFilters")
+                        @Html.Partial("_PreDefinedFilters")
+                    </div>
+                </div>
+            </div>
+        </div>
         @Html.Partial("_MainGrid")
     </main>
+</div>
+
+<div class="modal fade" tabindex="-1" id="data-accuracy-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    Data Accuracy
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" data-bind="html: accuracyMessage">
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button class="btn btn-secondary" data-bind="click: accuracyRefresh">
+                    Refresh
+                    <i class="material-icons">
+                        refresh
+                    </i>
+                </button>
+                <button class="btn btn-warning" data-bind="click: accuracyPleaseStopRemindingMe">
+                    No, Please Stop Reminding Me
+                    <i class="material-icons">
+                        block
+                    </i>
+                </button>
+                <button class="btn btn-secondary" data-bs-dismiss="modal">
+                    Not Now
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div id="order-book-detail-modal" class="modal fade">
@@ -108,6 +189,10 @@
                     </span>
                 </h5>
                 <div class="d-flex gap-5">
+                    <button id="filter-top-btn" class="btn btn-light btn-export" data-bind="click: toggleFilters">
+                        Filters
+                        <i class="bi bi-filter"></i>
+                    </button>
                     <button id="copy-to-clipboard-btn" class="btn btn-light btn-export" data-bind="click: copyLink" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Copied to Clipboard" data-bs-trigger="manual">
                         Copy Link to Clipboard
                         <i class="bi bi-copy"></i>

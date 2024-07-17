@@ -30,6 +30,8 @@ namespace SharedEFClasses.Models
 
         public short? QualityID { get; set; }
 
+        public int? DesignID { get; set; }
+
         public string SupplierCode { get; set; }
 
         [ForeignKey("BrandID")]
@@ -49,6 +51,9 @@ namespace SharedEFClasses.Models
 
         [ForeignKey("QualityID")]
         public virtual Quality Quality { get; set; }
+
+        [ForeignKey("DesignID")]
+        public virtual Design Design { get; set; }
 
         [ForeignKey("SupplierCode")]
         public virtual MertexLive.SupplierLive Supplier { get; set; }

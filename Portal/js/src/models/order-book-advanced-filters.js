@@ -43,7 +43,7 @@ const orderBookAdvancedFiltersViewModel = ({
 
     self.stockLocationGroupId = ko.observable(params.stockLocationGroupId ?? '');
     self.stockLocationGroup = ko.observable();
-    self.stockLocationGroupAwaitingBinding = ko.observable(params.stockLocationGroupId != null && params.stockLocationGroupId != '');
+    self.stockLocationGroupAwaitingBinding = ko.observable(params.stockLocationGroupId != null && params.stockLocationGroupId !== '');
 
     // THIS is the one, get rid of
     // and orderLineDetailedStatusId will be named orderStatusId 
@@ -839,11 +839,11 @@ const orderBookAdvancedFiltersViewModel = ({
     self.json = ko.computed(() => {
         if (self.allBound()) {
             let result = {
-                productStatus: self.productStatusId() || null,
-                orderGroupId: self.orderGroupId() || null,
-                stockLocationGroupId: self.stockLocationGroupId() || null,
-                orderStatusId: self.orderStatusId() || null,
-                orderStatusGroupId: self.orderStatusGroupId() || null,
+                productStatus: self.productStatusId() === '' ? null : self.productStatusId(),
+                orderGroupId: self.orderGroupId() === '' ? null : self.orderGroupId(),
+                stockLocationGroupId: self.stockLocationGroupId() === '' ? null : self.stockLocationGroupId(),
+                orderStatusId: self.orderStatusId() === '' ? null : self.orderStatusId(),
+                orderStatusGroupId: self.orderStatusGroupId() === '' ? null : self.orderStatusGroupId(),
                 hasLinkedPO: self.hasLinkedPOId() === '' ? null : self.hasLinkedPOId(),
                 linkedPODelayed: self.linkedPODelayedId() === '' ? null : self.linkedPODelayedId(),
                 couldBeFulfilledFromFreeStock: self.couldBeFulfilledFromFreeStockId() === '' ? null : self.couldBeFulfilledFromFreeStockId(),

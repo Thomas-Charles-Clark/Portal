@@ -80,9 +80,38 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
   overflow-y: auto;
 }
 
+#header-accordion {
+  border: none;
+}
+#header-accordion .accordion-item {
+  background-color: transparent;
+  border: none;
+}
+#header-accordion .accordion-item .accordion-header {
+  border-radius: 0;
+  margin-bottom: 1rem;
+}
+#header-accordion .accordion-item .accordion-header .accordion-button {
+  border-radius: 0;
+  font-size: 1.25rem;
+  background-color: #084298;
+  color: #fff;
+}
+#header-accordion .accordion-item .accordion-header .accordion-button::after {
+  color: #fff;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+#header-accordion .accordion-item .accordion-header .accordion-button a {
+  color: #fff;
+}
+#header-accordion .accordion-item .accordion-body {
+  background-color: transparent;
+  padding: 0;
+}
+
 /* If we can somehow identify which column indices form the boundaries between order groups ... */
 #main-grid-container-wrapper {
-  flex: 1;
+  flex: 0 0 auto;
   overflow-x: scroll;
 }
 #main-grid-container-wrapper #main-grid-container {
@@ -94,8 +123,13 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
 
 .main-grid {
   display: grid;
-  grid-template-columns: 240px repeat(calc(var(--grid-column-count) - 1), minmax(94px, 1fr));
+  grid-template-columns: 240px repeat(calc(var(--grid-column-count) - 1), 110px);
   grid-row-gap: 1px;
+}
+.main-grid .column-headings {
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 .main-grid .main-cell {
   text-align: right;
@@ -113,7 +147,7 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
 .main-grid .main-grid {
   border: 0;
   grid-row-gap: 0;
-  background-color: #e9ecef;
+  background-color: #f3f1ed;
 }
 .main-grid + .main-grid {
   margin-top: 1rem;
@@ -260,6 +294,9 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
 #order-book-detail-modal .modal-content .modal-header .btn-export {
   display: flex;
   gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 }
 #order-book-detail-modal .modal-content .modal-body {
   padding: 0;
@@ -312,5 +349,49 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
   background: #084298;
   color: #fff;
   border-radius: 0.375rem;
+}
+
+#accuracy-collapse,
+#accuracy-error-collapse {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  width: 100%;
+}
+#accuracy-collapse .card,
+#accuracy-error-collapse .card {
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+  background-color: #2155a2;
+}
+#accuracy-collapse .card .card-body p,
+#accuracy-error-collapse .card .card-body p {
+  margin-bottom: 0.5rem;
+  color: white;
+}
+
+#accuracy-error-collapse {
+  position: sticky;
+  top: 0;
+  z-index: 300;
+  width: 100%;
+}
+#accuracy-error-collapse .card {
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+  background-color: #90363e;
+}
+#accuracy-error-collapse .card .card-body p {
+  margin-bottom: 0.5rem;
+  color: #fff;
+  text-align: center;
+  font-size: 1.25rem;
+}
+#accuracy-error-collapse .card .card-body p a {
+  color: #fff;
 }
 /*# sourceMappingURL=order-book.css.map */

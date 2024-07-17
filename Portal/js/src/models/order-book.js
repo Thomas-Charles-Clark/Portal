@@ -31,11 +31,19 @@ const orderBookViewModel = (() => {
 
     self.columnHeadings = ko.observableArray([]);
 
+    self.displayColumnHeadings = ko.observableArray([]);
+
     self.rowHeadings = ko.observableArray([]);
 
     self.results = ko.observableArray([]);
 
     self.accurateAsOfDateTime = ko.observable();
+
+    self.accuracyCheckInterval = null;
+
+    self.accuracyMessage = ko.observable();
+
+    self.inaccuracyMilliseconds = null;
 
     self.defaultView = ko.observable();
 
@@ -78,6 +86,15 @@ const orderBookViewModel = (() => {
         return self.columnHeadings().flatMap(ch => ch.orderStatuses);
     }, self);
 
+    self.visibleColumns = ko.computed(() => {
+        let result = self.columnHeadings().filter(ch => self.displayColumnHeadings().indexOf(ch.orderStatusGroupSortOrder) > -1);
+        return result;
+    }, self);
+
+    self.visibleOrderStatuses = ko.computed(() => {
+        return self.visibleColumns().flatMap(ch => ch.orderStatuses);
+    }, self);
+
     //#endregion
 
 
@@ -85,6 +102,11 @@ const orderBookViewModel = (() => {
 
     self.userDefinedFilters.json.subscribe((nv) => {
         self.fetch(nv);
+    });
+
+    self.columnHeadings.subscribe(nv => {
+        let sortOrders = nv.map((c, i) => c.orderStatusGroupSortOrder);
+        self.displayColumnHeadings(sortOrders);
     });
 
     //#endregion
@@ -99,6 +121,96 @@ const orderBookViewModel = (() => {
 
     //#region Functions
 
+    self.getVisibleGrandTotal = () => {
+        let orderStatusGroupIds = self.visibleColumns().map(vc => vc.orderStatusGroupId);
+
+        let records = self.results().filter(r => {
+            return (
+                orderStatusGroupIds.indexOf(r.OrderStatusGroupID) > -1 &&
+                r.OrderStatusID == null &&
+                r.StockLocationGroupID == null &&
+                r.OrderGroupID == null
+            );
+        });
+
+        let result = records.reduce((a, i) => {
+            a.OrderValue += +(i.OrderValue.replace(/[^\d.]*/g, ''));
+            a.LineCount += +(i.LineCount.replace(/[^\d.]*/g, ''));
+            a.OrderCount += +(i.OrderCount.replace(/[^\d.]*/g, ''));
+            a.OrderQuantity += +(i.OrderQuantity.replace(/[^\d.]*/g, ''));
+            a.PercentageOfFilteredOrderBook += +(i.PercentageOfFilteredOrderBook.replace(/[^\d.]*/g, ''));
+            a.PercentageOfFullOrderBook += +(i.PercentageOfFullOrderBook.replace(/[^\d.]*/g, ''));
+            return a;
+        }, {
+            OrderValue: 0,
+            LineCount: 0,
+            OrderCount: 0,
+            OrderQuantity: 0,
+            PercentageOfFilteredOrderBook: 0,
+            PercentageOfFullOrderBook: 0
+        });
+
+        result.OrderValue = formatCurrency(result.OrderValue, 0, 'en-GB', 'GBP');
+        result.LineCount = formatNumber(result.LineCount, 0, 'en-GB');
+        result.OrderCount = formatNumber(result.OrderCount, 0, 'en-GB');
+        result.OrderQuantity = formatNumber(result.OrderQuantity, 0, 'en-GB');
+        result.PercentageOfFilteredOrderBook = formatPercentage(result.PercentageOfFilteredOrderBook / 100, 1, 'en-GB');
+        result.PercentageOfFullOrderBook = formatPercentage(result.PercentageOfFullOrderBook / 100, 1, 'en-GB');
+
+        //console.log(result);
+
+        return orderBookMainCell({
+            parent: self,
+            data: result,
+            grouping: false
+        });
+    }
+
+    self.getVisibleSubTotal = (orderGroupId, stockLocationGroupId) => {
+        let orderStatusGroupIds = self.visibleColumns().map(vc => vc.orderStatusGroupId);
+
+        let records = self.results().filter(r => {
+            return (
+                orderStatusGroupIds.indexOf(r.OrderStatusGroupID) > -1 &&
+                r.OrderStatusID == null &&
+                r.StockLocationGroupID == stockLocationGroupId &&
+                r.OrderGroupID == orderGroupId
+            );
+        });
+
+        let result = records.reduce((a, i) => {
+            a.OrderValue += +(i.OrderValue.replace(/[^\d.?\d?]*/g, ''));
+            a.LineCount += +(i.LineCount.replace(/[^\d.?\d?]*/g, ''));
+            a.OrderCount += +(i.OrderCount.replace(/[^\d.?\d?]*/g, ''));
+            a.OrderQuantity += +(i.OrderQuantity.replace(/[^\d.?\d?]*/g, ''));
+            a.PercentageOfFilteredOrderBook += +(i.PercentageOfFilteredOrderBook.replace(/[^\d.?\d?]*/g, ''));
+            a.PercentageOfFullOrderBook += +(i.PercentageOfFullOrderBook.replace(/[^\d.?\d?]*/g, ''));
+            return a;
+        }, {
+            OrderValue: 0,
+            LineCount: 0,
+            OrderCount: 0,
+            OrderQuantity: 0,
+            PercentageOfFilteredOrderBook: 0,
+            PercentageOfFullOrderBook: 0
+        });
+
+        result.OrderValue = formatCurrency(result.OrderValue, 0, 'en-GB', 'GBP');
+        result.LineCount = formatNumber(result.LineCount, 0, 'en-GB');
+        result.OrderCount = formatNumber(result.OrderCount, 0, 'en-GB');
+        result.OrderQuantity = formatNumber(result.OrderQuantity, 0, 'en-GB');
+        result.PercentageOfFilteredOrderBook = formatPercentage(result.PercentageOfFilteredOrderBook / 100, 1, 'en-GB');
+        result.PercentageOfFullOrderBook = formatPercentage(result.PercentageOfFullOrderBook / 100, 1, 'en-GB');
+
+        //console.log(result);
+
+        return orderBookMainCell({
+            parent: self,
+            data: result,
+            grouping: false
+        });
+    }
+
     self.getCell = (orderStatus, stockLocation) => {
         let record = null;
 
@@ -112,6 +224,8 @@ const orderBookViewModel = (() => {
     } 
 
     self.parse = (result) => {
+
+        self.inaccuracyMilliseconds = 0;
 
         self.accurateAsOfDateTime(result.AccurateAsOfDT);
 
@@ -242,6 +356,8 @@ const orderBookViewModel = (() => {
     self.reset = () => {
         window.showConfirm("Are you sure?", "This will clear all current filters and reset the Order Book display to defaults.", () => {
             self.userDefinedFilters.reset();
+            self.displayModes([DISPLAY_MODE_VALUE_SUM]);
+            self.displayColumnHeadings(self.columnHeadings().map((c, i) => c.orderStatusGroupSortOrder));
         }, null);
     };
 
@@ -334,6 +450,14 @@ const orderBookViewModel = (() => {
 
     }
 
+    self.toggleFilters = () => {
+
+        self.detailModaliFrame.contentWindow.postMessage({
+            action: 'toggleFilters'
+        });
+
+    }
+
     //#endregion
 
 
@@ -372,6 +496,82 @@ const orderBookViewModel = (() => {
             window.showError(error.message);
         }
     }
+
+    self.accuracyCheck = () => {
+        fetch("/api/orderbook/AccuracyCheck", {
+            method: "POST",
+            headers: window.fetchHeaders,
+            cache: 'no-store',
+            credentials: 'same-origin'
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+
+                console.log("accuracyCheckInterval returned", data);
+
+                let currentTimeMs = Date.parse(self.accurateAsOfDateTime());
+
+                let newTimeMs = Date.parse(data);
+
+                console.log("accuracyCheckInterval current", currentTimeMs, " new ", newTimeMs);
+
+                // if the data has remained stale for e.g. an hour, then there's a problem
+                // so we should, regardless of what the user's preference for nag screens is, nag them
+                // to tell them that the data is now e.g. an hour stale and should've been updated 45 minutes ago.
+
+                console.warn("boolean check forced for debugging")
+
+                let nagBlocked = document.cookie.split(';').find(c => c.indexOf('orderBookNag') === 0)?.split('=')[1] === "false";
+
+                if (!nagBlocked) {
+                    if (newTimeMs > currentTimeMs) {
+                        // newer data is available, prompt the user - unless they've specifically asked you not to
+                        self.accuracyMessage(`<p>Newer data is available. Would you like to refresh your view now?</p>
+                        <p><span class="bold">Current view was accurate: </span>${moment(new Date(currentTimeMs)).format("DD/MM/YYYY HH:mm:ss")}</p>                        
+                        <p><span class="bold">Refresh to update to: </span>${moment(new Date(newTimeMs)).format("DD/MM/YYYY HH:mm:ss")}</p>                        
+                    `);
+                        bootstrap.Collapse.getOrCreateInstance(document.querySelector("#accuracy-collapse")).show();
+                    }
+                } else {
+                    console.log("data accuracy reminder is disabled");
+                }
+
+                if (newTimeMs > currentTimeMs) {
+                    self.inaccuracyMilliseconds = 0;
+                }
+            })
+            .catch(window.catchFetchError);
+    }
+
+    self.accuracyPleaseStopRemindingMe = () => {
+        window.showConfirm('Are you sure?', 'This will disable the Order Book data accuracy reminder for 24 hours.', () => {
+            window.clearInterval(self.accuracyCheckInterval);
+            bootstrap.Collapse.getOrCreateInstance(document.querySelector("#accuracy-collapse")).hide();
+            document.cookie = "orderBookNag=false; max-age=86400";
+        }, () => {
+
+        });
+    }
+
+    self.accuracyRefresh = () => {
+        bootstrap.Collapse.getOrCreateInstance(document.querySelector("#accuracy-collapse")).hide();
+        self.refresh();
+    }
+
+    self.inaccuracyTimer = window.setInterval(() => {
+        self.inaccuracyMilliseconds += 1000;
+
+        if (self.inaccuracyMilliseconds > 3600000) {
+            bootstrap.Collapse.getOrCreateInstance(document.querySelector("#accuracy-error-collapse")).show();
+            //window.showError("More accurate data should be available by now but doesn't appear to be. Please contact <a href='mailto:itsupport@designersguild.com'>itsupport@designersguild.com</a>.");
+            self.inaccuracyMilliseconds = 0;
+        }
+    }, 1000);
+
+    self.accuracyCheckInterval = window.setInterval(
+        self.accuracyCheck
+        , 900000); // this is 15m in ms
+        //, 10000); // this is 10s in ms
 
     //#endregion
 

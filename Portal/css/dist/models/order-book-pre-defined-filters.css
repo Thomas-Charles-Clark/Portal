@@ -73,13 +73,15 @@
   flex: 1;
 }
 
+#pre-defined-filters-tab-container {
+  margin-bottom: 1rem;
+}
 #pre-defined-filters-tab-container .tab-content {
   padding: 1rem;
   border: 1px solid #dee2e6;
   border-top: 0;
   border-bottom-left-radius: 0.375rem;
   border-bottom-right-radius: 0.375rem;
-  margin-bottom: 1rem;
   background-color: #fff;
 }
 #pre-defined-filters-tab-container .tab-content .pre-defined-filter-summaries {

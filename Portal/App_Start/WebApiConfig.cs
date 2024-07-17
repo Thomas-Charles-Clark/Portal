@@ -70,6 +70,7 @@ namespace Portal
             odataBuilder.EntitySet<SharedEFClasses.Models.Maintenance.MaintenanceSupplier>("Suppliers");
             odataBuilder.EntitySet<Launch>("Launches");
             odataBuilder.EntitySet<ProductType>("ProductTypes");
+            odataBuilder.EntitySet<Design>("Designs");
             odataBuilder.EntitySet<Quality>("Qualities");
             odataBuilder.EntitySet<SalesMarket>("SalesMarkets");
             odataBuilder.EntitySet<Mertex_ProductType>("Mertex_ProductTypes");
@@ -113,8 +114,12 @@ namespace Portal
             odataBuilder.EntitySet<TransactionType>("TransactionTypes");
             odataBuilder.EntitySet<OrderTaker>("OrderTakers");
             odataBuilder.EntitySet<Mertex_DeliveryType>("DeliveryTypes");
+            odataBuilder.EntitySet<PaymentTerms>("PaymentTerms");
+            odataBuilder.EntitySet<PaymentTermsType>("PaymentTermsTypes");
 
             odataBuilder.EntitySet<MertexProductClassificationSuperSet>("MertexProductClassificationSuperSet");
+
+            odataBuilder.EntitySet<MertexTradeAccountClassificationSuperSet>("MertexTradeAccountClassificationSuperSet");
 
             odataBuilder.EntitySet<SharedEFClasses.Models.MertexLive.SupplierLive>("MertexLiveSuppliers");
 
@@ -154,6 +159,22 @@ namespace Portal
 
             orderTakerValueMapperFunction.Parameter<string>("orderTakerCode");
 
+
+            var paymentTermsValueMapperFunction = odataBuilder.EntityType<PaymentTerms>()
+                .Collection
+                .Function("PaymentTermsValueMapper")
+                .ReturnsCollectionFromEntitySet<PaymentTerms>("PaymentTerms");
+
+            paymentTermsValueMapperFunction.Parameter<byte>("paymentTermsId");
+
+
+
+            var paymentTermsTypeValueMapperFunction = odataBuilder.EntityType<PaymentTerms>()
+                .Collection
+                .Function("PaymentTermsTypeValueMapper")
+                .ReturnsCollectionFromEntitySet<PaymentTermsType>("PaymentTermsTypes");
+
+            paymentTermsTypeValueMapperFunction.Parameter<byte>("paymentTermsTypeId");
 
 
 
@@ -278,6 +299,11 @@ namespace Portal
                 .ReturnsCollectionFromEntitySet<TradeAccount>("TradeAccounts");
 
             tradeAccountValueMapperFunction.Parameter<int?>("tradeAccountId");
+
+            var tradeAccountOrderBookSummaryFilterFunction = odataBuilder.EntityType<TradeAccount>()
+                .Collection
+                .Function("GetTradeAccountsForOrderBookSummary")
+                .ReturnsCollectionFromEntitySet<TradeAccount>("TradeAccounts");
 
             var tradeAccountGroupFilterFunction = odataBuilder.EntityType<TradeAccount>()
                 .Collection
@@ -412,6 +438,15 @@ namespace Portal
                 .ReturnsCollectionFromEntitySet<Colour>("Colours");
 
             colourValueMapperFunction.Parameter<byte?>("colourId");
+
+
+            var designValueMapperFunction = odataBuilder.EntityType<Design>()
+                .Collection
+                .Function("DesignValueMapper")
+                .ReturnsCollectionFromEntitySet<Design>("Design");
+
+            designValueMapperFunction.Parameter<int?>("designId");
+
 
 
             var qualityValueMapperFunction = odataBuilder.EntityType<Quality>()
@@ -666,6 +701,7 @@ namespace Portal
             salesAgentOrderBookFilterFunction.Parameter<short?>("tradeAccountTypeId");
             salesAgentOrderBookFilterFunction.Parameter<int?>("tradeAccountGroupId");
             salesAgentOrderBookFilterFunction.Parameter<short?>("salesRepresentativeId");
+            salesAgentOrderBookFilterFunction.Parameter<short?>("salesAreaId");
 
 
 
@@ -687,6 +723,7 @@ namespace Portal
             salesAreaOrderBookFilterFunction.Parameter<short?>("tradeAccountTypeId");
             salesAreaOrderBookFilterFunction.Parameter<int?>("tradeAccountGroupId");
             salesAreaOrderBookFilterFunction.Parameter<short?>("salesRepresentativeId");
+            salesAreaOrderBookFilterFunction.Parameter<short?>("salesAgentId");
 
 
 

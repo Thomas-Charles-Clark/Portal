@@ -13,6 +13,7 @@ using Microsoft.AspNet.OData;
 using SharedEFClasses;
 using Microsoft.AspNet.OData.Query;
 using SharedEFClasses.Models.Leads;
+using SharedEFClasses.Models.Products;
 
 namespace Portal.Controllers
 {
@@ -76,6 +77,17 @@ namespace Portal.Controllers
             return PortalDb.TradeAccounts.Where(p => p.TradeAccountID == tradeAccountId).AsQueryable();
         }
 
+        // GET: odata/Products
+        [EnableQuery(MaxNodeCount = 200)]
+        public IQueryable<TradeAccount> GetTradeAccountsForOrderBookSummary()
+        {
+            // Who cares about samples anyway?
+            return PortalDb.TradeAccounts.Where(ta =>
+                ta.Deleted == false &&
+                ta.Status == "O"
+            ).AsQueryable();
+        }
+
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
         [HttpGet]
         public IQueryable<TradeAccount> TradeAccountOrderBookFilter(
@@ -83,7 +95,8 @@ namespace Portal.Controllers
             short? tradeAccountTypeId = null,
             int? tradeAccountGroupId = null,
             short? salesRepresentativeId = null,
-            short? salesAgentId = null)
+            short? salesAgentId = null,
+            short? salesAreaId = null)
         {
             salesMarketIds = salesMarketIds ?? new List<byte>();
 

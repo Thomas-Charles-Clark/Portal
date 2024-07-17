@@ -24,12 +24,14 @@ const orderBookUserDefinedFiltersViewModel = ({
         salesAgentId: '',
         tradeAccountTypeId: '',
         tradeAccountGroupId: '',
+        paymentTermsId: '',
+        paymentTermsTypeId: '',
         tradeAccountId: '',
         orderId: '',
         fromDate: undefined,
         toDate: undefined,
         haulierId: '',
-        orderTakerId: '',
+        orderTakerCode: '',
         deliveryTypeId: '',
         productGroupId: '',
         itemTypeId: '',
@@ -50,6 +52,8 @@ const orderBookUserDefinedFiltersViewModel = ({
         parent: parent
     };
 
+    self.initialParams = params;
+
     self.busy = self.parent.busy;
 
     self.cascadeEnabled = true; // this is defunct, remove it entirely 20/05/2024
@@ -69,6 +73,8 @@ const orderBookUserDefinedFiltersViewModel = ({
     self.salesMarkets = ko.observableArray();
     self.salesMarketsAwaitingBinding = ko.observable(params.marketIds != null && params.marketIds.length > 0);
 
+    self.selectedSalesMarketIds = ko.observableArray([]);
+
     self.salesRepresentativeId = ko.observable(params.salesRepresentativeId ?? '');
     self.salesRepresentative = ko.observable();
     self.salesRepresentativeAwaitingBinding = ko.observable(params.salesRepresentativeId != null && params.salesRepresentativeId != '');
@@ -76,6 +82,14 @@ const orderBookUserDefinedFiltersViewModel = ({
     self.salesAgentId = ko.observable(params.salesAgentId ?? '');
     self.salesAgent = ko.observable();
     self.salesAgentAwaitingBinding = ko.observable(params.salesAgentId != null && params.salesAgentId != '');
+
+    self.salesAreaId = ko.observable(params.salesAreaId ?? '');
+    self.salesArea = ko.observable();
+    self.salesAreaAwaitingBinding = ko.observable(params.salesAreaId != null && params.salesAreaId != '');
+
+    self.countryId = ko.observable(params.countryId ?? '');
+    self.country = ko.observable();
+    self.countryAwaitingBinding = ko.observable(params.countryId != null && params.countryId != '');
 
     self.tradeAccountTypeId = ko.observable(params.tradeAccountTypeId ?? '');
     self.tradeAccountType = ko.observable();
@@ -85,6 +99,14 @@ const orderBookUserDefinedFiltersViewModel = ({
     self.tradeAccountGroup = ko.observable();
     self.tradeAccountGroupAwaitingBinding = ko.observable(params.tradeAccountGroupId != null && params.tradeAccountGroupId != '');
 
+    self.paymentTermsId = ko.observable(params.paymentTermsId ?? '');
+    self.paymentTerms = ko.observable();
+    self.paymentTermsAwaitingBinding = ko.observable(params.paymentTermsId != null && params.paymentTermsId != '');
+
+    self.paymentTermsTypeId = ko.observable(params.paymentTermsTypeId ?? '');
+    self.paymentTermsType = ko.observable();
+    self.paymentTermsTypeAwaitingBinding = ko.observable(params.paymentTermsTypeId != null && params.paymentTermsTypeId != '');
+
     self.tradeAccountId = ko.observable(params.tradeAccountId ?? '');
     self.tradeAccount = ko.observable();
     self.tradeAccountAwaitingBinding = ko.observable(params.tradeAccountId != null && params.tradeAccountId != '');
@@ -93,21 +115,21 @@ const orderBookUserDefinedFiltersViewModel = ({
     self.order = ko.observable();
     self.orderAwaitingBinding = ko.observable(params.orderId != null && params.orderId != '');
 
-    self.orderTakerId = ko.observable(params.orderTakerId ?? '');
+    self.orderTakerId = ko.observable(params.orderTakerCode ?? '');
     self.orderTaker = ko.observable();
-    self.orderTakerAwaitingBinding = ko.observable(params.orderTakerId != null && params.orderTakerId != '');
+    self.orderTakerAwaitingBinding = ko.observable(params.orderTakerCode != null && params.orderTakerCode != '');
 
     self.fromDate = ko.observable(params.startDate ?? undefined);
 
     self.toDate = ko.observable(params.endDate ?? undefined);
 
-    self.haulierId = ko.observable(params.haulierId ?? '');
+    self.haulierId = ko.observable(params.haulierCode ?? '');
     self.haulier = ko.observable();
-    self.haulierAwaitingBinding = ko.observable(params.haulierId != null && params.haulierId != '');
+    self.haulierAwaitingBinding = ko.observable(params.haulierCode != null && params.haulierCode != '');
 
-    self.deliveryTypeId = ko.observable(params.deliveryTypeId ?? '');
+    self.deliveryTypeId = ko.observable(params.deliveryType ?? '');
     self.deliveryType = ko.observable();
-    self.deliveryTypeAwaitingBinding = ko.observable(params.deliveryTypeId != null && params.deliveryTypeId != '');
+    self.deliveryTypeAwaitingBinding = ko.observable(params.deliveryType != null && params.deliveryType != '');
 
     self.productGroupId = ko.observable(params.productGroupId ?? '');
     self.productGroup = ko.observable();
@@ -137,6 +159,10 @@ const orderBookUserDefinedFiltersViewModel = ({
     self.quality = ko.observable();
     self.qualityAwaitingBinding = ko.observable(params.qualityId != null && params.qualityId != '');
 
+    self.designId = ko.observable(params.designId ?? '');
+    self.design = ko.observable();
+    self.designAwaitingBinding = ko.observable(params.designId != null && params.designId != '');
+
     self.productId = ko.observable(params.productId ?? '');
     self.product = ko.observable();
     self.productAwaitingBinding = ko.observable(params.productId != null && params.productId != '');
@@ -149,7 +175,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         Value: 'R'
     }];
 
-    self.allocatedId = ko.observable(params.allocated == "1" ? true : params.allocated == "0" ? false : '');
+    self.allocatedId = ko.observable(((params.allocated == "1") || (params.allocated == "true")) ? true : ((params.allocated == "0") || (params.allocated == "false")) ? false : '');
     self.allocated = ko.observable();
 
     self.dataSourceId = ko.observable(params.dataSource ?? '');
@@ -179,7 +205,12 @@ const orderBookUserDefinedFiltersViewModel = ({
             self.launchAwaitingBinding() == false &&
             self.qualityAwaitingBinding() == false &&
             self.productAwaitingBinding() == false)
-    }, self);
+    }, self).extend({
+        rateLimit: {
+            method: 'notifyWhenChangesStop',
+            timeout: 100
+        }
+    });
 
     self.tradeAccountComputer = ko.observable(true).extend({
         rateLimit: {
@@ -217,8 +248,34 @@ const orderBookUserDefinedFiltersViewModel = ({
         }).catch((e) => { });
     }
 
-    self.genericUnsavedChangesClear = (e) => {
-        self.checkUnsavedChangesThenClear(e);
+    self.genericUnsavedChangesClear = (options) => {
+        var self = options; // self is now the params of the control the user just interacted with
+
+        if (ko.isObservableArray(self.observable)) {
+            self.observable([]);
+        } else {
+            self.observable(EMPTY_STRING);
+        }
+
+        if (self.dropDownListSettings.widget()) {
+
+            if (ko.isObservableArray(self.observable)) {
+                self.dropDownListSettings.widget().value([]);
+            } else {
+                self.dropDownListSettings.widget().value(EMPTY_STRING);
+            }
+
+            self.dropDownListSettings.widget()._widgetOptions.value.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
+
+            if (self.dropDownListSettings.widget()._widgetOptions.value.mdcSelect.label_ != null)
+                self.dropDownListSettings.widget()._widgetOptions.value.mdcSelect.label_.float(false);
+        }
+
+        if (typeof self.afterClear === 'function') {
+            self.afterClear();
+        }
+
+        //self.checkUnsavedChangesThenClear(e);
     }
 
     self.checkUnsavedChangesThenClear = async (options) => {
@@ -281,124 +338,180 @@ const orderBookUserDefinedFiltersViewModel = ({
     }
 
 
-    // This remains bullshit
-    //self.genericSelectSoleResult = (e, observable) => {
+    self.generateTradeAccountSuperSetParameterMap = (defaultODataOperation) => {
+        return (data) => {
+            let defaultOp = defaultODataOperation;
 
-    //    //console.log(self.name, 'dropdown dataBound hit', e);
-    //    var ds = e.sender.dataSource.data();
-    //    if (ds.length == 1 && e.sender.value() != ds[0][e.sender.options.dataValueField]) {
-    //        observable(ds[0][e.sender.options.dataValueField]);
-    //    }
-    //    if (ds.length == 0) {
-    //        //console.log(observable, 'is setting itself to null');
-    //        observable(EMPTY_STRING);
-    //    }
-    //    if (ds.length > 1) {
-    //        for (var i = 0; i < e.sender.dataSource.view().length; i++) {
-    //            if (e.sender.dataSource.view()[i][e.sender.options.dataValueField] == observable()) {
-    //                return; // we've got our selectedId in the view. No need to clear.
-    //            }
-    //        }
-    //        // we haven't got our selectedId in view. Clear.
-    //        observable(EMPTY_STRING);
-    //    }
-    //};
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
 
-    //#endregion
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
 
-    //#region Components
+            d.$count = true;
 
-    //self.salesMarketParams = kendoMDCDropDownList({
-    //    skipCascade: true,
-    //    label: 'Market',
-    //    odata: true,
-    //    endPoint: () => {
-    //        let tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId(),
-    //            tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
-    //            tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId(),
-    //            salesRepresentativeId = self.salesRepresentativeId() == EMPTY_STRING ? 'null' : self.salesRepresentativeId(),
-    //            salesAgentId = self.salesAgentId() == EMPTY_STRING ? 'null' : self.salesAgentId();
+            let filters = [];
 
-    //        //let computation = self.tradeAccountComputer();
+            let salesMarketIds = null;
+            let salesRepresentativeId = null;
+            let salesAgentId = null;
+            let salesAreaId = null;
+            let countryId = null;
+            let tradeAccountGroupId = null;
+            let paymentTermsId = null;
+            let paymentTermsTypeId = null;
+            let tradeAccountTypeId = null;
+            
+            if (defaultOp.indexOf("SalesMarketID") == -1) {
+                salesMarketIds = self.salesMarketIds();
+            } else {
+                salesMarketIds = self.salesMarketIds.peek();
+            }
 
-    //        return `/odata/SalesMarkets/Default.SalesMarketOrderBookFilter(tradeAccountId=${tradeAccountId},tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId},salesRepresentativeId=${salesRepresentativeId},salesAgentId=${salesAgentId})`;
-    //    },
-    //    textField: 'Name',
-    //    valueField: 'SalesMarketID',
-    //    virtual: true,
-    //    pageSize: 40,
-    //    virtualOptions: {
-    //        itemHeight: 34,
-    //        mapValueTo: 'dataItem',
-    //        valueMapper: function (options) {
-    //            if (options.value) {
-    //                $.ajax({
-    //                    url: `/odata/SalesMarkets/Default.SalesMarketValueMapper(salesMarketId=${options.value})`,
-    //                    type: 'GET',
-    //                    success: function (data) {
-    //                        options.success(data.value);
-    //                    }
-    //                });
-    //            } else {
-    //                options.success();
-    //            }
-    //        }
-    //    },
-    //    idObservable: self.salesMarketId,
-    //    objObservable: self.salesMarket,
-    //    enable: ko.observable(true),
-    //    disable: ko.observable(false),
-    //    clearable: ko.observable(true),
-    //    revertible: ko.observable(false),
-    //    readOnly: false,
-    //    filter: 'contains',
-    //    autoBind: true,
-    //    height: 340,
-    //    sort: {
-    //        dir: 'asc',
-    //        field: 'Name'
-    //    },
-    //    select: function (e) {
-    //        console.log('salesMarketParams select', e);
-    //        self.tradeAccountComputer.valueHasMutated();
-    //    },
-    //    requestStart: function (e) {
-    //        if (!self.cascadeEnabled)
-    //            e.preventDefault();
-    //    },
-    //    clearFunction: self.genericUnsavedChangesClear,
-    //    dataBound: (e) => self.salesMarketAwaitingBinding(false),
-    //    parameterMap: (data) => {
-    //        //Generate parameters in odata v4 format
-    //        if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "Label")) {
-    //            let f = data.filter.filters.find(f => f.field === "Label");
-    //            data.filter.filters = data.filter.filters.filter(f => f.field != "Label");
-    //            data.filter.logic = "or";
-    //            data.filter.filters = [{
-    //                field: "Name",
-    //                ignoreCase: true,
-    //                operator: "startswith",
-    //                value: f.value
-    //            }];
-    //        }
-    //        let d = kendo.data.transports['odata-v4'].parameterMap(data);
+            if (defaultOp.indexOf("SalesRepresentativeID") == -1) {
+                salesRepresentativeId = self.salesRepresentativeId();
+            } else {
+                salesRepresentativeId = self.salesRepresentativeId.peek();
+            }
 
-    //        delete d.$inlinecount; // <-- remove inlinecount
-    //        delete d.$format; // <-- remove format
-    //        delete d.$callback; // <-- remove callback
+            if (defaultOp.indexOf("SalesAgentID") == -1) {
+                salesAgentId = self.salesAgentId();
+            } else {
+                salesAgentId = self.salesAgentId.peek();
+            }
 
-    //        d.$count = true;
+            if (defaultOp.indexOf("SalesAreaID") == -1) {
+                salesAreaId = self.salesAreaId();
+            } else {
+                salesAreaId = self.salesAreaId.peek();
+            }
 
-    //        return d;
-    //    },
-    //    popupSettings: {
-    //        appendTo: document.getElementById('sales-market-prefilter')
-    //    }
-    //});
+            if (defaultOp.indexOf("CountryID") == -1) {
+                countryId = self.countryId();
+            } else {
+                countryId = self.countryId.peek();
+            }
+
+            if (defaultOp.indexOf("TradeAccountGroupID") == -1) {
+                tradeAccountGroupId = self.tradeAccountGroupId();
+            } else {
+                tradeAccountGroupId = self.tradeAccountGroupId.peek();
+            }
+
+            if (defaultOp.indexOf("PaymentTermsID") == -1) {
+                paymentTermsId = self.paymentTermsId();
+            } else {
+                paymentTermsId = self.paymentTermsId.peek();
+            }
+
+            if (defaultOp.indexOf("PaymentTermsTypeID") == -1) {
+                paymentTermsTypeId = self.paymentTermsTypeId();
+            } else {
+                paymentTermsTypeId = self.paymentTermsTypeId.peek();
+            }
+
+            if (defaultOp.indexOf("TradeAccountTypeID") == -1) {
+                tradeAccountTypeId = self.tradeAccountTypeId();
+            } else {
+                tradeAccountTypeId = self.tradeAccountTypeId.peek();
+            }
+
+            // product table map LatestCollectionID...
+
+            if (defaultOp === 'TRADEACCOUNT') {
+                if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "ShortLabel")) {
+                    let f = data.filter.filters.find(f => f.field === "ShortLabel");
+                    filters.push(`(contains(Name,'${f.value}') or startswith(Code,'${f.value}'))`);
+                    //filters.push(`Code eq '${f.value}'`);
+                }
+
+                if (d.$filter) {
+                    delete d.$filter;
+                }
+            }
+
+            // regardless whether or not a filter has a selection it must be refreshed if ANOTHER filter changes.
+            // the implementation beneath is *not quite* sufficient
+
+            if (defaultOp.indexOf('SalesMarketID') == -1 && salesMarketIds.length > 0) {
+                let salesMarketFilters = [];
+
+                salesMarketIds.forEach(sm => {
+                    salesMarketFilters.push(`SalesMarketID eq ${sm}`);
+                });
+
+                let salesMarketFilter = salesMarketFilters.join(' or ');
+
+                filters.push(`(${salesMarketFilter})`);
+            }
+
+            if (defaultOp.indexOf('SalesRepresentativeID') == -1 && salesRepresentativeId != '') {
+                filters.push(`SalesRepresentativeID eq ${salesRepresentativeId}`);
+            }
+
+            if (defaultOp.indexOf('SalesAgentID') == -1 && salesAgentId != '') {
+                filters.push(`SalesAgentID eq ${salesAgentId}`);
+            }
+
+            if (defaultOp.indexOf('SalesAreaID') == -1 && salesAreaId != '') {
+                filters.push(`SalesAreaID eq ${salesAreaId}`);
+            }
+
+            if (defaultOp.indexOf('CountryID') == -1 && countryId != '') {
+                filters.push(`CountryID eq ${countryId}`);
+            }
+
+            if (defaultOp.indexOf('TradeAccountGroupID') == -1 && tradeAccountGroupId != '') {
+                filters.push(`TradeAccountGroupID eq ${tradeAccountGroupId}`);
+            }
+
+            if (defaultOp.indexOf('PaymentTermsID') == -1 && paymentTermsId != '') {
+                filters.push(`PaymentTermsID eq ${paymentTermsId}`);
+            }
+
+            if (defaultOp.indexOf('PaymentTermsTypeID') == -1 && paymentTermsTypeId != '') {
+                if (defaultOp != 'TRADEACCOUNT') {
+                    filters.push(`PaymentTermsTypeID eq ${paymentTermsTypeId}`);
+                } else {
+                    filters.push(`PaymentTerms/PaymentTermsTypeID eq ${paymentTermsTypeId}`);
+                }
+            }
+
+            if (defaultOp.indexOf('TradeAccountTypeID') == -1 && tradeAccountTypeId != '') {
+                filters.push(`TradeAccountTypeID eq ${tradeAccountTypeId}`);
+            }
+
+            if (defaultOp == 'TRADEACCOUNT') {
+                defaultOp = '';
+            }
+
+            d.$apply = defaultOp;
+
+            if (filters.length) {
+                let filterString = filters.join(' and ');
+                d.$apply = `filter(${filterString})`;
+
+                if (defaultOp) {
+                    d.$apply = `${d.$apply}/${defaultOp}`;
+                }
+            }
+
+            if (!d.$apply) {
+                delete d.$apply;
+            } else {
+                console.log(d.$apply);
+            }
+
+            return d;
+        }
+    }
+
+    self.salesMarketGroupBy = `groupby((SalesMarket/SalesMarketID,SalesMarket/Code,SalesMarket/Name))/filter((SalesMarket/SalesMarketID ne null))`;
 
     self.salesMarketsParams = {
         observable: self.salesMarkets,
-        validate: self.salesMarketIds,
+        validate: self.selectedSalesMarketIds,
         showClear: true,
         width: 'auto',
         label: 'Market(s)',
@@ -411,20 +524,83 @@ const orderBookUserDefinedFiltersViewModel = ({
         enable: ko.observable(true),
         clearable: ko.observable(true),
         revertible: ko.observable(false),
+        showSelectAll: ko.observable(true),
         multiSelectSettings: {
             autoBind: true,
-            value: self.salesMarketIds,
+            autoClose: false,
+            tagMode: 'single',
+            value: self.selectedSalesMarketIds,
             dataItems: self.salesMarkets,
-            dataValueField: 'SalesMarketID',
-            dataTextField: 'Name',
-            height: 300,
+            dataValueField: 'SalesMarket.SalesMarketID',
+            dataTextField: 'SalesMarket.Name',
+            tagTemplate: (d, e) => {
+
+                console.log(d, e);
+
+                //return 'testing';
+
+                let plural = 's';
+
+                let count = d.values.length;
+
+                if (count === 1) {
+                    plural = '';
+                }
+
+                if (count == 1) {
+                    let rec = self.salesMarketsParams.multiSelectSettings.widget().dataSource.data().find(dat => dat.SalesMarket.SalesMarketID == d.values[0]);
+                    return rec.SalesMarket.Name;
+                }
+
+                if (count === self.salesMarketsParams.multiSelectSettings.widget().dataSource.data().length) {
+                    return 'All Markets Selected';
+                } else {
+                    return `${count} Market${plural} Selected`;
+                }
+
+            },
+            //itemTemplate: (d, e) => {
+            //    console.log(d, e);
+            //    return `<div class="form-check market-multiselect-checkbox flex-1">
+            //      <label class="form-check-label cursor" for="sales-market-${d.SalesMarket.SalesMarketID}-check">
+            //        <input class="form-check-input" type="checkbox" id="sales-market-${d.SalesMarket.SalesMarketID}-check" data-bind="checked: selectedSalesMarketIds, checkedValue: ${d.SalesMarket.SalesMarketID}">
+            //        <span>${d.SalesMarket.Name}</span>
+            //      </label>
+            //    </div>`
+            //},
+            height: 840,
             widget: ko.observable(),
             open: function (e) {
-                var self = this;
                 $(e.sender._widgetOptions.dataItems.mdcSelect.root_).toggleClass('mdc-select--focused');
+                //ko.cleanNode(document.querySelector('#sales-markets-prefilter .k-list-scroller'));
+                //ko.applyBindings(self, document.querySelector('#sales-markets-prefilter .k-list-scroller'));
+                self.salesMarketsTemp = JSON.stringify(self.selectedSalesMarketIds());
             },
             close: function (e) {
                 $(e.sender._widgetOptions.dataItems.mdcSelect.root_).toggleClass('mdc-select--focused');
+
+                let now = JSON.stringify(self.selectedSalesMarketIds());
+
+                if (self.salesMarketsTemp != now) {
+                    self.tradeAccountComputer.valueHasMutated();
+                    self.salesMarketIds(self.selectedSalesMarketIds());
+                }
+            },
+            select: function (e) {
+                console.log('salesMarketParams select', e);
+                self.tradeAccountComputer.valueHasMutated();
+            },
+            dataBound: function (e) {
+                console.log('salesMarketParams dataBound', e);
+
+                //if (self.initialParams && self.initialParams.hasOwnProperty('marketIds')) {
+                //    let marketIds = self.salesMarketIds();
+                //    e.sender.value(marketIds);
+                //} else {
+                //    e.sender.value(e.sender.dataSource.data().map(d => d.SalesMarket.SalesMarketID));
+                //}
+
+                //e.sender.trigger('change');
             },
             data: new kendo.data.DataSource({
                 serverFiltering: true,
@@ -435,46 +611,14 @@ const orderBookUserDefinedFiltersViewModel = ({
                 type: 'odata-v4',
                 transport: {
                     read: {
-                        url: () => {
-                            let tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId(),
-                                tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
-                                tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId(),
-                                salesRepresentativeId = self.salesRepresentativeId() == EMPTY_STRING ? 'null' : self.salesRepresentativeId(),
-                                salesAgentId = self.salesAgentId() == EMPTY_STRING ? 'null' : self.salesAgentId();
-
-                            //let computation = self.tradeAccountComputer();
-
-                            return `/odata/SalesMarkets/Default.SalesMarketOrderBookFilter(tradeAccountId=${tradeAccountId},tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId},salesRepresentativeId=${salesRepresentativeId},salesAgentId=${salesAgentId})`;
-                        }
+                        url: '/odata/MertexTradeAccountClassificationSuperSet'
                     },
-                    parameterMap: (data) => {
-                        //Generate parameters in odata v4 format
-                        if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "Label")) {
-                            let f = data.filter.filters.find(f => f.field === "Label");
-                            data.filter.filters = data.filter.filters.filter(f => f.field != "Label");
-                            data.filter.logic = "or";
-                            data.filter.filters = [{
-                                field: "Name",
-                                ignoreCase: true,
-                                operator: "startswith",
-                                value: f.value
-                            }];
-                        }
-                        let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-                        delete d.$inlinecount; // <-- remove inlinecount
-                        delete d.$format; // <-- remove format
-                        delete d.$callback; // <-- remove callback
-
-                        d.$count = true;
-
-                        return d;
-                    },
+                    parameterMap: self.generateTradeAccountSuperSetParameterMap(self.salesMarketGroupBy),
                     data: {}
                 },
                 sort: {
                     dir: 'asc',
-                    field: 'Name'
+                    field: 'SalesMarket.Name'
                 },
             }),
             popup: {
@@ -482,61 +626,77 @@ const orderBookUserDefinedFiltersViewModel = ({
             },
             valuePrimitive: true,
             autoWidth: false,
-            autoBind: true,
-            autoClose: false,
             optionLabel: ' ',
             filter: 'startswith'
         },
-        clearFunction: function () {
-            var self = this
-            self.multiSelectSettings.value([]);
-            self.multiSelectSettings.widget().value([]);
-            self.multiSelectSettings.widget().trigger('change');
-        }
+        //clearFunction: function () {
+        //    var self = this
+        //    self.multiSelectSettings.value([]);
+        //    self.multiSelectSettings.widget().value([]);
+        //    self.multiSelectSettings.widget().trigger('change');
+        //},
+        selectAllFunction: (e) => {
+            e.multiSelectSettings.widget().value(e.multiSelectSettings.widget().dataSource.data().map(d => d.SalesMarket.SalesMarketID));
+            e.multiSelectSettings.widget().trigger('change');
+            self.salesMarketIds(self.selectedSalesMarketIds());
+            self.tradeAccountComputer.valueHasMutated();
+        },
+        clearFunction: (e) => {
+
+            e.multiSelectSettings.widget().value([]);
+           
+            e.multiSelectSettings.widget().trigger('change');
+
+            self.salesMarketIds(self.selectedSalesMarketIds());
+
+            self.tradeAccountComputer.valueHasMutated();
+
+            //if (self.salesMarketsTemp != now) {
+            //    self.tradeAccountComputer.valueHasMutated();
+            //    self.salesMarketIds(self.selectedSalesMarketIds());
+            //    self.salesMarketsParams.multiSelectSettings.widget().value(self.salesMarketIds());
+            //}
+        },
     };
+
+    self.salesRepresentativeGroupBy = `groupby((SalesRepresentative/SalesRepresentativeID,SalesRepresentative/Code,SalesRepresentative/Name))/filter((SalesRepresentative/SalesRepresentativeID ne null))`;
+
+    self.salesRepresentativeTemplate = (e) => {
+        if (e.SalesRepresentative && e.SalesRepresentative.SalesRepresentativeID && e.SalesRepresentative.Name) {
+            return `<span title="${e.SalesRepresentative.Name} (${e.SalesRepresentative.Code})">${e.SalesRepresentative.Name} (${e.SalesRepresentative.Code})</span>`;
+        } else {
+            return '';
+        }
+    }
 
     self.salesRepresentativeParams = kendoMDCDropDownList({
         skipCascade: true,
         label: 'Representative',
         odata: true,
-        endPoint: () => {
-            let salesMarketIds = self.salesMarketIds(),
-                tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
-                tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId(),
-                tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId(),
-                salesAgentId = self.salesAgentId() == EMPTY_STRING ? 'null' : self.salesAgentId();
-
-            //let computation = self.tradeAccountComputer();
-
-            return `/odata/SalesRepresentatives/Default.SalesRepresentativesOrderBookFilter(salesMarketIds=[${salesMarketIds}],tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId},tradeAccountId=${tradeAccountId},salesAgentId=${salesAgentId})`;
-        },
-        textField: 'Name',
-        valueField: 'SalesRepresentativeID',
-        virtual: true,
-        pageSize: 40,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                if (options.value) {
-                    $.ajax({
-                        url: `/odata/SalesRepresentatives/Default.SalesRepresentativeValueMapper(salesRepresentativeId=${options.value})`,
-                        type: 'GET',
-                        success: function (data) {
-                            options.success(data.value);
-                        }
-                    });
-                } else {
-                    options.success();
-                }
-            }
-        },
-        template: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        valueTemplate: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
+        endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
+        textField: 'SalesRepresentative.Name',
+        valueField: 'SalesRepresentative.SalesRepresentativeID',
+        //virtual: true,
+        //pageSize: 40,
+        //virtualOptions: {
+        //    itemHeight: 34,
+        //    mapValueTo: 'dataItem',
+        //    valueMapper: function (options) {
+        //        if (options.value) {
+        //            $.ajax({
+        //                url: `/odata/SalesRepresentatives/Default.SalesRepresentativeValueMapper(salesRepresentativeId=${options.value})`,
+        //                type: 'GET',
+        //                success: function (data) {
+        //                    options.success(data.value);
+        //                }
+        //            });
+        //        } else {
+        //            options.success();
+        //        }
+        //    }
+        //},
+        template: self.salesRepresentativeTemplate,
+        valueTemplate: self.salesRepresentativeTemplate,
         idObservable: self.salesRepresentativeId,
         objObservable: self.salesRepresentative,
         enable: ko.observable(true),
@@ -549,83 +709,58 @@ const orderBookUserDefinedFiltersViewModel = ({
         height: 340,
         sort: {
             dir: 'asc',
-            field: 'Name'
+            field: 'SalesRepresentative.Name'
         },
         select: function (e) {
-            console.log('tradeAccountTypeParams select', e);
+            console.log('salesRepresentativeParams select', e);
             self.tradeAccountComputer.valueHasMutated();
-        },
-        requestStart: function (e) {
-            if (!self.cascadeEnabled)
-                e.preventDefault();
         },
         clearFunction: self.genericUnsavedChangesClear,
         dataBound: (e) => self.salesRepresentativeAwaitingBinding(false),
-        parameterMap: (data) => {
-
-            //Generate parameters in odata v4 format
-            let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-            delete d.$inlinecount; // <-- remove inlinecount
-            delete d.$format; // <-- remove format
-            delete d.$callback; // <-- remove callback
-
-            d.$count = true;
-
-            //if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
-            //    d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
-            //}
-
-            return d;
-        },
+        parameterMap: self.generateTradeAccountSuperSetParameterMap(self.salesRepresentativeGroupBy),
         popupSettings: {
             appendTo: document.getElementById('sales-representative-prefilter')
         }
     });
 
+    self.salesAgentGroupBy = `groupby((SalesAgent/SalesAgentID,SalesAgent/Code,SalesAgent/Name))/filter((SalesAgent/SalesAgentID ne null))`;
+
+    self.salesAgentTemplate = (e) => {
+        if (e.SalesAgent && e.SalesAgent.SalesAgentID && e.SalesAgent.Name) {
+            return `<span title="${e.SalesAgent.Name} (${e.SalesAgent.Code})">${e.SalesAgent.Name} (${e.SalesAgent.Code})</span>`;
+        } else {
+            return '';
+        }
+    }
 
     self.salesAgentParams = kendoMDCDropDownList({
         skipCascade: true,
         label: 'Agent',
         odata: true,
-        endPoint: () => {
-            let salesMarketIds = self.salesMarketIds(),
-                tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
-                tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId(),
-                tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId(),
-                salesRepresentativeId = self.salesRepresentativeId() == EMPTY_STRING ? 'null' : self.salesRepresentativeId();
-
-            //let computation = self.tradeAccountComputer();
-
-            return `/odata/SalesAgents/Default.SalesAgentsOrderBookFilter(salesMarketIds=[${salesMarketIds}],tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId},tradeAccountId=${tradeAccountId},salesRepresentativeId=${salesRepresentativeId})`;
-        },
-        textField: 'Name',
-        valueField: 'SalesAgentID',
-        virtual: true,
-        pageSize: 40,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                if (options.value) {
-                    $.ajax({
-                        url: `/odata/SalesAgents/Default.SalesAgentsValueMapper(salesAgentId=${options.value})`,
-                        type: 'GET',
-                        success: function (data) {
-                            options.success(data.value);
-                        }
-                    });
-                } else {
-                    options.success();
-                }
-            }
-        },
-        template: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        valueTemplate: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
+        endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
+        textField: 'SalesAgent.Name',
+        valueField: 'SalesAgent.SalesAgentID',
+        //virtual: true,
+        //pageSize: 40,
+        //virtualOptions: {
+        //    itemHeight: 34,
+        //    mapValueTo: 'dataItem',
+        //    valueMapper: function (options) {
+        //        if (options.value) {
+        //            $.ajax({
+        //                url: `/odata/SalesAgents/Default.SalesAgentsValueMapper(salesAgentId=${options.value})`,
+        //                type: 'GET',
+        //                success: function (data) {
+        //                    options.success(data.value);
+        //                }
+        //            });
+        //        } else {
+        //            options.success();
+        //        }
+        //    }
+        //},
+        template: self.salesAgentTemplate,
+        valueTemplate: self.salesAgentTemplate,
         idObservable: self.salesAgentId,
         objObservable: self.salesAgent,
         enable: ko.observable(true),
@@ -638,7 +773,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         height: 340,
         sort: {
             dir: 'asc',
-            field: 'Name'
+            field: 'SalesAgent.Name'
         },
         select: function (e) {
             console.log('salesAgentParams select', e);
@@ -650,70 +785,142 @@ const orderBookUserDefinedFiltersViewModel = ({
         },
         clearFunction: self.genericUnsavedChangesClear,
         dataBound: (e) => self.salesAgentAwaitingBinding(false),
-        parameterMap: (data) => {
-
-            //Generate parameters in odata v4 format
-            let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-            delete d.$inlinecount; // <-- remove inlinecount
-            delete d.$format; // <-- remove format
-            delete d.$callback; // <-- remove callback
-
-            d.$count = true;
-
-            //if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
-            //    d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
-            //}
-
-            return d;
-        },
+        parameterMap: self.generateTradeAccountSuperSetParameterMap(self.salesAgentGroupBy),
         popupSettings: {
             appendTo: document.getElementById('sales-agent-prefilter')
         }
     });
 
+    self.salesAreaGroupBy = `groupby((SalesArea/SalesAreaID,SalesArea/Code,SalesArea/Name))/filter((SalesArea/SalesAreaID ne null))`;
+
+    self.salesAreaTemplate = (e) => {
+        if (e.SalesArea && e.SalesArea.SalesAreaID && e.SalesArea.Name) {
+            return `<span title="${e.SalesArea.Name} (${e.SalesArea.Code})">${e.SalesArea.Name} (${e.SalesArea.Code})</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.salesAreaParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Area',
+        odata: true,
+        endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
+        textField: 'SalesArea.Name',
+        valueField: 'SalesArea.SalesAreaID',
+        virtual: false,
+        template: self.salesAreaTemplate,
+        valueTemplate: self.salesAreaTemplate,
+        idObservable: self.salesAreaId,
+        objObservable: self.salesArea,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'SalesArea.Name'
+        },
+        select: function (e) {
+            console.log('salesAreaParams select', e);
+            self.tradeAccountComputer.valueHasMutated();
+        },
+        clearFunction: self.genericUnsavedChangesClear,
+        dataBound: (e) => self.salesAreaAwaitingBinding(false),
+        parameterMap: self.generateTradeAccountSuperSetParameterMap(self.salesAreaGroupBy),
+        popupSettings: {
+            appendTo: document.getElementById('sales-area-prefilter')
+        }
+    });
+
+    self.countryGroupBy = `groupby((Country/CountryID,Country/Name))/filter((Country/CountryID ne null))`;
+
+    self.countryTemplate = (e) => {
+        if (e.Country && e.Country.CountryID && e.Country.Name) {
+            return `<span title="${e.Country.Name}">${e.Country.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.countryParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Country',
+        odata: true,
+        endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
+        textField: 'Country.Name',
+        valueField: 'Country.CountryID',
+        virtual: false,
+        template: self.countryTemplate,
+        valueTemplate: self.countryTemplate,
+        idObservable: self.countryId,
+        objObservable: self.country,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'Country.Name'
+        },
+        select: function (e) {
+            console.log('countryParams select', e);
+            self.tradeAccountComputer.valueHasMutated();
+        },
+        clearFunction: self.genericUnsavedChangesClear,
+        dataBound: (e) => self.countryAwaitingBinding(false),
+        parameterMap: self.generateTradeAccountSuperSetParameterMap(self.countryGroupBy),
+        popupSettings: {
+            appendTo: document.getElementById('country-prefilter')
+        }
+    });
+
+    self.tradeAccountTypeGroupBy = `groupby((TradeAccountType/TradeAccountTypeID,TradeAccountType/Name))/filter((TradeAccountType/TradeAccountTypeID ne null))`;
+
+    self.tradeAccountTypeTemplate = (e) => {
+        if (e.TradeAccountType && e.TradeAccountType.TradeAccountTypeID && e.TradeAccountType.Name) {
+            return `<span title="${e.TradeAccountType.Name}">${e.TradeAccountType.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
     self.tradeAccountTypeParams = kendoMDCDropDownList({
         skipCascade: true,
         label: 'Trade Account Type',
         odata: true,
-        endPoint: () => {
-            let salesMarketIds = self.salesMarketIds(),
-                tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId(),
-                tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId(),
-                salesRepresentativeId = self.salesRepresentativeId() == EMPTY_STRING ? 'null' : self.salesRepresentativeId(),
-                salesAgentId = self.salesAgentId() == EMPTY_STRING ? 'null' : self.salesAgentId();
-
-            //let computation = self.tradeAccountComputer();
-
-            return `/odata/TradeAccountTypes/Default.TradeAccountTypeOrderBookFilter(salesMarketIds=[${salesMarketIds}],tradeAccountGroupId=${tradeAccountGroupId},tradeAccountId=${tradeAccountId},salesRepresentativeId=${salesRepresentativeId},salesAgentId=${salesAgentId})`;
-        },
-        textField: 'Name',
-        valueField: 'TradeAccountTypeID',
-        virtual: true,
-        pageSize: 40,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                if (options.value) {
-                    $.ajax({
-                        url: `/odata/TradeAccountTypes/Default.TradeAccountTypeValueMapper(tradeAccountTypeId=${options.value})`,
-                        type: 'GET',
-                        success: function (data) {
-                            options.success(data.value);
-                        }
-                    });
-                } else {
-                    options.success();
-                }
-            }
-        },
-        template: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        valueTemplate: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
+        endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
+        textField: 'TradeAccountType.Name',
+        valueField: 'TradeAccountType.TradeAccountTypeID',
+        //virtual: true,
+        //pageSize: 40,
+        //virtualOptions: {
+        //    itemHeight: 34,
+        //    mapValueTo: 'dataItem',
+        //    valueMapper: function (options) {
+        //        if (options.value) {
+        //            $.ajax({
+        //                url: `/odata/TradeAccountTypes/Default.TradeAccountTypeValueMapper(tradeAccountTypeId=${options.value})`,
+        //                type: 'GET',
+        //                success: function (data) {
+        //                    options.success(data.value);
+        //                }
+        //            });
+        //        } else {
+        //            options.success();
+        //        }
+        //    }
+        //},
+        template: self.tradeAccountTypeTemplate,
+        valueTemplate: self.tradeAccountTypeTemplate,
         idObservable: self.tradeAccountTypeId,
         objObservable: self.tradeAccountType,
         enable: ko.observable(true),
@@ -726,82 +933,58 @@ const orderBookUserDefinedFiltersViewModel = ({
         height: 340,
         sort: {
             dir: 'asc',
-            field: 'Name'
+            field: 'TradeAccountType.Name'
         },
         select: function (e) {
-            console.log('tradeAccountTypeParams select', e);
+            console.log('tradeAccountType select', e);
             self.tradeAccountComputer.valueHasMutated();
-        },
-        requestStart: function (e) {
-            if (!self.cascadeEnabled)
-                e.preventDefault();
         },
         clearFunction: self.genericUnsavedChangesClear,
         dataBound: (e) => self.tradeAccountTypeAwaitingBinding(false),
-        parameterMap: (data) => {
-
-            //Generate parameters in odata v4 format
-            let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-            delete d.$inlinecount; // <-- remove inlinecount
-            delete d.$format; // <-- remove format
-            delete d.$callback; // <-- remove callback
-
-            d.$count = true;
-
-            //if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
-            //    d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
-            //}
-
-            return d;
-        },
+        parameterMap: self.generateTradeAccountSuperSetParameterMap(self.tradeAccountTypeGroupBy),
         popupSettings: {
             appendTo: document.getElementById('trade-account-type-prefilter')
         }
     });
 
+    self.tradeAccountGroupGroupBy = `groupby((TradeAccountGroup/TradeAccountGroupID,TradeAccountGroup/Name))/filter((TradeAccountGroup/TradeAccountGroupID ne null))`;
+
+    self.tradeAccountGroupTemplate = (e) => {
+        if (e.TradeAccountGroup && e.TradeAccountGroup.TradeAccountGroupID && e.TradeAccountGroup.Name) {
+            return `<span title="${e.TradeAccountGroup.Name}">${e.TradeAccountGroup.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
     self.tradeAccountGroupParams = kendoMDCDropDownList({
         skipCascade: true,
         label: 'Trade Account Group',
         odata: true,
-        endPoint: () => {
-            let salesMarketIds = self.salesMarketIds(),
-                tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
-                tradeAccountId = self.tradeAccountId() == EMPTY_STRING ? 'null' : self.tradeAccountId(),
-                salesRepresentativeId = self.salesRepresentativeId() == EMPTY_STRING ? 'null' : self.salesRepresentativeId(),
-                salesAgentId = self.salesAgentId() == EMPTY_STRING ? 'null' : self.salesAgentId();
-
-            //let computation = self.tradeAccountComputer();
-
-            return `/odata/TradeAccountGroups/Default.TradeAccountGroupOrderBookFilter(salesMarketIds=[${salesMarketIds}],tradeAccountTypeId=${tradeAccountTypeId},tradeAccountId=${tradeAccountId},salesRepresentativeId=${salesRepresentativeId},salesAgentId=${salesAgentId})`;
-        },
-        textField: 'Name',
-        valueField: 'TradeAccountGroupID',
-        virtual: true,
-        pageSize: 40,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                if (options.value) {
-                    $.ajax({
-                        url: `/odata/TradeAccountGroups/Default.TradeAccountGroupValueMapper(tradeAccountGroupId=${options.value})`,
-                        type: 'GET',
-                        success: function (data) {
-                            options.success(data.value);
-                        }
-                    });
-                } else {
-                    options.success();
-                }
-            }
-        },
-        template: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        valueTemplate: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
+        endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
+        textField: 'TradeAccountGroup.Name',
+        valueField: 'TradeAccountGroup.TradeAccountGroupID',
+        //virtual: true,
+        //pageSize: 40,
+        //virtualOptions: {
+        //    itemHeight: 34,
+        //    mapValueTo: 'dataItem',
+        //    valueMapper: function (options) {
+        //        if (options.value) {
+        //            $.ajax({
+        //                url: `/odata/TradeAccountGroups/Default.TradeAccountGroupValueMapper(tradeAccountGroupId=${options.value})`,
+        //                type: 'GET',
+        //                success: function (data) {
+        //                    options.success(data.value);
+        //                }
+        //            });
+        //        } else {
+        //            options.success();
+        //        }
+        //    }
+        //},
+        template: self.tradeAccountGroupTemplate,
+        valueTemplate: self.tradeAccountGroupTemplate,
         idObservable: self.tradeAccountGroupId,
         objObservable: self.tradeAccountGroup,
         enable: ko.observable(true),
@@ -814,36 +997,145 @@ const orderBookUserDefinedFiltersViewModel = ({
         height: 340,
         sort: {
             dir: 'asc',
-            field: 'Name'
+            field: 'TradeAccountGroup.Name'
         },
         select: function (e) {
             console.log('tradeAccountGroup select', e);
             self.tradeAccountComputer.valueHasMutated();
         },
-        requestStart: function (e) {
-            if (!self.cascadeEnabled)
-                e.preventDefault();
-        },
         clearFunction: self.genericUnsavedChangesClear,
         dataBound: (e) => self.tradeAccountGroupAwaitingBinding(false),
-        parameterMap: (data) => {
-            //Generate parameters in odata v4 format
-            let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-            delete d.$inlinecount; // <-- remove inlinecount
-            delete d.$format; // <-- remove format
-            delete d.$callback; // <-- remove callback
-
-            d.$count = true;
-
-            //if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
-            //    d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
-            //}
-
-            return d;
-        },
+        parameterMap: self.generateTradeAccountSuperSetParameterMap(self.tradeAccountGroupGroupBy),
         popupSettings: {
             appendTo: document.getElementById('trade-account-group-prefilter')
+        }
+    });
+
+    self.paymentTermsGroupBy = `groupby((PaymentTerms/PaymentTermsID,PaymentTerms/Name))/filter((PaymentTerms/PaymentTermsID ne null))`;
+
+    self.paymentTermsTemplate = (e) => {
+        if (e.PaymentTerms && e.PaymentTerms.PaymentTermsID && e.PaymentTerms.Name) {
+            return `<span title="${e.PaymentTerms.Name}">${e.PaymentTerms.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.paymentTermsParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Payment Terms',
+        odata: true,
+        endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
+        textField: 'PaymentTerms.Name',
+        valueField: 'PaymentTerms.PaymentTermsID',
+        //virtual: true,
+        //pageSize: 40,
+        //virtualOptions: {
+        //    itemHeight: 34,
+        //    mapValueTo: 'dataItem',
+        //    valueMapper: function (options) {
+        //        if (options.value) {
+        //            $.ajax({
+        //                url: `/odata/PaymentTerms/Default.PaymentTermsValueMapper(paymentTermsId=${options.value})`,
+        //                type: 'GET',
+        //                success: function (data) {
+        //                    options.success(data.value);
+        //                }
+        //            });
+        //        } else {
+        //            options.success();
+        //        }
+        //    }
+        //},
+        template: self.paymentTermsTemplate,
+        valueTemplate: self.paymentTermsTemplate,
+        idObservable: self.paymentTermsId,
+        objObservable: self.paymentTerms,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'PaymentTerms.Name'
+        },
+        select: function (e) {
+            console.log('paymentTerms select', e);
+            self.tradeAccountComputer.valueHasMutated();
+        },
+        clearFunction: self.genericUnsavedChangesClear,
+        dataBound: (e) => self.paymentTermsAwaitingBinding(false),
+        parameterMap: self.generateTradeAccountSuperSetParameterMap(self.paymentTermsGroupBy),
+        popupSettings: {
+            appendTo: document.getElementById('payment-terms-prefilter')
+        }
+    });
+
+    self.paymentTermsTypeGroupBy = `groupby((PaymentTermsType/PaymentTermsTypeID,PaymentTermsType/Name))/filter((PaymentTermsType/PaymentTermsTypeID ne null))`;
+
+    self.paymentTermsTypeTemplate = (e) => {
+        if (e.PaymentTermsType && e.PaymentTermsType.PaymentTermsTypeID && e.PaymentTermsType.Name) {
+            return `<span title="${e.PaymentTermsType.Name}">${e.PaymentTermsType.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.paymentTermsTypeParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Payment Terms Type',
+        odata: true,
+        endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
+        textField: 'PaymentTermsType.Name',
+        valueField: 'PaymentTermsType.PaymentTermsTypeID',
+        //virtual: true,
+        //pageSize: 40,
+        //virtualOptions: {
+        //    itemHeight: 34,
+        //    mapValueTo: 'dataItem',
+        //    valueMapper: function (options) {
+        //        if (options.value) {
+        //            $.ajax({
+        //                url: `/odata/PaymentTermsType/Default.PaymentTermsTypesValueMapper(paymentTermsTypeId=${options.value})`,
+        //                type: 'GET',
+        //                success: function (data) {
+        //                    options.success(data.value);
+        //                }
+        //            });
+        //        } else {
+        //            options.success();
+        //        }
+        //    }
+        //},
+        template: self.paymentTermsTypeTemplate,
+        valueTemplate: self.paymentTermsTypeTemplate,
+        idObservable: self.paymentTermsTypeId,
+        objObservable: self.paymentTermsType,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'PaymentTermsType.Name'
+        },
+        select: function (e) {
+            console.log('paymentTermsType select', e);
+            self.tradeAccountComputer.valueHasMutated();
+        },
+        clearFunction: self.genericUnsavedChangesClear,
+        dataBound: (e) => self.paymentTermsTypeAwaitingBinding(false),
+        parameterMap: self.generateTradeAccountSuperSetParameterMap(self.paymentTermsTypeGroupBy),
+        popupSettings: {
+            appendTo: document.getElementById('payment-terms-type-prefilter')
         }
     });
 
@@ -851,17 +1143,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         skipCascade: true,
         label: 'Trade Account',
         odata: true,
-        endPoint: () => {
-            let salesMarketIds = self.salesMarketIds(),
-                tradeAccountTypeId = self.tradeAccountTypeId() == EMPTY_STRING ? 'null' : self.tradeAccountTypeId(),
-                tradeAccountGroupId = self.tradeAccountGroupId() == EMPTY_STRING ? 'null' : self.tradeAccountGroupId(),
-                salesRepresentativeId = self.salesRepresentativeId() == EMPTY_STRING ? 'null' : self.salesRepresentativeId(),
-                salesAgentId = self.salesAgentId() == EMPTY_STRING ? 'null' : self.salesAgentId();
-
-            //let computation = self.tradeAccountComputer();
-
-            return `/odata/TradeAccounts/Default.TradeAccountOrderBookFilter(salesMarketIds=[${salesMarketIds}],tradeAccountTypeId=${tradeAccountTypeId},tradeAccountGroupId=${tradeAccountGroupId},salesRepresentativeId=${salesRepresentativeId},salesAgentId=${salesAgentId})?$expand=TradePriceList`;
-        },
+        endPoint: '/odata/TradeAccounts/GetTradeAccountsForOrderBookSummary',
         textField: 'ShortLabel',
         valueField: 'TradeAccountID',
         virtual: true,
@@ -872,7 +1154,7 @@ const orderBookUserDefinedFiltersViewModel = ({
             valueMapper: function (options) {
                 if (options.value) {
                     $.ajax({
-                        url: `/odata/TradeAccounts/Default.TradeAccountValueMapper(tradeAccountId=${options.value})?$expand=TradePriceList`,
+                        url: `/odata/TradeAccounts/Default.TradeAccountValueMapper(tradeAccountId=${options.value})`,
                         type: 'GET',
                         success: function (data) {
                             options.success(data.value);
@@ -916,22 +1198,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         },
         dataBound: (e) => self.tradeAccountAwaitingBinding(false),
         clearFunction: self.genericUnsavedChangesClear,
-        parameterMap: (data) => {
-            //Generate parameters in odata v4 format
-            let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-            delete d.$inlinecount; // <-- remove inlinecount
-            delete d.$format; // <-- remove format
-            delete d.$callback; // <-- remove callback
-
-            d.$count = true;
-
-            if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
-                d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
-            }
-
-            return d;
-        },
+        parameterMap: self.generateTradeAccountSuperSetParameterMap('TRADEACCOUNT'),
         popupSettings: {
             appendTo: document.getElementById('trade-account-prefilter')
         }
@@ -1327,7 +1594,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         },
     });
 
-    self.generateSuperSetParameterMap = (defaultODataOperation) => {
+    self.generateProductSuperSetParameterMap = (defaultODataOperation) => {
         return (data) => {
             let defaultOp = defaultODataOperation;
 
@@ -1348,6 +1615,7 @@ const orderBookUserDefinedFiltersViewModel = ({
             let collectionId = null;
             let launchId = null;
             let qualityId = null;
+            let designId = null;
             let supplierId = null;
 
             if (defaultOp.indexOf("BrandID") == -1) {
@@ -1390,6 +1658,12 @@ const orderBookUserDefinedFiltersViewModel = ({
                 qualityId = self.qualityId();
             } else {
                 qualityId = self.qualityId.peek();
+            }
+
+            if (defaultOp.indexOf("DesignID") == -1) {
+                designId = self.designId();
+            } else {
+                designId = self.designId.peek();
             }
 
             // product table map LatestCollectionID...
@@ -1440,9 +1714,7 @@ const orderBookUserDefinedFiltersViewModel = ({
 
             if (collectionId != '') {
                 if (defaultOp != 'PRODUCT') {
-                    filters.push(`CollectionID eq ${CollectionID}`);
-                } else {
-                    filters.push(`CollectionID eq ${CollectionID}`);
+                    filters.push(`CollectionID eq ${collectionId}`);
                 }
             } else {
                 if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "Collection.Name")) {
@@ -1465,6 +1737,19 @@ const orderBookUserDefinedFiltersViewModel = ({
                 if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "Quality.Name")) {
                     let f = data.filter.filters.find(f => f.field === "Quality.Name");
                     filters.push(`(contains(Quality/Name, '${f.value}') or startswith(Quality/Code,'${f.value}'))`);
+
+                    if (d.$filter) {
+                        delete d.$filter;
+                    }
+                }
+            }
+
+            if (designId != '') {
+                filters.push(`DesignID eq ${designId}`);
+            } else {
+                if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "Design.Name")) {
+                    let f = data.filter.filters.find(f => f.field === "Design.Name");
+                    filters.push(`(startwith(Design/Name, '${f.value}'))`);
 
                     if (d.$filter) {
                         delete d.$filter;
@@ -1522,10 +1807,13 @@ const orderBookUserDefinedFiltersViewModel = ({
         select: self.genericUnsavedChangesSelect,
         dataBound: (e) => self.productGroupAwaitingBinding(false),
         clearFunction: self.genericUnsavedChangesClear,
-        parameterMap: self.generateSuperSetParameterMap(self.productGroupGroupBy),
-        //afterClear: self.generateAfterClear(self.productGroupGroupBy),
+        parameterMap: self.generateProductSuperSetParameterMap(self.productGroupGroupBy),
         popupSettings: {
             appendTo: document.getElementById('product-group-prefilter')
+        },
+        sort: {
+            dir: 'asc',
+            field: 'ProductGroup.Name'
         }
     });
 
@@ -1554,10 +1842,13 @@ const orderBookUserDefinedFiltersViewModel = ({
             self.itemTypeAwaitingBinding(false);
             self.itemTypeParams.enable(e.sender.dataSource.data().length != 0);
         },
-        parameterMap: self.generateSuperSetParameterMap(self.itemTypeGroupBy),
-        //afterClear: self.generateAfterClear(self.itemTypeGroupBy),
+        parameterMap: self.generateProductSuperSetParameterMap(self.itemTypeGroupBy),
         popupSettings: {
             appendTo: document.getElementById('product-group-prefilter')
+        },
+        sort: {
+            field: 'ItemType.Name',
+            dir: 'asc'
         }
     });
 
@@ -1583,8 +1874,11 @@ const orderBookUserDefinedFiltersViewModel = ({
         select: self.genericUnsavedChangesSelect,
         dataBound: (e) => self.brandAwaitingBinding(false),
         clearFunction: self.genericUnsavedChangesClear,
-        parameterMap: self.generateSuperSetParameterMap(self.brandsGroupBy),
-        //afterClear: self.generateAfterClear(self.brandsGroupBy)
+        parameterMap: self.generateProductSuperSetParameterMap(self.brandsGroupBy),
+        sort: {
+            field: 'Brand.Name',
+            dir: 'asc'
+        }
     });
 
     self.collectionGroupBy = `groupby((Collection/CollectionID,Collection/Name,Collection/Code))/filter((Collection/CollectionID ne null))`;
@@ -1603,27 +1897,29 @@ const orderBookUserDefinedFiltersViewModel = ({
         endPoint: '/odata/MertexProductClassificationSuperSet',
         textField: 'Collection.Name',
         valueField: 'Collection.CollectionID',
-        virtual: true,
-        pageSize: 40,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                if (options.value) {
-                    $.ajax({
-                        url: `/odata/Collections/Default.CollectionValueMapper(collectionId=${options.value})`,
-                        type: 'GET',
-                        success: function (data) {
-                            options.success([{
-                                Collection: data.value[0]
-                            }]);
-                        }
-                    });
-                } else {
-                    options.success();
-                }
-            }
-        },
+        virtual: false,
+        //pageSize: 40,
+        //virtualOptions: {
+        //    itemHeight: 34,
+        //    mapValueTo: 'dataItem',
+        //    valueMapper: function (options) {
+        //        if (options.value) {
+        //            self.collectionAwaitingBinding(true);
+        //            $.ajax({
+        //                url: `/odata/MertexProductClassificationSuperSet?$apply=groupby((Collection/CollectionID,Collection/Name,Collection/Code))/filter((Collection/CollectionID eq ${options.value}))`,
+        //                type: 'GET',
+        //                success: function (data) {
+        //                    options.success(data[0]);
+        //                    window.setTimeout(() => {
+        //                        self.collectionAwaitingBinding(false);
+        //                    }, 0);
+        //                }
+        //            });
+        //        } else {
+        //            options.success()
+        //        }
+        //    }
+        //},
         template: self.collectionTemplate,
         valueTemplate: self.collectionTemplate,
         idObservable: self.collectionId,
@@ -1637,17 +1933,19 @@ const orderBookUserDefinedFiltersViewModel = ({
         autoBind: true,
         height: 340,
         sort: {
-            dir: 'desc',
-            field: 'Collection.CollectionID'
+            dir: 'asc',
+            field: 'Collection.Name'
         },
         select: self.genericUnsavedChangesSelect,
-        dataBound: (e) => self.collectionAwaitingBinding(false),
+        requestStart: (e) => self.collectionAwaitingBinding(true),
+        dataBound: (e) => window.setTimeout(() => {
+            self.collectionAwaitingBinding(false);
+        }, 0),
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
             appendTo: document.getElementById('collection-prefilter')
         },
-        parameterMap: self.generateSuperSetParameterMap(self.collectionGroupBy),
-        //afterClear: self.generateAfterClear(self.collectionGroupBy)
+        parameterMap: self.generateProductSuperSetParameterMap(self.collectionGroupBy),
     });
 
     self.launchesGroupBy = `groupby((Launch/LaunchID,Launch/Name))/filter((Launch/LaunchID ne null))`;
@@ -1658,27 +1956,29 @@ const orderBookUserDefinedFiltersViewModel = ({
         endPoint: '/odata/MertexProductClassificationSuperSet',
         textField: 'Launch.Name',
         valueField: 'Launch.LaunchID',
-        virtual: true,
-        pageSize: 40,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                if (options.value) {
-                    $.ajax({
-                        url: `/odata/Launches/Default.LaunchValueMapper(launchId=${options.value})`,
-                        type: 'GET',
-                        success: function (data) {
-                            options.success([{
-                                Launch: data.value[0]
-                            }]);
-                        }
-                    });
-                } else {
-                    options.success();
-                }
-            }
-        },
+        virtual: false,
+        //pageSize: 40,
+        //virtualOptions: {
+        //    itemHeight: 34,
+        //    mapValueTo: 'dataItem',
+        //    valueMapper: function (options) {
+        //        if (options.value) {
+        //            self.launchAwaitingBinding(true);
+        //            $.ajax({
+        //                url: `/odata/MertexProductClassificationSuperSet?$apply=groupby((Launch/LaunchID,Launch/Name))/filter((Launch/LaunchID eq ${options.value}))`,
+        //                type: 'GET',
+        //                success: function (data) {
+        //                    options.success(data[0]);
+        //                    window.setTimeout(() => {
+        //                        self.launchAwaitingBinding(false);
+        //                    }, 0)
+        //                }
+        //            });
+        //        } else {
+        //            options.success()
+        //        }
+        //    }
+        //},
         idObservable: self.launchId,
         objObservable: self.launch,
         enable: ko.observable(true),
@@ -1694,10 +1994,12 @@ const orderBookUserDefinedFiltersViewModel = ({
             field: 'Launch.LaunchID'
         },
         select: self.genericUnsavedChangesSelect,
-        dataBound: (e) => self.launchAwaitingBinding(false),
+        requestStart: (e) => self.launchAwaitingBinding(true),
+        dataBound: (e) => window.setTimeout(() => {
+            self.launchAwaitingBinding(false);
+        }, 0),
         clearFunction: self.genericUnsavedChangesClear,
-        parameterMap: self.generateSuperSetParameterMap(self.launchesGroupBy),
-        //afterClear: self.generateAfterClear(self.launchesGroupBy)
+        parameterMap: self.generateProductSuperSetParameterMap(self.launchesGroupBy),
     });
 
     self.qualityGroupBy = `groupby((Quality/QualityID,Quality/Code,Quality/Name))/filter((Quality/QualityID ne null))`;
@@ -1716,27 +2018,29 @@ const orderBookUserDefinedFiltersViewModel = ({
         endPoint: '/odata/MertexProductClassificationSuperSet',
         textField: 'Quality.Name',
         valueField: 'Quality.QualityID',
-        virtual: true,
-        pageSize: 40,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                if (options.value) {
-                    $.ajax({
-                        url: `/odata/Qualities/Default.QualityValueMapper(qualityId=${options.value})`,
-                        type: 'GET',
-                        success: function (data) {
-                            options.success([{
-                                Quality: data.value[0]
-                            }]);
-                        }
-                    });
-                } else {
-                    options.success();
-                }
-            }
-        },
+        virtual: false,
+        //pageSize: 40,
+        //virtualOptions: {
+        //    itemHeight: 34,
+        //    mapValueTo: 'dataItem',
+        //    valueMapper: function (options) {
+        //        if (options.value) {
+        //            self.qualityAwaitingBinding(true);
+        //            $.ajax({
+        //                url: `groupby((Quality/QualityID,Quality/Code,Quality/Name))/filter((Quality/QualityID eq ${options.value}))`,
+        //                type: 'GET',
+        //                success: function (data) {
+        //                    options.success(data[0]);
+        //                    window.setTimeout(() => {
+        //                        self.qualityAwaitingBinding(false);
+        //                    }, 0)
+        //                }
+        //            });
+        //        } else {
+        //            options.success()
+        //        }
+        //    }
+        //},
         template: self.qualityTemplate,
         valueTemplate: self.qualityTemplate,
         idObservable: self.qualityId,
@@ -1754,13 +2058,84 @@ const orderBookUserDefinedFiltersViewModel = ({
             field: 'Quality.QualityID'
         },
         select: self.genericUnsavedChangesSelect,
-        dataBound: (e) => self.qualityAwaitingBinding(false),
+        requestStart: (e) => self.qualityAwaitingBinding(true),
+        dataBound: (e) => window.setTimeout(() => {
+            self.qualityAwaitingBinding(false);
+        }, 0),
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
             appendTo: document.getElementById('quality-prefilter')
         },
-        parameterMap: self.generateSuperSetParameterMap(self.qualityGroupBy),
-        //afterClear: self.generateAfterClear(self.qualityGroupBy)
+        parameterMap: self.generateProductSuperSetParameterMap(self.qualityGroupBy),
+    });
+
+
+
+    self.designGroupBy = `groupby((Design/DesignID,Design/Name))/filter((Design/DesignID ne null))`;
+
+    self.designTemplate = (e) => {
+        if (e.Design && e.Design.DesignID && e.Design.Name) {
+            return `<span title="${e.Design.Name}">${e.Design.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.designParams = kendoMDCDropDownList({
+        label: 'Design',
+        odata: true,
+        endPoint: '/odata/MertexProductClassificationSuperSet',
+        textField: 'Design.Name',
+        valueField: 'Design.DesignID',
+        //virtual: true,
+        //pageSize: 40,
+        //virtualOptions: {
+        //    itemHeight: 34,
+        //    mapValueTo: 'dataItem',
+        //    valueMapper: function (options) {
+        //        if (options.value) {
+        //            self.designAwaitingBinding(true)
+        //            $.ajax({
+        //                url: `/odata/MertexProductClassificationSuperSet?$apply=groupby((Design/DesignID,Design/Name))/filter((Design/DesignID eq ${options.value}))`,
+        //                type: 'GET',
+        //                success: function (data) {
+        //                    options.success(data);
+        //                    window.setTimeout(() => {
+        //                        self.designAwaitingBinding(false);
+        //                    }, 0);
+        //                }
+        //            });
+        //        } else {
+        //            options.success();
+        //        }
+        //    }
+        //},
+        template: self.designTemplate,
+        valueTemplate: self.designTemplate,
+        idObservable: self.designId,
+        objObservable: self.design,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'Design.Name'
+        },
+        select: self.genericUnsavedChangesSelect,
+        requestStart: (e) => self.designAwaitingBinding(true),
+        dataBound: (e) => window.setTimeout(() => {
+            self.designAwaitingBinding(false);
+        }, 0),
+        clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: document.getElementById('design-prefilter')
+        },
+        parameterMap: self.generateProductSuperSetParameterMap(self.designGroupBy),
     });
 
 
@@ -1780,27 +2155,26 @@ const orderBookUserDefinedFiltersViewModel = ({
         endPoint: '/odata/MertexProductClassificationSuperSet',
         textField: 'Supplier.Name',
         valueField: 'Supplier.Code',
-        virtual: true,
-        pageSize: 40,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                if (options.value) {
-                    $.ajax({
-                        url: `/odata/MertexProductClassificationSuperSet?$apply=groupby((Supplier/Code,Supplier/Name))/filter((Supplier/Code eq '${options.value}'))`,
-                        type: 'GET',
-                        success: function (data) {
-                            options.success([{
-                                Supplier: data.value[0]
-                            }]);
-                        }
-                    });
-                } else {
-                    options.success();
-                }
-            }
-        },
+        //virtual: true,
+        //pageSize: 40,
+        //virtualOptions: {
+        //    itemHeight: 34,
+        //    mapValueTo: 'dataItem',
+        //    valueMapper: function (options) {
+        //        if (options.value) {
+        //            self.supplierAwaitingBinding(true)
+        //            $.ajax({
+        //                url: `/odata/MertexProductClassificationSuperSet?$apply=groupby((Supplier/Code,Supplier/Name))/filter((Supplier/Code eq '${options.value}'))`,
+        //                type: 'GET',
+        //                success: function (data) {
+        //                    options.success(data[0]);
+        //                }
+        //            });
+        //        } else {
+        //            options.success();
+        //        }
+        //    }
+        //},
         template: self.supplierTemplate,
         valueTemplate: self.supplierTemplate,
         idObservable: self.supplierId,
@@ -1815,17 +2189,19 @@ const orderBookUserDefinedFiltersViewModel = ({
         height: 340,
         sort: {
             dir: 'asc',
-            field: 'Supplier.Code'
+            field: 'Supplier.Name'
         },
         ignoreCase: false,
         select: self.genericUnsavedChangesSelect,
-        dataBound: (e) => self.supplierAwaitingBinding(false),
+        requestStart: (e) => self.supplierAwaitingBinding(true),
+        dataBound: (e) => window.setTimeout(() => {
+            self.supplierAwaitingBinding(false);
+        }, 0),
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
             appendTo: document.getElementById('supplier-prefilter')
         },
-        parameterMap: self.generateSuperSetParameterMap(self.supplierGroupBy),
-        //afterClear: self.generateAfterClear(self.supplierGroupBy)
+        parameterMap: self.generateProductSuperSetParameterMap(self.supplierGroupBy),
     });
 
     self.productDefault = 'PRODUCT';
@@ -1879,12 +2255,15 @@ const orderBookUserDefinedFiltersViewModel = ({
             field: 'ProductFilter.SortOrder'
         }],
         select: self.genericUnsavedChangesSelect,
-        dataBound: (e) => self.productAwaitingBinding(false),
+        requestStart: (e) => self.productAwaitingBinding(true),
+        dataBound: (e) => window.setTimeout(() => {
+            self.supplierAwaitingBinding(false);
+        }, 0),
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
             appendTo: document.getElementById('product-prefilter')
         },
-        parameterMap: self.generateSuperSetParameterMap(self.productDefault)
+        parameterMap: self.generateProductSuperSetParameterMap(self.productDefault)
     });
 
     self.dataSourceParams = kendoMDCDropDownList({
@@ -1934,8 +2313,12 @@ const orderBookUserDefinedFiltersViewModel = ({
 
     //#region Subscriptions
 
+    self.tradeAccountComputer.subscribe(nv => {
+        self.tradeAccountParams.dropDownListSettings.widget().dataSource.query();
+    });
+
     self.salesMarketsParams.multiSelectSettings.widget.subscribe(nv => {
-        if (self.salesMarketIds()) {
+        if (self.salesMarketIds().length) {
             window.setTimeout(() => {
                 self.salesMarketsParams.multiSelectSettings.widget().value(self.salesMarketIds());
                 window.setTimeout(() => {
@@ -1968,6 +2351,10 @@ const orderBookUserDefinedFiltersViewModel = ({
     self.qualityId.subscribe(nv => {
         console.log('qualityId subscribe hit', nv);
     });
+    
+    self.designId.subscribe(nv => {
+        console.log('designId subscribe hit', nv);
+    });
 
     self.supplierId.subscribe(nv => {
         console.log('supplierId subscribe hit', nv);
@@ -1990,7 +2377,7 @@ const orderBookUserDefinedFiltersViewModel = ({
 
             self.toDate.tempusDominus.updateOptions({
                 restrictions: {
-                    minDate: new Date(nv.getTime() + oneDayMilliseconds)
+                    minDate: new Date(nv.getTime())// + oneDayMilliseconds)
                 }
             });
         } else {
@@ -2014,7 +2401,7 @@ const orderBookUserDefinedFiltersViewModel = ({
 
             self.fromDate.tempusDominus.updateOptions({
                 restrictions: {
-                    maxDate: new Date(nv.getTime() - oneDayMilliseconds)
+                    maxDate: new Date(nv.getTime())// - oneDayMilliseconds)
                 }
             });
         } else {
@@ -2052,9 +2439,15 @@ const orderBookUserDefinedFiltersViewModel = ({
     self.reset = () => {
         self.salesMarketId(EMPTY_STRING);
         self.salesMarket(undefined);
-
+        
         self.salesMarketIds([]);
         self.salesMarkets([]);
+        self.selectedSalesMarketIds([]);
+        self.salesMarketsParams.multiSelectSettings.widget().value([]);
+        self.salesMarketsParams.multiSelectSettings.widget().trigger('change');
+
+        self.countryId(EMPTY_STRING);
+        self.country(undefined);
 
         self.tradeAccountTypeId(EMPTY_STRING);
         self.tradeAccountType(undefined);
@@ -2065,11 +2458,21 @@ const orderBookUserDefinedFiltersViewModel = ({
         self.salesAgentId(EMPTY_STRING);
         self.salesAgent(undefined);
 
+        self.salesAreaId(EMPTY_STRING);
+        self.salesArea(undefined);
+
         self.tradeAccountGroupId(EMPTY_STRING);
         self.tradeAccountGroup(undefined);
 
-        self.tradeAccountId(EMPTY_STRING);
-        self.tradeAccount(undefined);
+        self.paymentTermsId(EMPTY_STRING);
+        self.paymentTerms(undefined);
+
+        self.paymentTermsTypeId(EMPTY_STRING);
+        self.paymentTermsType(undefined);
+
+        //self.tradeAccountId(EMPTY_STRING);
+        //self.tradeAccount(undefined);
+        self.tradeAccountParams.clearFunction();
 
         self.orderId(EMPTY_STRING);
         self.order(undefined);
@@ -2105,6 +2508,9 @@ const orderBookUserDefinedFiltersViewModel = ({
         self.qualityId(EMPTY_STRING);
         self.quality(undefined);
 
+        self.designId(EMPTY_STRING);
+        self.design(undefined);
+
         self.supplierId(EMPTY_STRING);
         self.supplier(undefined);
 
@@ -2123,7 +2529,7 @@ const orderBookUserDefinedFiltersViewModel = ({
 
     self.togglePinning = (data, event) => {
         self.sidebarElement.classList.toggle('pinned');
-        event.target.closest('button') && event.target.closest('button').blur();
+        event && event.target.closest('button') && event.target.closest('button').blur();
     }
 
     self.json = ko.computed(() => {
@@ -2134,7 +2540,11 @@ const orderBookUserDefinedFiltersViewModel = ({
                 tradeAccountTypeId: self.tradeAccountTypeId() || null,
                 salesRepresentativeId: self.salesRepresentativeId() || null,
                 salesAgentId: self.salesAgentId() || null,
+                salesAreaId: self.salesAreaId() || null,
+                countryId: self.countryId() || null,
                 tradeAccountGroupId: self.tradeAccountGroupId() || null,
+                paymentTermsId: self.paymentTermsId() || null,
+                paymentTermsTypeId: self.paymentTermsTypeId() || null,
                 tradeAccountId: self.tradeAccountId() || null,
                 orderId: self.orderId() || null,
                 startDate: self.fromDate() ? moment(self.fromDate()).format('YYYY/MM/DD') : null,
@@ -2148,6 +2558,7 @@ const orderBookUserDefinedFiltersViewModel = ({
                 collectionId: self.collectionId() || null,
                 launchId: self.launchId() || null,
                 qualityId: self.qualityId() || null,
+                designId: self.designId() || null,
                 supplierCode: self.supplierId() || null,
                 productId: self.productId() || null,
                 allocated: self.allocatedId() || null,
@@ -2180,41 +2591,3 @@ const orderBookUserDefinedFiltersViewModel = ({
 
     return self;
 };
-
-//self.generateAfterClear = (defaultGroupBy) => {
-//    return () => {
-//        let filters = [];
-
-//        if (defaultGroupBy.indexOf('BrandID') == -1) {
-//            filters.push(self.brandParams.dropDownListSettings.widget());
-//        }
-
-//        if (defaultGroupBy.indexOf('SupplierCode') == -1) {
-//            filters.push(self.supplierParams.dropDownListSettings.widget());
-//        }
-
-//        if (defaultGroupBy.indexOf('ProductGroupID') == -1) {
-//            filters.push(self.productGroupParams.dropDownListSettings.widget());
-//        }
-
-//        if (defaultGroupBy.indexOf('ItemTypeID') == -1) {
-//            filters.push(self.itemTypeParams.dropDownListSettings.widget());
-//        }
-
-//        if (defaultGroupBy.indexOf('CollectionID') == -1) {
-//            filters.push(self.collectionParams.dropDownListSettings.widget());
-//        }
-
-//        if (defaultGroupBy.indexOf('LaunchID') == -1) {
-//            filters.push(self.launchParams.dropDownListSettings.widget());
-//        }
-
-//        if (defaultGroupBy.indexOf('QualityID') == -1) {
-//            filters.push(self.qualityParams.dropDownListSettings.widget());
-//        }
-
-//        filters.forEach(f => {
-//            //f.dataSource.read();
-//        })
-//    }
-//}

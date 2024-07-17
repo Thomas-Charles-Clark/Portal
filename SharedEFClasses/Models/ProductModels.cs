@@ -359,6 +359,10 @@ namespace SharedEFClasses.Models.Products
 
         [JsonIgnore]
         public virtual ICollection<Product> Products { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("Design")]
+        public virtual ICollection<MertexProductClassificationSuperSet> MertexProductClassificationSuperSetRecords { get; set; }
     }
 
     public class ItemType

@@ -208,7 +208,8 @@ textarea.mdc-text-field__input {
         display: flex;
 
         .close.revert,
-        .close.clear {
+        .close.clear,
+        .close.select-all {
             padding: 0 $sm-gutter;
             display: inline;
             position: static;

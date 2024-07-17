@@ -1721,6 +1721,8 @@ namespace Portal.Controllers
 
                 PortalDb.BasketReload(user.Id, objBasket.BasketID);
 
+                b = PortalDb.Baskets.Where(p => p.BasketID == objBasket.BasketID).SingleOrDefault();
+
                 GlobalHost.ConnectionManager.GetHubContext<BasketLockHub>()
                    .Clients.All.receiveOrderProductsGridViewRefresh();
                 //var lines = PortalDb.FetchBasket(objBasket);

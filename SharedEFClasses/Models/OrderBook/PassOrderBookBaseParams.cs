@@ -18,6 +18,8 @@ namespace SharedEFClasses.Models.OrderBook
         public IEnumerable<byte> MarketIDs { get; set; }
         public int? TradeAccountID { get; set; }
         public short? TradeAccountGroupID { get; set; }
+        public byte? PaymentTermsID { get; set; }
+        public byte? PaymentTermsTypeID { get; set; }
         public short? TradeAccountTypeID { get; set; }
         public short? SalesRepresentativeID { get; set; }
         public short? SalesAgentID { get; set; }
@@ -30,7 +32,7 @@ namespace SharedEFClasses.Models.OrderBook
         public byte? BrandID { get; set; }
         public short? CollectionID { get; set; }
         public short? QualityID { get; set; }
-        public short? DesignID { get; set; }
+        public int? DesignID { get; set; }
         public int? ProductID { get; set; }
         public string ProductStatus { get; set; }
         public short? LaunchID { get; set; }

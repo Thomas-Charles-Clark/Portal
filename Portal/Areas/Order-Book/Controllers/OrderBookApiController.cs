@@ -60,6 +60,13 @@ namespace Portal.Areas.Sales.Controllers
             return Ok(result);
         }
 
+        public async Task<IHttpActionResult> AccuracyCheck()
+        {
+            var accuracyResult = await PortalDB.FetchOrderBookAccurateAsAtDT();
+
+            return Ok(accuracyResult);
+        }
+
         public async Task<IHttpActionResult> DetailRefresh([FromBody]ExpandoObject dto)
         {
             var detailResult = await PortalDB.FetchOrderBookDetail((string)dto.FirstOrDefault(kvp => kvp.Key == "procedure").Value, dto);
@@ -125,11 +132,11 @@ namespace Portal.Areas.Sales.Controllers
                 //    bytes = fs.GetBuffer();// result.Content.ReadAsByteArrayAsync().Result;
                 //}
 
-#if DEBUG
-                var result = await client.PostAsync("https://localhost:44354/api/excel/GetFileStream", content);
-#else
+//#if DEBUG
+                //var result = await client.PostAsync("https://localhost:44354/api/excel/GetFileStream", content);
+//#else
                 var result = await client.PostAsync("https://excel.designersguild.com/api/excel/GetFileStream", content);
-#endif
+//#endif
 
                 if (result.StatusCode == System.Net.HttpStatusCode.OK)
                 {

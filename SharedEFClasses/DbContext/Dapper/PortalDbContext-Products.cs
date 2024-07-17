@@ -155,9 +155,9 @@ namespace SharedEFClasses.Models
             }, null, null, System.Data.CommandType.StoredProcedure);
         }
 
-        public async Task<IEnumerable<Supplier>> SupplierList(SharedEFClasses.Models.Orders.PassProductCode objProductCode)
+        public async Task<IEnumerable<SupplierSelectResult>> SupplierList(SharedEFClasses.Models.Orders.PassProductCode objProductCode)
         {
-            return await this.Database.Connection.QueryAsync<Supplier>("[portal].[Supplier_SelectByProductCode]", new
+            return await this.Database.Connection.QueryAsync<SupplierSelectResult>("[portal].[Supplier_SelectByProductCode]", new
             {
                 ProductCode = objProductCode.code
             }, null, null, System.Data.CommandType.StoredProcedure);

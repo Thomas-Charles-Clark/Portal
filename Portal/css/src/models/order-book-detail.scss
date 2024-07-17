@@ -64,6 +64,19 @@ $light-blue-background: tint-color($blue-200, 90%);
                     &.sortable-column {
                         cursor: pointer;
                     }
+
+                    &:nth-of-type(1),
+                    &:nth-of-type(2),
+                    &:nth-of-type(3),
+                    &:nth-of-type(4) {
+                        position: sticky;
+                        left: var(--left-offset);
+                        z-index: 2;
+                    }
+
+                    &:nth-of-type(4) {
+                        border-right: 1px solid $gray-200;
+                    }
                 }
             }
 
@@ -88,6 +101,20 @@ $light-blue-background: tint-color($blue-200, 90%);
                     height: 36px;
                     overflow-x: hidden;
                     border-bottom: 1px solid $gray-400;
+                    background-color: $white;
+
+                    &:nth-of-type(1),
+                    &:nth-of-type(2),
+                    &:nth-of-type(3),
+                    &:nth-of-type(4) {
+                        position: sticky;
+                        left: var(--left-offset);
+                        z-index: 2;
+                    }
+
+                    &:nth-of-type(4) {
+                        border-right: 1px solid $gray-200;
+                    }
 
                     span {
                         display: block;

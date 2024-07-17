@@ -81,6 +81,7 @@ namespace SharedEFClasses.Models
         public DbSet<SalesAgent> SalesAgents { get; set; }
         public DbSet<SalesArea> SalesAreas { get; set; }
         public DbSet<PaymentTerms> PaymentTerms { get; set; }
+        public DbSet<PaymentTermsType> PaymentTermsTypes { get; set; }
         public DbSet<SalesMarket> SalesMarkets { get; set; }
         public DbSet<Colour> Colours { get; set; }
         public DbSet<Pattern> Patterns { get; set; }
@@ -130,6 +131,7 @@ namespace SharedEFClasses.Models
         public DbSet<ContractProductRestriction> ContractProductRestrictions { get; set; }
 
         public DbSet<MertexProductClassificationSuperSet> MertexProductClassificationSuperSet { get; set; }
+        public DbSet<MertexTradeAccountClassificationSuperSet> MertexTradeAccountClassificationSuperSet { get; set; }
 
         #endregion
 

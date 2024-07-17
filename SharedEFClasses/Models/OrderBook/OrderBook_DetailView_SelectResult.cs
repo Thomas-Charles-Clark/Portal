@@ -12,5 +12,6 @@ namespace SharedEFClasses.Models.OrderBook
     {
         public DateTime AccurateAsOfDT { get; set; }
         public object Data { get; set; }
+        public object Columns { get; set; }
     }
 }

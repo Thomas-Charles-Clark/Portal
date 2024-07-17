@@ -16,13 +16,13 @@
     <table id="order-book-detail-table" class="table table-condensed table-striped table-hover order-book-detail-table">
         <colgroup>
             <!-- ko foreach: $parent.columns -->
-            <col style="width: 240px;" />
+            <col data-bind="style: { width: `${$data.width}px` }" />
             <!-- /ko -->
         </colgroup>
         <thead>
             <tr>
                 <!-- ko foreach: $parent.columns -->
-                <th class="sortable-column" data-bind="click: $root.sortByColumn">
+                <th class="sortable-column" data-bind="click: $root.sortByColumn, style: { '--left-offset': `${$parentContext.$parent.columns().reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }">
                     <span data-bind="text: columnNameDisplay"></span>
                     <!-- ko if: direction -->
                     <i class="bi" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
@@ -32,7 +32,7 @@
             </tr>
             <tr class="subtotal-row">
                 <!-- ko foreach: $parent.columns -->
-                <th data-bind="text: total"></th>
+                <th data-bind="text: total, style: { '--left-offset': `${$parentContext.$parent.columns().reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }"></th>
                 <!-- /ko -->
             </tr>
         </thead>
@@ -44,7 +44,7 @@
         <tbody data-bind="foreach: visibleItems">
             <tr>
                 <!-- ko foreach: $parentContext.$parent.columns -->
-                <td>
+                <td data-bind="style: { '--left-offset': `${$parentContext.$parentContext.$parent.columns().reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }">
                     <span data-bind="text: $parent[columnName]"></span>
                 </td>
                 <!-- /ko -->

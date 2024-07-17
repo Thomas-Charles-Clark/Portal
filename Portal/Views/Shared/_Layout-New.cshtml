@@ -1423,15 +1423,22 @@
                     <div class="mdc-notched-outline__trailing"></div>
                 </div>
                 <div class="controls">
+                    <!-- ko if: typeof showSelectAll != 'undefined' && ko.unwrap(showSelectAll) -->
+                    <div class="close select-all" data-bind="click: selectAllFunction" title="Select All">
+                        <i class="material-icons">
+                            done_all
+                        </i>
+                    </div>
+                    <!-- /ko -->
                     <!-- ko if: revertible -->
-                    <div class="close revert" data-bind="click: revertFunction">
+                    <div class="close revert" data-bind="click: revertFunction" title="Revert">
                         <i class="material-icons">
                             replay
                         </i>
                     </div>
                     <!-- /ko -->
                     <!-- ko if: clearable -->
-                    <div class="close clear" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
+                    <div class="close clear" title="Clear" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }">
                         &times;
                     </div>
                     <!-- /ko -->

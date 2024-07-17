@@ -57,35 +57,37 @@ namespace SharedEFClasses.Models
                     // Trade Account Filters
                     dto.MarketID,
                     MarketIDs,
-                    dto.TradeAccountID,
-                    dto.TradeAccountGroupID,
-                    dto.TradeAccountTypeID,
                     dto.SalesRepresentativeID,
                     dto.SalesAgentID,
                     dto.SalesAreaID,
                     dto.CountryID,
+                    dto.TradeAccountTypeID,
+                    dto.TradeAccountGroupID,
+                    dto.PaymentTermsID,
+                    dto.PaymentTermsTypeID,
+                    dto.TradeAccountID,
+
+                    // Order Filters
+                    dto.OrderID,
+                    dto.OrderTakerCode,
+                    dto.StartDate,
+                    dto.EndDate,
+                    dto.HaulierCode,
+                    dto.Allocated,
+                    dto.TransactionTypeID,
+                    dto.DeliveryType,
 
                     // Product Filters
                     dto.ProductGroupID,
                     dto.ItemTypeID,
                     dto.BrandID,
                     dto.CollectionID,
+                    dto.LaunchID,
                     dto.QualityID,
                     dto.DesignID,
+                    dto.SupplierCode,
                     dto.ProductID,
                     dto.ProductStatus,
-                    dto.LaunchID,
-                    dto.SupplierCode,
-
-                    // Order Filters
-                    dto.OrderID,
-                    dto.HaulierCode,
-                    dto.StartDate,
-                    dto.EndDate,
-                    dto.Allocated,
-                    dto.TransactionTypeID,
-                    dto.OrderTakerCode,
-                    dto.DeliveryType,
                 }, null, 30, CommandType.StoredProcedure);
 
             return results;
@@ -108,35 +110,37 @@ namespace SharedEFClasses.Models
                     // Trade Account Filters
                     dto.MarketID,
                     MarketIDs,
-                    dto.TradeAccountID,
-                    dto.TradeAccountGroupID,
-                    dto.TradeAccountTypeID,
                     dto.SalesRepresentativeID,
                     dto.SalesAgentID,
                     dto.SalesAreaID,
                     dto.CountryID,
+                    dto.TradeAccountTypeID,
+                    dto.TradeAccountGroupID,
+                    dto.PaymentTermsID,
+                    dto.PaymentTermsTypeID,
+                    dto.TradeAccountID,
+
+                    // Order Filters
+                    dto.OrderID,
+                    dto.OrderTakerCode,
+                    dto.StartDate,
+                    dto.EndDate,
+                    dto.HaulierCode,
+                    dto.Allocated,
+                    dto.TransactionTypeID,
+                    dto.DeliveryType,
 
                     // Product Filters
                     dto.ProductGroupID,
                     dto.ItemTypeID,
                     dto.BrandID,
                     dto.CollectionID,
+                    dto.LaunchID,
                     dto.QualityID,
                     dto.DesignID,
+                    dto.SupplierCode,
                     dto.ProductID,
                     dto.ProductStatus,
-                    dto.LaunchID,
-                    dto.SupplierCode,
-
-                    // Order Filters
-                    dto.OrderID,
-                    dto.HaulierCode,
-                    dto.StartDate,
-                    dto.EndDate,
-                    dto.Allocated,
-                    dto.TransactionTypeID,
-                    dto.OrderTakerCode,
-                    dto.DeliveryType,
                 }, null, 30, CommandType.StoredProcedure);
 
             var sb = new StringBuilder();
@@ -166,35 +170,37 @@ namespace SharedEFClasses.Models
                     // Trade Account Filters
                     dto.MarketID,
                     MarketIDs,
-                    dto.TradeAccountID,
-                    dto.TradeAccountGroupID,
-                    dto.TradeAccountTypeID,
                     dto.SalesRepresentativeID,
                     dto.SalesAgentID,
                     dto.SalesAreaID,
                     dto.CountryID,
+                    dto.TradeAccountTypeID,
+                    dto.TradeAccountGroupID,
+                    dto.PaymentTermsID,
+                    dto.PaymentTermsTypeID,
+                    dto.TradeAccountID,
+
+                    // Order Filters
+                    dto.OrderID,
+                    dto.OrderTakerCode,
+                    dto.StartDate,
+                    dto.EndDate,
+                    dto.HaulierCode,
+                    dto.Allocated,
+                    dto.TransactionTypeID,
+                    dto.DeliveryType,
 
                     // Product Filters
                     dto.ProductGroupID,
                     dto.ItemTypeID,
                     dto.BrandID,
                     dto.CollectionID,
+                    dto.LaunchID,
                     dto.QualityID,
                     dto.DesignID,
+                    dto.SupplierCode,
                     dto.ProductID,
                     dto.ProductStatus,
-                    dto.LaunchID,
-                    dto.SupplierCode,
-
-                    // Order Filters
-                    dto.OrderID,
-                    dto.HaulierCode,
-                    dto.StartDate,
-                    dto.EndDate,
-                    dto.Allocated,
-                    dto.TransactionTypeID,
-                    dto.OrderTakerCode,
-                    dto.DeliveryType,
                 }, null, 30, CommandType.StoredProcedure);
 
             return new OrderBook_MainSummary_SelectResult()
@@ -277,8 +283,6 @@ namespace SharedEFClasses.Models
             //    sb.Append(part);
             //}
 
-
-
             var reader = await this.Database.Connection.QueryMultipleAsync($"[portal].[OrderBook_DetailView_{procedureName}]", dynParams, null, 30, CommandType.StoredProcedure);
 
             var accurateDt = await reader.ReadSingleAsync<DateTime>();
@@ -290,13 +294,28 @@ namespace SharedEFClasses.Models
                 data = "[]";
             }
 
+            var columnData = String.Join("", await reader.ReadAsync<string>());
+
+            if (String.IsNullOrEmpty(columnData))
+            {
+                columnData = "[]";
+            }
+
             return new OrderBook_DetailView_SelectResult()
             {
                 AccurateAsOfDT = accurateDt,
+                Columns = JArray.Parse(columnData),
                 Data = JArray.Parse(data)
             };
 
             //return sb.ToString();
+        }
+
+        public async Task<DateTime> FetchOrderBookAccurateAsAtDT()
+        {
+            var result = await this.Database.Connection.QuerySingleAsync<DateTime>("[portal].[OrderBook_MainSummary_AccurateAsOfSelect]", null, null, 30, CommandType.StoredProcedure);
+
+            return result;
         }
 
         public async Task<OrderBookOrderLineInspectResult> FetchOrderBookOrderLineInspect(PassOrderBookOrderLinePopoverFetch dto)

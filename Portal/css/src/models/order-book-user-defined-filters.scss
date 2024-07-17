@@ -86,7 +86,7 @@ $light-blue-bg: tint-color($blue-100, 80%);
     &:hover,
     &:focus-within,
     &.pinned {
-        width: 280px;
+        width: 560px;
 
         #sidebar-collapse {
             opacity: 1;
@@ -94,7 +94,7 @@ $light-blue-bg: tint-color($blue-100, 80%);
 
         .btn-reset,
         .btn-refresh {
-            width: 233px;
+            width: 514px;
             padding-left: $btn-padding-x;
             padding-right: $btn-padding-x;
             opacity: 1;
@@ -184,7 +184,8 @@ $light-blue-bg: tint-color($blue-100, 80%);
             }
 
             :after {
-                top: 6px;
+                top: 50%;
+                transform: translateY(-50%);
                 right: 8px;
             }
 
@@ -226,10 +227,10 @@ $light-blue-bg: tint-color($blue-100, 80%);
             }
 
             .controls {
-                height: 28px;
+                /*height: 28px;*/
 
                 .close.clear {
-                    line-height: 28px;
+                    /*line-height: 28px;*/
                 }
             }
         }
@@ -336,7 +337,8 @@ $light-blue-bg: tint-color($blue-100, 80%);
         position: relative;
     }
 
-    #display-mode-list {
+    #display-mode-list,
+    #column-display-list {
         cursor: pointer;
 
         li {
@@ -401,6 +403,34 @@ $light-blue-bg: tint-color($blue-100, 80%);
         &.mdc-select--selected {
             .k-dropdown-wrap.k-state-default {
                 /*font-weight: bold;*/
+            }
+        }
+    }
+}
+
+#sales-markets-prefilter {
+    .k-list-container {
+        .k-list-scroller {
+            .market-multiselect-checkbox {
+                flex: 1;
+
+                label {
+                    display: flex;
+                    align-items: center;
+                    gap: $sm-gutter;
+                    cursor: pointer;
+
+                    .form-check-input {
+                        margin-top: -5px;
+                    }
+                }
+            }
+
+            .k-item {
+                &.k-state-selected {
+                    background-color: $blue-700;
+                    color: $white;
+                }
             }
         }
     }

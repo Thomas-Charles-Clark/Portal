@@ -9,8 +9,12 @@
         <div id="sales-markets-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-multiselect-component', params: salesMarketsParams }"></div>
         <div id="sales-representative-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesRepresentativeParams }"></div>
         <div id="sales-agent-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesAgentParams }"></div>
+        <div id="sales-area-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesAreaParams }"></div>
+        <div id="country-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: countryParams }"></div>
         <div id="trade-account-type-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountTypeParams }"></div>
         <div id="trade-account-group-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountGroupParams }"></div>
+        <div id="payment-terms-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsParams }"></div>
+        <div id="payment-terms-type-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsTypeParams }"></div>
         <div id="trade-account-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountParams }"></div>
     </div>
     <div>
@@ -36,6 +40,7 @@
         <div id="collection-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: collectionParams }"></div>
         <div id="launch-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: launchParams }"></div>
         <div id="quality-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: qualityParams }"></div>
+        <div id="design-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: designParams }"></div>
         <div id="supplier-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
         <div id="product-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productParams }"></div>
     </div>
@@ -51,7 +56,7 @@
     </div>
     <div>
         <h5 class="sidebar-heading">
-            Display
+            Values
         </h5>
         <ul id="display-mode-list" class="list-group">
             <li class="list-group-item" data-bind="css: { 'disabled': parent.displayModes().length == 1 && parent.displayModes()[0] == 1 }">
@@ -126,6 +131,23 @@
                     </span>
                 </label>
             </li>
+        </ul>
+        <h5 class="sidebar-heading">
+            Groups
+        </h5>
+        <ul id="column-display-list" class="list-group">
+            <!-- ko foreach: $parent.columnHeadings -->
+            <li class="list-group-item" data-bind="css: { 'disabled': $parentContext.$parent.displayColumnHeadings().length == 1 && $parentContext.$parent.displayColumnHeadings()[0] === $data.orderStatusGroupSortOrder }">
+                <label class="form-check">
+                    <input class="form-check-input" type="checkbox" id="column-heading-mode-value" data-bind="checked: $parentContext.$parent.displayColumnHeadings,
+                        checkedValue: $data.orderStatusGroupSortOrder,
+                        attr: {
+                            disabled: $parentContext.$parent.displayColumnHeadings().length == 1 && $parentContext.$parent.displayColumnHeadings()[0] === $data.orderStatusGroupSortOrder
+                        }">
+                    <span data-bind="text: orderStatusGroupName"></span>
+                </label>
+            </li>
+            <!-- /ko -->
         </ul>
         <div id="data-source-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: dataSourceParams }"></div>
     </div>

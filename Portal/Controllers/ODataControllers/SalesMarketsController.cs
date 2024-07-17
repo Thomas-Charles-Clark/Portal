@@ -59,7 +59,8 @@ namespace Portal.Controllers
             short? tradeAccountTypeId = null,
             int? tradeAccountGroupId = null,
             short? salesRepresentativeId = null,
-            short? salesAgentId = null)
+            short? salesAgentId = null,
+            short? salesAreaId = null)
         {
             return PortalDb.SalesMarkets.Where(sm => 
                 (tradeAccountId == null || sm.TradeAccounts.Any(ta => ta.TradeAccountID == tradeAccountId.Value)) &&
