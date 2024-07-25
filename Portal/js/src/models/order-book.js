@@ -5,6 +5,30 @@
     DISPLAY_MODE_PERCENTAGE_FULL = 5,
     DISPLAY_MODE_PERCENTAGE_FILTER = 6
 
+const DISPLAY_MODES = [{
+    label: 'Order Value £',
+    value: DISPLAY_MODE_VALUE_SUM,
+    children: [{
+        label: '% of Full Order Book',
+        value: DISPLAY_MODE_PERCENTAGE_FULL
+    }, {
+        label: '% of Filtered Order Book',
+        value: DISPLAY_MODE_PERCENTAGE_FILTER
+    }]
+}, {
+    label: 'Order Quantity',
+    value: DISPLAY_MODE_QUANTITY_SUM,
+    children: []
+}, {
+    label: 'No. of Lines',
+    value: DISPLAY_MODE_LINE_COUNT,
+    children: []
+}, {
+    label: 'No. of Orders',
+    value: DISPLAY_MODE_ORDER_COUNT,
+    children: []
+}]
+
 const orderBookViewModel = (() => {
 
     //#region Properties
@@ -13,7 +37,13 @@ const orderBookViewModel = (() => {
 
     self.busy = ko.observable(false);
 
-    self.displayModes = ko.observableArray([DISPLAY_MODE_VALUE_SUM]);
+    self.displayModes = ko.observableArray([DISPLAY_MODE_VALUE_SUM]); // this now belongs to just the main summary grid Totals segment at the top
+
+    self.datesDisplayModes = ko.observableArray([DISPLAY_MODE_VALUE_SUM, DISPLAY_MODE_ORDER_COUNT]); // this now belongs to just the main summary grid Totals segment at the top
+
+    self.podsDisplayModes = ko.observableArray([DISPLAY_MODE_VALUE_SUM, DISPLAY_MODE_ORDER_COUNT]); // this now belongs to just the main summary grid Totals segment at the top
+
+    self.salesDisplayModes = ko.observableArray([DISPLAY_MODE_VALUE_SUM, DISPLAY_MODE_ORDER_COUNT]); // this now belongs to just the main summary grid Totals segment at the top
 
     let emptyParams = {
         dateBasis: 'O'
@@ -61,26 +91,55 @@ const orderBookViewModel = (() => {
 
     self.detailModalBusy = ko.observable(false);
 
+    self.displayColumnHeadingsSelection = ko.observableArray([]);
+
+    self.availableDisplayModes = ko.observableArray(DISPLAY_MODES),
+
     //#endregion
 
 
     //#region Components
 
+    self.displayColumnHeadingsParams = {
+        widget: ko.observable(),
+        btnMarkup: `<span>
+                Columns
+            </span>
+            <i class="bi bi-collection ms-auto"></i>`,
+        displayClass: "btn-secondary dropdown-toggle d-flex gap-3 justify-content-between align-items-center",
+        elementId: "column-groups-btn",
+        controls: {
+            selectAll: () => {
+                //console.log('selectAll');
+                self.displayColumnHeadingsSelection(self.columnHeadings().map(d => d.orderStatusGroupSortOrder));
+            },
+            deselectAll: () => {
+                //console.log('deselectAll');
+                self.displayColumnHeadingsSelection([]);
+            },
+            applySelection: (hide) => {
+                //console.log('apply');
+                if (hide != false) {
+                    bootstrap.Dropdown.getOrCreateInstance(self.displayColumnHeadingsSelection.DOMElement).hide();
+                }
 
+                let a = JSON.stringify(self.displayColumnHeadings());
+                let b = JSON.stringify(self.displayColumnHeadingsSelection());
+
+                if (a != b) {
+                    self.displayColumnHeadings(JSON.parse(b));
+                    self.fetch(self.userDefinedFilters.json());
+                }
+            }
+        },
+        observableArray: self.displayColumnHeadingsSelection,
+        options: self.columnHeadings
+    }
 
     //#endregion
 
 
     //#region Computeds
-
-    self.displayModeDisplay = ko.computed(() => {
-        let result = self.displayModes().length;
-        let plural = 'ies';
-        if (result == 1) {
-            plural = 'y';
-        }
-        return `(${result} Propert${plural} Selected)`;
-    }, self);
 
     self.orderStatuses = ko.computed(() => {
         return self.columnHeadings().flatMap(ch => ch.orderStatuses);
@@ -95,10 +154,22 @@ const orderBookViewModel = (() => {
         return self.visibleColumns().flatMap(ch => ch.orderStatuses);
     }, self);
 
+    self.visibleColumnsJson = ko.computed(() => {
+        return JSON.stringify(self.visibleColumns());
+    })
+
     //#endregion
 
 
     //#region Subscriptions
+
+    self.displayModes.subscribe(changes => {
+        if (changes.find(c => c.status == 'deleted' && c.value == DISPLAY_MODE_VALUE_SUM)) {
+            self.displayModes.remove(dm => {
+                return dm == DISPLAY_MODE_PERCENTAGE_FULL || dm == DISPLAY_MODE_PERCENTAGE_FILTER;
+            });
+        }
+    }, self, 'arrayChange');
 
     self.userDefinedFilters.json.subscribe((nv) => {
         self.fetch(nv);
@@ -108,6 +179,10 @@ const orderBookViewModel = (() => {
         let sortOrders = nv.map((c, i) => c.orderStatusGroupSortOrder);
         self.displayColumnHeadings(sortOrders);
     });
+
+    //self.displayColumnHeadingsJson.subscribe(nv => {
+    //    self.fetch(self.userDefinedFilters.json());
+    //});
 
     //#endregion
 
@@ -121,94 +196,137 @@ const orderBookViewModel = (() => {
 
     //#region Functions
 
-    self.getVisibleGrandTotal = () => {
-        let orderStatusGroupIds = self.visibleColumns().map(vc => vc.orderStatusGroupId);
+    //self.getVisibleGrandTotal = () => {
+    //    let orderStatusGroupIds = self.visibleColumns().map(vc => vc.orderStatusGroupId);
 
-        let records = self.results().filter(r => {
-            return (
-                orderStatusGroupIds.indexOf(r.OrderStatusGroupID) > -1 &&
-                r.OrderStatusID == null &&
-                r.StockLocationGroupID == null &&
-                r.OrderGroupID == null
-            );
-        });
+    //    let records = self.results().filter(r => {
+    //        return (
+    //            orderStatusGroupIds.indexOf(r.OrderStatusGroupID) > -1 &&
+    //            r.OrderStatusID == null &&
+    //            r.StockLocationGroupID == null &&
+    //            r.OrderGroupID == null
+    //        );
+    //    });
 
-        let result = records.reduce((a, i) => {
-            a.OrderValue += +(i.OrderValue.replace(/[^\d.]*/g, ''));
-            a.LineCount += +(i.LineCount.replace(/[^\d.]*/g, ''));
-            a.OrderCount += +(i.OrderCount.replace(/[^\d.]*/g, ''));
-            a.OrderQuantity += +(i.OrderQuantity.replace(/[^\d.]*/g, ''));
-            a.PercentageOfFilteredOrderBook += +(i.PercentageOfFilteredOrderBook.replace(/[^\d.]*/g, ''));
-            a.PercentageOfFullOrderBook += +(i.PercentageOfFullOrderBook.replace(/[^\d.]*/g, ''));
-            return a;
-        }, {
-            OrderValue: 0,
-            LineCount: 0,
-            OrderCount: 0,
-            OrderQuantity: 0,
-            PercentageOfFilteredOrderBook: 0,
-            PercentageOfFullOrderBook: 0
-        });
+    //    let result = records.reduce((a, i) => {
+    //        a.OrderValue += +(i.OrderValue.replace(/[^\d.]*/g, ''));
+    //        a.LineCount += +(i.LineCount.replace(/[^\d.]*/g, ''));
+    //        a.OrderCount += +(i.OrderCount.replace(/[^\d.]*/g, ''));
+    //        a.OrderQuantity += +(i.OrderQuantity.replace(/[^\d.]*/g, ''));
+    //        a.PercentageOfFilteredOrderBook += +(i.PercentageOfFilteredOrderBook.replace(/[^\d.]*/g, ''));
+    //        a.PercentageOfFullOrderBook += +(i.PercentageOfFullOrderBook.replace(/[^\d.]*/g, ''));
+    //        return a;
+    //    }, {
+    //        OrderValue: 0,
+    //        LineCount: 0,
+    //        OrderCount: 0,
+    //        OrderQuantity: 0,
+    //        PercentageOfFilteredOrderBook: 0,
+    //        PercentageOfFullOrderBook: 0
+    //    });
 
-        result.OrderValue = formatCurrency(result.OrderValue, 0, 'en-GB', 'GBP');
-        result.LineCount = formatNumber(result.LineCount, 0, 'en-GB');
-        result.OrderCount = formatNumber(result.OrderCount, 0, 'en-GB');
-        result.OrderQuantity = formatNumber(result.OrderQuantity, 0, 'en-GB');
-        result.PercentageOfFilteredOrderBook = formatPercentage(result.PercentageOfFilteredOrderBook / 100, 1, 'en-GB');
-        result.PercentageOfFullOrderBook = formatPercentage(result.PercentageOfFullOrderBook / 100, 1, 'en-GB');
+    //    result.OrderValue = formatCurrency(result.OrderValue, 0, 'en-GB', 'GBP');
+    //    result.LineCount = formatNumber(result.LineCount, 0, 'en-GB');
+    //    result.OrderCount = formatNumber(result.OrderCount, 0, 'en-GB');
+    //    result.OrderQuantity = formatNumber(result.OrderQuantity, 0, 'en-GB');
+    //    result.PercentageOfFilteredOrderBook = formatPercentage(result.PercentageOfFilteredOrderBook / 100, 1, 'en-GB');
+    //    result.PercentageOfFullOrderBook = formatPercentage(result.PercentageOfFullOrderBook / 100, 1, 'en-GB');
 
-        //console.log(result);
+    //    //console.log(result);
 
-        return orderBookMainCell({
-            parent: self,
-            data: result,
-            grouping: false
-        });
+    //    return orderBookMainCell({
+    //        parent: self,
+    //        data: result,
+    //        grouping: false
+    //    });
+    //}
+
+    //self.getVisibleSubTotal = (orderGroupId, stockLocationGroupId) => {
+    //    let orderStatusGroupIds = self.visibleColumns().map(vc => vc.orderStatusGroupId);
+
+    //    let records = self.results().filter(r => {
+    //        return (
+    //            orderStatusGroupIds.indexOf(r.OrderStatusGroupID) > -1 &&
+    //            r.OrderStatusID == null &&
+    //            r.StockLocationGroupID == stockLocationGroupId &&
+    //            r.OrderGroupID == orderGroupId
+    //        );
+    //    });
+
+    //    let result = records.reduce((a, i) => {
+    //        a.OrderValue += +(i.OrderValue.replace(/[^\d.?\d?]*/g, ''));
+    //        a.LineCount += +(i.LineCount.replace(/[^\d.?\d?]*/g, ''));
+    //        a.OrderCount += +(i.OrderCount.replace(/[^\d.?\d?]*/g, ''));
+    //        a.OrderQuantity += +(i.OrderQuantity.replace(/[^\d.?\d?]*/g, ''));
+    //        a.PercentageOfFilteredOrderBook += +(i.PercentageOfFilteredOrderBook.replace(/[^\d.?\d?]*/g, ''));
+    //        a.PercentageOfFullOrderBook += +(i.PercentageOfFullOrderBook.replace(/[^\d.?\d?]*/g, ''));
+    //        return a;
+    //    }, {
+    //        OrderValue: 0,
+    //        LineCount: 0,
+    //        OrderCount: 0,
+    //        OrderQuantity: 0,
+    //        PercentageOfFilteredOrderBook: 0,
+    //        PercentageOfFullOrderBook: 0
+    //    });
+
+    //    result.OrderValue = formatCurrency(result.OrderValue, 0, 'en-GB', 'GBP');
+    //    result.LineCount = formatNumber(result.LineCount, 0, 'en-GB');
+    //    result.OrderCount = formatNumber(result.OrderCount, 0, 'en-GB');
+    //    result.OrderQuantity = formatNumber(result.OrderQuantity, 0, 'en-GB');
+    //    result.PercentageOfFilteredOrderBook = formatPercentage(result.PercentageOfFilteredOrderBook / 100, 1, 'en-GB');
+    //    result.PercentageOfFullOrderBook = formatPercentage(result.PercentageOfFullOrderBook / 100, 1, 'en-GB');
+
+    //    //console.log(result);
+
+    //    return orderBookMainCell({
+    //        parent: self,
+    //        data: result,
+    //        grouping: false
+    //    });
+    //}
+
+    self.toggleOrderGroupCollapse = (data, event) => {
+        let totalToggleEl = document.querySelector('.first-column.grand-total-row');
+
+        event.currentTarget.classList.toggle('collapsed');
+
+        bootstrap.Collapse.getOrCreateInstance(`.order-group-${data.orderGroupId}`).toggle();
+
+        if (document.querySelector(`.order-group-${data.orderGroupId}`).classList.contains('collapsing')) {
+            totalToggleEl.classList.remove('collapsed');
+        } else {
+            totalToggleEl.classList.add('collapsed');
+        }
     }
 
-    self.getVisibleSubTotal = (orderGroupId, stockLocationGroupId) => {
-        let orderStatusGroupIds = self.visibleColumns().map(vc => vc.orderStatusGroupId);
+    self.toggleAllOrderGroups = () => {
 
-        let records = self.results().filter(r => {
-            return (
-                orderStatusGroupIds.indexOf(r.OrderStatusGroupID) > -1 &&
-                r.OrderStatusID == null &&
-                r.StockLocationGroupID == stockLocationGroupId &&
-                r.OrderGroupID == orderGroupId
-            );
-        });
+        let toggleEl = document.querySelector('.first-column.grand-total-row')
 
-        let result = records.reduce((a, i) => {
-            a.OrderValue += +(i.OrderValue.replace(/[^\d.?\d?]*/g, ''));
-            a.LineCount += +(i.LineCount.replace(/[^\d.?\d?]*/g, ''));
-            a.OrderCount += +(i.OrderCount.replace(/[^\d.?\d?]*/g, ''));
-            a.OrderQuantity += +(i.OrderQuantity.replace(/[^\d.?\d?]*/g, ''));
-            a.PercentageOfFilteredOrderBook += +(i.PercentageOfFilteredOrderBook.replace(/[^\d.?\d?]*/g, ''));
-            a.PercentageOfFullOrderBook += +(i.PercentageOfFullOrderBook.replace(/[^\d.?\d?]*/g, ''));
-            return a;
-        }, {
-            OrderValue: 0,
-            LineCount: 0,
-            OrderCount: 0,
-            OrderQuantity: 0,
-            PercentageOfFilteredOrderBook: 0,
-            PercentageOfFullOrderBook: 0
-        });
+        let collapseElementList = [].slice.call(document.querySelectorAll('.order-group-collapsible'));
 
-        result.OrderValue = formatCurrency(result.OrderValue, 0, 'en-GB', 'GBP');
-        result.LineCount = formatNumber(result.LineCount, 0, 'en-GB');
-        result.OrderCount = formatNumber(result.OrderCount, 0, 'en-GB');
-        result.OrderQuantity = formatNumber(result.OrderQuantity, 0, 'en-GB');
-        result.PercentageOfFilteredOrderBook = formatPercentage(result.PercentageOfFilteredOrderBook / 100, 1, 'en-GB');
-        result.PercentageOfFullOrderBook = formatPercentage(result.PercentageOfFullOrderBook / 100, 1, 'en-GB');
+        let collapseList = collapseElementList.map(e => bootstrap.Collapse.getOrCreateInstance(e));
 
-        //console.log(result);
+        toggleEl.classList.toggle('collapsed');
 
-        return orderBookMainCell({
-            parent: self,
-            data: result,
-            grouping: false
-        });
+        if (toggleEl.classList.contains('collapsed')) {
+
+            collapseList.forEach(cl => {
+                cl.hide();
+            });
+
+            document.querySelectorAll('.order-group-heading.order-group-row').forEach(el => el.classList.add('collapsed'));
+
+        } else {
+
+            collapseList.forEach(cl => {
+                cl.show();
+            });
+
+            document.querySelectorAll('.order-group-heading.order-group-row').forEach(el => el.classList.remove('collapsed'));
+
+        }
     }
 
     self.getCell = (orderStatus, stockLocation) => {
@@ -232,11 +350,6 @@ const orderBookViewModel = (() => {
         self.defaultView(result.Defaults.View);
         self.defaultProcedure(result.Defaults.Procedure);
 
-        self.results(result.Data.map(d => orderBookMainCell({
-            parent: self,
-            data: d
-        })));
-
         let rowHeadings = result.RowHeadings.reduce((array, current) => {
             let extant = array.find(gh => gh.orderGroupId == current.OrderGroupID);
             if (extant) {
@@ -247,18 +360,29 @@ const orderBookViewModel = (() => {
                     orderGroupId: current.OrderGroupID
                 })
             } else {
-                array.push({
+                let rowHeading = {
                     orderGroupId: current.OrderGroupID,
                     orderGroupName: current.OrderGroupName,
                     orderGroupSortOrder: current.OrderGroupSortOrder,
                     stockLocationGroupId: current.StockLocationGroupID,
+                    displayModes: ko.observableArray([DISPLAY_MODE_VALUE_SUM]),
                     stockLocationGroups: [{
                         stockLocationGroupId: current.StockLocationGroupID,
                         stockLocationGroupName: current.StockLocationGroupName,
                         stockLocationGroupSortOrder: current.StockLocationGroupSortOrder,
                         orderGroupId: current.OrderGroupID
                     }]
-                })
+                }
+
+                rowHeading.displayModes.subscribe(changes => {
+                    if (changes.find(c => c.status == 'deleted' && c.value == DISPLAY_MODE_VALUE_SUM)) {
+                        rowHeading.displayModes.remove(dm => {
+                            return dm == DISPLAY_MODE_PERCENTAGE_FULL || dm == DISPLAY_MODE_PERCENTAGE_FILTER;
+                        });
+                    }
+                }, self, 'arrayChange');
+
+                array.push(rowHeading);
             }
             return array;
         }, []).sort((a, b) => {
@@ -291,6 +415,9 @@ const orderBookViewModel = (() => {
                     orderStatusGroupSortOrder: current.OrderStatusGroupSortOrder,
                     view: current.View,
                     procedure: current.Procedure,
+                    disabled: ko.computed(() => {
+                        return self.displayColumnHeadingsSelection().length == 1 && self.displayColumnHeadingsSelection()[0] === current.OrderStatusGroupSortOrder;
+                    }, self),
                     orderStatuses: [{
                         orderStatusId: current.OrderStatusID,
                         orderStatusName: current.OrderStatusName,
@@ -323,27 +450,43 @@ const orderBookViewModel = (() => {
             });
         });
 
-        self.columnHeadings(columnHeadings);
+        self.results(result.Data.map(d => orderBookMainCell({
+            parent: self.rowHeadings().find(rh => rh.orderGroupId == d.OrderGroupID) ?? self, // I want parent from here to be the rowHeading the cell resides in
+            data: d
+        })));
+
+        // this will only be true on the first run through
+        if (self.columnHeadings().length == 0) {
+            self.columnHeadings(columnHeadings);
+            self.displayColumnHeadingsSelection(self.columnHeadings().map(d => d.orderStatusGroupSortOrder));
+        }
     }
 
     self.fetch = (params) => {
 
         self.busy(true);
 
-        console.log("FetchMain calling with", JSON.parse(params));
+        let body = JSON.parse(params);
+
+        body.orderLineDetailedStatusGroupIds = self.visibleColumns().map(v => v.orderStatusGroupId);
+
+        console.log("FetchMain calling with", body);
 
         fetch("/api/orderbook/Refresh", {
             method: "POST",
             headers: window.fetchHeaders,
             cache: 'no-store',
             credentials: 'same-origin',
-            body: params
+            body: JSON.stringify(body)
         })
             .then(window.handleFetchResponse)
             .then(data => {
                 console.log("FetchMain returned", data);
                 self.dateFilters.parse(data.dateFilters);
                 self.preDefinedFilters.parse(data.preDefinedFilters);
+
+                bootstrap.Collapse.getOrCreateInstance(document.querySelector("#accuracy-collapse")).hide();
+
                 self.parse(data.mainResult);
                 self.busy(false);
             })
@@ -356,8 +499,6 @@ const orderBookViewModel = (() => {
     self.reset = () => {
         window.showConfirm("Are you sure?", "This will clear all current filters and reset the Order Book display to defaults.", () => {
             self.userDefinedFilters.reset();
-            self.displayModes([DISPLAY_MODE_VALUE_SUM]);
-            self.displayColumnHeadings(self.columnHeadings().map((c, i) => c.orderStatusGroupSortOrder));
         }, null);
     };
 
@@ -378,6 +519,7 @@ const orderBookViewModel = (() => {
 
         let preDefinedFilterCriteria = {
             displayModes: self.displayModes(),
+            orderLineDetailedStatusGroupIds: self.visibleColumns().map(v => v.orderStatusGroupId),
             accurateAsOfDateTime: self.accurateAsOfDateTime(),
             procedure: procedure,
             view: view,
@@ -545,7 +687,6 @@ const orderBookViewModel = (() => {
 
     self.accuracyPleaseStopRemindingMe = () => {
         window.showConfirm('Are you sure?', 'This will disable the Order Book data accuracy reminder for 24 hours.', () => {
-            window.clearInterval(self.accuracyCheckInterval);
             bootstrap.Collapse.getOrCreateInstance(document.querySelector("#accuracy-collapse")).hide();
             document.cookie = "orderBookNag=false; max-age=86400";
         }, () => {

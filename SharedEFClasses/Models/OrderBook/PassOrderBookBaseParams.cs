@@ -12,6 +12,7 @@ namespace SharedEFClasses.Models.OrderBook
     {
         // Hmmm.
         public string DataSource { get; set; }
+        public IEnumerable<byte> OrderLineDetailedStatusGroupIDs { get; set; }
 
         // Trade Account Filters
         public byte? MarketID { get; set; }

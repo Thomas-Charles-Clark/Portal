@@ -54,7 +54,9 @@ const orderBookDetailViewModel = (() => {
 
     self.params = window.getDetailParameters();
 
-    let parseExclusions = ['marketIds', 'startDate', 'endDate'];
+    
+
+    let parseExclusions = ['marketIds', 'startDate', 'endDate', 'orderLineDetailedStatusGroupIds'];
 
     Object.keys(self.params).forEach(k => {
         if (parseExclusions.indexOf(k) === -1) {
@@ -64,6 +66,8 @@ const orderBookDetailViewModel = (() => {
             }
         }
     });
+
+    
 
     //#region Lifted Methods
 
@@ -177,15 +181,6 @@ const orderBookDetailViewModel = (() => {
 
     //#region Computeds
 
-    self.displayModeDisplay = ko.computed(() => {
-        let result = self.displayModes().length;
-        let plural = 'ies';
-        if (result == 1) {
-            plural = 'y';
-        }
-        return `(${result} Propert${plural} Selected)`;
-    }, self);
-
     self.primaryFetchParams = ko.computed(() => {
 
         let udf = null;
@@ -201,9 +196,14 @@ const orderBookDetailViewModel = (() => {
         }
 
         if (udf && adv) {
-            let result = JSON.stringify(Object.assign(window.getDetailParameters(), udf, adv, { procedure: self.procedure }))
 
-            console.log('primaryFetchParams computed', result);
+            let resultObject = Object.assign(window.getDetailParameters(), udf, adv, { procedure: self.procedure });
+
+            resultObject.orderLineDetailedStatusGroupIds = resultObject.orderLineDetailedStatusGroupIds == '' ? [] : resultObject.orderLineDetailedStatusGroupIds?.split(',').map(oldsgid => +oldsgid)
+
+            let result = JSON.stringify(resultObject);
+
+            console.log('primaryFetchParams computed', resultObject);
 
             return result;
         }
@@ -374,6 +374,7 @@ const orderBookDetailViewModel = (() => {
 
         let preDefinedFilterCriteria = {
             displayModes: self.displayModes(),
+            orderLineDetailedStatusGroupIds: self.params.orderLineDetailedStatusGroupIds,
             accurateAsOfDateTime: self.accurateAsOfDateTime(),
             procedure: self.params.procedure,
             view: self.params.view,

@@ -48,11 +48,18 @@ namespace SharedEFClasses.Models
 
             dto.MarketIDs?.ForEach(mid => MarketIDs.Rows.Add(mid));
 
+            var OrderLineDetailedStatusGroupIDs = new DataTable();
+
+            OrderLineDetailedStatusGroupIDs.Columns.Add("ID", typeof(byte));
+
+            dto.OrderLineDetailedStatusGroupIDs?.ForEach(mid => OrderLineDetailedStatusGroupIDs.Rows.Add(mid));
+
             var results = await this.Database.Connection.QueryAsync<OrderBook_PreDefinedSummary_SelectResult>("[portal].[OrderBook_DateSummary_Select]",
                 new
                 {
                     // Hmmm.
                     dto.DataSource,
+                    OrderLineDetailedStatusGroupIDs,
 
                     // Trade Account Filters
                     dto.MarketID,
@@ -101,11 +108,18 @@ namespace SharedEFClasses.Models
 
             dto.MarketIDs?.ForEach(mid => MarketIDs.Rows.Add(mid));
 
+            var OrderLineDetailedStatusGroupIDs = new DataTable();
+
+            OrderLineDetailedStatusGroupIDs.Columns.Add("ID", typeof(byte));
+
+            dto.OrderLineDetailedStatusGroupIDs?.ForEach(mid => OrderLineDetailedStatusGroupIDs.Rows.Add(mid));
+
             var results = await this.Database.Connection.QueryAsync<string>("[portal].[OrderBook_ProblemSummary_Select]",
                 new
                 {
                     // Hmmm.
                     dto.DataSource,
+                    OrderLineDetailedStatusGroupIDs,
 
                     // Trade Account Filters
                     dto.MarketID,
@@ -161,11 +175,18 @@ namespace SharedEFClasses.Models
 
             dto.MarketIDs?.ForEach(mid => MarketIDs.Rows.Add(mid));
 
+            var OrderLineDetailedStatusGroupIDs = new DataTable();
+
+            OrderLineDetailedStatusGroupIDs.Columns.Add("ID", typeof(byte));
+
+            dto.OrderLineDetailedStatusGroupIDs?.ForEach(mid => OrderLineDetailedStatusGroupIDs.Rows.Add(mid));
+
             var reader = await this.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_MainSummary_Select]",
                 new
                 {
                     // Hmmm.
                     dto.DataSource,
+                    OrderLineDetailedStatusGroupIDs,
 
                     // Trade Account Filters
                     dto.MarketID,
@@ -225,7 +246,8 @@ namespace SharedEFClasses.Models
                 "View",
                 "view",
                 "filterable",
-                "marketIds"
+                "marketIds",
+                "orderLineDetailedStatusGroupIds"
             };
 
             var marketIdsDataTable = new DataTable();
@@ -241,7 +263,15 @@ namespace SharedEFClasses.Models
                     marketIdsDataTable.Rows.Add(Convert.ToByte(mid));
                 }
             });
-            
+
+            var orderLineDetailedStatusGroupsIdsDataTable = new DataTable();
+
+            orderLineDetailedStatusGroupsIdsDataTable.Columns.Add("ID", typeof(byte));
+
+            var oldsgids = ((IDictionary<string, object>)dto)["orderLineDetailedStatusGroupIds"] as List<object>;
+
+            oldsgids?.ForEach(mid => orderLineDetailedStatusGroupsIdsDataTable.Rows.Add(mid));
+
             var dynParams = new DynamicParameters();
 
             dto.ToList().ForEach(kvp =>
@@ -272,6 +302,11 @@ namespace SharedEFClasses.Models
             if (marketIdsDataTable.Rows.Count > 0)
             {
                 dynParams.Add("@MarketIDs", marketIdsDataTable.AsTableValuedParameter("dbo.TinyIntList"));
+            }
+
+            if (orderLineDetailedStatusGroupsIdsDataTable.Rows.Count > 0)
+            {
+                dynParams.Add("@OrderLineDetailedStatusGroupIDs", orderLineDetailedStatusGroupsIdsDataTable.AsTableValuedParameter("dbo.TinyIntList"));
             }
 
             //var results = await this.Database.Connection.QueryAsync<string>("[portal].[OrderBook_DetailView_BackOrders]", dynParams, null, 30, CommandType.StoredProcedure);

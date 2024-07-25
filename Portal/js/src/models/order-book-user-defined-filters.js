@@ -65,13 +65,15 @@ const orderBookUserDefinedFiltersViewModel = ({
     self.sidebarCollapseElement = document.getElementById('sidebar-collapse');
     self.sidebarCollapse = bootstrap.Collapse.getOrCreateInstance(self.sidebarCollapseElement);
 
-    self.salesMarketId = ko.observable(params.marketId ?? '');
-    self.salesMarket = ko.observable();
-    self.salesMarketAwaitingBinding = ko.observable(params.marketId != null && params.marketId != '');
-
-    self.salesMarketIds = ko.observableArray(params.marketIds?.split(',').map(m => +m) ?? []);
-    self.salesMarkets = ko.observableArray();
+    //self.salesMarketId = ko.observable(params.marketId ?? '');
+    //self.salesMarket = ko.observable();
+    
+    self.availableSalesMarkets = ko.observableArray([]);
+    self.salesMarketIds = ko.observableArray(params.marketIds == '' ? [] : params.marketIds?.split(',').map(m => +m));
+    self.salesMarkets = ko.observableArray([]);
+    self.salesMarketSelection = ko.observableArray([]); // this is just what's selected in the control, not what we pass to the fetch call
     self.salesMarketsAwaitingBinding = ko.observable(params.marketIds != null && params.marketIds.length > 0);
+    self.salesMarketAwaitingBinding = ko.observable(params.marketId != null && params.marketId != '');
 
     self.selectedSalesMarketIds = ko.observableArray([]);
 
@@ -188,6 +190,103 @@ const orderBookUserDefinedFiltersViewModel = ({
 
 
     //#region Computeds
+
+    self.countDisplay = ko.computed(() => {
+        let count = 0;
+
+        if (self.salesMarketIds().length)
+            count++;
+
+        if (self.countryId())
+            count++;
+
+        if (self.tradeAccountTypeId())
+            count++;
+
+        if (self.salesRepresentativeId())
+            count++;
+
+        if (self.salesAgentId())
+            count++;
+
+        if (self.salesAreaId())
+            count++;
+
+        if (self.tradeAccountGroupId())
+            count++;
+
+        if (self.paymentTermsId())
+            count++;
+
+        if (self.paymentTermsTypeId())
+            count++;
+
+        if (self.tradeAccountId())
+            count++;
+
+        if (self.orderId())
+            count++;
+
+        if (self.fromDate())
+            count++;
+
+        if (self.toDate())
+            count++;
+
+        if (self.haulierId())
+            count++;
+
+        if (self.deliveryTypeId())
+            count++;
+
+        if (self.orderTakerId())
+            count++;
+
+        if (self.productGroupId())
+            count++;
+
+        if (self.itemTypeId())
+            count++;
+
+        if (self.brandId())
+            count++;
+
+        if (self.collectionId())
+            count++;
+
+        if (self.launchId())
+            count++;
+
+        if (self.qualityId())
+            count++;
+
+        if (self.designId())
+            count++;
+
+        if (self.supplierId())
+            count++;
+
+        if (self.productId())
+            count++;
+
+        if (self.allocatedId())
+            count++;
+
+        if (self.dataSourceId())
+            count++;
+
+        if (self.transactionTypeId())
+            count++;
+
+        let plural = 's';
+
+        if (count == 1)
+            plural = '';
+
+        if (count > 0) {
+            return `${count}&nbsp;&nbsp;Filter${plural}&nbsp;&nbsp;Selected`;
+        }
+    }, self);
 
     self.allBound = ko.computed(() => {
         return (self.salesMarketAwaitingBinding() == false &&
@@ -500,7 +599,7 @@ const orderBookUserDefinedFiltersViewModel = ({
             if (!d.$apply) {
                 delete d.$apply;
             } else {
-                console.log(d.$apply);
+                //console.log(d.$apply);
             }
 
             return d;
@@ -510,36 +609,44 @@ const orderBookUserDefinedFiltersViewModel = ({
     self.salesMarketGroupBy = `groupby((SalesMarket/SalesMarketID,SalesMarket/Code,SalesMarket/Name))/filter((SalesMarket/SalesMarketID ne null))`;
 
     self.salesMarketsParams = {
-        observable: self.salesMarkets,
-        validate: self.selectedSalesMarketIds,
-        showClear: true,
-        width: 'auto',
-        label: 'Market(s)',
-        valuePrimitive: false,
         useNativeValidation: false,
-        decorateInputElement: false,
         insertValidationMessages: false,
-        controlClass: 'form-control',
-        disable: ko.observable(false),
-        enable: ko.observable(true),
+        decorateInputElement: false,
         clearable: ko.observable(true),
         revertible: ko.observable(false),
-        showSelectAll: ko.observable(true),
+        busy: ko.observable(false),
+        disable: ko.observable(false),
+        enable: ko.observable(true),
         multiSelectSettings: {
-            autoBind: true,
-            autoClose: false,
-            tagMode: 'single',
-            value: self.selectedSalesMarketIds,
-            dataItems: self.salesMarkets,
-            dataValueField: 'SalesMarket.SalesMarketID',
-            dataTextField: 'SalesMarket.Name',
-            tagTemplate: (d, e) => {
-
-                console.log(d, e);
-
-                //return 'testing';
+            widget: ko.observable(),
+            label: "Market(s)",
+            class: "btn-sm",
+            elementId: "sales-markets-prefilter",
+            autoClose: "outside",
+            controls: {
+                selectAll: () => {
+                    console.log('selectAll');
+                    self.salesMarketSelection(self.salesMarketsParams.multiSelectSettings.widget().dataSource.data().map(d => d.SalesMarket.SalesMarketID));
+                },
+                deselectAll: () => {
+                    console.log('deselectAll');
+                    self.salesMarketSelection([]);
+                },
+                applySelection: (hide) => {
+                    console.log('apply');
+                    if (hide != false) {
+                        bootstrap.Dropdown.getOrCreateInstance(self.salesMarketSelection.DOMElement).hide();
+                    }
+                    self.salesMarketIds(self.salesMarketSelection());
+                }
+            },
+            label: ko.computed(() => {
 
                 let plural = 's';
+
+                let d = {
+                    values: self.salesMarketIds()
+                }
 
                 let count = d.values.length;
 
@@ -548,60 +655,20 @@ const orderBookUserDefinedFiltersViewModel = ({
                 }
 
                 if (count == 1) {
-                    let rec = self.salesMarketsParams.multiSelectSettings.widget().dataSource.data().find(dat => dat.SalesMarket.SalesMarketID == d.values[0]);
-                    return rec.SalesMarket.Name;
+                    let rec = self.availableSalesMarkets().find(dat => dat.value == d.values[0]);
+                    return rec.label;
                 }
 
-                if (count === self.salesMarketsParams.multiSelectSettings.widget().dataSource.data().length) {
-                    return 'All Markets Selected';
+                if (count === 0) {
+                    return 'Market(s)';
                 } else {
                     return `${count} Market${plural} Selected`;
                 }
-
-            },
-            //itemTemplate: (d, e) => {
-            //    console.log(d, e);
-            //    return `<div class="form-check market-multiselect-checkbox flex-1">
-            //      <label class="form-check-label cursor" for="sales-market-${d.SalesMarket.SalesMarketID}-check">
-            //        <input class="form-check-input" type="checkbox" id="sales-market-${d.SalesMarket.SalesMarketID}-check" data-bind="checked: selectedSalesMarketIds, checkedValue: ${d.SalesMarket.SalesMarketID}">
-            //        <span>${d.SalesMarket.Name}</span>
-            //      </label>
-            //    </div>`
-            //},
-            height: 840,
-            widget: ko.observable(),
-            open: function (e) {
-                $(e.sender._widgetOptions.dataItems.mdcSelect.root_).toggleClass('mdc-select--focused');
-                //ko.cleanNode(document.querySelector('#sales-markets-prefilter .k-list-scroller'));
-                //ko.applyBindings(self, document.querySelector('#sales-markets-prefilter .k-list-scroller'));
-                self.salesMarketsTemp = JSON.stringify(self.selectedSalesMarketIds());
-            },
-            close: function (e) {
-                $(e.sender._widgetOptions.dataItems.mdcSelect.root_).toggleClass('mdc-select--focused');
-
-                let now = JSON.stringify(self.selectedSalesMarketIds());
-
-                if (self.salesMarketsTemp != now) {
-                    self.tradeAccountComputer.valueHasMutated();
-                    self.salesMarketIds(self.selectedSalesMarketIds());
-                }
-            },
-            select: function (e) {
-                console.log('salesMarketParams select', e);
-                self.tradeAccountComputer.valueHasMutated();
-            },
-            dataBound: function (e) {
-                console.log('salesMarketParams dataBound', e);
-
-                //if (self.initialParams && self.initialParams.hasOwnProperty('marketIds')) {
-                //    let marketIds = self.salesMarketIds();
-                //    e.sender.value(marketIds);
-                //} else {
-                //    e.sender.value(e.sender.dataSource.data().map(d => d.SalesMarket.SalesMarketID));
-                //}
-
-                //e.sender.trigger('change');
-            },
+            }, self),
+            selectedState: ko.computed(() => {
+                return self.salesMarketIds().length > 0;
+            }, self),
+            observableArray: self.salesMarketSelection,
             data: new kendo.data.DataSource({
                 serverFiltering: true,
                 serverSorting: true,
@@ -620,44 +687,26 @@ const orderBookUserDefinedFiltersViewModel = ({
                     dir: 'asc',
                     field: 'SalesMarket.Name'
                 },
+                requestEnd: (data) => {
+                    //console.log("salesMarketsParams.multiSelectSettings.dataSource.requestEnd", data);
+                    self.availableSalesMarkets(data.response.value.map(d => {
+                        return {
+                            disabled: false,
+                            value: d.SalesMarket.SalesMarketID,
+                            label: d.SalesMarket.Name
+                        }
+                    }));
+                }
             }),
-            popup: {
-                appendTo: document.getElementById('sales-markets-prefilter')
-            },
-            valuePrimitive: true,
-            autoWidth: false,
-            optionLabel: ' ',
-            filter: 'startswith'
+            options: self.availableSalesMarkets
         },
-        //clearFunction: function () {
-        //    var self = this
-        //    self.multiSelectSettings.value([]);
-        //    self.multiSelectSettings.widget().value([]);
-        //    self.multiSelectSettings.widget().trigger('change');
-        //},
-        selectAllFunction: (e) => {
-            e.multiSelectSettings.widget().value(e.multiSelectSettings.widget().dataSource.data().map(d => d.SalesMarket.SalesMarketID));
-            e.multiSelectSettings.widget().trigger('change');
-            self.salesMarketIds(self.selectedSalesMarketIds());
-            self.tradeAccountComputer.valueHasMutated();
+        revertFunction: () => {
+
         },
-        clearFunction: (e) => {
+        clearFunction: () => {
 
-            e.multiSelectSettings.widget().value([]);
-           
-            e.multiSelectSettings.widget().trigger('change');
-
-            self.salesMarketIds(self.selectedSalesMarketIds());
-
-            self.tradeAccountComputer.valueHasMutated();
-
-            //if (self.salesMarketsTemp != now) {
-            //    self.tradeAccountComputer.valueHasMutated();
-            //    self.salesMarketIds(self.selectedSalesMarketIds());
-            //    self.salesMarketsParams.multiSelectSettings.widget().value(self.salesMarketIds());
-            //}
-        },
-    };
+        }
+    }
 
     self.salesRepresentativeGroupBy = `groupby((SalesRepresentative/SalesRepresentativeID,SalesRepresentative/Code,SalesRepresentative/Name))/filter((SalesRepresentative/SalesRepresentativeID ne null))`;
 
@@ -2437,14 +2486,13 @@ const orderBookUserDefinedFiltersViewModel = ({
     // these id observables start as and reset to the empty string value intentionally
     // should probably set that as a constant
     self.reset = () => {
-        self.salesMarketId(EMPTY_STRING);
-        self.salesMarket(undefined);
-        
+
         self.salesMarketIds([]);
         self.salesMarkets([]);
         self.selectedSalesMarketIds([]);
         self.salesMarketsParams.multiSelectSettings.widget().value([]);
         self.salesMarketsParams.multiSelectSettings.widget().trigger('change');
+        self.availableSalesMarkets([]);
 
         self.countryId(EMPTY_STRING);
         self.country(undefined);
@@ -2535,7 +2583,6 @@ const orderBookUserDefinedFiltersViewModel = ({
     self.json = ko.computed(() => {
         if (self.allBound()) {
             let result = {
-                marketId: self.salesMarketId() || null,
                 marketIds: self.salesMarketIds(),
                 tradeAccountTypeId: self.tradeAccountTypeId() || null,
                 salesRepresentativeId: self.salesRepresentativeId() || null,

@@ -8,6 +8,8 @@
 
     self.busy = self.parent.busy;
 
+    self.displayModes = self.parent.podsDisplayModes;
+
     self.groups = ko.observableArray([]);
 
     self.detailModalElement = document.querySelector("#order-book-detail-modal");

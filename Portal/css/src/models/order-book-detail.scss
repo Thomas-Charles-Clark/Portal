@@ -18,7 +18,7 @@ $light-blue-background: tint-color($blue-200, 90%);
     /*max-height: calc(100vh - 57px);*/
     max-height: 100vh;
     overflow-y: auto;
-
+    transform: translate3d(0,0,0);
 
     #order-book-detail-table {
         table-layout: fixed;
@@ -29,7 +29,6 @@ $light-blue-background: tint-color($blue-200, 90%);
         border-width: 0;
         width: 100%;
         border-spacing: 0;
-        transform: translate3d(0, 0, 0);
 
         tbody.virtual-spacing {
             tr {

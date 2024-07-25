@@ -226,8 +226,10 @@ const orderBookDetailViewModel = (() => {
 
     self.params = window.getDetailParameters();
 
+    let parseExclusions = ['marketIds', 'startDate', 'endDate', 'orderLineDetailedStatusGroupIds'];
+
     Object.keys(self.params).forEach(k => {
-        if (k != 'marketIds') {
+        if (parseExclusions.indexOf(k) === -1) {
             let parsed = Number.parseInt(self.params[k]);
             if (!isNaN(parsed)) {
                 self.params[k] = parsed;
@@ -342,15 +344,6 @@ const orderBookDetailViewModel = (() => {
 
 
     //#region Computeds
-
-    self.displayModeDisplay = ko.computed(() => {
-        let result = self.displayModes().length;
-        let plural = 'ies';
-        if (result == 1) {
-            plural = 'y';
-        }
-        return `(${result} Propert${plural} Selected)`;
-    }, self);
 
     self.primaryFetchParams = ko.computed(() => {
 

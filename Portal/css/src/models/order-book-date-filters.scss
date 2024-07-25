@@ -11,18 +11,8 @@ $blue-background: $blue-700;
         display: flex;
         gap: 2px;
 
-        > div:first-of-type {
-            border-top-left-radius: $border-radius;
-            border-bottom-left-radius: $border-radius;
-        }
-
-        > div:last-of-type {
-            border-top-right-radius: $border-radius;
-            border-bottom-right-radius: $border-radius;
-        }
-
         .card {
-            border-radius: 0;
+            border-radius: $border-radius;
             margin-bottom: 0;
             cursor: pointer;
             flex: 1;

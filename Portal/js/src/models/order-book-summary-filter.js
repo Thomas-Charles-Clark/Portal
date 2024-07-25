@@ -23,7 +23,7 @@ const orderBookSummaryFilter = ({ parent, data } = {
     //#region Computeds
 
     self.display = ko.computed(() => {
-        let displayModes = self.parent.parent.displayModes();
+        let displayModes = self.parent.displayModes();
 
         let result = [];
 
@@ -39,9 +39,9 @@ const orderBookSummaryFilter = ({ parent, data } = {
             result.push(`<span title="No. of Lines: ${self.LineCount}">${self.LineCount}</span>`);
         }
 
-        //if (displayModes.indexOf(DISPLAY_MODE_ORDER_COUNT) > -1) {
+        if (displayModes.indexOf(DISPLAY_MODE_ORDER_COUNT) > -1) {
             result.push(`<span title="No. of Orders: ${self.OrderCount}">${self.OrderCount}</span>`);
-        //}
+        }
 
         if (displayModes.indexOf(DISPLAY_MODE_PERCENTAGE_FULL) > -1) {
             result.push(`<span title="% of Full Order Book: ${self.PercentageOfFullOrderBook}">${self.PercentageOfFullOrderBook}</span>`);

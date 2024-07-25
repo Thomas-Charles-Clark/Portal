@@ -1396,7 +1396,7 @@
     <script id="mdc-kendo-multiselect-component" type="text/html">
         <div class="mdc-validating-field">
             <div class="mdc-select mdc-multiselect mdc-select--outlined" data-bind="
-                mdcMultiSelectComponent: {
+                 mdcMultiSelectComponent: {
                     boundTo: observable,
                     useNativeValidation: useNativeValidation,
                     optionsValue: multiSelectSettings.dataValueField,
@@ -1954,6 +1954,103 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </script>
+
+    <script type="text/html" id="mdc-bootstrap-multiselect-component">
+        <div class="mdc-validating-field" data-bind="visible: $data.hasOwnProperty('visible') ? $data.visible : true">
+            <div class="mdc-text-field mdc-text-field--outlined mdc-bootstrap-multiselect" data-bind="
+                 mdcMultiSelectCheckboxesComponent: {
+                    boundTo: multiSelectSettings.observableArray,
+                    useNativeValidation: useNativeValidation,
+                    optionsValue: multiSelectSettings.dataValueField,
+                    disabled: disable() || !enable(),
+                    widget: multiSelectSettings.widget,
+                    controls: multiSelectSettings.controls
+                 },
+                 validationOptions: {
+                    insertMessages: insertValidationMessages,
+                    decorateInputElement: decorateInputElement
+                 },
+                 css: {
+                    'clearable': clearable,
+                    'revertible': revertible,
+                    'busy': typeof busy === 'undefined' ? false : busy,
+                    'mdc-select--disabled': disable() || !enable(),
+                    'mdc-select--selected': multiSelectSettings.selectedState
+                 }">
+                <select class="d-none mdc-select__native-control" data-bind="kendoDropDownList: multiSelectSettings"></select>
+                <div class="dropdown">
+                    <button class="btn dropdown-toggle w-100"
+                            type="button"
+                            data-bind="
+                                keepElement: multiSelectSettings.observableArray,
+                                class: multiSelectSettings.class ?? 'btn-secondary',
+                                attr: {
+                                    id: multiSelectSettings.elementId
+                                }"
+                            data-bs-toggle="dropdown"
+                            data-bs-auto-close="outside"
+                            data-bs-display="static"
+                            aria-expanded="false">
+                    </button>
+                    <ul class="dropdown-menu" data-bind="attr: { 'aria-labelledby': multiSelectSettings.elementId }">
+                        <!-- ko if: typeof multiSelectSettings.controls != "undefined" -->
+                        <li class="dropdown-menu-controls d-flex gap-2">
+                            <!-- ko if: multiSelectSettings.controls.selectAll -->
+                            <button class="btn btn-secondary btn-sm" data-bind="click: multiSelectSettings.controls.selectAll">
+                                Select All
+                            </button>
+                            <!-- /ko -->
+                            <!-- ko if: multiSelectSettings.controls.deselectAll -->
+                            <button class="btn btn-secondary btn-sm" data-bind="click: multiSelectSettings.controls.deselectAll">
+                                Deselect All
+                            </button>
+                            <!-- /ko -->
+                            <!-- ko if: multiSelectSettings.controls.applySelection -->
+                            <button class="btn btn-secondary btn-sm ms-auto" data-bind="click: multiSelectSettings.controls.applySelection">
+                                Apply
+                            </button>
+                            <!-- /ko -->
+                        </li>
+                        <!-- /ko -->
+                        <!-- ko foreach: multiSelectSettings.options -->
+                        <li data-bind="css: { 'disabled': disabled }">
+                            <label class="dropdown-item pointer form-check-label">
+                                <input class="form-check-input" type="checkbox" data-bind="checkedValue: value, checked: $parent.multiSelectSettings.observableArray">
+                                <span data-bind="text: label"></span>
+                            </label>
+                        </li>
+                        <!-- /ko -->
+                    </ul>
+                </div>
+                <div class="mdc-notched-outline">
+                    <div class="mdc-notched-outline__leading"></div>
+                    <div class="mdc-notched-outline__notch">
+                        <label for="input" class="mdc-floating-label">
+                            <span data-bind="text: multiSelectSettings.label"></span>
+                        </label>
+                    </div>
+                    <div class="mdc-notched-outline__trailing"></div>
+                </div>
+                <div class="controls">
+                    <!-- ko if: revertible -->
+                    <div class="close revert" data-bind="click: revertFunction">
+                        <i class="material-icons">
+                            replay
+                        </i>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: clearable -->
+                    <div class="close clear" data-bind="click: clearFunction, css: { 'disabled':  disable }">
+                        &times;
+                    </div>
+                    <!-- /ko -->
+                    <span class="k-select" aria-label="select"
+                          data-bind="click: (data, event) => { bootstrap.Dropdown.getOrCreateInstance(event.currentTarget.closest('.mdc-bootstrap-multiselect').querySelector('.dropdown-toggle')).toggle(); }"
+                          ><span class="k-icon k-i-arrow-60-down"></span></span>
+                </div>
+            </div>
         </div>
     </script>
 
@@ -2901,8 +2998,8 @@
             template: { element: document.getElementById('mdc-file-field-component') }
         });
 
-        ko.components.register('mdc-week-component', {
-            template: { element: document.getElementById('mdc-week-component') }
+        ko.components.register('mdc-bootstrap-multiselect-component', {
+            template: { element: document.getElementById('mdc-bootstrap-multiselect-component') }
         });
 
     </script>

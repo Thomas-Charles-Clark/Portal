@@ -14,11 +14,15 @@
 
     self.toDate = ko.observable();
 
+    self.displayModes = self.parent.datesDisplayModes;
+
     self.dateFiltersElement = document.querySelector("#date-filters .pre-defined-filter-list");
 
     self.skipFromDateFilterSubscription = ko.observable(false);
 
     self.skipToDateFilterSubscription = ko.observable(false);
+
+    self.latch = {};
 
     //#endregion
 

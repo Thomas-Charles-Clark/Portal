@@ -24,6 +24,7 @@ const orderBookMainCell = ({ parent, data, grouping } = {
     //#region Computeds
 
     self.display = ko.computed(() => {
+
         let displayModes = self.parent.displayModes();
 
         let result = [];

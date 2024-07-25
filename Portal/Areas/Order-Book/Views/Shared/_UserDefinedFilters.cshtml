@@ -6,7 +6,7 @@
             Customers
         </h5>
         @*<div id="sales-market-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesMarketParams }"></div>*@
-        <div id="sales-markets-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-multiselect-component', params: salesMarketsParams }"></div>
+        <div id="sales-markets-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-bootstrap-multiselect-component', params: salesMarketsParams }"></div>
         <div id="sales-representative-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesRepresentativeParams }"></div>
         <div id="sales-agent-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesAgentParams }"></div>
         <div id="sales-area-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesAreaParams }"></div>
@@ -58,97 +58,6 @@
         <h5 class="sidebar-heading">
             Values
         </h5>
-        <ul id="display-mode-list" class="list-group">
-            <li class="list-group-item" data-bind="css: { 'disabled': parent.displayModes().length == 1 && parent.displayModes()[0] == 1 }">
-                <label class="form-check">
-                    <input class="form-check-input" type="checkbox" id="display-mode-value" data-bind="checked: parent.displayModes,
-                        checkedValue: 1,
-                        attr: {
-                            disabled: parent.displayModes().length == 1 && parent.displayModes()[0] == 1
-                        }">
-                    <span>
-                        Order Value £
-                    </span>
-                </label>
-            </li>
-            <li class="list-group-item" data-bind="css: { 'disabled': parent.displayModes().length == 1 && parent.displayModes()[0] == 2 }">
-                <label class="form-check">
-                    <input class="form-check-input" type="checkbox" id="display-mode-quantity" data-bind="checked: parent.displayModes,
-                        checkedValue: 2,
-                        attr: {
-                            disabled: parent.displayModes().length == 1 && parent.displayModes()[0] == 2
-                        }">
-                    <span>
-                        Order Quantity
-                    </span>
-                </label>
-            </li>
-            <li class="list-group-item" data-bind="css: { 'disabled': parent.displayModes().length == 1 && parent.displayModes()[0] == 3 }">
-                <label class="form-check">
-                    <input class="form-check-input" type="checkbox" id="display-mode-line-count" data-bind="checked: parent.displayModes,
-                        checkedValue: 3,
-                        attr: {
-                            disabled: parent.displayModes().length == 1 && parent.displayModes()[0] == 3
-                        }">
-                    <span>
-                        No. of Lines
-                    </span>
-                </label>
-            </li>
-            <li class="list-group-item" data-bind="css: { 'disabled': parent.displayModes().length == 1 && parent.displayModes()[0] == 4 }">
-                <label class="form-check">
-                    <input class="form-check-input" type="checkbox" id="display-mode-order-count" data-bind="checked: parent.displayModes,
-                        checkedValue: 4,
-                        attr: {
-                            disabled: parent.displayModes().length == 1 && parent.displayModes()[0] == 4
-                        }">
-                    <span>
-                        No. of Orders
-                    </span>
-                </label>
-            </li>
-            <li class="list-group-item" data-bind="css: { 'disabled': parent.displayModes().length == 1 && parent.displayModes()[0] == 5 }">
-                <label class="form-check">
-                    <input class="form-check-input" type="checkbox" id="display-mode-percentage-full" data-bind="checked: parent.displayModes,
-                        checkedValue: 5,
-                        attr: {
-                            disabled: parent.displayModes().length == 1 && parent.displayModes()[0] == 5
-                        }">
-                    <span>
-                        % of Full Order Book
-                    </span>
-                </label>
-            </li>
-            <li class="list-group-item" data-bind="css: { 'disabled': parent.displayModes().length == 1 && parent.displayModes()[0] == 6 }">
-                <label class="form-check">
-                    <input class="form-check-input" type="checkbox" id="display-mode-percentage-filter" data-bind="checked: parent.displayModes,
-                        checkedValue: 6,
-                        attr: {
-                            disabled: parent.displayModes().length == 1 && parent.displayModes()[0] == 6
-                        }">
-                    <span>
-                        % of Filtered Order Book
-                    </span>
-                </label>
-            </li>
-        </ul>
-        <h5 class="sidebar-heading">
-            Groups
-        </h5>
-        <ul id="column-display-list" class="list-group">
-            <!-- ko foreach: $parent.columnHeadings -->
-            <li class="list-group-item" data-bind="css: { 'disabled': $parentContext.$parent.displayColumnHeadings().length == 1 && $parentContext.$parent.displayColumnHeadings()[0] === $data.orderStatusGroupSortOrder }">
-                <label class="form-check">
-                    <input class="form-check-input" type="checkbox" id="column-heading-mode-value" data-bind="checked: $parentContext.$parent.displayColumnHeadings,
-                        checkedValue: $data.orderStatusGroupSortOrder,
-                        attr: {
-                            disabled: $parentContext.$parent.displayColumnHeadings().length == 1 && $parentContext.$parent.displayColumnHeadings()[0] === $data.orderStatusGroupSortOrder
-                        }">
-                    <span data-bind="text: orderStatusGroupName"></span>
-                </label>
-            </li>
-            <!-- /ko -->
-        </ul>
         <div id="data-source-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: dataSourceParams }"></div>
     </div>
     @if (ViewBag.Partial == null)

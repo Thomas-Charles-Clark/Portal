@@ -13,12 +13,72 @@
                 <span data-bind="text: orderStatusGroupName"></span>
             </div>
             <!-- /ko -->
-
             <div class="th order-status first-column">
-                <button id="filter-top-btn" class="btn btn-secondary btn-lg btn-export" data-bind="click: $root.userDefinedFilters.togglePinning">
-                    Filters
-                    <i class="bi bi-filter"></i>
-                </button>
+                <div class="mdc-bootstrap-multiselect">
+                    <div class="vstack gap-3">
+                        <div class="dropdown" data-bind="with: displayColumnHeadingsParams">
+                            <button class="btn dropdown-toggle w-100"
+                                    type="button"
+                                    data-bind="keepElement: observableArray,
+                                    class: displayClass,
+                                    attr: {
+                                    id: elementId
+                                    },
+                                    html: btnMarkup,
+                                    event: {
+                                    'hide.bs.dropdown' : ()=>
+                                { controls.applySelection(false); return true; }
+                                }"
+                                data-bs-toggle="dropdown"
+                                data-bs-auto-close="outside"
+                                data-bs-display="static"
+                                aria-expanded="false">
+                            </button>
+                            <ul class="dropdown-menu" data-bind="attr: { 'aria-labelledby': elementId }">
+                                <!-- ko if: controls != "undefined" -->
+                                <li class="dropdown-menu-controls d-flex gap-2">
+                                    <!-- ko if: controls.selectAll -->
+                                    <button class="btn btn-secondary btn-sm" data-bind="click: controls.selectAll">
+                                        Select All
+                                    </button>
+                                    <!-- /ko -->
+                                    <!-- ko if: controls.deselectAll -->
+                                    <button class="btn btn-secondary btn-sm" data-bind="click: controls.deselectAll">
+                                        Deselect All
+                                    </button>
+                                    <!-- /ko -->
+                                    <!-- ko if: controls.applySelection -->
+                                    <button class="btn btn-secondary btn-sm ms-auto" data-bind="click: () => { controls.applySelection(false); }">
+                                        Apply
+                                    </button>
+                                    <!-- /ko -->
+                                </li>
+                                <!-- /ko -->
+                                <!-- ko foreach: options -->
+                                <li data-bind="css: { 'disabled': disabled }">
+                                    <label class="dropdown-item pointer form-check-label">
+                                        <input class="form-check-input" type="checkbox" data-bind="checked: $parent.observableArray,
+                                    checkedValue: $data.orderStatusGroupSortOrder,
+                                    attr: {
+                                        disabled: disabled
+                                    }">
+                                        <span data-bind="text: orderStatusGroupName"></span>
+                                    </label>
+                                </li>
+                                <!-- /ko -->
+                            </ul>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle d-flex gap-3 justify-content-between align-items-center" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: () => { return true; }, clickBubble: false">
+                                <span>
+                                    Values
+                                </span>
+                                <i class="bi bi-list-check ms-auto"></i>
+                            </button>
+                            <!-- ko template: { name: 'values-dropdown-container' } --><!-- /ko -->
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="th intersectable order-status-group-heading grand-total-column" data-bind="click: () => { $root.showDetail({}) }">
                 Grand Total
@@ -31,13 +91,10 @@
             <!-- /ko -->
             <!-- /ko -->
 
-            <div class="th order-status-total justify-content-end first-column grand-total-row">
+            <div class="th order-status-total justify-content-between first-column grand-total-row pointer" data-bind="click: toggleAllOrderGroups">
                 Total
             </div>
-            @*<div class="main-cell order-status-total grand-total-column grand-total-row" data-bind="css: { 'intersectable': $root.getCell($data, {}) }, with: $root.getCell($data, null), click: () => { if ($root.getCell($data, null)) { $root.showDetail({}); } }">
-                <p class="values-display" data-bind="html: display"></p>
-            </div>*@
-            <div class="main-cell order-status-total grand-total-column grand-total-row" data-bind="css: { 'intersectable': $root.getCell($data, {}) }, with: $root.getVisibleGrandTotal(), click: () => { if ($root.getCell($data, null)) { $root.showDetail({}); } }">
+            <div class="main-cell order-status-total grand-total-column grand-total-row" data-bind="css: { 'intersectable': $root.getCell($data, {}) }, with: $root.getCell($data, null), click: () => { if ($root.getCell($data, null)) { $root.showDetail({}); } }">
                 <p class="values-display" data-bind="html: display"></p>
             </div>
             <!-- ko foreach: visibleColumns -->
@@ -51,18 +108,18 @@
         </div>
         <!-- ko foreach: rowHeadings -->
         <div class="main-grid"
-             data-bind="style: { '--grid-column-count': $parent.visibleOrderStatuses().length + 2 }">
-
-            <div class="order-group-heading order-group-row first-column" data-bs-toggle="collapse" data-bind="attr: { 'data-bs-target': `.order-group-${$data.orderGroupId}` }">
+             data-bind="style: { 'z-index': $parent.rowHeadings().length - $index(), '--grid-column-count': $parent.visibleOrderStatuses().length + 2 }">
+            <div class="order-group-heading order-group-row first-column gap-2" data-bind="click: $parent.toggleOrderGroupCollapse">
                 <span data-bind="text: orderGroupName"></span>
+                <div class="dropdown ms-auto">
+                    <button class="btn display-control-btn btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: () => { return true; }, clickBubble: false">
+                        <i class="bi bi-list-check"></i>
+                    </button>
+                    <!-- ko template: { name: 'values-dropdown-container' } --><!-- /ko -->
+                </div>
             </div>
-            @*<div class="main-cell order-group-row order-group-total-row grand-total-column intersectable" data-bind="with: $root.getCell({}, { orderGroupId: $data.orderGroupId }),
-                 click: (data)=>
-                { $root.showDetail({ orderGroupId: $data.orderGroupId }) }">
-                <p class="values-display" data-bind="html: display"></p>
-            </div>*@
-            <div class="main-cell order-group-row order-group-total-row grand-total-column intersectable" data-bind="with: $root.getVisibleSubTotal($data.orderGroupId, null),
-                 click: (data)=>
+            <div class="main-cell order-group-row order-group-total-row grand-total-column intersectable" data-bind="with: $root.getCell({}, { orderGroupId: $data.orderGroupId }),
+                    click: (data)=>
                 { $root.showDetail({ orderGroupId: $data.orderGroupId }) }">
                 <p class="values-display" data-bind="html: display"></p>
             </div>
@@ -80,14 +137,14 @@
             <!-- /ko -->
             <!-- /ko -->
 
-            <div class="main-grid span-n collapse show" data-bind="class: `order-group-${orderGroupId}`">
+            <div class="main-grid span-n order-group-collapsible collapse show" data-bind="class: `order-group-${orderGroupId}`">
                 <!-- ko foreach: stockLocationGroups -->
                 <div class="th main-cell first-column intersectable" data-bind="css: { 'border-bottom-0': $index() == $parent.stockLocationGroups.length - 1, 'alternate-row': ($index() + 1) % 2 == 0 },
                      click: (data)=>
                     { showDetail({ stockLocationGroupId: data.stockLocationGroupId }); }">
                     <span data-bind="text: stockLocationGroupName"></span>
                 </div>
-                <div class="main-cell grand-total-column intersectable" data-bind="css: { 'border-bottom-0': $index() == $parent.stockLocationGroups.length - 1, 'alternate-row': ($index() + 1) % 2 == 0 }, with: $root.getVisibleSubTotal($data.orderGroupId, $data.stockLocationGroupId), click: (data) => { $root.showDetail(data) }">
+                <div class="main-cell grand-total-column intersectable" data-bind="css: { 'border-bottom-0': $index() == $parent.stockLocationGroups.length - 1, 'alternate-row': ($index() + 1) % 2 == 0 }, with: $root.getCell({ }, { orderGroupId: $data.orderGroupId, stockLocationGroupId: $data.stockLocationGroupId }), click: (data) => { $root.showDetail(data) }">
                     <p class="values-display" data-bind="html: display"></p>
                 </div>
                 <!-- ko foreach: $parentContext.$parent.visibleColumns -->

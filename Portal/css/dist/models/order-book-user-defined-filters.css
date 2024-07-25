@@ -69,12 +69,26 @@
   justify-content: space-between;
 }
 #filters-sidebar .sidebar-header {
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 2;
 }
 #filters-sidebar .sidebar-header,
 #filters-sidebar .sidebar-body {
   padding: 1rem;
+}
+#filters-sidebar .filters-count {
+  position: absolute;
+  top: 60px;
+  right: 12px;
+  writing-mode: vertical-rl;
+  width: auto;
+  height: 200px;
+  font-weight: bold;
+  font-size: 1.25rem;
+  opacity: 1;
+  will-change: opacity;
+  transition: opacity 150ms ease-in-out;
 }
 #filters-sidebar .sidebar-body {
   padding-top: 0;
@@ -85,6 +99,12 @@
 }
 #filters-sidebar:hover, #filters-sidebar:focus-within, #filters-sidebar.pinned {
   width: 560px;
+}
+#filters-sidebar:hover .filters-count, #filters-sidebar:focus-within .filters-count, #filters-sidebar.pinned .filters-count {
+  opacity: 0;
+}
+#filters-sidebar:hover .sidebar-header, #filters-sidebar:focus-within .sidebar-header, #filters-sidebar.pinned .sidebar-header {
+  position: static;
 }
 #filters-sidebar:hover #sidebar-collapse, #filters-sidebar:focus-within #sidebar-collapse, #filters-sidebar.pinned #sidebar-collapse {
   opacity: 1;
@@ -263,98 +283,58 @@
 #advanced-filters .mdc-select.mdc-select--focused:hover ~ .mdc-notched-outline .mdc-notched-outline__trailing {
   border-color: #adb5bd;
 }
-#user-defined-filters .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover,
-#user-defined-filters .mdc-text-field--textarea:not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover,
-#advanced-filters .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover,
-#advanced-filters .mdc-text-field--textarea:not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover {
+#user-defined-filters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover,
+#user-defined-filters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover,
+#user-defined-filters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover,
+#advanced-filters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover,
+#advanced-filters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover,
+#advanced-filters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover {
   background-color: #f5f9ff;
 }
-#user-defined-filters .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover input,
-#user-defined-filters .mdc-text-field--textarea:not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover input,
-#advanced-filters .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover input,
-#advanced-filters .mdc-text-field--textarea:not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover input {
+#user-defined-filters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover .k-state-hover,
+#user-defined-filters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover .k-state-hover,
+#user-defined-filters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover .k-state-hover,
+#advanced-filters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover .k-state-hover,
+#advanced-filters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover .k-state-hover,
+#advanced-filters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover .k-state-hover {
+  background-color: #f5f9ff;
+}
+#user-defined-filters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover input,
+#user-defined-filters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover input,
+#user-defined-filters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover input,
+#advanced-filters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover input,
+#advanced-filters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover input,
+#advanced-filters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover input {
   cursor: pointer;
 }
-#user-defined-filters .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__leading,
-#user-defined-filters .mdc-text-field--textarea:not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__leading,
-#advanced-filters .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__leading,
-#advanced-filters .mdc-text-field--textarea:not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__leading {
+#user-defined-filters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__leading,
+#user-defined-filters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__leading,
+#user-defined-filters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__leading,
+#advanced-filters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__leading,
+#advanced-filters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__leading,
+#advanced-filters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__leading {
   border-color: #adb5bd;
 }
-#user-defined-filters .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__notch,
-#user-defined-filters .mdc-text-field--textarea:not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__notch,
-#advanced-filters .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__notch,
-#advanced-filters .mdc-text-field--textarea:not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__notch {
+#user-defined-filters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__notch,
+#user-defined-filters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__notch,
+#user-defined-filters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__notch,
+#advanced-filters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__notch,
+#advanced-filters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__notch,
+#advanced-filters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__notch {
   border-color: #adb5bd;
 }
-#user-defined-filters .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__trailing,
-#user-defined-filters .mdc-text-field--textarea:not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__trailing,
-#advanced-filters .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__trailing,
-#advanced-filters .mdc-text-field--textarea:not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__trailing {
+#user-defined-filters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__trailing,
+#user-defined-filters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__trailing,
+#user-defined-filters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__trailing,
+#advanced-filters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__trailing,
+#advanced-filters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__trailing,
+#advanced-filters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__trailing {
   border-color: #adb5bd;
 }
 #user-defined-filters .user-defined-filter,
 #advanced-filters .user-defined-filter {
   position: relative;
-}
-#user-defined-filters #display-mode-list,
-#user-defined-filters #column-display-list,
-#advanced-filters #display-mode-list,
-#advanced-filters #column-display-list {
-  cursor: pointer;
-}
-#user-defined-filters #display-mode-list li,
-#user-defined-filters #column-display-list li,
-#advanced-filters #display-mode-list li,
-#advanced-filters #column-display-list li {
-  padding: 0;
-}
-#user-defined-filters #display-mode-list li.disabled,
-#user-defined-filters #column-display-list li.disabled,
-#advanced-filters #display-mode-list li.disabled,
-#advanced-filters #column-display-list li.disabled {
-  filter: brightness(95%);
-}
-#user-defined-filters #display-mode-list li .form-check,
-#user-defined-filters #column-display-list li .form-check,
-#advanced-filters #display-mode-list li .form-check,
-#advanced-filters #column-display-list li .form-check {
-  cursor: pointer;
-  padding: 0.5rem 1rem;
-  padding-left: 2.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0;
-}
-#user-defined-filters #display-mode-list li .form-check .form-check-input,
-#user-defined-filters #column-display-list li .form-check .form-check-input,
-#advanced-filters #display-mode-list li .form-check .form-check-input,
-#advanced-filters #column-display-list li .form-check .form-check-input {
-  top: 1px;
-}
-#user-defined-filters #display-mode-list li .form-check span,
-#user-defined-filters #column-display-list li .form-check span,
-#advanced-filters #display-mode-list li .form-check span,
-#advanced-filters #column-display-list li .form-check span {
-  display: inline-block;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-#user-defined-filters #display-mode-list li,
-#user-defined-filters #display-mode-list li .dropdown-item,
-#user-defined-filters #display-mode-list li .dropdown-item .form-check-input,
-#user-defined-filters #column-display-list li,
-#user-defined-filters #column-display-list li .dropdown-item,
-#user-defined-filters #column-display-list li .dropdown-item .form-check-input,
-#advanced-filters #display-mode-list li,
-#advanced-filters #display-mode-list li .dropdown-item,
-#advanced-filters #display-mode-list li .dropdown-item .form-check-input,
-#advanced-filters #column-display-list li,
-#advanced-filters #column-display-list li .dropdown-item,
-#advanced-filters #column-display-list li .dropdown-item .form-check-input {
-  cursor: pointer;
-  user-select: none;
+  height: 28px;
 }
 
 /*

@@ -2559,6 +2559,54 @@ ko.bindingHandlers.mdcMultiSelectComponent = {
 }
 
 
+ko.bindingHandlers.mdcMultiSelectCheckboxesComponent = {
+    init: function (element, valueAccessor, allBindingsAccessor) {
+        if (!window.mdc) {
+            console.error('mdcMultiSelectCheckboxesComponent binding handler: global mdc was not defined', element)
+            return;
+        }
+
+        var params = valueAccessor();
+
+        //console.log('init mdcMultiSelectCheckboxesComponent for', $(element).parent());
+
+        element.MDCSelect = new mdc.select.MDCSelect(element);
+
+        params.boundTo.mdcSelect = element.MDCSelect;
+
+        params.boundTo.mdcSelect.useNativeValidation = params.useNativeValidation;
+
+        if (params.useNativeValidation == false) {
+            if (!params.hasOwnProperty('validate')) {
+                //console.warn('mdcMultiSelectCheckboxesComponent params had no validate property', element);
+            } else {
+                if (!params.validate.hasOwnProperty('isValid')) {
+                    //console.warn('mdcMultiSelectCheckboxesComponent params.validate had no isValid property', element);
+                } else {
+                    params.validate.isValid.extend({
+                        notify: 'always'
+                    });
+                    params.validate.isValid.subscribe(function (newValue) {
+                        if (newValue === true) {
+                            params.boundTo.mdcSelect.valid = true;
+                        }
+                        if (newValue === false) {
+                            params.boundTo.mdcSelect.valid = false;
+                            params.boundTo.mdcSelect.label_.shake(true);
+                        }
+                    });
+                }
+            }
+        }
+
+        element.querySelector('.dropdown-toggle').addEventListener('hide.bs.dropdown', () => {
+            if (params.controls.hasOwnProperty('applySelection')) {
+                params.controls.applySelection(false);
+            }
+        });
+    }
+}
+
 ko.bindingHandlers.mdcBootstrapDateTimePicker = {
     init: function (element, valueAccessor, allBindingsAccessor) {
         if (!window.mdc) {

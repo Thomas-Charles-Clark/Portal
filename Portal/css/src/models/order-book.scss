@@ -56,6 +56,7 @@ html {
     flex: 1;
     align-self: stretch;
     max-height: calc(100vh - 50px);
+    transform: translate3d(0,0,0);
 } 
 
 .container {
@@ -98,6 +99,7 @@ html {
                 font-size: $font-size-lg;
                 background-color: $blue-700;
                 color: $white;
+                justify-content: space-between;
 
                 &::after {
                     color: $white;
@@ -124,8 +126,9 @@ $light-blue-background: tint-color($blue-200, 90%);
 
 /* If we can somehow identify which column indices form the boundaries between order groups ... */
 #main-grid-container-wrapper {
-    flex: 0 0 auto;
+    /*flex: 0 0 auto;*/
     overflow-x: scroll;
+    transform: translate3d(0,0,0);
 
     #main-grid-container {
         padding-bottom: $l-gutter;
@@ -144,6 +147,7 @@ $heading-font-size: 1.1rem;
     display: grid;
     grid-template-columns: 240px repeat($grid-column-count-minus-one, 110px);
     grid-row-gap: 1px;
+    transform: translate3d(0,0,0);
 
     .column-headings {
         position: sticky;
@@ -225,6 +229,38 @@ $heading-font-size: 1.1rem;
         z-index: 1;
         left: 0;
         border-right: $blue-border;
+
+        &.order-group-heading {
+            z-index: 2;
+
+            .dropdown {
+                .list-group:not(.show) {
+                    display: none;
+                }
+
+                .dropdown-menu {
+                    overflow-y: unset;
+                }
+            }
+        }
+
+        &.order-status, &.dropdown-menu {
+            z-index: 100;
+        }
+
+        .btn.display-control-btn {
+            padding: 0;
+            color: $white;
+
+            &:after {
+                display: none;
+            }
+
+            .bi-list-check {
+                padding: $btn-padding-y $btn-padding-x;
+                font-size: $font-size-base;
+            }
+        }
     }
 
     .grand-total-column {
@@ -310,6 +346,36 @@ $heading-font-size: 1.1rem;
         &:focus,
         &:hover {
             filter: brightness(110%);
+
+            .dropdown-menu {
+                filter: brightness(90%);
+            }
+        }
+    }
+
+    .first-column {
+        &.grand-total-row {
+
+            &::after {
+                content: "\F286";
+                display: inline-block;
+                font-family: "bootstrap-icons" !important;
+                font-style: normal;
+                font-weight: normal !important;
+                font-variant: normal;
+                text-transform: none;
+                line-height: 1;
+                vertical-align: -0.125em;
+                -webkit-font-smoothing: antialiased;
+                will-change: transform;
+                transition: transform 150ms ease-in-out;
+            }
+
+            &.collapsed {
+                &::after {
+                    transform: rotate(180deg);
+                }
+            }
         }
     }
 
@@ -341,6 +407,10 @@ $heading-font-size: 1.1rem;
             }
         }
     }
+    /* unfeasible: see notes-23-07-2024.txt:80 */
+    /*&.order-group-collapsible {
+        overflow: visible;
+    }*/
 }
 
 #order-book-detail-modal {
@@ -400,6 +470,28 @@ $selected-background-color: $blue-700;
 $selected-color: $white;
 
 .mdc-validating-field {
+
+    .mdc-bootstrap-multiselect {
+        &.mdc-select--selected {
+            .dropdown-toggle {
+                background: $selected-background-color;
+                color: $selected-color;
+                border-radius: $border-radius;
+            }
+
+            .mdc-floating-label {
+                color: $selected-color;
+            }
+
+            .controls {
+                > div {
+                    color: $white;
+                    text-shadow: 0 1px 0 $black;
+                }
+            }
+        }
+    }
+
     .mdc-select:not(.mdc-select--disabled) {
 
         .mdc-notched-outline__notch {
@@ -410,6 +502,7 @@ $selected-color: $white;
         }
 
         &.mdc-select--selected {
+
             .k-dropdown-wrap.k-state-default {
                 position: relative;
                 z-index: 0;
@@ -507,6 +600,96 @@ $selected-color: $white;
 
                 a {
                     color: $white;
+                }
+            }
+        }
+    }
+}
+
+.display-mode-list,
+#column-display-list {
+    cursor: pointer;
+    z-index: 200;
+    padding: 0;
+
+    li {
+        padding: 0;
+
+        &.disabled {
+            filter: brightness(95%);
+        }
+
+        .form-check {
+            cursor: pointer;
+            padding: $sm-gutter $list-group-item-padding-x;
+            padding-left: calc($xl-gutter + $sm-gutter);
+            display: flex;
+            align-items: center;
+            gap: $m-gutter;
+            margin-bottom: 0;
+
+            .form-check-input {
+                top: 1px;
+            }
+
+            span {
+                display: inline-block;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                font-weight: normal;
+            }
+        }
+    }
+
+    li + li {
+        border-top: 1px solid $gray-200;
+    }
+
+    li,
+    li .dropdown-item,
+    li .dropdown-item .form-check-input {
+        cursor: pointer;
+        user-select: none;
+    }
+}
+
+.mdc-bootstrap-multiselect {
+
+    &.mdc-text-field {
+        .dropdown {
+            .dropdown-toggle {
+                &:after {
+                    display: none;
+                }
+            }
+        }
+    }
+
+    .dropdown {
+        .dropdown-toggle {
+            &:after {
+                display: inline-block;
+            }
+        }
+
+        .dropdown-toggle {
+            &.show {
+
+            }
+        }
+            
+        .dropdown-menu {
+            min-width: 320px;
+            
+            .dropdown-item {
+                padding: $sm-gutter $m-gutter;
+                display: flex;
+                align-items: center;
+                gap: $vsm-gutter;
+
+                .form-check-input {
+                    top: 0;
+                    cursor: pointer;
                 }
             }
         }
