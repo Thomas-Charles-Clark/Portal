@@ -87,6 +87,19 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
 #header-accordion .accordion-item {
   background-color: transparent;
   border: none;
+  position: relative;
+}
+#header-accordion .accordion-item:nth-of-type(1) {
+  z-index: 4;
+}
+#header-accordion .accordion-item:nth-of-type(2) {
+  z-index: 3;
+}
+#header-accordion .accordion-item:nth-of-type(3) {
+  z-index: 2;
+}
+#header-accordion .accordion-item:nth-of-type(4) {
+  z-index: 1;
 }
 #header-accordion .accordion-item .accordion-header {
   border-radius: 0;
@@ -94,17 +107,34 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
 }
 #header-accordion .accordion-item .accordion-header .accordion-button {
   border-radius: 0;
-  font-size: 1.25rem;
-  background-color: #084298;
-  color: #fff;
-  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  gap: 1rem;
+  transition: background-color 150ms ease-in-out;
+  will-change: background-color;
+  line-height: 28px;
+}
+#header-accordion .accordion-item .accordion-header .accordion-button:not(.collapsed) {
+  color: var(--bs-body-color);
+}
+#header-accordion .accordion-item .accordion-header .accordion-button:hover {
+  background-color: #f5f9ff;
 }
 #header-accordion .accordion-item .accordion-header .accordion-button::after {
-  color: #fff;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
 }
 #header-accordion .accordion-item .accordion-header .accordion-button a {
-  color: #fff;
+  color: var(--bs-body-color);
+  padding: 0;
+}
+#header-accordion .accordion-item .accordion-header .accordion-button a .bi {
+  font-size: 1.15rem;
+  padding: 0.25rem 0.5rem;
+}
+#header-accordion .accordion-item .accordion-header .accordion-button a:after {
+  display: none;
 }
 #header-accordion .accordion-item .accordion-body {
   background-color: transparent;
@@ -133,6 +163,9 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
   /*&.order-group-collapsible {
       overflow: visible;
   }*/
+}
+.main-grid .btn.dropdown-toggle.ripple-surface {
+  vertical-align: middle;
 }
 .main-grid .column-headings {
   position: sticky;
@@ -224,6 +257,9 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
   z-index: 1;
   left: 240px;
 }
+.main-grid .grand-total-column.column-controls {
+  z-index: 2;
+}
 .main-grid .order-status,
 .main-grid .order-status-group-heading,
 .main-grid .order-status-total,
@@ -290,6 +326,9 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
 }
 .main-grid .order-group-heading:focus .dropdown-menu, .main-grid .order-group-heading:hover .dropdown-menu {
   filter: brightness(90%);
+}
+.main-grid .first-column.grand-total-row {
+  z-index: 2;
 }
 .main-grid .first-column.grand-total-row::after {
   content: "\f286";
@@ -511,7 +550,7 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
   display: none;
 }
 .mdc-bootstrap-multiselect .dropdown .dropdown-toggle:after {
-  display: inline-block;
+  /*display: inline-block;*/
 }
 .mdc-bootstrap-multiselect .dropdown .dropdown-menu {
   min-width: 320px;

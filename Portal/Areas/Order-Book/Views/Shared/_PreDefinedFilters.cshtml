@@ -30,7 +30,7 @@
     <ul class="nav nav-tabs">
         <!-- ko foreach: groups -->
         <li class="nav-item">
-            <button class="nav-link" type="button" data-bs-toggle="tab" data-bind="attr: { 'data-bs-target': `#pre-defined-tab-${$index()}` }, css: { 'active': $index() == 0 }">
+            <button class="nav-link" type="button" data-bind="click: (data, event) => { $root.podTabIndex($index()); }, attr: { 'data-bs-target': `#pre-defined-tab-${$index()}` }, css: { 'active': $index() == $root.podTabIndex() }">
                 <span data-bind="text: name"></span>
             </button>
         </li>
@@ -38,7 +38,7 @@
     </ul>
     <div class="tab-content">
         <!-- ko foreach: groups -->
-        <div class="tab-pane fade" data-bind="attr: { id: `pre-defined-tab-${$index()}` }, css: { 'show active': $index() == 0 }">
+        <div class="tab-pane fade" data-bind="attr: { id: `pre-defined-tab-${$index()}` }, css: { 'show active': $index() == $root.podTabIndex() }">
             <div class="pre-defined-filter-summaries" data-bind="foreach: summaries, style: {  '--grid-column-count': summaries().length }">
                 <div class="card filter-card alert" data-bind="css: AlertClass, click: $parentContext.$parent.showDetail">
                     <div class="card-body">

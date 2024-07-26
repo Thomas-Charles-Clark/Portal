@@ -37,14 +37,6 @@ const orderBookViewModel = (() => {
 
     self.busy = ko.observable(false);
 
-    self.displayModes = ko.observableArray([DISPLAY_MODE_VALUE_SUM]); // this now belongs to just the main summary grid Totals segment at the top
-
-    self.datesDisplayModes = ko.observableArray([DISPLAY_MODE_VALUE_SUM, DISPLAY_MODE_ORDER_COUNT]); // this now belongs to just the main summary grid Totals segment at the top
-
-    self.podsDisplayModes = ko.observableArray([DISPLAY_MODE_VALUE_SUM, DISPLAY_MODE_ORDER_COUNT]); // this now belongs to just the main summary grid Totals segment at the top
-
-    self.salesDisplayModes = ko.observableArray([DISPLAY_MODE_VALUE_SUM, DISPLAY_MODE_ORDER_COUNT]); // this now belongs to just the main summary grid Totals segment at the top
-
     let emptyParams = {
         dateBasis: 'O'
     };
@@ -53,15 +45,56 @@ const orderBookViewModel = (() => {
 
     window.udf = self.userDefinedFilters;
 
+    let loadedConfig = window.localStorage.getItem("orderBookDisplayConfig");
+
+    if (loadedConfig == null) {
+        self.displayConfig = {
+            totals: [DISPLAY_MODE_VALUE_SUM],
+            dates: [DISPLAY_MODE_VALUE_SUM, DISPLAY_MODE_ORDER_COUNT],
+            datesCollapse: false,
+            pods: [DISPLAY_MODE_VALUE_SUM, DISPLAY_MODE_ORDER_COUNT],
+            podsCollapse: false,
+            podTabIndex: 0,
+            sales: [DISPLAY_MODE_VALUE_SUM, DISPLAY_MODE_ORDER_COUNT],
+            salesCollapse: false,
+            gridCollapse: false,
+            orderGroups: [],
+            columnHeadings: []
+        }
+
+        window.localStorage.setItem("orderBookDisplayConfig", JSON.stringify(self.displayConfig));
+    } else {
+        self.displayConfig = JSON.parse(loadedConfig);
+    }
+
+
+    self.displayModes = ko.observableArray(self.displayConfig.totals); // this now belongs to just the main summary grid Totals segment at the top
+
+
+    self.datesDisplayModes = ko.observableArray(self.displayConfig.dates); // this now belongs to just the main summary grid Totals segment at the top
+    self.datesCollapse = ko.observable(self.displayConfig.datesCollapse);
     self.dateFilters = orderBookDateFiltersViewModel(self);
 
+
+    self.podsDisplayModes = ko.observableArray(self.displayConfig.pods); // this now belongs to just the main summary grid Totals segment at the top
+    self.podsCollapse = ko.observable(self.displayConfig.podsCollapse);
     self.preDefinedFilters = orderBookPreDefinedFiltersViewModel(self);
+    self.podTabIndex = ko.observable(self.displayConfig.podTabIndex);
+
+
+    self.salesDisplayModes = ko.observableArray(self.displayConfig.sales); // this now belongs to just the main summary grid Totals segment at the top
+    self.salesCollapse = ko.observable(self.displayConfig.salesCollapse);
+    self.salesFilters = orderBookPreDefinedFiltersViewModel(self);
+
+
+    self.gridCollapse = ko.observable(self.displayConfig.gridCollapse);
+
 
     window.pdf = self.preDefinedFilters;
 
     self.columnHeadings = ko.observableArray([]);
 
-    self.displayColumnHeadings = ko.observableArray([]);
+    self.displayColumnHeadings = ko.observableArray(self.displayConfig.columnHeadings);
 
     self.rowHeadings = ko.observableArray([]);
 
@@ -91,7 +124,7 @@ const orderBookViewModel = (() => {
 
     self.detailModalBusy = ko.observable(false);
 
-    self.displayColumnHeadingsSelection = ko.observableArray([]);
+    self.displayColumnHeadingsSelection = ko.observableArray(self.displayConfig.columnHeadings);
 
     self.availableDisplayModes = ko.observableArray(DISPLAY_MODES),
 
@@ -102,11 +135,8 @@ const orderBookViewModel = (() => {
 
     self.displayColumnHeadingsParams = {
         widget: ko.observable(),
-        btnMarkup: `<span>
-                Columns
-            </span>
-            <i class="bi bi-collection ms-auto"></i>`,
-        displayClass: "btn-secondary dropdown-toggle d-flex gap-3 justify-content-between align-items-center",
+        btnMarkup: `<i class="bi bi-collection ms-auto"></i>`,
+        displayClass: null,
         elementId: "column-groups-btn",
         controls: {
             selectAll: () => {
@@ -156,7 +186,53 @@ const orderBookViewModel = (() => {
 
     self.visibleColumnsJson = ko.computed(() => {
         return JSON.stringify(self.visibleColumns());
-    })
+    });
+
+    self.displayComputer = ko.computed(() => {
+
+        let orderGroups = self.rowHeadings();
+
+        let totals = self.displayModes();
+        let dates = self.datesDisplayModes();
+        let datesCollapse = self.datesCollapse();
+        let pods = self.podsDisplayModes();
+        let podsCollapse = self.podsCollapse();
+        let podTabIndex = self.podTabIndex();
+        let sales = self.salesDisplayModes();
+        let salesCollapse = self.salesCollapse();
+
+        let gridCollapse = self.gridCollapse();
+
+        let columnHeadings = self.displayColumnHeadings();
+
+        if (orderGroups.length) {
+
+            let result = {
+                totals: totals,
+                dates: dates,
+                datesCollapse: datesCollapse,
+                pods: pods,
+                podsCollapse: podsCollapse,
+                podTabIndex: podTabIndex,
+                sales: sales,
+                salesCollapse: salesCollapse,
+                gridCollapse: gridCollapse,
+                orderGroups: orderGroups.map(h => {
+                    return {
+                        orderGroupId: h.orderGroupId,
+                        displayModes: h.displayModes(),
+                        collapsed: h.collapsed()
+                    }
+                }),
+                columnHeadings: columnHeadings
+            }
+
+            self.displayConfig = result;
+
+            window.localStorage.setItem("orderBookDisplayConfig", JSON.stringify(self.displayConfig));
+        }
+
+    }, self);
 
     //#endregion
 
@@ -176,8 +252,10 @@ const orderBookViewModel = (() => {
     });
 
     self.columnHeadings.subscribe(nv => {
-        let sortOrders = nv.map((c, i) => c.orderStatusGroupSortOrder);
-        self.displayColumnHeadings(sortOrders);
+        if (self.displayColumnHeadings().length == 0) {
+            let sortOrders = nv.map((c, i) => c.orderStatusGroupSortOrder);
+            self.displayColumnHeadings(sortOrders);
+        }
     });
 
     //self.displayColumnHeadingsJson.subscribe(nv => {
@@ -286,6 +364,51 @@ const orderBookViewModel = (() => {
     //    });
     //}
 
+    self.toggleDates = (data, event) => {
+        event.currentTarget.classList.toggle('collapsed');
+
+        bootstrap.Collapse.getOrCreateInstance('#header-accordion-one').toggle();
+
+        self.datesCollapse(event.currentTarget.classList.contains('collapsed'));
+    }
+
+    self.togglePrompts = (data, event) => {
+        event.currentTarget.classList.toggle('collapsed');
+
+        bootstrap.Collapse.getOrCreateInstance('#header-accordion-two').toggle();
+
+        self.podsCollapse(event.currentTarget.classList.contains('collapsed'));
+    }
+
+    self.toggleSales = (data, event) => {
+        event.currentTarget.classList.toggle('collapsed');
+
+        bootstrap.Collapse.getOrCreateInstance('#header-accordion-three').toggle();
+
+        self.salesCollapse(event.currentTarget.classList.contains('collapsed'));
+    }
+
+    self.toggleGrid = (data, event) => {
+        event.currentTarget.classList.toggle('collapsed');
+
+        bootstrap.Collapse.getOrCreateInstance('#header-accordion-four').toggle();
+
+        self.gridCollapse(event.currentTarget.classList.contains('collapsed'));
+    }
+
+    self.hideValueDropdowns = (data, event) => {
+
+        let showing = event.currentTarget.parentNode.querySelector('.display-mode-list');
+
+        document.querySelectorAll('.display-mode-list').forEach(el => {
+            if (el != showing) {
+                el.classList.remove('show');
+            }
+        });
+
+        return true;
+    }
+
     self.toggleOrderGroupCollapse = (data, event) => {
         let totalToggleEl = document.querySelector('.first-column.grand-total-row');
 
@@ -295,8 +418,10 @@ const orderBookViewModel = (() => {
 
         if (document.querySelector(`.order-group-${data.orderGroupId}`).classList.contains('collapsing')) {
             totalToggleEl.classList.remove('collapsed');
+            data.collapsed(true);
         } else {
             totalToggleEl.classList.add('collapsed');
+            data.collapsed(false);
         }
     }
 
@@ -360,12 +485,15 @@ const orderBookViewModel = (() => {
                     orderGroupId: current.OrderGroupID
                 })
             } else {
+                let displayConfig = self.displayConfig.orderGroups.find(og => og.orderGroupId == current.OrderGroupID);
+
                 let rowHeading = {
                     orderGroupId: current.OrderGroupID,
                     orderGroupName: current.OrderGroupName,
                     orderGroupSortOrder: current.OrderGroupSortOrder,
                     stockLocationGroupId: current.StockLocationGroupID,
-                    displayModes: ko.observableArray([DISPLAY_MODE_VALUE_SUM]),
+                    displayModes: ko.observableArray(displayConfig?.displayModes ?? [DISPLAY_MODE_VALUE_SUM]),
+                    collapsed: ko.observable(displayConfig?.collapsed ?? false),
                     stockLocationGroups: [{
                         stockLocationGroupId: current.StockLocationGroupID,
                         stockLocationGroupName: current.StockLocationGroupName,
@@ -458,7 +586,6 @@ const orderBookViewModel = (() => {
         // this will only be true on the first run through
         if (self.columnHeadings().length == 0) {
             self.columnHeadings(columnHeadings);
-            self.displayColumnHeadingsSelection(self.columnHeadings().map(d => d.orderStatusGroupSortOrder));
         }
     }
 
@@ -605,7 +732,7 @@ const orderBookViewModel = (() => {
 
     //#region Events
 
-    self.parse(window.getMainResult());
+    self.fetch(self.userDefinedFilters.json());
 
     document.addEventListener('setDetailModalTitle', (e) => {
         self.detailModalTitleElement.innerHTML = e.detail.join("");

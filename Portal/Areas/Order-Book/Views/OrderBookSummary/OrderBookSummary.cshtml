@@ -142,44 +142,60 @@
     <main id="order-book-main">
         <div class="accordion" id="header-accordion">
             <div class="accordion-item">
-                <h2 class="accordion-header" id="header-accordion-one-header">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#header-accordion-one" aria-expanded="true" aria-controls="header-accordion-one">
+                <h5 class="accordion-header" id="header-accordion-one-header">
+                    <button class="accordion-button" type="button" aria-expanded="true" aria-controls="header-accordion-one" data-bind="with: dateFilters, click: toggleDates, css: { collapsed: datesCollapse }">
                         <span>
-                            Order Book Aged by Date Received
+                            Order Book Aged by Order Date
                         </span>
-                        <!--<div class="dropdown" data-bind="click: () => { return true; }, clickBubble: false">
-                            <a class="btn display-control-btn btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static">
+                        <div class="dropdown">
+                            <a class="btn display-control-btn btn-sm dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
                                 <i class="bi bi-list-check"></i>
-                            </a>-->
+                            </a>
                             <!-- ko template: { name: 'values-dropdown-container' } --><!-- /ko -->
-                        <!--</div>-->
+                        </div>
                     </button>
-                </h2>
-                <div id="header-accordion-one" class="accordion-collapse collapse show" aria-labelledby="header-accordion-header">
+                </h5>
+                <div id="header-accordion-one" class="accordion-collapse collapse show" aria-labelledby="header-accordion-header" data-bind="css: { show: !datesCollapse() }">
                     <div class="accordion-body">
                         @Html.Partial("_DateFilters")
                     </div>
                 </div>
             </div>
             <div class="accordion-item">
-                <h2 class="accordion-header" id="header-accordion-two-header">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#header-accordion-two" aria-expanded="true" aria-controls="header-accordion-two">
-                        Management Prompts
+                <h5 class="accordion-header" id="header-accordion-two-header">
+                    <button class="accordion-button" type="button" aria-expanded="true" aria-controls="header-accordion-two" data-bind="with: preDefinedFilters, click: togglePrompts, css: { collapsed: podsCollapse }">
+                        <span>
+                            Management Prompts
+                        </span>
+                        <div class="dropdown">
+                            <a class="btn display-control-btn btn-sm dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
+                                <i class="bi bi-list-check"></i>
+                            </a>
+                            <!-- ko template: { name: 'values-dropdown-container' } --><!-- /ko -->
+                        </div>
                     </button>
-                </h2>
-                <div id="header-accordion-two" class="accordion-collapse collapse show" aria-labelledby="header-accordion-two">
+                </h5>
+                <div id="header-accordion-two" class="accordion-collapse collapse show" aria-labelledby="header-accordion-two" data-bind="css: { show: !podsCollapse() }">
                     <div class="accordion-body">
                         @Html.Partial("_PreDefinedFilters")
                     </div>
                 </div>
             </div>
             <div class="accordion-item">
-                <h2 class="accordion-header" id="header-accordion-three-header">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#header-accordion-three" aria-expanded="true" aria-controls="header-accordion-three">
-                        Sales
+                <h5 class="accordion-header" id="header-accordion-three-header">
+                    <button class="accordion-button" type="button" aria-expanded="true" aria-controls="header-accordion-three" data-bind="with: salesFilters, click: toggleSales, css: { collapsed: salesCollapse }">
+                        <span>
+                            Sales
+                        </span>
+                        <div class="dropdown">
+                            <a class="btn display-control-btn btn-sm dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
+                                <i class="bi bi-list-check"></i>
+                            </a>
+                            <!-- ko template: { name: 'values-dropdown-container' } --><!-- /ko -->
+                        </div>
                     </button>
-                </h2>
-                <div id="header-accordion-three" class="accordion-collapse collapse show" aria-labelledby="header-accordion-three">
+                </h5>
+                <div id="header-accordion-three" class="accordion-collapse collapse" aria-labelledby="header-accordion-three" data-bind="css: { show: !salesCollapse() }">
                     <div class="accordion-body">
                         <div class="card mb-3">
                             <div class="card-body">
@@ -191,8 +207,19 @@
                     </div>
                 </div>
             </div>
+            <div class="accordion-item">
+                <h5 class="accordion-header" id="header-accordion-four-header">
+                    <button class="accordion-button" type="button" aria-expanded="true" aria-controls="header-accordion-four" data-bind="click: toggleGrid, css: { collapsed: gridCollapse }">
+                        Order Book
+                    </button>
+                </h5>
+                <div id="header-accordion-four" class="accordion-collapse collapse" aria-labelledby="header-accordion-four" data-bind="css: { show: !gridCollapse() }">
+                    <div class="accordion-body">
+                        @Html.Partial("_MainGrid")
+                    </div>
+                </div>
+            </div>
         </div>
-        @Html.Partial("_MainGrid")
     </main>
 </div>
 

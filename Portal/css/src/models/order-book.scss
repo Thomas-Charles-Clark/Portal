@@ -1,5 +1,10 @@
 @import "common.scss";
 
+$grid-column-count: var(--grid-column-count);
+$grid-column-count-minus-one: calc($grid-column-count - 1);
+$blue-border: 1px solid $blue-700;
+$light-blue-background: tint-color($blue-200, 90%);
+
 html {
     min-height: 100%;
     display: flex;
@@ -86,9 +91,27 @@ html {
 #header-accordion {
     border: none;
 
+
     .accordion-item {
         background-color: transparent;
         border: none;
+        position: relative;
+
+        &:nth-of-type(1) {
+            z-index: 4;
+        }
+
+        &:nth-of-type(2) {
+            z-index: 3;
+        }
+
+        &:nth-of-type(3) {
+            z-index: 2;
+        }
+
+        &:nth-of-type(4) {
+            z-index: 1;
+        }
 
         .accordion-header {
             border-radius: 0;
@@ -96,18 +119,39 @@ html {
 
             .accordion-button {
                 border-radius: 0;
-                font-size: $font-size-lg;
-                background-color: $blue-700;
-                color: $white;
-                justify-content: space-between;
+                padding: $sm-gutter $l-gutter;
+                font-size: $font-size-base;
+                background-color: $white;
+                border: 1px solid $gray-300;
+                gap: $l-gutter;
+                transition: background-color 150ms ease-in-out;
+                will-change: background-color;
+                line-height: 28px;
+
+                &:not(.collapsed) {
+                    color: $accordion-button-color;
+                }
+
+                &:hover {
+                    background-color: $light-blue-background;
+                }
 
                 &::after {
-                    color: $white;
-                    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+                    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
                 }
 
                 a {
-                    color: $white;
+                    color: $accordion-button-color;
+                    padding: 0;
+
+                    .bi {
+                        font-size: $font-size-md;
+                        padding: $btn-padding-y-sm $btn-padding-x-sm;
+                    }
+
+                    &:after {
+                        display: none;
+                    }
                 }
             }
         }
@@ -118,11 +162,6 @@ html {
         }
     }
 }
-
-$grid-column-count: var(--grid-column-count);
-$grid-column-count-minus-one: calc($grid-column-count - 1);
-$blue-border: 1px solid $blue-700;
-$light-blue-background: tint-color($blue-200, 90%);
 
 /* If we can somehow identify which column indices form the boundaries between order groups ... */
 #main-grid-container-wrapper {
@@ -148,6 +187,10 @@ $heading-font-size: 1.1rem;
     grid-template-columns: 240px repeat($grid-column-count-minus-one, 110px);
     grid-row-gap: 1px;
     transform: translate3d(0,0,0);
+
+    .btn.dropdown-toggle.ripple-surface {
+        vertical-align: middle;
+    }
 
     .column-headings {
         position: sticky;
@@ -267,6 +310,10 @@ $heading-font-size: 1.1rem;
         position: sticky;
         z-index: 1;
         left: 240px;
+
+        &.column-controls {
+            z-index: 2;
+        }
     }
 
     .order-status,
@@ -355,6 +402,7 @@ $heading-font-size: 1.1rem;
 
     .first-column {
         &.grand-total-row {
+            z-index: 2;
 
             &::after {
                 content: "\F286";
@@ -668,7 +716,7 @@ $selected-color: $white;
     .dropdown {
         .dropdown-toggle {
             &:after {
-                display: inline-block;
+                /*display: inline-block;*/
             }
         }
 

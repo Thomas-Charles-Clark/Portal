@@ -6,6 +6,9 @@
         parent: parent
     };
 
+    // this is so that the values-dropdown-container template can render a distinct id for the displaymodes
+    self.orderGroupId = "pod-filters";
+
     self.busy = self.parent.busy;
 
     self.displayModes = self.parent.podsDisplayModes;

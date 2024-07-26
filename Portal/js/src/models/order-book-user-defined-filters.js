@@ -52,6 +52,8 @@ const orderBookUserDefinedFiltersViewModel = ({
         parent: parent
     };
 
+    // this is so that the values-dropdown-container template can render a distinct id for the displaymodes
+
     self.initialParams = params;
 
     self.busy = self.parent.busy;
@@ -704,7 +706,8 @@ const orderBookUserDefinedFiltersViewModel = ({
 
         },
         clearFunction: () => {
-
+            self.salesMarketsParams.multiSelectSettings.controls.deselectAll();
+            self.salesMarketsParams.multiSelectSettings.controls.applySelection(false);
         }
     }
 

@@ -20,42 +20,36 @@
 @font-face {
   font-family: "Trixie Rough";
   /* Trixie Rough OT W05 Light */
-  font-display: swap;
   font-weight: 400;
   src: url("/css/src/fonts/src/5355145/7b581bfb-fe90-4438-9589-f44b3f85e5e1.woff2") format("woff2");
 }
 @font-face {
   font-family: "Trixie Rough";
   /* Trixie Rough OT W05 Heavy */
-  font-display: swap;
   font-weight: 700;
   src: url("/css/src/fonts/src/5353122/44f98f55-29b4-4bb1-99b3-e9298ecfec9b.woff2") format("woff2");
 }
 @font-face {
   font-family: "Trixie";
   /* Trixie W05 Light */
-  font-display: swap;
   font-weight: 400;
   src: url("/css/src/fonts/src/5359239/acb8e019-6e8d-486d-9222-15170d9657c1.woff2") format("woff2");
 }
 @font-face {
   font-family: "Trixie";
   /* Trixie W05 Heavy */
-  font-display: swap;
   font-weight: 600;
   src: url("/css/src/fonts/src/5355143/c3ade7ce-98e9-4a5d-9eae-a8fb74f4e6ef.woff2") format("woff2");
 }
 @font-face {
   font-family: "Trixie";
   /* Trixie W05 Heavy */
-  font-display: swap;
   font-weight: 700;
   src: url(/css/src/fonts/src/5355143/c3ade7ce-98e9-4a5d-9eae-a8fb74f4e6ef.woff2);
   src: local("/css/dist/fonts/src/5355143/c3ade7ce-98e9-4a5d-9eae-a8fb74f4e6ef.woff2"), url("/css/dist/fonts/src/5355143/c3ade7ce-98e9-4a5d-9eae-a8fb74f4e6ef.woff2") format("woff2");
 }
 .trixie {
   font-family: "Trixie";
-  font-display: swap;
 }
 
 h1.trixie {
