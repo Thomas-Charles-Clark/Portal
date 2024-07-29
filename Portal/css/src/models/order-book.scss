@@ -71,7 +71,7 @@ html {
 }
 
 #order-book-main {
-    padding: $l-gutter;
+    padding: $sm-gutter;
     overflow-x: auto;
     display: flex;
     height: 100%;
@@ -115,13 +115,14 @@ html {
 
         .accordion-header {
             border-radius: 0;
-            margin-bottom: $l-gutter;
+            margin-bottom: $sm-gutter;
 
             .accordion-button {
                 border-radius: 0;
                 padding: $sm-gutter $l-gutter;
                 font-size: $font-size-base;
-                background-color: $white;
+                background-color: $gray-600;
+                color: $white;
                 border: 1px solid $gray-300;
                 gap: $l-gutter;
                 transition: background-color 150ms ease-in-out;
@@ -129,19 +130,19 @@ html {
                 line-height: 28px;
 
                 &:not(.collapsed) {
-                    color: $accordion-button-color;
+                    color: $white;
                 }
 
-                &:hover {
-                    background-color: $light-blue-background;
+                &:hover, &:focus, &:focus-within {
+                    background-color: tint-color($gray-600, 15%); //$light-blue-background;
                 }
 
                 &::after {
-                    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+                    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
                 }
 
                 a {
-                    color: $accordion-button-color;
+                    color: $white;
                     padding: 0;
 
                     .bi {
@@ -170,7 +171,7 @@ html {
     transform: translate3d(0,0,0);
 
     #main-grid-container {
-        padding-bottom: $l-gutter;
+        padding-bottom: $sm-gutter;
 
         .main-grid:not(.column-headings) {
             .main-grid.show {
@@ -223,7 +224,7 @@ $heading-font-size: 1.1rem;
     }
 
     & + .main-grid {
-        margin-top: $l-gutter;
+        margin-top: $sm-gutter;
     }
 
     .span-n {
@@ -439,6 +440,24 @@ $heading-font-size: 1.1rem;
 
         span {
             display: block;
+            &.order-value {
+
+            }
+            &.order-quantity {
+                /*color: $orange-400;*/
+            }
+            &.line-count {
+
+            }
+            &.order-count {
+
+            }
+            &.percentage-of-full {
+
+            }
+            &.percentage-of-filtered {
+
+            }
         }
     }
 

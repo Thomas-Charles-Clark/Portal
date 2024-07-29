@@ -16,12 +16,15 @@
     <table id="order-book-detail-table" class="table table-condensed table-striped table-hover order-book-detail-table">
         <colgroup>
             <!-- ko foreach: $parent.columns -->
+            <!-- ko if: $index() < 10 -->
             <col data-bind="style: { width: `${$data.width}px` }" />
+            <!-- /ko -->
             <!-- /ko -->
         </colgroup>
         <thead>
             <tr>
                 <!-- ko foreach: $parent.columns -->
+                <!-- ko if: $index() < 10 -->
                 <th class="sortable-column" data-bind="click: $root.sortByColumn, style: { '--left-offset': `${$parentContext.$parent.columns().reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }">
                     <span data-bind="text: columnNameDisplay"></span>
                     <!-- ko if: direction -->
@@ -29,10 +32,13 @@
                     <!-- /ko -->
                 </th>
                 <!-- /ko -->
+                <!-- /ko -->
             </tr>
             <tr class="subtotal-row">
                 <!-- ko foreach: $parent.columns -->
+                <!-- ko if: $index() < 10 -->
                 <th data-bind="text: total, style: { '--left-offset': `${$parentContext.$parent.columns().reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }"></th>
+                <!-- /ko -->
                 <!-- /ko -->
             </tr>
         </thead>
@@ -44,9 +50,11 @@
         <tbody data-bind="foreach: visibleItems">
             <tr>
                 <!-- ko foreach: $parentContext.$parent.columns -->
+                <!-- ko if: $index() < 10 -->
                 <td data-bind="style: { '--left-offset': `${$parentContext.$parentContext.$parent.columns().reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }">
                     <span data-bind="text: $parent[columnName]"></span>
                 </td>
+                <!-- /ko -->
                 <!-- /ko -->
             </tr>
         </tbody>

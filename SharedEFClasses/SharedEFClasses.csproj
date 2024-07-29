@@ -493,6 +493,7 @@
     <Compile Include="Models\OrderBook\OrderBook_DetailView_SelectResult.cs" />
     <Compile Include="Models\OrderBook\OrderBook_MainSummary_SelectResult.cs" />
     <Compile Include="Models\OrderBook\OrderBook_PreDefinedSummary_SelectResult.cs" />
+    <Compile Include="Models\OrderBook\OrderBook_SalesSummary_SelectResult.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookDetailViewParams.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookBaseParams.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookRingFencePopoverFetch.cs" />

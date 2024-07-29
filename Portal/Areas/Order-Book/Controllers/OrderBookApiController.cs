@@ -49,12 +49,14 @@ namespace Portal.Areas.Sales.Controllers
             var dateFilters = await PortalDB.FetchOrderBookDateSummaries(dto);
             var preDefinedFilters = JArray.Parse(await PortalDB.FetchOrderBookPreDefinedSummaries(dto));
             var mainResult = await PortalDB.FetchOrderBookMainSummary(dto);
+            var salesResult = await PortalDB.FetchOrderBookSalesSummaries(dto);
 
             var result = new
             {
                 dateFilters,
                 preDefinedFilters,
-                mainResult
+                mainResult,
+                salesResult
             };
 
             return Ok(result);

@@ -1,5 +1,5 @@
 ﻿@model SharedEFClasses.BaseViewModel
-<div id="main-grid-container-wrapper">
+<div id="main-grid-container-wrapper" class="accordion-collapse collapse" aria-labelledby="header-accordion-four" data-bind="css: { show: !gridCollapse() }">
     <div id="main-grid-container"
          style="display: none"
          class="main-grid"
@@ -51,7 +51,7 @@
                             <li data-bind="css: { 'disabled': disabled }">
                                 <label class="dropdown-item pointer form-check-label">
                                     <input class="form-check-input" type="checkbox" data-bind="checked: $parent.observableArray,
-                                checkedValue: $data.orderStatusGroupSortOrder,
+                                checkedValue: $data.orderStatusGroupId,
                                 attr: {
                                     disabled: disabled
                                 }">

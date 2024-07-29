@@ -94,7 +94,7 @@ const orderBookViewModel = (() => {
 
     self.columnHeadings = ko.observableArray([]);
 
-    self.displayColumnHeadings = ko.observableArray(self.displayConfig.columnHeadings);
+    self.displayColumnHeadings = ko.observableArray([].slice.call(self.displayConfig.columnHeadings));
 
     self.rowHeadings = ko.observableArray([]);
 
@@ -124,7 +124,7 @@ const orderBookViewModel = (() => {
 
     self.detailModalBusy = ko.observable(false);
 
-    self.displayColumnHeadingsSelection = ko.observableArray(self.displayConfig.columnHeadings);
+    self.displayColumnHeadingsSelection = ko.observableArray([].slice.call(self.displayConfig.columnHeadings));
 
     self.availableDisplayModes = ko.observableArray(DISPLAY_MODES),
 
@@ -141,7 +141,7 @@ const orderBookViewModel = (() => {
         controls: {
             selectAll: () => {
                 //console.log('selectAll');
-                self.displayColumnHeadingsSelection(self.columnHeadings().map(d => d.orderStatusGroupSortOrder));
+                self.displayColumnHeadingsSelection(self.columnHeadings().map(d => d.orderStatusGroupId));
             },
             deselectAll: () => {
                 //console.log('deselectAll');
@@ -176,7 +176,7 @@ const orderBookViewModel = (() => {
     }, self);
 
     self.visibleColumns = ko.computed(() => {
-        let result = self.columnHeadings().filter(ch => self.displayColumnHeadings().indexOf(ch.orderStatusGroupSortOrder) > -1);
+        let result = self.columnHeadings().filter(ch => self.displayColumnHeadings().indexOf(ch.orderStatusGroupId) > -1);
         return result;
     }, self);
 
@@ -253,8 +253,8 @@ const orderBookViewModel = (() => {
 
     self.columnHeadings.subscribe(nv => {
         if (self.displayColumnHeadings().length == 0) {
-            let sortOrders = nv.map((c, i) => c.orderStatusGroupSortOrder);
-            self.displayColumnHeadings(sortOrders);
+            let orderStatusGroupIds = nv.map((c, i) => c.orderStatusGroupId);
+            self.displayColumnHeadings(orderStatusGroupIds);
         }
     });
 
@@ -391,7 +391,7 @@ const orderBookViewModel = (() => {
     self.toggleGrid = (data, event) => {
         event.currentTarget.classList.toggle('collapsed');
 
-        bootstrap.Collapse.getOrCreateInstance('#header-accordion-four').toggle();
+        bootstrap.Collapse.getOrCreateInstance('#main-grid-container-wrapper').toggle();
 
         self.gridCollapse(event.currentTarget.classList.contains('collapsed'));
     }
@@ -416,13 +416,15 @@ const orderBookViewModel = (() => {
 
         bootstrap.Collapse.getOrCreateInstance(`.order-group-${data.orderGroupId}`).toggle();
 
-        if (document.querySelector(`.order-group-${data.orderGroupId}`).classList.contains('collapsing')) {
-            totalToggleEl.classList.remove('collapsed');
-            data.collapsed(true);
-        } else {
-            totalToggleEl.classList.add('collapsed');
-            data.collapsed(false);
-        }
+        totalToggleEl.classList.toggle('collapsed');
+
+        //if (document.querySelector(`.order-group-${data.orderGroupId}`).classList.contains('collapsing')) {
+        //    totalToggleEl.classList.remove('collapsed');
+        //    data.collapsed(true);
+        //} else {
+        //    totalToggleEl.classList.add('collapsed');
+        //    data.collapsed(false);
+        //}
     }
 
     self.toggleAllOrderGroups = () => {
@@ -544,7 +546,7 @@ const orderBookViewModel = (() => {
                     view: current.View,
                     procedure: current.Procedure,
                     disabled: ko.computed(() => {
-                        return self.displayColumnHeadingsSelection().length == 1 && self.displayColumnHeadingsSelection()[0] === current.OrderStatusGroupSortOrder;
+                        return self.displayColumnHeadingsSelection().length == 1 && self.displayColumnHeadingsSelection()[0] === current.OrderStatusGroupID;
                     }, self),
                     orderStatuses: [{
                         orderStatusId: current.OrderStatusID,
@@ -595,7 +597,7 @@ const orderBookViewModel = (() => {
 
         let body = JSON.parse(params);
 
-        body.orderLineDetailedStatusGroupIds = self.visibleColumns().map(v => v.orderStatusGroupId);
+        body.orderLineDetailedStatusGroupIds = self.displayColumnHeadings();
 
         console.log("FetchMain calling with", body);
 
@@ -615,7 +617,10 @@ const orderBookViewModel = (() => {
                 bootstrap.Collapse.getOrCreateInstance(document.querySelector("#accuracy-collapse")).hide();
 
                 self.parse(data.mainResult);
-                self.busy(false);
+
+                window.setTimeout(() => {
+                    self.busy(false);
+                }, 0);
             })
             .catch((err) => {
                 self.busy(false);
@@ -787,8 +792,6 @@ const orderBookViewModel = (() => {
                 // if the data has remained stale for e.g. an hour, then there's a problem
                 // so we should, regardless of what the user's preference for nag screens is, nag them
                 // to tell them that the data is now e.g. an hour stale and should've been updated 45 minutes ago.
-
-                console.warn("boolean check forced for debugging")
 
                 let nagBlocked = document.cookie.split(';').find(c => c.indexOf('orderBookNag') === 0)?.split('=')[1] === "false";
 

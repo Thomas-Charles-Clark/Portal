@@ -58,7 +58,7 @@
   border-width: 0;
 }
 #order-book-detail-scroller-container #order-book-detail-table thead tr th {
-  height: 57px;
+  height: 99px;
   position: sticky;
   top: 0;
   background-color: #fff;
@@ -81,8 +81,8 @@
 }
 #order-book-detail-scroller-container #order-book-detail-table thead tr.subtotal-row th {
   background-color: #f5f9ff;
-  height: 26px;
-  top: 57px;
+  height: 36px;
+  top: 99px;
 }
 #order-book-detail-scroller-container #order-book-detail-table tbody {
   position: relative;
@@ -97,6 +97,7 @@
   overflow-x: hidden;
   border-bottom: 1px solid #ced4da;
   background-color: #fff;
+  box-shadow: none;
 }
 #order-book-detail-scroller-container #order-book-detail-table tbody tr td:nth-of-type(1), #order-book-detail-scroller-container #order-book-detail-table tbody tr td:nth-of-type(2), #order-book-detail-scroller-container #order-book-detail-table tbody tr td:nth-of-type(3), #order-book-detail-scroller-container #order-book-detail-table tbody tr td:nth-of-type(4) {
   position: sticky;

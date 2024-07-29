@@ -30,27 +30,27 @@ const orderBookMainCell = ({ parent, data, grouping } = {
         let result = [];
 
         if (displayModes.indexOf(DISPLAY_MODE_VALUE_SUM) > -1) {
-            result.push(`<span title="Order Value: ${self.OrderValue}">${self.OrderValue}</span>`);
+            result.push(`<span class="order-value" title="Order Value: ${self.OrderValue}">${self.OrderValue}</span>`);
         }
 
         if (displayModes.indexOf(DISPLAY_MODE_QUANTITY_SUM) > -1) {
-            result.push(`<span title="Order Quantity: ${self.OrderQuantity}">${self.OrderQuantity}</span>`);
+            result.push(`<span class="order-quantity" title="Order Quantity: ${self.OrderQuantity}">${self.OrderQuantity}</span>`);
         }
 
         if (displayModes.indexOf(DISPLAY_MODE_LINE_COUNT) > -1) {
-            result.push(`<span title="Line Count: ${self.LineCount}">${self.LineCount}</span>`);
+            result.push(`<span class="line-count" title="Line Count: ${self.LineCount}">${self.LineCount}</span>`);
         }
 
         if (displayModes.indexOf(DISPLAY_MODE_ORDER_COUNT) > -1) {
-            result.push(`<span title="Order Count: ${self.OrderCount}">${self.OrderCount}</span>`);
+            result.push(`<span class="order-count" title="Order Count: ${self.OrderCount}">${self.OrderCount}</span>`);
         }
 
         if (displayModes.indexOf(DISPLAY_MODE_PERCENTAGE_FULL) > -1) {
-            result.push(`<span title="Percentage of Full Order Book: ${self.PercentageOfFullOrderBook}">${self.PercentageOfFullOrderBook}</span>`);
+            result.push(`<span class="percentage-of-full" title="Percentage of Full Order Book: ${self.PercentageOfFullOrderBook}">${self.PercentageOfFullOrderBook}</span>`);
         }
 
         if (displayModes.indexOf(DISPLAY_MODE_PERCENTAGE_FILTER) > -1) {
-            result.push(`<span title="Percentage of Filtered Order Book: ${self.PercentageOfFilteredOrderBook}">${self.PercentageOfFilteredOrderBook}</span>`);
+            result.push(`<span class="percentage-of-filtered" title="Percentage of Filtered Order Book: ${self.PercentageOfFilteredOrderBook}">${self.PercentageOfFilteredOrderBook}</span>`);
         }
 
         return result.join('\n');
@@ -99,27 +99,27 @@ const orderBookMainCell = ({ parent, data, grouping } = {
             }
 
             if (displayModes.indexOf(DISPLAY_MODE_VALUE_SUM) > -1 && self[orderValuePropertyName] != null) {
-                result.push(`<span title="Order Value: ${formatCurrency(self[orderValuePropertyName], 2, 'en-GB', 'GBP') }">${formatCurrency(self[orderValuePropertyName], 2, 'en-GB', 'GBP')}</span>`);
+                result.push(`<span class="order-value" title="Order Value: ${formatCurrency(self[orderValuePropertyName], 2, 'en-GB', 'GBP') }">${formatCurrency(self[orderValuePropertyName], 2, 'en-GB', 'GBP')}</span>`);
             }
 
             if (displayModes.indexOf(DISPLAY_MODE_QUANTITY_SUM) > -1 && self[orderQuantityPropertyName] != null) {
-                result.push(`<span title="Order Quantity: ${formatNumber(self[orderQuantityPropertyName], 2) }">${formatNumber(self[orderQuantityPropertyName], 2)}</span>`);
+                result.push(`<span class="order-quantity"  title="Order Quantity: ${formatNumber(self[orderQuantityPropertyName], 2) }">${formatNumber(self[orderQuantityPropertyName], 2)}</span>`);
             }
 
             if (displayModes.indexOf(DISPLAY_MODE_LINE_COUNT) > -1 && self[lineCountPropertyName] != null) {
-                result.push(`<span title="Line Count: ${formatNumber(self[lineCountPropertyName], 0) }">${formatNumber(self[lineCountPropertyName], 0)}</span>`);
+                result.push(`<span class="line-count" title="Line Count: ${formatNumber(self[lineCountPropertyName], 0) }">${formatNumber(self[lineCountPropertyName], 0)}</span>`);
             }
 
             if (displayModes.indexOf(DISPLAY_MODE_ORDER_COUNT) > -1 && self[orderCountPropertyName] != null) {
-                result.push(`<span title="Order Count: ${formatNumber(self[orderCountPropertyName], 0)}">${formatNumber(self[orderCountPropertyName], 0)}</span>`);
+                result.push(`<span class="order-count" title="Order Count: ${formatNumber(self[orderCountPropertyName], 0)}">${formatNumber(self[orderCountPropertyName], 0)}</span>`);
             }
 
             //if (displayModes.indexOf(DISPLAY_MODE_PERCENTAGE_FULL) > -1) {
-            //    result.push(`<span title="Percentage of Full Order Book: ${self[percentageFullPropertyName]}">${self[percentageFullPropertyName]}</span>`);
+            //    result.push(`<span class="percentage-of-full" title="Percentage of Full Order Book: ${self[percentageFullPropertyName]}">${self[percentageFullPropertyName]}</span>`);
             //}
 
             //if (displayModes.indexOf(DISPLAY_MODE_PERCENTAGE_FILTER) > -1) {
-            //    result.push(`< span title = "Percentage of Filtered Order Book: ${self[percentageFilteredPropertyName]}" > ${self[percentageFilteredPropertyName]}</span>`);
+            //    result.push(`<span class="percentage-of-filtered" title = "Percentage of Filtered Order Book: ${self[percentageFilteredPropertyName]}" > ${self[percentageFilteredPropertyName]}</span>`);
             //}
 
             return result.join('<br/>');

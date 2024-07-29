@@ -23,6 +23,7 @@
   flex: 0 0 auto;
   will-change: width;
   transition: width 150ms linear;
+  /*transition-delay: 150ms;*/
   width: 50px;
   border-right: 1px solid #dee2e6;
   /*

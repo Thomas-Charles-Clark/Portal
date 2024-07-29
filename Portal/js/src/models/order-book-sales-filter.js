@@ -124,7 +124,7 @@
 
     //#endregion
 
-    self.parse(getPreDefinedSummaries());
+    //self.parse(getPreDefinedSummaries());
 
     return self;
 });

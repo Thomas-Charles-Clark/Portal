@@ -78,14 +78,27 @@ const orderBookDetailViewModel = (() => {
             sortingFunction: (a, b) => {
                 if (isNaN(+a[parameterName])) {
                     if (isNaN(Date.parse(`${a[parameterName].split('/').reverse().join('-')}T00:00:00.000Z`))) {
-                        return a[parameterName] === b[parameterName] ? 0 : a[parameterName] > b[parameterName] ? 1 : -1;
-                    } else {
-                        let aDate = Date.parse(`${a[parameterName].split('/').reverse().join('-')}T00:00:00.000Z`);
-                        let bDate = Date.parse(`${b[parameterName].split('/').reverse().join('-')}T00:00:00.000Z`);
 
-                        //console.log('performing date sort ascending');
-                        
-                        return aDate === bDate ? 0 : aDate > bDate ? 1 : -1;
+                        return a[parameterName] === b[parameterName] ? 0 : a[parameterName] > b[parameterName] ? 1 : -1;
+
+                    } else {
+
+                        let aDate = Date.parse(`${a[parameterName].split('/').reverse().join('-')}T00:00:00.000Z`);
+
+                        if (isNaN(Date.parse(`${b[parameterName]?.split('/').reverse().join('-')}T00:00:00.000Z`))) {
+
+                            return 1;
+
+                        } else {
+
+                            let bDate = Date.parse(`${b[parameterName].split('/').reverse().join('-')}T00:00:00.000Z`);
+
+                            //console.log('performing date sort ascending');
+
+                            return aDate === bDate ? 0 : aDate > bDate ? 1 : -1;
+
+                        }
+
                     }
                 } else {
                     return +a[parameterName] === +b[parameterName] ? 0 : +a[parameterName] > +b[parameterName] ? 1 : -1;
@@ -101,14 +114,26 @@ const orderBookDetailViewModel = (() => {
             sortingFunction: (a, b) => {
                 if (isNaN(+a[parameterName])) {
                     if (isNaN(Date.parse(`${a[parameterName].split('/').reverse().join('-')}T00:00:00.000Z`))) {
+
                         return a[parameterName] === b[parameterName] ? 0 : a[parameterName] < b[parameterName] ? 1 : -1;
+
                     } else {
+
                         let aDate = Date.parse(`${a[parameterName].split('/').reverse().join('-')}T00:00:00.000Z`);
-                        let bDate = Date.parse(`${b[parameterName].split('/').reverse().join('-')}T00:00:00.000Z`);
 
-                        //console.log('performing date sort descending');
+                        if (isNaN(Date.parse(`${b[parameterName]?.split('/').reverse().join('-')}T00:00:00.000Z`))) {
 
-                        return aDate === bDate ? 0 : aDate < bDate ? 1 : -1;
+                            return -1;
+
+                        } else {
+
+                            let bDate = Date.parse(`${b[parameterName].split('/').reverse().join('-')}T00:00:00.000Z`);
+
+                            //console.log('performing date sort descending');
+
+                            return aDate === bDate ? 0 : aDate < bDate ? 1 : -1;
+                        }
+
                     }
                 } else {
                     return +a[parameterName] === +b[parameterName] ? 0 : +a[parameterName] < +b[parameterName] ? 1 : -1;
@@ -252,7 +277,7 @@ const orderBookDetailViewModel = (() => {
 
                 self.allSortingOperations(sortFunctions.flat());
 
-                columns = columnNames.map(cn => {
+                columns = columnNames.map((cn, i) => {
                     let specifiedColumn = cols.find(c => c.Name == cn);
                     if (specifiedColumn == null) {
                         specifiedColumn = cols.find(c => c.Name == "Default");
@@ -275,9 +300,8 @@ const orderBookDetailViewModel = (() => {
         },
         primaryFetchResultFn: (rec) => orderBookMainCell({ parent: self, data: rec }),
         container: self.virtualScrollerContainer,
-        gridHeaderHeight: 83,
-        gridPositionTop: 0,
-        maxYMultiplier: 1
+        gridHeaderHeight: 135,
+        gridPositionTop: 0
     });
 
     //#endregion

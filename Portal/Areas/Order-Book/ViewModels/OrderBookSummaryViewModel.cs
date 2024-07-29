@@ -38,14 +38,14 @@ namespace Portal.Areas.Orders.ViewModels
         {
             var result = new OrderBookSummaryViewModel(properties, applicationHeading, applicationSubHeading);
 
-            using (var db = new PortalDbContext())
-            {
-                var objParams = new PassOrderBookBaseParams();
+            //using (var db = new PortalDbContext())
+            //{
+            //    var objParams = new PassOrderBookBaseParams();
 
-                result.DateFilters = await db.FetchOrderBookDateSummaries(objParams);
-                result.PreDefinedFilters = JArray.Parse(await db.FetchOrderBookPreDefinedSummaries(objParams));
-                result.MainResult = await db.FetchOrderBookMainSummary(objParams);
-            }
+            //    result.DateFilters = await db.FetchOrderBookDateSummaries(objParams);
+            //    result.PreDefinedFilters = JArray.Parse(await db.FetchOrderBookPreDefinedSummaries(objParams));
+            //    result.MainResult = await db.FetchOrderBookMainSummary(objParams);
+            //}
 
             return result;
         }

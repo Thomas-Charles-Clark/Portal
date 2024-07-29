@@ -99,6 +99,66 @@ namespace SharedEFClasses.Models
 
             return results;
         }
+
+        public async Task<IEnumerable<OrderBook_SalesSummary_SelectResult>> FetchOrderBookSalesSummaries(PassOrderBookBaseParams dto)
+        {
+            var MarketIDs = new DataTable();
+
+            MarketIDs.Columns.Add("ID", typeof(byte));
+
+            dto.MarketIDs?.ForEach(mid => MarketIDs.Rows.Add(mid));
+
+            var OrderLineDetailedStatusGroupIDs = new DataTable();
+
+            OrderLineDetailedStatusGroupIDs.Columns.Add("ID", typeof(byte));
+
+            dto.OrderLineDetailedStatusGroupIDs?.ForEach(mid => OrderLineDetailedStatusGroupIDs.Rows.Add(mid));
+
+            var results = await this.Database.Connection.QueryAsync<OrderBook_SalesSummary_SelectResult>("[portal].[OrderBook_SalesSummary_Select]",
+                new
+                {
+                    // Hmmm.
+                    dto.DataSource,
+                    OrderLineDetailedStatusGroupIDs,
+
+                    // Trade Account Filters
+                    dto.MarketID,
+                    MarketIDs,
+                    dto.SalesRepresentativeID,
+                    dto.SalesAgentID,
+                    dto.SalesAreaID,
+                    dto.CountryID,
+                    dto.TradeAccountTypeID,
+                    dto.TradeAccountGroupID,
+                    dto.PaymentTermsID,
+                    dto.PaymentTermsTypeID,
+                    dto.TradeAccountID,
+
+                    // Order Filters
+                    dto.OrderID,
+                    dto.OrderTakerCode,
+                    dto.StartDate,
+                    dto.EndDate,
+                    dto.HaulierCode,
+                    dto.Allocated,
+                    dto.TransactionTypeID,
+                    dto.DeliveryType,
+
+                    // Product Filters
+                    dto.ProductGroupID,
+                    dto.ItemTypeID,
+                    dto.BrandID,
+                    dto.CollectionID,
+                    dto.LaunchID,
+                    dto.QualityID,
+                    dto.DesignID,
+                    dto.SupplierCode,
+                    dto.ProductID,
+                    dto.ProductStatus,
+                }, null, 30, CommandType.StoredProcedure);
+
+            return results;
+        }
         
         public async Task<string> FetchOrderBookPreDefinedSummaries(PassOrderBookBaseParams dto)
         {

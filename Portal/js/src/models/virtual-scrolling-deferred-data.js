@@ -246,7 +246,7 @@ const virtualScrollingDeferredDataFactory = ({
 
             results = self.searchResults().filter((i, index) => {
 
-                let actuallyVisible = (i.offsetY) >= (scrollY) && (i.offsetY) <= (maxY);
+                let actuallyVisible = (i.offsetY) >= (scrollY - (ko.unwrap(self.rowHeight) * 2)) && (i.offsetY) <= (maxY);
 
                 let dataFetchVisible = actuallyVisible;
 
@@ -272,7 +272,7 @@ const virtualScrollingDeferredDataFactory = ({
 
             return self.searchResults().filter(i => {
 
-                let actuallyVisible = (i.offsetY) >= (scrollY) && (i.offsetY) <= (maxY);
+                let actuallyVisible = (i.offsetY) >= (scrollY - (ko.unwrap(self.rowHeight) * 2)) && (i.offsetY) <= (maxY);
 
                 return actuallyVisible;
             });
@@ -302,6 +302,8 @@ const virtualScrollingDeferredDataFactory = ({
 
         self.gridTotalHeight(cumulativeHeight);
 
+        console.log('gridScrollTopPadding', result);
+
         return result;
     }, self);
 
@@ -311,11 +313,15 @@ const virtualScrollingDeferredDataFactory = ({
 
         let maxY = self.maxY();
 
-        if (self.finalRowVisible()) {
-            return 0;
-        } else {
-            return self.gridTotalHeight.peek() - (self.visibleItems().length * self.rowHeight.peek()) - self.gridScrollTopPadding.peek() - self.gridPositionTop;
+        let result = 0;
+
+        if (!self.finalRowVisible()) {
+            result = self.gridTotalHeight.peek() - (self.visibleItems().length * self.rowHeight.peek()) - self.gridScrollTopPadding.peek() - self.gridPositionTop
         }
+
+        console.log("gridScrollBottomPadding", result)
+
+        return result;
     }, self);
 
 
@@ -356,40 +362,42 @@ const virtualScrollingDeferredDataFactory = ({
 
     //#region Subscriptions
 
-    self.primaryFetchSortFn.subscribe(nv => {
-        let data = self.searchResults();
+    if (self.primaryFetchSortFn) {
+        self.primaryFetchSortFn.subscribe(nv => {
+            let data = self.searchResults();
 
-        let gridHeaderHeight = self.gridHeaderHeight();
+            let gridHeaderHeight = self.gridHeaderHeight();
 
-        let rowHeight = self.rowHeight();
+            let rowHeight = self.rowHeight();
 
-        let startingOffset = self.gridPositionTop + gridHeaderHeight;
+            let startingOffset = self.gridPositionTop + gridHeaderHeight;
 
-        let additionalOffset = startingOffset;
+            let additionalOffset = startingOffset;
 
 
-        if (typeof nv === 'function') {
+            if (typeof nv === 'function') {
 
-            data.sort(nv);
+                data.sort(nv);
 
-            data.forEach((result, index) => {
-                result.offsetY = (((index) * rowHeight) + additionalOffset) - gridHeaderHeight;
-            });
+                data.forEach((result, index) => {
+                    result.offsetY = (((index) * rowHeight) + additionalOffset) - gridHeaderHeight;
+                });
 
-            self.searchResults(data);
-        } else {
+                self.searchResults(data);
+            } else {
 
-            data.sort((a, b) => {
-                return a.originalOffsetY > b.originalOffsetY ? 1 : -1;
-            });
+                data.sort((a, b) => {
+                    return a.originalOffsetY > b.originalOffsetY ? 1 : -1;
+                });
 
-            data.forEach((result, index) => {
-                result.offsetY = (((index) * rowHeight) + additionalOffset) - gridHeaderHeight;
-            });
+                data.forEach((result, index) => {
+                    result.offsetY = (((index) * rowHeight) + additionalOffset) - gridHeaderHeight;
+                });
 
-            self.searchResults(data);
-        }
-    });
+                self.searchResults(data);
+            }
+        });
+    }
 
     //#endregion
 
@@ -461,7 +469,7 @@ const virtualScrollingDeferredDataFactory = ({
                         //return result;
                     });
 
-                    if (self.primaryFetchSortFn()) {
+                    if (self.primaryFetchSortFn && self.primaryFetchSortFn()) {
                         results.sort(self.primaryFetchSortFn());
                     } 
 

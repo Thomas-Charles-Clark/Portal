@@ -215,7 +215,7 @@
 
     //#endregion
 
-    self.parse(getDateSummaries());
+    //self.parse(getDateSummaries());
 
     return self;
 });
