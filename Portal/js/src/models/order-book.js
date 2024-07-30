@@ -3,7 +3,8 @@
     DISPLAY_MODE_LINE_COUNT = 3,
     DISPLAY_MODE_ORDER_COUNT = 4,
     DISPLAY_MODE_PERCENTAGE_FULL = 5,
-    DISPLAY_MODE_PERCENTAGE_FILTER = 6
+    DISPLAY_MODE_PERCENTAGE_FILTER = 6,
+    DISPLAY_MODE_BUDGET = 7
 
 const DISPLAY_MODES = [{
     label: 'Order Value £',
@@ -26,6 +27,24 @@ const DISPLAY_MODES = [{
 }, {
     label: 'No. of Orders',
     value: DISPLAY_MODE_ORDER_COUNT,
+    children: []
+}]
+
+const DISPLAY_MODES_SALES = [{
+    label: 'Order Value £',
+    value: DISPLAY_MODE_VALUE_SUM,
+    children: []
+}, {
+    label: 'Order Quantity',
+    value: DISPLAY_MODE_QUANTITY_SUM,
+    children: []
+}, {
+    label: 'No. of Lines',
+    value: DISPLAY_MODE_LINE_COUNT,
+    children: []
+}, {
+    label: 'Budget',
+    value: DISPLAY_MODE_BUDGET,
     children: []
 }]
 
@@ -84,7 +103,7 @@ const orderBookViewModel = (() => {
 
     self.salesDisplayModes = ko.observableArray(self.displayConfig.sales); // this now belongs to just the main summary grid Totals segment at the top
     self.salesCollapse = ko.observable(self.displayConfig.salesCollapse);
-    self.salesFilters = orderBookPreDefinedFiltersViewModel(self);
+    self.salesFilters = orderBookSalesFiltersViewModel(self);
 
 
     self.gridCollapse = ko.observable(self.displayConfig.gridCollapse);
@@ -126,7 +145,9 @@ const orderBookViewModel = (() => {
 
     self.displayColumnHeadingsSelection = ko.observableArray([].slice.call(self.displayConfig.columnHeadings));
 
-    self.availableDisplayModes = ko.observableArray(DISPLAY_MODES),
+    self.availableDisplayModes = ko.observableArray(DISPLAY_MODES);
+
+    self.availableDisplayModesSales = ko.observableArray(DISPLAY_MODES_SALES);
 
     //#endregion
 
@@ -256,6 +277,10 @@ const orderBookViewModel = (() => {
             let orderStatusGroupIds = nv.map((c, i) => c.orderStatusGroupId);
             self.displayColumnHeadings(orderStatusGroupIds);
         }
+    });
+
+    self.busy.subscribe(nv => {
+        console.log('busy', nv);
     });
 
     //self.displayColumnHeadingsJson.subscribe(nv => {
@@ -613,6 +638,7 @@ const orderBookViewModel = (() => {
                 console.log("FetchMain returned", data);
                 self.dateFilters.parse(data.dateFilters);
                 self.preDefinedFilters.parse(data.preDefinedFilters);
+                self.salesFilters.parse(data.salesResult);
 
                 bootstrap.Collapse.getOrCreateInstance(document.querySelector("#accuracy-collapse")).hide();
 

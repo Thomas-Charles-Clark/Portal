@@ -246,7 +246,7 @@ const virtualScrollingDeferredDataFactory = ({
 
             results = self.searchResults().filter((i, index) => {
 
-                let actuallyVisible = (i.offsetY) >= (scrollY - (ko.unwrap(self.rowHeight) * 2)) && (i.offsetY) <= (maxY);
+                let actuallyVisible = (i.offsetY) >= (scrollY) && (i.offsetY) <= (maxY);
 
                 let dataFetchVisible = actuallyVisible;
 
@@ -270,17 +270,12 @@ const virtualScrollingDeferredDataFactory = ({
 
             let scrollY = self.scrollY();
 
-            return self.searchResults().filter(i => {
+            return self.searchResults().filter((i, index) => {
 
-                let actuallyVisible = (i.offsetY) >= (scrollY - (ko.unwrap(self.rowHeight) * 2)) && (i.offsetY) <= (maxY);
+                let actuallyVisible = (i.offsetY) >= (scrollY) && (i.offsetY) <= (maxY);
 
                 return actuallyVisible;
             });
-        }).extend({
-            rateLimit: {
-                timeout: self.rateLimitFactor,
-                method: 'notifyAtFixedRate'
-            }
         });
     }
 
@@ -355,8 +350,8 @@ const virtualScrollingDeferredDataFactory = ({
 
 
     */
-
-
+    
+    
     //#endregion
 
 
@@ -457,7 +452,7 @@ const virtualScrollingDeferredDataFactory = ({
 
                     let results = data[self.primaryFetchResultSetName].map((result, index) => {
 
-                        result.offsetY = (((index) * rowHeight) + additionalOffset) - gridHeaderHeight;
+                        result.offsetY = (((index + 1) * rowHeight) + additionalOffset) - gridHeaderHeight;
 
                         result.originalOffsetY = result.offsetY;
 

@@ -249,7 +249,7 @@ const orderBookDetailViewModel = (() => {
     self.virtualScroller = virtualScrollingDeferredDataFactory({
         busy: self.busy,
         tableSelector: "#order-book-detail-table",
-        rowHeight: 36,
+        rowHeight: 35,
         primaryFetchParams: self.primaryFetchParams,
         primaryFetchEndpoint: "/api/orderbook/DetailRefresh",
         primaryFetchResultSetName: "Data",

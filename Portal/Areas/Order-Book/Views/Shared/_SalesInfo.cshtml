@@ -1,0 +1,133 @@
+﻿@model SharedEFClasses.BaseViewModel
+<div id="sales-filters-tab-container" data-bind="style: { '--column-count': salesFilters.groups().length }">
+    <div data-bind="with: salesFilters">
+        <div class="sales-section" data-bind="visible: displayModes().indexOf(DISPLAY_MODE_QUANTITY_SUM) > -1">
+            <div class="sales-header">
+                <h5 class="sales-group-title">
+                    Number of Orders
+                </h5>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: Label"></span>
+                <!-- /ko -->
+            </div>
+            <div class="this-year">
+                <label>
+                    This Year
+                </label>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: OrderCount_TY"></span>
+                <!-- /ko -->
+            </div>
+            <div class="last-year">
+                <label>
+                    Last Year
+                </label>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: OrderCount_LY"></span>
+                <!-- /ko -->
+            </div>
+            <div class="variance">
+                <label>
+                    This Year vs Last Year
+                </label>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: OrderCount_Variance"></span>
+                <!-- /ko -->
+            </div>
+        </div>
+        <div class="sales-section" data-bind="visible: displayModes().indexOf(DISPLAY_MODE_LINE_COUNT) > -1">
+            <div class="sales-header">
+                <h5 class="sales-group-title">
+                    Number of Lines
+                </h5>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: Label"></span>
+                <!-- /ko -->
+            </div>
+            <div class="this-year">
+                <label>
+                    This Year
+                </label>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: LineCount_TY"></span>
+                <!-- /ko -->
+            </div>
+            <div class="last-year">
+                <label>
+                    Last Year
+                </label>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: LineCount_LY"></span>
+                <!-- /ko -->
+            </div>
+            <div class="variance">
+                <label>
+                    This Year vs Last Year
+                </label>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: LineCount_Variance"></span>
+                <!-- /ko -->
+            </div>
+        </div>
+        <div class="sales-section" data-bind="visible: displayModes().indexOf(DISPLAY_MODE_VALUE_SUM) > -1">
+            <div class="sales-header">
+                <h5 class="sales-group-title">
+                    Actual Sales
+                </h5>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: Label"></span>
+                <!-- /ko -->
+            </div>
+            <div class="this-year">
+                <label>
+                    This Year
+                </label>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: SalesTotal_TY"></span>
+                <!-- /ko -->
+            </div>
+            <div class="last-year">
+                <label>
+                    Last Year
+                </label>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: SalesTotal_LY"></span>
+                <!-- /ko -->
+            </div>
+            <div class="variance">
+                <label>
+                    This Year vs Last Year
+                </label>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: SalesTotal_Variance"></span>
+                <!-- /ko -->
+            </div>
+        </div>
+        <div class="sales-section" data-bind="visible: displayModes().indexOf(DISPLAY_MODE_BUDGET) > -1">
+            <div class="sales-header">
+                <h5 class="sales-group-title">
+                    Budget
+                </h5>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: Label"></span>
+                <!-- /ko -->
+            </div>
+            <div class="this-year">
+                <label>
+                    This Year
+                </label>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: Budget_TY"></span>
+                <!-- /ko -->
+            </div>
+            <div class="variance">
+                <label>
+                    Sales This Year vs Budget
+                </label>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: Budget_Growth"></span>
+                <!-- /ko -->
+            </div>
+        </div>
+    </div>
+</div>

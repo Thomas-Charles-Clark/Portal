@@ -32,8 +32,6 @@
 
         ko.applyBindings(viewModel, document.body);
 
-        viewModel.busy(false);
-
         window.self = viewModel;
 
     </script>
@@ -123,8 +121,40 @@
     </ul>
 </script>
 
+<script type="text/html" id="sales-values-dropdown-container">
+    <ul class="dropdown-menu display-mode-list">
+        <!-- ko foreach: $root.availableDisplayModesSales -->
+        <li data-bind="css: { 'disabled': $parent.displayModes().length == 1 && $parent.displayModes()[0] == value }">
+            <label class="form-check" data-bind="attr: { 'for': `order-group-${$parent.orderGroupId}-display-mode-${value}` }, click: function() { return true }, clickBubble: false">
+                <input class="form-check-input" type="checkbox" data-bind="checked: $parent.displayModes,
+                        checkedValue: value,
+                        attr: {
+                            id: `order-group-${$parent.orderGroupId}-display-mode-${value}`,
+                            disabled: $parent.displayModes().length == 1 && $parent.displayModes()[0] == value
+                        }" />
+                <span data-bind="text: label"></span>
+            </label>
+        </li>
+        <!-- ko foreach: children -->
+        <li data-bind="visible: $parentContext.$parent.displayModes().indexOf($parent.value) > -1" style="padding-left: 2rem;">
+            <label class="form-check" data-bind="attr: { 'for': `order-group-${$parentContext.$parent.orderGroupId}-display-mode-${value}` }, click: function() { return true }, clickBubble: false">
+                <input class="form-check-input" type="checkbox" data-bind="checked: $parentContext.$parent.displayModes,
+                checkedValue: value,
+                attr: {
+                    id: `order-group-${$parentContext.$parent.orderGroupId}-display-mode-${value}`,
+                    disabled: $parentContext.$parent.displayModes().length == 1 && $parentContext.$parent.displayModes()[0] == value
+                }" />
+                <span data-bind="text: label"></span>
+            </label>
+        </li>
+        <!-- /ko -->
+        <!-- /ko -->
+    </ul>
+</script>
+
 <div id="main-summary-container" class="d-flex align-items-start w-100" style="opacity: 0" data-bind="flexFadeVisible: true">
-    <sidebar id="filters-sidebar" class="collapse collapse-horizontal sidebar sticky-top"> @* show pinned *@
+    <sidebar id="filters-sidebar" class="collapse collapse-horizontal sidebar sticky-top">
+        @* show pinned *@
         <div class="sidebar-inner">
             <div class="sidebar-header" data-bind="click: userDefinedFilters.togglePinning">
                 <button type="button"
@@ -191,19 +221,13 @@
                             <a class="btn display-control-btn btn-sm dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
                                 <i class="bi bi-list-check"></i>
                             </a>
-                            <!-- ko template: { name: 'values-dropdown-container' } --><!-- /ko -->
+                            <!-- ko template: { name: 'sales-values-dropdown-container' } --><!-- /ko -->
                         </div>
                     </button>
                 </h5>
                 <div id="header-accordion-three" class="accordion-collapse collapse" aria-labelledby="header-accordion-three" data-bind="css: { show: !salesCollapse() }">
                     <div class="accordion-body">
-                        <div class="card mb-2">
-                            <div class="card-body">
-                                <h5 class="mb-0">
-                                    TBC
-                                </h5>
-                            </div>
-                        </div>
+                        @Html.Partial("_SalesInfo")
                     </div>
                 </div>
             </div>

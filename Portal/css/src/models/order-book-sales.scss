@@ -1,0 +1,55 @@
+﻿@import "common.scss";
+$blue-background: tint-color($blue-400, 10%);
+
+#sales-filters-tab-container {
+    margin-bottom: $sm-gutter;
+    $column-count: var(--column-count);
+
+    .sales-section {
+        display: grid;
+        border: 1px solid $gray-400;
+        border-top: 0;
+        box-sizing: border-box;
+        margin-bottom: $sm-gutter;
+
+        .sales-header {
+            color: $white;
+            padding: $sm-gutter $l-gutter;
+            background-color: $blue-background;
+            border: 1px solid $blue-background;
+            display: grid;
+            grid-template-columns: 280px repeat(var(--column-count), 1fr);
+
+            .sales-group-title {
+                display: inline-block;
+                margin-bottom: 0;
+                text-align: left;
+                font-size: $font-size-base;
+                line-height: normal;
+            }
+
+            span {
+                text-align: right;
+            }
+        }
+
+        .this-year,
+        .last-year,
+        .variance {
+            background-color: $white;
+            padding: $sm-gutter $l-gutter;
+            display: grid;
+            grid-template-columns: 280px repeat(var(--column-count), 1fr);
+
+            .sales-group-title {
+                display: inline-block;
+                margin-bottom: 0;
+                text-align: left;
+            }
+
+            span {
+                text-align: right;
+            }
+        }
+    }
+}

@@ -64,19 +64,25 @@
 
     //#region Functions
 
-    self.parse = (preDefinedFilter) => {
+    self.parse = (salesFilters) => {
 
-        let groups = preDefinedFilter.map(g => {
-            return {
-                name: g.Name,
-                summaries: ko.observableArray(g.ProblemPods.map(ds => orderBookSummaryFilter({
-                    parent: self,
-                    data: ds
-                })))
-            }
+        console.log('orderBookSalesFiltersViewModel parse', salesFilters);
+
+        salesFilters.sort((a, b) => {
+            return a.SortOrder > b.SortOrder ? 1 : -1;
         });
+
+        //let groups = salesFilter.map(g => {
+        //    return {
+        //        name: g.Label,
+        //        summaries: ko.observableArray(g.ProblemPods.map(ds => orderBookSummaryFilter({
+        //            parent: self,
+        //            data: ds
+        //        })))
+        //    }
+        //});
         
-        self.groups(groups);
+        self.groups(salesFilters);
     }
 
     self.showDetail = (preDefinedFilter) => {

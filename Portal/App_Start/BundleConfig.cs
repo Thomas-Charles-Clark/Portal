@@ -323,6 +323,7 @@ namespace Portal
                 $"{cssPrefix}/models/order-book-user-defined-filters{cssSuffix}",
                 $"{cssPrefix}/models/order-book-date-filters{cssSuffix}",
                 $"{cssPrefix}/models/order-book-pre-defined-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book-sales{cssSuffix}",
                 $"{cssPrefix}/models/order-book{cssSuffix}"
             ));
 
@@ -333,6 +334,7 @@ namespace Portal
                 $"{cssPrefix}/models/order-book-user-defined-filters{cssSuffix}",
                 $"{cssPrefix}/models/order-book-date-filters{cssSuffix}",
                 $"{cssPrefix}/models/order-book-pre-defined-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book-sales{cssSuffix}",
                 $"{cssPrefix}/models/order-book-advanced-filters{cssSuffix}",
                 $"{cssPrefix}/models/order-book{cssSuffix}",
                 $"{cssPrefix}/models/order-book-detail{cssSuffix}"
@@ -345,6 +347,7 @@ namespace Portal
                 $"{cssPrefix}/models/order-book-user-defined-filters{cssSuffix}",
                 $"{cssPrefix}/models/order-book-date-filters{cssSuffix}",
                 $"{cssPrefix}/models/order-book-pre-defined-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book-sales{cssSuffix}",
                 $"{cssPrefix}/models/order-book-advanced-filters{cssSuffix}",
                 $"{cssPrefix}/models/order-book{cssSuffix}",
                 $"{cssPrefix}/models/order-book-reallocate-stock{cssSuffix}"
@@ -786,6 +789,7 @@ namespace Portal
                         $"{jsPrefix}/models/order-book-user-defined-filters{jsSuffix}",
                         $"{jsPrefix}/models/order-book-date-filters{jsSuffix}",
                         $"{jsPrefix}/models/order-book-pre-defined-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-sales-filters{jsSuffix}",
                         $"{jsPrefix}/models/order-book-main-cell{jsSuffix}",
                         $"{jsPrefix}/models/order-book{jsSuffix}"
                 ));
@@ -799,6 +803,7 @@ namespace Portal
                         $"{jsPrefix}/models/order-book-user-defined-filters{jsSuffix}",
                         $"{jsPrefix}/models/order-book-date-filters{jsSuffix}",
                         $"{jsPrefix}/models/order-book-pre-defined-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-sales-filters{jsSuffix}",
                         $"{jsPrefix}/models/order-book-advanced-filters{jsSuffix}",
                         $"{jsPrefix}/models/order-book-main-cell{jsSuffix}",
                         $"{jsPrefix}/models/order-book-detail{jsSuffix}"
@@ -813,6 +818,7 @@ namespace Portal
                         $"{jsPrefix}/models/order-book-user-defined-filters{jsSuffix}",
                         $"{jsPrefix}/models/order-book-date-filters{jsSuffix}",
                         $"{jsPrefix}/models/order-book-pre-defined-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-sales-filters{jsSuffix}",
                         $"{jsPrefix}/models/order-book-advanced-filters{jsSuffix}",
                         $"{jsPrefix}/models/order-book-main-cell{jsSuffix}",
                         $"{jsPrefix}/models/order-book-reallocate-stock{jsSuffix}"

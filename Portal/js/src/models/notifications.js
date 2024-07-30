@@ -136,7 +136,7 @@
 
         self.bellElement.classList.add('ringing');
 
-        self.notificationSound.play();
+        //self.notificationSound.play();
     }
 
     self.receiveNotifications = function (incoming) {
