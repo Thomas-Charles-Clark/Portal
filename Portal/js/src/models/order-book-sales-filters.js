@@ -9,21 +9,11 @@
     // this is so that the values-dropdown-container template can render a distinct id for the displaymodes
     self.orderGroupId = "sales-filters";
 
-    self.busy = self.parent.busy;
+    self.busy = ko.observable(false);
 
     self.displayModes = self.parent.salesDisplayModes;
 
     self.groups = ko.observableArray([]);
-
-    self.detailModalElement = document.querySelector("#order-book-detail-modal");
-
-    self.detailModalTitleElement = document.querySelector("#order-book-detail-modal-title");
-
-    self.detailModaliFrameTargetElement = document.querySelector("#order-book-detail-iframe-target");
-
-    self.detailModal = bootstrap.Modal.getOrCreateInstance(self.detailModalElement);
-
-    self.detailModalBusy = ko.observable(false);
 
     //#endregion
 
@@ -72,60 +62,38 @@
             return a.SortOrder > b.SortOrder ? 1 : -1;
         });
 
-        //let groups = salesFilter.map(g => {
-        //    return {
-        //        name: g.Label,
-        //        summaries: ko.observableArray(g.ProblemPods.map(ds => orderBookSummaryFilter({
-        //            parent: self,
-        //            data: ds
-        //        })))
-        //    }
-        //});
-        
         self.groups(salesFilters);
     }
 
-    self.showDetail = (preDefinedFilter) => {
-        let iFrame = document.createElement("iframe");
+    self.fetch = (params) => {
 
-        let params = JSON.parse(self.parent.userDefinedFilters.json());
+        self.busy(true);
 
-        let preDefinedFilterCriteria = {
-            displayModes: self.parent.displayModes(),
-            accurateAsOfDateTime: self.parent.accurateAsOfDateTime(),
-            title: preDefinedFilter.Label,
-            procedure: preDefinedFilter.Procedure,
-            view: preDefinedFilter.View,
-            filterable: preDefinedFilter.Filterable
-        };
+        params.orderLineDetailedStatusGroupIds = self.parent.displayColumnHeadings();
 
-        preDefinedFilter.Criteria.forEach(c => {
-            preDefinedFilterCriteria[c[0]] = c[1];
-        });
+        console.log("FetchSales calling with", params);
 
-        Object.assign(params, preDefinedFilterCriteria);
+        fetch("/api/orderbook/RefreshSales", {
+            method: "POST",
+            headers: window.fetchHeaders,
+            cache: 'no-store',
+            credentials: 'same-origin',
+            body: JSON.stringify(params)
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                console.log("FetchSales returned", data);
 
-        self.detailModalTitleElement.innerHTML = preDefinedFilter.Label;
+                self.parse(data.salesResult);
 
-        let qs = new URLSearchParams(params).toString();
-
-        let src = `/order-book/detail/${preDefinedFilter.View}?partial=true&${qs}`;
-
-        console.log(src);
-
-        iFrame.src = src;
-
-        self.detailModalBusy(true);
-
-        iFrame.onload = () => {
-            self.detailModalBusy(false);
-        }
-
-        self.detailModaliFrameTargetElement.replaceChildren(iFrame);
-
-        self.parent.detailModaliFrame = iFrame;
-
-        self.detailModal.show();
+                window.setTimeout(() => {
+                    self.busy(false);
+                }, 0);
+            })
+            .catch((err) => {
+                self.busy(false);
+                window.catchFetchError(err);
+            });
     }
 
     //#endregion

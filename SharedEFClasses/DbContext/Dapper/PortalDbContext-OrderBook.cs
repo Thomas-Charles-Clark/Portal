@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Mertexer;
 using SharedEFClasses.Models.OrderBook;
+using SharedEFClasses.Models.Orders;
 
 using System;
 using System.Collections.Generic;
@@ -100,7 +101,7 @@ namespace SharedEFClasses.Models
             return results;
         }
 
-        public async Task<IEnumerable<OrderBook_SalesSummary_SelectResult>> FetchOrderBookSalesSummaries(PassOrderBookBaseParams dto)
+        public async Task<string> FetchOrderBookSalesSummaries(PassOrderBookBaseParams dto)
         {
             var MarketIDs = new DataTable();
 
@@ -114,7 +115,9 @@ namespace SharedEFClasses.Models
 
             dto.OrderLineDetailedStatusGroupIDs?.ForEach(mid => OrderLineDetailedStatusGroupIDs.Rows.Add(mid));
 
-            var results = await this.Database.Connection.QueryAsync<OrderBook_SalesSummary_SelectResult>("[portal].[OrderBook_SalesSummary_Select]",
+            var db = new PortalDbContext();
+
+            var results = await db.Database.Connection.QueryAsync<string>("[portal].[OrderBook_SalesSummary_Select]",
                 new
                 {
                     // Hmmm.
@@ -157,7 +160,14 @@ namespace SharedEFClasses.Models
                     dto.ProductStatus,
                 }, null, 30, CommandType.StoredProcedure);
 
-            return results;
+            var sb = new StringBuilder();
+
+            foreach (var part in results)
+            {
+                sb.Append(part);
+            }
+
+            return sb.ToString();
         }
         
         public async Task<string> FetchOrderBookPreDefinedSummaries(PassOrderBookBaseParams dto)
@@ -174,7 +184,9 @@ namespace SharedEFClasses.Models
 
             dto.OrderLineDetailedStatusGroupIDs?.ForEach(mid => OrderLineDetailedStatusGroupIDs.Rows.Add(mid));
 
-            var results = await this.Database.Connection.QueryAsync<string>("[portal].[OrderBook_ProblemSummary_Select]",
+            var db = new PortalDbContext();
+
+            var results = await db.Database.Connection.QueryAsync<string>("[portal].[OrderBook_ProblemSummary_Select]",
                 new
                 {
                     // Hmmm.
@@ -241,7 +253,9 @@ namespace SharedEFClasses.Models
 
             dto.OrderLineDetailedStatusGroupIDs?.ForEach(mid => OrderLineDetailedStatusGroupIDs.Rows.Add(mid));
 
-            var reader = await this.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_MainSummary_Select]",
+            var db = new PortalDbContext();
+
+            var reader = await db.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_MainSummary_Select]",
                 new
                 {
                     // Hmmm.
@@ -432,6 +446,16 @@ namespace SharedEFClasses.Models
             {
                 Totals = await reader.ReadSingleAsync<OrderBookRingFenceInspectTotal>(),
                 Data = await reader.ReadAsync<OrderBookRingFenceInspectData>()
+            };
+        }
+
+        public async Task<OrderBookSummaryResult> FetchOrderBookOveriew()
+        {
+            var reader = await this.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_Overview_Select]", null, null, 30, CommandType.StoredProcedure);
+
+            return new OrderBookSummaryResult()
+            {
+                Results = await reader.ReadAsync<OrderBookSummaryRecord>()
             };
         }
     }

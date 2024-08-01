@@ -485,6 +485,8 @@
     <Compile Include="Models\OrderBook\OrderBookOrderLineInspectData.cs" />
     <Compile Include="Models\OrderBook\OrderBookRingFenceInspectTotal.cs" />
     <Compile Include="Models\OrderBook\OrderBookOrderLineInspectTotal.cs" />
+    <Compile Include="Models\OrderBook\OrderBookSummaryRecord.cs" />
+    <Compile Include="Models\OrderBook\OrderBookSummaryResult.cs" />
     <Compile Include="Models\OrderBook\OrderBook_DetailView_DataRow.cs" />
     <Compile Include="Models\OrderBook\OrderBook_MainSummary_DataRow.cs" />
     <Compile Include="Models\OrderBook\OrderBook_MainSummary_Defaults.cs" />

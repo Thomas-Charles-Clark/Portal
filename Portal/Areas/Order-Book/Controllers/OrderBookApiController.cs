@@ -46,20 +46,49 @@ namespace Portal.Areas.Sales.Controllers
 
         public async Task<IHttpActionResult> Refresh([FromBody] PassOrderBookBaseParams dto)
         {
-            var dateFilters = await PortalDB.FetchOrderBookDateSummaries(dto);
-            var preDefinedFilters = JArray.Parse(await PortalDB.FetchOrderBookPreDefinedSummaries(dto));
-            var mainResult = await PortalDB.FetchOrderBookMainSummary(dto);
-            var salesResult = await PortalDB.FetchOrderBookSalesSummaries(dto);
+            var dateFiltersTask = PortalDB.FetchOrderBookDateSummaries(dto);
+
+            var preDefinedFiltersTask = PortalDB.FetchOrderBookPreDefinedSummaries(dto);
+
+            var mainResultTask = PortalDB.FetchOrderBookMainSummary(dto);
+
+            await Task.WhenAll(dateFiltersTask, preDefinedFiltersTask, mainResultTask);
+
+            var dateFilters = await dateFiltersTask;
+
+            var preDefinedFilters = JArray.Parse(await preDefinedFiltersTask);
+
+            var mainResult = await mainResultTask;
 
             var result = new
             {
                 dateFilters,
                 preDefinedFilters,
-                mainResult,
+                mainResult
+            };
+
+            return Ok(result);
+        }
+
+        public async Task<IHttpActionResult> RefreshSales([FromBody] PassOrderBookBaseParams dto)
+        {
+            var salesResult = JArray.Parse(await PortalDB.FetchOrderBookSalesSummaries(dto));
+
+            var result = new
+            {
                 salesResult
             };
 
             return Ok(result);
+        }
+
+        public async Task<IHttpActionResult> FetchOrderBookSummary()
+        {
+            var summaryResult = await PortalDB.FetchOrderBookOveriew();
+
+            return Ok(new { 
+                summaryResult 
+            });
         }
 
         public async Task<IHttpActionResult> AccuracyCheck()
