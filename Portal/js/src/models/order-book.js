@@ -85,15 +85,16 @@ const orderBookViewModel = (() => {
         salesCollapse: false,
         gridCollapse: false,
         orderGroups: [],
-        columnHeadings: []
+        columnHeadings: [],
+        managementPromptTabs: []
     }
     
-    let loadedConfig = window.localStorage.getItem("orderBookDisplayConfig");
+    let loadedConfig = localStorage.getItem("orderBookDisplayConfig");
 
-    if (loadedConfig == null) {
-        self.displayConfig = JSON.parse(window.localStorage.getItem("orderBookDefaultDisplayConfig"));
+    if (loadedConfig == null || loadedConfig == 'null') {
+        self.displayConfig = self.defaultConfig;// JSON.parse(localStorage.getItem("orderBookDefaultDisplayConfig"));
 
-        window.localStorage.setItem("orderBookDisplayConfig", JSON.stringify(self.displayConfig));
+        localStorage.setItem("orderBookDisplayConfig", JSON.stringify(self.displayConfig));
     } else {
         self.displayConfig = JSON.parse(loadedConfig);
     }
@@ -109,8 +110,8 @@ const orderBookViewModel = (() => {
 
     self.podsDisplayModes = ko.observableArray(self.displayConfig.pods); // this now belongs to just the main summary grid Totals segment at the top
     self.podsCollapse = ko.observable(self.displayConfig.podsCollapse);
-    self.preDefinedFilters = orderBookPreDefinedFiltersViewModel(self);
     self.podTabIndex = ko.observable(self.displayConfig.podTabIndex);
+    self.preDefinedFilters = orderBookPreDefinedFiltersViewModel(self);
 
 
     self.salesDisplayModes = ko.observableArray(self.displayConfig.sales); // this now belongs to just the main summary grid Totals segment at the top
@@ -248,6 +249,8 @@ const orderBookViewModel = (() => {
 
         let displayColumnHeadings = self.displayColumnHeadings();
 
+        let managementPromptTabs = self.preDefinedFilters.displayTabs();
+
         if (orderGroups.length) {
 
             let result = {
@@ -267,16 +270,17 @@ const orderBookViewModel = (() => {
                         collapsed: h.collapsed()
                     }
                 }),
-                columnHeadings: displayColumnHeadings
+                columnHeadings: displayColumnHeadings,
+                managementPromptTabs: managementPromptTabs
             }
 
             self.displayConfig = result;
 
             //console.log("orderBookDisplayConfig", result);
 
-            window.localStorage.setItem("orderBookDisplayConfig", JSON.stringify(self.displayConfig));
+            localStorage.setItem("orderBookDisplayConfig", JSON.stringify(self.displayConfig));
 
-            window.localStorage.setItem("orderBookDefaultDisplayConfig", JSON.stringify(self.defaultConfig));
+            localStorage.setItem("orderBookDefaultDisplayConfig", JSON.stringify(self.defaultConfig));
         }
 
     }, self).extend({
@@ -310,11 +314,11 @@ const orderBookViewModel = (() => {
         }
     });
 
-    self.salesCollapse.subscribe(nv => {
-        if (nv == false && self.salesFilters.groups().length === 0) {
-            self.salesFilters.fetch(JSON.parse(self.userDefinedFilters.json()));
-        }
-    })
+    //self.salesCollapse.subscribe(nv => {
+    //    if (nv == false && self.salesFilters.groups().length === 0) {
+    //        self.salesFilters.fetch(JSON.parse(self.userDefinedFilters.json()));
+    //    }
+    //})
 
     self.busy.subscribe(nv => {
         console.log('busy', nv);
@@ -337,7 +341,7 @@ const orderBookViewModel = (() => {
     //#region Functions
 
     self.showSummaryModal = () => {
-        self.fetchOrderBookSummary();
+        self.fetchOrderBookSummary(self.userDefinedFilters.json());
         self.orderBookSummaryModal.show();
     }
 
@@ -369,6 +373,8 @@ const orderBookViewModel = (() => {
         event.currentTarget.classList.toggle('collapsed');
 
         bootstrap.Collapse.getOrCreateInstance('#main-grid-container-wrapper').toggle();
+
+        bootstrap.Collapse.getOrCreateInstance('#date-filters').toggle();
 
         self.gridCollapse(event.currentTarget.classList.contains('collapsed'));
     }
@@ -593,14 +599,22 @@ const orderBookViewModel = (() => {
         })));
 
         // this will only be true on the first run through
-        if (self.columnHeadings().length == 0) {
-            self.columnHeadings(columnHeadings);
-        }
+        //if (self.columnHeadings().length == 0) {
+
+        self.columnHeadings(columnHeadings);
+
+        self.salesFilters.fetch(JSON.parse(self.userDefinedFilters.json()));
+
+        //}
     }
 
     self.fetch = (params) => {
 
         self.busy(true);
+
+        if (self.columnHeadings().length > 0) {
+            self.salesFilters.fetch(JSON.parse(params));
+        }
 
         let body = JSON.parse(params);
 
@@ -637,14 +651,22 @@ const orderBookViewModel = (() => {
             });
     }
 
-    self.fetchOrderBookSummary = () => {
+    self.fetchOrderBookSummary = (params) => {
+
         self.orderBookSummaryBusy(true);
-        //portal.OrderBook_Overview_Select
+
+        let body = JSON.parse(params);
+
+        body.orderLineDetailedStatusGroupIds = self.displayColumnHeadings();
+
+        console.log("FetchOrderBookSummary calling with", body);
+
         fetch("/api/orderbook/FetchOrderBookSummary", {
             method: "POST",
             headers: window.fetchHeaders,
             cache: 'no-store',
-            credentials: 'same-origin'
+            credentials: 'same-origin',
+            body: JSON.stringify(body)
         })
             .then(window.handleFetchResponse)
             .then(data => {
@@ -706,6 +728,8 @@ const orderBookViewModel = (() => {
                 self.displayColumnHeadings(self.defaultConfig.columnHeadings);
 
                 self.displayColumnHeadingsSelection(self.defaultConfig.columnHeadings);
+
+                self.preDefinedFilters.displayTabs(self.defaultConfig.managementPromptTabs);
 
                 self.defaultConfig.orderGroups.forEach(og => {
                     let rh = self.rowHeadings().find(rh => rh.orderGroupId == og.orderGroupId);
@@ -825,9 +849,9 @@ const orderBookViewModel = (() => {
 
     self.fetch(self.userDefinedFilters.json());
 
-    if (self.salesCollapse() == false) {
-        self.salesFilters.fetch(JSON.parse(self.userDefinedFilters.json()));
-    }
+    //if (self.salesCollapse() == false) {
+    //    self.salesFilters.fetch(JSON.parse(self.userDefinedFilters.json()));
+    //}
 
     document.addEventListener('setDetailModalTitle', (e) => {
         self.detailModalTitleElement.innerHTML = e.detail.join("");

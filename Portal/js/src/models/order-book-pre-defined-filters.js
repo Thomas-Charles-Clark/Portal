@@ -25,6 +25,10 @@
 
     self.detailModalBusy = ko.observable(false);
 
+    self.availableManagementPromptTabs = ko.observableArray([]); 
+
+    self.displayTabs = ko.observableArray([]);
+
     //#endregion
 
 
@@ -44,7 +48,11 @@
 
     //#region Computeds
 
-
+    self.visibleManagementPromptTabs = ko.computed(() => {
+        return self.groups().filter((g, i) => {
+            return self.displayTabs().find(a => a == i) != null;
+        })
+    }, self);
 
     //#endregion
 
@@ -75,7 +83,23 @@
                 })))
             }
         });
-        
+
+        self.availableManagementPromptTabs(groups.map((g, i) => {
+            return {
+                label: g.name,
+                value: i,
+                children: []
+            }
+        }));
+
+        if (self.parent.displayConfig.managementPromptTabs.length) {
+            self.displayTabs(self.parent.displayConfig.managementPromptTabs);
+        } else {
+            self.displayTabs(self.availableManagementPromptTabs().map(a => a.value));
+        }
+
+        self.parent.defaultConfig.managementPromptTabs = self.availableManagementPromptTabs().map(a => a.value);
+
         self.groups(groups);
     }
 

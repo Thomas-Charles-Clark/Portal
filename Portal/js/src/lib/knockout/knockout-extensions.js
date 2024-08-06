@@ -3388,6 +3388,58 @@ ko.bindingHandlers.addressAutocompleteKeyPress = {
     }
 }
 
+ko.bindingHandlers.gridFadeVisible = {
+    init: function (element, valueAccessor) {
+        var value = valueAccessor();
+        var unwrapped = ko.unwrap(value);
+        if (!typeof ko.unwrap(unwrapped.boolean) === 'boolean') {
+            console.error('gridFadeVisible bindingHandler error - parameter "boolean" is not a boolean', element, unwrapped);
+        }
+        if (value) {
+            element.classList.remove('d-none');
+            element.classList.add('opacity-100');
+            element.style.display = 'grid';
+        }
+    },
+    update: function (element, valueAccessor) {
+        var value = ko.unwrap(valueAccessor());
+        if (value) {
+            element.classList.remove('d-none');
+            element.classList.add('d-grid');
+            setTimeout(() => {
+                element.classList.add('opacity-100');
+            }, 0);
+        } else {
+            element.classList.remove('opacity-100');
+            setTimeout(() => {
+                element.classList.remove('d-grid');
+                element.classList.add('d-none');
+            }, 150);
+        }
+    }
+}
+
+
+ko.bindingHandlers.gridVisible = {
+    init: function (element, valueAccessor) {
+        var value = valueAccessor();
+        var unwrapped = ko.unwrap(value);
+        if (!typeof ko.unwrap(unwrapped.boolean) === 'boolean') {
+            console.error('gridVisible bindingHandler error - parameter "boolean" is not a boolean', element, unwrapped);
+        }
+        if (value) {
+            element.style.display = 'grid';
+        }
+    },
+    update: function (element, valueAccessor) {
+        var value = ko.unwrap(valueAccessor());
+        if (value) {
+            element.style.display = 'grid';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+}
 
 ko.bindingHandlers.stopBinding = {
     init: function () {

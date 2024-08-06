@@ -1,16 +1,23 @@
 ﻿@model SharedEFClasses.BaseViewModel
 <div id="sales-filters-tab-container" data-bind="style: { '--first-column-count': salesFilters.groups().slice(1).findIndex(g => g.Label == ''), '--second-column-count': salesFilters.groups().length - salesFilters.groups().slice(1).findIndex(g => g.Label == '') - 2 }">
-    <div class="blocker" style="display: flex; opacity: 1" data-bind="flexFadeVisible: salesFilters.busy">
-        <div class="loading-spinner"></div>
-        <h4 class="mt-3">
-            Please wait...
-        </h4>
+    <div class="blocker-wrapper" style="display: flex; opacity: 1" data-bind="flexFadeVisible: salesFilters.busy">
+        <div class="blocker-message-wrapper loading-wrapper">
+            <div class="loading-spinner"></div>
+            <h4 class="mt-3">
+                Please wait...
+            </h4>
+        </div>
+    </div>
+    <div class="blocker-wrapper" data-bind="gridFadeVisible: !salesFilters.busy() && salesFilters.displayBlocker()">
+        <div class="blocker-message-wrapper">
+            <h4 data-bind="html: salesFilters.blockerMessage"></h4>
+        </div>
     </div>
     <div data-bind="with: salesFilters">
         <div class="sales-section" data-bind="visible: displayModes().indexOf(DISPLAY_MODE_BUDGET) > -1">
             <div class="sales-header">
                 <h5 class="sales-group-title">
-                    Budget
+                    Sales vs Budget
                 </h5>
                 <!-- ko foreach: groups -->
                 <!-- ko if: $index() > 0 -->
@@ -42,7 +49,7 @@
         <div class="sales-section" data-bind="visible: displayModes().indexOf(DISPLAY_MODE_COMBINED) > -1">
             <div class="sales-header">
                 <h5 class="sales-group-title">
-                    Combined (Sales - Credits)
+                    Net Sales (Sales - Credits)
                 </h5>
                 <!-- ko foreach: groups -->
                 <!-- ko if: $index() > 0 -->
@@ -74,7 +81,7 @@
         <div class="sales-section" data-bind="visible: displayModes().indexOf(DISPLAY_MODE_VALUE_SUM) > -1">
             <div class="sales-header">
                 <h5 class="sales-group-title">
-                    Sales
+                    Sales before Credits
                 </h5>
                 <!-- ko foreach: groups -->
                 <!-- ko if: $index() > 0 -->
@@ -106,7 +113,7 @@
         <div class="sales-section" data-bind="visible: displayModes().indexOf(DISPLAY_MODE_CREDIT_SUM) > -1">
             <div class="sales-header">
                 <h5 class="sales-group-title">
-                    Credits
+                    Credits Issued
                 </h5>
                 <!-- ko foreach: groups -->
                 <!-- ko if: $index() > 0 -->

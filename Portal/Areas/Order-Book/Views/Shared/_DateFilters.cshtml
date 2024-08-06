@@ -4,9 +4,9 @@
         return @Html.Raw(JsonConvert.SerializeObject(Model.DateFilters))
     }
 </script>
-<div id="date-filters" data-bind="with: dateFilters">
+<div id="date-filters" data-bind="with: dateFilters, css: { show: !gridCollapse() }" class="accordion-collapse collapse" aria-labelledby="header-accordion-four">
     <div class="pre-defined-filter-list" data-bind="foreach: summaries">
-        <div class="card filter-card alert alert-light" data-bind="css: AlertClass, click: $parent.click">
+        <div class="card filter-card alert" data-bind="css: AlertClass, click: $parent.click">
             <div class="card-body">
                 <h5 class="card-title" data-bind="html: Label"></h5>
                 <p class="card-text" data-bind="html: display"></p>

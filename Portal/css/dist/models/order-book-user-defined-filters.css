@@ -90,6 +90,7 @@
   opacity: 1;
   will-change: opacity;
   transition: opacity 150ms ease-in-out;
+  pointer-events: none;
 }
 #filters-sidebar .sidebar-body {
   padding-top: 0;
@@ -130,7 +131,7 @@
   transform: rotate(-45deg);
 }
 #filters-sidebar .sidebar-inner {
-  background-color: #f8f9fa;
+  background-color: ghostwhite;
   display: flex;
   flex-direction: column;
   gap: 1rem;

@@ -7,62 +7,7 @@
         <div class="main-grid column-headings"
              data-bind="style: { '--grid-column-count': visibleOrderStatuses().length + 2 }">
             <div class="th first-column"></div>
-            <div class="th grand-total-column column-controls">
-                <div class="mdc-bootstrap-multiselect">
-                    <div class="dropdown" data-bind="with: displayColumnHeadingsParams">
-                        <button class="btn display-control-btn dropdown-toggle no-ripple"
-                                type="button"
-                                data-bind="keepElement: observableArray,
-                                class: displayClass,
-                                attr: {
-                                id: elementId
-                                },
-                                html: btnMarkup,
-                                event: {
-                                'hide.bs.dropdown' : ()=>
-                            { controls.applySelection(false); return true; }
-                            }"
-                            data-bs-toggle="dropdown"
-                            data-bs-auto-close="outside"
-                            data-bs-display="static"
-                            aria-expanded="false">
-                        </button>
-                        <ul class="dropdown-menu" data-bind="attr: { 'aria-labelledby': elementId }">
-                            <!-- ko if: controls != "undefined" -->
-                            <li class="dropdown-menu-controls d-flex gap-2">
-                                <!-- ko if: controls.selectAll -->
-                                <button class="btn btn-secondary btn-sm" data-bind="click: controls.selectAll">
-                                    Select All
-                                </button>
-                                <!-- /ko -->
-                                <!-- ko if: controls.deselectAll -->
-                                <button class="btn btn-secondary btn-sm" data-bind="click: controls.deselectAll">
-                                    Deselect All
-                                </button>
-                                <!-- /ko -->
-                                <!-- ko if: controls.applySelection -->
-                                <button class="btn btn-secondary btn-sm ms-auto" data-bind="click: () => { controls.applySelection(true); }">
-                                    Apply
-                                </button>
-                                <!-- /ko -->
-                            </li>
-                            <!-- /ko -->
-                            <!-- ko foreach: options -->
-                            <li data-bind="css: { 'disabled': disabled }">
-                                <label class="dropdown-item pointer form-check-label">
-                                    <input class="form-check-input" type="checkbox" data-bind="checked: $parent.observableArray,
-                                checkedValue: $data.orderStatusGroupId,
-                                attr: {
-                                    disabled: disabled
-                                }">
-                                    <span data-bind="text: orderStatusGroupName"></span>
-                                </label>
-                            </li>
-                            <!-- /ko -->
-                        </ul>
-                    </div>
-                </div>
-            </div>
+            <div class="th grand-total-column column-controls"></div>
             <!-- ko foreach: visibleColumns -->
             <div class="th intersectable span-x order-status-group-heading" data-bind="css: { 'border-left-0': $index() == 0 }, style: { '--colspan': orderStatuses.length }, click: () => { $root.showDetail($data) }">
                 <span data-bind="text: orderStatusGroupName"></span>

@@ -86,6 +86,7 @@ $light-blue-bg: tint-color($blue-100, 80%);
         opacity: 1;
         will-change: opacity;
         transition: opacity 150ms ease-in-out;
+        pointer-events: none;
     }
 
     .sidebar-body {
@@ -143,7 +144,7 @@ $light-blue-bg: tint-color($blue-100, 80%);
     }
 
     .sidebar-inner {
-        background-color: $light;
+        background-color: ghostwhite;
         display: flex;
         flex-direction: column;
         gap: $l-gutter;

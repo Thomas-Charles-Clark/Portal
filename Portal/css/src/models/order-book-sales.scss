@@ -6,7 +6,51 @@ $light-blue-background: tint-color($blue-200, 90%);
     position: relative;
     margin-bottom: $sm-gutter;
     $column-count: var(--column-count);
+    $first-column-count: var(--first-column-count);
+    $second-column-count: var(--second-column-count);
     overflow-x: auto;
+
+    .blocker-wrapper {
+        position: absolute;
+        display: grid;
+        left: 0;
+        top: 0;
+        height: 100%;
+        background-color: rgba(0,0,0,0.85);
+        grid-template-columns: 200px repeat($first-column-count, minmax(120px, 1fr)) 200px repeat($second-column-count, minmax(120px, 1fr));
+
+        .blocker-message-wrapper {
+            position: sticky;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            height: 100%;
+            left: 0;
+            top: 0;
+
+            &.loading-wrapper {
+                display: flex;
+                flex-direction: column;
+                gap: $l-gutter;
+            }
+
+            h4 {
+                color: white;
+                position: sticky;
+                left: 0;
+            }
+        }
+    }
+
+    .blocker-message-wrapper {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        display: none;
+    }
 
     .sales-section {
         display: grid;
@@ -18,8 +62,9 @@ $light-blue-background: tint-color($blue-200, 90%);
         margin-bottom: $sm-gutter;
 
         .sales-header {
+            height: 30px;
             display: grid;
-            grid-template-columns: 200px repeat(var(--first-column-count), minmax(120px, 1fr)) 200px repeat(var(--second-column-count), minmax(120px, 1fr));
+            grid-template-columns: 200px repeat($first-column-count, minmax(120px, 1fr)) 200px repeat($second-column-count, minmax(120px, 1fr));
 
             > h5,
             > label,
@@ -59,6 +104,7 @@ $light-blue-background: tint-color($blue-200, 90%);
         }
 
         > div:not(.sales-header) {
+            height: 30px;
             background-color: $white;
             display: grid;
             grid-template-columns: 200px repeat(var(--first-column-count), minmax(120px, 1fr)) 200px repeat(var(--second-column-count), minmax(120px, 1fr));

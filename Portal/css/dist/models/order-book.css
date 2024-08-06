@@ -55,7 +55,7 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
   transition: opacity 300ms ease-in-out;
   flex: 1;
   align-self: stretch;
-  max-height: calc(100vh - 50px);
+  max-height: calc(100% - 50px);
   transform: translate3d(0, 0, 0);
 }
 
@@ -67,10 +67,9 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
   padding: 0.5rem;
   overflow-x: auto;
   display: flex;
-  min-height: 100%;
-  /*max-height: 100%;*/
   flex-direction: column;
   flex: 1;
+  /*align-self: stretch;*/
 }
 
 #order-book-main-wrapper {
@@ -104,12 +103,13 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
 #header-accordion .accordion-item .accordion-header {
   border-radius: 0;
   margin-bottom: 0.5rem;
+  border: 1px solid #dee2e6;
 }
 #header-accordion .accordion-item .accordion-header .accordion-button {
   border-radius: 0;
   padding: 0.5rem 1rem;
   font-size: 1rem;
-  background-color: transparent;
+  background-color: ghostwhite;
   box-shadow: none;
   border: none;
   color: #212529;
@@ -133,12 +133,15 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
   color: #424649;
 }
 #header-accordion .accordion-item .accordion-header .accordion-button::after {
-  margin-left: initial;
+  margin-left: 0.25rem;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23888'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
 }
 #header-accordion .accordion-item .accordion-header .accordion-button a {
   color: #212529;
   padding: 0;
+}
+#header-accordion .accordion-item .accordion-header .accordion-button a:not(.display-control-btn) {
+  padding: 0 0.5rem;
 }
 #header-accordion .accordion-item .accordion-header .accordion-button a .bi {
   font-size: 1.15rem;
@@ -157,13 +160,13 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
   /*flex: 0 0 auto;*/
   overflow-x: scroll;
   transform: translate3d(0, 0, 0);
-  max-height: 800px;
+  max-height: 100vh;
 }
 #main-grid-container-wrapper #main-grid-container {
   padding-bottom: 0.5rem;
 }
 #main-grid-container-wrapper #main-grid-container .main-grid:not(.column-headings) .main-grid.show {
-  border-bottom: 1px solid #084298;
+  /*border-bottom: $blue-border;*/
 }
 
 .main-grid {
@@ -186,7 +189,7 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
 }
 .main-grid .main-cell {
   text-align: right;
-  border-bottom: 1px solid #e9ecef;
+  /*border-bottom: 1px solid $gray-200;*/
 }
 .main-grid .intersectable {
   cursor: pointer;
@@ -276,7 +279,7 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
 .main-grid .order-status-group-heading,
 .main-grid .order-status-total,
 .main-grid .order-group-total-row {
-  border-bottom: 1px solid #084298;
+  /*border-bottom: $blue-border;*/
 }
 .main-grid .order-status-group-heading {
   border-left: 1px solid #084298;
@@ -428,6 +431,9 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
 .mdc-validating-field .mdc-bootstrap-multiselect.mdc-select--selected .controls > div {
   color: #fff;
   text-shadow: 0 1px 0 #000;
+}
+.mdc-validating-field .mdc-bootstrap-multiselect li + li {
+  border-top: 1px solid #ced4da;
 }
 .mdc-validating-field .mdc-select:not(.mdc-select--disabled) .mdc-notched-outline__notch {
   opacity: 1;
@@ -584,8 +590,22 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
 #order-book-summary-modal .modal-header {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
-  background-color: #12376d;
+  background-color: #084298;
   color: #fff;
+  justify-content: flex-start;
+}
+#order-book-summary-modal .modal-header .btn {
+  padding: 0.25rem 1rem;
+  font-size: 1.25rem;
+  position: relative;
+  color: #fff;
+  margin-left: auto;
+}
+#order-book-summary-modal .modal-header .btn.btn-primary {
+  font-size: 1rem;
+}
+#order-book-summary-modal .modal-header .btn-close {
+  margin-left: 1rem;
 }
 #order-book-summary-modal .modal-body {
   min-height: 420px;
@@ -597,7 +617,7 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
   text-align: center;
 }
 #order-book-summary-modal .modal-body #order-book-summary-table tbody .summary-total-row {
-  background-color: #ecf3ff;
+  background-color: #f5f9ff;
   font-weight: bold;
 }
 #order-book-summary-modal .modal-body #order-book-summary-table tbody + tbody::before {
@@ -609,7 +629,37 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
   text-align: center;
 }
 #order-book-summary-modal .modal-body #order-book-summary-table tbody:last-of-type tr {
-  background-color: #3968ad;
+  background-color: #084298;
+  color: #fff;
+}
+
+.display-mode-list .dropdown-menu-controls {
+  position: sticky;
+  top: 0;
+  padding: 0.5rem;
+  z-index: 1;
+  background-color: #fff;
+}
+.display-mode-list .dropdown-menu-controls .btn {
+  white-space: nowrap;
+}
+.display-mode-list .dropdown-menu-controls a.btn {
+  padding: 0.25rem 0.5rem;
+  color: #fff;
+}
+
+#header-accordion .accordion-item .accordion-header .accordion-button .dropdown-menu-controls {
+  position: sticky;
+  top: 0;
+  padding: 0.5rem;
+  z-index: 1;
+  background-color: #fff;
+}
+#header-accordion .accordion-item .accordion-header .accordion-button .dropdown-menu-controls .btn {
+  white-space: nowrap;
+}
+#header-accordion .accordion-item .accordion-header .accordion-button .dropdown-menu-controls a.btn {
+  padding: 0.25rem 0.5rem;
   color: #fff;
 }
 /*# sourceMappingURL=order-book.css.map */

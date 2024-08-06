@@ -72,19 +72,14 @@ namespace Portal.Areas.Sales.Controllers
 
         public async Task<IHttpActionResult> RefreshSales([FromBody] PassOrderBookBaseParams dto)
         {
-            var salesResult = JArray.Parse(await PortalDB.FetchOrderBookSalesSummaries(dto));
+            var salesResult = await PortalDB.FetchOrderBookSalesSummaries(dto);
 
-            var result = new
-            {
-                salesResult
-            };
-
-            return Ok(result);
+            return Ok(salesResult);
         }
 
-        public async Task<IHttpActionResult> FetchOrderBookSummary()
+        public async Task<IHttpActionResult> FetchOrderBookSummary([FromBody] PassOrderBookBaseParams dto)
         {
-            var summaryResult = await PortalDB.FetchOrderBookOveriew();
+            var summaryResult = await PortalDB.FetchOrderBookOveriew(dto);
 
             return Ok(new { 
                 summaryResult 
@@ -169,6 +164,70 @@ namespace Portal.Areas.Sales.Controllers
                 var result = await client.PostAsync("https://excel.designersguild.com/api/excel/GetFileStream", content);
 //#endif
 
+                if (result.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    bytes = result.Content.ReadAsByteArrayAsync().Result;
+                }
+            }
+
+            var httpResponseMessage = Request.CreateResponse(HttpStatusCode.OK);
+
+            httpResponseMessage.Content = new StreamContent(new MemoryStream(bytes));
+            httpResponseMessage.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment");
+            httpResponseMessage.Content.Headers.ContentDisposition.FileName = fileName;
+            httpResponseMessage.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
+
+            return httpResponseMessage;
+        }
+
+
+        [HttpPost]
+        public async Task<HttpResponseMessage> ExportSalesToExcel([FromBody]PassOrderBookBaseParams dto)
+        {
+            byte[] bytes = null;
+
+            var detailResult = await PortalDB.FetchOrderBookSalesExport(dto);
+
+            var now = DateTime.Now;
+
+            var fileName = $"OrderBook-Sales-Export-{now:g}";
+
+            using (var client = new HttpClient())
+            {
+                var content = new StringContent(JsonConvert.SerializeObject(new
+                {
+                    FileName = fileName,
+                    FileType = "xlsx",
+                    Destination = (string)null,
+                    Contents = JsonConvert.SerializeObject(detailResult.SalesResult),
+                    UppercaseHeadings = false,
+                    AutoSizeColumns = true,
+                    HeadingStyleID = 15,
+                    StandardStyleID = (byte?)null
+                }), System.Text.Encoding.UTF8, "application/json");
+
+                // cheers: https://stackoverflow.com/questions/777607/the-remote-certificate-is-invalid-according-to-the-validation-procedure-using#answer-1386568
+                ServicePointManager.ServerCertificateValidationCallback =
+                    delegate (
+                        object s,
+                        X509Certificate certificate,
+                        X509Chain chain,
+                        SslPolicyErrors sslPolicyErrors
+                    )
+                    {
+                        return true;
+                    };
+
+                var url = "https://excel.designersguild.com/api/excel/GetFileStream";
+
+#if DEBUG
+
+                url = "https://localhost:44354/api/excel/GetFileStream";
+
+#endif
+
+                var result = await client.PostAsync(url, content);
+                
                 if (result.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     bytes = result.Content.ReadAsByteArrayAsync().Result;

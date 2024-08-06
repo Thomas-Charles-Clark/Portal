@@ -2493,9 +2493,9 @@ const orderBookUserDefinedFiltersViewModel = ({
         self.salesMarketIds([]);
         self.salesMarkets([]);
         self.selectedSalesMarketIds([]);
+        self.salesMarketSelection([]);
         self.salesMarketsParams.multiSelectSettings.widget().value([]);
         self.salesMarketsParams.multiSelectSettings.widget().trigger('change');
-        self.availableSalesMarkets([]);
 
         self.countryId(EMPTY_STRING);
         self.country(undefined);

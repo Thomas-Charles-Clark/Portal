@@ -180,7 +180,7 @@ const rangeManagementViewModel = ({ } = {}) => {
             self.finalRowVisible(entry.isIntersecting);
         });
     }, {
-        rootMargin: "0px"
+        rootMargin: "1px"
     });
 
 
@@ -2175,7 +2175,7 @@ const rangeManagementViewModel = ({ } = {}) => {
                     if (tr)
                         self.intersectionObserver.observe(tr);
                 })
-            }, 0);
+            }, 10);
 
             //console.log(results);
 
@@ -2518,7 +2518,7 @@ const rangeManagementViewModel = ({ } = {}) => {
                     if (tr)
                         self.intersectionObserver.observe(tr);
                 })
-            }, 0);
+            }, 10);
 
             //console.log(results);
 

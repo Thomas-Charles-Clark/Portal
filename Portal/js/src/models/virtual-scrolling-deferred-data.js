@@ -182,7 +182,7 @@ const virtualScrollingDeferredDataFactory = ({
             self.finalRowVisible(entry.isIntersecting);
         });
     }, {
-        rootMargin: "0px"
+        rootMargin: "1px"
     });
 
     self.unfilledRecordFn = unfilledRecordFn;

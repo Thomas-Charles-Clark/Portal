@@ -1741,7 +1741,7 @@
                                         <!-- ko with: viewingLinkedDocument -->
                                         <h4 data-bind="text: Description"></h4>
                                         <!-- /ko -->
-                                        <button class="btn btn-default" data-bind="click: downloadLinkedDocument">
+                                        <button class="btn btn-default" data-bind="click: () => { downloadLinkedDocument(viewingLinkedDocument()) }">
                                             Download this Document
                                             <i class="material-icons">
                                                 save_alt
