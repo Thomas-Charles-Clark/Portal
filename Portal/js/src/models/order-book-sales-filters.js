@@ -19,6 +19,18 @@
 
     self.blockerMessage = ko.observable();
 
+    self.summaryBusy = ko.observable(false);
+
+    self.summaryModalElement = document.querySelector('#order-book-sales-summary-modal');
+
+    self.summaryModal = bootstrap.Modal.getOrCreateInstance(self.summaryModalElement);
+
+    self.summary = ko.observableArray([]);
+
+    self.summaryStartDt = null;
+
+    self.summaryEndDt = null;
+
     //#endregion
 
 
@@ -58,6 +70,13 @@
 
     //#region Functions
 
+    self.showSummaryModal = (data) => {
+        self.summaryStartDt = data.startDt;
+        self.summaryEndDt = data.endDt;
+        self.fetchSummary();
+        self.summaryModal.show();
+    }
+
     self.parse = (data) => {
 
         console.log('orderBookSalesFiltersViewModel parse', data);
@@ -73,16 +92,20 @@
         self.blockerMessage(data.BlockerResult.DisableBudgetPanelMessage);
     }
 
+    self.parseSummary = (data) => {
+
+        console.log('orderBookSalesFiltersViewModel parseSummary', data);
+
+        self.summary(data.Results);
+
+    }
+
     self.fetch = (params) => {
 
         self.busy(true);
 
-        params.orderLineDetailedStatusGroupIds = self.parent.displayColumnHeadings();
-
-        if (self.parent.displayColumnHeadings().length == self.parent.columnHeadings().length) {
-            params.orderLineDetailedStatusGroupIds = [];
-        }
-
+        params.orderLineDetailedStatusGroupIds = [];
+        
         console.log("FetchSales calling with", params);
 
         fetch("/api/orderbook/RefreshSales", {
@@ -108,36 +131,96 @@
             });
     }
 
-    self.exportSales = (params) => {
+    self.fetchSummary = () => {
 
-        self.busy(true);
+        let originalParams = JSON.parse(self.parent.userDefinedFilters.json());
 
-        params.orderLineDetailedStatusGroupIds = self.parent.displayColumnHeadings();
-
-        if (self.parent.displayColumnHeadings().length == self.parent.columnHeadings().length) {
-            params.orderLineDetailedStatusGroupIds = [];
+        let params = {
+            marketIds: originalParams.marketIds,
+            tradeAccountGroupId: originalParams.tradeAccountGroupId,
+            tradeAccountTypeId: originalParams.tradeAccountTypeId,
+            startDate: self.summaryStartDt,
+            endDate: self.summaryEndDt
         }
 
-        fetch("/api/orderbook/ExportSalesToExcel", {
+        self.summaryBusy(true);
+
+        console.log("FetchSalesSummary calling with", params);
+
+        fetch("/api/orderbook/RefreshSalesSummary", {
             method: "POST",
             headers: window.fetchHeaders,
             cache: 'no-store',
             credentials: 'same-origin',
             body: JSON.stringify(params)
         })
-            .then(response => response.blob())
-            .then(blob => {
-                var link = document.createElement('a');
-                link.href = window.URL.createObjectURL(blob);
-                link.download = 'DG-Order-Book-Sales.xlsx';
-                link.click();
-                self.busy(false);
-                link.remove();
+            .then(window.handleFetchResponse)
+            .then(data => {
+                console.log("FetchSalesSummary returned", data);
+
+                self.parseSummary(data);
+
+                window.setTimeout(() => {
+                    self.summaryBusy(false);
+                }, 0);
             })
             .catch((err) => {
-                self.busy(false);
+                self.summaryBusy(false);
                 window.catchFetchError(err);
             });
+    }
+
+    self.fetchLabel = ($index, $rowName) => {
+        return self.groups()[self.fetchLabelIndex($index)][$rowName].replace(/\s/g, '_');
+    }
+
+    self.fetchLabelIndex = ($index) => {
+        let index = 0;
+
+        if ($index >= self.groups().slice(1).findIndex(g => g.Label == '')) // slice to skip the first column which is a label...
+        {
+            index = self.groups().slice(1).findIndex(g => g.Label == '') + 1; // + 1 to account for the column skipped by the slice above
+        }
+
+        return index;
+    }
+
+    self.exportSales = (data) => {
+
+        window.showConfirm("Are you sure?", "This will generate and download an .xlsx for you", () => {
+
+            self.busy(true);
+
+            let params = JSON.parse(self.parent.userDefinedFilters.json());
+
+            params.orderLineDetailedStatusGroupIds = [];
+
+            params.StartDate = data.startDt;
+            params.EndDate = data.endDt;
+
+            let label = data.label;
+
+            fetch("/api/orderbook/ExportSalesToExcel", {
+                method: "POST",
+                headers: window.fetchHeaders,
+                cache: 'no-store',
+                credentials: 'same-origin',
+                body: JSON.stringify(params)
+            })
+                .then(response => response.blob())
+                .then(blob => {
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = `${label}.xlsx`;
+                    link.click();
+                    self.busy(false);
+                    link.remove();
+                })
+                .catch((err) => {
+                    self.busy(false);
+                    window.catchFetchError(err);
+                });
+        });
     }
 
     //#endregion

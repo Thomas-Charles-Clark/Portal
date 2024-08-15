@@ -220,15 +220,9 @@ namespace Portal.Areas.Sales.Controllers
 
                 var url = "https://excel.designersguild.com/api/excel/GetFileStream";
 
-#if DEBUG
-
-                url = "https://localhost:44354/api/excel/GetFileStream";
-
-#endif
-
                 var result = await client.PostAsync(url, content);
                 
-                if (result.StatusCode == System.Net.HttpStatusCode.OK)
+               if (result.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     bytes = result.Content.ReadAsByteArrayAsync().Result;
                 }
@@ -254,6 +248,12 @@ namespace Portal.Areas.Sales.Controllers
         public async Task<IHttpActionResult> FetchRingFencePopoverContents([FromBody]PassOrderBookRingFencePopoverFetch dto)
         {
             return Ok(await PortalDB.FetchOrderBookRingFenceInspect(dto));
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> RefreshSalesSummary([FromBody]PassOrderBookDetailViewSalesBudget dto)
+        {
+            return Ok(await PortalDB.FetchOrderBookDetailViewSalesBudget(dto));
         }
     }
 }

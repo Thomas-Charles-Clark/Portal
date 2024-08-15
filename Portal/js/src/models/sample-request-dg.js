@@ -746,6 +746,9 @@ var SamplesViewModel = function () {
     self.lessThanRRP = ko.observable().extend({ roundedNumeric: 2 });
 
     self.fetchSampleOrderConfirmationText = (tradeAccountId) => {
+
+        console.log("fetchSampleOrderConfirmationText calling with", tradeAccountId);
+
         $.ajax({
             url: "/api/ComponentAPI/FetchTradeAccountSampleOrderConfirmationText",
             type: "POST",
@@ -754,6 +757,8 @@ var SamplesViewModel = function () {
                 tradeAccountId: tradeAccountId
             },
             success: function (data) {
+                console.log("fetchSampleOrderConfirmationText returned", data);
+
                 self.account().SampleOrderConfirmationTopText(data.SampleOrderConfirmationTopText);
                 self.account().SampleOrderConfirmationTopTextReadOnly(data.SampleOrderConfirmationTopTextReadOnly);
 
@@ -998,7 +1003,7 @@ var SamplesViewModel = function () {
             $("#extra-text-modal").modal('show');
         } else {
             if (self.account()) {
-                self.extraConfirmationText(self.account().SampleOrderConfirmationTopText);
+                self.extraConfirmationText(self.account().SampleOrderConfirmationTopText());
             } else {
                 self.extraConfirmationText(undefined);
             }

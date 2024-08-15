@@ -42,7 +42,9 @@ const orderBookUserDefinedFiltersViewModel = ({
         supplierId: '',
         productId: '',
         dataSource: '',
-        transactionTypeId: ''
+        transactionTypeId: '',
+        buyerId: '',
+        productStatusId: ''
     }
 }) => {
 
@@ -149,7 +151,15 @@ const orderBookUserDefinedFiltersViewModel = ({
 
     self.supplierId = ko.observable(params.supplierId ?? '');
     self.supplier = ko.observable();
-    self.supplierAwaitingBinding = ko.observable(params.vId != null && params.supplierId != '');
+    self.supplierAwaitingBinding = ko.observable(params.supplierId != null && params.supplierId != '');
+
+    self.buyerId = ko.observable(params.buyerId ?? '');
+    self.buyer = ko.observable();
+    self.buyerAwaitingBinding = ko.observable(params.buyerId != null && params.buyerId != '');
+
+    self.productStatusId = ko.observable(params.productStatusId ?? '');
+    self.productStatus = ko.observable();
+    self.productStatusAwaitingBinding = ko.observable(params.productStatusId != null && params.productStatusId != '');
 
     self.collectionId = ko.observable(params.collectionId ?? '');
     self.collection = ko.observable();
@@ -280,6 +290,12 @@ const orderBookUserDefinedFiltersViewModel = ({
         if (self.transactionTypeId())
             count++;
 
+        if (self.buyerId())
+            count++;
+
+        if (self.productStatusId())
+            count++;
+
         let plural = 's';
 
         if (count == 1)
@@ -305,7 +321,9 @@ const orderBookUserDefinedFiltersViewModel = ({
             self.collectionAwaitingBinding() == false &&
             self.launchAwaitingBinding() == false &&
             self.qualityAwaitingBinding() == false &&
-            self.productAwaitingBinding() == false)
+            self.productAwaitingBinding() == false &&
+            self.buyerAwaitingBinding() == false &&
+            self.productStatusAwaitingBinding() == false)
     }, self).extend({
         rateLimit: {
             method: 'notifyWhenChangesStop',
@@ -1669,6 +1687,8 @@ const orderBookUserDefinedFiltersViewModel = ({
             let qualityId = null;
             let designId = null;
             let supplierId = null;
+            let buyerId = null;
+            let productStatusId = null;
 
             if (defaultOp.indexOf("BrandID") == -1) {
                 brandId = self.brandId();
@@ -1680,6 +1700,18 @@ const orderBookUserDefinedFiltersViewModel = ({
                 supplierId = self.supplierId();
             } else {
                 supplierId = self.supplierId.peek();
+            }
+
+            if (defaultOp.indexOf("BuyerCode") == -1) {
+                buyerId = self.buyerId();
+            } else {
+                buyerId = self.buyerId.peek();
+            }
+
+            if (defaultOp.indexOf("ProductStatus") == -1) {
+                productStatusId = self.productStatusId();
+            } else {
+                productStatusId = self.productStatusId.peek();
             }
 
             if (defaultOp.indexOf("ProductGroupID") == -1) {
@@ -1754,6 +1786,23 @@ const orderBookUserDefinedFiltersViewModel = ({
                         delete d.$filter;
                     }
                 }
+            }
+
+            if (buyerId != '') {
+                 filters.push(`BuyerCode eq '${buyerId}'`);
+            } else {
+                if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "Buyer.Name")) {
+                    let f = data.filter.filters.find(f => f.field === "Buyer.Name");
+                    filters.push(`(contains(BuyerName, '${f.value}') or startswith(BuyerCode,'${f.value}'))`);
+
+                    if (d.$filter) {
+                        delete d.$filter;
+                    }
+                }
+            }
+
+            if (productStatusId != '') {
+                filters.push(`Status eq '${productStatusId}'`);
             }
 
             if (defaultOp.indexOf('ProductGroupID') == -1 && productGroupId != '') {
@@ -2207,26 +2256,6 @@ const orderBookUserDefinedFiltersViewModel = ({
         endPoint: '/odata/MertexProductClassificationSuperSet',
         textField: 'Supplier.Name',
         valueField: 'Supplier.Code',
-        //virtual: true,
-        //pageSize: 40,
-        //virtualOptions: {
-        //    itemHeight: 34,
-        //    mapValueTo: 'dataItem',
-        //    valueMapper: function (options) {
-        //        if (options.value) {
-        //            self.supplierAwaitingBinding(true)
-        //            $.ajax({
-        //                url: `/odata/MertexProductClassificationSuperSet?$apply=groupby((Supplier/Code,Supplier/Name))/filter((Supplier/Code eq '${options.value}'))`,
-        //                type: 'GET',
-        //                success: function (data) {
-        //                    options.success(data[0]);
-        //                }
-        //            });
-        //        } else {
-        //            options.success();
-        //        }
-        //    }
-        //},
         template: self.supplierTemplate,
         valueTemplate: self.supplierTemplate,
         idObservable: self.supplierId,
@@ -2255,6 +2284,99 @@ const orderBookUserDefinedFiltersViewModel = ({
         },
         parameterMap: self.generateProductSuperSetParameterMap(self.supplierGroupBy),
     });
+
+
+
+    self.buyerGroupBy = `groupby((Buyer/Code,Buyer/Name))/filter((Buyer/Code ne null))`;
+
+    self.buyerTemplate = (e) => {
+        if (e.Buyer && e.Buyer.Code && e.Buyer.Name) {
+            return `<span title="${e.Buyer.Code} - ${e.Buyer.Name}">${e.Buyer.Code} - ${e.Buyer.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.buyerParams = kendoMDCDropDownList({
+        label: 'Buyer',
+        odata: true,
+        endPoint: '/odata/MertexProductClassificationSuperSet',
+        textField: 'Buyer.Name',
+        valueField: 'Buyer.Code',
+        template: self.buyerTemplate,
+        valueTemplate: self.buyerTemplate,
+        idObservable: self.buyerId,
+        objObservable: self.buyer,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'Buyer.Name'
+        },
+        ignoreCase: false,
+        select: self.genericUnsavedChangesSelect,
+        requestStart: (e) => self.buyerAwaitingBinding(true),
+        dataBound: (e) => window.setTimeout(() => {
+            self.buyerAwaitingBinding(false);
+        }, 0),
+        clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: document.getElementById('buyer-prefilter')
+        },
+        parameterMap: self.generateProductSuperSetParameterMap(self.buyerGroupBy),
+    });
+
+    self.productStatusGroupBy = `groupby((ProductStatus/Code,ProductStatus/Name))/filter((ProductStatus/Code ne null))`;
+
+    self.productStatusTemplate = (e) => {
+        if (e.ProductStatus && e.ProductStatus.Code && e.ProductStatus.Name) {
+            return `<span title="${e.ProductStatus.Code} - ${e.ProductStatus.Name}">${e.ProductStatus.Code} - ${e.ProductStatus.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.productStatusParams = kendoMDCDropDownList({
+        label: 'Product Status',
+        odata: true,
+        endPoint: '/odata/MertexProductClassificationSuperSet',
+        textField: 'ProductStatus.Name',
+        valueField: 'ProductStatus.Code',
+        template: self.productStatusTemplate,
+        valueTemplate: self.productStatusTemplate,
+        idObservable: self.productStatusId,
+        objObservable: self.productStatus,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'ProductStatus.Name'
+        },
+        ignoreCase: false,
+        select: self.genericUnsavedChangesSelect,
+        requestStart: (e) => self.productStatusAwaitingBinding(true),
+        dataBound: (e) => window.setTimeout(() => {
+            self.productStatusAwaitingBinding(false);
+        }, 0),
+        clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: document.getElementById('product-status-prefilter')
+        },
+        parameterMap: self.generateProductSuperSetParameterMap(self.productStatusGroupBy),
+    });
+
 
     self.productDefault = 'PRODUCT';
 
@@ -2309,7 +2431,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         select: self.genericUnsavedChangesSelect,
         requestStart: (e) => self.productAwaitingBinding(true),
         dataBound: (e) => window.setTimeout(() => {
-            self.supplierAwaitingBinding(false);
+            self.productAwaitingBinding(false);
         }, 0),
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
@@ -2410,6 +2532,14 @@ const orderBookUserDefinedFiltersViewModel = ({
 
     self.supplierId.subscribe(nv => {
         console.log('supplierId subscribe hit', nv);
+    });
+
+    self.buyerId.subscribe(nv => {
+        console.log('buyerId subscribe hit', nv);
+    });
+
+    self.productStatusId.subscribe(nv => {
+        console.log('productStatusId subscribe hit', nv);
     });
 
     self.tradeAccount.subscribe(nv => {
@@ -2565,6 +2695,12 @@ const orderBookUserDefinedFiltersViewModel = ({
         self.supplierId(EMPTY_STRING);
         self.supplier(undefined);
 
+        self.buyerId(EMPTY_STRING);
+        self.buyer(undefined);
+
+        self.productStatusId(EMPTY_STRING);
+        self.productStatus(undefined);
+
         self.productId(EMPTY_STRING);
         self.product(undefined);
 
@@ -2610,6 +2746,8 @@ const orderBookUserDefinedFiltersViewModel = ({
                 qualityId: self.qualityId() || null,
                 designId: self.designId() || null,
                 supplierCode: self.supplierId() || null,
+                buyerCode: self.buyerId() || null,
+                productStatus: self.productStatusId() || null,
                 productId: self.productId() || null,
                 allocated: self.allocatedId() || null,
                 dataSource: self.dataSourceId() || null,

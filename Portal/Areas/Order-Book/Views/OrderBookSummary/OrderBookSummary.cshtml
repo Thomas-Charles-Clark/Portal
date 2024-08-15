@@ -227,9 +227,9 @@
                         <span>
                             Sales
                         </span>
-                        <a class="btn display-control-btn btn-sm btn-export no-ripple" href="#" data-bind="click: () => { exportSales(JSON.parse(parent.userDefinedFilters.json())) }, clickBubble: false">
-                            <i class="bi bi-filetype-xlsx"></i>
-                        </a>
+                        @*<a class="btn display-control-btn btn-sm btn-export no-ripple" href="#" data-bind="click: (data, event) => { exportSales(data, JSON.parse(parent.userDefinedFilters.json())) }, clickBubble: false">
+                                <i class="bi bi-filetype-xlsx"></i>
+                            </a>*@
                         <div class="dropdown">
                             <a class="btn display-control-btn btn-sm dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
                                 <i class="bi bi-list-check"></i>
@@ -244,7 +244,7 @@
                     </div>
                 </div>
             </div>
-            <div class="accordion-item">
+            @*<div class="accordion-item">
                 <h5 class="accordion-header" id="header-accordion-two-header">
                     <button class="accordion-button" type="button" aria-expanded="true" aria-controls="header-accordion-two" data-bind="with: preDefinedFilters, click: togglePrompts, css: { collapsed: podsCollapse }">
                         <span>
@@ -253,15 +253,15 @@
                         <div class="dropdown">
                             <a class="btn display-control-btn btn-sm dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
                                 <i class="bi bi-collection"></i>
-                            </a>
+                            </a>-->
                             <!-- ko template: { name: 'management-prompt-tabs-values-dropdown-container' } --><!-- /ko -->
-                        </div>
+                        <!--</div>
                         <div class="dropdown">
                             <a class="btn display-control-btn btn-sm dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
                                 <i class="bi bi-list-check"></i>
-                            </a>
+                            </a>-->
                             <!-- ko template: { name: 'values-dropdown-container' } --><!-- /ko -->
-                        </div>
+                        <!--</div>
                     </button>
                 </h5>
                 <div id="header-accordion-two" class="accordion-collapse collapse show" aria-labelledby="header-accordion-two" data-bind="css: { show: !podsCollapse() }">
@@ -269,7 +269,7 @@
                         @Html.Partial("_PreDefinedFilters")
                     </div>
                 </div>
-            </div>
+            </div>*@
             <div class="accordion-item">
                 <h5 class="accordion-header" id="header-accordion-four-header">
                     <button class="accordion-button" type="button" aria-expanded="true" aria-controls="header-accordion-four" data-bind="click: toggleGrid, css: { collapsed: gridCollapse }">
@@ -354,7 +354,7 @@
             </div>
             <div class="modal-header">
                 <h5 class="modal-title">
-                    Order Book Potential
+                    Order Book Summary
                 </h5>
                 <button class="btn btn-sm btn-primary no-ripple" type="button" data-bind="click: () => { fetchOrderBookSummary(userDefinedFilters.json()) }">
                     Refresh
@@ -455,6 +455,77 @@
                 <div id="order-book-detail-iframe-target">
 
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="order-book-sales-summary-modal" class="modal fade" tabindex="-1" data-bind="with: salesFilters">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="blocker" style="display: flex; opacity: 1" data-bind="flexFadeVisible: summaryBusy">
+                <div class="loading-spinner"></div>
+                <h4 class="mt-3">
+                    Please wait...
+                </h4>
+            </div>
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    Sales Summary
+                </h5>
+                <button class="btn btn-sm btn-primary no-ripple" type="button" data-bind="click: fetchSummary">
+                    Refresh
+                    <i class="material-icons">
+                        refresh
+                    </i>
+                </button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- ko if: summary().length -->
+                <table id="order-book-sales-summary-table" class="table table-collapsed">
+                    <colgroup>
+                        <col />
+                        <col />
+                        <col />
+                        <col />
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>
+                                Market
+                            </th>
+                            <th>
+                                Financial Year
+                            </th>
+                            <th>
+                                Financial Period
+                            </th>
+                            <th>
+                                Budget
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- ko foreach: summary -->
+                        <tr>
+                            <td>
+                                <span data-bind="text: Label"></span>
+                            </td>
+                            <td>
+                                <span data-bind="text: FinancialYear"></span>
+                            </td>
+                            <td>
+                                <span data-bind="text: FinancialPeriod"></span>
+                            </td>
+                            <td>
+                                <span data-bind="text: formatCurrency(Budget, 0, 'en-GB', 'GBP')"></span>
+                            </td>
+                        </tr>
+                        <!-- /ko -->
+                    </tbody>
+                </table>
+                <!-- /ko -->
             </div>
         </div>
     </div>

@@ -8,13 +8,13 @@
             </h4>
         </div>
     </div>
-    <div class="blocker-wrapper" data-bind="gridFadeVisible: !salesFilters.busy() && salesFilters.displayBlocker()">
-        <div class="blocker-message-wrapper">
-            <h4 data-bind="html: salesFilters.blockerMessage"></h4>
-        </div>
-    </div>
     <div data-bind="with: salesFilters">
         <div class="sales-section" data-bind="visible: displayModes().indexOf(DISPLAY_MODE_BUDGET) > -1">
+            <div id="budget-blocker" class="blocker-wrapper" data-bind="gridFadeVisible: !busy() && displayBlocker()">
+                <div class="blocker-message-wrapper">
+                    <h4 data-bind="html: blockerMessage"></h4>
+                </div>
+            </div>
             <div class="sales-header">
                 <h5 class="sales-group-title">
                     Sales vs Budget
@@ -27,12 +27,12 @@
             </div>
             <div>
                 <!-- ko foreach: groups -->
-                <span data-bind="text: Budget_Row1, class: `sales-cell-${CellType.toLowerCase()}`"></span>
+                <span class="downloadable" data-bind="text: Budget_Row1, class: `sales-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportSales({ startDt: data.Budget_Row1_StartDT, endDt: data.Budget_Row1_EndDT }) }, clickBubble: false"></span>
                 <!-- /ko -->
             </div>
             <div>
                 <!-- ko foreach: groups -->
-                <span data-bind="text: Budget_Row2, class: `sales-cell-${CellType.toLowerCase()}`"></span>
+                <span class="downloadable" data-bind="text: Budget_Row2, class: `sales-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.showSummaryModal({ startDt: data.Budget_Row2_StartDT, endDt: data.Budget_Row2_EndDT }) }, clickBubble: false"></span>
                 <!-- /ko -->
             </div>
             <div>
@@ -59,12 +59,12 @@
             </div>
             <div>
                 <!-- ko foreach: groups -->
-                <span data-bind="text: CombinedTotal_Row1, class: `sales-cell-${CellType.toLowerCase()}`"></span>
+                <span class="downloadable" data-bind="text: CombinedTotal_Row1, class: `sales-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportSales({ label: `Net_Sales_${$parent.fetchLabel($index(), 'CombinedTotal_Row1')}_${Label}`, startDt: data.CombinedTotal_Row1_StartDT, endDt: data.CombinedTotal_Row1_EndDT }) }, clickBubble: false"></span>
                 <!-- /ko -->
             </div>
             <div>
                 <!-- ko foreach: groups -->
-                <span data-bind="text: CombinedTotal_Row2, class: `sales-cell-${CellType.toLowerCase()}`"></span>
+                <span class="downloadable" data-bind="text: CombinedTotal_Row2, class: `sales-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportSales({ label: `Net_Sales_${$parent.fetchLabel($index(), 'CombinedTotal_Row2')}_${Label}`, startDt: data.CombinedTotal_Row2_StartDT, endDt: data.CombinedTotal_Row2_EndDT }) }, clickBubble: false"></span>
                 <!-- /ko -->
             </div>
             <div>
@@ -91,12 +91,12 @@
             </div>
             <div>
                 <!-- ko foreach: groups -->
-                <span data-bind="text: SalesTotal_Row1, class: `sales-cell-${CellType.toLowerCase()}`"></span>
+                <span class="downloadable" data-bind="text: SalesTotal_Row1, class: `sales-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportSales({ label: `Sales_Before_Credits_${$parent.fetchLabel($index(), 'SalesTotal_Row1')}_${Label}`, startDt: SalesTotal_Row1_StartDT, endDt: SalesTotal_Row1_EndDT }) }, clickBubble: false"></span>
                 <!-- /ko -->
             </div>
             <div>
                 <!-- ko foreach: groups -->
-                <span data-bind="text: SalesTotal_Row2, class: `sales-cell-${CellType.toLowerCase()}`"></span>
+                <span class="downloadable" data-bind="text: SalesTotal_Row2, class: `sales-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportSales({ label: `Sales_Before_Credits_${$parent.fetchLabel($index(), 'SalesTotal_Row2')}_${Label}`, startDt: SalesTotal_Row2_StartDT, endDt: SalesTotal_Row2_EndDT }) }, clickBubble: false"></span>
                 <!-- /ko -->
             </div>
             <div>
@@ -123,12 +123,12 @@
             </div>
             <div>
                 <!-- ko foreach: groups -->
-                <span data-bind="text: CreditTotal_Row1, class: `sales-cell-${CellType.toLowerCase()}`"></span>
+                <span class="downloadable" data-bind="text: CreditTotal_Row1, class: `sales-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportSales({ label: `Credits_${$parent.fetchLabel($index(), 'CreditTotal_Row1')}_${Label}`, startDt: data.CreditTotal_Row1_StartDT, endDt: data.CreditTotal_Row1_EndDT }) }, clickBubble: false"></span>
                 <!-- /ko -->
             </div>
             <div>
                 <!-- ko foreach: groups -->
-                <span data-bind="text: CreditTotal_Row2, class: `sales-cell-${CellType.toLowerCase()}`"></span>
+                <span class="downloadable" data-bind="text: CreditTotal_Row2, class: `sales-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportSales({ label: `Credits_${$parent.fetchLabel($index(), 'CreditTotal_Row2')}_${Label}`, startDt: data.CreditTotal_Row2_StartDT, endDt: data.CreditTotal_Row2_EndDT }) }, clickBubble: false"></span>
                 <!-- /ko -->
             </div>
             <div>
@@ -155,12 +155,12 @@
             </div>
             <div>
                 <!-- ko foreach: groups -->
-                <span data-bind="text: OrderCount_Row1, class: `sales-cell-${CellType.toLowerCase()}`"></span>
+                <span class="downloadable" data-bind="text: OrderCount_Row1, class: `sales-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportSales({ label: `Order_Count_${$parent.fetchLabel($index(), 'OrderCount_Row1')}_${Label}`, startDt: data.OrderCount_Row1_StartDT, endDt: data.OrderCount_Row1_EndDT }) }, clickBubble: false"></span>
                 <!-- /ko -->
             </div>
             <div>
                 <!-- ko foreach: groups -->
-                <span data-bind="text: OrderCount_Row2, class: `sales-cell-${CellType.toLowerCase()}`"></span>
+                <span class="downloadable" data-bind="text: OrderCount_Row2, class: `sales-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportSales({ label: `Order_Count_${$parent.fetchLabel($index(), 'OrderCount_Row2')}_${Label}`, startDt: data.OrderCount_Row2_StartDT, endDt: data.OrderCount_Row2_EndDT }) }, clickBubble: false"></span>
                 <!-- /ko -->
             </div>
             <div>
@@ -187,12 +187,12 @@
             </div>
             <div>
                 <!-- ko foreach: groups -->
-                <span data-bind="text: LineCount_Row1, class: `sales-cell-${CellType.toLowerCase()}`"></span>
+                <span class="downloadable" data-bind="text: LineCount_Row1, class: `sales-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportSales({ label: `Line_Count_${$parent.fetchLabel($index(), 'LineCount_Row1')}_${Label}`, startDt: data.LineCount_Row1_StartDT, endDt: data.LineCount_Row1_EndDT }) }, clickBubble: false"></span>
                 <!-- /ko -->
             </div>
             <div>
                 <!-- ko foreach: groups -->
-                <span data-bind="text: LineCount_Row2, class: `sales-cell-${CellType.toLowerCase()}`"></span>
+                <span class="downloadable" data-bind="text: LineCount_Row2, class: `sales-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportSales({ label: `Line_Count_${$parent.fetchLabel($index(), 'LineCount_Row2')}_${Label}`, startDt: data.LineCount_Row2_StartDT, endDt:data.LineCount_Row2_EndDT }) }, clickBubble: false"></span>
                 <!-- /ko -->
             </div>
             <div>

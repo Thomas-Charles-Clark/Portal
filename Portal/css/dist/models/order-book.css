@@ -587,50 +587,84 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
   cursor: pointer;
 }
 
-#order-book-summary-modal .modal-header {
+#order-book-summary-modal .modal-header,
+#order-book-sales-summary-modal .modal-header {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
   background-color: #084298;
   color: #fff;
   justify-content: flex-start;
 }
-#order-book-summary-modal .modal-header .btn {
+#order-book-summary-modal .modal-header .btn,
+#order-book-sales-summary-modal .modal-header .btn {
   padding: 0.25rem 1rem;
   font-size: 1.25rem;
   position: relative;
   color: #fff;
   margin-left: auto;
 }
-#order-book-summary-modal .modal-header .btn.btn-primary {
+#order-book-summary-modal .modal-header .btn.btn-primary,
+#order-book-sales-summary-modal .modal-header .btn.btn-primary {
   font-size: 1rem;
 }
-#order-book-summary-modal .modal-header .btn-close {
+#order-book-summary-modal .modal-header .btn-close,
+#order-book-sales-summary-modal .modal-header .btn-close {
   margin-left: 1rem;
 }
-#order-book-summary-modal .modal-body {
+#order-book-summary-modal .modal-body,
+#order-book-sales-summary-modal .modal-body {
   min-height: 420px;
 }
-#order-book-summary-modal .modal-body #order-book-summary-table {
+#order-book-summary-modal .modal-body #order-book-summary-table,
+#order-book-sales-summary-modal .modal-body #order-book-summary-table {
   margin-bottom: 0;
 }
-#order-book-summary-modal .modal-body #order-book-summary-table thead tr th:not(:first-of-type) {
+#order-book-summary-modal .modal-body #order-book-summary-table thead tr th:not(:first-of-type),
+#order-book-sales-summary-modal .modal-body #order-book-summary-table thead tr th:not(:first-of-type) {
   text-align: center;
 }
-#order-book-summary-modal .modal-body #order-book-summary-table tbody .summary-total-row {
+#order-book-summary-modal .modal-body #order-book-summary-table tbody .summary-total-row,
+#order-book-sales-summary-modal .modal-body #order-book-summary-table tbody .summary-total-row {
   background-color: #f5f9ff;
   font-weight: bold;
 }
-#order-book-summary-modal .modal-body #order-book-summary-table tbody + tbody::before {
+#order-book-summary-modal .modal-body #order-book-summary-table tbody + tbody::before,
+#order-book-sales-summary-modal .modal-body #order-book-summary-table tbody + tbody::before {
   content: "";
   display: table-row;
   height: 2rem;
 }
-#order-book-summary-modal .modal-body #order-book-summary-table tbody tr td:not(:first-of-type) {
+#order-book-summary-modal .modal-body #order-book-summary-table tbody tr td:not(:first-of-type),
+#order-book-sales-summary-modal .modal-body #order-book-summary-table tbody tr td:not(:first-of-type) {
   text-align: center;
 }
-#order-book-summary-modal .modal-body #order-book-summary-table tbody:last-of-type tr {
+#order-book-summary-modal .modal-body #order-book-summary-table tbody:first-of-type tr,
+#order-book-sales-summary-modal .modal-body #order-book-summary-table tbody:first-of-type tr {
   background-color: #084298;
   color: #fff;
+}
+#order-book-summary-modal .modal-body #order-book-sales-summary-table,
+#order-book-sales-summary-modal .modal-body #order-book-sales-summary-table {
+  margin-bottom: 0;
+}
+#order-book-summary-modal .modal-body #order-book-sales-summary-table thead tr th:not(:first-of-type),
+#order-book-sales-summary-modal .modal-body #order-book-sales-summary-table thead tr th:not(:first-of-type) {
+  text-align: center;
+}
+#order-book-summary-modal .modal-body #order-book-sales-summary-table tbody .summary-total-row,
+#order-book-sales-summary-modal .modal-body #order-book-sales-summary-table tbody .summary-total-row {
+  background-color: #f5f9ff;
+  font-weight: bold;
+}
+#order-book-summary-modal .modal-body #order-book-sales-summary-table tbody + tbody::before,
+#order-book-sales-summary-modal .modal-body #order-book-sales-summary-table tbody + tbody::before {
+  content: "";
+  display: table-row;
+  height: 2rem;
+}
+#order-book-summary-modal .modal-body #order-book-sales-summary-table tbody tr td:not(:first-of-type),
+#order-book-sales-summary-modal .modal-body #order-book-sales-summary-table tbody tr td:not(:first-of-type) {
+  text-align: center;
 }
 
 .display-mode-list .dropdown-menu-controls {

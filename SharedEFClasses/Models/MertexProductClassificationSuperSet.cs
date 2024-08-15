@@ -34,6 +34,16 @@ namespace SharedEFClasses.Models
 
         public string SupplierCode { get; set; }
 
+        public string BuyerCode { get; set; }
+
+        public string Status { get; set; }
+
+        [ForeignKey("Status")]
+        public virtual ProductStatus ProductStatus { get; set; }
+
+        [ForeignKey("BuyerCode")]
+        public virtual Buyer Buyer { get; set; }
+
         [ForeignKey("BrandID")]
         public virtual Brand Brand { get; set; }
 

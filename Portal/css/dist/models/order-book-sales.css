@@ -49,6 +49,16 @@
   position: sticky;
   left: 0;
 }
+#sales-filters-tab-container #budget-blocker {
+  height: 150px;
+}
+#sales-filters-tab-container #budget-blocker .blocker-message-wrapper h4 {
+  font-size: 1.25rem;
+}
+#sales-filters-tab-container #budget-blocker .blocker-message-wrapper ul {
+  margin-bottom: 0;
+  margin-top: 0.5rem;
+}
 #sales-filters-tab-container .blocker-message-wrapper {
   position: absolute;
   width: 100%;
@@ -86,6 +96,12 @@
   font-size: 1rem;
   line-height: normal;
   border-right: 1px solid #ced4da;
+  display: inline-flex;
+  justify-content: space-between;
+}
+#sales-filters-tab-container .sales-section .sales-header .sales-group-title .btn {
+  padding: 0 0.25rem;
+  color: #fff;
 }
 #sales-filters-tab-container .sales-section .sales-header .sales-cell-l {
   text-align: right;
@@ -99,19 +115,19 @@
 #sales-filters-tab-container .sales-section .sales-header span {
   text-align: right;
 }
-#sales-filters-tab-container .sales-section > div:not(.sales-header) {
+#sales-filters-tab-container .sales-section > div:not(.sales-header):not(#budget-blocker) {
   height: 30px;
   background-color: #fff;
   display: grid;
   grid-template-columns: 200px repeat(var(--first-column-count), minmax(120px, 1fr)) 200px repeat(var(--second-column-count), minmax(120px, 1fr));
 }
-#sales-filters-tab-container .sales-section > div:not(.sales-header) > label,
-#sales-filters-tab-container .sales-section > div:not(.sales-header) > span {
+#sales-filters-tab-container .sales-section > div:not(.sales-header):not(#budget-blocker) > label,
+#sales-filters-tab-container .sales-section > div:not(.sales-header):not(#budget-blocker) > span {
   padding: 0.25rem 0.5rem 0.25rem 0.5rem;
   border-bottom: 1px solid #ced4da;
   line-height: 23px;
 }
-#sales-filters-tab-container .sales-section > div:not(.sales-header) .sales-cell-l {
+#sales-filters-tab-container .sales-section > div:not(.sales-header):not(#budget-blocker) .sales-cell-l {
   display: inline-block;
   margin-bottom: 0;
   text-align: right;
@@ -119,19 +135,23 @@
   border-right: 1px solid #ced4da;
   background-color: #f8f9fa;
 }
-#sales-filters-tab-container .sales-section > div:not(.sales-header) .sales-cell-t {
+#sales-filters-tab-container .sales-section > div:not(.sales-header):not(#budget-blocker) .sales-cell-t {
   background-color: #f5f9ff;
   border-right: 1px solid #ced4da;
 }
-#sales-filters-tab-container .sales-section > div:not(.sales-header) span {
+#sales-filters-tab-container .sales-section > div:not(.sales-header):not(#budget-blocker) span {
   text-align: right;
 }
-#sales-filters-tab-container .sales-section > div:not(.sales-header) span.total {
+#sales-filters-tab-container .sales-section > div:not(.sales-header):not(#budget-blocker) span.downloadable:hover, #sales-filters-tab-container .sales-section > div:not(.sales-header):not(#budget-blocker) span.downloadable:focus, #sales-filters-tab-container .sales-section > div:not(.sales-header):not(#budget-blocker) span.downloadable:focus-within {
+  cursor: pointer;
+  text-decoration: underline;
+}
+#sales-filters-tab-container .sales-section > div:not(.sales-header):not(#budget-blocker) span.total {
   background-color: #f5f9ff;
   border-left: 1px solid #ced4da;
   border-right: 1px solid #ced4da;
 }
-#sales-filters-tab-container .sales-section > div:not(.sales-header) .red {
+#sales-filters-tab-container .sales-section > div:not(.sales-header):not(#budget-blocker) .red {
   color: #e35d6a;
 }
 /*# sourceMappingURL=order-book-sales.css.map */

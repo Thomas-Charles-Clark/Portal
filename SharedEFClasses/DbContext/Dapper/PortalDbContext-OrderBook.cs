@@ -94,6 +94,7 @@ namespace SharedEFClasses.Models
                     dto.QualityID,
                     dto.DesignID,
                     dto.SupplierCode,
+                    dto.BuyerCode,
                     dto.ProductID,
                     dto.ProductStatus,
                 }, null, 30, CommandType.StoredProcedure);
@@ -117,7 +118,7 @@ namespace SharedEFClasses.Models
 
             var db = new PortalDbContext();
 
-            var reader = await db.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_SalesSummary_Select]",
+            var parameters =
                 new
                 {
                     // Hmmm.
@@ -156,9 +157,12 @@ namespace SharedEFClasses.Models
                     dto.QualityID,
                     dto.DesignID,
                     dto.SupplierCode,
+                    dto.BuyerCode,
                     dto.ProductID,
                     dto.ProductStatus,
-                }, null, 30, CommandType.StoredProcedure);
+                };
+
+            var reader = await db.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_SalesSummary_Select]", parameters, null, 30, CommandType.StoredProcedure);
 
             var allStrings = await reader.ReadAsync<string>();
 
@@ -231,6 +235,7 @@ namespace SharedEFClasses.Models
                     dto.QualityID,
                     dto.DesignID,
                     dto.SupplierCode,
+                    dto.BuyerCode,
                     dto.ProductID,
                     dto.ProductStatus,
                 }, null, 30, CommandType.StoredProcedure);
@@ -300,6 +305,7 @@ namespace SharedEFClasses.Models
                     dto.QualityID,
                     dto.DesignID,
                     dto.SupplierCode,
+                    dto.BuyerCode,
                     dto.ProductID,
                     dto.ProductStatus,
                 }, null, 30, CommandType.StoredProcedure);
@@ -510,6 +516,7 @@ namespace SharedEFClasses.Models
                     dto.QualityID,
                     dto.DesignID,
                     dto.SupplierCode,
+                    dto.BuyerCode,
                     dto.ProductID,
                     dto.ProductStatus,
                 }, null, 30, CommandType.StoredProcedure);
@@ -575,6 +582,7 @@ namespace SharedEFClasses.Models
                     dto.QualityID,
                     dto.DesignID,
                     dto.SupplierCode,
+                    dto.BuyerCode,
                     dto.ProductID,
                     dto.ProductStatus,
                 }, null, 30, CommandType.StoredProcedure);
@@ -592,6 +600,32 @@ namespace SharedEFClasses.Models
             {
                 SalesResult = JArray.Parse(sb.ToString()),
                 BlockerResult = null
+            };
+        }
+
+        public async Task<OrderBook_DetailView_SalesBudget_Result> FetchOrderBookDetailViewSalesBudget(PassOrderBookDetailViewSalesBudget dto)
+        {
+            var MarketIDs = new DataTable();
+
+            MarketIDs.Columns.Add("ID", typeof(byte));
+
+            dto.MarketIDs?.ForEach(mid => MarketIDs.Rows.Add(mid));
+
+            var db = new PortalDbContext();
+
+            var reader = await db.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_DetailView_SalesBudget]",
+                new
+                {
+                    MarketIDs,
+                    dto.TradeAccountTypeID,
+                    dto.TradeAccountGroupID,
+                    dto.StartDate,
+                    dto.EndDate,
+                }, null, 30, CommandType.StoredProcedure);
+
+            return new OrderBook_DetailView_SalesBudget_Result()
+            {
+                Results = await reader.ReadAsync<OrderBook_DetailView_SalesBudget_Record>()
             };
         }
     }

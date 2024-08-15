@@ -784,7 +784,8 @@ $selected-color: $white;
     }
 }
 
-#order-book-summary-modal {
+#order-book-summary-modal,
+#order-book-sales-summary-modal {
     .modal-header {
         border-bottom-right-radius: 0;
         border-bottom-left-radius: 0;
@@ -802,7 +803,7 @@ $selected-color: $white;
             &.btn-primary {
                 font-size: $font-size-base;
             }
-            
+
             .material-icons {
             }
         }
@@ -847,10 +848,44 @@ $selected-color: $white;
                     }
                 }
 
-                &:last-of-type {
+                &:first-of-type {
                     tr {
                         background-color: $blue-700;
                         color: $white;
+                    }
+                }
+            }
+        }
+
+        #order-book-sales-summary-table {
+            margin-bottom: 0;
+
+            thead {
+                tr {
+                    th:not(:first-of-type) {
+                        text-align: center;
+                    }
+                }
+            }
+
+            tbody {
+
+                .summary-total-row {
+                    background-color: $light-blue-background;
+                    font-weight: bold;
+                }
+
+                & + tbody {
+                    &::before {
+                        content: '';
+                        display: table-row;
+                        height: $xl-gutter;
+                    }
+                }
+
+                tr {
+                    td:not(:first-of-type) {
+                        text-align: center;
                     }
                 }
             }

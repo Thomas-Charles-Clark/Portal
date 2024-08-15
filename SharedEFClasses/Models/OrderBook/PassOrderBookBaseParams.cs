@@ -38,6 +38,7 @@ namespace SharedEFClasses.Models.OrderBook
         public string ProductStatus { get; set; }
         public short? LaunchID { get; set; }
         public string SupplierCode { get; set; }
+        public string BuyerCode { get; set; }
 
         // Order Filters
         public string OrderID { get; set; }

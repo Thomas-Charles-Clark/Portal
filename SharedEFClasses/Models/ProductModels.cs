@@ -101,6 +101,11 @@ namespace SharedEFClasses.Models.Products
         public int? DefaultSupplierID { get; set; }
         public byte? ProductFilterID { get; set; }
 
+        public string BuyerCode { get; set; }
+
+        public string BuyerName { get; set; }
+
+
         [InverseProperty("Products")]
         public virtual ProductFilter ProductFilter { get; set; }
 

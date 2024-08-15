@@ -33,27 +33,27 @@ const DISPLAY_MODES = [{
 }]
 
 const DISPLAY_MODES_SALES = [{
-    label: 'Budget',
+    label: 'Sales vs Budget',
     value: DISPLAY_MODE_BUDGET,
     children: []
 }, {
-    label: 'Combined (Sales - Credits)',
+    label: 'Net Sales (Sales - Credits)',
     value: DISPLAY_MODE_COMBINED,
     children: []
 }, {
-    label: 'Sales',
+    label: 'Sales before Credits',
     value: DISPLAY_MODE_VALUE_SUM,
     children: []
 }, {
-    label: 'Credits',
+    label: 'Credits Issued',
     value: DISPLAY_MODE_CREDIT_SUM,
     children: []
 }, {
-    label: 'No. of Orders',
+    label: 'Number of Orders',
     value: DISPLAY_MODE_QUANTITY_SUM,
     children: []
 }, {
-    label: 'No. of Lines',
+    label: 'Number of Lines',
     value: DISPLAY_MODE_LINE_COUNT,
     children: []
 }]
@@ -689,7 +689,7 @@ const orderBookViewModel = (() => {
                 })
 
                 self.orderBookSummaryResults(orderBookSummaryResults.sort((a, b) => {
-                    a.groupId > b.groupId ? 1 : -1
+                    return a.groupId > b.groupId ? 1 : -1
                 }));
             })
             .catch(err => {

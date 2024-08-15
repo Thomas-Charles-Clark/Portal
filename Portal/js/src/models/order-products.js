@@ -13780,7 +13780,10 @@ var bespokeFurnitureFactory = function (parent) {
         },
         permitRevert: false,
         height: 300,
-        filter: 'startswith'
+        filter: 'startswith',
+        popupSettings: {
+            appendTo: '#order-processing-modal .modal-body'
+        }
     });
 
     self.modelParams = kendoMDCDropDownList({
@@ -14054,7 +14057,7 @@ var bespokeFurnitureFactory = function (parent) {
             optionLabel: ' ',
             filter: 'startswith',
             popup: {
-                appendTo: 'body'
+                appendTo: '#order-processing-modal .modal-body'
             }
         },
         clearFunction: function () {

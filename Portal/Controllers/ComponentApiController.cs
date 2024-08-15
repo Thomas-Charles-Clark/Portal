@@ -2026,7 +2026,9 @@ namespace Portal.Controllers
         [HttpPost]
         public IHttpActionResult SaveBasketDeliveryAddress(PassBasketAddressCleanse objAddress)
         {
-            var tradeDataSourceJson = PortalDb.TradeAccounts.Where(p => p.Code == objAddress.tradeAccountCode).Select(p => p.UniVerseDataSources).Single();
+            var code = objAddress.endCustomerCode ?? objAddress.tradeAccountCode;
+
+            var tradeDataSourceJson = PortalDb.TradeAccounts.Where(p => p.Code == code).Select(p => p.UniVerseDataSources).Single();
 
             var dataSources = JsonConvert.DeserializeObject<TradeAccountDataSourceInfo>(tradeDataSourceJson);
 

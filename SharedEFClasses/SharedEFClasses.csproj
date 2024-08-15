@@ -438,6 +438,7 @@
     <Compile Include="Models\Mertexer\UniVerse\UniVerseSerializationBase.cs" />
     <Compile Include="Models\MertexTradeAccountClassificationSuperSet.cs" />
     <Compile Include="Models\MertexProductClassificationSuperSet.cs" />
+    <Compile Include="Models\Mertex\Buyer.cs" />
     <Compile Include="Models\Mertex\Carriage.cs" />
     <Compile Include="Models\Mertex\ClaimHead.cs" />
     <Compile Include="Models\Mertex\ClaimLine.cs" />
@@ -465,6 +466,7 @@
     <Compile Include="Models\Mertex\ProductColour.cs" />
     <Compile Include="Models\Mertex\ProductLive.cs" />
     <Compile Include="Models\Mertex\ProductAftercare.cs" />
+    <Compile Include="Models\Mertex\ProductStatus.cs" />
     <Compile Include="Models\Mertex\PurchaseOrderHead.cs" />
     <Compile Include="Models\Mertex\PurchaseOrderLine.cs" />
     <Compile Include="Models\Mertex\PurchaseOrderStatus.cs" />
@@ -487,7 +489,10 @@
     <Compile Include="Models\OrderBook\OrderBookOrderLineInspectTotal.cs" />
     <Compile Include="Models\OrderBook\OrderBookSummaryRecord.cs" />
     <Compile Include="Models\OrderBook\OrderBookSummaryResult.cs" />
+    <Compile Include="Models\OrderBook\OrderBook_BudgetSummary_Result.cs" />
     <Compile Include="Models\OrderBook\OrderBook_DetailView_DataRow.cs" />
+    <Compile Include="Models\OrderBook\OrderBook_DetailView_SalesBudget_Record.cs" />
+    <Compile Include="Models\OrderBook\OrderBook_DetailView_SalesBudget_Result.cs" />
     <Compile Include="Models\OrderBook\OrderBook_MainSummary_DataRow.cs" />
     <Compile Include="Models\OrderBook\OrderBook_MainSummary_Defaults.cs" />
     <Compile Include="Models\OrderBook\OrderBook_MainSummary_OrderGroupStockLocation.cs" />
@@ -500,6 +505,7 @@
     <Compile Include="Models\OrderBook\OrderBook_SalesSummary_SelectResult.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookDetailViewParams.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookBaseParams.cs" />
+    <Compile Include="Models\OrderBook\PassOrderBookDetailViewSalesBudget.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookRingFencePopoverFetch.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookOrderLinePopoverFetch.cs" />
     <Compile Include="Models\OrderGroup.cs" />
