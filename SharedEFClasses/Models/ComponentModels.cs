@@ -114,6 +114,7 @@ namespace SharedEFClasses.Models.Components
 
         public Currency Currency { get; set; }
         public SalesMarket SalesMarket { get; set; }
+        public Country Country { get; set; }
     }
 
 

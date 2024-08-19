@@ -353,6 +353,14 @@ namespace Portal
                 $"{cssPrefix}/models/order-book-reallocate-stock{cssSuffix}"
             ));
 
+            bundles.Add(new StyleBundle("~/bundles/css/parcel-calculator").Include(
+                $"{cssPrefix}/models/parcel-calculator{cssSuffix}"
+            ));
+
+            bundles.Add(new StyleBundle("~/bundles/css/parcel-pricing").Include(
+                $"{cssPrefix}/models/parcel-pricing{cssSuffix}"
+            ));
+
             //  
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             //
@@ -822,6 +830,14 @@ namespace Portal
                         $"{jsPrefix}/models/order-book-advanced-filters{jsSuffix}",
                         $"{jsPrefix}/models/order-book-main-cell{jsSuffix}",
                         $"{jsPrefix}/models/order-book-reallocate-stock{jsSuffix}"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/parcel-calculator").Include(
+                        $"{jsPrefix}/models/parcel-calculator{jsSuffix}"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/parcel-pricing").Include(
+                        $"{jsPrefix}/models/parcel-pricing{jsSuffix}"
                 ));
 
             foreach (var b in BundleTable.Bundles)

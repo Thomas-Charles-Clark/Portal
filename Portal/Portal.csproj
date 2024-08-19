@@ -586,6 +586,12 @@
     <Compile Include="Areas\Paint\Utilities\PaintLabelGenerator.cs" />
     <Compile Include="Areas\Paint\Utilities\ViewRenderer.cs" />
     <Compile Include="Areas\Paint\ViewModels\PaintMixingViewModel.cs" />
+    <Compile Include="Areas\Parcel\Controllers\ParcelCalculatorAPIController.cs" />
+    <Compile Include="Areas\Parcel\Controllers\ParcelCalculatorController.cs" />
+    <Compile Include="Areas\Parcel\Controllers\ParcelPricingController.cs" />
+    <Compile Include="Areas\Parcel\ParcelAreaRegistration.cs" />
+    <Compile Include="Areas\Parcel\ViewModels\ParcelPricingViewModel.cs" />
+    <Compile Include="Areas\Parcel\ViewModels\ParcelCalculatorViewModel.cs" />
     <Compile Include="Areas\Products\Controllers\BasketStatusAPIController.cs" />
     <Compile Include="Areas\Products\Controllers\BasketStatusController.cs" />
     <Compile Include="Areas\Products\Controllers\ProductCategoriesController.cs" />
@@ -621,11 +627,13 @@
     <Compile Include="Controllers\ODataControllers\OrderLineDetailedStatusGroupsController.cs" />
     <Compile Include="Controllers\ODataControllers\OrderBooksGroupedController.cs" />
     <Compile Include="Controllers\ODataControllers\MertexProductClassificationSuperSetController.cs" />
+    <Compile Include="Controllers\ODataControllers\DeliveryServicesController.cs" />
     <Compile Include="Controllers\ODataControllers\PaymentTermsTypeController.cs" />
     <Compile Include="Controllers\ODataControllers\PaymentTermsController.cs" />
     <Compile Include="Controllers\ODataControllers\ProductGroupsController.cs" />
     <Compile Include="Controllers\ODataControllers\OrdersController.cs" />
     <Compile Include="Controllers\ODataControllers\DesignsController.cs" />
+    <Compile Include="Controllers\ODataControllers\ParcelTypesController.cs" />
     <Compile Include="Controllers\ODataControllers\QualitiesController.cs" />
     <Compile Include="Controllers\ODataControllers\SalesAreasController.cs" />
     <Compile Include="Controllers\ODataControllers\SalesAgentsController.cs" />
@@ -2071,6 +2079,10 @@
     <Content Include="Areas\Order-Book\Views\OrderBookDetail\ReallocateStock.cshtml" />
     <Content Include="Areas\Order-Book\Views\Shared\_ReallocateStockGrid.cshtml" />
     <Content Include="Areas\Order-Book\Views\Shared\_SalesInfo.cshtml" />
+    <Content Include="Areas\Parcel\Views\web.config" />
+    <Content Include="Areas\Parcel\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Parcel\Views\ParcelCalculator\ParcelCalculator.cshtml" />
+    <Content Include="Areas\Parcel\Views\ParcelPricing\ParcelPricing.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
     <Content Include="Areas\Stock\Views\RangeManagement\RangeManagement.cshtml" />
     <None Include="compilerconfig.json" />
@@ -2154,6 +2166,8 @@
     <Content Include="css\src\models\order-book-reallocate-stock.scss" />
     <Content Include="css\src\lib\bootstrap-icons\bootstrap-icons.scss" />
     <Content Include="css\src\models\order-book-sales.scss" />
+    <Content Include="css\src\models\parcel-calculator.scss" />
+    <Content Include="css\src\models\parcel-pricing.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -3170,6 +3184,8 @@
     <Folder Include="Areas\Order-Book\Data\" />
     <Folder Include="Areas\Orders\Views\Shared\" />
     <Folder Include="Areas\Paint\Data\" />
+    <Folder Include="Areas\Parcel\Data\" />
+    <Folder Include="Areas\Parcel\Views\Shared\" />
     <Folder Include="Areas\Press\Views\Shared\" />
     <Folder Include="Areas\Pricing\Models\" />
     <Folder Include="Areas\Pricing\Views\PricingWebApi\" />

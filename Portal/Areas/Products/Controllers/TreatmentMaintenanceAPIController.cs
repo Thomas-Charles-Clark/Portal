@@ -12,7 +12,7 @@ using SharedEFClasses.Models.TradeAccounts;
 namespace Portal.Areas.Products.Controllers
 {
     [System.Web.Http.Authorize]
-    public partial class ProductMaintenanceAPIController : ApiController
+    public partial class ParcelCalculatorAPIController : ApiController
     {
         [HttpGet]
         public DataSourceResult GetTreatmentProviders([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))]DataSourceRequest request, bool includeEU = true)

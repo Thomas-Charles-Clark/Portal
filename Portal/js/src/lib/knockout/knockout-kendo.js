@@ -578,7 +578,7 @@ createBinding({
                 if (ko.isWriteableObservable(options.dataItem)) {
                     var list = e.sender;
                     if (e.sender.value() || e.sender.value() === 0 || e.sender.value() === false) {
-                        if (typeof options.virtual === 'undefined') {
+                        if (typeof options.virtual === 'undefined' || options.virtual === false) {
                             options.dataItem(list.dataItem(list.selectedIndex));
                         } else {
                             if (list.dataItem(list.selectedIndex)) {
@@ -629,7 +629,7 @@ createBinding({
                 if (ko.isObservable(options.dataItem)) {
                     var list = e.sender;
 
-                    if (typeof options.virtual === 'undefined') {
+                    if (typeof options.virtual === 'undefined' || options.virtual === false) {
                         options.dataItem(list.dataItem(list.selectedIndex));
                     } else {
                         if (list.dataItem(list.selectedIndex)) {

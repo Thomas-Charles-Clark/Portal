@@ -88,6 +88,7 @@ namespace SharedEFClasses.Models
                         r.Currency = this.Currencies.Where(p => p.CurrencyID == r.CurrencyID).SingleOrDefault();
                         r.SalesMarket = this.SalesMarkets.Where(p => p.SalesMarketID == r.SalesMarketID).SingleOrDefault();
                     }
+                    r.Country = this.Countries.Single(c => c.CountryID == r.CountryID);
                 });
 
                 return results;

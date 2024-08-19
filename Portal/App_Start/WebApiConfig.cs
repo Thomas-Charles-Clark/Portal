@@ -26,6 +26,7 @@ using SharedEFClasses.Models.Maintenance;
 using SharedEFClasses.Models.OrderBook;
 using DocumentFormat.OpenXml.EMMA;
 using SharedEFClasses.Models.Mertex;
+using SharedEFClasses.Models.Parcel;
 
 namespace Portal
 {
@@ -116,6 +117,8 @@ namespace Portal
             odataBuilder.EntitySet<Mertex_DeliveryType>("DeliveryTypes");
             odataBuilder.EntitySet<PaymentTerms>("PaymentTerms");
             odataBuilder.EntitySet<PaymentTermsType>("PaymentTermsTypes");
+            odataBuilder.EntitySet<ParcelType>("ParcelTypes");
+            odataBuilder.EntitySet<DeliveryService>("DeliveryServices");
 
             odataBuilder.EntitySet<MertexProductClassificationSuperSet>("MertexProductClassificationSuperSet");
 

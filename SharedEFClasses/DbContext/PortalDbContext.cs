@@ -11,6 +11,7 @@ using SharedEFClasses.Models.Marketing;
 using SharedEFClasses.Models.Mertexer;
 using SharedEFClasses.Models.OrderBook;
 using SharedEFClasses.Models.Orders;
+using SharedEFClasses.Models.Parcel;
 using SharedEFClasses.Models.Press;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.Retail;
@@ -555,6 +556,14 @@ namespace SharedEFClasses.Models
 
         #endregion
 
+
+        #region Parcel Calculator related stuff
+
+        public DbSet<ParcelType> ParcelTypes { get; set; }
+        public DbSet<DeliveryService> DeliveryServices { get; set; }
+        public DbSet<Surcharge> Surcharges { get; set; }
+
+        #endregion
 
         #endregion
 
