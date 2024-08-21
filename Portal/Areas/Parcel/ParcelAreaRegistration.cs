@@ -8,15 +8,15 @@ namespace Portal.Areas.Parcel
         {
             get 
             {
-                return "Parcel";
+                return "parcel";
             }
         }
 
         public override void RegisterArea(AreaRegistrationContext context) 
         {
             context.MapRoute(
-                "Parcel_default",
-                "Parcel/{controller}/{action}/{id}",
+                "parcel_default",
+                "parcel/{controller}/{action}/{id}",
                 new { action = "Index", id = UrlParameter.Optional }
             );
         }

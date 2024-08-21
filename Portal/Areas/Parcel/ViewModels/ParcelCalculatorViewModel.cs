@@ -10,12 +10,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using SharedEFClasses.Models.Components;
+using SharedEFClasses.Models.Parcel;
 
 namespace Portal.Areas.Parcel.ViewModels
 {
     public class ParcelCalculatorViewModel : BaseViewModel
     {
         public TradeAccountNumber_AutocompleteResult PreselectedTradeAccount { get; set; }
+        public IEnumerable<ParcelDeliveryServiceSurcharge> Surcharges { get; set; }
 
         private ParcelCalculatorViewModel(
             int memberId,
@@ -44,6 +46,8 @@ namespace Portal.Areas.Parcel.ViewModels
         protected async System.Threading.Tasks.Task InitialiseAsync()
         {
             var db = new SharedEFClasses.Models.PortalDbContext();
+
+            Surcharges = db.ParcelDeliveryServiceSurcharges.ToList();
         }
     }
 }

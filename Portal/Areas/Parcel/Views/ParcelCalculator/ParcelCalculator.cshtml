@@ -1,4 +1,5 @@
-﻿@model Portal.Areas.Parcel.ViewModels.ParcelCalculatorViewModel
+﻿@using Microsoft.AspNet.Identity;
+@model Portal.Areas.Parcel.ViewModels.ParcelCalculatorViewModel
 @{
     ViewBag.Title = "Parcel Calculator";
 
@@ -18,7 +19,11 @@
     {
         <script type="text/javascript">
 
-            let viewModel = parcelCalculatorViewModel();
+            window.getSurcharges = function () {
+                return @Html.Raw(JsonConvert.SerializeObject(Model.Surcharges));
+            }
+
+            window.viewModel = parcelCalculatorViewModel();
 
             ko.options.deferUpdates = true;
 
@@ -36,8 +41,22 @@
             });
 
             function getPreselectedTradeAccount() {
-                return @Html.Raw(JsonConvert.SerializeObject(Model.PreselectedTradeAccount))
+                return null;
+
+                @*@if (User.Identity.GetUserId<int>() == 8)
+                {
+                    @:return @Html.Raw(JsonConvert.SerializeObject(Model.PreselectedTradeAccount));
+                }
+                else
+                {
+                    @:return null;
+                }*@
             }
+
+           @*@if (User.Identity.GetUserId<int>() == 8)
+            {
+                @:viewModel.setTest();
+            }*@
 
         </script>
     }
@@ -76,37 +95,43 @@
 
 
 
-<div id="calculator" class="card" style="display: none" data-bind="visible: tradeAccount">
+<form id="calculator" class="card" style="display: none" data-bind="visible: tradeAccount" autocomplete="off" method="post" onsubmit="(event) => { event.preventDefault(); return false; }">
     <div class="card-body">
         <h4 class="card-title" data-bind="with: tradeAccount">
             <span data-bind="text: `${Code} - ${Name}`"></span>
             <span class="ms-5" data-bind="text: `Country: ${Country.Name}`"></span>
             <span class="ms-5" data-bind="text: `Currency: ${Currency.Name}`"></span>
         </h4>
-        <div class="grid" style="--bs-columns: 4">
-            <div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: countryParams }"></div>
+        <div class="grid" style="--bs-columns: 3">
+            <div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: destinationParams }"></div>
             <div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: parcelTypeParams }"></div>
             <div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: deliveryServiceParams }"></div>
+            @*<div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: residentialParams }"></div>
+                <div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: addressCorrectionParams }"></div>*@
         </div>
         <div class="grid" style="--bs-columns: 4">
             <div class="prefilter" data-bind="component: { name: 'mdc-text-field-numeric-component', params: parcelWeightParams }"></div>
-            <div class="prefilter" data-bind="component: { name: 'mdc-text-field-numeric-component', params: parcelWidthParams }"></div>
             <div class="prefilter" data-bind="component: { name: 'mdc-text-field-numeric-component', params: parcelLengthParams }"></div>
+            <div class="prefilter" data-bind="component: { name: 'mdc-text-field-numeric-component', params: parcelWidthParams }"></div>
             <div class="prefilter" data-bind="component: { name: 'mdc-text-field-numeric-component', params: parcelHeightParams }"></div>
         </div>
-        <div class="grid" style="--bs-columns: 6; display: none" data-bind="visible: computed">
-            <div class="prefilter">
-                <label class="computation-display">
-                    Overmax Applied?
-                    <span class="bold" data-bind="text: overmaxApplied() ? 'Yes' : 'No'"></span>
-                </label>
-            </div>
-            <div class="prefilter">
-                <label class="computation-display">
-                    Large Packet Applied?
-                    <span class="bold" data-bind="text: largePacketApplied() ? 'Yes' : 'No'"></span>
-                </label>
-            </div>
+        <!-- ko if: computed -->
+        <h4 class="sub-title">
+            Properties
+        </h4>
+        <div class="grid" style="--bs-columns: 4; display: none" data-bind="visible: computed">
+            @*<div class="prefilter">
+            <label class="computation-display">
+                Overmax Applied?
+                <span class="bold" data-bind="text: overmaxApplied() ? 'Yes' : 'No'"></span>
+            </label>
+        </div>
+        <div class="prefilter">
+            <label class="computation-display">
+                Large Packet Applied?
+                <span class="bold" data-bind="text: largePacketApplied() ? 'Yes' : 'No'"></span>
+            </label>
+        </div>*@
             <div class="prefilter">
                 <label class="computation-display">
                     Volumetric Weight (kg):
@@ -121,6 +146,84 @@
                     <span class="bold" data-bind="text: $parent.deliveryServiceParcelWeightKg"></span>
                 </label>
             </div>
+            <div class="prefilter">
+                <label class="computation-display">
+                    <!-- ko if: tradeAccount() && tradeAccount().MertexCurrencyCode == parcelRateCurrencyCode() -->
+                    Exchange Rate (<span data-bind="with: tradeAccount"><span data-bind="text: MertexCurrencyCode"></span></span> to <span data-bind="text: parcelRateCurrencyCode"></span>):
+                    <span class="bold">
+                        1
+                    </span>
+                    <!-- /ko -->
+                    <!-- ko ifnot: tradeAccount() && tradeAccount().MertexCurrencyCode == parcelRateCurrencyCode() -->
+                    Exchange Rate (<span data-bind="with: tradeAccount"><span data-bind="text: MertexCurrencyCode"></span></span> to <span data-bind="text: parcelRateCurrencyCode"></span>):
+                    <span class="bold" data-bind="text: exchangeRate"></span>
+                    <!-- /ko -->
+                </label>
+            </div>
+            <div class="prefilter">
+                <label class="computation-display">
+                    Exchange Rate (GBP to <span data-bind="with: tradeAccount"><span data-bind="text: MertexCurrencyCode"></span></span>):
+                    <span class="bold" data-bind="text: exchangeRateToCustomerCurrency"></span>
+                </label>
+            </div> 
+            @*<div id="parcel-rate-currency" class="prefilter" style="display: none" data-bind="visible: parcelRateCurrency">
+                <label class="computation-display">
+                    Parcel Rate (Destination Currency)
+                    <span class="bold" data-bind="text: parcelRateCurrency"></span>
+                </label>
+            </div>*@
         </div>
+        <h4 class="sub-title">
+            Charges
+            @*
+                any parcel more than 274cm in length or weighs more that 70kg = overmax surcharge - or any parcel where 2xwidth +2xheight is more than 400cm = overmax surcharge
+                For international shipments, a package is considered a "Large Package" when its length (longest side of the package) plus girth [(2 x width) + (2 x height)] combined exceeds 330 cm. Large Parcels are subject to a minimum billable weight of 40kg in addition to the Large Parcel Surcharge.
+            *@
+        </h4>
+        <div class="grid" style="--bs-columns: 6; display: none" data-bind="visible: computed">
+            <div class="prefilter">
+                <label class="computation-display">
+                    <br/>
+                    Parcel Rate (<span data-bind="with: tradeAccount"><span data-bind="text: Currency.Symbol"></span></span>):
+                    <span class="bold" data-bind="text: parcelRate"></span>
+                </label>
+            </div>
+            <div class="prefilter">
+                <label class="computation-display">
+                    Overmax<br />Surcharge (£)
+                    <span class="bold" data-bind="text: overmaxCharge"></span>
+                </label>
+            </div>
+            <div class="prefilter">
+                <label class="computation-display">
+                    Large Packet<br />Surcharge (£)
+                    <span class="bold" data-bind="text: largePacketCharge"></span>
+                </label>
+            </div>
+            <div class="prefilter">
+                <label class="computation-display">
+                    Residential<br />Surcharge (£)
+                    <span class="bold" data-bind="text: residentialCharge"></span>
+                </label>
+            </div>
+            <div class="prefilter">
+                <label class="computation-display">
+                    Address Correction<br />Surcharge (£)
+                    <span class="bold" data-bind="text: addressCorrectionCharge"></span>
+                </label>
+            </div>
+            <div class="prefilter">
+                <label class="computation-display" data-bind="with: deliveryService">
+                    <span>
+                        <span data-bind="text: ParcelWeightChargeLimit"></span>kg Charge Limit - Parcel Charge Count
+                    </span>
+                    <span class="bold" data-bind="text: $parent.chargeLimitParcelCount"></span>
+                </label>
+            </div>
+        </div>
+        <h4 class="final-charge-title">
+            Final Charge (<span data-bind="with: tradeAccount"><span data-bind="text: Currency.Symbol"></span></span>): <span class="bold" data-bind="text: finalCharge"></span>
+        </h4>
+        <!-- /ko -->
     </div>
-</div>
+</form>

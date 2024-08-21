@@ -118,7 +118,8 @@ namespace Portal
             odataBuilder.EntitySet<PaymentTerms>("PaymentTerms");
             odataBuilder.EntitySet<PaymentTermsType>("PaymentTermsTypes");
             odataBuilder.EntitySet<ParcelType>("ParcelTypes");
-            odataBuilder.EntitySet<DeliveryService>("DeliveryServices");
+            odataBuilder.EntitySet<ParcelDeliveryService>("ParcelDeliveryServices");
+            odataBuilder.EntitySet<ParcelDestination>("ParcelDestinations");
 
             odataBuilder.EntitySet<MertexProductClassificationSuperSet>("MertexProductClassificationSuperSet");
 

@@ -357,10 +357,6 @@ namespace Portal
                 $"{cssPrefix}/models/parcel-calculator{cssSuffix}"
             ));
 
-            bundles.Add(new StyleBundle("~/bundles/css/parcel-pricing").Include(
-                $"{cssPrefix}/models/parcel-pricing{cssSuffix}"
-            ));
-
             //  
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             //
@@ -834,10 +830,6 @@ namespace Portal
 
             bundles.Add(new ScriptBundle("~/bundles/js/parcel-calculator").Include(
                         $"{jsPrefix}/models/parcel-calculator{jsSuffix}"
-                ));
-
-            bundles.Add(new ScriptBundle("~/bundles/js/parcel-pricing").Include(
-                        $"{jsPrefix}/models/parcel-pricing{jsSuffix}"
                 ));
 
             foreach (var b in BundleTable.Bundles)

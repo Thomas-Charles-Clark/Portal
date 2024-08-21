@@ -560,8 +560,10 @@ namespace SharedEFClasses.Models
         #region Parcel Calculator related stuff
 
         public DbSet<ParcelType> ParcelTypes { get; set; }
-        public DbSet<DeliveryService> DeliveryServices { get; set; }
-        public DbSet<Surcharge> Surcharges { get; set; }
+        public DbSet<ParcelDeliveryService> ParcelDeliveryServices { get; set; }
+        public DbSet<ParcelDeliveryServiceSurcharge> ParcelDeliveryServiceSurcharges { get; set; }
+        public DbSet<ParcelDestination> ParcelDestinations { get; set; }
+        public DbSet<ParcelRate> ParcelRates { get; set; }
 
         #endregion
 

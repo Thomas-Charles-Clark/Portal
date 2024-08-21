@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
 
+using SharedEFClasses.Models.Parcel;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -26,5 +28,9 @@ namespace SharedEFClasses.Models.MertexLive
         [JsonIgnore]
         [InverseProperty("MertexCurrencyCodeNavigation")]
         public virtual ICollection<SupplierLive> Suppliers { get; set; } = new List<SupplierLive>();
+
+        [JsonIgnore]
+        [InverseProperty("ExchangeRate")]
+        public virtual ICollection<ParcelRate> ParcelRates { get; set; }
     }
 }

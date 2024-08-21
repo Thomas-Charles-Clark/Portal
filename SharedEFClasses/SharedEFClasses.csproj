@@ -512,9 +512,14 @@
     <Compile Include="Models\OrderLineDetailedStatus.cs" />
     <Compile Include="Models\OrderLineDetailedStatusGroup.cs" />
     <Compile Include="Models\PaintModels.cs" />
-    <Compile Include="Models\Parcel\DeliveryService.cs" />
+    <Compile Include="Models\Parcel\ParcelDeliveryService.cs" />
+    <Compile Include="Models\Parcel\ParcelDestination.cs" />
+    <Compile Include="Models\Parcel\ParcelRate.cs" />
     <Compile Include="Models\Parcel\ParcelType.cs" />
-    <Compile Include="Models\Parcel\Surcharge.cs" />
+    <Compile Include="Models\Parcel\PassParcelCalculation.cs" />
+    <Compile Include="Models\Parcel\PassParcelRateFetch.cs" />
+    <Compile Include="Models\Parcel\ParcelDeliveryServiceSurcharge.cs" />
+    <Compile Include="Models\PassMertexCurrencyCode.cs" />
     <Compile Include="Models\PaymentTerms.cs" />
     <Compile Include="Models\PaymentTermsType.cs" />
     <Compile Include="Models\Press\PressContact.cs" />

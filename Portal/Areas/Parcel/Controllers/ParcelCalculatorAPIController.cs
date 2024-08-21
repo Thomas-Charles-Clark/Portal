@@ -2,11 +2,14 @@
 
 using SharedEFClasses;
 using SharedEFClasses.Models;
+using SharedEFClasses.Models.Parcel;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.TradeAccounts;
 
 using System;
 using System.Collections;
+using System.Data.Entity;
+using System.Data.Entity.Core.Common.CommandTrees;
 using System.Linq;
 
 using System.Threading.Tasks;
@@ -27,43 +30,20 @@ namespace Portal.Areas.Products.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult ProductAutocomplete([FromBody]PassAutocompleteTerm objAutocomplete)
+        public IHttpActionResult FetchRate([FromBody]PassParcelRateFetch dto)
         {
-            return Ok();
+            var rate = PortalDb.ParcelRates.SingleOrDefault(p => p.DestinationID == dto.DestinationID &&
+                p.ParcelTypeID == dto.ParcelTypeID);
+
+            return Ok(rate);
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> SaveGenericForm([FromBody]PassGenericFormSave objSave)
+        public async Task<IHttpActionResult> FetchExchangeRateToCustomerCurrency([FromBody]PassMertexCurrencyCode dto)
         {
-            var userId = User.Identity.GetUserId<int>();
+            var rate = await PortalDb.ExchangeRates.SingleOrDefaultAsync(p => p.MertexCurrencyCode == dto.MertexCurrencyCode);
 
-            var result = await PortalDb.SaveGenericProductFormAsync(userId, objSave);
-
-            return Ok(result);
-        }
-
-        [HttpPost]
-        public IHttpActionResult SaveProductTypeCore([FromBody]PassProductTypeCore objProductTypeCore)
-        {
-            var pt = PortalDb.MaintenanceProductTypes.Single(p => p.ProductTypeID == objProductTypeCore.productTypeId);
-
-            pt.Name = objProductTypeCore.name;
-
-            PortalDb.SaveChanges();
-
-            return Ok(new { productTypes = PortalDb.MaintenanceProductTypes.OrderBy(mpt => mpt.ProductTypeID) });
-        }
-
-        [HttpPost]
-        public IHttpActionResult SaveProductTypeJson([FromBody]PassProductTypeJson objProductTypeJson)
-        {
-            var pt = PortalDb.MaintenanceProductTypes.Single(p => p.ProductTypeID == objProductTypeJson.productTypeId);
-
-            pt.EditFormJSON = objProductTypeJson.json;
-
-            PortalDb.SaveChanges();
-
-            return Ok(new { productTypes = PortalDb.MaintenanceProductTypes.OrderBy(mpt => mpt.ProductTypeID) });
+            return Ok(rate);
         }
     }
 }

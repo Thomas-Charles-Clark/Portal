@@ -28,18 +28,18 @@ namespace Portal.Controllers
     config.Routes.MapODataServiceRoute("odata", "odata", builder.GetEdmModel());
     */
     [System.Web.Http.Authorize]
-    public class DeliveryServicesController : BaseODataController
+    public class ParcelDestinationsController : BaseODataController
     {
-        public DeliveryServicesController(PortalDbContext portalDb) : base(portalDb)
+        public ParcelDestinationsController(PortalDbContext portalDb) : base(portalDb)
         {
 
         }
 
         // GET: odata/Products
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
-        public IQueryable<DeliveryService> GetDeliveryServices()
+        public IQueryable<ParcelDestination> GetParcelDestinations()
         {
-            return PortalDb.DeliveryServices.AsQueryable();
+            return PortalDb.ParcelDestinations.AsQueryable();
         }
     }
 }

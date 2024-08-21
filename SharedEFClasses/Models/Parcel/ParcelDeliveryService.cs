@@ -8,19 +8,14 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models.Parcel
 {
-    [Table("Surcharge", Schema = "parcel")]
-    public class Surcharge
+    [Table("DeliveryService", Schema = "parcel")]
+    public class ParcelDeliveryService
     {
         [Key]
-        public byte SurchargeID { get; set; }
+        public byte DeliveryServiceID { get; set; }
 
         public string Name { get; set; }
 
-        public decimal RRP { get; set; }
-
-        public decimal? PercentageDiscount { get; set; }
-
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public decimal DGRate { get; set; }
+        public decimal ParcelWeightChargeLimit { get; set; }
     }
 }

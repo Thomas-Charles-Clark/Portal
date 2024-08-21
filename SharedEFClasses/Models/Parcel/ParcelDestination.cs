@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models.Parcel
 {
-    [Table("DeliveryService", Schema = "parcel")]
-    public class DeliveryService
+    [Table("Destination", Schema = "parcel")]
+    public class ParcelDestination
     {
         [Key]
-        public byte DeliveryServiceID { get; set; }
+        public short DestinationID { get; set; }
 
         public string Name { get; set; }
     }

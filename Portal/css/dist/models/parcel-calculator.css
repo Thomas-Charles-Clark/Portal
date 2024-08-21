@@ -27,7 +27,24 @@
 }
 
 #calculator .card-title {
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #ced4da;
+}
+#calculator .sub-title {
+  font-size: 1.25rem;
+  margin: 2rem 0;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #ced4da;
+}
+#calculator .final-charge-title {
+  font-size: 2rem;
+  text-align: center;
+  padding: 2rem 0 1rem 0;
+  border-top: 1px solid #ced4da;
+  margin-top: 2rem;
+  margin-bottom: 0;
 }
 #calculator .grid {
   gap: 1rem;
@@ -42,5 +59,10 @@
   display: block;
   font-weight: bold;
   font-size: 1.25rem;
+}
+
+#parcel-rate-currency,
+#parcel-rate-sterling {
+  color: #fff;
 }
 /*# sourceMappingURL=parcel-calculator.css.map */
