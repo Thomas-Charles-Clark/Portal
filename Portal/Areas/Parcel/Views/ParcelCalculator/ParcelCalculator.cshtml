@@ -107,7 +107,7 @@
             <div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: parcelTypeParams }"></div>
             <div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: deliveryServiceParams }"></div>
             @*<div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: residentialParams }"></div>
-                <div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: addressCorrectionParams }"></div>*@
+            <div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: addressCorrectionParams }"></div>*@
         </div>
         <div class="grid" style="--bs-columns: 4">
             <div class="prefilter" data-bind="component: { name: 'mdc-text-field-numeric-component', params: parcelWeightParams }"></div>
@@ -121,17 +121,17 @@
         </h4>
         <div class="grid" style="--bs-columns: 4; display: none" data-bind="visible: computed">
             @*<div class="prefilter">
-            <label class="computation-display">
-                Overmax Applied?
-                <span class="bold" data-bind="text: overmaxApplied() ? 'Yes' : 'No'"></span>
-            </label>
-        </div>
-        <div class="prefilter">
-            <label class="computation-display">
-                Large Packet Applied?
-                <span class="bold" data-bind="text: largePacketApplied() ? 'Yes' : 'No'"></span>
-            </label>
-        </div>*@
+                <label class="computation-display">
+                    Overmax Applied?
+                    <span class="bold" data-bind="text: overmaxApplied() ? 'Yes' : 'No'"></span>
+                </label>
+            </div>
+            <div class="prefilter">
+                <label class="computation-display">
+                    Large Packet Applied?
+                    <span class="bold" data-bind="text: largePacketApplied() ? 'Yes' : 'No'"></span>
+                </label>
+            </div>*@
             <div class="prefilter">
                 <label class="computation-display">
                     Volumetric Weight (kg):
@@ -162,10 +162,10 @@
             </div>
             <div class="prefilter">
                 <label class="computation-display">
-                    Exchange Rate (GBP to <span data-bind="with: tradeAccount"><span data-bind="text: MertexCurrencyCode"></span></span>):
+                    Exchange Rate (STG to <span data-bind="with: tradeAccount"><span data-bind="text: MertexCurrencyCode"></span></span>):
                     <span class="bold" data-bind="text: exchangeRateToCustomerCurrency"></span>
                 </label>
-            </div> 
+            </div>
             @*<div id="parcel-rate-currency" class="prefilter" style="display: none" data-bind="visible: parcelRateCurrency">
                 <label class="computation-display">
                     Parcel Rate (Destination Currency)
@@ -173,17 +173,16 @@
                 </label>
             </div>*@
         </div>
-        <h4 class="sub-title">
+        <h4 class="sub-title mb-2">
             Charges
-            @*
-                any parcel more than 274cm in length or weighs more that 70kg = overmax surcharge - or any parcel where 2xwidth +2xheight is more than 400cm = overmax surcharge
-                For international shipments, a package is considered a "Large Package" when its length (longest side of the package) plus girth [(2 x width) + (2 x height)] combined exceeds 330 cm. Large Parcels are subject to a minimum billable weight of 40kg in addition to the Large Parcel Surcharge.
-            *@
         </h4>
+        <small class="display-block mb-3">
+            Any parcel which weighs more than 70kg, or is greater than 274cm in length, or where girth (2 &times; width + 2 &times; height) exceeds 400cm attracts the Overmax surcharge. Parcels where length (longest side of the package) plus girth exceeds 330cm attract the Large Parcel surcharge. Large Parcels are subject to a minimum billable weight of 40kg.
+        </small>
         <div class="grid" style="--bs-columns: 6; display: none" data-bind="visible: computed">
             <div class="prefilter">
                 <label class="computation-display">
-                    <br/>
+                    <br />
                     Parcel Rate (<span data-bind="with: tradeAccount"><span data-bind="text: Currency.Symbol"></span></span>):
                     <span class="bold" data-bind="text: parcelRate"></span>
                 </label>
@@ -196,7 +195,7 @@
             </div>
             <div class="prefilter">
                 <label class="computation-display">
-                    Large Packet<br />Surcharge (£)
+                    Large Parcel<br />Surcharge (£)
                     <span class="bold" data-bind="text: largePacketCharge"></span>
                 </label>
             </div>

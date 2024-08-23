@@ -22,7 +22,7 @@ const parcelCalculatorViewModel = (() => {
     self.destination = ko.observable();
 
     self.destinationId = ko.observable();
-    
+
     self.parcelType = ko.observable();
 
     self.parcelTypeId = ko.observable();
@@ -59,9 +59,9 @@ const parcelCalculatorViewModel = (() => {
 
     self.parcelHeightCm = ko.observable().extend(self.lengthFormatting);
 
-    self.residential = ko.observable(true);
+    self.residential = ko.observable(false);
 
-    self.addressCorrection = ko.observable(true);
+    self.addressCorrection = ko.observable(false);
 
     self.surcharges = window.getSurcharges();
 
@@ -76,6 +76,8 @@ const parcelCalculatorViewModel = (() => {
     self.destinationCurrencyCode = ko.observable();
 
     self.parcelRateCurrencyCode = ko.observable();
+
+    self.fabricLengthM = ko.observable();
 
     //#endregion
 
@@ -374,7 +376,16 @@ const parcelCalculatorViewModel = (() => {
 
     //#region Subscriptions
 
-
+    self.tradeAccount.subscribe(nv => {
+        self.destinationParams.clearFunction();
+        self.parcelTypeParams.clearFunction();
+        self.deliveryServiceId(1);
+        self.parcelWeightKg(undefined);
+        self.parcelWidthCm(undefined);
+        self.parcelLengthCm(undefined);
+        self.parcelHeightCm(undefined);
+        self.fabricLengthM(undefined)
+    })
 
     //#endregion
 
@@ -383,8 +394,8 @@ const parcelCalculatorViewModel = (() => {
 
     self.computed = ko.computed(() => {
         return self.destinationId() &&
-            self.parcelTypeId() && 
-            self.deliveryServiceId() && 
+            self.parcelTypeId() &&
+            self.deliveryServiceId() &&
             self.parcelWeightKg() &&
             self.parcelWidthCm() &&
             self.parcelLengthCm() &&
@@ -404,15 +415,15 @@ const parcelCalculatorViewModel = (() => {
     }, self);
 
     self.largePacketApplied = ko.computed(() => {
-        
+
         if (self.computed()) {
             let l = self.parcelLengthCm();
             let w = self.parcelWidthCm();
             let h = self.parcelHeightCm();
 
-            let threshold = 335;
+            let threshold = 330;
 
-            if (l + (w + w * h + h) > threshold) {
+            if (l + (w + w + h + h) > threshold) {
                 return true;
             }
         }
@@ -466,7 +477,7 @@ const parcelCalculatorViewModel = (() => {
                 return true;
             }
 
-            if ((w + w * h + h) >= 400) { // maximum parcel size is 400cm in length and girth combined
+            if (w + w + h + h >= 400) { // maximum parcel size is 400cm in length and girth combined
                 return true;
             }
 
@@ -534,14 +545,14 @@ const parcelCalculatorViewModel = (() => {
             let addressCorrectionCharge = self.addressCorrectionCharge();
 
             return formatNumber(
-                    (
-                        (parcelRate * parcelCount) +
-                        overmaxCharge +
-                        largePacketCharge + 
-                        residentialCharge + 
-                        addressCorrectionCharge
-                    )
-                    * self.exchangeRateToCustomerCurrency(), 2, 'en-GB');
+                (
+                    (parcelRate * parcelCount) +
+                    overmaxCharge +
+                    largePacketCharge +
+                    residentialCharge +
+                    addressCorrectionCharge
+                )
+                * self.exchangeRateToCustomerCurrency(), 0, 'en-GB');
         }
     }, self);
 
@@ -558,26 +569,26 @@ const parcelCalculatorViewModel = (() => {
 
         if (self.tradeAccount()) {
 
-        let params = {
-            mertexCurrencyCode: self.tradeAccount().MertexCurrencyCode
-        }
+            let params = {
+                mertexCurrencyCode: self.tradeAccount().MertexCurrencyCode
+            }
 
-        fetch('/api/parcelCalculatorApi/FetchExchangeRateToCustomerCurrency', {
-            method: 'POST',
-            headers: window.fetchHeaders,
-            cache: 'no-cache',
-            body: JSON.stringify(params)
-        })
-            .then(window.handleFetchResponse)
-            .then(data => {
-                if (data != null) {
-                    //self.exchangeRate(data.SterlingExchangeRate);
-                    self.exchangeRateToCustomerCurrency(data.SterlingExchangeRate);
-                } else {
-                    window.showError(`No exchange rate was found from GBP to ${params.currencyCode}.`);
-                }
+            fetch('/api/parcelCalculatorApi/FetchExchangeRateToCustomerCurrency', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                cache: 'no-cache',
+                body: JSON.stringify(params)
             })
-            .catch(window.catchFetchError)
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    if (data != null) {
+                        //self.exchangeRate(data.SterlingExchangeRate);
+                        self.exchangeRateToCustomerCurrency(data.SterlingExchangeRate);
+                    } else {
+                        window.showError(`No exchange rate was found from GBP to ${params.currencyCode}.`);
+                    }
+                })
+                .catch(window.catchFetchError)
         }
     }, self);
 
@@ -638,4 +649,4 @@ const parcelCalculatorViewModel = (() => {
     //#endregion
 
     return self;
-})
+});

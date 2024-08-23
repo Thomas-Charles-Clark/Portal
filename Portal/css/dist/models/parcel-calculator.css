@@ -37,6 +37,12 @@
   padding-top: 1rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid #ced4da;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+#calculator .sub-title small {
+  font-size: 0.875rem;
 }
 #calculator .final-charge-title {
   font-size: 2rem;

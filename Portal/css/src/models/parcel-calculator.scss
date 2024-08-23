@@ -29,6 +29,12 @@
         padding-top: $l-gutter;
         padding-bottom: $l-gutter;
         border-bottom: 1px solid $gray-400;
+        display: flex;
+        gap: $l-gutter;
+        align-items: center;
+        small {
+            font-size: $font-size-sm;
+        }
     }
 
     .final-charge-title {
