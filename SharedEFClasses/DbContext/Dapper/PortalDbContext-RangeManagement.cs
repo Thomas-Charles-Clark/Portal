@@ -4,11 +4,16 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 using SharedEFClasses.Models.RangeManagement;
 
+using SimpleImpersonation;
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -227,33 +232,63 @@ namespace SharedEFClasses.Models
 
         public async Task<int> RangeManagementSendNewSeasonNotification(RangeManagementNotesDto dto)
         {
-            var _ = await this.Database.Connection.QueryAsync("[portal].[RangeManagement_InventoryNotification_NewSeasonProduct]", new
+            var credentials = new UserCredentials("DESIGNERSGUILD\\SQLAgentFileAccess", "34949C02-4677-4711-999C-8E038E26B10F");
+
+            var token = credentials.LogonUser(LogonType.Interactive);
+
+            await WindowsIdentity.RunImpersonated(token, async () =>
             {
-                BranchID = dto.BranchID,
-                MemberID = dto.MemberID
-            }, null, null, CommandType.StoredProcedure);
+                using (var conn = new SqlConnection(ConfigurationManager.ConnectionStrings["VM-SQL-IntegratedConnectionString"].ConnectionString))
+                {
+                    var _ = await this.Database.Connection.QueryAsync("[portal].[RangeManagement_InventoryNotification_NewSeasonProduct]", new
+                    {
+                        BranchID = dto.BranchID,
+                        MemberID = dto.MemberID
+                    }, null, null, CommandType.StoredProcedure);
+                }
+            });
 
             return 0;
         }
 
         public async Task<int> RangeManagementSendExitingProductsNotification(RangeManagementNotesDto dto)
         {
-            var _ = await this.Database.Connection.QueryAsync("[portal].[RangeManagement_InventoryNotification_ExitingProducts]", new
+            var credentials = new UserCredentials("DESIGNERSGUILD\\SQLAgentFileAccess", "34949C02-4677-4711-999C-8E038E26B10F");
+
+            var token = credentials.LogonUser(LogonType.Interactive);
+
+            await WindowsIdentity.RunImpersonated(token, async () =>
             {
-                BranchID = dto.BranchID,
-                MemberID = dto.MemberID
-            }, null, null, CommandType.StoredProcedure);
+                using (var conn = new SqlConnection(ConfigurationManager.ConnectionStrings["VM-SQL-IntegratedConnectionString"].ConnectionString))
+                {
+                    var _ = await this.Database.Connection.QueryAsync("[portal].[RangeManagement_InventoryNotification_ExitingProducts]", new
+                    {
+                        BranchID = dto.BranchID,
+                        MemberID = dto.MemberID
+                    }, null, null, CommandType.StoredProcedure);
+                }
+            });
 
             return 0;
         }
 
         public async Task<int> RangeManagementSendCarryForwardsProductsNotification(RangeManagementNotesDto dto)
         {
-            var _ = await this.Database.Connection.QueryAsync("[portal].[RangeManagement_InventoryNotification_CarryForwardProduct]", new
+            var credentials = new UserCredentials("DESIGNERSGUILD\\SQLAgentFileAccess", "34949C02-4677-4711-999C-8E038E26B10F");
+
+            var token = credentials.LogonUser(LogonType.Interactive);
+
+            await WindowsIdentity.RunImpersonated(token, async () =>
             {
-                BranchID = dto.BranchID,
-                MemberID = dto.MemberID
-            }, null, null, CommandType.StoredProcedure);
+                using (var conn = new SqlConnection(ConfigurationManager.ConnectionStrings["VM-SQL-IntegratedConnectionString"].ConnectionString))
+                {
+                    var _ = await this.Database.Connection.QueryAsync("[portal].[RangeManagement_InventoryNotification_CarryForwardProduct]", new
+                    {
+                        BranchID = dto.BranchID,
+                        MemberID = dto.MemberID
+                    }, null, null, CommandType.StoredProcedure);
+                }
+            });
 
             return 0;
         }

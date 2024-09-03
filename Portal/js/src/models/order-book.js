@@ -608,7 +608,7 @@ const orderBookViewModel = (() => {
         //}
     }
 
-    self.fetch = (params) => {
+    self.fetch = (params, afterFetch) => {
 
         self.busy(true);
 
@@ -642,6 +642,9 @@ const orderBookViewModel = (() => {
                 bootstrap.Collapse.getOrCreateInstance(document.querySelector("#accuracy-collapse")).hide();
 
                 window.setTimeout(() => {
+                    if (typeof afterFetch === 'function')
+                        afterFetch();
+
                     self.busy(false);
                 }, 0);
             })
@@ -725,9 +728,7 @@ const orderBookViewModel = (() => {
 
                 self.gridCollapse(self.defaultConfig.gridCollapse);
 
-                self.displayColumnHeadings(self.defaultConfig.columnHeadings);
-
-                self.displayColumnHeadingsSelection(self.defaultConfig.columnHeadings);
+                self.displayColumnHeadings([]);
 
                 self.preDefinedFilters.displayTabs(self.defaultConfig.managementPromptTabs);
 
@@ -737,7 +738,9 @@ const orderBookViewModel = (() => {
                     rh.displayModes(og.displayModes);
                 });
 
-                self.fetch(self.userDefinedFilters.json());
+                self.fetch(self.userDefinedFilters.json(), () => {
+                    self.displayColumnHeadingsSelection(self.columnHeadings().map(d => d.orderStatusGroupId));
+                });
 
             }, 0);
 

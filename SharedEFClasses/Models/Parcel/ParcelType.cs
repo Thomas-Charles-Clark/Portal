@@ -15,5 +15,12 @@ namespace SharedEFClasses.Models.Parcel
         public byte ParcelTypeID { get; set; }
 
         public string Name { get; set; }
+
+        public bool Visible { get; set; }
+
+        public DateTime? DeletedDT { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public bool Deleted { get; set; }
     }
 }

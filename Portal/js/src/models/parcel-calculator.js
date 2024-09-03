@@ -13,35 +13,7 @@ const parcelCalculatorViewModel = (() => {
 
     //#region Properties
 
-    self.tradeAccountSelector = new tradeAccountSelector(getPreselectedTradeAccount());
-
-    self.tradeAccount = self.tradeAccountSelector.selected;
-
-    self.busy = ko.observable(false);
-
-    self.destination = ko.observable();
-
-    self.destinationId = ko.observable();
-
-    self.parcelType = ko.observable();
-
-    self.parcelTypeId = ko.observable();
-
-    self.deliveryService = ko.observable();
-
-    self.deliveryServiceId = ko.observable(1);
-
-    self.weightFormatting = {
-        numberFormatted: {
-            digits: 2,
-            currency: {
-                FormattingCulture: 'en-GB'
-            },
-            skipExtraNotify: true
-        }
-    };
-
-    self.lengthFormatting = {
+    self.defaultFormatting = {
         numberFormatted: {
             digits: 0,
             currency: {
@@ -51,33 +23,47 @@ const parcelCalculatorViewModel = (() => {
         }
     };
 
-    self.parcelWeightKg = ko.observable().extend(self.lengthFormatting);
+    self.twoDPFormatting = {
+        numberFormatted: {
+            digits: 2,
+            currency: {
+                FormattingCulture: 'en-GB'
+            },
+            skipExtraNotify: true
+        }
+    };
 
-    self.parcelLengthCm = ko.observable().extend(self.lengthFormatting);
+    self.tradeAccountSelector = new tradeAccountSelector(getPreselectedTradeAccount());
 
-    self.parcelWidthCm = ko.observable().extend(self.lengthFormatting);
+    self.tradeAccount = self.tradeAccountSelector.selected;
 
-    self.parcelHeightCm = ko.observable().extend(self.lengthFormatting);
+    self.previousTradeAccount = ko.observable();
+
+    self.busy = ko.observable(false);
+
+    self.destination = ko.observable();
+
+    self.destinationId = ko.observable();
+
+    self.deliveryService = ko.observable();
+
+    self.deliveryServiceId = ko.observable(1);
 
     self.residential = ko.observable(false);
 
     self.addressCorrection = ko.observable(false);
 
-    self.surcharges = window.getSurcharges();
-
-    self.parcelRate = ko.observable();
-
-    self.parcelRateCurrency = ko.observable();
-
     self.exchangeRate = ko.observable();
 
     self.exchangeRateToCustomerCurrency = ko.observable();
+
+    self.parcelRateCurrency = ko.observable();
 
     self.destinationCurrencyCode = ko.observable();
 
     self.parcelRateCurrencyCode = ko.observable();
 
-    self.fabricLengthM = ko.observable();
+    self.parcels = ko.observableArray([]);
 
     //#endregion
 
@@ -174,34 +160,6 @@ const parcelCalculatorViewModel = (() => {
         clearFunction: self.genericUnsavedChangesClear
     });
 
-    self.parcelTypeParams = kendoMDCDropDownList({
-        skipCascade: true,
-        label: 'Parcel Type',
-        odata: true,
-        endPoint: '/odata/ParcelTypes',
-        textField: 'Name',
-        valueField: 'ParcelTypeID',
-        virtual: false,
-        idObservable: self.parcelTypeId,
-        objObservable: self.parcelType,
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertible: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        autoBind: true,
-        height: 340,
-        sort: {
-            dir: 'asc',
-            field: 'Name'
-        },
-        select: function (e) {
-            console.log('parcelType select', e);
-        },
-        clearFunction: self.genericUnsavedChangesClear
-    });
-
     self.deliveryServiceParams = kendoMDCDropDownList({
         label: 'Delivery Service',
         odata: true,
@@ -228,6 +186,259 @@ const parcelCalculatorViewModel = (() => {
         },
         clearFunction: self.genericUnsavedChangesClear
     });
+
+    self.residentialParams = kendoMDCDropDownList({
+        label: 'Residential?',
+        data: yesNoOptions,
+        textField: 'Name',
+        valueField: 'Value',
+        idObservable: self.residential,
+        objObservable: ko.observable(),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        }
+    });
+
+    self.addressCorrectionParams = kendoMDCDropDownList({
+        label: 'Address Correction?',
+        data: yesNoOptions,
+        textField: 'Name',
+        valueField: 'Value',
+        idObservable: self.addressCorrection,
+        objObservable: ko.observable(),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        }
+    });
+
+    self.fetchExchangeRateToCustomerCurrency = ko.computed(() => {
+
+        if (self.tradeAccount()) {
+
+            let params = {
+                mertexCurrencyCode: self.tradeAccount().MertexCurrencyCode
+            }
+
+            fetch('/api/parcelCalculatorApi/FetchExchangeRateToCustomerCurrency', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                cache: 'no-cache',
+                body: JSON.stringify(params)
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    if (data != null) {
+                        //self.exchangeRate(data.SterlingExchangeRate);
+                        self.exchangeRateToCustomerCurrency(data.SterlingExchangeRate);
+                    } else {
+                        window.showError(`No exchange rate was found from GBP to ${params.currencyCode}.`);
+                    }
+                })
+                .catch(window.catchFetchError)
+        }
+    }, self);
+
+    //#endregion
+
+    //#region Subscriptions
+
+    self.tradeAccount.subscribe(nv => {
+        if (self.previousTradeAccount()) {
+            self.reset();
+        } else {
+
+            self.deliveryServiceId(1);
+
+            self.parcels([]);
+
+            self.previousTradeAccount(nv);
+
+        }
+    })
+
+    //#endregion
+
+    //#region Computeds
+
+    self.finalCharge = ko.computed(() => {
+        let result = self.parcels().reduce((a, v) => a += +v.finalCharge(), 0);
+
+        return result;
+    });
+
+    self.finalChargeDisplay = ko.computed(() => {
+        let finalCharge = self.finalCharge();
+
+        let currency = self.tradeAccount() && self.tradeAccount().Currency.Symbol;
+
+        if (isNaN(finalCharge)) {
+            return `<span class="bold">Please completely specify all Parcels</span>`;
+        } else {
+            return `Final Charge (${ currency }): <span class="bold">${finalCharge}</span>`;
+        }
+    }, self);
+
+    //#endregion
+
+    //#region Methods
+
+    self.ready = () => {
+        self.busy(false);
+    }
+
+    self.addParcel = () => {
+        self.parcels.push(parcelViewModel({ parent: self }));
+    }
+
+    self.reset = () => {
+        window.showConfirm('Are you sure?', 'Changing Trade Accounts will clear your parcels.', () => {
+
+            self.destinationParams.clearFunction();
+
+            self.deliveryServiceId(1);
+
+            self.parcels([parcelViewModel({ parent: self })]);
+
+        }, () => {
+            self.tradeAccount(self.previousTradeAccount());
+            self.tradeAccountSelector.tradeAccountAutocomplete.autocompleteSettings.observable(self.tradeAccount().Label);
+        });
+    }
+
+    self.setTest = () => {
+        self.destinationId(10);
+
+        let parcel = parcelViewModel({ parent: self });
+
+        parcel.parcelTypeId(3);
+
+        parcel.fabricLengthM(4.7);
+
+        parcel.parcelWeightKg(6);
+
+        parcel.parcelLengthCm(80);
+
+        parcel.parcelWidthCm(30);
+
+        parcel.parcelHeightCm(40);
+
+        self.parcels([parcel]);
+    }
+
+    self.removeParcel = (parcel) => {
+        self.parcels.remove(parcel);
+    }
+
+    //#endregion
+
+    return self;
+});
+
+
+const parcelViewModel = (({ parent } = { parent: null }) => {
+
+    let self = {
+        parent: parent
+    };
+
+    //#region Properties
+
+    self.parcelType = ko.observable();
+
+    self.parcelTypeId = ko.observable();
+
+    self.parcelWeightKg = ko.observable().extend(self.parent.defaultFormatting);
+
+    self.parcelLengthCm = ko.observable().extend(self.parent.defaultFormatting);
+
+    self.parcelWidthCm = ko.observable().extend(self.parent.defaultFormatting);
+
+    self.parcelHeightCm = ko.observable().extend(self.parent.defaultFormatting);
+
+    self.surcharges = window.getSurcharges();
+
+    self.parcelRate = ko.observable();
+
+    self.fabricLengthM = ko.observable().extend(self.parent.twoDPFormatting);
+
+    //#endregion
+
+
+    //#region Components
+
+    self.parcelTypeParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Parcel Type',
+        odata: true,
+        endPoint: '/odata/ParcelTypes',
+        textField: 'Name',
+        valueField: 'ParcelTypeID',
+        virtual: false,
+        idObservable: self.parcelTypeId,
+        objObservable: self.parcelType,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'ParcelTypeID'
+        },
+        select: function (e) {
+            console.log('parcelType select', e);
+        },
+        clearFunction: self.parent.genericUnsavedChangesClear
+    });
+
+    self.fabricLengthParams = {
+        label: 'Fabric Length (m)',
+        observable: self.fabricLengthM,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: true,
+        showClear: false,
+        busy: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        revertible: false,
+        clearable: true,
+        buttons: false,
+        inputType: 'text',
+        minValue: 0.5,
+        maxValue: 999999,
+        step: 1,
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            self.observable.DOMElement.focus();
+        },
+    }
 
     self.parcelWeightParams = {
         label: 'Parcel Weight (kg)',
@@ -325,77 +536,36 @@ const parcelCalculatorViewModel = (() => {
         },
     }
 
-    self.residentialParams = kendoMDCDropDownList({
-        label: 'Residential?',
-        data: yesNoOptions,
-        textField: 'Name',
-        valueField: 'Value',
-        idObservable: self.residential,
-        objObservable: ko.observable(),
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertible: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        autoBind: true,
-        clearFunction: self.genericUnsavedChangesClear,
-        template: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        valueTemplate: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        }
-    });
-
-    self.addressCorrectionParams = kendoMDCDropDownList({
-        label: 'Address Correction?',
-        data: yesNoOptions,
-        textField: 'Name',
-        valueField: 'Value',
-        idObservable: self.addressCorrection,
-        objObservable: ko.observable(),
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertible: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        autoBind: true,
-        clearFunction: self.genericUnsavedChangesClear,
-        template: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        valueTemplate: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        }
-    });
-
     //#endregion
 
 
     //#region Subscriptions
 
-    self.tradeAccount.subscribe(nv => {
-        self.destinationParams.clearFunction();
-        self.parcelTypeParams.clearFunction();
-        self.deliveryServiceId(1);
-        self.parcelWeightKg(undefined);
-        self.parcelWidthCm(undefined);
-        self.parcelLengthCm(undefined);
-        self.parcelHeightCm(undefined);
-        self.fabricLengthM(undefined)
-    })
+
 
     //#endregion
 
 
     //#region Computeds
 
+    self.parcelLengthVisible = ko.computed(() => {
+        return self.parcelTypeId() == 3;
+    }, self);
+
     self.computed = ko.computed(() => {
-        return self.destinationId() &&
+
+        let parcelTypeId = self.parcelTypeId();
+
+        let fabricLengthValid = true;
+
+        if (parcelTypeId == 3) {
+            fabricLengthValid = self.fabricLengthM() != null;
+        }
+
+        return self.parent.destinationId() &&
             self.parcelTypeId() &&
-            self.deliveryServiceId() &&
+            fabricLengthValid &&
+            self.parent.deliveryServiceId() &&
             self.parcelWeightKg() &&
             self.parcelWidthCm() &&
             self.parcelLengthCm() &&
@@ -490,48 +660,48 @@ const parcelCalculatorViewModel = (() => {
     }, self);
 
     self.additionalHandlingCharge = ko.computed(() => {
-        if (self.deliveryServiceId()) {
-            return self.surcharges.find(s => s.DeliveryServiceID == self.deliveryServiceId() && s.SurchargeID == 1).DGRate;
+        if (self.parent.deliveryServiceId()) {
+            return self.surcharges.find(s => s.DeliveryServiceID == self.parent.deliveryServiceId() && s.SurchargeID == 1).DGRate;
         } else {
             return 0;
         }
     }, self);
 
     self.overmaxCharge = ko.computed(() => {
-        if (self.deliveryServiceId() && self.overmaxApplied()) {
-            return self.surcharges.find(s => s.DeliveryServiceID == self.deliveryServiceId() && s.SurchargeID == 2).DGRate;
+        if (self.parent.deliveryServiceId() && self.overmaxApplied()) {
+            return self.surcharges.find(s => s.DeliveryServiceID == self.parent.deliveryServiceId() && s.SurchargeID == 2).DGRate;
         } else {
             return 0;
         }
     }, self);
 
     self.largePacketCharge = ko.computed(() => {
-        if (self.deliveryServiceId() && self.largePacketApplied()) {
-            return self.surcharges.find(s => s.DeliveryServiceID == self.deliveryServiceId() && s.SurchargeID == 3).DGRate;
+        if (self.parent.deliveryServiceId() && self.largePacketApplied()) {
+            return self.surcharges.find(s => s.DeliveryServiceID == self.parent.deliveryServiceId() && s.SurchargeID == 3).DGRate;
         } else {
             return 0;
         }
     }, self);
 
     self.residentialCharge = ko.computed(() => {
-        if (self.deliveryServiceId() && self.residential()) {
-            return self.surcharges.find(s => s.DeliveryServiceID == self.deliveryServiceId() && s.SurchargeID == 4).DGRate;
+        if (self.parent.deliveryServiceId() && self.parent.residential()) {
+            return self.surcharges.find(s => s.DeliveryServiceID == self.parent.deliveryServiceId() && s.SurchargeID == 4).DGRate;
         } else {
             return 0;
         }
     }, self);
 
     self.addressCorrectionCharge = ko.computed(() => {
-        if (self.deliveryServiceId() && self.addressCorrection()) {
-            return self.surcharges.find(s => s.DeliveryServiceID == self.deliveryServiceId() && s.SurchargeID == 5).DGRate;
+        if (self.parent.deliveryServiceId() && self.parent.addressCorrection()) {
+            return self.surcharges.find(s => s.DeliveryServiceID == self.parent.deliveryServiceId() && s.SurchargeID == 5).DGRate;
         } else {
             return 0;
         }
     }, self);
 
     self.chargeLimitParcelCount = ko.computed(() => {
-        if (self.deliveryServiceParcelWeightKg() && self.deliveryService()) {
-            return Math.ceil(self.deliveryServiceParcelWeightKg() / self.deliveryService().ParcelWeightChargeLimit);
+        if (self.deliveryServiceParcelWeightKg() && self.parent.deliveryService()) {
+            return Math.ceil(self.deliveryServiceParcelWeightKg() / self.parent.deliveryService().ParcelWeightChargeLimit);
         }
     }, self);
 
@@ -544,15 +714,20 @@ const parcelCalculatorViewModel = (() => {
             let residentialCharge = self.residentialCharge();
             let addressCorrectionCharge = self.addressCorrectionCharge();
 
-            return formatNumber(
-                (
-                    (parcelRate * parcelCount) +
-                    overmaxCharge +
-                    largePacketCharge +
-                    residentialCharge +
-                    addressCorrectionCharge
-                )
-                * self.exchangeRateToCustomerCurrency(), 0, 'en-GB');
+            if (parcelRate) {
+
+                return formatNumber(
+                    (
+                        (parcelRate * parcelCount) +
+                        overmaxCharge +
+                        largePacketCharge +
+                        residentialCharge +
+                        addressCorrectionCharge
+                    )
+                    * self.parent.exchangeRateToCustomerCurrency(), 0, 'en-GB');
+            } else {
+                return "Please contact <a href='mailto:itsupport@designersguild.com'>itsupport@designersguild.com</a> to request a quote for this shipment.";
+            }
         }
     }, self);
 
@@ -561,47 +736,39 @@ const parcelCalculatorViewModel = (() => {
 
     //#region Methods
 
-    self.ready = () => {
-        self.busy(false);
+    self.reset = () => {
+        self.parcelWeightKg(undefined);
+        self.parcelWidthCm(undefined);
+        self.parcelLengthCm(undefined);
+        self.parcelHeightCm(undefined);
+        self.fabricLengthM(undefined)
+        self.parcelTypeParams.clearFunction();
     }
-
-    self.fetchExchangeRateToCustomerCurrency = ko.computed(() => {
-
-        if (self.tradeAccount()) {
-
-            let params = {
-                mertexCurrencyCode: self.tradeAccount().MertexCurrencyCode
-            }
-
-            fetch('/api/parcelCalculatorApi/FetchExchangeRateToCustomerCurrency', {
-                method: 'POST',
-                headers: window.fetchHeaders,
-                cache: 'no-cache',
-                body: JSON.stringify(params)
-            })
-                .then(window.handleFetchResponse)
-                .then(data => {
-                    if (data != null) {
-                        //self.exchangeRate(data.SterlingExchangeRate);
-                        self.exchangeRateToCustomerCurrency(data.SterlingExchangeRate);
-                    } else {
-                        window.showError(`No exchange rate was found from GBP to ${params.currencyCode}.`);
-                    }
-                })
-                .catch(window.catchFetchError)
-        }
-    }, self);
 
     self.fetchParcelRate = ko.computed(() => {
 
-        if (self.tradeAccount() &&
-            self.destinationId() &&
-            self.parcelTypeId()) {
+        if (self.computed()) {
+
+            let parcelTypeId = self.parcelTypeId();
+
+            // Fabric on a 3m Pole
+            // What threshold did we make
+            if (parcelTypeId == 3) {
+                let fabricLengthM = self.fabricLengthM();
+
+                if (fabricLengthM <= 5) {
+                    parcelTypeId = 7;
+                } else if (fabricLengthM > 5 && fabricLengthM <= 15) {
+                    parcelTypeId = 8;
+                } else {
+                    parcelTypeId = 9;
+                }
+            }
 
             let params = {
-                destinationId: self.destinationId(),
-                tradeAccountCurrencyCode: self.tradeAccount().MertexCurrencyCode,
-                parcelTypeId: self.parcelTypeId()
+                destinationId: self.parent.destinationId(),
+                tradeAccountCurrencyCode: self.parent.tradeAccount().MertexCurrencyCode,
+                parcelTypeId: parcelTypeId
             };
 
             fetch('/api/parcelCalculatorApi/FetchRate', {
@@ -613,15 +780,17 @@ const parcelCalculatorViewModel = (() => {
                 .then(window.handleFetchResponse)
                 .then(data => {
                     if (data != null) {
-                        self.parcelRateCurrencyCode(data.ExchangeRate.MertexCurrencyCode);
+                        self.parent.parcelRateCurrencyCode(data.ExchangeRate.MertexCurrencyCode);
 
-                        self.exchangeRate(data.ExchangeRate.SterlingExchangeRate);
+                        self.parent.exchangeRate(data.ExchangeRate.SterlingExchangeRate);
 
-                        self.parcelRateCurrency(data.PriceCurrency);
+                        self.parent.parcelRateCurrency(data.PriceCurrency);
 
-                        self.parcelRate(Math.round((data.PriceCurrency / self.exchangeRate()) * 100) / 100);
+                        self.parcelRate(Math.round((data.PriceCurrency / self.parent.exchangeRate()) * 100) / 100);
                     } else {
-                        window.showInfo("No Parcel Rate", "No rate exists for this combination of Destination, Currency and Parcel Type.");
+                        window.showInfo("Quote Required", "Please contact <a href='mailto:itsupport@designersguild.com'>itsupport@designersguild.com</a> to request a quote for this shipment.");
+
+
                     }
                 })
                 .catch(window.catchFetchError)
@@ -637,16 +806,8 @@ const parcelCalculatorViewModel = (() => {
     //    }
     //}, self);
 
-    self.setTest = () => {
-        self.destinationId(16);
-        self.parcelTypeId(1);
-        self.parcelWeightKg(6);
-        self.parcelLengthCm(80);
-        self.parcelWidthCm(30);
-        self.parcelHeightCm(40);
-    }
-
     //#endregion
 
     return self;
+
 });

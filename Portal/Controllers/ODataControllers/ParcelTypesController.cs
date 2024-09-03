@@ -39,7 +39,7 @@ namespace Portal.Controllers
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
         public IQueryable<ParcelType> GetParcelTypes()
         {
-            return PortalDb.ParcelTypes.AsQueryable();
+            return PortalDb.ParcelTypes.Where(pt => pt.Visible && !pt.Deleted).AsQueryable();
         }
     }
 }

@@ -18,31 +18,52 @@
 
 #calculator {
     .card-title {
-        margin-bottom: $xl-gutter;
+        margin-bottom: $mxl-gutter;
         padding-bottom: $l-gutter;
         border-bottom: 1px solid $gray-400;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .btn-close {
+            font-size: $font-size-base;
+        }
+    }
+
+    .card {
+        & + .card {
+            margin-top: $l-gutter;
+        }
     }
 
     .sub-title {
         font-size: $font-size-lg;
-        margin: $xl-gutter 0;
+        margin: $mxl-gutter 0;
         padding-top: $l-gutter;
         padding-bottom: $l-gutter;
         border-bottom: 1px solid $gray-400;
         display: flex;
         gap: $l-gutter;
         align-items: center;
+
         small {
             font-size: $font-size-sm;
         }
     }
 
-    .final-charge-title {
-        font-size: 2rem;
+    .parcel-charge-title {
+        font-size: 1.5rem;
         text-align: center;
         padding: $xl-gutter 0 $l-gutter 0;
         border-top: 1px solid $gray-400;
         margin-top: $xl-gutter;
+        margin-bottom: 0;
+    }
+
+    .final-charge-title {
+        font-size: 2rem;
+        text-align: center;
+        padding: $l-gutter 0;
         margin-bottom: 0;
     }
 
@@ -62,7 +83,20 @@
                 display: block;
                 font-weight: bold;
                 font-size: $font-size-lg;
+
+                &.strikethrough {
+                    text-decoration-line: line-through;
+                }
             }
+        }
+    }
+
+    .prefilter-wrapper {
+        display: flex;
+        gap: $l-gutter;
+
+        .prefilter {
+            width: 200px;
         }
     }
 }

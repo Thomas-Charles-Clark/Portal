@@ -15,7 +15,7 @@
 
     self.notificationSoundPath = "/content/sounds/notification-sound.mp3";
 
-    self.notificationSound = new Audio(self.notificationSoundPath);
+    //self.notificationSound = new Audio(self.notificationSoundPath);
 
     //#endregion
 

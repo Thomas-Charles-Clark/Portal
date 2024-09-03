@@ -27,13 +27,22 @@
 }
 
 #calculator .card-title {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid #ced4da;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#calculator .card-title .btn-close {
+  font-size: 1rem;
+}
+#calculator .card + .card {
+  margin-top: 1rem;
 }
 #calculator .sub-title {
   font-size: 1.25rem;
-  margin: 2rem 0;
+  margin: 1.5rem 0;
   padding-top: 1rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid #ced4da;
@@ -44,12 +53,18 @@
 #calculator .sub-title small {
   font-size: 0.875rem;
 }
-#calculator .final-charge-title {
-  font-size: 2rem;
+#calculator .parcel-charge-title {
+  font-size: 1.5rem;
   text-align: center;
   padding: 2rem 0 1rem 0;
   border-top: 1px solid #ced4da;
   margin-top: 2rem;
+  margin-bottom: 0;
+}
+#calculator .final-charge-title {
+  font-size: 2rem;
+  text-align: center;
+  padding: 1rem 0;
   margin-bottom: 0;
 }
 #calculator .grid {
@@ -65,6 +80,16 @@
   display: block;
   font-weight: bold;
   font-size: 1.25rem;
+}
+#calculator .prefilter .computation-display span.bold.strikethrough {
+  text-decoration-line: line-through;
+}
+#calculator .prefilter-wrapper {
+  display: flex;
+  gap: 1rem;
+}
+#calculator .prefilter-wrapper .prefilter {
+  width: 200px;
 }
 
 #parcel-rate-currency,
