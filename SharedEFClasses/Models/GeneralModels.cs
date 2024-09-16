@@ -1182,6 +1182,16 @@ namespace SharedEFClasses.Models.General
         public ProductSearchResult product { get; set; }
     }
 
+    public class PassSendPatternBookAllInfo
+    {
+        public string recipient { get; set; }
+
+        public string patternBookCode { get; set; }
+
+        public string patternBookName { get; set; }
+        public List<ProductSearchResult> items { get; set; }
+    }
+
     public class PassSendPatternBookDiscoInfo
     {
         public string recipient { get; set; }

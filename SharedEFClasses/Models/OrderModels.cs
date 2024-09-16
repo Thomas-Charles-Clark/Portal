@@ -2379,7 +2379,6 @@ namespace SharedEFClasses.Models.Orders
         public List<DeliveryServiceResult> deliveryServices { get; set; }
     }
 
-
     public class DispatchFactorySaveResult
     {
         public bool RequestEORI { get; set; }

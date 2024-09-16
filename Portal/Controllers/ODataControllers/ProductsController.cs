@@ -42,6 +42,15 @@ namespace Portal.Controllers
 
         // GET: odata/Products
         [EnableQuery(MaxNodeCount = 200)]
+        public IQueryable<Product> GetPatternBooks()
+        {
+            var count = PortalDb.Products.Where(p => p.Code.StartsWith("Q")).Count();
+
+            return PortalDb.Products.Where(p => p.Code.StartsWith("Q")).AsQueryable();
+        }
+
+        // GET: odata/Products
+        [EnableQuery(MaxNodeCount = 200)]
         public IQueryable<Product> GetRingFenceableProducts()
         {
             // Limit by adm.Mertex_ProductGroup, to AC 'Finished Product', FA 'Fabric', and PA 'Wallpaper'

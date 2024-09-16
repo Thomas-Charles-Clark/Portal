@@ -5,6 +5,8 @@ using Kendo.Mvc.UI;
 
 using Microsoft.AspNet.Identity;
 
+using Newtonsoft.Json;
+
 using Portal.Utilities;
 using Portal.Utilities.InMemoryMultipartFormDataStreamProvider;
 
@@ -12,6 +14,7 @@ using SharedEFClasses;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Products;
+using SharedEFClasses.Models.TradeAccounts;
 using SharedEFClasses.Utilities;
 
 using System;
@@ -21,6 +24,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -84,6 +88,61 @@ namespace Portal.Controllers
 
             return Ok(results);
         }
+
+        [HttpGet]
+        public async Task<IHttpActionResult> TestHMRCVATChecker()
+        {
+            var tokenPostData = new List<KeyValuePair<string, string>>()
+            {
+                new KeyValuePair<string, string>("grant_type", "client_credentials"),
+                new KeyValuePair<string, string>("client_secret", SharedEFClasses.Utilities.Framework.HMRCDeveloperHubCheckGBVATNoClientSecret),
+                new KeyValuePair<string, string>("client_id", SharedEFClasses.Utilities.Framework.HMRCDeveloperHubCheckGBVATNoClientID)
+            };
+
+            var objVATNumber = new PassVATNumber();
+
+            objVATNumber.vatNumber = "553557881";
+
+            var country = PortalDb.Countries.Where(p => p.Code == "GB").Single();
+
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Clear();
+
+                var tokenBody = new FormUrlEncodedContent(tokenPostData);
+
+                tokenBody.Headers.ContentType.MediaType = "application/x-www-form-urlencoded";
+
+                var tokenResponse = await client.PostAsync($"{SharedEFClasses.Utilities.Framework.HMRCDeveloperHubSandboxBaseURL}/oauth/token", tokenBody);
+
+                if (tokenResponse.IsSuccessStatusCode)
+                {
+                    var token = JsonConvert.DeserializeObject<HMRCTokenResponse>(await tokenResponse.Content.ReadAsStringAsync());
+
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.hmrc.1.0+json"));
+
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.access_token);
+
+                    var vatResponse = await client.GetAsync($"{SharedEFClasses.Utilities.Framework.HMRCDeveloperHubSandboxBaseURL}/organisations/vat/check-vat-number/lookup/{objVATNumber.vatNumber}");
+
+                    if (vatResponse.IsSuccessStatusCode)
+                    {
+                        var vatCheckResult = JsonConvert.DeserializeObject<HMRCVATCheckResult>(await vatResponse.Content.ReadAsStringAsync());
+
+                        return Ok(new { Body = new { valid = true, traderName = vatCheckResult.Target.Name }, countryName = country.Name });
+                    }
+                    else
+                    {
+                        return Ok(new { Body = new { valid = false }, countryName = country.Name, responseMessage = await vatResponse.Content.ReadAsStringAsync() });
+                    }
+                }
+                else
+                {
+                    return Ok(new { Body = new { valid = false }, countryName = country.Name, responseMessage = await tokenResponse.Content.ReadAsStringAsync() });
+                }
+            }
+        }
+
 
         [HttpPost]
         public async Task<IHttpActionResult> PostFileForm()

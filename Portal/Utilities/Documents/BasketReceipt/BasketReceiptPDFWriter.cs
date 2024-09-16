@@ -717,8 +717,6 @@ namespace Portal.Utilities.Basket
 
             finalDocument.Close();
 
-
-
             finalStream.Position = 0; // reset the finalStream to position 0
 
             PdfReader reader = new PdfReader(finalStream); // create a reader on this finalStream

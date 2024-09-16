@@ -31,22 +31,6 @@ namespace Portal.Controllers
 
             var userId = User.Identity.GetUserId<int>();
 
-            //var availableApplications = new List<Application>();
-            //var permittedApplications = new List<Application>();
-
-            //if (user.Roles != null)
-            //{
-            //    var myRoles = user.Roles.Select(p => p.Role).ToList();
-
-            //    permittedApplications = myRoles.SelectMany(p => p.Application_Roles).OrderBy(p => p.SortOrder ?? p.Application.SortOrder).Select(q => q.Application).ToList();
-
-            //    if (myRoles.Select(p => p.Id).ToList().Contains(1))
-            //    {
-            //        // Super Admin detected.
-            //        permittedApplications = PortalDb.Applications.Where(p => p.Deleted == false).ToList();
-            //    }
-            //}
-
             var model = new HomeViewModel(
                 PortalDb.FetchApplications(userId).ToList(),
                 PortalDb.ApplicationGroups.Where(p => p.Deleted == false).ToList(),

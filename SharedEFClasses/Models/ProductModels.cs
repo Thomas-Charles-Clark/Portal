@@ -14,6 +14,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
+using NLog.LayoutRenderers.Wrappers;
 
 namespace SharedEFClasses.Models.Products
 {
@@ -641,6 +642,84 @@ namespace SharedEFClasses.Models.Products
                     }
                 };
             }
+        }
+    }
+
+
+    public class ProductSearchResultFlat
+    {
+        public string Code { get; set; }
+        public string BasketName { get; set; }
+        public string OrderFormName { get; set; }
+        public string Brand { get; set; }
+        public string Status { get; set; }
+        public decimal? RRP { get; set; }
+        public string ProductType { get; set; }
+        public string ProductPageName { get; set; }
+        public string OrderFormGroup { get; set; }
+        public string Collection { get; set; }
+        public string ProductPageDescription { get; set; }
+        public bool Grouped { get; set; }
+        public string Design { get; set; }
+        public string EAN { get; set; }
+        public string StockLocation { get; set; }
+        public decimal Available { get; set; }
+        public decimal Incoming { get; set; }
+        public decimal? NetWeight { get; set; }
+        public bool? WideWidth { get; set; }
+        public byte MaxFoldLength { get; set; }
+        public string Size { get; set; }
+        public bool MadeToOrder { get; set; }
+        public decimal? MaxLengthPerPole { get; set; }
+        public string AKA { get; set; }
+        public long ImageID { get; set; }
+        public string Units { get; set; }
+        public byte QuantityPrecision { get; set; }
+
+        public ProductSearchResultFlat(ProductSearchResult p)
+        {
+            this.AKA = p.AKA;
+            this.BasketName = p.BasketName;
+            this.Brand = p.Brand;
+            this.Code = p.Code;
+            this.Collection = p.Collection;
+            this.Design = p.Design;
+            this.EAN = p.EAN;
+            this.Grouped = p.Grouped;
+            this.MadeToOrder = p.MadeToOrder;
+            this.MaxFoldLength = p.MaxFoldLength;
+            this.MaxLengthPerPole = p.MaxLengthPerPole;
+            this.NetWeight = p.NetWeight;
+            this.OrderFormGroup = p.OrderFormGroup;
+            this.OrderFormName = p.OrderFormName;
+            this.ProductPageDescription = p.ProductPageDescription;
+            this.ProductPageName = p.ProductPageName;
+            this.ProductType = p.ProductType?.Replace("<br/>", " ");
+            this.RRP = p.RRP;
+            this.Size = p.Size;
+            this.ImageID = p.ImageID ?? 117989L;
+            this.QuantityPrecision = p.QuantityPrecisionA;
+            this.Units = p.Units;
+
+            switch (p.Status)
+            {
+                case "C":
+                case "Y":
+                    this.Status = "Current";
+                    break;
+                case "L":
+                    this.Status = "Limited";
+                    break;
+                case "D":
+                    this.Status = "Discontinued";
+                    break;
+                default: break;
+            }
+
+            this.StockLocation = p.StockLocationA;
+            this.Available = p.StockLocationA_Available;
+            this.Incoming = p.StockLocationA_Incoming;
+            this.WideWidth = p.WideWidth;
         }
     }
 

@@ -1,0 +1,249 @@
+﻿@model Portal.Areas.Products.ViewModels.PatternBooksViewModel
+@{
+    ViewBag.Title = "Pattern Books";
+    Layout = "~/Views/Shared/_Layout-New.cshtml";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/kendo-custom")
+    @Styles.Render("~/bundles/css/pattern-books")
+    @Styles.Render("~/bundles/css/mdc-custom")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/datetime-picker")
+    @Scripts.Render("~/bundles/js/contract-pricing")
+    @Scripts.Render("~/bundles/js/tempus-dominus")
+    @Scripts.Render("~/bundles/js/pattern-books")
+
+    <script type="text/javascript">
+
+        var viewModel = patternBooksViewModel();
+
+        ko.options.deferUpdates = true;
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        ko.applyBindings(viewModel, document.body);
+
+        self = viewModel;
+
+        @*@if (User.Identity.GetUserId<int>() == 8)
+        {
+            @:viewModel.setTest();
+        }*@
+    </script>
+}
+
+<div class="blocker" data-bind="flexFadeVisible: busy">
+    <div class="loading-spinner"></div>
+    <h4 class="mt-3">
+        Please wait...
+    </h4>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+<script type="text/html" id="current-products">
+    <section class="current-products">
+        <!-- ko if: currentProducts().length == 0 -->
+        <label>
+            No Current Products exist in this Pattern Book
+        </label>
+        <!-- /ko -->
+        <!-- ko if: currentProducts().length > 0 -->
+        <label>
+            Current Products
+        </label>
+        <!-- /ko -->
+        <div class="pattern-book-contents-wrapper current">
+            <!-- ko foreach: currentProducts -->
+            <div class="pattern-book-item">
+                <!-- ko if: ImageID != null -->
+                <img data-bind="attr: { src: 'https://www.designersguild.com/image/239/' + ImageID, title: Code }" />
+                <!-- /ko -->
+                <span class="product-details">
+                    <span data-bind="text: OrderFormName"></span>
+                    <span data-bind="text: Code"></span>
+                </span>
+                <span class="stock-info" data-bind="with: StockData">
+                    <span data-bind="with: StockLocationA">
+                        <span data-bind="text: `${Name}: ${Available}${Units}`, class: AvailableClass"></span>
+                    </span>
+                </span>
+            </div>
+            <!-- /ko -->
+        </div>
+    </section>
+</script>
+<script type="text/html" id="limited-discontinued-products">
+    <section class="pattern-book-disco-limo">
+        <!-- ko if: limitedProducts().length == 0 -->
+        <label>
+            No Limited Stock Products exist in this Pattern Book
+        </label>
+        <!-- /ko -->
+        <!-- ko if: limitedProducts().length > 0 -->
+        <label>
+            Limited Availability - Please Check Stock Before Ordering
+        </label>
+        <div class="pattern-book-contents-wrapper limo-disco">
+            <!-- ko foreach: limitedProducts -->
+            <div class="pattern-book-item">
+                <!-- ko if: ImageID != null -->
+                <img data-bind="attr: { src: 'https://www.designersguild.com/image/239/' + ImageID, title: Code }" />
+                <!-- /ko -->
+                <span class="product-details">
+                    <span data-bind="text: OrderFormName"></span>
+                    <span data-bind="text: Code"></span>
+                </span>
+                <span class="stock-info" data-bind="with: StockData">
+                    <span data-bind="with: StockLocationA">
+                        <span data-bind="text: `${Name}: ${Available}${Units}`, class: AvailableClass"></span>
+                    </span>
+                </span>
+            </div>
+            <!-- /ko -->
+        </div>
+        <!-- /ko -->
+    </section>
+    <section class="pattern-book-disco-limo">
+        <!-- ko if: discontinuedProducts().length == 0 -->
+        <label>
+            No Discontinued Products exist in this Pattern Book
+        </label>
+        <!-- /ko -->
+        <!-- ko if: discontinuedProducts().length > 0 -->
+        <label>
+            Discontinued Products
+        </label>
+        <div class="pattern-book-contents-wrapper limo-disco">
+            <!-- ko foreach: discontinuedProducts -->
+            <div class="pattern-book-item">
+                <!-- ko if: ImageID != null -->
+                <img data-bind="attr: { src: 'https://www.designersguild.com/image/239/' + ImageID, title: Code }" />
+                <!-- /ko -->
+                <span class="product-details">
+                    <span data-bind="text: OrderFormName"></span>
+                    <span data-bind="text: Code"></span>
+                </span>
+                <span class="stock-info" data-bind="with: StockData">
+                    <span data-bind="with: StockLocationA">
+                        <span data-bind="text: `${Name}: ${Available}${Units}`, class: AvailableClass"></span>
+                    </span>
+                </span>
+            </div>
+            <!-- /ko -->
+        </div>
+        <!-- /ko -->
+    </section>
+</script>
+<div class="card mt-3">
+    <div class="card-body">
+        <div class="prefilters">
+            <div id="trade-account-filter" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: tradeAccountParams }"></div>
+            <div id="pattern-book-filter" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: patternBookParams }"></div>
+        </div>
+        <div class="wrapper d-none" data-bind="flexFadeVisible: computer">
+            <div class="pattern-book-contents">
+                <!-- ko if: patternBookContents().length > 0 -->
+                <ul class="nav nav-tabs nav-justified">
+                    <li class="nav-item">
+                        <button id="all-products-btn" type="button" class="nav-link active" data-bs-toggle="tab" data-bs-target="#all-products-tab" type="button" role="tab" aria-controls="home" aria-selected="true"
+                                data-bind="event: { 'show.bs.tab': (e) => { patternBookView(PATTERNBOOK_DISPLAY_ALL); return true; } }">
+                            All Products (<span data-bind="text: patternBookContents().length"></span>)
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button id="current-products-btn" type="button" class="nav-link" data-bs-toggle="tab" data-bs-target="#current-products-tab" type="button" role="tab" aria-controls="profile" aria-selected="false"
+                                data-bind="event: { 'show.bs.tab': (e) => { patternBookView(PATTERNBOOK_DISPLAY_CURRENT); return true; } }">
+                            Current Products (<span data-bind="text: currentProducts().length"></span>)
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button id="limited-discontinued-products-btn" type="button" class="nav-link" data-bs-toggle="tab" data-bs-target="#limited-discontinued-products-tab" type="button" role="tab" aria-controls="contact" aria-selected="false"
+                                data-bind="event: { 'show.bs.tab': (e) => { patternBookView(PATTERNBOOK_DISPLAY_LIMITED_DISCO); return true; } }">
+                            Limited / Discontinued Products (<span data-bind="text: limitedProducts().length + discontinuedProducts().length"></span>)
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="all-products-tab" role="tabpanel" aria-labelledby="all-products-tab">
+                        <!-- ko template: { name: 'current-products', data: $data } --><!-- /ko -->
+                        <!-- ko template: { name: 'limited-discontinued-products', data: $data } --><!-- /ko -->
+                    </div>
+                    <div class="tab-pane fade" id="current-products-tab" role="tabpanel" aria-labelledby="current-products-tab">
+                        <!-- ko template: { name: 'current-products' } --><!-- /ko -->
+                    </div>
+                    <div class="tab-pane fade" id="limited-discontinued-products-tab" role="tabpanel" aria-labelledby="limited-discontinued-products-tab">
+                        <!-- ko template: { name: 'limited-discontinued-products' } --><!-- /ko -->
+                    </div>
+                </div>
+                <div class="emailer-wrapper d-none" data-bind="flexFadeVisible: patternBookContents().length > 0">
+                    <div class="">
+                        <div class="d-flex gap-3">
+                            <div class="d-flex pattern-book-email-input-wrapper">
+                                <div class="form-group mdc-validating-field margin-bottom-0">
+                                    <div class="mdc-text-field mdc-text-field--outlined" data-bind="keepElement: patternBookEmail, mdcTextField: { boundTo: patternBookEmail, useNativeValidation: false }, validationOptions: { insertMessages: false }">
+                                        <input id="pattern-book-email-input" type="text" class="mdc-text-field__input" data-bind="textInput: patternBookEmail" />
+                                        <div class="mdc-notched-outline mdc-notched-outline--notched">
+                                            <div class="mdc-notched-outline__leading"></div>
+                                            <div class="mdc-notched-outline__notch">
+                                                <label for="input" class="col-form-label mdc-floating-label">
+                                                    Email Address
+                                                </label>
+                                            </div>
+                                            <div class="mdc-notched-outline__trailing"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-success" data-bind="click: sendEmail">
+                                    Send
+                                    <span class="bi bi-send"></span>
+                                </button>
+                                <span class="validation-message text-danger" data-bind="validationMessage: patternBookEmail"></span>
+                            </div>
+                            <button class="btn btn-success" data-bind="click: downloadXlsx">
+                                Download .xlsx
+                                <span class="bi bi-filetype-xlsx ms-2"></span>
+                            </button>
+                            <button class="btn btn-success" data-bind="click: downloadPdf">
+                                Download .pdf
+                                <span class="bi bi-filetype-pdf ms-2"></span>
+                            </button>
+                        </div>
+                        <span class="tarf-last-send" style="display: none;" data-bind="fadeVisible: showLastSentTo, fadeSpeed: 'slow', text: 'Sent successfully to: ' + patternBookEmail()"></span>
+                    </div>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: !busy() && patternBookContents().length == 0 -->
+                <p>
+                    No contents were found for this pattern book.
+                </p>
+                <!-- /ko -->
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -626,6 +626,8 @@
     <Compile Include="Utilities\dgCrypto.cs" />
     <Compile Include="Utilities\EntityUtils.cs" />
     <Compile Include="Utilities\Framework.cs" />
+    <Compile Include="Utilities\HMRCTokenResponse.cs" />
+    <Compile Include="Utilities\HMRCVATCheckResult.cs" />
     <Compile Include="Utilities\NewtonsoftExtensions\JsonExtensions.cs" />
     <Compile Include="Utilities\OrderedContractResolver.cs" />
     <Compile Include="Utilities\ResourceCacheProvider.cs" />

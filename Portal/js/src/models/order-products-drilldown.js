@@ -3695,7 +3695,7 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
             self.sendEmailBusy(true);
 
             var currentItems = Enumerable.From(self.patternBookContents().products).Where(function (x) {
-                return x.record.Status == 'C'
+                return x.record.Status == 'C' || x.record.Status == 'Y'
             }).Select(function (x) {
                 var result = $.extend({}, x.record);
                 delete result.StockData;

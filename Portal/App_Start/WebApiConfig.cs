@@ -291,6 +291,12 @@ namespace Portal
                 .ReturnsCollectionFromEntitySet<Product>("Products");
 
 
+            var patternBooksFilterFunction = odataBuilder.EntityType<Product>()
+                .Collection
+                .Function("GetPatternBooks")
+                .ReturnsCollectionFromEntitySet<Product>("Products");
+
+
             var ringFenceableProductsFilterFunction = odataBuilder.EntityType<Product>()
                 .Collection
                 .Function("GetRingFenceableProducts")

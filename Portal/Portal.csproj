@@ -592,7 +592,11 @@
     <Compile Include="Areas\Parcel\ViewModels\ParcelCalculatorViewModel.cs" />
     <Compile Include="Areas\Products\Controllers\BasketStatusAPIController.cs" />
     <Compile Include="Areas\Products\Controllers\BasketStatusController.cs" />
+    <Compile Include="Areas\Products\Controllers\PatternBooksApiController.cs" />
+    <Compile Include="Areas\Products\Controllers\PatternBooksController.cs" />
     <Compile Include="Areas\Products\Controllers\ProductCategoriesController.cs" />
+    <Compile Include="Areas\Products\Models\PassPatternBookFetch.cs" />
+    <Compile Include="Areas\Products\ViewModels\PatternBooksViewModel.cs" />
     <Compile Include="Areas\Products\ViewModels\ProductCategoriesViewModel.cs" />
     <Compile Include="Areas\Products\ViewModels\BasketStatusViewModel.cs" />
     <Compile Include="Areas\Products\ViewModels\TreatmentMaintenanceViewModel.cs" />
@@ -688,6 +692,7 @@
     <Compile Include="UPSTracking\Functions.cs" />
     <Compile Include="UPSTracking\TrackingRequest.cs" />
     <Compile Include="UPSTracking\TrackingReply.cs" />
+    <Compile Include="Utilities\Documents\PatternBook\PatternBookPDFWriter.cs" />
     <Compile Include="Utilities\EU_EORI_Lookup.cs" />
     <Compile Include="Utilities\FastExcel\Cell.cs" />
     <Compile Include="Utilities\FastExcel\CellRange.cs" />
@@ -1428,6 +1433,7 @@
     <Content Include="js\src\models\paint-invoice-approval.js" />
     <Content Include="js\src\models\paint-mixing.js" />
     <Content Include="js\src\models\parcel-calculator.js" />
+    <Content Include="js\src\models\pattern-books.js" />
     <Content Include="js\src\models\press-contacts.js" />
     <Content Include="js\src\models\price-checker.js" />
     <Content Include="js\src\models\pricing-enquiry.js" />
@@ -2215,6 +2221,7 @@
     <Content Include="Areas\Parcel\Views\web.config" />
     <Content Include="Areas\Parcel\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Parcel\Views\ParcelCalculator\ParcelCalculator.cshtml" />
+    <Content Include="Areas\Products\Views\PatternBooks\PatternBooks.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
     <Content Include="Areas\Stock\Views\RangeManagement\RangeManagement.cshtml" />
     <None Include="compilerconfig.json" />
@@ -2299,6 +2306,7 @@
     <Content Include="css\src\lib\bootstrap-icons\bootstrap-icons.scss" />
     <Content Include="css\src\models\order-book-sales.scss" />
     <Content Include="css\src\models\parcel-calculator.scss" />
+    <Content Include="css\src\models\pattern-books.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -3321,7 +3329,6 @@
     <Folder Include="Areas\Pricing\Models\" />
     <Folder Include="Areas\Pricing\Views\PricingWebApi\" />
     <Folder Include="Areas\Pricing\Views\Shared\" />
-    <Folder Include="Areas\Products\Models\" />
     <Folder Include="Areas\Retail\Views\Shared\" />
     <Folder Include="edge\x64\" />
     <Folder Include="edge\x86\" />

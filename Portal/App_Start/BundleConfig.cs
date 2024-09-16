@@ -357,6 +357,11 @@ namespace Portal
                 $"{cssPrefix}/models/parcel-calculator{cssSuffix}"
             ));
 
+            bundles.Add(new StyleBundle("~/bundles/css/pattern-books").Include(
+                $"{cssPrefix}/lib/tempus-dominus/tempus-dominus{cssSuffix}",
+                $"{cssPrefix}/models/pattern-books{cssSuffix}"
+            ));
+
             //  
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             //
@@ -830,6 +835,12 @@ namespace Portal
 
             bundles.Add(new ScriptBundle("~/bundles/js/parcel-calculator").Include(
                         $"{jsPrefix}/models/parcel-calculator{jsSuffix}"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/pattern-books").Include(
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/pattern-books{jsSuffix}"
                 ));
 
             foreach (var b in BundleTable.Bundles)

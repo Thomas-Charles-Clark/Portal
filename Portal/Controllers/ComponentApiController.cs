@@ -1183,7 +1183,7 @@ namespace Portal.Controllers
 
             if (limitedProducts.Count > 0)
             {
-                limitedProductsInky = $@"<row><columns><hr/></columns></row><spacer size=""10""></spacer><row><columns><h6>The following products are of <strong>Limited Availability</strong>.</h6></columns></row><spacer size=""10""></spacer>";
+                limitedProductsInky = $@"<spacer size=""10""></spacer><row><columns><h6>The following products are of <strong>Limited Availability</strong>.</h6></columns></row><spacer size=""10""></spacer>";
 
                 var requireExtraRow = limitedProducts.Count % 3 > 0;
 
@@ -1207,7 +1207,7 @@ namespace Portal.Controllers
                             limitedProductsInky += $@"
 <columns small=""12"" large=""3"" valign=""top"" style=""vertical-align: top;"">
     <center>
-        <img width=""192"" height=""192"" src=""https://www.designersguild.com/image/239/{rec.ImageID}"" alt=""{rec.BasketName}""/>
+        <img width=""192"" height=""192"" src=""https://www.designersguild.com/image-nonwebp/239/{rec.ImageID}"" alt=""{rec.BasketName}""/>
     </center>
     <p class=""product-name text-center small-text-center"">
         {rec.BasketName}
@@ -1241,7 +1241,12 @@ namespace Portal.Controllers
 
             if (discoProducts.Count > 0)
             {
-                discoProductsInky = @"<row><columns><hr/></columns></row><spacer size=""10""></spacer><row><columns><h6 class=""red-text"">The following products are <strong>Discontinued</strong> and cannot be ordered.</h6></columns></row><spacer size=""10""></spacer>";
+                if (limitedProducts.Count > 0)
+                {
+                    discoProductsInky = @"<row><columns><hr/></columns></row>";
+                }
+
+                discoProductsInky += @"<spacer size=""10""></spacer><row><columns><h6 class=""red-text"">The following products are <strong>Discontinued</strong> and cannot be ordered.</h6></columns></row><spacer size=""10""></spacer>";
 
                 var requireExtraRow = discoProducts.Count % 3 > 0;
 
@@ -1265,7 +1270,7 @@ namespace Portal.Controllers
                             discoProductsInky += $@"
 <columns small=""12"" large=""3"" valign=""top"" style=""vertical-align: top;"">
     <center>
-        <img width=""192"" height=""192"" src=""https://www.designersguild.com/image/239/{rec.ImageID}"" alt=""{rec.BasketName}"">
+        <img width=""192"" height=""192"" src=""https://www.designersguild.com/image-nonwebp/239/{rec.ImageID}"" alt=""{rec.BasketName}"">
     </center>
     <p class=""product-name text-center small-text-center"">
         {rec.BasketName}
@@ -1273,6 +1278,7 @@ namespace Portal.Controllers
     <p class=""text-center small-text-center"">
         {rec.Code}
     </p>
+    <p>&nbsp;</p>
 </columns>";
                         }
                         else
@@ -1293,8 +1299,8 @@ namespace Portal.Controllers
             <meta name=""x-apple-disable-message-reformatting""/>
             <container>
                 <row>
+                    <spacer height=""15""></spacer>
                     <columns>
-                        <img width=""640"" height=""54"" style=""margin: 15px 0 0 0"" alt='Designers Guild' src='https://www.designersguild.com/_assets/email_images/logos/header-logo.jpg' title='Designers Guild' />
                         <p class=""text-left"" style=""margin-top: 0"">
                             Dear Customer,
                         </p>
@@ -1312,6 +1318,7 @@ namespace Portal.Controllers
                     <columns>
                         <spacer height=""10""></spacer>
                         <p class=""text-center small-text-center"">Thank you for your interest in Designers Guild.</span>
+                        <spacer height=""20""></spacer>
                     </columns>
                 </row>
             </container>";
@@ -1368,11 +1375,6 @@ namespace Portal.Controllers
             if (currentProducts.Count > 0)
             {
                 currentProductsInky = $@"
-<row>
-    <columns>
-        <hr/>
-    </columns>
-</row>
 <spacer size=""10""></spacer>
 <row>
     <columns>
@@ -1438,7 +1440,7 @@ namespace Portal.Controllers
             <container>
                 <row>
                     <columns>
-                        <img style=""margin: 15px 0 0 0"" alt='Designers Guild' src='https://www.designersguild.com/_assets/email_images/logos/header-logo.jpg' title='Designers Guild' />
+                        <spacer height=""15""></spacer>
                         <p class=""text-left"" style=""margin-top: 0"">
                             Dear Customer,
                         </p>
@@ -1452,9 +1454,10 @@ namespace Portal.Controllers
                 </row>
                     {currentProductsInky}
                 <row>
-                    <columns>
+                    <columns> 
                         <spacer height=""10""></spacer>
                         <p class=""text-center small-text-center"">Thank you for your interest in Designers Guild.</span>
+                        <spacer height=""20""></spacer>
                     </columns>
                 </row>
             </container>";
@@ -1483,6 +1486,269 @@ namespace Portal.Controllers
                 var subject = "";
 
                 subject = $"{objSend.patternBookCode} - Current Product Info";
+
+                body = inkyMarkup;
+
+                ((EmailService)UserManager.EmailService).SendFoundationEmailAsync(new IdentityMessage()
+                {
+                    Body = body,
+                    Subject = subject,
+                    Destination = objSend.recipient
+                });
+            });
+#pragma warning restore 4014
+
+            return Ok(new { });
+        }
+
+
+
+        [HttpPost]
+        public IHttpActionResult SendPatternBookAllEmail([FromBody] PassSendPatternBookAllInfo objSend)
+        {
+            var member = UserManager.FindById(User.Identity.GetUserId<int>());
+
+            var currentProducts = objSend.items.Where(p => p.Status == "C" || p.Status == "Y").OrderBy(p => p.Code).ToList();
+
+            var currentProductsInky = "";
+
+            if (currentProducts.Count > 0)
+            {
+                currentProductsInky = $@"
+<spacer size=""10""></spacer>
+<row>
+    <columns>
+        <h6>The following products are Currently Available.</h6>
+    </columns>
+</row>
+<spacer size=""10""></spacer>";
+
+                var requireExtraRow = currentProducts.Count % 3 > 0;
+
+                var rowCount = (int)Math.Floor(currentProducts.Count / 3m);
+
+                if (requireExtraRow)
+                    rowCount++;
+
+                var ctr = 0;
+
+                for (var i = 1; i <= rowCount; i++)
+                {
+                    currentProductsInky += "<row>";
+
+                    for (var j = 0; j < 3; j++)
+                    {
+                        if (ctr < currentProducts.Count)
+                        {
+                            var rec = currentProducts[ctr];
+
+                            currentProductsInky += $@"
+<columns small=""12"" large=""3"" valign=""top"" style=""vertical-align: top;"">
+    <center>
+        <img width=""192"" height=""192"" src=""https://www.designersguild.com/image-nonwebp/239/{rec.ImageID}"" alt=""{rec.BasketName}""/>
+    </center>
+    <p class=""product-name text-center small-text-center"">
+        {rec.BasketName}
+    </p>
+    <p class=""text-center small-text-center"">
+        {rec.Code}
+    </p>
+    <p class="" text-center small-text-center"">
+        {rec.StockLocationA_Available.ToString($"N{rec.QuantityPrecisionA}")} {rec.Units} available
+    </p>
+    <p class=""text-center small-text-center"">
+        {(rec.RRP.HasValue ? @"RRP: " + rec.RRP.Value.ToString("C") : "&nbsp;")}
+    </p>
+</columns>";
+                        }
+                        else
+                        {
+                            //currentProductsInky += $@"<columns small=""12"" large=""3""></columns>";
+                        }
+
+                        ctr++;
+                    }
+
+                    currentProductsInky += "</row>";
+                }
+            }
+
+            var limitedProducts = objSend.items.Where(p => p.Status == "L").OrderBy(p => p.Code).ToList();
+
+            var limitedProductsInky = "";
+
+            if (limitedProducts.Count > 0)
+            {
+                if (currentProducts.Count > 0)
+                {
+                    limitedProductsInky += @"
+<row>
+    <columns>
+        <hr/>
+    </columns>
+</row>";
+                }
+
+                limitedProductsInky = $@"<spacer size=""10""></spacer><row><columns><h6>The following products are of <strong>Limited Availability</strong>.</h6></columns></row><spacer size=""10""></spacer>";
+
+                var requireExtraRow = limitedProducts.Count % 3 > 0;
+
+                var rowCount = (int)Math.Floor(limitedProducts.Count / 3m);
+
+                if (requireExtraRow)
+                    rowCount++;
+
+                var ctr = 0;
+
+                for (var i = 1; i <= rowCount; i++)
+                {
+                    limitedProductsInky += "<row>";
+
+                    for (var j = 0; j < 3; j++)
+                    {
+                        if (ctr < limitedProducts.Count)
+                        {
+                            var rec = limitedProducts[ctr];
+
+                            limitedProductsInky += $@"
+<columns small=""12"" large=""3"" valign=""top"" style=""vertical-align: top;"">
+    <center>
+        <img width=""192"" height=""192"" src=""https://www.designersguild.com/image-nonwebp/239/{rec.ImageID}"" alt=""{rec.BasketName}""/>
+    </center>
+    <p class=""product-name text-center small-text-center"">
+        {rec.BasketName}
+    </p>
+    <p class=""text-center small-text-center"">
+        {rec.Code}
+    </p>
+    <p class=""text-center small-text-center"">
+        {rec.StockLocationA_Available.ToString($"N{rec.QuantityPrecisionA}")} {rec.Units} available
+    </p>
+    <p class=""text-center small-text-center"">
+        {(rec.RRP.HasValue ? @"RRP: " + rec.RRP.Value.ToString("C") : "&nbsp;")}
+    </p>
+</columns>";
+                        }
+                        else
+                        {
+                            //limitedProductsInky += $@"<columns small=""12"" large=""3""></columns>";
+                        }
+
+                        ctr++;
+                    }
+
+                    limitedProductsInky += "</row>";
+                }
+            }
+
+            var discoProducts = objSend.items.Where(p => p.Status == "D").OrderBy(p => p.Code).ToList();
+
+            var discoProductsInky = "";
+
+            if (discoProducts.Count > 0)
+            {
+                if (limitedProducts.Count > 0)
+                {
+                    discoProductsInky = @"<row><columns><hr/></columns></row>";
+                }
+
+                discoProductsInky += @"<spacer size=""10""></spacer><row><columns><h6 class=""red-text"">The following products are <strong>Discontinued</strong> and cannot be ordered.</h6></columns></row><spacer size=""10""></spacer>";
+
+                var requireExtraRow = discoProducts.Count % 3 > 0;
+
+                var rowCount = (int)Math.Floor(discoProducts.Count / 3m);
+
+                if (requireExtraRow)
+                    rowCount++;
+
+                var ctr = 0;
+
+                for (var i = 1; i <= rowCount; i++)
+                {
+                    discoProductsInky += "<row>";
+
+                    for (var j = 0; j < 3; j++)
+                    {
+                        if (ctr < discoProducts.Count)
+                        {
+                            var rec = discoProducts[ctr];
+
+                            discoProductsInky += $@"
+<columns small=""12"" large=""3"" valign=""top"" style=""vertical-align: top;"">
+    <center>
+        <img width=""192"" height=""192"" src=""https://www.designersguild.com/image-nonwebp/239/{rec.ImageID}"" alt=""{rec.BasketName}"">
+    </center>
+    <p class=""product-name text-center small-text-center"">
+        {rec.BasketName}
+    </p>
+    <p class=""text-center small-text-center"">
+        {rec.Code}
+    </p>
+    <p>&nbsp;</p>
+</columns>";
+                        }
+                        else
+                        {
+                            //discoProductsInky += $@"<columns small=""12"" large=""3""></columns>";
+                        }
+
+                        ctr++;
+                    }
+
+                    discoProductsInky += " </row>";
+                } 
+            }
+
+            var inkyMarkup = $@"<style>
+            {PortalFramework.FoundationEmailCSS}
+            </style>
+            <meta name=""x-apple-disable-message-reformatting""/>
+            <container>
+                <row>
+                    <columns>
+                        <spacer height=""15""></spacer>
+                        <p class=""text-left"" style=""margin-top: 0"">
+                            Dear Customer,
+                        </p>
+                        <p>
+                            Please find below information on products in Pattern Book {objSend.patternBookCode}, ""{objSend.patternBookName.Trim()}"".
+                        </p>
+                        <p>
+                            Stock levels stated were accurate as at {DateTime.Now.ToString("dd/MM/yyyy")}.
+                        </p>
+                    </columns>
+                </row>
+                    {currentProductsInky}
+                    {limitedProductsInky}
+                    {discoProductsInky}
+                <row>
+                    <columns> 
+                        <spacer height=""10""></spacer>
+                        <p class=""text-center small-text-center"">Thank you for your interest in Designers Guild.</span>
+                        <spacer height=""20""></spacer>
+                    </columns>
+                </row>
+            </container>";
+
+
+#pragma warning disable 4014
+            System.Threading.Tasks.Task.Factory.StartNew(async () =>
+            {
+                using (var client = new HttpClient())
+                {
+                    var content = new StringContent(inkyMarkup);
+
+                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+
+                    var result = await client.PostAsync(PortalFramework.InkyEndpoint, content);
+
+                    inkyMarkup = await result.Content.ReadAsStringAsync();
+                }
+
+                var body = "";
+                var subject = "";
+
+                subject = $"{objSend.patternBookCode} - Product Info";
 
                 body = inkyMarkup;
 
@@ -2656,6 +2922,31 @@ namespace Portal.Controllers
                 {
                     using (var client = new HttpClient())
                     {
+                        var tokenResponse = await client.GetAsync($"{Framework.HMRCDeveloperHubSandboxBaseURL}/oauth/token");
+
+                        if (tokenResponse.IsSuccessStatusCode)
+                        {
+                            var token = JsonConvert.DeserializeObject<HMRCTokenResponse>(await tokenResponse.Content.ReadAsStringAsync());
+
+                            var vatResponse = await client.GetAsync($"{Framework.HMRCDeveloperHubSandboxBaseURL}/organisations/vat/check-vat-number/lookup/{objVATNumber.vatNumber}");
+
+                            if (vatResponse.IsSuccessStatusCode)
+                            {
+                                var vatCheckResult = JsonConvert.DeserializeObject<HMRCVATCheckResult>(await vatResponse.Content.ReadAsStringAsync());
+
+                                return Ok(new { Body = new { valid = true, traderName = vatCheckResult.Target.Name }, countryName = country.Name });
+                            }
+                            else
+                            {
+                                return Ok(new { Body = new { valid = false }, countryName = country.Name });
+                            }
+                        }
+                        else
+                        {
+                            return Ok(new { Body = new { valid = false }, countryName = country.Name });
+                        }
+
+
                         var gbResponse = await client.GetAsync($"https://api.service.hmrc.gov.uk/organisations/vat/check-vat-number/lookup/{objVATNumber.vatNumber}");
 
                         if (gbResponse.IsSuccessStatusCode)
