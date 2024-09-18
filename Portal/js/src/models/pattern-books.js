@@ -344,7 +344,7 @@ const patternBooksViewModel = (() => {
     //#region Functions
 
     self.reset = () => {
-        self.errors.showAllMessages(false);
+        self.patternBookErrors.showAllMessages(false);
         self.tradeAccountParams.clearFunction();
         self.patternBookParams.clearFunction();
         self.patternBookEmail(undefined);

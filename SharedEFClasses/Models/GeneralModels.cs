@@ -704,7 +704,7 @@ namespace SharedEFClasses.Models.General
         public string Name { get; set; }
         public byte CurrencyID { get; set; }
 
-        [JsonIgnore]
+        [ForeignKey("CurrencyID")]
         public virtual Currency Currency { get; set; }
 
         [JsonIgnore]
@@ -713,6 +713,10 @@ namespace SharedEFClasses.Models.General
         [JsonIgnore]
         [InverseProperty("PriceList")]
         public virtual ICollection<MarketingBudget> MarketingBudgetRecords { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("PriceList")]
+        public virtual ICollection<GiftVoucher> GiftVouchers { get; set; }
     }
 
     public class SalesRepresentative

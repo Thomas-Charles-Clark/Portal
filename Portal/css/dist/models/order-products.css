@@ -1,4 +1,21 @@
 @charset "UTF-8";
+:root {
+  --vsm-gutter: 0.25rem;
+  --sm-gutter: 0.5rem;
+  --m-gutter: 0.75rem;
+  --l-gutter: 1rem;
+  --mxl-gutter: 1.5rem;
+  --xl-gutter: 2rem;
+  --xxl-gutter: 3rem;
+  --disco-color: #e51f7c;
+  --letter-spacing-slight: 0.05rem;
+  --page-heading-colour: #44546b;
+}
+
+.input-group-lg .btn {
+  font-size: 1rem;
+}
+
 @media (min-width: 1023px) {
   #order-products-modal {
     padding-left: 0 !important;
@@ -279,6 +296,53 @@
   color: blue;
 }
 
+.modal-readonly {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+.modal-readonly label {
+  position: absolute;
+  bottom: 0;
+  background-color: #495057;
+  color: #fff;
+  padding: 0.25rem 0.75rem;
+  margin-bottom: 0;
+}
+.modal-readonly label.readonly-start {
+  left: 0;
+  border-bottom-left-radius: 4px;
+  text-align: left;
+}
+.modal-readonly label.readonly-end {
+  right: 0;
+  border-bottom-right-radius: 4px;
+  text-align: right;
+}
+
+.readonly {
+  background: repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.05), transparent 1rem, rgba(0, 0, 0, 0.05) 1rem, transparent 2rem);
+}
+.readonly .modal-readonly {
+  display: block;
+}
+
+#last-chance-modal .modal-body.readonly {
+  padding-bottom: 3rem;
+  background: repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.05), transparent 1rem, rgba(0, 0, 0, 0.05) 1rem, transparent 2rem);
+}
+#last-chance-modal .modal-body.readonly .modal-readonly {
+  display: block;
+}
+#last-chance-modal .modal-body.readonly .modal-readonly label {
+  border-radius: 0;
+  width: 50%;
+}
+
 #order-products-drilldown-modal .modal-header {
   border-bottom: 0;
   background-image: none;
@@ -479,6 +543,9 @@
   flex: 0 1 auto;
   min-width: 0;
   width: 100%;
+}
+#search-wrapper .search-control .form-control {
+  z-index: 0;
 }
 #search-wrapper .group {
   display: flex;
@@ -6266,5 +6333,9 @@ td.popover-container {
 }
 #basket-split-modal .basket-item-split-list .list-group-item .form-check-label .mdc-form-field {
   font-size: 1rem;
+}
+
+tr.readonly {
+  background: repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.05), transparent 1rem, rgba(0, 0, 0, 0.05) 1rem, transparent 2rem);
 }
 /*# sourceMappingURL=order-products.css.map */

@@ -1,0 +1,49 @@
+:root {
+  --vsm-gutter: 0.25rem;
+  --sm-gutter: 0.5rem;
+  --m-gutter: 0.75rem;
+  --l-gutter: 1rem;
+  --mxl-gutter: 1.5rem;
+  --xl-gutter: 2rem;
+  --xxl-gutter: 3rem;
+  --disco-color: #e51f7c;
+  --letter-spacing-slight: 0.05rem;
+  --page-heading-colour: #44546b;
+}
+
+.input-group-lg .btn {
+  font-size: 1rem;
+}
+
+#main-section {
+  margin-top: 2rem;
+}
+
+.navbar.navbar-default.navbar-expand {
+  position: fixed;
+  z-index: 1;
+  width: 100%;
+}
+.navbar.navbar-default.navbar-expand .container {
+  max-width: unset !important;
+  width: 100% !important;
+  padding-left: 5em;
+  padding-right: 5em;
+  min-width: 1260px;
+}
+
+.container.body-content {
+  max-width: unset !important;
+  width: unset !important;
+  padding-left: 3rem;
+  padding-right: 3rem;
+  padding-top: 2rem;
+  position: relative;
+  top: 52px;
+  z-index: 0;
+}
+
+.k-loading-mask {
+  display: none !important;
+}
+/*# sourceMappingURL=gift-vouchers.css.map */

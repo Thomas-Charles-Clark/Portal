@@ -135,7 +135,7 @@ namespace Portal.Areas.Documents.Controllers
             attachmentStream.Write(stream.GetBuffer(), 0, stream.GetBuffer().Length);
             attachmentStream.Position = 0;
 
-            attachments.Add($"Designers-Guild-{documentTypeHeader}.pdf", attachmentStream);
+            attachments.Add($"Designers Guild {documentTypeHeader}.pdf", attachmentStream);
 
             var memberId = User.Identity.GetUserId<int>();
 

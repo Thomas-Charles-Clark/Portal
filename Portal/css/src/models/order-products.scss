@@ -1,4 +1,8 @@
-﻿@media (min-width: 1023px) {
+﻿@import "../models/common.scss";
+
+$readonly-background: repeating-linear-gradient(-45deg, rgb(0 0 0 / 5%), transparent 1rem, rgba(0, 0, 0, 0.05) 1rem, transparent 2rem);
+
+@media (min-width: 1023px) {
     #order-products-modal {
         padding-left: 0 !important;
 
@@ -382,6 +386,63 @@
     }
 }
 
+.modal-readonly {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+
+    label {
+        position: absolute;
+        bottom: 0;
+        background-color: $gray-700;
+        color: $white;
+        padding: $vsm-gutter $m-gutter;
+        margin-bottom: 0;
+
+        &.readonly-start {
+            left: 0;
+            border-bottom-left-radius: 4px;
+            text-align: left;
+        }
+
+        &.readonly-end {
+            right: 0;
+            border-bottom-right-radius: 4px;
+            text-align: right;
+        }
+    }
+}
+
+.readonly {
+    background: $readonly-background;
+
+    .modal-readonly {
+        display: block;
+    }
+}
+
+#last-chance-modal {
+    .modal-body {
+        &.readonly {
+            padding-bottom: $xxl-gutter;
+            background: $readonly-background;
+
+            .modal-readonly {
+                display: block;
+
+                label {
+                    border-radius: 0;
+                    width: 50%;
+                }
+            }
+        }
+    }
+}
+
 #order-products-drilldown-modal {
     .modal-header {
         border-bottom: 0;
@@ -658,6 +719,12 @@
 }
 
 #search-wrapper {
+    .search-control {
+        .form-control {
+            z-index: 0;
+        }
+    }
+
     .group {
         display: flex;
         flex-direction: column;
@@ -8482,4 +8549,8 @@ td.popover-container {
             }
         }
     }
+}
+
+tr.readonly {
+    background: $readonly-background;
 }

@@ -1183,7 +1183,7 @@
                 <div class="phase-btns" data-bind="template: { name: 'order-phase-btns', data: phaseButtons }"></div>
                 <!-- /ko -->
             </div>
-            <div class="modal-body">
+            <div class="modal-body" data-bind="css: { 'readonly': basketServerObject() && basketServerObject().ReadOnly }">
                 <div data-bind="component: { name: 'matrix-loading-component', params: matrixLoader }"></div>
                 <div class="blocker" data-bind="visible: busy() && !useMatrixLoader()">
                     <div class="busy-bars">
@@ -1196,15 +1196,15 @@
                     <h3 data-bind="html: busyMessage"></h3>
                 </div>
                 <input id="promo-code-autocomplete" type="hidden" data-bind="keepElement: promoCode, value: promoCode, autocomplete: promoCodeAutocompleteParams" />
-                <div id="blank-phase" class="order-product-phases" style="display: none" data-bind="fadeBetweenMany: { 
-                         observable: phase, 
-                         visibleWhen: ORDERFACTORY_PHASE_BLANK, 
-                         swapWith: '.order-product-phases' 
+                <div id="blank-phase" class="order-product-phases" style="display: none" data-bind="fadeBetweenMany: {
+                         observable: phase,
+                         visibleWhen: ORDERFACTORY_PHASE_BLANK,
+                         swapWith: '.order-product-phases'
                      }">
                 </div>
-                <div id="delivery-address-phase" class="order-product-phases" style="display: none" data-bind="fadeBetweenMany: { 
-                         observable: phase, 
-                         visibleWhen: ORDERFACTORY_PHASE_ADDRESS, 
+                <div id="delivery-address-phase" class="order-product-phases" style="display: none" data-bind="fadeBetweenMany: {
+                         observable: phase,
+                         visibleWhen: ORDERFACTORY_PHASE_ADDRESS,
                          swapWith: '.order-product-phases'
                      }">
                     <!-- ko if: deliveryAddressFactory.loadedAddresses() -->
@@ -1270,7 +1270,7 @@
                                         Select End Customer
                                     </h4>
                                     <span class="margin-bottom-15 display-block">
-                                        Please select an End Customer belonging to <span data-bind="text: parent.tradeAccount().Name"></span> 
+                                        Please select an End Customer belonging to <span data-bind="text: parent.tradeAccount().Name"></span>
                                     </span>
                                     <div data-bind="component: { name: 'mdc-text-field-autocomplete-component', params: endCustomerAutocomplete }"></div>
                                     <button class="btn btn-default margin-top-15" data-bind="click: deliveryToParent">
@@ -1320,10 +1320,10 @@
                         </div>
                     </div>
                 </div>
-                <div id="misc-phase" class="order-product-phases" style="display: none;" data-bind="fadeBetweenMany: { 
-                         observable: phase, 
-                         visibleWhen: ORDERFACTORY_PHASE_MISC, 
-                         swapWith: '.order-product-phases' 
+                <div id="misc-phase" class="order-product-phases" style="display: none;" data-bind="fadeBetweenMany: {
+                         observable: phase,
+                         visibleWhen: ORDERFACTORY_PHASE_MISC,
+                         swapWith: '.order-product-phases'
                      }">
                     <div class="order-products-delivery-wrapper" data-bind="with: deliveryAddressFactory, visible: busy() == false">
                         <div class="form-group row">
@@ -1363,10 +1363,10 @@
                         </div>
                     </div>
                 </div>
-                <div id="preamble-phase" class="order-product-phases" style="display: none;" data-bind="fadeBetweenMany: { 
-                         observable: phase, 
-                         visibleWhen: ORDERFACTORY_PHASE_PREAMBLE, 
-                         swapWith: '.filter-phases' 
+                <div id="preamble-phase" class="order-product-phases" style="display: none;" data-bind="fadeBetweenMany: {
+                         observable: phase,
+                         visibleWhen: ORDERFACTORY_PHASE_PREAMBLE,
+                         swapWith: '.filter-phases'
                      }">
                     <div class="form-group row" data-bind="visible: busy() == false">
                         <div class="col-xs-12">
@@ -1492,7 +1492,7 @@
                                         </h4>
                                         <p>
                                             Please enter the purchase order number provided by the customer. If the customer has not provided a purchase order number then please
-                                            request that they provide one before placing the order.<br/>
+                                            request that they provide one before placing the order.<br />
                                             Do not place an order for this customer without a valid purchase order number.
                                         </p>
                                     </div>
@@ -1522,12 +1522,12 @@
                                                 <!-- ko if: PaymentTermsID == 31 -->
                                                 <label class="font-normal flex-container" data-bind="css: { 'text-disabled': !$parent.permitAllocationEnabled() }">
                                                     <input type="checkbox" data-bind="checked: $parent.allocateProforma, enable: $parent.permitAllocationEnabled()" />
-                                                    Tick this box to allow stock to be allocated to this order.<br/>
+                                                    Tick this box to allow stock to be allocated to this order.<br />
                                                     By default stock is not allocated to proforma orders until payment is taken.
                                                 </label>
                                                 <!-- ko ifnot: $parent.permitAllocationEnabled() -->
                                                 <span class="note margin-top-5">
-                                                     You may not change this setting with one or more items in your basket.
+                                                    You may not change this setting with one or more items in your basket.
                                                 </span>
                                                 <!-- /ko -->
                                                 <!-- /ko -->
@@ -1693,22 +1693,22 @@
                                     </div>
                                 </div>
                                 @*<!-- ko if: deliveryAddress.country() -->
-                                <!-- ko if: deliveryAddress.country().EU -->
-                                <div class="col-xs-4">
-                                    <div class="alert alert-info">
-                                        <h4 class="blue-heading">
-                                            What are EU Exit Details?
-                                        </h4>
-                                        <p>
-                                            If we are delivering this order into the EU and the customer is then transporting it to a final destination outside the EU, then we don't need to charge the customer VAT.'
-                                        </p>
-                                        <p>
-                                            To prove that the goods are leaving the EU, we require the final destination address (outside the EU) and an EU exit code.
-                                        </p>
-                                    </div>
-                                </div>
-                                <!-- /ko -->
-                                <!-- /ko -->*@
+                        <!-- ko if: deliveryAddress.country().EU -->
+                        <div class="col-xs-4">
+                            <div class="alert alert-info">
+                                <h4 class="blue-heading">
+                                    What are EU Exit Details?
+                                </h4>
+                                <p>
+                                    If we are delivering this order into the EU and the customer is then transporting it to a final destination outside the EU, then we don't need to charge the customer VAT.'
+                                </p>
+                                <p>
+                                    To prove that the goods are leaving the EU, we require the final destination address (outside the EU) and an EU exit code.
+                                </p>
+                            </div>
+                        </div>
+                        <!-- /ko -->
+                        <!-- /ko -->*@
                             </div>
                             <div class="row margin-top-45">
                                 <div class="col-xs-6">
@@ -1746,10 +1746,10 @@
                         </div>
                     </div>
                 </div>
-                <div id="search-phase" class="order-product-phases" data-bind="fadeBetweenMany: { 
-                         observable: phase, 
-                         visibleWhen: ORDERFACTORY_PHASE_SEARCH, 
-                         swapWith: '.order-product-phases' 
+                <div id="search-phase" class="order-product-phases" data-bind="fadeBetweenMany: {
+                         observable: phase,
+                         visibleWhen: ORDERFACTORY_PHASE_SEARCH,
+                         swapWith: '.order-product-phases'
                      }">
                     <div id="product-group-wrapper" class="form-group">
                         <div class="form-group group shallow-group" data-bind="visible: filterViewMode() == ORDERFACTORY_FILTER_MODE_ADVANCED">
@@ -1807,8 +1807,7 @@
                                 <!-- ko if: $index() == 0 -->
                                 <div class="panel">
                                     <a id="all-products-collapse" class="btn category-heading collapsed" data-toggle="collapse" data-parent="#category-accordion" href="#all-products-collapser" data-product-filter-group="null" data-product-filter-group-id="null"
-                                       data-bind="click: function () { $parent.productFilterGroupButtonClick({ Value: null, ProductFilterID: null, ProductFilterGroupID: null, Seasonal: null }); }"
-                                       >
+                                       data-bind="click: function () { $parent.productFilterGroupButtonClick({ Value: null, ProductFilterID: null, ProductFilterGroupID: null, Seasonal: null }); }">
                                         All Products
                                     </a>
                                     <div id="all-products-collapser" class="panel-collapse collapse">
@@ -1851,15 +1850,15 @@
                             </div>
                         </div>
                         @*<div class="group">
-                                <a class="btn btn-secondary-blue" data-bind="
-                                    css: {
-                                        'btn-primary': filterViewMode() == ORDERFACTORY_FILTER_MODE_STANDARD
-                                    }, click: function () {
-                                        filterViewMode(ORDERFACTORY_FILTER_MODE_STANDARD)
-                                    }">
-                                    Please Select a Category
-                                </a>
-                            </div>*@
+                    <a class="btn btn-secondary-blue" data-bind="
+                        css: {
+                            'btn-primary': filterViewMode() == ORDERFACTORY_FILTER_MODE_STANDARD
+                        }, click: function () {
+                            filterViewMode(ORDERFACTORY_FILTER_MODE_STANDARD)
+                        }">
+                        Please Select a Category
+                    </a>
+                </div>*@
                         <div id="advanced-filters" class="group filter-phases shallow-group" data-bind="fadeBetweenMany: { observable: filterViewMode, visibleWhen: ORDERFACTORY_FILTER_MODE_ADVANCED, swapWith: '.filter-phases' }">
                             <!-- ko if: searchWidgetProductFilterGroupId() == null -->
                             <span class="text-center">
@@ -2232,39 +2231,39 @@
                         </div>
                     </div>
                     <div id="search-wrapper">
-                        @* Gone but not forgotten: the distinction between is handled elsewhere by button availability *@ 
+                        @* Gone but not forgotten: the distinction between is handled elsewhere by button availability *@
                         @*<div class="group">
-                            <a class="btn btn-secondary-blue" data-bind="css: {
-                                    'btn-primary': display() == ORDERFACTORY_ADD_MODE_STOCK
-                                }, click: function() { display(ORDERFACTORY_ADD_MODE_STOCK) }">
-                                <span>
-                                    Customer Order
-                                    <!-- ko if: basket().length -->
-                                    <span data-bind="text: ' (' + Number(Enumerable.From(basket()).Where('$.display == ORDERFACTORY_ADD_MODE_STOCK').Select('Number($.quantity())').Sum()).toFixed(1) + ')'"></span>
-                                    <!-- /ko -->
-                                </span>
-                            </a>
-                            <a class="btn btn-secondary-blue" data-bind="css: {
-                                    'btn-primary': display() == ORDERFACTORY_ADD_MODE_DISPLAY
-                                }, click: function() { display(ORDERFACTORY_ADD_MODE_DISPLAY); }">
-                                <span>
-                                    Display Order
-                                    <!-- ko if: basket().length -->
-                                    <span data-bind="text: ' (' + Number(Enumerable.From(basket()).Where('$.display == ORDERFACTORY_ADD_MODE_DISPLAY').Select('Number($.quantity())').Sum()).toFixed(1) + ')'"></span>
-                                    <!-- /ko -->
-                                </span>
-                            </a>
-                            <a class="btn btn-secondary-blue" data-bind="css: {
-                                    'btn-primary': display() == ORDERFACTORY_ADD_MODE_RESERVE
-                                }, click: function() { display(ORDERFACTORY_ADD_MODE_RESERVE); }">
-                                <span>
-                                    Reserve Order
-                                    <!-- ko if: basket().length -->
-                                    <span data-bind="text: ' (' + Number(Enumerable.From(basket()).Where('$.display == ORDERFACTORY_ADD_MODE_RESERVE').Select('Number($.quantity())').Sum()).toFixed(1) + ')'"></span>
-                                    <!-- /ko -->
-                                </span>
-                            </a>
-                        </div>*@
+                    <a class="btn btn-secondary-blue" data-bind="css: {
+                            'btn-primary': display() == ORDERFACTORY_ADD_MODE_STOCK
+                        }, click: function() { display(ORDERFACTORY_ADD_MODE_STOCK) }">
+                        <span>
+                            Customer Order
+                            <!-- ko if: basket().length -->
+                            <span data-bind="text: ' (' + Number(Enumerable.From(basket()).Where('$.display == ORDERFACTORY_ADD_MODE_STOCK').Select('Number($.quantity())').Sum()).toFixed(1) + ')'"></span>
+                            <!-- /ko -->
+                        </span>
+                    </a>
+                    <a class="btn btn-secondary-blue" data-bind="css: {
+                            'btn-primary': display() == ORDERFACTORY_ADD_MODE_DISPLAY
+                        }, click: function() { display(ORDERFACTORY_ADD_MODE_DISPLAY); }">
+                        <span>
+                            Display Order
+                            <!-- ko if: basket().length -->
+                            <span data-bind="text: ' (' + Number(Enumerable.From(basket()).Where('$.display == ORDERFACTORY_ADD_MODE_DISPLAY').Select('Number($.quantity())').Sum()).toFixed(1) + ')'"></span>
+                            <!-- /ko -->
+                        </span>
+                    </a>
+                    <a class="btn btn-secondary-blue" data-bind="css: {
+                            'btn-primary': display() == ORDERFACTORY_ADD_MODE_RESERVE
+                        }, click: function() { display(ORDERFACTORY_ADD_MODE_RESERVE); }">
+                        <span>
+                            Reserve Order
+                            <!-- ko if: basket().length -->
+                            <span data-bind="text: ' (' + Number(Enumerable.From(basket()).Where('$.display == ORDERFACTORY_ADD_MODE_RESERVE').Select('Number($.quantity())').Sum()).toFixed(1) + ')'"></span>
+                            <!-- /ko -->
+                        </span>
+                    </a>
+                </div>*@
                         <div class="search-control input-group">
                             <input style="text-align: center;" type="text" class="form-control" placeholder="Search by Collection, Design or Product Code" data-bind="keepElement: searchTerm, value: searchTerm, autocomplete: searchTermKeywordAutocompleteParams, hasFocus: searchTermHasFocus, enterKey: function () { searchNonce.valueHasMutated(); $(searchTerm.DOMElement).data('ui-autocomplete').close(); }" autocapitalize="off" autocomplete="off" autocorrect="off" />
                             <div class="input-group-btn">
@@ -2289,8 +2288,8 @@
                                     Add All
                                 </button>
                                 @*<button class="btn btn-danger" data-bind="click: removeAllSearchResultsFromBasket">
-                                    Remove All
-                                </button>*@
+                            Remove All
+                        </button>*@
                             </div>
                             <!-- /ko -->
                             <div class="btn-toolbar pull-right">
@@ -2300,10 +2299,10 @@
                                     </i>
                                 </button>
                                 @*<button class="btn btn-default" data-bind="css: { 'btn-primary': searchDisplay() == ORDERFACTORY_SEARCH_DISPLAY_TABLE }, click: function () { searchDisplay(ORDERFACTORY_SEARCH_DISPLAY_TABLE); }">
-                                        <i class="material-icons">
-                                            list
-                                        </i>
-                                    </button>*@
+                            <i class="material-icons">
+                                list
+                            </i>
+                        </button>*@
                                 <button class="btn btn-default" data-bind="css: { 'btn-primary': searchDisplay() == ORDERFACTORY_SEARCH_DISPLAY_LIST }, click: function () { searchDisplay(ORDERFACTORY_SEARCH_DISPLAY_LIST); }">
                                     <i class="material-icons">
                                         list
@@ -2313,38 +2312,38 @@
                             <select class="search-sort form-control pull-right" data-bind="options: availableSortOrders, optionsText: 'Name', optionsValue: 'Code', optionsCaption: 'Sort Options', value: searchSortOrder"></select>
                             <select class="result-count form-control pull-right" data-bind="options: availablePageSizes, optionsCaption: 'Page Size', value: searchPageSize"></select>
                             @*<div class="input-group search-price">
-                                <span class="input-group-addon input-group-addon-default">
-                                    Price
-                                </span>
-                                <select class="form-control text-center search-price-select" data-bind="value: searchPriceOperator, options: searchPriceOperators, optionsText: 'name', optionsValue: 'value'"></select>
-                                <span class="input-group-addon">
-                                    <input class="form-control text-right" style="border-left: 0" placeholder="0.00" data-bind="keepElement: searchPriceMin, numeric, forceNullOnEmpty: searchPriceMin, value: searchPriceMin"/>
-                                </span>
-                                <!-- ko if: searchPriceOperator() == 'Between' -->
-                                <span class="input-group-addon input-group-addon-default" style="border-left: 0">
-                                    &amp;
-                                </span>
-                                <span class="input-group-addon">
-                                    <input class="form-control text-right" style="border-left: 0" placeholder="500.00" data-bind="keepElement: searchPriceMax, numeric, forceNullOnEmpty: searchPriceMax, value: searchPriceMax"/>
-                                </span>
-                                <!-- /ko -->
-                            </div>*@
+                        <span class="input-group-addon input-group-addon-default">
+                            Price
+                        </span>
+                        <select class="form-control text-center search-price-select" data-bind="value: searchPriceOperator, options: searchPriceOperators, optionsText: 'name', optionsValue: 'value'"></select>
+                        <span class="input-group-addon">
+                            <input class="form-control text-right" style="border-left: 0" placeholder="0.00" data-bind="keepElement: searchPriceMin, numeric, forceNullOnEmpty: searchPriceMin, value: searchPriceMin"/>
+                        </span>
+                        <!-- ko if: searchPriceOperator() == 'Between' -->
+                        <span class="input-group-addon input-group-addon-default" style="border-left: 0">
+                            &amp;
+                        </span>
+                        <span class="input-group-addon">
+                            <input class="form-control text-right" style="border-left: 0" placeholder="500.00" data-bind="keepElement: searchPriceMax, numeric, forceNullOnEmpty: searchPriceMax, value: searchPriceMax"/>
+                        </span>
+                        <!-- /ko -->
+                    </div>*@
                             <div class="clearfix"></div>
                         </div>
                         @*<div class="search-display-container">
-                            <div class="input-group search-price">
-                                <span class="input-group-addon input-group-addon-default">
-                                    Stock
-                                </span>
-                                <select class="form-control text-center search-price-select" data-bind="value: searchStockOperator, options: searchStockOptions, optionsText: 'name', optionsValue: 'value'"></select>
-                                <!-- ko if: searchStockOperator() == 'InStock' || searchStockOperator() == 'DueIn' -->
-                                <span class="input-group-addon">
-                                    <input class="form-control text-right" style="border-left: 0" placeholder="100.00" data-bind="keepElement: searchStock, numeric, forceNullOnEmpty: searchStock, value: searchStock"/>
-                                </span>
-                                <!-- /ko -->
-                            </div>
-                            <div class="clearfix"></div>
-                        </div>*@
+                    <div class="input-group search-price">
+                        <span class="input-group-addon input-group-addon-default">
+                            Stock
+                        </span>
+                        <select class="form-control text-center search-price-select" data-bind="value: searchStockOperator, options: searchStockOptions, optionsText: 'name', optionsValue: 'value'"></select>
+                        <!-- ko if: searchStockOperator() == 'InStock' || searchStockOperator() == 'DueIn' -->
+                        <span class="input-group-addon">
+                            <input class="form-control text-right" style="border-left: 0" placeholder="100.00" data-bind="keepElement: searchStock, numeric, forceNullOnEmpty: searchStock, value: searchStock"/>
+                        </span>
+                        <!-- /ko -->
+                    </div>
+                    <div class="clearfix"></div>
+                </div>*@
                         <div class="search-results-container form-group">
                             <!-- ko if: searchWidgetProductFilterId() == 13 -->
                             <div class="group">
@@ -2398,10 +2397,10 @@
                             <!-- ko if: searchDisplay() == ORDERFACTORY_SEARCH_DISPLAY_GRID -->
                             <div id="search-result-grid-layout">
                                 @*<!-- ko if: searchWidgetProductFilterGroupId() == null -->
-                                <div class="alert alert-warning text-center">
-                                    Please Select a Category
-                                </div>
-                                <!-- /ko -->*@
+                        <div class="alert alert-warning text-center">
+                            Please Select a Category
+                        </div>
+                        <!-- /ko -->*@
                                 <!-- ko if: mode() == ORDERFACTORY_MODE_STANDARD && busy() == false && searchWidgetValue() != null && brandGroupedSearchResults().length == 0 -->
                                 <div class="no-items">
                                     There are no products in this category matching your search criteria or the product you are searching for has been discontinued.
@@ -2412,63 +2411,62 @@
                                     Displaying top <span data-bind="text: searchPageSize"></span> results. Use the filters or search to refine your selection.
                                 </div>
                                 <!-- /ko -->
-
                                 @* Not in the mockup. *@
                                 @*<!-- ko if: Tag -->
-                                <span class="product-tag" data-bind="with: Tag">
-                                    <span data-bind="text: $data"></span>
-                                    <!-- ko if: $parent.ClearanceDiscountPercentage -->
-                                    <span data-bind="text: formatPercentage($parent.ClearanceDiscountPercentage / 100, 0, 'en-GB') + ' Off'"></span>
-                                    <!-- /ko -->
-                                </span>
-                                <!-- /ko -->*@
+                        <span class="product-tag" data-bind="with: Tag">
+                            <span data-bind="text: $data"></span>
+                            <!-- ko if: $parent.ClearanceDiscountPercentage -->
+                            <span data-bind="text: formatPercentage($parent.ClearanceDiscountPercentage / 100, 0, 'en-GB') + ' Off'"></span>
+                            <!-- /ko -->
+                        </span>
+                        <!-- /ko -->*@
 
                                 @* Not in the mockup. *@
                                 @*<div data-bind="with: $parent.patternBookSaturation">
-                                    <span class="pattern-book-history">
-                                        <span data-bind="text: Quantity"></span>
-                                        <i class="material-icons" data-bind="click: function() { $.info($parentContext.$parentContext.$parent.parent.tradeAccount().Code + ' - ' + $parentContext.$parentContext.$parent.parent.tradeAccount().Name + '<br/>Pattern Book History: ' + $parent.Code, $parentContext.$parentContext.$parent.patternBookSaturationDisplay() ); }, attr: { title: 'Pattern Book History' }">
-                                            history
-                                        </i>
-                                    </span>
-                                </div>*@
+                            <span class="pattern-book-history">
+                                <span data-bind="text: Quantity"></span>
+                                <i class="material-icons" data-bind="click: function() { $.info($parentContext.$parentContext.$parent.parent.tradeAccount().Code + ' - ' + $parentContext.$parentContext.$parent.parent.tradeAccount().Name + '<br/>Pattern Book History: ' + $parent.Code, $parentContext.$parentContext.$parent.patternBookSaturationDisplay() ); }, attr: { title: 'Pattern Book History' }">
+                                    history
+                                </i>
+                            </span>
+                        </div>*@
 
                                 @*<!-- ko if: mode() == ORDERFACTORY_MODE_BESPOKE_FURNITURE && busy() == false -->
-                                <div class="brand-grid">
-                                    <div>
-                                        <div class="search-result-brand-row">
-                                            <img class="brand-logo" src="/Content/images/logos/designers-guild.png">
-                                        </div>
+                        <div class="brand-grid">
+                            <div>
+                                <div class="search-result-brand-row">
+                                    <img class="brand-logo" src="/Content/images/logos/designers-guild.png">
+                                </div>
+                            </div>
+                            <div class="search-result-product-type">
+                                <span>
+                                    Bespoke Furniture
+                                </span>
+                            </div>
+                            <div class="search-result-flex-wrapper">
+                                <div class="search-result">
+                                    <div class="search-result-inner">
+                                        <img class="product-image" data-bind="attr: { src: 'https://www.designersguild.com/image/322/108409' }" />
                                     </div>
-                                    <div class="search-result-product-type">
-                                        <span>
-                                            Bespoke Furniture
+                                    <div class="search-result-text">
+                                        <span class="product-name">
+                                            Bespoke Furniture Builder
                                         </span>
                                     </div>
-                                    <div class="search-result-flex-wrapper">
-                                        <div class="search-result">
-                                            <div class="search-result-inner">
-                                                <img class="product-image" data-bind="attr: { src: 'https://www.designersguild.com/image/322/108409' }" />
-                                            </div>
-                                            <div class="search-result-text">
-                                                <span class="product-name">
-                                                    Bespoke Furniture Builder
-                                                </span>
-                                            </div>
-                                            <div class="btn-container">
-                                                <div class="btn-toolbar pull-right">
-                                                    <div class="btn-group">
-                                                        <button class="btn btn-default order-btn" data-bind="enable: !parent.addingBasketItem(), click: function () { $parentContext.$parentContext.$parentContext.$parent.searchResultDrilldown($data); }">
-                                                            View
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <div class="clearfix"></div>
+                                    <div class="btn-container">
+                                        <div class="btn-toolbar pull-right">
+                                            <div class="btn-group">
+                                                <button class="btn btn-default order-btn" data-bind="enable: !parent.addingBasketItem(), click: function () { $parentContext.$parentContext.$parentContext.$parent.searchResultDrilldown($data); }">
+                                                    View
+                                                </button>
                                             </div>
                                         </div>
+                                        <div class="clearfix"></div>
                                     </div>
                                 </div>
-                                <!-- /ko -->*@
+                            </div>
+                        </div>
+                        <!-- /ko -->*@
 
                                 <!-- ko fastForEach: brandGroupedSearchResults -->
                                 <div class="brand-grid">
@@ -2500,16 +2498,16 @@
                                         </div>
                                         <!-- /ko -->
                                         <!-- ko ifnot: productPage.Grouped -->
-                                        <!-- ko fastForEach: products --> 
+                                        <!-- ko fastForEach: products -->
                                         <div class="search-result">
                                             <div class="search-result-inner">
                                                 <!-- ko if: parent.displayOrderFeatures() -->
-                                                    <!-- ko if: record.BespokeProduct && parent.searchWidgetValue() != 'BespokeRug' -->
-                                                        <img class="product-image" data-bind="attr: { src: 'https://www.designersguild.com/image/322/' + record.ImageID, title: record.OrderFormName }, click: function (data) { Promise.resolve(parent.addBasketItem(data));  }" />
-                                                    <!-- /ko -->
-                                                    <!-- ko if: !record.BespokeProduct || parent.searchWidgetValue() == 'BespokeRug' -->
-                                                        <img class="product-image" data-bind="attr: { src: 'https://www.designersguild.com/image/322/' + record.ImageID, title: record.OrderFormName }, click: function () { $parentContext.$parentContext.$parentContext.$parent.searchResultDrilldown($data); }" />
-                                                    <!-- /ko -->
+                                                <!-- ko if: record.BespokeProduct && parent.searchWidgetValue() != 'BespokeRug' -->
+                                                <img class="product-image" data-bind="attr: { src: 'https://www.designersguild.com/image/322/' + record.ImageID, title: record.OrderFormName }, click: function (data) { Promise.resolve(parent.addBasketItem(data));  }" />
+                                                <!-- /ko -->
+                                                <!-- ko if: !record.BespokeProduct || parent.searchWidgetValue() == 'BespokeRug' -->
+                                                <img class="product-image" data-bind="attr: { src: 'https://www.designersguild.com/image/322/' + record.ImageID, title: record.OrderFormName }, click: function () { $parentContext.$parentContext.$parentContext.$parent.searchResultDrilldown($data); }" />
+                                                <!-- /ko -->
                                                 <!-- /ko -->
                                                 <!-- ko ifnot: parent.displayOrderFeatures() -->
                                                 <img class="product-image" data-bind="attr: { src: 'https://www.designersguild.com/image/322/' + record.ImageID, title: record.OrderFormName }, click: function () { $parentContext.$parentContext.$parentContext.$parent.searchResultDrilldown($data); }" />
@@ -2559,45 +2557,42 @@
                                                         <!-- /ko -->
                                                         <!-- /ko -->
                                                         <!-- ko if: record.BespokeProduct && parent.displayOrderFeatures() -->
-
-                                                            <!-- ko if: parent.searchWidgetValue() == 'FabricBespokeShowlength' -->
-                                                            <div class="btn-group">
-                                                                <button class="btn btn-default order-btn" data-bind="click: function (data) { Promise.resolve(parent.addBasketItem(data)); }">
-                                                                    Showlength
-                                                                </button>
-                                                            </div>
-                                                            <div class="btn-group">
-                                                                <button class="btn btn-default order-btn" data-bind="click: function (data) { Promise.resolve(parent.addBasketItem(data, null, null, null, null, null, BASKETITEM_TYPE_BESPOKESHELFSAMPLE)); }">
-                                                                    Shelf Sample
-                                                                </button>
-                                                            </div>
-                                                            <!-- /ko -->
-                                                            <!-- ko if: parent.searchWidgetValue() == 'FabricBespokeHanger' -->
-                                                            <div class="btn-group">
-                                                                <button class="btn btn-default order-btn" data-bind="enable: !parent.addingBasketItem(), click: function (data) { Promise.resolve(parent.addBasketItem(data)); }">
-                                                                    Order
-                                                                </button>
-                                                            </div>
-                                                            <!-- /ko -->
-                                                            <!-- ko if: parent.searchWidgetValue() == 'BespokeRug' -->
-                                                            <div class="btn-group">
-                                                                <button class="btn btn-default order-btn" data-bind="enable: !parent.addingBasketItem(), click: function () { $parentContext.$parentContext.$parentContext.$parent.searchResultDrilldown($data); }">
-                                                                    View
-                                                                </button>
-                                                            </div>
-                                                            <!-- /ko -->
-                                                            <!-- ko if: parent.searchWidgetValue() != 'FabricBespokeShowlength' && 
-                                                                        parent.searchWidgetValue() != 'FabricBespokeHanger' &&
-                                                                        parent.searchWidgetValue() != 'BespokeRug' -->
-                                                            <div class="btn-group">
-                                                                <button class="btn btn-default order-btn" data-bind="enable: !parent.addingBasketItem(), click: function(data) { Promise.resolve(parent.addBasketItem(data)); }">
-                                                                    Order
-                                                                </button>
-                                                            </div>
-                                                            <!-- /ko -->
-
+                                                        <!-- ko if: parent.searchWidgetValue() == 'FabricBespokeShowlength' -->
+                                                        <div class="btn-group">
+                                                            <button class="btn btn-default order-btn" data-bind="click: function (data) { Promise.resolve(parent.addBasketItem(data)); }">
+                                                                Showlength
+                                                            </button>
+                                                        </div>
+                                                        <div class="btn-group">
+                                                            <button class="btn btn-default order-btn" data-bind="click: function (data) { Promise.resolve(parent.addBasketItem(data, null, null, null, null, null, BASKETITEM_TYPE_BESPOKESHELFSAMPLE)); }">
+                                                                Shelf Sample
+                                                            </button>
+                                                        </div>
                                                         <!-- /ko -->
-
+                                                        <!-- ko if: parent.searchWidgetValue() == 'FabricBespokeHanger' -->
+                                                        <div class="btn-group">
+                                                            <button class="btn btn-default order-btn" data-bind="enable: !parent.addingBasketItem(), click: function (data) { Promise.resolve(parent.addBasketItem(data)); }">
+                                                                Order
+                                                            </button>
+                                                        </div>
+                                                        <!-- /ko -->
+                                                        <!-- ko if: parent.searchWidgetValue() == 'BespokeRug' -->
+                                                        <div class="btn-group">
+                                                            <button class="btn btn-default order-btn" data-bind="enable: !parent.addingBasketItem(), click: function () { $parentContext.$parentContext.$parentContext.$parent.searchResultDrilldown($data); }">
+                                                                View
+                                                            </button>
+                                                        </div>
+                                                        <!-- /ko -->
+                                                        <!-- ko if: parent.searchWidgetValue() != 'FabricBespokeShowlength' &&
+                                                        parent.searchWidgetValue() != 'FabricBespokeHanger' &&
+                                                        parent.searchWidgetValue() != 'BespokeRug' -->
+                                                        <div class="btn-group">
+                                                            <button class="btn btn-default order-btn" data-bind="enable: !parent.addingBasketItem(), click: function(data) { Promise.resolve(parent.addBasketItem(data)); }">
+                                                                Order
+                                                            </button>
+                                                        </div>
+                                                        <!-- /ko -->
+                                                        <!-- /ko -->
                                                         <!-- ko if: !record.BespokeProduct -->
                                                         <div class="btn-group">
                                                             <button class="btn btn-default order-btn" data-bind="click: function () { parent.searchResultDrilldown($data); }">
@@ -2612,30 +2607,30 @@
                                                 </div>
                                                 <!-- ko if: productFilterOptions().StockMessageOverride == null -->
                                                 @*<div class="search-result-stock-flex">
-                                                    <div>
-                                                        <span>
-                                                            Stock Location
-                                                        </span>
-                                                        <span>
-                                                            Available Now
-                                                        </span>
-                                                        <span>
-                                                            Due In
-                                                        </span>
-                                                    </div>
-                                                    <div>
-                                                        <span data-bind="text: stockData.StockLocationA.Name"></span>
-                                                        <span data-bind="text: (stockData.StockLocationA.Available).toFixed(stockData.StockLocationA.QuantityPrecision) + ' ' + stockData.StockLocationA.Units, css: stockData.StockLocationA.AvailableClass"></span>
-                                                        <span data-bind="text: (stockData.StockLocationA.Incoming).toFixed(stockData.StockLocationA.QuantityPrecision) + ' ' + stockData.StockLocationA.Units, css: stockData.StockLocationA.IncomingClass"></span>
-                                                    </div>
-                                                    <!-- ko if: stockData.StockLocationB.Name != null-->
-                                                    <div>
-                                                        <span data-bind="text: stockData.StockLocationB.Name"></span>
-                                                        <span data-bind="text: (stockData.StockLocationB.Available).toFixed(stockData.StockLocationB.QuantityPrecision) + ' ' + stockData.StockLocationB.Units, css: stockData.StockLocationB.AvailableClass"></span>
-                                                        <span data-bind="text: (stockData.StockLocationB.Incoming).toFixed(stockData.StockLocationB.QuantityPrecision) + ' ' + stockData.StockLocationB.Units, css: stockData.StockLocationB.IncomingClass"></span>
-                                                    </div>
-                                                    <!-- /ko -->
-                                                </div>*@
+                                            <div>
+                                                <span>
+                                                    Stock Location
+                                                </span>
+                                                <span>
+                                                    Available Now
+                                                </span>
+                                                <span>
+                                                    Due In
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <span data-bind="text: stockData.StockLocationA.Name"></span>
+                                                <span data-bind="text: (stockData.StockLocationA.Available).toFixed(stockData.StockLocationA.QuantityPrecision) + ' ' + stockData.StockLocationA.Units, css: stockData.StockLocationA.AvailableClass"></span>
+                                                <span data-bind="text: (stockData.StockLocationA.Incoming).toFixed(stockData.StockLocationA.QuantityPrecision) + ' ' + stockData.StockLocationA.Units, css: stockData.StockLocationA.IncomingClass"></span>
+                                            </div>
+                                            <!-- ko if: stockData.StockLocationB.Name != null-->
+                                            <div>
+                                                <span data-bind="text: stockData.StockLocationB.Name"></span>
+                                                <span data-bind="text: (stockData.StockLocationB.Available).toFixed(stockData.StockLocationB.QuantityPrecision) + ' ' + stockData.StockLocationB.Units, css: stockData.StockLocationB.AvailableClass"></span>
+                                                <span data-bind="text: (stockData.StockLocationB.Incoming).toFixed(stockData.StockLocationB.QuantityPrecision) + ' ' + stockData.StockLocationB.Units, css: stockData.StockLocationB.IncomingClass"></span>
+                                            </div>
+                                            <!-- /ko -->
+                                        </div>*@
                                                 <div class="search-result-stock-flex">
                                                     <div>
                                                         <span>
@@ -2701,10 +2696,10 @@
                         </div>
                     </div>
                 </div>
-                <div id="basket-phase" class="order-product-phases basket-phase" style="display: none;" data-bind="fadeBetweenMany: { 
-                        observable: phase, 
-                        visibleWhen: ORDERFACTORY_PHASE_BASKET, 
-                        swapWith: '.order-product-phases' 
+                <div id="basket-phase" class="order-product-phases basket-phase" style="display: none;" data-bind="fadeBetweenMany: {
+                        observable: phase,
+                        visibleWhen: ORDERFACTORY_PHASE_BASKET,
+                        swapWith: '.order-product-phases'
                      }">
                     <div data-bind="visible: busy() == false">
                         <!-- ko if: orderTypeGroupings().length == 0 -->
@@ -2729,10 +2724,10 @@
                         <!-- /ko -->
                     </div>
                 </div>
-                <div id="shipping-check-phase" class="order-product-phases" style="display: none" data-bind="fadeBetweenMany: { 
-                         observable: phase, 
-                         visibleWhen: ORDERFACTORY_PHASE_SHIPPINGCHECK, 
-                         swapWith: '.order-product-phases' 
+                <div id="shipping-check-phase" class="order-product-phases" style="display: none" data-bind="fadeBetweenMany: {
+                         observable: phase,
+                         visibleWhen: ORDERFACTORY_PHASE_SHIPPINGCHECK,
+                         swapWith: '.order-product-phases'
                      }">
                     <div class="order-products-dispatch-wrapper" data-bind="visible: busy() == false">
                         <div class="blocker" data-bind="visible: deliveryAddressFactory.shippingCheckBusy">
@@ -2742,8 +2737,8 @@
                             </h3>
                         </div>
                         @*
-                            How do we want to go about this... we need a display line for each offending product...
-                            And a button to remove all offending products at once...
+                How do we want to go about this... we need a display line for each offending product...
+                And a button to remove all offending products at once...
                         *@
                         <div data-bind="visible: !deliveryAddressFactory.shippingCheckBusy()">
                             <p>
@@ -2770,10 +2765,10 @@
                         </div>
                     </div>
                 </div>
-                <div id="dispatch-phase" class="order-product-phases" style="display: none" data-bind="fadeBetweenMany: { 
-                        observable: phase, 
-                        visibleWhen: ORDERFACTORY_PHASE_DISPATCH, 
-                        swapWith: '.order-product-phases' 
+                <div id="dispatch-phase" class="order-product-phases" style="display: none" data-bind="fadeBetweenMany: {
+                        observable: phase,
+                        visibleWhen: ORDERFACTORY_PHASE_DISPATCH,
+                        swapWith: '.order-product-phases'
                      },
                      with: dispatchFactory">
                     <!-- ko if: $parent.euExitCode.observable() && $parent.euExitFinalDestinationAddress.country() -->
@@ -2820,32 +2815,32 @@
                         </div>
                         <!-- /ko -->
                         @*<!-- ko if: UPSDeliveryEstimatesUnavailable() -->
-                        <div class="alert alert-danger margin-bottom-15">
-                            <h4>
-                                UPS have not given us any delivery time estimates for the address you provided.
-                            </h4>
-                            <span>
-                                You may choose to continue, but please be aware that <strong>we cannot guarantee any specific delivery date for this order</strong>.
-                            </span>
-                            <span data-bind="html: parent.deliveryAddress.displayLine()"></span>
-                            <button class="btn btn-default margin-top-15" data-bind="click: function () { parent.jumpToDeliveryFromDispatch() }">
-                                Click here to amend the delivery address
-                            </button>
-                        </div>
-                        <!-- /ko -->*@
+                <div class="alert alert-danger margin-bottom-15">
+                    <h4>
+                        UPS have not given us any delivery time estimates for the address you provided.
+                    </h4>
+                    <span>
+                        You may choose to continue, but please be aware that <strong>we cannot guarantee any specific delivery date for this order</strong>.
+                    </span>
+                    <span data-bind="html: parent.deliveryAddress.displayLine()"></span>
+                    <button class="btn btn-default margin-top-15" data-bind="click: function () { parent.jumpToDeliveryFromDispatch() }">
+                        Click here to amend the delivery address
+                    </button>
+                </div>
+                <!-- /ko -->*@
                         <!-- ko template: { name: 'basket-group-template', data: $data } --><!-- /ko -->
                     </div>
                 </div>
-                <div id="clauses-phase" class="order-product-phases" style="display: none" data-bind="fadeBetweenMany: { 
-                        observable: phase, 
-                        visibleWhen: ORDERFACTORY_PHASE_DELIVERY_ALERT, 
-                        swapWith: '.order-product-phases' 
+                <div id="clauses-phase" class="order-product-phases" style="display: none" data-bind="fadeBetweenMany: {
+                        observable: phase,
+                        visibleWhen: ORDERFACTORY_PHASE_DELIVERY_ALERT,
+                        swapWith: '.order-product-phases'
                      }">
                 </div>
-                <div id="comments-phase" class="order-product-phases" style="display: none" data-bind="fadeBetweenMany: { 
-                         observable: phase, 
-                         visibleWhen: ORDERFACTORY_PHASE_COMMENTS, 
-                         swapWith: '.order-product-phases' 
+                <div id="comments-phase" class="order-product-phases" style="display: none" data-bind="fadeBetweenMany: {
+                         observable: phase,
+                         visibleWhen: ORDERFACTORY_PHASE_COMMENTS,
+                         swapWith: '.order-product-phases'
                      }">
                     <div data-bind="visible: busy() == false">
                         <ul class="nav nav-tabs">
@@ -2868,43 +2863,43 @@
                         <div class="tab-content">
                             <div id="clauses-tab-comments" class="tab-pane active">
                                 <!-- ko foreach: orders -->
-                                    <label>
-                                        <span data-bind="text: BasketSplitName"></span>
-                                    </label>
-                                    <div class="section">
-                                        <!-- ko foreach: comments -->
-                                        <div class="form-group row">
-                                            <div class="col-xs-8">
-                                                <div data-bind="component: { name: 'mdc-text-area-component', params: $data }"></div>
-                                            </div>
-                                            <div class="col-xs-4">
-                                                <!-- ko ifnot: readOnly -->
-                                                <div class="margin-bottom-15" style="padding-right: 40px" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: availableClausesDropDownList }, style: { width: '100%' }"></div>
-                                                <a class="close remove-clause" data-bind="attr: { href: 'javascript:;' }, click: function () { $parent.comments.remove($data); }">
-                                                    <i class="material-icons">
-                                                        delete_forever
-                                                    </i>
-                                                </a>
-                                                <!-- /ko -->
-                                                <ul class="document-types" data-bind="validationOptions: { insertMessages: false }, css: { 'force-disabled': readOnly }">
-                                                    <!-- ko foreach: $parentContext.$parent.documentTypes -->
-                                                    <li data-bind="css: { 'document-type-all':  $index() == 0 }">
-                                                        <label class="pointer">
-                                                            <input type="checkbox" data-bind="checkedValue: Code, checked: $parent.selectedDocumentTypes" />
-                                                            <span data-bind="text: Name"></span>
-                                                        </label>
-                                                    </li>
-                                                    <!-- /ko -->
-                                                </ul>
-                                                <span class="validation-message text-danger" data-bind="validationMessage: selectedDocumentTypes"></span>
-                                            </div>
+                                <label>
+                                    <span data-bind="text: BasketSplitName"></span>
+                                </label>
+                                <div class="section">
+                                    <!-- ko foreach: comments -->
+                                    <div class="form-group row">
+                                        <div class="col-xs-8">
+                                            <div data-bind="component: { name: 'mdc-text-area-component', params: $data }"></div>
                                         </div>
-                                        <!-- /ko -->
-                                        <button class="btn btn-green" data-bind="click: $parent.addBasketComment">
-                                            Add Document Comment
-                                        </button>
+                                        <div class="col-xs-4">
+                                            <!-- ko ifnot: readOnly -->
+                                            <div class="margin-bottom-15" style="padding-right: 40px" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: availableClausesDropDownList }, style: { width: '100%' }"></div>
+                                            <a class="close remove-clause" data-bind="attr: { href: 'javascript:;' }, click: function () { $parent.comments.remove($data); }">
+                                                <i class="material-icons">
+                                                    delete_forever
+                                                </i>
+                                            </a>
+                                            <!-- /ko -->
+                                            <ul class="document-types" data-bind="validationOptions: { insertMessages: false }, css: { 'force-disabled': readOnly }">
+                                                <!-- ko foreach: $parentContext.$parent.documentTypes -->
+                                                <li data-bind="css: { 'document-type-all':  $index() == 0 }">
+                                                    <label class="pointer">
+                                                        <input type="checkbox" data-bind="checkedValue: Code, checked: $parent.selectedDocumentTypes" />
+                                                        <span data-bind="text: Name"></span>
+                                                    </label>
+                                                </li>
+                                                <!-- /ko -->
+                                            </ul>
+                                            <span class="validation-message text-danger" data-bind="validationMessage: selectedDocumentTypes"></span>
+                                        </div>
                                     </div>
-                                 <!-- /ko -->
+                                    <!-- /ko -->
+                                    <button class="btn btn-green" data-bind="click: $parent.addBasketComment">
+                                        Add Document Comment
+                                    </button>
+                                </div>
+                                <!-- /ko -->
                             </div>
                             <div id="clauses-tab-notes" class="tab-pane">
                                 <!-- ko foreach: orders -->
@@ -2930,7 +2925,7 @@
                                         Add Order Note
                                     </button>
                                 </div>
-                                 <!-- /ko -->
+                                <!-- /ko -->
                             </div>
                             <div id="clauses-tab-clauses" class="tab-pane">
                                 <!-- ko foreach: orders -->
@@ -2986,10 +2981,10 @@
                      swapWith: '.order-product-phases'
                 }">
                     @*<div class="section">
-                        <h4 class="blue-heading bold">
-                            Review Order (ORDERFACTORY_PHASE_REVIEW_MANAGER_DISCO)
-                        </h4>
-                    </div>*@
+                <h4 class="blue-heading bold">
+                    Review Order (ORDERFACTORY_PHASE_REVIEW_MANAGER_DISCO)
+                </h4>
+            </div>*@
                     <!-- ko if: basketReviewStageOneNotices().length -->
                     <div class="section section-danger alert-danger">
                         <!-- ko foreach: basketReviewStageOneNotices -->
@@ -3072,9 +3067,9 @@
                 }">
                     <div class="section">
                         @*<h4 class="blue-heading bold">
-                            Review Order (ORDERFACTORY_PHASE_REVIEW_DUPLICATES)
-                        </h4>*@
-                        
+                    Review Order (ORDERFACTORY_PHASE_REVIEW_DUPLICATES)
+                </h4>*@
+
                         <!-- ko if: basketReviewStageTwoNotices().length -->
                         <div class="section section-danger alert-danger">
                             <!-- ko foreach: basketReviewStageTwoNotices -->
@@ -3156,10 +3151,10 @@
                      swapWith: '.order-product-phases'
                 }">
                     @*<div class="section">
-                        <h4 class="blue-heading bold">
-                            Review Order (ORDERFACTORY_PHASE_REVIEW_FOC)
-                        </h4>
-                    </div>*@
+                <h4 class="blue-heading bold">
+                    Review Order (ORDERFACTORY_PHASE_REVIEW_FOC)
+                </h4>
+            </div>*@
                     <!-- ko if: basketReviewStageThreeNotices().length -->
                     <div class="section section-danger alert-danger">
                         <!-- ko foreach: basketReviewStageThreeNotices -->
@@ -3344,6 +3339,14 @@
                      swapWith: '.order-product-phases'
                 }">
                     <!-- ko template: { name: 'retail-till-phase-template', data: $data } --><!-- /ko -->
+                </div>
+                <div class="modal-readonly">
+                    <label class="readonly-start">
+                        THIS BASKET IS READ-ONLY
+                    </label>
+                    <label class="readonly-end">
+                        THIS BASKET IS READ-ONLY
+                    </label>
                 </div>
             </div>
         </div>

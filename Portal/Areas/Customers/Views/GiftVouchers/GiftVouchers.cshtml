@@ -1,0 +1,134 @@
+﻿@model Portal.Areas.Customers.ViewModels.GiftVouchersViewModel
+@{
+    ViewBag.Title = "Gift Vouchers";
+    Layout = "~/Views/Shared/_Layout-New.cshtml";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/kendo-custom")
+    @Styles.Render("~/bundles/css/gift-vouchers")
+    @Styles.Render("~/bundles/css/tempus-dominus")
+    @Styles.Render("~/bundles/css/mdc-custom")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/datetime-picker")
+    @Scripts.Render("~/bundles/js/gift-vouchers")
+    @Scripts.Render("~/bundles/js/tempus-dominus")
+
+    <script type="text/javascript">
+            window.getGiftVoucherTypes = () => {
+                return @Html.Raw(JsonConvert.SerializeObject(Model.GiftVoucherTypes));
+            }
+            window.getPriceLists = () => {
+                return @Html.Raw(JsonConvert.SerializeObject(Model.PriceLists));
+            }
+    </script>
+
+    <script type="text/javascript">
+
+        var viewModel = giftVouchersViewModel();
+
+        var vm = viewModel;
+
+        ko.options.deferUpdates = true;
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        ko.applyBindings(viewModel, document.body);
+
+        window.self = viewModel;
+
+    </script>
+}
+@section modals {
+    @Html.Partial("Modals/_ImageModalNew")
+}
+
+<script type="text/html" id="gift-voucher-row-template">
+    <tr class="gift-voucher-row">
+        <td class="text-end">
+            <span data-bind="text: GiftVoucherID"></span>
+        </td>
+        <td>
+            <span data-bind="text: GiftVoucherType.Name"></span>
+        </td>
+        <td>
+            <span data-bind="text: PriceList.Name"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: formatCurrency(ValueInc, 2, PriceList.Currency.FormattingCulture, PriceList.Currency.Code)"></span>
+        </td>
+        <td>
+            <span data-bind="text: formatCurrency(ValueEx, 2, PriceList.Currency.FormattingCulture, PriceList.Currency.Code)"></span>
+        </td>
+        <td>
+            <span data-bind="text: CreatedDT ? moment(CreatedDT).format('DD/MM/YYYY HH:MM:ss') : ''"></span>
+        </td>
+        <td>
+            <span data-bind="text: AuthorisedDT ? moment(AuthorisedDT).format('DD/MM/YYYY HH:MM:ss') : ''"></span>
+        </td>
+        <td>
+            <span data-bind="text: ExpiryDT ? moment(ExpiryDT).format('DD/MM/YYYY HH:MM:ss') : ''"></span>
+        </td>
+        <td>
+            <span data-bind="text: UsedDT ? moment(UsedDT).format('DD/MM/YYYY HH:MM:ss') : ''"></span>
+        </td>
+        <td>
+            <span data-bind="text: CancelledDT ? moment(CancelledDT).format('DD/MM/YYYY HH:MM:ss') : ''"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: RedeemTransactionID"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: SaleTransactionID"></span>
+        </td>
+        <td>
+            <span data-bind="text: CreatedByMember?.FullName ?? 'eCommerce'"></span>
+        </td>
+        <td>
+            <button type="button" class="btn btn-secondary">
+                Print
+            </button>
+            <button type="button" class="btn btn-secondary">
+                Email
+            </button>
+        </td>
+    </tr>
+</script>
+
+<div class="blocker" data-bind="flexFadeVisible: busy">
+    <div class="loading-spinner"></div>
+    <h4 class="mt-3">
+        Please wait...
+    </h4>
+</div>
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+
+<div id="main-section">
+    <div data-bind="kendoGrid: giftVouchersGridSettings"></div>
+</div>

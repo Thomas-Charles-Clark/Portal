@@ -54,7 +54,6 @@ namespace Portal.Areas.Documents.ViewModels
             ReplyTo = replyTo;
             Subject = subject;
             Body = body;
-            DocumentSendHistory = new DocumentSendHistoryResult();
         }
     }
 }

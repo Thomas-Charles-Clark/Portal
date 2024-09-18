@@ -1539,6 +1539,7 @@ namespace SharedEFClasses.Models.Products
         public bool? EUExitingConfirmed { get; set; }
         public string VATCountryCode { get; set; }
         public string VATNumber { get; set; }
+        public bool ReadOnly { get; set; }
     }
 
     public class PatternBookSchemeResult

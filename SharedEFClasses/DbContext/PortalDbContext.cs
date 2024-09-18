@@ -567,6 +567,10 @@ namespace SharedEFClasses.Models
 
         #endregion
 
+        public DbSet<GiftVoucher> GiftVouchers { get; set; }
+
+        public DbSet<GiftVoucherType> GiftVoucherTypes { get; set; }
+
         #endregion
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

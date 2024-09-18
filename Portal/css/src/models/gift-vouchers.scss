@@ -1,0 +1,34 @@
+﻿@import "../models/common.scss";
+
+#main-section {
+    margin-top: $xl-gutter;
+}
+
+.navbar.navbar-default.navbar-expand {
+    position: fixed;
+    z-index: 1;
+    width: 100%;
+
+    .container {
+        max-width: unset !important;
+        width: 100% !important;
+        padding-left: 5em;
+        padding-right: 5em;
+        min-width: 1260px;
+    }
+}
+
+.container.body-content {
+    max-width: unset !important;
+    width: unset !important;
+    padding-left: $xxl-gutter;
+    padding-right: $xxl-gutter;
+    padding-top: $xl-gutter;
+    position: relative;
+    top: 52px;
+    z-index: 0;
+}
+
+.k-loading-mask {
+    display: none !important;
+}

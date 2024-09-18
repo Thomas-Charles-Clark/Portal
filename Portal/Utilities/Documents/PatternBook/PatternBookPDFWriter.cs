@@ -387,7 +387,7 @@ Stock levels stated were accurate as at {documentDate:dd/MM/yyyy}", normalFont, 
 
                 var headerTable = new PdfPTable(2);
 
-                headerTable = GetPageNumberTable(dgLogo, i, count, normalFont, boldFont);
+                headerTable = GetPageNumberTable(dgLogo, i, count, normalFont, boldFont, patternBookCode, patternBookName);
                 headerTable.WriteSelectedRows(0, -1, 25, 812, c); // write stuff to it
             }
 
@@ -511,10 +511,10 @@ Stock levels stated were accurate as at {documentDate:dd/MM/yyyy}", normalFont, 
             return result;
         }
 
-        internal static PdfPTable GetPageNumberTable(Image logo, int x, int y, iTextSharp.text.Font normal, iTextSharp.text.Font bold)
+        internal static PdfPTable GetPageNumberTable(Image logo, int x, int y, iTextSharp.text.Font normal, iTextSharp.text.Font bold, string patternBookCode, string patternBookName)
         {
-            PdfPTable HeaderTable = new PdfPTable(2);
-            HeaderTable.SetWidths(new float[] { logo.ScaledWidth, 545 - logo.ScaledWidth });
+            PdfPTable HeaderTable = new PdfPTable(3);
+            HeaderTable.SetWidths(new float[] { logo.ScaledWidth, 140,  545 - logo.ScaledWidth - 140 });
             HeaderTable.TotalWidth = 545.0f;
 
             // you add chunks to phrases and phrases to paragraphs.
@@ -523,17 +523,48 @@ Stock levels stated were accurate as at {documentDate:dd/MM/yyyy}", normalFont, 
             // this is because it is "reduced to a phrase".
 
             var LeftHeaderCell = new PdfPCell();
+            var LabelHeaderCell = new PdfPCell();
             var RightHeaderCell = new PdfPCell();
 
             LeftHeaderCell.Padding = 0;
             LeftHeaderCell.Border = 0;
-            LeftHeaderCell.AddElement(logo);
+            LeftHeaderCell.VerticalAlignment = Element.ALIGN_TOP;
+            LeftHeaderCell.HorizontalAlignment = Element.ALIGN_LEFT;
+
+            LabelHeaderCell.Padding = 0;
+            LabelHeaderCell.PaddingLeft = 24;
+            LabelHeaderCell.Border = 0;
+            LabelHeaderCell.VerticalAlignment = Element.ALIGN_TOP;
+            LabelHeaderCell.HorizontalAlignment = Element.ALIGN_LEFT;
 
             RightHeaderCell.Padding = 0;
             RightHeaderCell.HorizontalAlignment = Element.ALIGN_RIGHT;
             RightHeaderCell.Border = 0;
+            
+            var text = ProcessTextBlock($@"{patternBookCode}
+{patternBookName}", normal, bold);
+
+            for (var i = 0; i < text.Count; i++)
+            {
+                var p = text.ElementAt(i);
+
+                if (i == 0)
+                {
+                    p.Leading = 10;
+                }
+                else
+                {
+                    p.Leading = 12;
+                }
+
+                LabelHeaderCell.AddElement(p);
+            }
+
+            LeftHeaderCell.AddElement(logo);
 
             HeaderTable.AddCell(LeftHeaderCell);
+
+            HeaderTable.AddCell(LabelHeaderCell);
 
             PdfPTable RightTable = new PdfPTable(1);
             RightTable.WidthPercentage = 100.0f;

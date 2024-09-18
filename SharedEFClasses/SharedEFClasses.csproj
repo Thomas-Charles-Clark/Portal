@@ -406,6 +406,8 @@
     <Compile Include="Models\Fenwick\SelfBillInvoice.cs" />
     <Compile Include="Models\Fenwick\SelfBillInvoiceDocumentUpsertDto.cs" />
     <Compile Include="Models\GenericFormModels.cs" />
+    <Compile Include="Models\GiftVoucher.cs" />
+    <Compile Include="Models\GiftVoucherType.cs" />
     <Compile Include="Models\ImageDownloadTask.cs" />
     <Compile Include="Models\InvoiceModels.cs" />
     <Compile Include="Models\DocumentModels.cs" />

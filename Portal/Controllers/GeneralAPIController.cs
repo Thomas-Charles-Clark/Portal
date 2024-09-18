@@ -123,6 +123,8 @@ namespace Portal.Controllers
 
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.access_token);
 
+                    client.DefaultRequestHeaders.Add("scope", "read:vat");
+
                     var vatResponse = await client.GetAsync($"{SharedEFClasses.Utilities.Framework.HMRCDeveloperHubSandboxBaseURL}/organisations/vat/check-vat-number/lookup/{objVATNumber.vatNumber}");
 
                     if (vatResponse.IsSuccessStatusCode)

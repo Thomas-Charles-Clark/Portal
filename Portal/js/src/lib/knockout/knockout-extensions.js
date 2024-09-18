@@ -2832,6 +2832,85 @@ ko.bindingHandlers.stopBinding = {
 
 ko.virtualElements.allowedBindings.stopBinding = true;
 
+
+const matrixLoaderPoint = (({
+    x,
+    y,
+    cw,
+    ch,
+    ca
+} = {
+    x: 0,
+    y: 0,
+    cw: 0,
+    ch: 0,
+    ca: []
+}) => {
+    let self = {
+        charArr: ca
+    };
+
+    self.randomInt = function (min, max) {
+        return Math.floor(Math.random() * (max - min) + min);
+    }
+    self.randomFloat = function (min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    self.charIndex = self.randomInt(0, self.charArr.length);
+    self.x = x;
+    self.originalX = x;
+    self.y = y;
+    self.ySpeed = self.randomFloat(2, 3.5);
+    self.value = self.charArr[self.charIndex];//.toUpperCase();
+    self.xSpeed = self.randomInt(-1.5, 1.5);
+    self.rotation = self.randomFloat(-(Math.PI / 45), (Math.PI / 45));
+    self.canvasWidth = cw;
+    self.canvasHeight = ch;
+
+    self.imageBitmap = null;
+
+    self.draw = (ctx) => {
+
+        //if (this.value == String.fromCodePoint(0x2744)) {
+        //    self.ctx.translate(this.x, this.y);
+        //    self.ctx.setTransform(1, 0, 0, 1, this.x - self.imageWidth * 2, this.y - self.textHeight * 2);
+        //    self.ctx.rotate(this.rotation);
+        //}
+        //else {
+        //    self.ctx.setTransform(1, 0, 0, 1, 0, 0);
+        //}
+
+        ctx.drawImage(self.imageBitmap, self.x, self.y);
+
+        if (self.xSpeed > 0) {
+            self.xSpeed -= (self.ySpeed);
+        } else {
+            self.xSpeed += (self.ySpeed);
+        }
+
+        if (self.rotation > 0) {
+            self.rotation += (self.ySpeed / 400);
+        } else {
+            self.rotation -= (self.ySpeed / 400);
+        }
+
+        self.x += self.xSpeed;
+        self.y += self.ySpeed;
+
+        if (self.y > self.canvasHeight || self.x > self.canvasWidth) {
+            self.x = self.originalX;
+            self.y = self.randomFloat(-50, 0);
+            self.ySpeed = self.randomFloat(2, 3.5);
+        }
+
+        self.x = Math.floor(self.x);
+        self.y = Math.floor(self.y);
+    }
+
+    return self;
+});
+
 ko.bindingHandlers.matrixLoader = {
     init: function (element, valueAccessor, allBindingsAccessor) {
 
@@ -2923,28 +3002,28 @@ Lianne's contribution:
 Summer theme
 bg #1ca9c9
 */
-            return [
-                String.fromCodePoint(0x1F60E), //smiling face w / sunglasses
-                String.fromCodePoint(0x1F33B), //sunflower
-                String.fromCodePoint(0x1F334), //palm tree
-                String.fromCodePoint(0x1F34D), //pineapple
-                String.fromCodePoint(0x1F965), //coconut
-                String.fromCodePoint(0x1F3C4), //person surfing
-                String.fromCodePoint(0x1F42C), //dolphin
-                String.fromCodePoint(0x1F41A), //spiral seashell
-                String.fromCodePoint(0x1F98B), //butterfly
-                String.fromCodePoint(0x2708), //aeroplane
-                String.fromCodePoint(0x2600), //sun
-                String.fromCodePoint(0x1F30A), //cresting wave
-                String.fromCodePoint(0x1F453), //glasses
-                String.fromCodePoint(0x1F366), //ice cream cone
-                String.fromCodePoint(0x1F379), //tropical drink
-                String.fromCodePoint(0x1F3D6), //beach w / umbrella
-                String.fromCodePoint(0x1F3DD), //desert island
-                String.fromCodePoint(0x1F9A9), //flamingo
-                String.fromCodePoint(0x1F99C), //parrot
-                String.fromCodePoint(0x1F93F), //snorkel
-            ]
+            //return [
+            //    String.fromCodePoint(0x1F60E), //smiling face w / sunglasses
+            //    String.fromCodePoint(0x1F33B), //sunflower
+            //    String.fromCodePoint(0x1F334), //palm tree
+            //    String.fromCodePoint(0x1F34D), //pineapple
+            //    String.fromCodePoint(0x1F965), //coconut
+            //    String.fromCodePoint(0x1F3C4), //person surfing
+            //    String.fromCodePoint(0x1F42C), //dolphin
+            //    String.fromCodePoint(0x1F41A), //spiral seashell
+            //    String.fromCodePoint(0x1F98B), //butterfly
+            //    String.fromCodePoint(0x2708), //aeroplane
+            //    String.fromCodePoint(0x2600), //sun
+            //    String.fromCodePoint(0x1F30A), //cresting wave
+            //    String.fromCodePoint(0x1F453), //glasses
+            //    String.fromCodePoint(0x1F366), //ice cream cone
+            //    String.fromCodePoint(0x1F379), //tropical drink
+            //    String.fromCodePoint(0x1F3D6), //beach w / umbrella
+            //    String.fromCodePoint(0x1F3DD), //desert island
+            //    String.fromCodePoint(0x1F9A9), //flamingo
+            //    String.fromCodePoint(0x1F99C), //parrot
+            //    String.fromCodePoint(0x1F93F), //snorkel
+            //]
 
             /*
             Jubilee theme
@@ -2958,7 +3037,7 @@ bg #1ca9c9
             //return [String.fromCodePoint(0x1F31E), String.fromCodePoint(0x1F33B), String.fromCodePoint(0x1F3BE), String.fromCodePoint(0x1F349), String.fromCodePoint(0x1F353), String.fromCodePoint(0x1F343), String.fromCodePoint(0x1F33E), String.fromCodePoint(0x1F337), String.fromCodePoint(0x1F425), String.fromCodePoint(0x1F3CF)]
 
             // Autumn
-            //return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F343), String.fromCodePoint(0x1F480), String.fromCodePoint(0x1F383), String.fromCodePoint(0x1F47B), String.fromCodePoint(0x2614), String.fromCodePoint(0x1F987), String.fromCodePoint(0x1F36C), String.fromCodePoint(0x1F578), String.fromCodePoint(0x1F577)]
+            return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F343), String.fromCodePoint(0x2614), String.fromCodePoint(0x2615), String.fromCodePoint(0x1F36C)]
 
             // Halloween
             //return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F343), String.fromCodePoint(0x1F480), String.fromCodePoint(0x1F383), String.fromCodePoint(0x1F47B), String.fromCodePoint(0x2614), String.fromCodePoint(0x1F987), String.fromCodePoint(0x1F36C), String.fromCodePoint(0x1F578), String.fromCodePoint(0x1F577)]
@@ -2967,6 +3046,13 @@ bg #1ca9c9
 
             //return [...Array(Math.round(1))].map(() => String.fromCharCode(0x2744));
             //return [...Array(Math.round(60))].map(() => String.fromCharCode(0x1F030 + Math.random() * (0x1F3BE - 0x0460 + 1)));
+        }
+
+        self.randomInt = function (min, max) {
+            return Math.floor(Math.random() * (max - min) + min);
+        }
+        self.randomFloat = function (min, max) {
+            return Math.random() * (max - min) + min;
         }
 
         self.canvas = element;
@@ -2990,14 +3076,16 @@ bg #1ca9c9
 
             //self.ctx.fillStyle = "#da5e04"; // autumn (bright)
             //self.ctx.fillStyle = '#c86e2d'; // autumn (darker)
-            //self.ctx.fillStyle = "#f0b447"; // autumn (golden yellow)
+            self.ctx.fillStyle = "#f0b447"; // autumn (golden yellow)
+            //self.ctx.fillStyle = '#003153'; // autumn (prussian blue)
+
 
             //self.ctx.fillStyle = "#66b8ff"; //winter
             //self.ctx.fillStyle = "#ffbbd7"; //valentine's (pink)
             //self.ctx.fillStyle = '#f8c9dd'; // spring (pink)
             //self.ctx.fillStyle = '#53bfea'; // spring (sky blue)
             //self.ctx.fillStyle = '#c1e0ff'; // summer
-            self.ctx.fillStyle = '#1ca9c9'; // summer, Lianne's Pacific Ocean Blue
+            //self.ctx.fillStyle = '#1ca9c9'; // summer, Lianne's Pacific Ocean Blue
 
             self.ctx.clearRect(0, 0, self.cw, self.ch);
             self.ctx.fillRect(0, 0, self.cw, self.ch);
@@ -3022,7 +3110,13 @@ bg #1ca9c9
             console.log('matrixLoader resetting, charCount: ', self.maxColumns);
 
             for (var i = 0; i < self.maxColumns; i++) {
-                self.fallingCharArr.push(new self.Point(i * self.fontSize, self.randomFloat(-500, 0)));
+                self.fallingCharArr.push(matrixLoaderPoint({
+                    x: i * self.fontSize,
+                    y: self.randomFloat(-500, 0),
+                    cw: self.cw,
+                    ch: self.ch,
+                    ca: self.charArr
+                }));
             }
 
             self.drawCharArrayToCanvas2();
@@ -3033,26 +3127,11 @@ bg #1ca9c9
 
             Promise.all(imagePromises).then(images => {
                 self.ctx2cache = images;
+
+                self.fallingCharArr.forEach(c => {
+                    c.imageBitmap = self.ctx2cache[c.charIndex];
+                });
             });
-        }
-
-        self.randomInt = function (min, max) {
-            return Math.floor(Math.random() * (max - min) + min);
-        }
-
-        self.randomFloat = function (min, max) {
-            return Math.random() * (max - min) + min;
-        }
-
-        self.Point = function (x, y) {
-            this.charIndex = self.randomInt(0, self.charArr.length);
-            this.x = x;
-            this.originalX = x;
-            this.y = y;
-            this.ySpeed = self.randomFloat(2, 3.5);
-            this.value = self.charArr[this.charIndex];//.toUpperCase();
-            this.xSpeed = self.randomInt(-1.5, 1.5);
-            this.rotation = self.randomFloat(-(Math.PI / 45), (Math.PI / 45));
         }
 
         self.textHeightOffset = 0;
@@ -3064,47 +3143,6 @@ bg #1ca9c9
 
         self.canvas.parentElement.appendChild(self.canvas3);
 
-        //self.putImageDataCalls = 0;
-
-        self.Point.prototype.draw = function () {
-
-            let imageBitmap = self.ctx2cache[this.charIndex];
-
-            if (this.value == String.fromCodePoint(0x2744)) {
-                self.ctx.translate(this.x, this.y);
-                self.ctx.setTransform(1, 0, 0, 1, this.x - self.imageWidth * 2, this.y - self.textHeight * 2);
-                self.ctx.rotate(this.rotation);
-            }
-            else {
-                self.ctx.setTransform(1, 0, 0, 1, 0, 0);
-            }
-
-            self.ctx.drawImage(imageBitmap, this.x, this.y);
-
-            if (this.xSpeed > 0) {
-                this.xSpeed -= (this.ySpeed);
-            } else {
-                this.xSpeed += (this.ySpeed);
-            }
-
-            if (this.rotation > 0) {
-                this.rotation += (this.ySpeed / 400);
-            } else {
-                this.rotation -= (this.ySpeed / 400);
-            }
-
-            this.x += this.xSpeed;
-            this.y += this.ySpeed;
-
-            if (this.y > self.ch || this.x > self.cw) {
-                this.x = this.originalX;
-                this.y = self.randomFloat(-50, 0);
-                this.ySpeed = self.randomFloat(2, 3.5);
-            }
-
-            this.x = Math.floor(this.x);
-            this.y = Math.floor(this.y);
-        }
 
         for (var i = 0; i < self.maxColumns; i++) {
             self.fallingCharArr.push(new self.Point(i * self.fontSize, self.randomFloat(-500, 0)));
@@ -3176,8 +3214,6 @@ bg #1ca9c9
             self.update(window.performance.now());
         }
 
-        self.frameCount = 0;
-
         self.update = function (newTime) {
             if (!self.visible())
                 return;
@@ -3189,8 +3225,11 @@ bg #1ca9c9
 
             if (elapsed > self.fpsInterval) {
 
+                self.ctx.clearRect(0, 0, self.cw, self.ch);
                 self.ctx.fillRect(0, 0, self.cw, self.ch);
                 self.ctx2.clearRect(0, 0, self.cw, self.ch);
+                self.ctx2.clearRect(0, 0, self.cw, self.ch);
+                self.ctx3.clearRect(0, 0, self.cw, self.ch);
                 self.ctx3.clearRect(0, 0, self.cw, self.ch);
 
                 // with thanks: http://jsfiddle.net/chicagogrooves/nRpVD/2/
@@ -3201,15 +3240,11 @@ bg #1ca9c9
                 var i = self.fallingCharArr.length;
 
                 while (i--) {
-                    self.fallingCharArr[i].draw();
+                    self.fallingCharArr[i].draw(self.ctx);
                 }
 
                 if (self.visible())
                     requestAnimationFrame(self.update);
-
-                self.frameCount++;
-
-                //console.log(`frame: ${self.frameCount}, putImageData calls: ${self.putImageDataCalls}`);
             }
         }
     }

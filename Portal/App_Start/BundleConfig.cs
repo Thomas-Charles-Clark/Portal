@@ -362,6 +362,11 @@ namespace Portal
                 $"{cssPrefix}/models/pattern-books{cssSuffix}"
             ));
 
+            bundles.Add(new StyleBundle("~/bundles/css/gift-vouchers").Include(
+                $"{cssPrefix}/lib/tempus-dominus/tempus-dominus{cssSuffix}",
+                $"{cssPrefix}/models/gift-vouchers{cssSuffix}"
+            ));
+
             //  
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             //
@@ -841,6 +846,12 @@ namespace Portal
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/emailer{jsSuffix}",
                         $"{jsPrefix}/models/pattern-books{jsSuffix}"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/gift-vouchers").Include(
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/gift-vouchers{jsSuffix}"
                 ));
 
             foreach (var b in BundleTable.Bundles)

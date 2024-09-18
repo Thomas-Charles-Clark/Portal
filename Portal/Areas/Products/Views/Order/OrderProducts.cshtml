@@ -178,7 +178,7 @@
 }
 
 <script id="basket-row-template" type="text/html">
-    <tr class="pointer">
+    <tr class="pointer" data-bind="css: { readonly: ReadOnly }">
         <td class="basket-row-status-column">
             <a class="basket-status-button" data-bind="bootstrapPopover: bootstrapPopoverDetails">
                 <span data-bind="html: Status"></span>
@@ -226,7 +226,7 @@
 
 
 <script id="imported-basket-row-template" type="text/html">
-    <tr class="pointer">
+    <tr class="pointer" data-bind="css: { readonly: ReadOnly }">
         <td class="basket-row-status-column">
             <a class="basket-status-button" data-bind="bootstrapPopover: bootstrapPopoverDetails">
                 <span data-bind="html: Status"></span>
@@ -496,7 +496,7 @@
 
 
 <script type="text/html" id="basket-status-row-template">
-    <tr>
+    <tr data-bind="css: { readonly: ReadOnly }">
         @*<td>
                 <span data-bind="text: BasketID"></span>
             </td>*@
@@ -1069,7 +1069,7 @@
                     Please Provide Additional Details
                 </h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" data-bind="css: { readonly: parent.basketServerObject() && parent.basketServerObject().ReadOnly }">
                 <p>
                     Basket ID: <span data-bind="text: parent.basketId"></span>
                 </p>
@@ -1128,6 +1128,14 @@
                 <div class="margin-bottom-15" data-bind="component: { name: 'mdc-phone-field-component', params: lastChancePhone }"></div>
                 <div class="margin-bottom-15" data-bind="component: { name: 'mdc-phone-field-component', params: lastChanceMobilePhone }"></div>
                 <div data-bind="component: { name: 'mdc-text-field-component', params: lastChanceDeliveryEmailParams }"></div>
+                <div class="modal-readonly">
+                    <label class="readonly-start">
+                        THIS BASKET IS READ-ONLY
+                    </label>
+                    <label class="readonly-end">
+                        THIS BASKET IS READ-ONLY
+                    </label>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-default pull-left" data-bind="click: cancelLastChanceModal">

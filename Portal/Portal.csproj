@@ -546,7 +546,9 @@
     <Compile Include="App_Start\UnityMvcActivator.cs" />
     <Compile Include="App_Start\UnityWebApiActivator.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Areas\Customers\Controllers\GiftVouchersAPIController.cs" />
     <Compile Include="Areas\Customers\Controllers\ContractPricingAPIController.cs" />
+    <Compile Include="Areas\Customers\Controllers\GiftVouchersController.cs" />
     <Compile Include="Areas\Customers\Controllers\CustomerMaintenanceAPIController.cs" />
     <Compile Include="Areas\Customers\Controllers\ContractPricingController.cs" />
     <Compile Include="Areas\Customers\Controllers\CustomerMaintenanceController.cs" />
@@ -560,6 +562,7 @@
     <Compile Include="Areas\Customers\Controllers\CustomerInviteController.cs" />
     <Compile Include="Areas\Customers\CustomersAreaRegistration.cs" />
     <Compile Include="Areas\Customers\ViewModels\ContractPricingViewModel.cs" />
+    <Compile Include="Areas\Customers\ViewModels\GiftVouchersViewModel.cs" />
     <Compile Include="Areas\Customers\ViewModels\TradeAccountCreationEmailMaintenanceViewModel.cs" />
     <Compile Include="Areas\Customers\ViewModels\CustomerMaintenanceViewModel.cs" />
     <Compile Include="Areas\Fenwick\Controllers\FenwickInvoicingAPIController.cs" />
@@ -1433,6 +1436,7 @@
     <Content Include="js\src\models\paint-invoice-approval.js" />
     <Content Include="js\src\models\paint-mixing.js" />
     <Content Include="js\src\models\parcel-calculator.js" />
+    <Content Include="js\src\models\gift-vouchers.js" />
     <Content Include="js\src\models\pattern-books.js" />
     <Content Include="js\src\models\press-contacts.js" />
     <Content Include="js\src\models\price-checker.js" />
@@ -2222,6 +2226,7 @@
     <Content Include="Areas\Parcel\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Parcel\Views\ParcelCalculator\ParcelCalculator.cshtml" />
     <Content Include="Areas\Products\Views\PatternBooks\PatternBooks.cshtml" />
+    <Content Include="Areas\Customers\Views\GiftVouchers\GiftVouchers.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
     <Content Include="Areas\Stock\Views\RangeManagement\RangeManagement.cshtml" />
     <None Include="compilerconfig.json" />
@@ -2307,6 +2312,7 @@
     <Content Include="css\src\models\order-book-sales.scss" />
     <Content Include="css\src\models\parcel-calculator.scss" />
     <Content Include="css\src\models\pattern-books.scss" />
+    <Content Include="css\src\models\gift-vouchers.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

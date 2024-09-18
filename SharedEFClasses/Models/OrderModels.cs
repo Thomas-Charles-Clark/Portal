@@ -269,6 +269,8 @@ namespace SharedEFClasses.Models.Orders
 
         public bool IsDeliveryAddressTrade { get; set; }
 
+        public bool ReadOnly { get; set; }
+
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool OverCreditLimit { get; set; }
@@ -1109,7 +1111,9 @@ namespace SharedEFClasses.Models.Orders
             {
             }
         }
-
+        
+        public bool ReadOnly { get; set; }
+        
         public TradeAccount TradeAccount { get; set; }
         public List<BasketItem> BasketItems { get; set; }
         public List<BasketItemLineMemo> BasketItemLineMemos { get; set; }
@@ -1199,6 +1203,7 @@ namespace SharedEFClasses.Models.Orders
         public int? TransactionID { get; set; }
         public bool Imported { get; set; }
         public byte LanguageID { get; set; }
+        public bool ReadOnly { get; set; }
 
         public DateTime HeldSince { get; set; }
 

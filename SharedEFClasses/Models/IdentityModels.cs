@@ -270,6 +270,10 @@ namespace SharedEFClasses.Models
         [InverseProperty("LastModifiedBy")]
         public virtual ICollection<Maintenance.MaintenanceSupplier> SuppliersModified { get; set; }
 
+        [JsonIgnore]
+        [InverseProperty("CreatedByMember")]
+        public virtual ICollection<GiftVoucher> GiftVouchersCreated { get; set; }
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
