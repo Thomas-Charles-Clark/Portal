@@ -23,7 +23,7 @@ namespace Portal.Utilities.Documents.PatternBook
 {
     public static class PatternBookPDFWriter
     {
-        public static MemoryStream GenerateReceipt(string rootPath, string patternBookCode, string patternBookName, IEnumerable<ProductSearchResultFlat> products)
+        public static MemoryStream Generate(string rootPath, string patternBookCode, string patternBookName, IEnumerable<ProductSearchResultFlat> products)
         {
             var stopWatch = new System.Diagnostics.Stopwatch();
 

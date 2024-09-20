@@ -290,6 +290,11 @@ namespace Portal
                 .Function("GetProductsForOrderBookSummary")
                 .ReturnsCollectionFromEntitySet<Product>("Products");
 
+            var productGiftVouchersFilterFunction = odataBuilder.EntityType<Product>()
+                .Collection
+                .Function("GetProductsForGiftVouchers")
+                .ReturnsCollectionFromEntitySet<Product>("Products");
+
 
             var patternBooksFilterFunction = odataBuilder.EntityType<Product>()
                 .Collection

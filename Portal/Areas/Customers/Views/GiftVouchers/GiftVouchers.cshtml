@@ -59,26 +59,29 @@
         <td>
             <span data-bind="text: PriceList.Name"></span>
         </td>
+        <td>
+            <span data-bind="text: Code"></span>
+        </td>
         <td class="text-end">
             <span data-bind="text: formatCurrency(ValueInc, 2, PriceList.Currency.FormattingCulture, PriceList.Currency.Code)"></span>
         </td>
-        <td>
+        <td class="text-end">
             <span data-bind="text: formatCurrency(ValueEx, 2, PriceList.Currency.FormattingCulture, PriceList.Currency.Code)"></span>
         </td>
         <td>
-            <span data-bind="text: CreatedDT ? moment(CreatedDT).format('DD/MM/YYYY HH:MM:ss') : ''"></span>
+            <span data-bind="text: CreatedDT ? moment(CreatedDT).format('DD/MM/YYYY HH:MM') : ''"></span>
         </td>
         <td>
-            <span data-bind="text: AuthorisedDT ? moment(AuthorisedDT).format('DD/MM/YYYY HH:MM:ss') : ''"></span>
+            <span data-bind="text: AuthorisedDT ? moment(AuthorisedDT).format('DD/MM/YYYY HH:MM') : ''"></span>
         </td>
         <td>
-            <span data-bind="text: ExpiryDT ? moment(ExpiryDT).format('DD/MM/YYYY HH:MM:ss') : ''"></span>
+            <span data-bind="text: ExpiryDT ? moment(ExpiryDT).format('DD/MM/YYYY HH:MM') : ''"></span>
         </td>
         <td>
-            <span data-bind="text: UsedDT ? moment(UsedDT).format('DD/MM/YYYY HH:MM:ss') : ''"></span>
+            <span data-bind="text: UsedDT ? moment(UsedDT).format('DD/MM/YYYY HH:MM') : ''"></span>
         </td>
         <td>
-            <span data-bind="text: CancelledDT ? moment(CancelledDT).format('DD/MM/YYYY HH:MM:ss') : ''"></span>
+            <span data-bind="text: CancelledDT ? moment(CancelledDT).format('DD/MM/YYYY HH:MM') : ''"></span>
         </td>
         <td class="text-end">
             <span data-bind="text: RedeemTransactionID"></span>
@@ -90,14 +93,21 @@
             <span data-bind="text: CreatedByMember?.FullName ?? 'eCommerce'"></span>
         </td>
         <td>
-            <button type="button" class="btn btn-secondary">
-                Print
+            <button type="button" class="btn btn-secondary grid-btn" data-bind="click: $root.viewVoucher">
+                View
             </button>
-            <button type="button" class="btn btn-secondary">
+            <button type="button" class="btn btn-secondary grid-btn">
                 Email
             </button>
         </td>
     </tr>
+</script>
+
+<script type="text/html" id="grid-toolbar-create-new">
+    <a id="create-new-btn" role="button" class="k-button k-button-icontext k-grid-CreateNew" href="javascript:;" data-bind="click: beginNewVoucher">
+        <span class="k-icon k-i-add"></span>
+        Create New
+    </a>
 </script>
 
 <div class="blocker" data-bind="flexFadeVisible: busy">
@@ -107,28 +117,50 @@
     </h4>
 </div>
 
-<div class="form-group row">
-    <div class="col-xs-12">
-        <div class="page-heading-logo">
-            <div></div>
-        </div>
-        <div class="page-heading text-right">
-            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
-            {
-                <h1 class="main-heading">
-                    @(Model.ApplicationHeading)
-                </h1>
-            }
-            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
-            {
-                <h4 class="sub-heading">
-                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
-                </h4>
-            }
-        </div>
+<div class="page-heading-wrapper">
+    <div class="page-heading-logo">
+        <div></div>
+    </div>
+    <div class="page-heading text-right">
+        @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+        {
+            <h1 class="main-heading">
+                @(Model.ApplicationHeading)
+            </h1>
+        }
+        @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+        {
+            <h4 class="sub-heading">
+                <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+            </h4>
+        }
     </div>
 </div>
 
 <div id="main-section">
     <div data-bind="kendoGrid: giftVouchersGridSettings"></div>
+</div>
+
+<div id="new-voucher-modal" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" data-bind="with: giftVoucherCreator">
+            <div class="modal-header grey-blue">
+                <h4 class="modal-title">
+                    Create Gift Voucher
+                </h4>
+                <button class="btn-close btn-close-white" data-bind="click: hide"></button>
+            </div>
+            <div class="modal-body">
+                <div id="creation-product" class="creation-parameter" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: productParams }"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bind="click: hide">
+                    Cancel
+                </button>
+                <button class="btn btn-primary" data-bind="click: proceed">
+                    Ok
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

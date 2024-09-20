@@ -255,6 +255,11 @@
     <Reference Include="PreMailer.Net, Version=2.4.0.0, Culture=neutral, PublicKeyToken=23e3f43e29cae17f, processorArchitecture=MSIL">
       <HintPath>..\packages\PreMailer.Net.2.4.0\lib\net461\PreMailer.Net.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="QRCoder, Version=1.6.0.0, Culture=neutral, PublicKeyToken=c4ed5b9ae8358a28, processorArchitecture=MSIL">
+      <HintPath>..\packages\QRCoder.1.6.0\lib\net40\QRCoder.dll</HintPath>
+    </Reference>
     <Reference Include="SimpleImpersonation, Version=4.2.0.0, Culture=neutral, PublicKeyToken=2558a0becb966f83, processorArchitecture=MSIL">
       <HintPath>..\packages\SimpleImpersonation.4.2.0\lib\net461\SimpleImpersonation.dll</HintPath>
     </Reference>
@@ -598,6 +603,7 @@
     <Compile Include="Areas\Products\Controllers\PatternBooksApiController.cs" />
     <Compile Include="Areas\Products\Controllers\PatternBooksController.cs" />
     <Compile Include="Areas\Products\Controllers\ProductCategoriesController.cs" />
+    <Compile Include="Areas\Products\Models\PassGiftVoucher.cs" />
     <Compile Include="Areas\Products\Models\PassPatternBookFetch.cs" />
     <Compile Include="Areas\Products\ViewModels\PatternBooksViewModel.cs" />
     <Compile Include="Areas\Products\ViewModels\ProductCategoriesViewModel.cs" />
@@ -695,6 +701,7 @@
     <Compile Include="UPSTracking\Functions.cs" />
     <Compile Include="UPSTracking\TrackingRequest.cs" />
     <Compile Include="UPSTracking\TrackingReply.cs" />
+    <Compile Include="Utilities\Documents\GiftVoucher\GiftVoucherPDFWriter.cs" />
     <Compile Include="Utilities\Documents\PatternBook\PatternBookPDFWriter.cs" />
     <Compile Include="Utilities\EU_EORI_Lookup.cs" />
     <Compile Include="Utilities\FastExcel\Cell.cs" />
@@ -1055,6 +1062,8 @@
     <Content Include="Content\images\logos\designers-guild-clearance.png" />
     <Content Include="Content\images\logos\designers-guild-essentials.png" />
     <Content Include="Content\images\logos\designers-guild-kids.png" />
+    <Content Include="Content\images\logos\designers-guild-transparent-inversion.png" />
+    <Content Include="Content\images\logos\designers-guild-transparent.png" />
     <Content Include="Content\images\logos\designers-guild-unlimited.png" />
     <Content Include="Content\images\logos\designers-guild.png" />
     <Content Include="Content\images\logos\john-derian.png" />
@@ -2272,6 +2281,8 @@
     <Content Include="css\src\fonts\src\arial-400.woff2" />
     <Content Include="css\src\fonts\src\arial-700.woff2" />
     <Content Include="css\src\fonts\src\bootstrap-icons.woff2" />
+    <Content Include="Content\fonts\CascadiaCode.ttf" />
+    <Content Include="Content\fonts\kunstler.ttf" />
     <None Include="css\src\fonts\src\bootstrap-icons.woff2.bak" />
     <Content Include="css\src\fonts\src\courier-new-400-italic.woff2" />
     <Content Include="css\src\fonts\src\courier-new-400.woff2" />

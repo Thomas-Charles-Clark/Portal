@@ -19,6 +19,11 @@ using SharedEFClasses.Models.ContractPricing;
 using Portal.Utilities.DynamicRoles;
 using System.Collections;
 using Microsoft.AspNet.Identity;
+using Newtonsoft.Json;
+using System.Dynamic;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
+using Portal.Areas.Products.Models;
 
 namespace Portal.Areas.Customers.Controllers
 {

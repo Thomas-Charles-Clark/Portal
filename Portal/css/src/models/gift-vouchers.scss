@@ -1,12 +1,15 @@
 ﻿@import "../models/common.scss";
 
 #main-section {
-    margin-top: $xl-gutter;
+
+}
+
+.page-heading-wrapper {
+    position: relative;
+    margin: 0 $l-gutter $mxl-gutter $l-gutter;
 }
 
 .navbar.navbar-default.navbar-expand {
-    position: fixed;
-    z-index: 1;
     width: 100%;
 
     .container {
@@ -21,14 +24,14 @@
 .container.body-content {
     max-width: unset !important;
     width: unset !important;
-    padding-left: $xxl-gutter;
-    padding-right: $xxl-gutter;
-    padding-top: $xl-gutter;
-    position: relative;
-    top: 52px;
-    z-index: 0;
 }
 
 .k-loading-mask {
     display: none !important;
+}
+
+.k-grid {
+    td.k-state-focused {
+        box-shadow: none;
+    }
 }

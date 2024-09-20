@@ -15,13 +15,12 @@
   font-size: 1rem;
 }
 
-#main-section {
-  margin-top: 2rem;
+.page-heading-wrapper {
+  position: relative;
+  margin: 0 1rem 1.5rem 1rem;
 }
 
 .navbar.navbar-default.navbar-expand {
-  position: fixed;
-  z-index: 1;
   width: 100%;
 }
 .navbar.navbar-default.navbar-expand .container {
@@ -35,15 +34,13 @@
 .container.body-content {
   max-width: unset !important;
   width: unset !important;
-  padding-left: 3rem;
-  padding-right: 3rem;
-  padding-top: 2rem;
-  position: relative;
-  top: 52px;
-  z-index: 0;
 }
 
 .k-loading-mask {
   display: none !important;
+}
+
+.k-grid td.k-state-focused {
+  box-shadow: none;
 }
 /*# sourceMappingURL=gift-vouchers.css.map */

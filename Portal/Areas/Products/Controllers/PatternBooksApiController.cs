@@ -112,7 +112,7 @@ namespace Portal.Areas.Products.Controllers
                 TradeAccountID = objPatternBook.TradeAccountID
             });
 
-            var stream = Utilities.Documents.PatternBook.PatternBookPDFWriter.GenerateReceipt(System.Web.Hosting.HostingEnvironment.MapPath("~"),
+            var stream = Utilities.Documents.PatternBook.PatternBookPDFWriter.Generate(System.Web.Hosting.HostingEnvironment.MapPath("~"),
                 objPatternBook.Code, objPatternBook.Name, results.Select(r => new ProductSearchResultFlat(r)));
 
             HttpContext.Current.Response.ContentType = "application/pdf";

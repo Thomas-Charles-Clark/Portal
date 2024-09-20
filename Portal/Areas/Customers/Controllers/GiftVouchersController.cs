@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.Identity;
 using Portal.Areas.Customers.ViewModels;
+using Portal.Areas.Products.Models;
 using Portal.Models;
 using Portal.Utilities.DynamicRoles;
 using SharedEFClasses;
@@ -9,10 +10,14 @@ using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Utilities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Data.Entity;
 
 namespace Portal.Areas.Customers.Controllers
 {
@@ -40,6 +45,15 @@ namespace Portal.Areas.Customers.Controllers
                 application.SubHeading);
 
             return View("GiftVouchers", model);
+        }
+
+        public async Task<ActionResult> PDF(short id)
+        {
+            var gv = await PortalDb.GiftVouchers.Include(p => p.PriceList).SingleAsync(p => p.GiftVoucherID == id);
+
+            var ms = Utilities.Documents.GiftVoucher.GiftVoucherPDFWriter.Generate(System.Web.Hosting.HostingEnvironment.MapPath("~"), gv);
+
+            return File(ms.ToArray(), "application/pdf");
         }
     }
 }

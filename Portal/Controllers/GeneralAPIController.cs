@@ -96,7 +96,8 @@ namespace Portal.Controllers
             {
                 new KeyValuePair<string, string>("grant_type", "client_credentials"),
                 new KeyValuePair<string, string>("client_secret", SharedEFClasses.Utilities.Framework.HMRCDeveloperHubCheckGBVATNoClientSecret),
-                new KeyValuePair<string, string>("client_id", SharedEFClasses.Utilities.Framework.HMRCDeveloperHubCheckGBVATNoClientID)
+                new KeyValuePair<string, string>("client_id", SharedEFClasses.Utilities.Framework.HMRCDeveloperHubCheckGBVATNoClientID),
+                new KeyValuePair<string, string>("scope", "read:vat")
             };
 
             var objVATNumber = new PassVATNumber();
@@ -109,6 +110,8 @@ namespace Portal.Controllers
             {
                 client.DefaultRequestHeaders.Clear();
 
+                client.DefaultRequestHeaders.Add("scope", "read:vat");
+
                 var tokenBody = new FormUrlEncodedContent(tokenPostData);
 
                 tokenBody.Headers.ContentType.MediaType = "application/x-www-form-urlencoded";
@@ -119,11 +122,9 @@ namespace Portal.Controllers
                 {
                     var token = JsonConvert.DeserializeObject<HMRCTokenResponse>(await tokenResponse.Content.ReadAsStringAsync());
 
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.hmrc.1.0+json"));
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.hmrc.2.0+json"));
 
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.access_token);
-
-                    client.DefaultRequestHeaders.Add("scope", "read:vat");
 
                     var vatResponse = await client.GetAsync($"{SharedEFClasses.Utilities.Framework.HMRCDeveloperHubSandboxBaseURL}/organisations/vat/check-vat-number/lookup/{objVATNumber.vatNumber}");
 

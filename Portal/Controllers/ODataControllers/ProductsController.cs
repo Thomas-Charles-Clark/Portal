@@ -70,6 +70,17 @@ namespace Portal.Controllers
                 .AsQueryable();
         }
 
+        // GET: odata/Products
+        [EnableQuery(MaxNodeCount = 200)]
+        public IQueryable<Product> GetProductsForGiftVouchers()
+        {
+            // Who cares about samples anyway?
+            return PortalDb.Products
+                .Where(p => p.Name.Contains("Voucher"))
+                .OrderBy(p => p.BasketName)
+                .AsQueryable();
+        }
+
         [EnableQuery(MaxNodeCount = 200)]
         [HttpGet]
         public IQueryable<Product> ProductValueMapper(int? productId)
