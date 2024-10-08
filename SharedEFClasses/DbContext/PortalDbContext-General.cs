@@ -36,7 +36,7 @@ namespace SharedEFClasses.Models
             cmd.CommandText = "[portal].[Application_Select]";
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddRange(parameters);
-        
+            
             try
             {
                 this.Database.Connection.Open();

@@ -570,6 +570,10 @@
     <Compile Include="Areas\Customers\ViewModels\GiftVouchersViewModel.cs" />
     <Compile Include="Areas\Customers\ViewModels\TradeAccountCreationEmailMaintenanceViewModel.cs" />
     <Compile Include="Areas\Customers\ViewModels\CustomerMaintenanceViewModel.cs" />
+    <Compile Include="Areas\Email\Controllers\EmailContactsController.cs" />
+    <Compile Include="Areas\Email\Controllers\EmailContactsAPIController.cs" />
+    <Compile Include="Areas\Email\EmailAreaRegistration.cs" />
+    <Compile Include="Areas\Email\ViewModels\EmailContactsViewModel.cs" />
     <Compile Include="Areas\Fenwick\Controllers\FenwickInvoicingAPIController.cs" />
     <Compile Include="Areas\Fenwick\Controllers\FenwickInvoicingController.cs" />
     <Compile Include="Areas\Fenwick\FenwickAreaRegistration.cs" />
@@ -722,6 +726,7 @@
     <Compile Include="Utilities\FastExcel\Worksheet.cs" />
     <Compile Include="Utilities\FastExcel\WorksheetAddSettings.cs" />
     <Compile Include="Utilities\FastExcel\WorksheetProperties.cs" />
+    <Compile Include="Utilities\HMRC\HMRCVATChecker.cs" />
     <Compile Include="Utilities\InMemoryMultipartFormDataStreamProvider\InMemoryMultipartFormDataStreamProvider.cs" />
     <Compile Include="Utilities\NotificationAuthentication.cs" />
     <Compile Include="Web References\EU_EORI_Lookup\Reference.cs">
@@ -1402,6 +1407,7 @@
     <Content Include="js\src\models\customer-visit.js" />
     <Content Include="js\src\models\documents-preview.js" />
     <Content Include="js\src\models\download-products.js" />
+    <Content Include="js\src\models\email-contacts.js" />
     <Content Include="js\src\models\emailer.js" />
     <Content Include="js\src\models\extensions.js" />
     <Content Include="js\src\models\fenwick-invoicing.js" />
@@ -2236,6 +2242,8 @@
     <Content Include="Areas\Parcel\Views\ParcelCalculator\ParcelCalculator.cshtml" />
     <Content Include="Areas\Products\Views\PatternBooks\PatternBooks.cshtml" />
     <Content Include="Areas\Customers\Views\GiftVouchers\GiftVouchers.cshtml" />
+    <Content Include="Areas\Email\Views\web.config" />
+    <Content Include="Areas\Email\Views\Contacts\EmailContacts.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
     <Content Include="Areas\Stock\Views\RangeManagement\RangeManagement.cshtml" />
     <None Include="compilerconfig.json" />
@@ -2324,6 +2332,7 @@
     <Content Include="css\src\models\parcel-calculator.scss" />
     <Content Include="css\src\models\pattern-books.scss" />
     <Content Include="css\src\models\gift-vouchers.scss" />
+    <Content Include="css\src\models\email-contacts.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -3332,6 +3341,8 @@
     <Folder Include="Areas\Documents\Views\Shared\" />
     <Folder Include="Areas\Downloads\Views\Shared\" />
     <Folder Include="Areas\Downloads\WindowsDownloaderBase\Service References\" />
+    <Folder Include="Areas\Email\Data\" />
+    <Folder Include="Areas\Email\Views\Shared\" />
     <Folder Include="Areas\Fenwick\Data\" />
     <Folder Include="Areas\Fenwick\Views\Shared\" />
     <Folder Include="Areas\Invoices\Views\Shared\" />

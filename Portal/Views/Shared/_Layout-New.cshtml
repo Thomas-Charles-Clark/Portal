@@ -364,14 +364,14 @@
                             <p>
                                 Please log in again.
                             </p>
-                            <div id="credentials-modal-form" class="row">
+                            <form id="credentials-modal-form" class="row" onsubmit="return false">
                                 <div class="col-xs-12">
                                     <div class="form-group row">
                                         <div class="col-md-3">
                                             <label class="col-form-label" style="float: none; padding-top: 6px">Email</label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input id="webapi-email" name="email" class="form-control" data-bind="textInput: email" />
+                                            <input id="login-email" name="email" class="form-control" data-bind="textInput: email" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -379,11 +379,11 @@
                                             <label class="col-form-label" style="float: none; padding-top: 6px">Password</label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input id="webapi-password" name="password" type="password" class="form-control" data-bind="enterKey: function() { performAuth(); }, textInput: password">
+                                            <input id="login-password" name="password" type="password" class="form-control" data-bind="enterKey: function() { performAuth(); }, textInput: password">
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </form>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-primary" data-bind="click: function() { performAuth(); }">Login</button>

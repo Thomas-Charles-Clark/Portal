@@ -1778,16 +1778,21 @@ ko.bindingHandlers.bootstrapPopover = {
                 event.stopPropagation();
             });
 
-            var pop = $(element).popover({
+            var params = {
                 container: properties.container || false,
-                selector: properties.selector || element,
                 placement: properties.placement,
                 title: properties.title,
                 content: properties.content,
                 html: true,
                 trigger: properties.trigger || 'click',
                 template: properties.template || '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
-            });
+            };
+
+            if (properties.selector) {
+                params.selector = properties.selector;
+            }
+
+            var pop = $(element).popover(params);
 
             properties.popObject = pop;
 
@@ -1832,7 +1837,7 @@ ko.bindingHandlers.actualBootstrapPopover = {
 
         var options = params.details;
 
-        var pop = new bootstrap.Popover(element, {
+        var popProps = {
             element: element,
             html: options.html ?? true,
             sanitize: options.sanitize ?? false,
@@ -1848,7 +1853,38 @@ ko.bindingHandlers.actualBootstrapPopover = {
             placement: options.placement || 'auto',
             fallbackPlacements: options.fallbackPlacements || ['top', 'right', 'bottom', 'left'],
             popperConfig: options.popperConfig ?? {}
-        });
+        };
+
+        if (options.solo === true) {
+            if (typeof options.show === 'function') {
+
+                let originalFn = options.show;
+
+                options.show = () => {
+                    document.querySelectorAll('[data-bind*="actualBootstrapPopover"]').forEach(e => {
+                        let p = bootstrap.Popover.getInstance(e);
+                        if (p) {
+                            p.hide();
+                        }
+                    });
+
+                    originalFn();
+                }
+            } else {
+                options.show = () => {
+                    document.querySelectorAll('[data-bind*="actualBootstrapPopover"]').forEach(e => {
+                        let p = bootstrap.Popover.getInstance(e);
+                        if (p) {
+                            p.hide();
+                        }
+                    });
+                }
+            }
+        }
+
+        var pop = new bootstrap.Popover(element, popProps);
+
+
 
         params.details.popover = pop;
         params.details.popoverElement = element;

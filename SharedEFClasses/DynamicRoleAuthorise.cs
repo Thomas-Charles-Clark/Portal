@@ -27,6 +27,8 @@ namespace SharedEFClasses
         {
             var controller = httpContext.Request.RequestContext.RouteData.GetRequiredString("controller");
 
+            controller = controller?.Replace("-", "");
+
             var action = httpContext.Request.RequestContext.RouteData.GetRequiredString("action");
 
             var area = httpContext.Request.RequestContext.RouteData.DataTokens["area"] as string;

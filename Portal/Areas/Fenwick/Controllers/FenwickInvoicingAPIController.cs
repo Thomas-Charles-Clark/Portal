@@ -115,6 +115,8 @@ namespace Portal.Areas.Fenwick.Controllers
                 sbi.SignedOffDT,
                 sbi.SignedOffMemberID,
                 SignedOffByMemberFullName = sbi.SignedOffByMember == null ? null : sbi.SignedOffByMember.FullName,
+                sbi.OrderHeadID,
+                sbi.OrderHead,
                 sbi.TotalCommission,
                 sbi.TotalGrossSales,
                 sbi.TotalVAT,

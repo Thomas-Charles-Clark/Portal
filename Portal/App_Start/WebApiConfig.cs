@@ -406,12 +406,17 @@ namespace Portal
 
 
 
-            var memberFilterFunction = odataBuilder.EntityType<TradeAccount>()
+            var memberFilterFunction = odataBuilder.EntityType<Member>()
                 .Collection
                 .Function("MemberFilter")
                 .ReturnsCollectionFromEntitySet<Member>("Members");
 
             memberFilterFunction.Parameter<string>("searchTerm");
+
+            var membersForEmailContacts = odataBuilder.EntityType<Member>()
+                .Collection
+                .Function("MembersForEmailContacts")
+                .ReturnsCollectionFromEntitySet<Member>("Members");
 
             var memberValueMapperFunction = odataBuilder.EntityType<Member>()
                 .Collection

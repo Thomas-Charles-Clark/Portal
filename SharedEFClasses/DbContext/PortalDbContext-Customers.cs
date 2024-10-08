@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+﻿using Dapper;
+
+using Microsoft.AspNet.Identity.EntityFramework;
 using SharedEFClasses.Models.Components;
 using SharedEFClasses.Models.Customers;
 using SharedEFClasses.Models.General;
@@ -12,6 +14,7 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace SharedEFClasses.Models

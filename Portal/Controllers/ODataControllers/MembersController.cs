@@ -36,7 +36,7 @@ namespace Portal.Controllers
         [EnableQuery(MaxNodeCount = 200)]
         public IQueryable<Member> GetMembers()
         {
-            return PortalDb.Users.Where(p => p.Roles.Any() && p.Deleted == false && p.Email.EndsWith("@designersguild.com")).OrderBy(p => p.FullName).OrderBy(p => p.FullName).AsQueryable();
+            return PortalDb.Users.Where(p => p.Deleted == false).OrderBy(p => p.FullName).AsQueryable();
         }
 
         [EnableQuery(MaxNodeCount = 200)]
@@ -58,6 +58,15 @@ namespace Portal.Controllers
             {
                 return PortalDb.Users.Where(p => p.Deleted == false).OrderBy(p => p.FullName).AsQueryable();
             }
+        }
+
+        [EnableQuery(MaxNodeCount = 200)]
+        [HttpGet]
+        public IQueryable<Member> MembersForEmailContacts()
+        {
+             return PortalDb.Users.Where(p => (p.Deleted == false) && 
+                ((p.DotDigitalAccountID == null) || (p.DotDigitalAccount.DotDigitalAccountTypeID == 1))
+             ).OrderBy(p => p.FullName).AsQueryable();
         }
 
         [EnableQuery(MaxNodeCount = 200)]

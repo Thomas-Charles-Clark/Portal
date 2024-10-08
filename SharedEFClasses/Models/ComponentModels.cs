@@ -325,6 +325,13 @@ namespace SharedEFClasses.Models.Components
     public class PassMember
     {
         public int MemberID { get; set; }
+        public string GUID { get; set; }
+        public string Email { get; set; }
+    }
+
+    public class PassEmail
+    {
+        public string Email { get; set; }
     }
 
     public class PassLeadDashboard

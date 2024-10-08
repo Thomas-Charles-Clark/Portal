@@ -1,0 +1,193 @@
+﻿@import "../models/common.scss";
+
+.k-loading-mask {
+    display: none !important;
+}
+
+.k-grid {
+    td.k-state-focused {
+        box-shadow: none;
+    }
+}
+
+#prefilters {
+    .prefilter {
+
+    }
+
+    #email-prefilter {
+
+    }
+}
+
+#grid-wrapper {
+    margin-top: $l-gutter;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    gap: $l-gutter;
+
+    .card {
+        align-self: flex-start;
+
+        .card-body {
+            .accordion-item {
+                border: none;
+
+                & + .accordion-item {
+                    margin-top: $l-gutter;
+                    padding-top: $l-gutter;
+                }
+
+                .accordion-collapse {
+                }
+            }
+
+            .accordion-header {
+                border: none;
+                border-bottom: 1px solid $gray-200;
+
+                .accordion-button {
+                    padding: 0;
+                    margin-bottom: 0;
+                    padding-bottom: $l-gutter;
+
+                    &:focus,
+                    &:active {
+                        box-shadow: none;
+                        border: none;
+                    }
+
+                    &:not(.collapsed) {
+                        background-color: transparent;
+                        box-shadow: none;
+                        border: none;
+                        color: $body-color;
+
+                        &::after {
+                            color: $body-color;
+                            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23212529'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+                        }
+                    }
+                }
+            }
+
+            .card-title {
+                font-family: 'Trixie';
+                font-weight: 700;
+                font-size: 1.5rem;
+                cursor: pointer;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            dl {
+                margin-bottom: 0;
+
+                dd {
+                    margin-bottom: 0;
+
+                    & + dt {
+                        margin-top: $l-gutter;
+                    }
+                }
+            }
+
+            .collapse-inner {
+                margin-top: $m-gutter;
+
+                .prop-grid {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: $l-gutter;
+                }
+            }
+        }
+    }
+}
+
+#email-prefilter {
+    position: relative;
+    border-radius: 4px;
+    background-color: $white;
+}
+
+.mdc-select {
+    .k-dropdown-wrap {
+        background-color: transparent;
+        &.k-state-hover,
+        &.k-state-active {
+
+        }
+
+        .k-icon {
+            &.k-i-loading {
+                background-image: none;
+            }
+        }
+
+        &.busy {
+
+        }
+    }
+}
+
+#action-collapse {
+    .collapse-inner {
+        .btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            border-radius: 0;
+
+            + .btn {
+                margin-top: $l-gutter;
+            }
+        }
+    }
+}
+
+#change-account-modal {
+    .modal-header {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .change-account-row {
+        display: flex;
+        align-items: center;
+        gap: $l-gutter;
+        height: 34px;
+
+        .change-account-input {
+            flex: 1;
+        }
+
+        > :first-child {
+            flex: 0 1 64px;
+        }
+    }
+}
+
+.nav-tabs {
+    &.nav-justified {
+
+    }
+}
+
+.tab-content {
+    padding: $l-gutter;
+    background-color: $white;
+    border: 1px solid $gray-300;
+    border-top: 0;
+    border-bottom-left-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
+}
+
+#submit-new-contact {
+    &[disabled] {
+        pointer-events: initial;
+        cursor: not-allowed;
+    }
+}

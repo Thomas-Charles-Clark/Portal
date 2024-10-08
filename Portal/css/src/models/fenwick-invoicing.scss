@@ -64,7 +64,7 @@
     tr:focus, 
     tr:focus-within {
         td {
-            border: 2px solid $gray-300;
+            border: 1px solid $gray-300;
         }
     }
 }
@@ -232,4 +232,12 @@
 .processed-tick {
     position: relative;
     right: 2px;
+    text-decoration: none;
+    color: $black;
+
+    &:active,
+    &:focus {
+        border: none;
+    }
 }
+

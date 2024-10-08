@@ -388,6 +388,9 @@ const orderBookUserDefinedFiltersViewModel = ({
 
             if (self.dropDownListSettings.widget()._widgetOptions.value.mdcSelect.label_ != null)
                 self.dropDownListSettings.widget()._widgetOptions.value.mdcSelect.label_.float(false);
+
+            self.dropDownListSettings.widget().dataSource.query({});
+
         }
 
         if (typeof self.afterClear === 'function') {
@@ -2119,29 +2122,29 @@ const orderBookUserDefinedFiltersViewModel = ({
         endPoint: '/odata/MertexProductClassificationSuperSet',
         textField: 'Quality.Name',
         valueField: 'Quality.QualityID',
-        virtual: false,
-        //pageSize: 40,
-        //virtualOptions: {
-        //    itemHeight: 34,
-        //    mapValueTo: 'dataItem',
-        //    valueMapper: function (options) {
-        //        if (options.value) {
-        //            self.qualityAwaitingBinding(true);
-        //            $.ajax({
-        //                url: `groupby((Quality/QualityID,Quality/Code,Quality/Name))/filter((Quality/QualityID eq ${options.value}))`,
-        //                type: 'GET',
-        //                success: function (data) {
-        //                    options.success(data[0]);
-        //                    window.setTimeout(() => {
-        //                        self.qualityAwaitingBinding(false);
-        //                    }, 0)
-        //                }
-        //            });
-        //        } else {
-        //            options.success()
-        //        }
-        //    }
-        //},
+        virtual: true,
+        pageSize: 40,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    self.qualityAwaitingBinding(true);
+                    $.ajax({
+                        url: `groupby((Quality/QualityID,Quality/Code,Quality/Name))/filter((Quality/QualityID eq ${options.value}))`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data[0]);
+                            window.setTimeout(() => {
+                                self.qualityAwaitingBinding(false);
+                            }, 0)
+                        }
+                    });
+                } else {
+                    options.success()
+                }
+            }
+        },
         template: self.qualityTemplate,
         valueTemplate: self.qualityTemplate,
         idObservable: self.qualityId,
@@ -2188,29 +2191,29 @@ const orderBookUserDefinedFiltersViewModel = ({
         endPoint: '/odata/MertexProductClassificationSuperSet',
         textField: 'Design.Name',
         valueField: 'Design.DesignID',
-        //virtual: true,
-        //pageSize: 40,
-        //virtualOptions: {
-        //    itemHeight: 34,
-        //    mapValueTo: 'dataItem',
-        //    valueMapper: function (options) {
-        //        if (options.value) {
-        //            self.designAwaitingBinding(true)
-        //            $.ajax({
-        //                url: `/odata/MertexProductClassificationSuperSet?$apply=groupby((Design/DesignID,Design/Name))/filter((Design/DesignID eq ${options.value}))`,
-        //                type: 'GET',
-        //                success: function (data) {
-        //                    options.success(data);
-        //                    window.setTimeout(() => {
-        //                        self.designAwaitingBinding(false);
-        //                    }, 0);
-        //                }
-        //            });
-        //        } else {
-        //            options.success();
-        //        }
-        //    }
-        //},
+        virtual: true,
+        pageSize: 40,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    self.designAwaitingBinding(true)
+                    $.ajax({
+                        url: `/odata/MertexProductClassificationSuperSet?$apply=groupby((Design/DesignID,Design/Name))/filter((Design/DesignID eq ${options.value}))`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data);
+                            window.setTimeout(() => {
+                                self.designAwaitingBinding(false);
+                            }, 0);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
         template: self.designTemplate,
         valueTemplate: self.designTemplate,
         idObservable: self.designId,
@@ -2720,47 +2723,49 @@ const orderBookUserDefinedFiltersViewModel = ({
     }
 
     self.json = ko.computed(() => {
-        if (self.allBound()) {
-            let result = {
-                marketIds: self.salesMarketIds(),
-                tradeAccountTypeId: self.tradeAccountTypeId() || null,
-                salesRepresentativeId: self.salesRepresentativeId() || null,
-                salesAgentId: self.salesAgentId() || null,
-                salesAreaId: self.salesAreaId() || null,
-                countryId: self.countryId() || null,
-                tradeAccountGroupId: self.tradeAccountGroupId() || null,
-                paymentTermsId: self.paymentTermsId() || null,
-                paymentTermsTypeId: self.paymentTermsTypeId() || null,
-                tradeAccountId: self.tradeAccountId() || null,
-                orderId: self.orderId() || null,
-                startDate: self.fromDate() ? moment(self.fromDate()).format('YYYY/MM/DD') : null,
-                endDate: self.toDate() ? moment(self.toDate()).format('YYYY/MM/DD') : null,
-                haulierCode: self.haulierId() || null,
-                deliveryType: self.deliveryTypeId() || null,
-                orderTakerCode: self.orderTakerId() || null,
-                productGroupId: self.productGroupId() || null,
-                itemTypeId: self.itemTypeId() || null,
-                brandId: self.brandId() || null,
-                collectionId: self.collectionId() || null,
-                launchId: self.launchId() || null,
-                qualityId: self.qualityId() || null,
-                designId: self.designId() || null,
-                supplierCode: self.supplierId() || null,
-                buyerCode: self.buyerId() || null,
-                productStatus: self.productStatusId() || null,
-                productId: self.productId() || null,
-                allocated: self.allocatedId() || null,
-                dataSource: self.dataSourceId() || null,
-                transactionTypeId: self.transactionTypeId() || null
-            };
 
-            console.log("userDefinedFilters.json returning", result);
+        let result = {
+            marketIds: self.salesMarketIds(),
+            tradeAccountTypeId: self.tradeAccountTypeId() || null,
+            salesRepresentativeId: self.salesRepresentativeId() || null,
+            salesAgentId: self.salesAgentId() || null,
+            salesAreaId: self.salesAreaId() || null,
+            countryId: self.countryId() || null,
+            tradeAccountGroupId: self.tradeAccountGroupId() || null,
+            paymentTermsId: self.paymentTermsId() || null,
+            paymentTermsTypeId: self.paymentTermsTypeId() || null,
+            tradeAccountId: self.tradeAccountId() || null,
+            orderId: self.orderId() || null,
+            startDate: self.fromDate() ? moment(self.fromDate()).format('YYYY/MM/DD') : null,
+            endDate: self.toDate() ? moment(self.toDate()).format('YYYY/MM/DD') : null,
+            haulierCode: self.haulierId() || null,
+            deliveryType: self.deliveryTypeId() || null,
+            orderTakerCode: self.orderTakerId() || null,
+            productGroupId: self.productGroupId() || null,
+            itemTypeId: self.itemTypeId() || null,
+            brandId: self.brandId() || null,
+            collectionId: self.collectionId() || null,
+            launchId: self.launchId() || null,
+            qualityId: self.qualityId() || null,
+            designId: self.designId() || null,
+            supplierCode: self.supplierId() || null,
+            buyerCode: self.buyerId() || null,
+            productStatus: self.productStatusId() || null,
+            productId: self.productId() || null,
+            allocated: self.allocatedId() || null,
+            dataSource: self.dataSourceId() || null,
+            transactionTypeId: self.transactionTypeId() || null
+        };
 
-            return JSON.stringify(result);
-        } else {
-            console.log("userDefinedFilters.json returning", undefined);
-            return undefined;
-        }
+        console.log("userDefinedFilters.json returning", result);
+
+        return JSON.stringify(result);
+
+        //if (self.allBound()) {
+        //} else {
+        //    console.log("userDefinedFilters.json returning", undefined);
+        //    return undefined;
+        //}
     }).extend({
         rateLimit: {
             timeout: 100,

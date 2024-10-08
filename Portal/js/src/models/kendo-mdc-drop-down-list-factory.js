@@ -44,13 +44,15 @@
     cascade,
     parameterMap,
     select,
+    change,
     aggregate,
     requestStart,
     requestEnd,
     skipCascade,
     ignoreCase,
     minLength,
-    enforceMinLength
+    enforceMinLength,
+    busy
 } = {
         widget: ko.observable(),
         endPoint: null,
@@ -94,13 +96,15 @@
         parameterMap: null,
         aggregate: null,
         select: (e) => { },
+        change: (e) => { },
         dataBound: (e) => { },
         requestStart: (e) => { },
         requestEnd: (e) => { },
         skipCascade: false,
         ignoreCase: true,
         minLength: null,
-        enforceMinLength: false
+        enforceMinLength: false,
+        busy: ko.observable(false)
     }) {
 
     if (endPoint == null && data == null) {
@@ -149,7 +153,9 @@
                 data: additionalParams
             },
             sort: sort,
-            schema: schema
+            schema: schema,
+            requestStart: requestStart,
+            requestEnd: requestEnd
         });
     } else {
         dataSource = new kendo.data.DataSource({
@@ -210,6 +216,7 @@
         controlClass: 'form-control',
         disabled: disabled,
         readOnly: readOnly,
+        busy: busy,
         dropDownListSettings: {
             isKendoMDCDropDownList: true,
             enable: !disabled,
@@ -230,6 +237,7 @@
                 $(e.sender._widgetOptions.value.mdcSelect.root_).toggleClass('mdc-select--focused');
             },
             select: select,
+            change: change,
             data: dataSource,
             dataBound: dataBound,
             valuePrimitive: false,

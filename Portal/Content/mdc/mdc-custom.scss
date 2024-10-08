@@ -6403,6 +6403,13 @@ svg.mdc-button__icon {
         &::before {
             background-color: $background-color_8;
         }
+
+        .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate) ~ .mdc-checkbox__background {
+            background-color: $background-color_8;
+        }
+        label.mdc-checkbox--label {
+            color: $background-color_8;
+        }
     }
 
     .mdc-select.mdc-multiselect.clearable {

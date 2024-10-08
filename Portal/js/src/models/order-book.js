@@ -170,6 +170,8 @@ const orderBookViewModel = (() => {
 
     self.orderBookSummaryResults = ko.observableArray([]);
 
+    self.fetchAbortController = new AbortController();
+
     //#endregion
 
 
@@ -304,7 +306,8 @@ const orderBookViewModel = (() => {
     }, self, 'arrayChange');
 
     self.userDefinedFilters.json.subscribe((nv) => {
-        self.fetch(nv);
+        if (nv)
+            self.fetch(nv);
     });
 
     self.columnHeadings.subscribe(nv => {
@@ -461,7 +464,9 @@ const orderBookViewModel = (() => {
         return record;
     } 
 
-    self.parse = (result) => {
+    self.parse = (result, fetchSalesFilters) => {
+
+        //let rowHeadingsStartMs = +new Date();
 
         self.inaccuracyMilliseconds = 0;
 
@@ -520,6 +525,10 @@ const orderBookViewModel = (() => {
             return a.orderGroupSortOrder < b.orderGroupSortOrder ? -1 : 1;
         });
 
+        //let rowHeadingsEndMs = +new Date();
+
+        //console.log(`fetchMain primary parse: rowHeadings s1 took ${rowHeadingsEndMs - rowHeadingsStartMs}ms`);
+
         self.defaultConfig.orderGroups = defaultDisplayConfigOrderGroups;
 
         rowHeadings.forEach(rh => {
@@ -528,11 +537,17 @@ const orderBookViewModel = (() => {
             });
         });
 
-        self.rowHeadings(rowHeadings);
+        // this is SLOW on the order of 4s with... the second call? for some reason?
+        // don't know why the first time is relatively quick and the second is relatively slow but... hmph
+        window.setTimeout(() => {
+            self.rowHeadings(rowHeadings);
+        }, 0);
 
+        //let rowHeadingsCompleteMs = +new Date();
 
+        //console.log(`fetchMain primary parse: rowHeadings complete took ${rowHeadingsCompleteMs - rowHeadingsStartMs}ms`);
 
-
+        //let columnHeadingsStartMs = +new Date();
 
         let defaultDisplayConfigColumnHeadings = [];
 
@@ -574,6 +589,10 @@ const orderBookViewModel = (() => {
             return a.orderStatusGroupSortOrder < b.orderStatusGroupSortOrder ? -1 : 1;
         });
 
+        //let columnHeadingsEndMs = +new Date();
+
+        //console.log(`fetchMain primary parse: columnHeadings s1 took ${columnHeadingsEndMs - columnHeadingsStartMs}ms`);
+
         self.defaultConfig.columnHeadings = defaultDisplayConfigColumnHeadings;
 
         columnHeadings.forEach(ch => {
@@ -593,17 +612,35 @@ const orderBookViewModel = (() => {
             });
         });
 
+        //let columnHeadingsCompleteMs = +new Date();
+
+        //console.log(`fetchMain primary parse: columnHeadings s2 took ${columnHeadingsCompleteMs - columnHeadingsStartMs}ms`);
+
+        //let resultsFillStartMs = +new Date();
+
         self.results(result.Data.map(d => orderBookMainCell({
             parent: self.rowHeadings().find(rh => rh.orderGroupId == d.OrderGroupID) ?? self, // I want parent from here to be the rowHeading the cell resides in
             data: d
         })));
 
+        //let resultsFillEndMs = +new Date();
+
+        //console.log(`fetchMain primary parse: resultsFill took ${resultsFillEndMs - resultsFillStartMs}ms`);
+
         // this will only be true on the first run through
         //if (self.columnHeadings().length == 0) {
 
+        //let columnHeadingsFillStartMs = +new Date();
+
         self.columnHeadings(columnHeadings);
 
-        self.salesFilters.fetch(JSON.parse(self.userDefinedFilters.json()));
+        //let columnHeadingsFillEndMs = +new Date();
+
+        //console.log(`fetchMain primary parse: columnHeadings fill took ${columnHeadingsFillEndMs - columnHeadingsFillStartMs}ms`);
+
+        if (fetchSalesFilters) {
+            self.salesFilters.fetch(JSON.parse(self.userDefinedFilters.json()));
+        }
 
         //}
     }
@@ -612,45 +649,79 @@ const orderBookViewModel = (() => {
 
         self.busy(true);
 
+        let fetchSalesFiltersAfterParse = true;
+
         if (self.columnHeadings().length > 0) {
             self.salesFilters.fetch(JSON.parse(params));
+            fetchSalesFiltersAfterParse = false;
         }
 
         let body = JSON.parse(params);
 
         body.orderLineDetailedStatusGroupIds = self.displayColumnHeadings();
 
-        console.log("FetchMain calling with", body);
+        if (self.fetchAbortController.fetch == null) {
+            console.log("FetchMain calling with", body);
+        } else {
+            self.fetchAbortController.abort();
+        }
 
+        //self.fetchAbortController.fetch =
         fetch("/api/orderbook/Refresh", {
             method: "POST",
             headers: window.fetchHeaders,
             cache: 'no-store',
             credentials: 'same-origin',
-            body: JSON.stringify(body)
+            body: JSON.stringify(body),
+            signal: self.fetchAbortController.signal
         })
             .then(window.handleFetchResponse)
             .then(data => {
                 console.log("FetchMain returned", data);
 
-                self.parse(data.mainResult);
+                let startMs = +new Date();
+
+                self.parse(data.mainResult, fetchSalesFiltersAfterParse);
+
+                let endMs = +new Date();
+                
+                console.log(`FetchMain primary parsing took ${endMs - startMs}ms`);
+
+                let dateFilterParsingStart = +new Date();
 
                 self.dateFilters.parse(data.dateFilters);
 
+                endMs = +new Date();
+
+                console.log(`FetchMain dateFilters parsing took ${endMs - dateFilterParsingStart}ms`);
+
+                let preDefinedFilterParsingStart = +new Date();
+
                 self.preDefinedFilters.parse(data.preDefinedFilters);
+                
+                endMs = +new Date();
+
+                console.log(`FetchMain preDefinedFilters parsing took ${endMs - preDefinedFilterParsingStart}ms`);
 
                 bootstrap.Collapse.getOrCreateInstance(document.querySelector("#accuracy-collapse")).hide();
 
-                window.setTimeout(() => {
-                    if (typeof afterFetch === 'function')
+                if (typeof afterFetch === 'function') {
+                    window.setTimeout(() => {
                         afterFetch();
-
+                    }, 0);
+                } else {
                     self.busy(false);
-                }, 0);
+
+                    endMs = +new Date();
+
+                    console.log(`FetchMain overall parsing took ${endMs - startMs}ms`);
+                }
             })
             .catch((err) => {
                 self.busy(false);
                 window.catchFetchError(err);
+                //delete self.fetchAbortController.fetch;
+                //self.fetchAbortController.fetch = undefined;
             });
     }
 

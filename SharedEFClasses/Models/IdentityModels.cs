@@ -4,6 +4,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Newtonsoft.Json;
 
 using SharedEFClasses.Models.Applications;
+using SharedEFClasses.Models.DotDigital;
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Orders;
@@ -32,6 +33,7 @@ namespace SharedEFClasses.Models
 
         public string FullName { get; set; }
 
+        [NotMapped]
         public int MemberID
         {
             get
@@ -45,9 +47,9 @@ namespace SharedEFClasses.Models
 
         public int? TradeAccountID { get; set; }
 
-        //internal Guid GUID;
+        public Guid GUID { get; set; }
 
-        //internal DateTime CreatedDT;
+        public DateTime CreatedDT { get; set; }
 
         //internal DateTime? ModifiedDT;
 
@@ -66,10 +68,16 @@ namespace SharedEFClasses.Models
         public short MarketingCountryID { get; set; }
         public byte MarketingLanguageID { get; set; }
 
+        public byte? DotDigitalAccountID { get; set; }
+
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool InvalidEmail { get; set; }
 
         public bool TradeAuthenticationComplete { get; set; }
+
+        [ForeignKey("DotDigitalAccountID")]
+        [InverseProperty("Members")]
+        public virtual DotDigitalAccount DotDigitalAccount { get; set; }
 
         [JsonIgnore]
         public virtual ICollection<Member_Department> Departments { get; set; }
@@ -201,6 +209,9 @@ namespace SharedEFClasses.Models
                 FullName = value;
             }
         }
+
+        [NotMapped]
+        public DotDigitalMemberControl EmailContactInfo { get; set; }
 
         [JsonIgnore]
         [InverseProperty("CreatedMember")]

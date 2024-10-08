@@ -148,9 +148,9 @@
                     </td>
                     <td class="text-center">
                         <!-- ko if: Processed -->
-                        <i class="processed-tick fs-6" data-bind="attr: { title: `Processed: ${new moment(ProcessedDT).format('DD/MM/YYYY HH:mm:ss')}` }">
+                        <a tabindex="-1" class="processed-tick fs-6" href="javascript:;" data-bind="actualBootstrapPopover: { context: $data, details: bootstrapPopoverDetails }, click: () => { return true; }, clickBubble: false">
                             ✔
-                        </i>
+                        </a>
                         <!-- /ko -->
                     </td>
                 </tr>

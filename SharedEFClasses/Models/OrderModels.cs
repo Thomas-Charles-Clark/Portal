@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+
+using SharedEFClasses.Models.Fenwick;
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Mertexer;
 using SharedEFClasses.Models.Products;
@@ -660,8 +662,8 @@ namespace SharedEFClasses.Models.Orders
         public int TransactionID { get; set; }
 
         public int TradeAccountID { get; set; }
-
-        public long BasketID { get; set; }
+        
+        public long? BasketID { get; set; }
 
         public string Email { get; set; }
 
@@ -720,10 +722,17 @@ namespace SharedEFClasses.Models.Orders
 
         public string BasketSplitID { get; set; }
 
+        public DateTime? AcceptedByMertexDT { get; set; }
+
         [ForeignKey("TransactionID")]
         public virtual Transaction Transaction { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<OrderLine> OrderLines { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("OrderHead")]
+        public virtual ICollection<SelfBillInvoice> FenwickSelfBillInvoices { get; set; }
     }
 
 

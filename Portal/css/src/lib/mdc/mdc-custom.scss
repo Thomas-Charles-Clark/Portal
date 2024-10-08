@@ -419,6 +419,13 @@ label.mdc-floating-label {
     background-color: $mdc-theme-error;
 }
 
+.mdc-checkbox.mdc-checkbox-error {
+
+    .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate) ~ .mdc-checkbox__background {
+        border-color: $mdc-theme-error;
+    }
+}
+
 .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate) ~ .mdc-checkbox__background {
     background-color: white;
 }

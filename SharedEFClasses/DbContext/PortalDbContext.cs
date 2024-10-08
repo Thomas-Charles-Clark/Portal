@@ -521,6 +521,8 @@ namespace SharedEFClasses.Models
 
         #region DotDigital
 
+        public DbSet<DotDigitalAccount> DotDigitalAccounts { get; set; }
+
         public DbSet<SyncAction> SyncActions { get; set; }
 
         public DbSet<RetailStoreMember> RetailStoreMembers { get; set; }

@@ -367,6 +367,11 @@ namespace Portal
                 $"{cssPrefix}/models/gift-vouchers{cssSuffix}"
             ));
 
+            bundles.Add(new StyleBundle("~/bundles/css/email-contacts").Include(
+                $"{cssPrefix}/lib/tempus-dominus/tempus-dominus{cssSuffix}",
+                $"{cssPrefix}/models/email-contacts{cssSuffix}"
+            ));
+
             //  
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             //
@@ -853,6 +858,12 @@ namespace Portal
                         $"{jsPrefix}/models/emailer{jsSuffix}",
                         $"{jsPrefix}/models/gift-vouchers{jsSuffix}"
                 ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/email-contacts").Include(
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/email-contacts{jsSuffix}"
+                ));
+
 
             foreach (var b in BundleTable.Bundles)
             {

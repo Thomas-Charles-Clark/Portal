@@ -11,11 +11,15 @@ namespace SharedEFClasses.Utilities
 {
     public static class Framework
     {
-        public static readonly string HMRCDeveloperHubCheckGBVATNoClientID = "jtV0faSd7fs0AeIAM4z6cO9t0NyS";
+        public static readonly string HMRCDeveloperHubCheckGBVATNoSandboxClientID = "jtV0faSd7fs0AeIAM4z6cO9t0NyS";
 
-        public static readonly string HMRCDeveloperHubCheckGBVATNoClientSecret = "e96bf083-516f-4a68-97dd-1d619900519e";
+        public static readonly string HMRCDeveloperHubCheckGBVATNoSandboxClientSecret = "e96bf083-516f-4a68-97dd-1d619900519e";
 
         public static readonly string HMRCDeveloperHubSandboxBaseURL = "https://test-api.service.hmrc.gov.uk";
+
+        public static readonly string HMRCDeveloperHubCheckGBVATNoProductionClientID = "7TGOydrA4rbIOD6ltAaIiKylaTZh";
+
+        public static readonly string HMRCDeveloperHubCheckGBVATNoProductionClientSecret = "031dc349-5944-44c7-b96e-42887efcf04f";
 
         public static readonly string HMRCDeveloperHubProductionBaseURL = "https://api.service.hmrc.gov.uk";
 

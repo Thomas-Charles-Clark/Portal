@@ -504,7 +504,7 @@ const fenwickInvoicingViewModel = (() => {
         }
     }
 
-    self.fetchSelfBillInvoicesForDate = (sbid) => {
+    self.fetchSelfBillInvoicesForDate = (sbid, onComplete) => {
         self.busy(true);
 
         let data = {
@@ -521,8 +521,59 @@ const fenwickInvoicingViewModel = (() => {
             .then(window.handleFetchResponse)
             .then(data => {
                 console.log("fetchSelfBillInvoicesForDate returned", data);
-                self.selfBillInvoices(data);
-                self.busy(false);
+                self.selfBillInvoices(data.map(d => {
+                    return Object.assign({
+                        bootstrapPopoverDetails: {
+                            title: "Details",
+                            html: true,
+                            sanitize: false,
+                            busy: ko.observable(false),
+                            data: ko.observable(),
+                            element: ko.observable(),
+                            container: 'td.text-center',
+                            placement: 'left',
+                            fallbackPlacements: ['top'],
+                            customClass: 'invoices-popover',
+                            content: (element) => {
+                                let e = ko.dataFor(element);
+                                return `<span class="d-block">Processed: ${new moment(e.ProcessedDT).format('DD/MM/YYYY HH:mm:ss')}</span>
+                                <span class="d-block">OrderHeadID: ${e.OrderHeadID}</span>
+                                <span class="d-block">Accepted By Mertex: ${(e.OrderHead?.AcceptedByMertexDT == null ? "Not Yet" : new moment(e.OrderHead?.AcceptedByMertexDT).format('DD/MM/YYYY HH:mm:ss'))}</span>`;
+                            },
+                            trigger: 'click',
+                            //container: 'td',
+                            solo: true,
+                            show: null,
+                            shown: null,
+                            hide: null,
+                            hidden: null,
+                            inserted: async function (event) {
+                                
+                            },
+                            popperConfig: function (defaultBsPopperConfig) {
+                                return defaultBsPopperConfig;
+                            }
+                        }
+                    }, d);
+                }));
+
+                window.setTimeout(() => {
+                    document.addEventListener("click", (e) => {
+                        if (e.target.closest('.invoices-popover') == null) {
+                            document.querySelectorAll('[data-bind*="actualBootstrapPopover"]').forEach(e => {
+                                let p = bootstrap.Popover.getInstance(e);
+                                if (p) {
+                                    p.hide();
+                                }
+                            });
+                        }
+                    });
+                }, 0);
+
+                if (typeof onComplete == 'function')
+                    onComplete();
+                else
+                    self.busy(false);
             })
             .catch(err => {
                 self.busy(false);
@@ -648,18 +699,25 @@ const fenwickInvoicingViewModel = (() => {
                 .then(data => {
                     //self.validateNow(false);
 
-                    self.invoiceTotalGrossSales.originalValue(self.invoiceTotalGrossSales.value());
-                    self.invoiceTotalCommission.originalValue(self.invoiceTotalCommission.value());
-                    self.invoiceTotalVAT.originalValue(self.invoiceTotalVAT.value());
-                    self.signOffNotes.originalValue(self.signOffNotes.value());
+                    //self.invoiceTotalGrossSales.originalValue(self.invoiceTotalGrossSales.value());
+                    //self.invoiceTotalCommission.originalValue(self.invoiceTotalCommission.value());
+                    //self.invoiceTotalVAT.originalValue(self.invoiceTotalVAT.value());
+                    //self.signOffNotes.originalValue(self.signOffNotes.value());
 
-                    // so we don't need to cause a reload cascade?
-                    self.selectedSelfBillInvoice().TotalGrossSales = self.invoiceTotalGrossSales.value();
-                    self.selectedSelfBillInvoice().TotalVAT = self.invoiceTotalVAT.value();
-                    self.selectedSelfBillInvoice().TotalCommission = self.invoiceTotalCommission.value();
-                    self.selectedSelfBillInvoice().Notes = self.signOffNotes.value();
+                    //// so we don't need to cause a reload cascade?
+                    //self.selectedSelfBillInvoice().TotalGrossSales = self.invoiceTotalGrossSales.value();
+                    //self.selectedSelfBillInvoice().TotalVAT = self.invoiceTotalVAT.value();
+                    //self.selectedSelfBillInvoice().TotalCommission = self.invoiceTotalCommission.value();
+                    //self.selectedSelfBillInvoice().Notes = self.signOffNotes.value();
 
-                    self.reload();
+                    //self.reload();
+
+                    //
+
+                    self.fetchSelfBillInvoicesForDate(self.billingPeriodDate(), () => {
+                        let selectedSelfBillInvoiceId = self.selectedSelfBillInvoice().SelfBillInvoiceID;
+                        self.selectedSelfBillInvoice(self.selfBillInvoices().find(sbi => sbi.SelfBillInvoiceID == selectedSelfBillInvoiceId));
+                    });
 
                     //if (signOff) {
                     //    self.reload();

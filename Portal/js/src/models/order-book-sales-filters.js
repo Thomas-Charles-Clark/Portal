@@ -31,6 +31,8 @@
 
     self.summaryEndDt = null;
 
+    self.fetchAbortController = new AbortController();
+
     //#endregion
 
 
@@ -105,10 +107,16 @@
         self.busy(true);
 
         params.orderLineDetailedStatusGroupIds = [];
-        
+
+        //if (self.fetchAbortController.fetch == null) {
+        //    console.log("FetchSales calling with", params);
+        //} else {
+        //    self.fetchAbortController.abort();
+        //}
+
         console.log("FetchSales calling with", params);
 
-        fetch("/api/orderbook/RefreshSales", {
+        self.fetchAbortController.fetch = fetch("/api/orderbook/RefreshSales", {
             method: "POST",
             headers: window.fetchHeaders,
             cache: 'no-store',
@@ -119,15 +127,24 @@
             .then(data => {
                 console.log("FetchSales returned", data);
 
+                let startMs = +new Date();
+
                 self.parse(data);
 
-                window.setTimeout(() => {
-                    self.busy(false);
-                }, 0);
+                let endMs = +new Date();
+
+                console.log(`FetchSales parsing took ${endMs - startMs}ms`);
+
+                self.busy(false);
+
+                //delete self.fetchAbortController.fetch;
+                //self.fetchAbortController.fetch = undefined;
             })
             .catch((err) => {
                 self.busy(false);
-                window.catchFetchError(err);
+                //window.catchFetchError(err);
+                //delete self.fetchAbortController.fetch;
+                //self.fetchAbortController.fetch = undefined;
             });
     }
 

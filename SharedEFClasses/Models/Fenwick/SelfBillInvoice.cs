@@ -1,5 +1,7 @@
 ﻿using Microsoft.Owin.Security;
 
+using SharedEFClasses.Models.Orders;
+
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -51,6 +53,8 @@ namespace SharedEFClasses.Models.Fenwick
 
         public byte[] InvoicePDF { get; set; }
 
+        public int? OrderHeadID { get; set; }
+
         [ForeignKey("BranchID")]
         [InverseProperty("SelfBillInvoices")]
         public virtual FenwickBranch Branch { get; set; }
@@ -58,6 +62,10 @@ namespace SharedEFClasses.Models.Fenwick
         [ForeignKey("SignedOffMemberID")]
         [InverseProperty("SignedOffFenwicksInvoices")]
         public virtual Member SignedOffByMember { get; set; }
+
+        [ForeignKey("OrderHeadID")]
+        [InverseProperty("FenwickSelfBillInvoices")]
+        public virtual OrderHead OrderHead { get; set; }
 
         [NotMapped]
         public string InvoicePDFBase64

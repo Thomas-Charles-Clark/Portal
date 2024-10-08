@@ -8,6 +8,8 @@ using Microsoft.AspNet.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+using Portal.Utilities.HMRC;
+
 using SharedEFClasses;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Applications;
@@ -2920,46 +2922,7 @@ namespace Portal.Controllers
 
                 if (objVATNumber.countryCode == "GB")
                 {
-                    using (var client = new HttpClient())
-                    {
-                        var tokenResponse = await client.GetAsync($"{Framework.HMRCDeveloperHubSandboxBaseURL}/oauth/token");
-
-                        if (tokenResponse.IsSuccessStatusCode)
-                        {
-                            var token = JsonConvert.DeserializeObject<HMRCTokenResponse>(await tokenResponse.Content.ReadAsStringAsync());
-
-                            var vatResponse = await client.GetAsync($"{Framework.HMRCDeveloperHubSandboxBaseURL}/organisations/vat/check-vat-number/lookup/{objVATNumber.vatNumber}");
-
-                            if (vatResponse.IsSuccessStatusCode)
-                            {
-                                var vatCheckResult = JsonConvert.DeserializeObject<HMRCVATCheckResult>(await vatResponse.Content.ReadAsStringAsync());
-
-                                return Ok(new { Body = new { valid = true, traderName = vatCheckResult.Target.Name }, countryName = country.Name });
-                            }
-                            else
-                            {
-                                return Ok(new { Body = new { valid = false }, countryName = country.Name });
-                            }
-                        }
-                        else
-                        {
-                            return Ok(new { Body = new { valid = false }, countryName = country.Name });
-                        }
-
-
-                        var gbResponse = await client.GetAsync($"https://api.service.hmrc.gov.uk/organisations/vat/check-vat-number/lookup/{objVATNumber.vatNumber}");
-
-                        if (gbResponse.IsSuccessStatusCode)
-                        {
-                            var response = JsonConvert.DeserializeObject<hmrcVatResponse>(await gbResponse.Content.ReadAsStringAsync());
-
-                            return Ok(new { Body = new { valid = true, traderName = response.target.name }, countryName = country.Name });
-                        }
-                        else
-                        {
-                            return Ok(new { Body = new { valid = false }, countryName = country.Name });
-                        }
-                    }
+                    return Ok(await HMRCVATChecker.Check(objVATNumber.vatNumber));
                 }
                 else
                 {

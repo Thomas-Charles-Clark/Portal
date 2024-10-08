@@ -8,6 +8,7 @@ using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
 
 using Portal.Utilities;
+using Portal.Utilities.HMRC;
 using Portal.Utilities.InMemoryMultipartFormDataStreamProvider;
 
 using SharedEFClasses;
@@ -92,58 +93,9 @@ namespace Portal.Controllers
         [HttpGet]
         public async Task<IHttpActionResult> TestHMRCVATChecker()
         {
-            var tokenPostData = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                new KeyValuePair<string, string>("client_secret", SharedEFClasses.Utilities.Framework.HMRCDeveloperHubCheckGBVATNoClientSecret),
-                new KeyValuePair<string, string>("client_id", SharedEFClasses.Utilities.Framework.HMRCDeveloperHubCheckGBVATNoClientID),
-                new KeyValuePair<string, string>("scope", "read:vat")
-            };
+            var vatNumber = "212739618";
 
-            var objVATNumber = new PassVATNumber();
-
-            objVATNumber.vatNumber = "553557881";
-
-            var country = PortalDb.Countries.Where(p => p.Code == "GB").Single();
-
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Clear();
-
-                client.DefaultRequestHeaders.Add("scope", "read:vat");
-
-                var tokenBody = new FormUrlEncodedContent(tokenPostData);
-
-                tokenBody.Headers.ContentType.MediaType = "application/x-www-form-urlencoded";
-
-                var tokenResponse = await client.PostAsync($"{SharedEFClasses.Utilities.Framework.HMRCDeveloperHubSandboxBaseURL}/oauth/token", tokenBody);
-
-                if (tokenResponse.IsSuccessStatusCode)
-                {
-                    var token = JsonConvert.DeserializeObject<HMRCTokenResponse>(await tokenResponse.Content.ReadAsStringAsync());
-
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.hmrc.2.0+json"));
-
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.access_token);
-
-                    var vatResponse = await client.GetAsync($"{SharedEFClasses.Utilities.Framework.HMRCDeveloperHubSandboxBaseURL}/organisations/vat/check-vat-number/lookup/{objVATNumber.vatNumber}");
-
-                    if (vatResponse.IsSuccessStatusCode)
-                    {
-                        var vatCheckResult = JsonConvert.DeserializeObject<HMRCVATCheckResult>(await vatResponse.Content.ReadAsStringAsync());
-
-                        return Ok(new { Body = new { valid = true, traderName = vatCheckResult.Target.Name }, countryName = country.Name });
-                    }
-                    else
-                    {
-                        return Ok(new { Body = new { valid = false }, countryName = country.Name, responseMessage = await vatResponse.Content.ReadAsStringAsync() });
-                    }
-                }
-                else
-                {
-                    return Ok(new { Body = new { valid = false }, countryName = country.Name, responseMessage = await tokenResponse.Content.ReadAsStringAsync() });
-                }
-            }
+            return Ok(await HMRCVATChecker.Check(vatNumber));
         }
 
 

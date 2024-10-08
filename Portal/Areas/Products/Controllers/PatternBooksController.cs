@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNet.Identity;
+
 using Portal.Areas.Products.ViewModels;
-using Portal.Utilities.DynamicRoles;
 using SharedEFClasses;
 using SharedEFClasses.Models;
 using System;
@@ -11,7 +11,7 @@ using System.Web.Mvc;
 
 namespace Portal.Areas.Products.Controllers
 {
-    [DynamicRoleAuthorize]
+    [DynamicRoleAuthorise(actionNameAgnostic: true)]
     [RouteArea("products")]
     [RoutePrefix("pattern-books")]
     [Route("{action=index}")]
@@ -25,7 +25,7 @@ namespace Portal.Areas.Products.Controllers
         // GET: Products/Order
         public ActionResult Index(string model)
         {
-            var application = PortalDb.Applications.Where(p => p.ControllerName == "pattern-books" && p.AreaName == "products" && p.ActionName == "index").Single();
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "patternbooks" && p.AreaName == "products" && p.ActionName == "index").Single();
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 

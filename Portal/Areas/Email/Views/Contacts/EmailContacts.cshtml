@@ -1,0 +1,326 @@
+﻿@model Portal.Areas.Email.ViewModels.EmailContactsViewModel
+@{
+    ViewBag.Title = Model.ApplicationHeading;
+
+    Layout = "~/Views/Shared/_Layout-New.cshtml";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/components")
+    @Styles.Render("~/bundles/css/kendo-custom")
+    @Styles.Render("~/bundles/css/email-contacts")
+    @Styles.Render("~/bundles/css/tempus-dominus")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/components")
+    @Scripts.Render("~/bundles/js/generic-forms")
+    @Scripts.Render("~/bundles/js/tempus-dominus")
+    @Scripts.Render("~/bundles/js/email-contacts")
+    @Scripts.Render("~/bundles/js/datetime-picker")
+
+    <script type="text/javascript">
+        window.getCountries = () => {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Countries));
+        }
+
+        window.getMarkets = () => {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Markets));
+        }
+
+        window.getPriceLists = () => {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.PriceLists));
+        }
+
+        window.getDotDigitalAccounts = () => {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.DotDigitalAccounts.Where(a => a.DotDigitalAccountTypeID == 1)));
+        }
+    </script>
+
+    <script type="text/javascript">
+
+        let viewModel = emailContactsViewModel();
+
+        ko.options.deferUpdates = true;
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+        6
+        ko.applyBindings(viewModel, document.body);
+
+        window.self = viewModel;
+    </script>
+}
+@section beforeContainer {
+    <div class="blocker" data-bind="flexVisible: busy, toggleOpacity: busy">
+        <div class="loading-spinner"></div>
+        <h3 class="mt-3">
+            Please Wait...
+        </h3>
+    </div>
+}
+
+<div class="form-group row mb-3">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+
+<ul class="nav nav-tabs nav-justified" id="contact-tabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fs-5 active" id="current-tab-btn" data-bs-toggle="tab" data-bs-target="#current-tab" type="button" role="tab" aria-controls="Current" aria-selected="true">
+            Search eCommerce Contacts
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fs-5" id="new-tab-btn" data-bs-toggle="tab" data-bs-target="#new-tab" type="button" role="tab" aria-controls="New" aria-selected="false">
+            Create New Contact
+        </button>
+    </li>
+</ul>
+<div class="tab-content" id="contact-tabs-content">
+    <div class="tab-pane fade show active" id="current-tab" role="tabpanel" aria-labelledby="current-tab-btn">
+        <div id="prefilters">
+            <div id="email-prefilter" class="prefilter" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: emailParams }"></div>
+        </div>
+        <div id="grid-wrapper" style="display: none" data-bind="visible: memberDetailsLoaded">
+            <div class="card">
+                <div class="card-body">
+                    <div class="accordion">
+                        <div class="accordion-item">
+                            <h5 class="accordion-header">
+                                <button type="button" class="accordion-button card-title" data-bs-toggle="collapse" data-bs-target="#props-detail-collapse">
+                                    Properties
+                                </button>
+                            </h5>
+                            <div id="props-detail-collapse" class="accordion-collapse collapse show">
+                                <div class="collapse-inner" data-bind="with: memberDetails">
+                                    <div class="prop-grid">
+                                        <dl class="dl-vertical">
+                                            <dt>
+                                                Email
+                                            </dt>
+                                            <dd>
+                                                <a data-bind="text: Email, attr: { href: `mailto:${Email}` }" target="_blank"></a>
+                                            </dd>
+                                            <dt>
+                                                Country
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: CountryName"></span>
+                                            </dd>
+                                            <dt>
+                                                Price List
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: PriceListName ?? 'NULL', css: { 'text-italic': PriceListName == null }"></span>
+                                            </dd>
+                                            <dt>
+                                                Market
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: MarketName"></span>
+                                            </dd>
+                                            <dt>
+                                                Dot Digital Account
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: DotDigitalAccountName"></span>
+                                            </dd>
+                                            <dt>
+                                                Status
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: StatusDescription"></span>
+                                            </dd>
+                                            <dt>
+                                                Permission to Email?
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: PermissionToEmail ? '✔' : '✖'"></span>
+                                            </dd>
+                                            <dt>
+                                                Permission Basis
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: PermissionLegalBasis"></span>
+                                            </dd>
+                                        </dl>
+                                        <dl class="dl-vertical">
+                                            <dt>
+                                                Created
+                                            </dt>
+                                            <dd>
+                                                <a data-bind="text: moment(CreatedDT).format('DD/MM/YYYY HH:mm')"></a>
+                                            </dd>
+                                            <dt>
+                                                Modified
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: moment(ModifiedDT).format('DD/MM/YYYY HH:mm')"></span>
+                                            </dd>
+                                            <dt>
+                                                Deleted
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: DeletedDT ? moment(DeletedDT).format('DD/MM/YYYY HH:mm') : '✖'"></span>
+                                            </dd>
+                                            <dt>
+                                                Unsubscribed
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: UnsubscribedDT ? moment(UnsubscribedDT).format('DD/MM/YYYY HH:mm') : '✖'"></span>
+                                            </dd>
+                                            <dt>
+                                                Hard Bounced
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: HardBounceDT ? moment(HardBounceDT).format('DD/MM/YYYY HH:mm') : '✖'"></span>
+                                            </dd>
+                                            <dt>
+                                                Trade Email?
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: TradeEmail ? '✔' : '✖'"></span>
+                                            </dd>
+                                            <dt>
+                                                Retail Store Email?
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: RetailStoreEmail ? '✔' : '✖'"></span>
+                                            </dd>
+                                            <dt>
+                                                Sync to Email Service Provider?
+                                            </dt>
+                                            <dd>
+                                                <span data-bind="text: SyncToESP ? '✔' : '✖'"></span>
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @if (User.IsInRole("Super Admin"))
+                        {
+                            <div class="accordion-item">
+                                <h5 class="accordion-header">
+                                    <button type="button" class="accordion-button card-title collapsed" data-bs-toggle="collapse" data-bs-target="#tech-detail-collapse">
+                                        Technical Details
+                                    </button>
+                                </h5>
+                                <div id="tech-detail-collapse" class="accordion-collapse collapse">
+                                    <div class="collapse-inner">
+                                        <pre data-bind="html: jsonMarkup"></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="accordion">
+                        <div class="accordion-item">
+                            <h5 class="accordion-header">
+                                <button type="button" class="accordion-button card-title" data-bs-toggle="collapse" data-bs-target="#action-collapse">
+                                    Actions
+                                </button>
+                            </h5>
+                            <div id="action-collapse" class="accordion-collapse collapse show">
+                                <div class="collapse-inner">
+                                    <!-- ko if: memberDetails() -->
+                                        <!-- ko if: memberDetails().SyncToESP -->
+                                        <button class="btn btn-dark" data-bind="click: showChangeAccountModal">
+                                            Change DotDigital Account (Currently: <span data-bind="text: memberDetails().DotDigitalAccountName"></span>)
+                                        </button>
+                                            <!-- ko if: !memberDetails().Unsubscribed -->
+                                            <button class="btn btn-dark mt-5" data-bind="click: unsubscribe">
+                                                Unsubscribe
+                                            </button>
+                                            <!-- /ko -->
+                                        <!-- /ko -->
+                                    <!-- ko if: memberDetails().Unsubscribed -->
+                                    <button class="btn btn-dark" data-bind="click: resubscribe">
+                                        Resubscribe
+                                    </button>
+                                    <!-- /ko -->
+                                    <!-- /ko -->
+                                    <!-- ko ifnot: memberDetails() -->
+                                    <button type="button" class="btn btn-dark" data-bind="click: resubscribe">
+                                        Subscribe
+                                    </button>
+                                    <!-- /ko -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="new-tab" role="tabpanel" aria-labelledby="new-tab-btn">
+        <form class="form" onsubmit="return false;">
+            <div data-bind="component: { name: 'mdc-text-field-component', params: newEmailParams }"></div>
+            <span class="validation-message" data-bind="visible: emailExists">
+                This email address already exists in our database
+            </span>
+            <div class="mt-3" data-bind="component: { name: 'mdc-text-field-component', params: newFullNameParams }"></div>
+            <div class="mt-3" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: addToDotDigitalAccountParams }"></div>
+            <div class="mt-3 d-flex justify-content-center" data-bind="component: { name: 'mdc-checkbox-component', params: newCheckConfirmationParams }"></div>
+            <div class="d-flex justify-content-end gap-3 mt-3">
+                <button type="button" id="submit-new-contact" class="btn btn-dark ms-auto" data-bind="click: createNew, disable: createNewDisabled">
+                    Submit
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="change-account-modal" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    Change DotDigital Account
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="change-account-row" data-bind="with: memberDetails">
+                    <span>
+                        From:
+                    </span>
+                    <span data-bind="text: DotDigitalAccountName"></span>
+                </div>
+                <div class="change-account-row">
+                    <span>
+                        To:
+                    </span>
+                    <div class="change-account-input" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: destinationDotDigitalAccountParams }"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bind="click: saveAccountChange">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
