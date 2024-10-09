@@ -25,6 +25,8 @@ namespace Portal.Areas.Email.ViewModels
 
         public List<DotDigitalAccount> DotDigitalAccounts { get; set; }
 
+        public List<Source> Sources { get; set; }
+
         private EmailContactsViewModel(
             RoleProperties properties,
             string applicationHeading,
@@ -58,6 +60,22 @@ namespace Portal.Areas.Email.ViewModels
             PriceLists = db.PriceLists.ToList();
 
             DotDigitalAccounts = db.DotDigitalAccounts.ToList();
+
+            var allowedSourceIds = new byte[] 
+            {
+                74,  // Join Mailing List - (Portal - eCommerce)
+                201, // Join Mailing List - (Retail - Other)
+                202, // Join Mailing List - (Retail - Kings Road)
+                203, // Join Mailing List - (Retail - Marylebone)
+                204, // Join Mailing List - (Warehouse Sale)
+                205, // Join Mailing List - (Retail - Paris Showroom)
+                206, // Join Mailing List - (Retail - New York Showroom)
+                208  // Join Mailing List - (Retail - Munich Paint Shop)
+            };
+
+            var sources = db.Sources.ToList();
+
+            Sources = sources.Where(s => allowedSourceIds.Contains(s.SourceID)).ToList();
         }
     }
 }

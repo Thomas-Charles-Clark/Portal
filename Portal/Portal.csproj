@@ -635,6 +635,7 @@
     <Compile Include="Controllers\ODataControllers\AttributeGroupsController.cs" />
     <Compile Include="Controllers\ODataControllers\DeliveryTypesController.cs" />
     <Compile Include="Controllers\ODataControllers\MertexTradeAccountClassificationSuperSetController.cs" />
+    <Compile Include="Controllers\ODataControllers\Mertex_OperatorsController.cs" />
     <Compile Include="Controllers\ODataControllers\OrderTakersController.cs" />
     <Compile Include="Controllers\ODataControllers\HauliersController.cs" />
     <Compile Include="Controllers\ODataControllers\ItemTypesController.cs" />

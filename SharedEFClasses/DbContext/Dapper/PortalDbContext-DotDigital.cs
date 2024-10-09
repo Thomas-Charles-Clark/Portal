@@ -109,6 +109,8 @@ namespace SharedEFClasses.Models
         {
             var result = await this.Database.Connection.QuerySingleOrDefaultAsync<int?>("[portal].[EmailContact_Create]", new
             {
+                SourceID = dto.SourceID,
+                OperatorCode = dto.OperatorCode,
                 Email = dto.Email,
                 FullName = dto.FullName,
                 DotDigitalAccountID = dto.DotDigitalAccountID

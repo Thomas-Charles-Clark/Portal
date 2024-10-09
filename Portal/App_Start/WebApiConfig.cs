@@ -75,6 +75,7 @@ namespace Portal
             odataBuilder.EntitySet<Quality>("Qualities");
             odataBuilder.EntitySet<SalesMarket>("SalesMarkets");
             odataBuilder.EntitySet<Mertex_ProductType>("Mertex_ProductTypes");
+            odataBuilder.EntitySet<Mertex_Operator>("Mertex_Operators");
             odataBuilder.EntitySet<Product>("Products");
             odataBuilder.EntitySet<ProductPage>("ProductPages");
             odataBuilder.EntitySet<Branch>("Branches");
@@ -137,6 +138,7 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SalesRepresentative)).AddProperty(typeof(SalesRepresentative).GetProperty("Label"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SalesAgent)).AddProperty(typeof(SalesAgent).GetProperty("Label"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccount)).AddProperty(typeof(TradeAccount).GetProperty("ShortLabel"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_Operator)).AddProperty(typeof(Mertex_Operator).GetProperty("Label"));
             //odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccountGroup)).AddProperty(typeof(TradeAccountGroup).GetProperty("ShortLabel"));
             //odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccountType)).AddProperty(typeof(TradeAccountType).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Haulier)).AddProperty(typeof(Haulier).GetProperty("ShortLabel"));
@@ -763,6 +765,13 @@ namespace Portal
             mertexProductTypeValueMapperFunction.Parameter<byte?>("productGroupId");
             mertexProductTypeValueMapperFunction.Parameter<short?>("itemTypeId");
 
+
+            var mertexOperatorValueMapperFunction = odataBuilder.EntityType<Mertex_Operator>()
+                .Collection
+                .Function("Mertex_OperatorValueMapper")
+                .ReturnsCollectionFromEntitySet<Mertex_Operator>("Mertex_Operator");
+
+            mertexOperatorValueMapperFunction.Parameter<string>("code");
 
 
             var selfBillInvoiceValueMapperFunction = odataBuilder.EntityType<SelfBillInvoice>()

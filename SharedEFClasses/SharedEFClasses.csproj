@@ -417,6 +417,7 @@
     <Compile Include="Models\InvoiceModels.cs" />
     <Compile Include="Models\DocumentModels.cs" />
     <Compile Include="Models\FurnitureModels.cs" />
+    <Compile Include="Models\LawfulBasis.cs" />
     <Compile Include="Models\Lead_TradeAccountCreationEmailAttachment.cs" />
     <Compile Include="Models\Maintenance\MaintenanceBuyer.cs" />
     <Compile Include="Models\Maintenance\MaintenanceSupplier.cs" />
@@ -486,6 +487,7 @@
     <Compile Include="Models\Mertex\TradeAccountContactType.cs" />
     <Compile Include="Models\Mertex\TradeAccountInvoiceAccount.cs" />
     <Compile Include="Models\Mertex_DeliveryType.cs" />
+    <Compile Include="Models\Mertex_Operator.cs" />
     <Compile Include="Models\OrderBook\OrderBook.cs" />
     <Compile Include="Models\OrderBook\OrderBookGrouped.cs" />
     <Compile Include="Models\OrderBook\OrderBookRingFenceInspectData.cs" />
@@ -560,6 +562,8 @@
     <Compile Include="Models\Retail\RetailStoreMember.cs" />
     <Compile Include="Models\ReturnModels.cs" />
     <Compile Include="Models\SampleOrderConfirmationTextResult.cs" />
+    <Compile Include="Models\Source.cs" />
+    <Compile Include="Models\SourceGroup.cs" />
     <Compile Include="Models\StockLocationGroup.cs" />
     <Compile Include="Models\StockLocationOrderBookGroup.cs" />
     <Compile Include="Models\StockManagement\Branch.cs" />

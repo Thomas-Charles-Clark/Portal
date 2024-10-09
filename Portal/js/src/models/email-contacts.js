@@ -53,6 +53,30 @@ const emailContactsViewModel = (() => {
 
     self.validateNewContactNow = ko.observable(false);
 
+    self.newSourceId = ko.observable().extend({
+        required: {
+            params: true,
+            onlyIf: () => {
+                return self.validateNewContactNow();
+            },
+            message: "You must select a source"
+        }
+    });
+
+    self.newSource = ko.observable();
+
+    self.newOperatorCode = ko.observable().extend({
+        required: {
+            params: true,
+            onlyIf: () => {
+                return self.validateNewContactNow() && self.newSource() && self.newSource().Retail;
+            },
+            message: "You must select an operator"
+        }
+    });
+
+    self.newOperator = ko.observable();
+
     self.newEmailExtantCheckPerformed = ko.observable(false);
 
     self.newEmailExtantCheckPassed = ko.observable(false).extend({
@@ -322,6 +346,89 @@ const emailContactsViewModel = (() => {
         }
     });
 
+    self.newSourceParams = kendoMDCDropDownList({
+        skipCascade: true,
+        idObservable: self.newSourceId,
+        objObservable: self.newSource,
+        label: 'Source',
+        textField: 'Name',
+        valueField: 'SourceID',
+        data: getSources(),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: false,
+        sort: [{
+            dir: 'asc',
+            field: 'Name'
+        }]
+    });
+
+    self.newOperatorParams = kendoMDCDropDownList({
+        skipCascade: true,
+        idObservable: self.newOperatorCode,
+        objObservable: self.newOperator,
+        label: 'Operator',
+        textField: 'Label',
+        valueField: 'OperatorCode',
+        odata: true,
+        endPoint: '/odata/Mertex_Operators',
+        virtual: true,
+        pageSize: 40,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/Mertex_Operators/Default.Mertex_OperatorValueMapper(code=${options.value})`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: false,
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            if (data && data.filter && data.filter.filters && data.filter.filters.length) {
+                data.pageSize = 40;
+            } else {
+                data.pageSize = 0;
+            }
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            if (d.$filter && d.$filter.indexOf('contains(tolower(Label)' === 0)) {
+                d.$filter = `(tolower(OperatorCode) eq '${data.filter.filters[0].value.toLowerCase()}') or ${d.$filter.replace("Label", "Name")} or ${d.$filter.replace("Label", "Email")}`;
+            }
+
+            return d;
+        },
+        filter: "startswith",
+        sort: [{
+            dir: 'asc',
+            field: 'Name'
+        }]
+    });
+
     self.newEmailParams = {
         label: 'Email Address',
         originalValue: ko.observable(),
@@ -370,7 +477,7 @@ const emailContactsViewModel = (() => {
         revertible: ko.observable(false)
     };
 
-    self.addToDotDigitalAccountParams = kendoMDCDropDownList({
+    self.newDotDigitalAccountParams = kendoMDCDropDownList({
         skipCascade: true,
         label: 'Dot Digital Account',
         textField: 'Name',
@@ -405,6 +512,12 @@ const emailContactsViewModel = (() => {
 
 
     //#region Subscriptions
+
+    self.newSourceId.subscribe(nv => {
+        if (nv == null || nv == '' || +nv == 74) {
+            self.newOperatorParams.clearFunction();
+        }
+    })
 
     self.memberId.subscribe(nv => {
         if (nv) {
@@ -514,6 +627,8 @@ const emailContactsViewModel = (() => {
     ]);
 
     self.newContactErrors = ko.validation.group([
+        self.newSourceId,
+        self.newOperatorId,
         self.newEmail,
         self.newFullName,
         self.newDotDigitalAccountId,
@@ -559,10 +674,11 @@ const emailContactsViewModel = (() => {
 
     self.resetNewContact = () => {
         self.validateNewContactNow(false);
+        self.newSourceParams.clearFunction();
+        self.newOperatorParams.clearFunction();
         self.newEmail(undefined);
         self.newFullName(undefined);
-        self.newDotDigitalAccountId(undefined);
-        self.newDotDigitalAccount(undefined);
+        self.newDotDigitalAccountParams.clearFunction();
         self.newCheckConfirmation(false);
     }
 
@@ -718,6 +834,8 @@ const emailContactsViewModel = (() => {
 
             window.showConfirm("Are you sure?", "Please double check before submitting this new contact.", () => {
                 let params = {
+                    sourceId: self.newSourceId(),
+                    operatorCode: self.newOperatorCode(),
                     email: self.newEmail(),
                     fullName: self.newFullName(),
                     dotDigitalAccountId: self.newDotDigitalAccountId()

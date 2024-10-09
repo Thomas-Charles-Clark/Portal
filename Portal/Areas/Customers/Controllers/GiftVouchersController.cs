@@ -35,7 +35,7 @@ namespace Portal.Areas.Customers.Controllers
         // GET: Customers/Pricing
         public async Task<ActionResult> Index()
         {
-            var application = PortalDb.Applications.Where(p => p.ControllerName == "gift-vouchers" && p.AreaName == "customers" && p.ActionName == "index").Single();
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "giftvouchers" && p.AreaName == "customers" && p.ActionName == "index").Single();
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 

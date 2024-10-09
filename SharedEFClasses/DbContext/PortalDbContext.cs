@@ -529,6 +529,14 @@ namespace SharedEFClasses.Models
 
         public DbSet<PressContact> PressContacts { get; set; }
 
+        public DbSet<Source> Sources { get; set; }
+
+        public DbSet<SourceGroup> SourceGroups { get; set; }
+
+        public DbSet<LawfulBasis> LawfulBases { get; set; } // bey-seez if you please
+
+        public DbSet<Mertex_Operator> Mertex_Operators { get; set; }
+
         #endregion
 
         #region Stock Management 
