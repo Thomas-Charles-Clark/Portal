@@ -679,7 +679,8 @@ const orderBookUserDefinedFiltersViewModel = ({
 
                 if (count == 1) {
                     let rec = self.availableSalesMarkets().find(dat => dat.value == d.values[0]);
-                    return rec.label;
+                    if (rec)
+                        return rec.label;
                 }
 
                 if (count === 0) {

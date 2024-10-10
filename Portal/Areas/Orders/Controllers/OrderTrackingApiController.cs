@@ -202,13 +202,17 @@ namespace Portal.Areas.Sales.Controllers
 	<row>
 		<columns small=""12"">
 			<callout class=""primary"">
-				<p class=""text-bold"">
-					{resources["OperatorMessage"]}
-				</p>
-				<spacer id=""spacer-{++spacerId}"" size=""5""></spacer>
-				<p>
-					{objIncoming.body.Replace("\n", "<br>")}
-				</p>
+				<row>
+					<columns small=""12"" style=""padding: 5px;"">
+						<p class=""text-bold"">
+							{resources["OperatorMessage"]}
+						</p>
+						<spacer id=""spacer-{++spacerId}"" size=""5""></spacer>
+						<p>
+							{objIncoming.body.Replace("\n", "<br>")}
+						</p>
+					</columns>
+				</row>
 			</callout>
 		</columns>
 	</row>

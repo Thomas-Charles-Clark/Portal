@@ -13,6 +13,12 @@ const giftVouchersViewModel = (() => {
 
     self.giftVoucherCreator = giftVoucherCreatorViewModel({ parent: self });
 
+    self.giftVoucherRedeemer = giftVoucherRedeemerViewModel({ parent: self });
+
+    self.giftVoucherId = ko.observable('');
+
+    self.giftVoucher = ko.observable();
+
     //#endregion
 
     //#region Lifted Methods
@@ -74,6 +80,95 @@ const giftVouchersViewModel = (() => {
     //#endregion
 
     //#region Components (Knockout-specific)
+
+    self.giftVoucherTemplate = (item) => {
+        if (item.GiftVoucherID != null && item.Code != '') {
+            return `<span class="gift-voucher-label" title="GiftVoucherID: ${item.GiftVoucherID}">${item.Code}</span>`;
+        } else {
+            return ``;
+        }
+    }
+
+    self.giftVoucherParams = kendoMDCDropDownList({
+        label: 'Gift Voucher Code (e.g. ABCD-1234-EFGH-5678)',
+        autoBind: true,
+        odata: true,
+        endPoint: '/odata/GiftVouchers?$expand=GiftVoucherType',
+        textField: 'Code',
+        valueField: 'GiftVoucherID',
+        virtual: true,
+        pageSize: 40,
+        busy: self.emailBusy,
+        //minLength: 16,
+        //enforceMinLength: true,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/GiftVouchers/Default.GiftVoucherValueMapper(code=${options.value})?$expand=GiftVoucherType`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        template: self.giftVoucherTemplate,
+        valueTemplate: self.giftVoucherTemplate,
+        noDataTemplate: `Please provide a valid Gift Voucher code`,
+        idObservable: self.giftVoucherId,
+        objObservable: self.giftVoucher,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'equals',
+        height: 340,
+        sort: [{
+            dir: 'desc',
+            field: 'CreatedDT'
+        }],
+        requestStart: (e) => {
+            //self.busy(true);
+        },
+        requestEnd: (e) => {
+            console.log(e);
+
+            let arr = e.response.value.map(gv => giftVoucherViewModel({ rec: gv, parent: self }));
+
+            e.response.value = arr;
+            //self.busy(false);
+        },
+        clearFunction: self.genericUnsavedChangesClear,
+        afterClear: () => {
+            self.giftVoucher(undefined);
+        },
+        parameterMap: (data) => {
+
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            let filters = [];
+
+            //if (d.$filter == null) {
+            //    d.$filter = "Code eq ''";
+            //}
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            return d;
+        }
+    });
 
     self.gridWidget = ko.observable();
 
@@ -480,6 +575,357 @@ const giftVoucherCreatorViewModel = (({ parent } = { parent: null }) => {
         },
         parameterMap: (data) => {
         //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
+                d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
+            }
+
+            return d;
+        }
+    });
+
+    //#endregion
+
+
+    //#region Subscriptions
+
+
+
+    //#endregion
+
+
+    //#region Computeds
+
+
+
+    //#endregion
+
+
+    //#region Validation Groups
+
+    self.errors = ko.validation.group([
+        self.productId
+    ]);
+
+    //#endregion
+
+
+    //#region Methods
+
+    self.reset = () => {
+        self.giftVoucherProductParams.clearFunction();
+    }
+
+    self.show = () => {
+        self.newVoucherModal.show();
+    }
+
+    self.hide = () => {
+        self.newVoucherModal.hide();
+        self.reset();
+    }
+
+    self.proceed = () => {
+        self.validateNow(true);
+        self.errors.showAllMessages(false);
+
+        if (self.errors().length) {
+            self.errors.showAllMessages(true);
+            self.errors().filter(x => {
+                x.isValid.notifySubscribers(x.isValid());
+            });
+        } else {
+
+            window.confirm("Are you sure?", "Potato potato jibbering gibbon", () => {
+
+            }, () => {
+
+            });
+        }
+    }
+
+    //#endregion
+
+
+    //#region Events
+
+
+
+    //#endregion
+
+    return self;
+});
+
+
+
+const giftVoucherRedeemerViewModel = (({ parent } = { parent: null }) => {
+    var self = {
+        parent: parent
+    };
+
+    //#region Properties
+
+    self.ready = ko.observable(false);
+
+    self.busy = ko.observable(false);
+
+    self.busyMessage = ko.observable("Please wait");
+
+    self.validateNow = ko.observable(false);
+
+    self.modalElement = document.querySelector("#redeem-voucher-modal");
+
+    self.modal = bootstrap.Modal.getOrCreateInstance(self.modalElement);
+
+    self.redeemTransactionId = ko.observable().extend({
+        numberFormatted: {
+            digits: 0,
+            currency: ko.observable({ FormattingCulture: "en-GB" })
+        }
+    });
+
+    self.notes = ko.observable().extend({
+        required: {
+            params: true,
+            onlyIf: () => {
+                return self.validateNow();
+            },
+            message: "Please provide some detail to accompany this action."
+        }
+    });
+
+    //#endregion
+
+
+    //#region Components
+
+    self.redeemTransactionParams = {
+        label: 'Order ID',
+        originalValue: ko.observable(),
+        observable: self.redeemTransactionId,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        showClear: true,
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            $(self.observable.DOMElement).focus();
+        },
+        permitRevert: false,
+        charsRemainingOptions: {
+            maxLength: 25
+        },
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false)
+    };
+
+    self.notesParams = {
+        label: 'Notes',
+        originalValue: ko.observable(),
+        observable: self.notes,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        showClear: true,
+        rows: 10,
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            $(self.observable.DOMElement).focus();
+        },
+        permitRevert: true,
+        revertFunction: function () {
+            self.notes(self.originalNotes());
+            $(self.notes.DOMElement).focus();
+        },
+        charsRemainingOptions: {
+            maxLength: 4000
+        },
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(true),
+        visible: ko.observable(true)
+    };
+
+    //#endregion
+
+
+    //#region Subscriptions
+
+
+
+    //#endregion
+
+
+    //#region Computeds
+
+
+
+    //#endregion
+
+
+    //#region Validation Groups
+
+    self.errors = ko.validation.group([
+        self.notes
+    ]);
+
+    //#endregion
+
+
+    //#region Methods
+
+    self.reset = () => {
+        self.validateNow(false);
+        self.redeemTransactionParams.clearFunction();
+        self.notesParams.clearFunction();
+    }
+
+    self.show = () => {
+        self.reset();
+        self.modal.show();
+    }
+
+    self.hide = () => {
+        self.modal.hide();
+        self.reset();
+    }
+
+    self.proceed = () => {
+        self.validateNow(true);
+        self.errors.showAllMessages(false);
+
+        if (self.errors().length) {
+            self.errors.showAllMessages(true);
+            self.errors.filter(x => {
+                x.isValid.notifySubscribers(x.isValid());
+            });
+        } else {
+
+            window.confirm("Are you sure?", "Potato potato jibbering gibbon", () => {
+
+            }, () => {
+
+            });
+        }
+    }
+
+    //#endregion
+
+
+    //#region Events
+
+
+
+    //#endregion
+
+    return self;
+});
+
+
+const giftVoucherViewModel = (({ rec, parent } = { rec: null, parent: null }) => {
+    var self = Object.assign({
+
+    }, rec);
+
+    //#region Properties
+
+    self.busy = parent.busy
+
+    self.productId = ko.observable(rec.ProductID).extend({
+        required: {
+            params: true,
+            message: "You must specify a Gift Voucher"
+        }
+    });
+
+    self.product = ko.observable();
+
+    self.notes = ko.observable(self.Reason);
+
+    self.originalNotes = ko.observable(self.Reason);
+
+    //#endregion
+
+
+    //#region Components
+
+    self.notesParams = {
+        label: 'Notes',
+        originalValue: self.originalNotes,
+        observable: self.notes,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        showClear: true,
+        rows: 10,
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            $(self.observable.DOMElement).focus();
+        },
+        permitRevert: true,
+        revertFunction: function () {
+            self.notes(self.originalNotes());
+            $(self.notes.DOMElement).focus();
+        },
+        charsRemainingOptions: {
+            maxLength: 4000
+        },
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(true),
+        visible: ko.observable(true)
+    };
+
+    self.productParams = kendoMDCDropDownList({
+        label: 'Product',
+        odata: true,
+        endPoint: '/odata/Products/GetProductsForGiftVouchers',
+        textField: 'ShortLabel',
+        valueField: 'ProductID',
+        virtual: false,
+        template: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        idObservable: self.productId,
+        objObservable: self.product,
+        enable: ko.observable(false),
+        disable: ko.observable(true),
+        clearable: ko.observable(false),
+        revertible: ko.observable(false),
+        readOnly: true,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        select: self.genericUnsavedChangesSelect,
+        clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: document.getElementById('creation-product')
+        },
+        dataBound: (e) => {
+            document.querySelectorAll('.grid-btn').forEach(b => new bootstrap.Ripple(b));
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
             let d = kendo.data.transports['odata-v4'].parameterMap(data);
 
             delete d.$inlinecount; // <-- remove inlinecount

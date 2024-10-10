@@ -229,6 +229,7 @@ const emailContactsViewModel = (() => {
         textField: 'Email',
         valueField: 'Id',
         virtual: true,
+        minLength: 5,
         pageSize: 40,
         busy: self.emailBusy,
         virtualOptions: {

@@ -115,6 +115,7 @@ namespace Portal
             odataBuilder.EntitySet<OrderGroup>("OrderGroups");
             odataBuilder.EntitySet<TransactionType>("TransactionTypes");
             odataBuilder.EntitySet<OrderTaker>("OrderTakers");
+            odataBuilder.EntitySet<GiftVoucher>("GiftVouchers");
             odataBuilder.EntitySet<Mertex_DeliveryType>("DeliveryTypes");
             odataBuilder.EntitySet<PaymentTerms>("PaymentTerms");
             odataBuilder.EntitySet<PaymentTermsType>("PaymentTermsTypes");
@@ -164,6 +165,13 @@ namespace Portal
                 .ReturnsCollectionFromEntitySet<OrderTaker>("OrderTakers");
 
             orderTakerValueMapperFunction.Parameter<string>("orderTakerCode");
+
+            var giftVoucherValueMapperFunction = odataBuilder.EntityType<GiftVoucher>()
+                .Collection
+                .Function("GiftVoucherValueMapper")
+                .ReturnsCollectionFromEntitySet<GiftVoucher>("GiftVouchers");
+
+            giftVoucherValueMapperFunction.Parameter<string>("code");
 
 
             var paymentTermsValueMapperFunction = odataBuilder.EntityType<PaymentTerms>()

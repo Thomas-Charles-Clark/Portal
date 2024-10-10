@@ -137,8 +137,76 @@
     </div>
 </div>
 
-<div id="main-section">
-    <div data-bind="kendoGrid: giftVouchersGridSettings"></div>
+<ul class="nav nav-tabs nav-justified" id="gift-voucher-tabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fs-5 active" id="find-tab-btn" data-bs-toggle="tab" data-bs-target="#find-tab" type="button" role="tab" aria-controls="Find" aria-selected="true">
+            Find a Gift Voucher
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fs-5" id="create-tab-btn" data-bs-toggle="tab" data-bs-target="#create-tab" type="button" role="tab" aria-controls="Create" aria-selected="false">
+            Create a Gift Voucher
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fs-5" id="manage-tab-btn" data-bs-toggle="tab" data-bs-target="#manage-tab" type="button" role="tab" aria-controls="Manage" aria-selected="false">
+            Bulk Manage Gift Vouchers
+        </button>
+    </li>
+</ul>
+<div class="tab-content" id="gift-vouchers-tabs-content">
+    <div class="tab-pane fade show active" id="find-tab" role="tabpanel" aria-labelledby="find-tab-btn">
+        <div id="prefilters">
+            <div id="gift-voucher-prefilter" class="prefilter" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: giftVoucherParams }"></div>
+        </div>
+        <div id="gift-voucher-container-wrapper" style="display: none" data-bind="visible: true, with: giftVoucher">
+            <div id="gift-voucher-container">
+                <dl id="gift-voucher-details" class="row">
+                    <dt class="col-3 text-end">Code</dt>
+                    <dd class="col-8" data-bind="text: Code"></dd>
+                    <dt class="col-3 text-end">Type</dt>
+                    <dd class="col-8" data-bind="text: GiftVoucherType.Name"></dd>
+                    <dt class="col-3 text-end">Sold with Transaction ID</dt>
+                    <dd class="col-8" data-bind="text: SaleTransactionID"></dd>
+                    <dt class="col-3 text-end">Redeemed with Transaction ID</dt>
+                    <dd class="col-8" data-bind="text: RedeemTransactionID"></dd>
+                    <dt class="col-3 text-end">Created</dt>
+                    <dd class="col-8" data-bind="text: moment(CreatedDT).format('DD/MM/YYYY HH:MM')"></dd>
+                    <dt class="col-3 text-end">Expires</dt>
+                    <dd class="col-8" data-bind="text: moment(ExpiryDT).format('DD/MM/YYYY HH:MM')"></dd>
+                    <dt class="col-3 text-end">Notes</dt>
+                    <dd class="col-8">
+                        <div data-bind="component: { name: 'mdc-text-area-component', params: notesParams }"></div>
+                    </dd>
+                    <dt class="col-3 text-end">
+                        Actions
+                    </dt>
+                    <dd class="col-8">
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-primary" data-bind="click: $parent.giftVoucherRedeemer.show">
+                                Redeem
+                            </button>
+                            <button type="button" class="btn btn-primary">
+                                Extend
+                            </button>
+                            <button type="button" class="btn btn-primary ms-auto">
+                                View
+                            </button>
+                            <button type="button" class="btn btn-primary">
+                                Email
+                            </button>
+                        </div>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="create-tab" role="tabpanel" aria-labelledby="new-tab-btn">
+
+    </div>
+    <div class="tab-pane fade" id="manage-tab" role="tabpanel" aria-labelledby="manage-tab-btn">
+        <div data-bind="kendoGrid: giftVouchersGridSettings"></div>
+    </div>
 </div>
 
 <div id="new-voucher-modal" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -152,6 +220,40 @@
             </div>
             <div class="modal-body">
                 <div id="creation-product" class="creation-parameter" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: productParams }"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bind="click: hide">
+                    Cancel
+                </button>
+                <button class="btn btn-primary" data-bind="click: proceed">
+                    Ok
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="redeem-voucher-modal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" data-bind="with: giftVoucherRedeemer">
+            <div class="modal-header grey-blue">
+                <h4 class="modal-title">
+                    Redeem Gift Voucher
+                </h4>
+                <button class="btn-close btn-close-white" data-bind="click: hide"></button>
+            </div>
+            <div class="modal-body">
+                <p class="bold">
+                    Important Notes
+                </p>
+                <p>
+                    Gift vouchers cannot be part-redeemed.
+                </p>
+                <p>
+                    Please try to provide an Order ID for our records. If you cannot, please revisit this gift voucher when you have an order number from the redemption transaction.
+                </p>
+                <div data-bind="component: { name: 'mdc-text-field-component', params: redeemTransactionParams }"></div>
+                <div class="mt-3" data-bind="component: { name: 'mdc-text-area-component', params: notesParams }"></div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-bind="click: hide">

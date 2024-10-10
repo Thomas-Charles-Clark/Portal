@@ -181,10 +181,6 @@ const patternBooksViewModel = (() => {
             dir: 'asc',
             field: 'Name'
         }],
-        requestStart: function (e) {
-            if (!self.cascadeEnabled)
-                e.preventDefault();
-        },
         clearFunction: self.genericUnsavedChangesClear,
         parameterMap: (data) => {
             //Generate parameters in odata v4 format
@@ -203,7 +199,7 @@ const patternBooksViewModel = (() => {
             return d;
         },
         popupSettings: {
-            appendTo: document.getElementById('trade-account-prefilter')
+            appendTo: document.body
         }
     });
 
@@ -255,10 +251,6 @@ const patternBooksViewModel = (() => {
         select: function (e) {
             //console.log('patternBookParams select', e);
             self.fetchContents();
-        },
-        requestStart: function (e) {
-            if (!self.cascadeEnabled)
-                e.preventDefault();
         },
         clearFunction: self.genericUnsavedChangesClear,
         parameterMap: (data) => {

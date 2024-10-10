@@ -1,14 +1,17 @@
 ﻿@import "../models/common.scss";
 
-#main-section {
-
+#gift-vouchers-tabs-content {
+    background-color: $white;
+    border: 1px solid $gray-300;
+    border-top: 0;
+    padding: $l-gutter;
 }
 
 .page-heading-wrapper {
     position: relative;
     margin: 0 $l-gutter $mxl-gutter $l-gutter;
 }
-
+/*
 .navbar.navbar-default.navbar-expand {
     width: 100%;
 
@@ -27,7 +30,7 @@
     padding-left: 5em;
     padding-right: 5em;
 }
-
+*/
 .k-loading-mask {
     display: none !important;
 }
@@ -35,5 +38,31 @@
 .k-grid {
     td.k-state-focused {
         box-shadow: none;
+    }
+}
+
+#gift-voucher-container {
+    padding: $xl-gutter;
+
+    .code {
+        text-align: center;
+    }
+}
+
+#gift-voucher-details {
+    font-size: $font-size-lg;
+
+    dt {
+        color: $gray-900;
+        margin-bottom: $m-gutter;
+    }
+
+    dd {
+        margin-bottom: $m-gutter;
+    }
+
+    dt:last-of-type,
+    dd:last-of-type {
+        margin-bottom: 0;
     }
 }
