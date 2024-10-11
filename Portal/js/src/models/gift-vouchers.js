@@ -11,13 +11,15 @@ const giftVouchersViewModel = (() => {
 
     self.busyMessage = ko.observable("Please wait");
 
+    self.giftVoucherId = ko.observable('');
+
+    self.giftVoucher = ko.observable();
+
     self.giftVoucherCreator = giftVoucherCreatorViewModel({ parent: self });
 
     self.giftVoucherRedeemer = giftVoucherRedeemerViewModel({ parent: self });
 
-    self.giftVoucherId = ko.observable('');
-
-    self.giftVoucher = ko.observable();
+    self.giftVoucherExtender = giftVoucherExtenderViewModel({ parent: self });
 
     //#endregion
 
@@ -684,7 +686,7 @@ const giftVoucherRedeemerViewModel = (({ parent } = { parent: null }) => {
 
     self.modal = bootstrap.Modal.getOrCreateInstance(self.modalElement);
 
-    self.redeemTransactionId = ko.observable().extend({
+    self.redeemOrderId = ko.observable().extend({
         numberFormatted: {
             digits: 0,
             currency: ko.observable({ FormattingCulture: "en-GB" })
@@ -701,15 +703,17 @@ const giftVoucherRedeemerViewModel = (({ parent } = { parent: null }) => {
         }
     });
 
+    self.giftVoucher = self.parent.giftVoucher;
+
     //#endregion
 
 
     //#region Components
 
-    self.redeemTransactionParams = {
+    self.redeemOrderParams = {
         label: 'Order ID',
         originalValue: ko.observable(),
-        observable: self.redeemTransactionId,
+        observable: self.redeemOrderId,
         useNativeValidation: false,
         decorateInputElement: false,
         insertValidationMessages: false,
@@ -750,7 +754,7 @@ const giftVoucherRedeemerViewModel = (({ parent } = { parent: null }) => {
             $(self.notes.DOMElement).focus();
         },
         charsRemainingOptions: {
-            maxLength: 4000
+            maxLength: 2000
         },
         enable: ko.observable(true),
         disable: ko.observable(false),
@@ -765,7 +769,18 @@ const giftVoucherRedeemerViewModel = (({ parent } = { parent: null }) => {
 
     //#region Subscriptions
 
+    self.notes.subscribe(nv => {
+        console.log("redeemer notes", nv);
+    })
 
+    self.giftVoucher.subscribe(nv => {
+        if (nv) {
+            self.redeemOrderId(nv.RedeemOrderID);
+            self.notes(nv.Reason);
+        } else {
+            self.reset();
+        }
+    }); 
 
     //#endregion
 
@@ -790,18 +805,16 @@ const giftVoucherRedeemerViewModel = (({ parent } = { parent: null }) => {
 
     self.reset = () => {
         self.validateNow(false);
-        self.redeemTransactionParams.clearFunction();
+        self.redeemOrderParams.clearFunction();
         self.notesParams.clearFunction();
     }
 
     self.show = () => {
-        self.reset();
         self.modal.show();
     }
 
     self.hide = () => {
         self.modal.hide();
-        self.reset();
     }
 
     self.proceed = () => {
@@ -834,6 +847,222 @@ const giftVoucherRedeemerViewModel = (({ parent } = { parent: null }) => {
 
     return self;
 });
+
+
+
+
+
+
+const giftVoucherExtenderViewModel = (({ parent } = { parent: null }) => {
+    var self = {
+        parent: parent
+    };
+
+    //#region Properties
+
+    self.ready = ko.observable(false);
+
+    self.busy = ko.observable(false);
+
+    self.busyMessage = ko.observable("Please wait");
+
+    self.validateNow = ko.observable(false);
+
+    self.modalElement = document.querySelector("#extend-voucher-modal");
+
+    self.modal = bootstrap.Modal.getOrCreateInstance(self.modalElement);
+
+    self.expiryDate = ko.observable(self.ExpiryDT);
+
+    self.notes = ko.observable().extend({
+        required: {
+            params: true,
+            onlyIf: () => {
+                return self.validateNow();
+            },
+            message: "Please provide some detail to accompany this action."
+        }
+    });
+
+    self.giftVoucher = self.parent.giftVoucher;
+
+    //#endregion
+
+
+    //#region Components
+
+    self.expiryDateParams = {
+        label: "Expiry",
+        observable: self.expiryDate,
+        originalValue: self.expiryDate(),
+        displayObservable: ko.observable(),
+        dateTimePickerOptions: {
+            localization: {
+                locale: 'en-GB',
+                format: 'dd/MM/yyyy'
+            },
+            display: {
+                sideBySide: false,
+                components: {
+                    clock: false,
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: false,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false
+                },
+                viewMode: 'months',
+                cellSize: '5rem'
+            },
+            restrictions: {
+                disabledDates: []
+            },
+            allowInputToggle: true,
+            useCurrent: false,
+            keepInvalid: true,
+            debug: false,
+            eventHandlers: {
+                onChange: (e) => {
+
+                }
+            }
+        },
+        clearable: ko.observable(false),
+        clearFunction: () => {
+            self.expiryDate(undefined);
+        },
+        revertible: ko.observable(true),
+        revertFunction: () => {
+            self.expiryDate.observable(self.expiryDateParams.originalValue);
+        },
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true
+    };
+
+    self.notesParams = {
+        label: 'Notes',
+        originalValue: ko.observable(),
+        observable: self.notes,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        showClear: true,
+        rows: 10,
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            $(self.observable.DOMElement).focus();
+        },
+        permitRevert: true,
+        revertFunction: function () {
+            self.notes(self.originalNotes());
+            $(self.notes.DOMElement).focus();
+        },
+        charsRemainingOptions: {
+            maxLength: 2000
+        },
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(true),
+        visible: ko.observable(true)
+    };
+
+    //#endregion
+
+
+    //#region Subscriptions
+
+    self.giftVoucher.subscribe(nv => {
+        if (nv) {
+            self.expiryDate(nv.ExpiryDT);
+            self.notes(nv.Reason);
+
+            let oneDayMilliseconds = 1000 * 60 * 60 * 24;
+
+            self.expiryDate.tempusDominus.updateOptions({
+                restrictions: {
+                    minDate: new Date(new Date(nv.ExpiryDT).getTime() + oneDayMilliseconds)
+                }
+            });
+
+        } else {
+            self.reset();
+        }
+    }); 
+
+    //#endregion
+
+
+    //#region Computeds
+
+
+
+    //#endregion
+
+
+    //#region Validation Groups
+
+    self.errors = ko.validation.group([
+        self.notes
+    ]);
+
+    //#endregion
+
+
+    //#region Methods
+
+    self.reset = () => {
+        self.validateNow(false);
+        self.expiryDateParams.clearFunction();
+        self.notesParams.clearFunction();
+    }
+
+    self.show = () => {
+        self.modal.show();
+    }
+
+    self.hide = () => {
+        self.modal.hide();
+    }
+
+    self.proceed = () => {
+        self.validateNow(true);
+        self.errors.showAllMessages(false);
+
+        if (self.errors().length) {
+            self.errors.showAllMessages(true);
+            self.errors.filter(x => {
+                x.isValid.notifySubscribers(x.isValid());
+            });
+        } else {
+
+            window.confirm("Are you sure?", "Potato potato jibbering gibbon", () => {
+
+            }, () => {
+
+            });
+        }
+    }
+
+    //#endregion
+
+
+    //#region Events
+
+
+
+    //#endregion
+
+    return self;
+});
+
 
 
 const giftVoucherViewModel = (({ rec, parent } = { rec: null, parent: null }) => {
@@ -883,7 +1112,7 @@ const giftVoucherViewModel = (({ rec, parent } = { rec: null, parent: null }) =>
             $(self.notes.DOMElement).focus();
         },
         charsRemainingOptions: {
-            maxLength: 4000
+            maxLength: 2000
         },
         enable: ko.observable(true),
         disable: ko.observable(false),

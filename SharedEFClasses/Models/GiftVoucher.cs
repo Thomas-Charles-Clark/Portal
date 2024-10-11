@@ -1,4 +1,9 @@
-﻿using SharedEFClasses.Models.General;
+﻿using Microsoft.Owin.Security;
+
+using Org.BouncyCastle.Asn1;
+
+using SharedEFClasses.Models.General;
+using SharedEFClasses.Models.MertexLive;
 
 using System;
 using System.Collections.Generic;
@@ -49,13 +54,23 @@ namespace SharedEFClasses.Models
 
         public int? CreatorMemberID { get; set; }
 
+        public string SaleOrderID { get; set; }
+           
+        public string RedeemOrderID { get; set; }
+
+        [ForeignKey("SaleOrderID")]
+        public virtual OrderHeadLive SaleOrder { get; set; }
+
+        [ForeignKey("RedeemOrderID")]
+        public virtual OrderHeadLive RedeemOrder { get; set; }
+
         [ForeignKey("GiftVoucherTypeID")]
-        public GiftVoucherType GiftVoucherType { get; set; }
+        public virtual GiftVoucherType GiftVoucherType { get; set; }
 
         [ForeignKey("PriceListID")]
-        public PriceList PriceList { get; set; }
+        public virtual PriceList PriceList { get; set; }
 
         [ForeignKey("CreatorMemberID")]
-        public Member CreatedByMember { get; set; }
+        public virtual Member CreatedByMember { get; set; }
     }
 }

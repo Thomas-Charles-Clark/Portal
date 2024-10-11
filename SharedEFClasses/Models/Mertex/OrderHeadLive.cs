@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -157,6 +159,14 @@ namespace SharedEFClasses.Models.MertexLive
 
         [InverseProperty("Order")]
         public virtual ICollection<OrderLineLive> OrderLines { get; set; } = new List<OrderLineLive>();
+
+        [JsonIgnore]
+        [InverseProperty("SaleOrder")]
+        public virtual ICollection<GiftVoucher> GiftVouchersSold { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("RedeemOrder")]
+        public virtual ICollection<GiftVoucher> GiftVouchersRedeemed { get; set; }
 
         [NotMapped]
         public string DeliveryAddress
