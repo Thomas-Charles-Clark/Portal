@@ -92,3 +92,25 @@
 #actions-dd {
     border-top: 1px solid $gray-300;
 }
+
+#creation-fields {
+    > div {
+        &+div {
+            margin-top: $l-gutter;
+        }
+    }
+}
+
+#voucher-credit-field {
+    flex: 1;
+}
+
+#gift-voucher-preview {
+    width: 570px;
+    height: 456px;
+    border: none;
+}
+
+#internal-notes {
+    flex: 1;
+}

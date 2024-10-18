@@ -566,7 +566,9 @@
     <Compile Include="Areas\Customers\Controllers\CustomerEnquiryODataController.cs" />
     <Compile Include="Areas\Customers\Controllers\CustomerInviteController.cs" />
     <Compile Include="Areas\Customers\CustomersAreaRegistration.cs" />
+    <Compile Include="Areas\Customers\Models\PassGiftVoucherCreation.cs" />
     <Compile Include="Areas\Customers\Models\PassGiftVoucherExtend.cs" />
+    <Compile Include="Areas\Customers\Models\PassGiftVoucherPreview.cs" />
     <Compile Include="Areas\Customers\Models\PassGiftVoucherRedeem.cs" />
     <Compile Include="Areas\Customers\Models\PassGiftVoucherSend.cs" />
     <Compile Include="Areas\Customers\ViewModels\ContractPricingViewModel.cs" />
@@ -649,6 +651,7 @@
     <Compile Include="Controllers\ODataControllers\MertexProductClassificationSuperSetController.cs" />
     <Compile Include="Controllers\ODataControllers\ParcelDeliveryServicesController.cs" />
     <Compile Include="Controllers\ODataControllers\ParcelDestinationsController.cs" />
+    <Compile Include="Controllers\ODataControllers\PriceListsController.cs" />
     <Compile Include="Controllers\ODataControllers\PaymentTermsTypeController.cs" />
     <Compile Include="Controllers\ODataControllers\PaymentTermsController.cs" />
     <Compile Include="Controllers\ODataControllers\ProductGroupsController.cs" />

@@ -532,6 +532,7 @@
     <Compile Include="Models\PaymentTerms.cs" />
     <Compile Include="Models\PaymentTermsType.cs" />
     <Compile Include="Models\Press\PressContact.cs" />
+    <Compile Include="Models\Pricing\Price.cs" />
     <Compile Include="Models\ProductFilterGroup\ProductFilterGroup.cs" />
     <Compile Include="Models\ProductFilter\ProductFilter.cs" />
     <Compile Include="Models\ProductPage\ProductPage.cs" />

@@ -61,12 +61,18 @@ namespace SharedEFClasses.Models
 
         public int? RedeemedByMemberID { get; set; }
 
+        public string Message { get; set; }
+
+        public string CreditOrderID { get; set; }
 
         [ForeignKey("SaleOrderID")]
         public virtual OrderHeadLive SaleOrder { get; set; }
 
         [ForeignKey("RedeemOrderID")]
         public virtual OrderHeadLive RedeemOrder { get; set; }
+
+        [ForeignKey("CreditOrderID")]
+        public virtual OrderHeadLive CreditOrder { get; set; }
 
         [ForeignKey("GiftVoucherTypeID")]
         public virtual GiftVoucherType GiftVoucherType { get; set; }

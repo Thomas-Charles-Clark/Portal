@@ -573,23 +573,118 @@ const giftVoucherCreatorViewModel = (({ parent } = { parent: null }) => {
 
     self.busyMessage = ko.observable("Please wait");
 
-    self.newVoucherModalElement = document.querySelector("#new-voucher-modal");
-
-    self.newVoucherModal = bootstrap.Modal.getOrCreateInstance(self.newVoucherModalElement);
+    self.validateNow = ko.observable(false);
 
     self.productId = ko.observable().extend({
+        notEqual: {
+            params: '',
+            onlyIf: self.validateNow,
+            message: "You must specify a Gift Voucher"
+        },
         required: {
             params: true,
+            onlyIf: self.validateNow,
             message: "You must specify a Gift Voucher" 
         }
     });
 
     self.product = ko.observable();
 
+    self.code = ko.observable(crypto.randomUUID().toUpperCase().substring(4, 23)).extend({
+        required: {
+            params: true,
+            onlyIf: self.validateNow,
+            message: "Code is required"
+        }
+    });
+
+    let expiry = new Date();
+
+    expiry.setFullYear(expiry.getFullYear() + 1);
+
+    self.expiryDate = ko.observable(expiry);
+
+    self.isVoucherCredit = ko.observable(false);
+
+    self.creditOrderId = ko.observable().extend({
+        notEqual: {
+            params: '',
+            onlyIf: self.validateNow,
+            message: "You have indicated that this voucher credits an order. Please specify the order which this voucher credits."
+        },
+        required: {
+            params: true,
+            onlyIf: () => {
+                return self.validateNow() && self.isVoucherCredit()
+            },
+            message: "You have indicated that this voucher credits an order. Please specify the order which this voucher credits."
+        }
+    });
+
+    self.creditOrder = ko.observable();
+
+    self.giftVoucherTypeId = ko.observable().extend({
+        required: {
+            params: true,
+            onlyIf: () => {
+                return self.validateNow();
+            },
+            message: "You must specify a Gift Voucher Type"
+        }
+    });
+
+    self.giftVoucherType = ko.observable();
+
+    self.priceListId = ko.observable().extend({
+        required: {
+            params: true,
+            onlyIf: () => {
+                return self.validateNow();
+            },
+            message: "You must specify a Price List"
+        }
+    });
+
+    self.priceList = ko.observable();
+
+    self.valueEx = ko.observable();
+
+    self.valueInc = ko.observable();
+
+    self.notes = ko.observable();
+
+    self.message = ko.observable();
+
+    self.base64 = ko.observable();
+
     //#endregion
 
 
     //#region Components
+
+    self.codeParams = {
+        label: 'Code',
+        originalValue: ko.observable(),
+        observable: self.code,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        showClear: false,
+        rows: 10,
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            $(self.observable.DOMElement).focus();
+        },
+        permitRevert: false,
+        enable: ko.observable(true),
+        disable: ko.observable(true),
+        readonly: ko.observable(true),
+        busy: ko.observable(false),
+        clearable: ko.observable(false),
+        revertible: ko.observable(false),
+        visible: ko.observable(true)
+    };
 
     self.productParams = kendoMDCDropDownList({
         label: 'Product',
@@ -597,6 +692,9 @@ const giftVoucherCreatorViewModel = (({ parent } = { parent: null }) => {
         endPoint: '/odata/Products/GetProductsForGiftVouchers',
         textField: 'ShortLabel',
         valueField: 'ProductID',
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
         virtual: false,
         template: (e) => {
             return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
@@ -614,13 +712,9 @@ const giftVoucherCreatorViewModel = (({ parent } = { parent: null }) => {
         filter: 'contains',
         autoBind: true,
         height: 340,
-        select: self.genericUnsavedChangesSelect,
-        clearFunction: self.genericUnsavedChangesClear,
-        popupSettings: {
-            appendTo: document.getElementById('creation-product')
-        },
-        dataBound: (e) => {
-            document.querySelectorAll('.grid-btn').forEach(b => new bootstrap.Ripple(b));
+        sort: {
+            dir: 'asc',
+            field: 'Code'
         },
         parameterMap: (data) => {
         //Generate parameters in odata v4 format
@@ -632,6 +726,14 @@ const giftVoucherCreatorViewModel = (({ parent } = { parent: null }) => {
 
             d.$count = true;
 
+            if (self.priceListId()) {
+                if (d.$filter)
+                    d.$filter = `${d.$filter} and (Prices/any(price: price/PriceListID eq ${self.priceListId()}))`;
+                else {
+                    d.$filter = `(Prices/any(price: price/PriceListID eq ${self.priceListId()}))`;
+                }
+            }
+
             if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
                 d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
             }
@@ -640,19 +742,314 @@ const giftVoucherCreatorViewModel = (({ parent } = { parent: null }) => {
         }
     });
 
+    self.expiryDateParams = {
+        label: "Expiry",
+        observable: self.expiryDate,
+        originalValue: self.expiryDate(),
+        displayObservable: ko.observable(),
+        dateTimePickerOptions: {
+            localization: {
+                locale: 'en-GB',
+                format: 'dd/MM/yyyy'
+            },
+            display: {
+                sideBySide: false,
+                components: {
+                    clock: false,
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: false,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false
+                },
+                viewMode: 'months',
+                cellSize: '3rem'
+            },
+            restrictions: {
+                disabledDates: []
+            },
+            allowInputToggle: true,
+            useCurrent: false,
+            keepInvalid: true,
+            debug: false,
+            eventHandlers: {
+                onChange: (e) => {
+
+                }
+            },
+            viewDate: new Date(self.expiryDate())
+        },
+        clearable: ko.observable(false),
+        clearFunction: () => {
+            self.expiryDate(undefined);
+        },
+        revertible: ko.observable(true),
+        revertFunction: () => {
+            self.expiryDate.observable(self.expiryDateParams.originalValue);
+        },
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true
+    };
+
+    self.isVoucherCreditParams = {
+        checkboxId: "voucher-credit",
+        label: "Is this voucher crediting an order?",
+        observable: self.isVoucherCredit,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: self.busy,
+    }
+
+    self.creditOrderParams = kendoMDCDropDownList({
+        label: 'Credit Order ID',
+        odata: true,
+        endPoint: `/odata/Orders`,
+        textField: 'ShortLabel',
+        valueField: 'OrderID',
+        virtual: true,
+        autoBind: false,
+        minLength: 3,
+        enforceMinLength: true,
+        pageSize: 10,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/Orders/Default.OrderValueMapper(orderId='${options.value}')`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        template: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        idObservable: self.creditOrderId,
+        objObservable: self.creditOrder,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'desc',
+            field: 'OrderID'
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            if (data && data.filter && data.filter.filters && data.filter.filters.length) {
+                data.pageSize = 40;
+            } else {
+                data.pageSize = 0;
+            }
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
+                d.$filter = `${d.$filter.replace("ShortLabel", "CustomerOrderReference")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "OrderID")}`;
+            }
+
+            return d;
+        }
+    });
+
+    self.giftVoucherTypeParams = kendoMDCDropDownList({
+        label: 'Gift Voucher Type',
+        data: getGiftVoucherTypes(),
+        textField: 'Name',
+        valueField: 'GiftVoucherTypeID',
+        virtual: false,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        idObservable: self.giftVoucherTypeId,
+        objObservable: self.giftVoucherType,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: false,
+        autoBind: true
+    });
+
+    self.priceListParams = kendoMDCDropDownList({
+        label: 'Price List',
+        odata: true,
+        endPoint: '/odata/PriceLists?$expand=Currency',
+        textField: 'Name',
+        valueField: 'PriceListID',
+        virtual: false,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        idObservable: self.priceListId,
+        objObservable: self.priceList,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            return d;
+        }
+    });
+
+    self.messageParams = {
+        label: 'Message',
+        originalValue: ko.observable(),
+        observable: self.message,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        showClear: true,
+        rows: 5,
+        maxNewLines: 5,
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            $(self.observable.DOMElement).focus();
+        },
+        permitRevert: false,
+        charsRemainingOptions: {
+            maxLength: 255
+        },
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        visible: ko.observable(true)
+    };
+
+    self.notesParams = {
+        label: 'Internal Notes',
+        originalValue: ko.observable(),
+        observable: self.notes,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        showClear: true,
+        rows: 10,
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            $(self.observable.DOMElement).focus();
+        },
+        permitRevert: false,
+        charsRemainingOptions: {
+            maxLength: 2000
+        },
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        visible: ko.observable(true)
+    };
+
     //#endregion
 
 
     //#region Subscriptions
 
+    self.isVoucherCredit.subscribe(nv => {
+        if (nv) {
+            self.giftVoucherTypeId(2);
+            self.giftVoucherTypeParams.disable(true);
+        } else {
+            self.giftVoucherTypeParams.clearFunction();
+            self.giftVoucherTypeParams.disable(false);
+        }
+    });
 
+    self.giftVoucherTypeId.subscribe(nv => {
+        if (nv == 2) {
+            self.isVoucherCredit(true);
+        } else {
+            self.isVoucherCredit(false);
+            self.creditOrderParams.clearFunction();
+        }
+    })
 
     //#endregion
 
 
     //#region Computeds
 
+    self.previewSrc = ko.computed(() => {
+        let productId = self.productId();
+        let code = self.code();
+        let priceListId = self.priceListId();
 
+        let message = self.message();
+
+        if (productId &&
+            code &&
+            priceListId) {
+
+            var params = {
+                productId: productId,
+                priceListId: priceListId,
+                code: code,
+                expiryDt: self.expiryDate(),
+                currencySymbol: self.priceList().Currency.Symbol,
+                message: message
+            }
+
+            fetch("/api/giftvouchersapi/fetchGiftVoucherPreview", {
+                method: "POST",
+                headers: window.fetchHeaders,
+                cache: "no-cache",
+                credentials: "same-origin",
+                body: JSON.stringify(params)
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    self.base64(data.base64string);
+                })
+            }
+    }, self).extend({
+        rateLimit: {
+            timeout: 300,
+            method: 'notifyWhenChangesStop'
+        }
+    });
 
     //#endregion
 
@@ -660,7 +1057,13 @@ const giftVoucherCreatorViewModel = (({ parent } = { parent: null }) => {
     //#region Validation Groups
 
     self.errors = ko.validation.group([
-        self.productId
+        self.code,
+        self.priceListId,
+        self.productId,
+        self.giftVoucherTypeId,
+        self.creditOrderId,
+        self.message,
+        self.notes
     ]);
 
     //#endregion
@@ -670,15 +1073,6 @@ const giftVoucherCreatorViewModel = (({ parent } = { parent: null }) => {
 
     self.reset = () => {
         self.giftVoucherProductParams.clearFunction();
-    }
-
-    self.show = () => {
-        self.newVoucherModal.show();
-    }
-
-    self.hide = () => {
-        self.newVoucherModal.hide();
-        self.reset();
     }
 
     self.proceed = () => {
@@ -701,7 +1095,16 @@ const giftVoucherCreatorViewModel = (({ parent } = { parent: null }) => {
     }
 
     self.saveChanges = () => {
+        self.validateNow(true);
 
+        if (self.errors().length) {
+            self.errors.showAllMessages(true);
+            self.errors.forEach(x => {
+                x.isValid.notifySubscribers(x.isValid());
+            });
+        } else {
+            console.log("Hooray!");
+        }
     }
 
     //#endregion
@@ -709,7 +1112,9 @@ const giftVoucherCreatorViewModel = (({ parent } = { parent: null }) => {
 
     //#region Events
 
-
+    document.querySelector("#create-tab-btn").addEventListener("show.bs.tab", (e) => {
+        self.code(crypto.randomUUID().toUpperCase().substring(4, 23));
+    });
 
     //#endregion
 
@@ -956,6 +1361,7 @@ const giftVoucherRedeemerViewModel = (({ parent } = { parent: null }) => {
                         self.busy(false);
                         window.showInfo("Thank you", "This gift voucher has been redeemed.");
                         self.giftVoucher().redeemOrderId(self.orderId());
+                        self.giftVoucher().notes(self.notes());
                         self.giftVoucher().usedDt(data.usedDt);
                     })
                     .catch(err => {
@@ -1067,7 +1473,7 @@ const giftVoucherExtenderViewModel = (({ parent } = { parent: null }) => {
         clearFunction: () => {
             self.expiryDate(undefined);
         },
-        revertible: ko.observable(true),
+        revertible: ko.observable(false),
         revertFunction: () => {
             self.expiryDate.observable(self.expiryDateParams.originalValue);
         },
@@ -1186,7 +1592,7 @@ const giftVoucherExtenderViewModel = (({ parent } = { parent: null }) => {
 
                 var params = {
                     giftVoucherId: self.giftVoucher().GiftVoucherID,
-                    expiryDt: self.expiryDate().toUTCString(),
+                    expiryDt: typeof self.expiryDate() == 'object' ? self.expiryDate().toUTCString() : self.expiryDate(),
                     notes: self.notes()
                 }
 

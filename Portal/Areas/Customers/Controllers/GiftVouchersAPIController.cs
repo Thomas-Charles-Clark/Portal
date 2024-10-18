@@ -29,6 +29,7 @@ using System.Web.UI;
 using SharedEFClasses.Models.Documents;
 using SharedEFClasses.Utilities;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using System.Data.SqlTypes;
 
 namespace Portal.Areas.Customers.Controllers
 {
@@ -54,6 +55,38 @@ namespace Portal.Areas.Customers.Controllers
                 .Include(gv => gv.PriceList)
                 .Include(gv => gv.PriceList.Currency)
                 .AsQueryable().ToDataSourceResult(request);
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> Create([FromBody] PassGiftVoucherCreation dto)
+        {
+            var now = DateTime.Now;
+
+            var price = PortalDb.Prices.Where(p => p.ProductID == dto.ProductID && p.PriceListID == dto.PriceListID).SingleOrDefault();
+
+            throw new Exception("Oh no you don't! You need to lookup valueInc and valueEx from the product...");
+
+            var gv = new GiftVoucher()
+            {
+                CreatorMemberID = User.Identity.GetUserId<int>(),
+                AuthorisedDT = now,
+                CreatedDT = now,
+                Code = dto.GUID,
+                CreditOrderID = dto.CreditOrderID,
+                ExpiryDT = now.AddYears(1),
+                GiftVoucherTypeID = dto.GiftVoucherTypeID,
+                PriceListID = dto.PriceListID,
+                ValueEx = price.PriceInc,
+                ValueInc = price.PriceEx,
+                Reason = dto.Notes,
+                Message = dto.Message
+            };
+
+            PortalDb.GiftVouchers.Add(gv);
+
+            await PortalDb.SaveChangesAsync();
+            
+            return Ok(gv);
         }
 
         [HttpPost]
@@ -94,6 +127,32 @@ namespace Portal.Areas.Customers.Controllers
             }
 
             return Ok(new { });
+        }
+
+        [HttpPost]
+        public IHttpActionResult FetchGiftVoucherPreview([FromBody] PassGiftVoucherPreview dto)
+        {
+            var price = PortalDb.Prices.Where(p => p.ProductID == dto.ProductID && p.PriceListID == dto.PriceListID).SingleOrDefault();
+
+            var stream = Utilities.Documents.GiftVoucher.GiftVoucherPDFWriter.Generate(System.Web.Hosting.HostingEnvironment.MapPath("~"), new GiftVoucher() { 
+                ExpiryDT = dto.ExpiryDT,
+                Code = dto.Code,
+                Message = dto.Message,
+                PriceList = new SharedEFClasses.Models.General.PriceList() { 
+                    Currency = new SharedEFClasses.Models.General.Currency()
+                    {
+                        Symbol = dto.CurrencySymbol
+                    }
+                },
+                ValueInc = price?.PriceInc ?? 0,
+                ValueEx = price?.PriceEx ?? 0
+            });
+
+            var bytes = stream.ToArray();
+
+            var base64 = Convert.ToBase64String(bytes, Base64FormattingOptions.None);
+
+            return Ok(new { base64string = $"data:application/pdf;base64,{base64}" });
         }
 
         [HttpPost]

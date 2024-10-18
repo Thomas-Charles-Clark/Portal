@@ -15,6 +15,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 using NLog.LayoutRenderers.Wrappers;
+using SharedEFClasses.Models.Pricing;
 
 namespace SharedEFClasses.Models.Products
 {
@@ -208,6 +209,10 @@ namespace SharedEFClasses.Models.Products
 
         [ForeignKey("DefaultSupplierID")]
         public virtual Supplier DefaultSupplier  { get; set; }
+
+        [InverseProperty("Product")]
+        public virtual ICollection<Price> Prices { get; set; }
+
     }
 
     [Table("Product_Image", Schema = "dbo")]

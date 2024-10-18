@@ -100,4 +100,22 @@
 #actions-dd {
   border-top: 1px solid #dee2e6;
 }
+
+#creation-fields > div + div {
+  margin-top: 1rem;
+}
+
+#voucher-credit-field {
+  flex: 1;
+}
+
+#gift-voucher-preview {
+  width: 570px;
+  height: 456px;
+  border: none;
+}
+
+#internal-notes {
+  flex: 1;
+}
 /*# sourceMappingURL=gift-vouchers.css.map */

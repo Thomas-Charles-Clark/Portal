@@ -872,6 +872,7 @@
                     'mdc-text-field--disabled': disable() || !enable()
                  }">
                 <textarea class="mdc-text-field__input" data-bind="
+                    maxNewLines: typeof maxNewLines === 'undefined' ? null : maxNewLines,
                     keepElement: observable,
                     textInput: observable,
                     charsRemaining: charsRemainingOptions,

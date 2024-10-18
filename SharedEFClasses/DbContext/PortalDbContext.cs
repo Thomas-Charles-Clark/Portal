@@ -13,6 +13,7 @@ using SharedEFClasses.Models.OrderBook;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Parcel;
 using SharedEFClasses.Models.Press;
+using SharedEFClasses.Models.Pricing;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.Retail;
 using SharedEFClasses.Models.Samples;
@@ -77,6 +78,7 @@ namespace SharedEFClasses.Models
         public DbSet<Competitor> Competitors { get; set; }
         public DbSet<CompanyType> CompanyTypes { get; set; }
         public DbSet<PriceList> PriceLists { get; set; }
+        public DbSet<Price> Prices { get; set; }
         public DbSet<SalesRepresentative> SalesRepresentatives { get; set; }
         public DbSet<SalesRepresentative_SalesMarket> SalesRepresentative_SalesMarkets { get; set; }
         public DbSet<SalesAgent> SalesAgents { get; set; }

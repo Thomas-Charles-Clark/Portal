@@ -77,6 +77,14 @@ namespace Portal.Utilities.Documents.GiftVoucher
             {
                 message = giftVoucher.OrderLines.First().GiftVoucherMessage;
             }
+            else
+            {
+                message = giftVoucher.Message;
+            }
+
+//#if DEBUG
+//            message = "AISDJ ASNFJS LJK3NLKMZVIL 32WEOPA, AE[PLAE:! RGA09J2Q3L; QJOIP089;LKV njkdk EOI4W81M mkfsl;apo;94 SKDFMIG92 KLMDFLIJRO sert#P'L2OAKFL ADS;LKJ9084WMKO;LKGFL;MVCPIOSO;KWE,MA RIIPOA  ARLIJDFL;IKJ DFAML/KGEOI;ERAJKD 234IU8NIKW 'IOJSDFGO9JKL;ER90KLMREOPIKWER42";
+//#endif
 
             var streams = new List<MemoryStream>();
 
