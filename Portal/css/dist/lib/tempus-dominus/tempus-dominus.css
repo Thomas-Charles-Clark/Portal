@@ -236,6 +236,12 @@
   bottom: 6px;
   right: 6px;
 }
+.tempus-dominus-widget .date-container-months div:not(.no-highlight) {
+  width: 100%;
+  min-width: calc(var(--td-cell-size) * 2);
+  height: auto;
+  clip-path: none;
+}
 .tempus-dominus-widget .time-container {
   margin-bottom: 0.5rem;
 }

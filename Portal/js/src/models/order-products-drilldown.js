@@ -4618,14 +4618,8 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
             let productIds = [];
 
             ko.utils.arrayForEach(self.products(), function (item, index) {
-                if ([12, 46, 84, 85].indexOf(item.record.ProductFilterID) > -1) {
+                if ([84, 85].indexOf(item.record.ProductFilterID) > -1) {
                     // skip paint...
-                    //item.stockInfo({
-                    //    TotalPurchaseOrderLength: null,
-                    //    TotalStock: null,
-                    //    Batches: [],
-                    //    Code: item.record.Code
-                    //});
                 } else {
                     productIds.push(item.record.ProductID);
                 }

@@ -24,6 +24,11 @@ using System.Dynamic;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using Portal.Areas.Products.Models;
+using Portal.Areas.Customers.Models;
+using System.Web.UI;
+using SharedEFClasses.Models.Documents;
+using SharedEFClasses.Utilities;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace Portal.Areas.Customers.Controllers
 {
@@ -49,6 +54,116 @@ namespace Portal.Areas.Customers.Controllers
                 .Include(gv => gv.PriceList)
                 .Include(gv => gv.PriceList.Currency)
                 .AsQueryable().ToDataSourceResult(request);
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> Redeem([FromBody] PassGiftVoucherRedeem dto)
+        {
+            var voucher = PortalDb.GiftVouchers.SingleOrDefault(gv => gv.GiftVoucherID == dto.GiftVoucherID);
+
+            var now = DateTime.Now;
+
+            if (voucher != null)
+            {
+                voucher.RedeemOrderID = dto.OrderID;
+
+                voucher.Reason = dto.Notes;
+
+                voucher.UsedDT = now;
+
+                voucher.RedeemedByMemberID = User.Identity.GetUserId<int>();
+
+                await PortalDb.SaveChangesAsync();
+            }
+
+            return Ok(new { usedDt = now });
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> Extend([FromBody] PassGiftVoucherExtend dto)
+        {
+            var voucher = PortalDb.GiftVouchers.SingleOrDefault(gv => gv.GiftVoucherID == dto.GiftVoucherID);
+
+            if (voucher != null)
+            {
+                voucher.Reason = dto.Notes;
+
+                voucher.ExpiryDT = dto.ExpiryDT;
+
+                await PortalDb.SaveChangesAsync();
+            }
+
+            return Ok(new { });
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> SendGiftVoucher([FromBody] PassGiftVoucherSend dto)
+        {
+            var inkyMarkup = $@"
+            <style type=""text/css"">
+                {PortalFramework.FoundationEmailCSS}
+            </style>
+            <meta name=""x-apple-disable-message-reformatting""/>
+            <container>
+	            <row>
+		            <columns>
+			            <p class=""text-left"" style=""margin-top: 0"">
+				            {System.Text.RegularExpressions.Regex.Replace(dto.Body, "\n", "<br/>")}
+			            </p>
+		            </columns>
+	            </row>
+                <spacer size=""15""></spacer>
+            </container>
+            ";
+
+            var gv = await PortalDb.GiftVouchers.Include(p => p.PriceList).SingleAsync(p => p.Code == dto.GiftVoucherCode);
+
+            var stream = Utilities.Documents.GiftVoucher.GiftVoucherPDFWriter.Generate(System.Web.Hosting.HostingEnvironment.MapPath("~"), gv);
+
+            var emailTo = dto.To;
+
+            var replyTo = dto.ReplyTo;
+
+            using (var client = new HttpClient())
+            {
+                var content = new StringContent(inkyMarkup);
+
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+
+                var inkyResult = await client.PostAsync(PortalFramework.InkyEndpoint, content);
+
+                inkyMarkup = await inkyResult.Content.ReadAsStringAsync();
+            }
+
+            var body = inkyMarkup;
+
+            var attachments = new Dictionary<string, MemoryStream>();
+
+            var attachmentStream = new MemoryStream();
+
+            attachmentStream.Write(stream.GetBuffer(), 0, stream.GetBuffer().Length);
+
+            attachmentStream.Position = 0;
+
+            attachments.Add($"Designers Guild Gift Voucher.pdf", attachmentStream);
+
+            var memberId = User.Identity.GetUserId<int>();
+
+#pragma warning disable 4014
+            System.Threading.Tasks.Task.Factory.StartNew(() =>
+            {
+                ((EmailService)UserManager.EmailService).SendFoundationEmailWithAttachmentsAsync(new IdentityMessage()
+                {
+                    Body = body,
+                    Subject = dto.Subject,
+                    Destination = emailTo
+                },
+                attachments,
+                replyTo);
+            });
+#pragma warning restore 4014
+
+            return Ok(new { });
         }
     }
 }

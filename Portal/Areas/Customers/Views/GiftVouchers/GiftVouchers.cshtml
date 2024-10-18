@@ -22,6 +22,9 @@
             window.getPriceLists = () => {
                 return @Html.Raw(JsonConvert.SerializeObject(Model.PriceLists));
             }
+            window.getGiftVoucherCode = () => {
+                return '@Html.Raw(Model.GiftVoucherCode)';
+            }
     </script>
 
     <script type="text/javascript">
@@ -41,6 +44,18 @@
         ko.applyBindings(viewModel, document.body);
 
         window.self = viewModel;
+
+        if (window.getGiftVoucherCode()) {
+            self.giftVoucherParams.dropDownListSettings.widget.subscribe(nv => {
+                window.setTimeout(() => {
+                    nv.dataSource.filter({
+                        field: 'Code',
+                        operator: 'eq',
+                        value: window.getGiftVoucherCode()
+                    });
+                }, 0);
+            });
+        }
 
     </script>
 }
@@ -143,16 +158,19 @@
             Find a Gift Voucher
         </button>
     </li>
-    <li class="nav-item" role="presentation">
-        <button class="nav-link fs-5" id="create-tab-btn" data-bs-toggle="tab" data-bs-target="#create-tab" type="button" role="tab" aria-controls="Create" aria-selected="false">
-            Create a Gift Voucher
-        </button>
-    </li>
-    <li class="nav-item" role="presentation">
-        <button class="nav-link fs-5" id="manage-tab-btn" data-bs-toggle="tab" data-bs-target="#manage-tab" type="button" role="tab" aria-controls="Manage" aria-selected="false">
-            Bulk Manage Gift Vouchers
-        </button>
-    </li>
+    @if (User.IsInRole("Super Admin") || User.IsInRole("Gift Voucher Creator"))
+    {
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fs-5" id="create-tab-btn" data-bs-toggle="tab" data-bs-target="#create-tab" type="button" role="tab" aria-controls="Create" aria-selected="false">
+                Create a Gift Voucher
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fs-5" id="manage-tab-btn" data-bs-toggle="tab" data-bs-target="#manage-tab" type="button" role="tab" aria-controls="Manage" aria-selected="false">
+                Bulk Manage Gift Vouchers
+            </button>
+        </li>
+    }
 </ul>
 <div class="tab-content" id="gift-vouchers-tabs-content">
     <div class="tab-pane fade show active" id="find-tab" role="tabpanel" aria-labelledby="find-tab-btn">
@@ -161,11 +179,15 @@
         </div>
         <div id="gift-voucher-container-wrapper" style="display: none" data-bind="visible: true, with: giftVoucher">
             <div id="gift-voucher-container">
-                <dl id="gift-voucher-details" class="row">
+                <dl class="gift-voucher-details row">
                     <dt class="col-3 text-end">
                         Code
                     </dt>
                     <dd class="col-8" data-bind="text: Code"></dd>
+                    <dt class="col-3 text-end">
+                        Value
+                    </dt>
+                    <dd class="col-8" data-bind="text: formatCurrency(ValueInc, 2, PriceList.Currency.FormattingCulture, PriceList.Currency.Code)"></dd>
                     <dt class="col-3 text-end">
                         Type
                     </dt>
@@ -173,54 +195,85 @@
                     <dt class="col-3 text-end">
                         Sold with Order ID
                     </dt>
-                    <dd class="col-8" data-bind="text: SaleTransactionID"></dd>
+                    <dd class="col-8" data-bind="text: soldWithOrderId"></dd>
                     <dt class="col-3 text-end">
-                        Redeemed with Transaction ID
+                        Redeemed with Order ID
                     </dt>
-                    <dd class="col-8" data-bind="text: RedeemTransactionID"></dd>
+                    <dd class="col-8" data-bind="text: redeemOrderId"></dd>
                     <dt class="col-3 text-end">
                         Created
                     </dt>
-                    <dd class="col-8" data-bind="text: moment(CreatedDT).format('DD/MM/YYYY HH:MM')"></dd>
+                    <dd class="col-8" data-bind="text: moment(CreatedDT).format('DD/MM/YYYY HH:mm')"></dd>
                     <dt class="col-3 text-end">
                         Expires
                     </dt>
-                    <dd class="col-8" data-bind="text: moment(ExpiryDT).format('DD/MM/YYYY HH:MM')"></dd>
+                    <dd class="col-8" data-bind="text: moment(expiryDate()).format('DD/MM/YYYY HH:mm')"></dd>
                     <dt class="col-3 text-end">
+                        Used
+                    </dt>
+                    <dd class="col-8" data-bind="text: usedDt() ? moment(usedDt()).format('DD/MM/YYYY HH:mm') : 'Not yet'"></dd>
+                    <dt class="col-3 text-end">
+                        Message
+                    </dt>
+                    <dd class="col-8">
+                        <p data-bind="html: orderLine?.GiftVoucherMessage.replace('\n', '<br/><br/>') ?? '(No message)', css: { 'text-italic': orderLine?.GiftVoucherMessage == null }"></p>
+                    </dd>
+                    <dt class="col-3 text-end mt-3">
                         Notes
                     </dt>
-                    <dd class="col-8">
-                        <div data-bind="component: { name: 'mdc-text-area-component', params: notesParams }"></div>
+                    <dd class="col-8 mt-3">
+                        <div data-bind="html: notes"></div>
                     </dd>
-                    <dt class="col-3 text-end">
+                    <dt id="actions-dt" class="col-3 text-end">
                         Actions
                     </dt>
-                    <dd class="col-8">
+                    <dd id="actions-dd" class="col-8">
                         <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-primary" data-bind="click: $parent.giftVoucherRedeemer.show">
+                            <button type="button" class="btn btn-primary" data-bind="disable: voucherEditDisabled, click: $parent.giftVoucherRedeemer.show">
                                 Redeem
                             </button>
-                            <button type="button" class="btn btn-primary" data-bind="click: $parent.giftVoucherExtender.show">
+                            <button type="button" class="btn btn-primary" data-bind="disable: voucherEditDisabled, click: $parent.giftVoucherExtender.show">
                                 Extend
                             </button>
                             <button type="button" class="btn btn-primary ms-auto" data-bind="click: $parent.viewVoucher">
                                 View
                             </button>
-                            <button type="button" class="btn btn-primary">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target=".emailer-collapse">
                                 Email
                             </button>
                         </div>
+                    </dd>
+                    <dt class="emailer-collapse collapse">
+
+                    </dt>
+                    <dd class="emailer-collapse collapse">
+                        <dl class="gift-voucher-details row">
+                            <dt class="col-3 text-end">
+                                Email
+                            </dt>
+                            <dd class="col-8">
+                                <div class="py-3">
+                                    <!-- ko component: { name: 'emailer-component', params: $parent.emailer } --><!-- /ko -->
+                                </div>
+                            </dd>
+                        </dl>
                     </dd>
                 </dl>
             </div>
         </div>
     </div>
-    <div class="tab-pane fade" id="create-tab" role="tabpanel" aria-labelledby="new-tab-btn">
+    @if (User.IsInRole("Super Admin") || User.IsInRole("Gift Voucher Creator"))
+    {
+        <div class="tab-pane fade" id="create-tab" role="tabpanel" aria-labelledby="new-tab-btn" data-bind="with: giftVoucherCreator">
 
-    </div>
-    <div class="tab-pane fade" id="manage-tab" role="tabpanel" aria-labelledby="manage-tab-btn">
-        <div data-bind="kendoGrid: giftVouchersGridSettings"></div>
-    </div>
+            <button type="button" class="btn btn-success" data-bind="click: saveChanges">
+                Save
+            </button>
+        </div>
+        <div class="tab-pane fade" id="manage-tab" role="tabpanel" aria-labelledby="manage-tab-btn">
+            <div data-bind="kendoGrid: giftVouchersGridSettings"></div>
+        </div>
+    }
 </div>
 
 <div id="new-voucher-modal" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -266,7 +319,7 @@
                 <p>
                     Please try to provide an Order ID for our records. If you cannot, please revisit this gift voucher when you have an order number from the redemption transaction.
                 </p>
-                <div data-bind="component: { name: 'mdc-text-field-component', params: redeemOrderParams }"></div>
+                <div data-bind="component: { name: 'kendo-mdc-dropdown-component', params: redeemOrderParams }"></div>
                 <div class="mt-3" data-bind="component: { name: 'mdc-text-area-component', params: notesParams }"></div>
             </div>
             <div class="modal-footer">
@@ -311,3 +364,22 @@
         </div>
     </div>
 </div>
+
+<p class="text-italic mt-3">
+    Still need to:
+</p>
+<ul class="text-italic list-unstyled">
+    <li class="list-item">
+        Re-craft the PDF generation as per design from Babette ✔
+    </li>
+    <li class="list-item">
+        Test Redeem and Extend save as intended
+    </li>
+    <li class="list-item">
+        Put together the creation interface
+    </li>
+    <li>
+        Somehow work this in to the eCommerce gift voucher creation route. There are new voucher part numbers prefixed with DIGITAL.
+        We want to offer a combination of digital and postal... do we... I don't know.
+    </li>
+</ul>

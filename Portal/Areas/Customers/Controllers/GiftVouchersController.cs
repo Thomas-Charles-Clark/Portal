@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Data.Entity;
+using NLog.LayoutRenderers;
 
 namespace Portal.Areas.Customers.Controllers
 {
@@ -33,13 +34,24 @@ namespace Portal.Areas.Customers.Controllers
         }
 
         // GET: Customers/Pricing
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(string code)
         {
             var application = PortalDb.Applications.Where(p => p.ControllerName == "giftvouchers" && p.AreaName == "customers" && p.ActionName == "index").Single();
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
+            if (!String.IsNullOrEmpty(code))
+            {
+                var voucher = PortalDb.GiftVouchers.SingleOrDefault(gv => gv.Code == code);
+
+                if (voucher == null)
+                {
+                    code = null;
+                }
+            }
+
             var model = await GiftVouchersViewModel.CreateAsync(
+                code,
                 user.GetActiveRoleProperties(),
                 application.Heading,
                 application.SubHeading);
@@ -47,9 +59,9 @@ namespace Portal.Areas.Customers.Controllers
             return View("GiftVouchers", model);
         }
 
-        public async Task<ActionResult> PDF(short id)
+        public async Task<ActionResult> PDF(string code)
         {
-            var gv = await PortalDb.GiftVouchers.Include(p => p.PriceList).SingleAsync(p => p.GiftVoucherID == id);
+            var gv = await PortalDb.GiftVouchers.Include(p => p.PriceList).SingleAsync(p => p.Code == code);
 
             var ms = Utilities.Documents.GiftVoucher.GiftVoucherPDFWriter.Generate(System.Web.Hosting.HostingEnvironment.MapPath("~"), gv);
 

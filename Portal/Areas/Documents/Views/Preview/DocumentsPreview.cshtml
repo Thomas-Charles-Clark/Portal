@@ -42,7 +42,7 @@
         }
 
         function getDocumentSendHistory() {
-            return @Html.Raw(JsonConvert.SerializeObject(Model.DocumentSendHistory.Results));
+            return @Html.Raw(JsonConvert.SerializeObject(Model.DocumentSendHistory?.Results));
         }
         
         var viewModel = new documentsPreviewViewModel();

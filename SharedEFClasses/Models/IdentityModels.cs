@@ -285,6 +285,10 @@ namespace SharedEFClasses.Models
         [InverseProperty("CreatedByMember")]
         public virtual ICollection<GiftVoucher> GiftVouchersCreated { get; set; }
 
+        [JsonIgnore]
+        [InverseProperty("RedeemedByMember")]
+        public virtual ICollection<GiftVoucher> GiftVouchersRedeemed { get; set; }
+        
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType

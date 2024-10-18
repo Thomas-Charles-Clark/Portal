@@ -247,6 +247,15 @@
         }
     }
 
+    .date-container-months {
+        div:not(.no-highlight) {
+            width: 100%;
+            min-width: calc($td-cell-size * 2);
+            height: auto;
+            clip-path: none;//circle(calc(var(--td-cell-size) * 0.75));
+        }
+    }
+
     .time-container {
         margin-bottom: 0.5rem;
     }

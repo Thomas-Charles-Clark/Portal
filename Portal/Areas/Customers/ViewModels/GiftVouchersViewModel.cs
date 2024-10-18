@@ -19,25 +19,27 @@ namespace Portal.Areas.Customers.ViewModels
 {
     public class GiftVouchersViewModel : BaseViewModel
     {
+        public string GiftVoucherCode { get; set; }
         public List<PriceList> PriceLists { get; set; }
         public List<GiftVoucherType> GiftVoucherTypes { get; set; }
 
-        public GiftVouchersViewModel(RoleProperties properties, string applicationHeading, string applicationSubHeading)
+        public GiftVouchersViewModel(string giftVoucherCode, RoleProperties properties, string applicationHeading, string applicationSubHeading)
             : base(properties,
                    applicationHeading,
                    applicationSubHeading)
         {
-
+            GiftVoucherCode = giftVoucherCode;
         }
 
         public static async Task<GiftVouchersViewModel> CreateAsync(
+            string giftVoucherCode,
             RoleProperties properties,
             string applicationHeading,
             string applicationSubHeading)
         {
             var portalDb = new PortalDbContext();
 
-            var result = new GiftVouchersViewModel(properties, applicationHeading, applicationSubHeading);
+            var result = new GiftVouchersViewModel(giftVoucherCode, properties, applicationHeading, applicationSubHeading);
 
             result.GiftVoucherTypes = portalDb.GiftVoucherTypes.ToList();
 

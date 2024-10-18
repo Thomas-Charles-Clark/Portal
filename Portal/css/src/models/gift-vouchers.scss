@@ -49,7 +49,7 @@
     }
 }
 
-#gift-voucher-details {
+.gift-voucher-details {
     font-size: $font-size-lg;
 
     dt {
@@ -65,4 +65,30 @@
     dd:last-of-type {
         margin-bottom: 0;
     }
+
+    button[disabled] {
+        pointer-events: initial;
+        cursor: not-allowed;
+    }
+
+    .mdc-text-field .mdc-floating-label {
+        top: 4px;
+    }
+
+    .mdc-text-field.mdc-text-field--textarea .mdc-floating-label {
+        top: 12px;
+    }
+}
+
+#emailer-collapse {
+    padding: 0;
+}
+
+#actions-dt,
+#actions-dd {
+    margin-top: $l-gutter;
+    padding-top: $l-gutter;
+}
+#actions-dd {
+    border-top: 1px solid $gray-300;
 }

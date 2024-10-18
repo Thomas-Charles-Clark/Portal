@@ -4,6 +4,7 @@ using Org.BouncyCastle.Asn1;
 
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.MertexLive;
+using SharedEFClasses.Models.Orders;
 
 using System;
 using System.Collections.Generic;
@@ -58,6 +59,9 @@ namespace SharedEFClasses.Models
            
         public string RedeemOrderID { get; set; }
 
+        public int? RedeemedByMemberID { get; set; }
+
+
         [ForeignKey("SaleOrderID")]
         public virtual OrderHeadLive SaleOrder { get; set; }
 
@@ -72,5 +76,11 @@ namespace SharedEFClasses.Models
 
         [ForeignKey("CreatorMemberID")]
         public virtual Member CreatedByMember { get; set; }
+
+        [ForeignKey("RedeemedByMemberID")]
+        public virtual Member RedeemedByMember { get; set; }
+
+        [ForeignKey("GiftVoucherID")]
+        public virtual ICollection<OrderLine> OrderLines { get; set; }
     }
 }

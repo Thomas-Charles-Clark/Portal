@@ -744,6 +744,8 @@ namespace SharedEFClasses.Models.Orders
 
         public int OrderHeadID { get; set; }
 
+        public short? GiftVoucherID { get; set; }
+
         public DateTime? SupplierInvoiceDate { get; set; }
         public DateTime? SupplierInvoiceApprovedDT { get; set; }
         public bool SupplierInvoiceApproved { get; set; }
@@ -751,7 +753,13 @@ namespace SharedEFClasses.Models.Orders
         public decimal? SupplierInvoiceCharge { get; set; }
         public string SupplierInvoiceComments { get; set; }
 
+        public string GiftVoucherMessage { get; set; }
+
         public virtual OrderHead OrderHead { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("OrderLines")]
+        public virtual GiftVoucher GiftVoucher { get; set; }
     }
 
     [Table("BasketItem", Schema = "portal")]

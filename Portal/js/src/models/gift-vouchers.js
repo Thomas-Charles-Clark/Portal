@@ -21,6 +21,59 @@ const giftVouchersViewModel = (() => {
 
     self.giftVoucherExtender = giftVoucherExtenderViewModel({ parent: self });
 
+    self.loadedCode = window.getGiftVoucherCode();
+
+    self.emailer = emailer({ parent: self, sendLabel: 'Send <span class="bi bi-send ms-2"></span>' });
+
+    self.emailer.to(getUserEmail());
+    self.emailer.subject(`Designers Guild Gift Voucher`);
+    self.emailer.originalSubject(self.emailer.subject());
+
+    self.emailer.send = () => {
+
+        self.emailer.validateSendNow(true);
+
+        var errors = self.emailer.emailErrors().concat(self.errors());
+
+        if (errors.length) {
+            self.emailer.emailErrors.showAllMessages(true);
+            self.emailer.emailErrors.filter(function (x) {
+                x.isValid.notifySubscribers(x.isValid());
+            });
+            //self.errors.showAllMessages(true);
+            //self.errors.filter(function (x) {
+            //    x.isValid.notifySubscribers(x.isValid());
+            //});
+        } else {
+            self.busy(true);
+            fetch('/api/giftvouchersapi/SendGiftVoucher', {
+                method: 'POST',
+                dataType: 'json',
+                headers: window.fetchHeaders,
+                body: JSON.stringify({
+                    to: self.emailer.to(),
+                    subject: self.emailer.subject(),
+                    replyTo: self.emailer.replyTo(),
+                    body: self.emailer.body(),
+                    giftVoucherCode: self.giftVoucher().Code
+                })
+            }).then(window.handleFetchResponse)
+                .then(data => {
+                    self.busy(false);
+                    self.emailer.sentTo(self.emailer.to());
+                    self.emailer.showLastSentTo(true);
+                    window.setTimeout(function () {
+                        self.emailer.showLastSentTo(false);
+                    }, 5000);
+                    window.showInfo("Sent", "That Gift Voucher was emailed successfully.");
+                })
+                .catch(err => {
+                    self.busy(false);
+                    window.showError("Sorry, there was an error sending that email.");
+                });
+        }
+    }
+
     //#endregion
 
     //#region Lifted Methods
@@ -95,21 +148,21 @@ const giftVouchersViewModel = (() => {
         label: 'Gift Voucher Code (e.g. ABCD-1234-EFGH-5678)',
         autoBind: true,
         odata: true,
-        endPoint: '/odata/GiftVouchers?$expand=GiftVoucherType',
+        endPoint: '/odata/GiftVouchers?$expand=GiftVoucherType,OrderLines($expand=OrderHead),PriceList($expand=Currency)',
         textField: 'Code',
         valueField: 'GiftVoucherID',
         virtual: true,
-        pageSize: 40,
+        pageSize: 1,
         busy: self.emailBusy,
-        //minLength: 16,
-        //enforceMinLength: true,
+        minLength: 16,
+        enforceMinLength: true,
         virtualOptions: {
             itemHeight: 34,
             mapValueTo: 'dataItem',
             valueMapper: function (options) {
                 if (options.value) {
                     $.ajax({
-                        url: `/odata/GiftVouchers/Default.GiftVoucherValueMapper(code=${options.value})?$expand=GiftVoucherType`,
+                        url: `/odata/GiftVouchers/Default.GiftVoucherValueMapper(code=${options.value})?$expand=GiftVoucherType,OrderLines($expand=OrderHead),PriceList($expand=Currency)`,
                         type: 'GET',
                         success: function (data) {
                             options.success(data.value);
@@ -131,7 +184,7 @@ const giftVouchersViewModel = (() => {
         revertible: ko.observable(false),
         readOnly: false,
         filter: 'equals',
-        height: 340,
+        height: 34,
         sort: [{
             dir: 'desc',
             field: 'CreatedDT'
@@ -145,6 +198,11 @@ const giftVouchersViewModel = (() => {
             let arr = e.response.value.map(gv => giftVoucherViewModel({ rec: gv, parent: self }));
 
             e.response.value = arr;
+
+            if (arr.length == 1 && self.loadedCode) {
+                self.giftVoucherParams.dropDownListSettings.widget().select(0);
+                self.giftVoucherParams.dropDownListSettings.widget().trigger('change');
+            }
             //self.busy(false);
         },
         clearFunction: self.genericUnsavedChangesClear,
@@ -158,9 +216,9 @@ const giftVouchersViewModel = (() => {
 
             let filters = [];
 
-            //if (d.$filter == null) {
-            //    d.$filter = "Code eq ''";
-            //}
+            if (d.$filter == null) {
+                d.$filter = "Code eq ''";
+            }
 
             delete d.$inlinecount; // <-- remove inlinecount
             delete d.$format; // <-- remove format
@@ -381,7 +439,7 @@ const giftVouchersViewModel = (() => {
                 self.busy(false);
             }
         },
-        noDataTemplate: 'There are no Furniture Orders awaiting invoicing information.'
+        noDataTemplate: 'Nothing to display'
     });
 
     self.giftVouchersGridSettings = {
@@ -428,7 +486,20 @@ const giftVouchersViewModel = (() => {
 
     //#region Subscriptions
 
+    self.giftVoucher.subscribe(nv => {
+        if (nv) {
+            self.emailer.body(`Dear Customer,
 
+Please find attached your Designers Guild Gift Voucher.
+
+Code: ${nv.Code}
+Value: ${nv.PriceList.Currency.Symbol}${nv.ValueInc}
+
+
+Thank you for shopping with Designers Guild`);
+            self.emailer.originalBody(self.emailer.body());
+        }
+    });
 
     //#endregion
 
@@ -473,31 +544,7 @@ const giftVouchersViewModel = (() => {
     }
 
     self.viewVoucher = (voucher) => {
-        window.open(`/customers/gift-vouchers/pdf?id=${voucher.GiftVoucherID}`, '_blank');
-
-        //fetch('/api/giftvouchersapi/FetchPDF', {
-        //    method: 'GET',
-        //    headers: window.fetchHeaders,
-        //    cache: 'no-cache',
-        //    credentials: 'same-origin',
-        //    body: JSON.stringify({
-        //        giftVoucherId: voucher.GiftVoucherID
-        //    })
-        //})
-        //    .then(response => response.blob())
-        //    .then(blob => {
-        //        var link = document.createElement('a');
-        //        link.target = "_blank";
-        //        link.href = window.URL.createObjectURL(blob);
-        //        //link.download = `${voucher.Code}.pdf`;
-        //        link.click();
-        //        self.busy(false);
-        //        link.remove();
-        //    })
-        //    .catch((err) => {
-        //        self.busy(false);
-        //        window.catchFetchError(err);
-        //    });
+        window.open(`/customers/gift-vouchers/pdf?code=${voucher.Code}`, '_blank');
     }
 
     //#endregion
@@ -653,6 +700,10 @@ const giftVoucherCreatorViewModel = (({ parent } = { parent: null }) => {
         }
     }
 
+    self.saveChanges = () => {
+
+    }
+
     //#endregion
 
 
@@ -686,12 +737,18 @@ const giftVoucherRedeemerViewModel = (({ parent } = { parent: null }) => {
 
     self.modal = bootstrap.Modal.getOrCreateInstance(self.modalElement);
 
-    self.redeemOrderId = ko.observable().extend({
+    self.modal._element.addEventListener('shown.bs.modal', () => {
+        self.modal._focustrap.deactivate();
+    });
+
+    self.orderId = ko.observable().extend({
         numberFormatted: {
             digits: 0,
             currency: ko.observable({ FormattingCulture: "en-GB" })
         }
     });
+
+    self.order = ko.observable();
 
     self.notes = ko.observable().extend({
         required: {
@@ -710,29 +767,77 @@ const giftVoucherRedeemerViewModel = (({ parent } = { parent: null }) => {
 
     //#region Components
 
-    self.redeemOrderParams = {
-        label: 'Order ID',
-        originalValue: ko.observable(),
-        observable: self.redeemOrderId,
-        useNativeValidation: false,
-        decorateInputElement: false,
-        insertValidationMessages: false,
-        showClear: true,
-        clearFunction: function () {
-            var self = this;
-            self.observable(undefined);
-            $(self.observable.DOMElement).focus();
+    self.redeemOrderParams = kendoMDCDropDownList({
+        label: 'Order ID / Reference',
+        odata: true,
+        endPoint: `/odata/Orders`,
+        textField: 'ShortLabel',
+        valueField: 'OrderID',
+        virtual: true,
+        autoBind: false,
+        minLength: 3,
+        enforceMinLength: true,
+        pageSize: 10,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/Orders/Default.OrderValueMapper(orderId='${options.value}')`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
         },
-        permitRevert: false,
-        charsRemainingOptions: {
-            maxLength: 25
+        template: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
         },
+        valueTemplate: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        idObservable: self.orderId,
+        objObservable: self.order,
         enable: ko.observable(true),
         disable: ko.observable(false),
-        busy: ko.observable(false),
         clearable: ko.observable(true),
-        revertible: ko.observable(false)
-    };
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'desc',
+            field: 'OrderID'
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            if (data && data.filter && data.filter.filters && data.filter.filters.length) {
+                data.pageSize = 40;
+            } else {
+                data.pageSize = 0;
+            }
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
+                d.$filter = `${d.$filter.replace("ShortLabel", "CustomerOrderReference")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "OrderID")}`;
+            }
+
+            return d;
+        }
+    });
 
     self.notesParams = {
         label: 'Notes',
@@ -770,12 +875,12 @@ const giftVoucherRedeemerViewModel = (({ parent } = { parent: null }) => {
     //#region Subscriptions
 
     self.notes.subscribe(nv => {
-        console.log("redeemer notes", nv);
-    })
+        //console.log("redeemer notes", nv);
+    });
 
     self.giftVoucher.subscribe(nv => {
         if (nv) {
-            self.redeemOrderId(nv.RedeemOrderID);
+            self.orderId(nv.RedeemOrderID);
             self.notes(nv.Reason);
         } else {
             self.reset();
@@ -828,8 +933,35 @@ const giftVoucherRedeemerViewModel = (({ parent } = { parent: null }) => {
             });
         } else {
 
-            window.confirm("Are you sure?", "Potato potato jibbering gibbon", () => {
+            window.showConfirm("Are you sure?", "This action will mark the gift voucher as having been used and cannot be undone.", () => {
 
+                self.busy(true);
+
+                var params = {
+                    giftVoucherId: self.giftVoucher().GiftVoucherID,
+                    orderId: self.orderId(),
+                    notes: self.notes()
+                }
+
+                fetch('/api/giftvouchersapi/redeem', {
+                    method: 'POST',
+                    headers: window.fetchHeaders,
+                    cache: 'no-cache',
+                    credentials: 'same-origin',
+                    body: JSON.stringify(params)
+                })
+                    .then(window.handleFetchResponse)
+                    .then(data => {
+                        self.hide();
+                        self.busy(false);
+                        window.showInfo("Thank you", "This gift voucher has been redeemed.");
+                        self.giftVoucher().redeemOrderId(self.orderId());
+                        self.giftVoucher().usedDt(data.usedDt);
+                    })
+                    .catch(err => {
+                        self.busy(false);
+                        window.catchFetchError(err);
+                    })
             }, () => {
 
             });
@@ -916,7 +1048,7 @@ const giftVoucherExtenderViewModel = (({ parent } = { parent: null }) => {
                     seconds: false
                 },
                 viewMode: 'months',
-                cellSize: '5rem'
+                cellSize: '3rem'
             },
             restrictions: {
                 disabledDates: []
@@ -980,6 +1112,7 @@ const giftVoucherExtenderViewModel = (({ parent } = { parent: null }) => {
     //#region Subscriptions
 
     self.giftVoucher.subscribe(nv => {
+        console.log('giftVoucher', nv);
         if (nv) {
             self.expiryDate(nv.ExpiryDT);
             self.notes(nv.Reason);
@@ -989,13 +1122,18 @@ const giftVoucherExtenderViewModel = (({ parent } = { parent: null }) => {
             self.expiryDate.tempusDominus.updateOptions({
                 restrictions: {
                     minDate: new Date(new Date(nv.ExpiryDT).getTime() + oneDayMilliseconds)
-                }
+                },
+                viewDate: new Date(self.expiryDate())
             });
 
         } else {
             self.reset();
         }
     }); 
+
+    self.expiryDate.subscribe(nv => {
+        console.log('expiryDate', nv);
+    });
 
     //#endregion
 
@@ -1042,9 +1180,45 @@ const giftVoucherExtenderViewModel = (({ parent } = { parent: null }) => {
                 x.isValid.notifySubscribers(x.isValid());
             });
         } else {
+            window.showConfirm("Are you sure?", "This action will extend the gift voucher's expiry date.", () => {
 
-            window.confirm("Are you sure?", "Potato potato jibbering gibbon", () => {
+                self.busy(true);
 
+                var params = {
+                    giftVoucherId: self.giftVoucher().GiftVoucherID,
+                    expiryDt: self.expiryDate().toUTCString(),
+                    notes: self.notes()
+                }
+
+                fetch('/api/giftvouchersapi/extend', {
+                    method: 'POST',
+                    headers: window.fetchHeaders,
+                    cache: 'no-cache',
+                    credentials: 'same-origin',
+                    body: JSON.stringify(params)
+                })
+                    .then(window.handleFetchResponse)
+                    .then(data => {
+                        self.hide();
+                        window.showInfo("Thank you", "This gift voucher has been extended.");
+                        self.giftVoucher().expiryDate(self.expiryDate());
+                        self.giftVoucher().notes(self.notes());
+
+                        self.busy(false);
+
+                        let oneDayMilliseconds = 1000 * 60 * 60 * 24;
+
+                        self.expiryDate.tempusDominus.updateOptions({
+                            restrictions: {
+                                minDate: new Date(new Date(self.expiryDate()).getTime() + oneDayMilliseconds)
+                            },
+                            viewDate: new Date(self.expiryDate())
+                        });
+                    })
+                    .catch(err => {
+                        self.busy(false);
+                        window.catchFetchError(err);
+                    })
             }, () => {
 
             });
@@ -1086,6 +1260,12 @@ const giftVoucherViewModel = (({ rec, parent } = { rec: null, parent: null }) =>
     self.notes = ko.observable(self.Reason);
 
     self.originalNotes = ko.observable(self.Reason);
+
+    self.expiryDate = ko.observable(self.ExpiryDT);
+
+    self.redeemOrderId = ko.observable(self.RedeemOrderID ?? self.RedeemTransactionID);
+
+    self.usedDt = ko.observable(self.UsedDT);
 
     //#endregion
 
@@ -1183,7 +1363,28 @@ const giftVoucherViewModel = (({ rec, parent } = { rec: null, parent: null }) =>
 
     //#region Computeds
 
+    self.orderLine = self.OrderLines.length ? self.OrderLines[0] : null;
 
+    self.soldWithOrderId = ko.computed(() => {
+        var result = null;
+
+        result = self.SaleOrderID ?? self.SaleTransactionID;
+
+        if (self.OrderLines.length) {
+            result = self.OrderLines[0].OrderHeadID;
+        }
+
+        return result;
+    }, self);
+
+    self.saveNotesButtonVisible = ko.computed(() => {
+        return self.originalNotes() != self.notes();
+    }, self);
+
+    self.voucherEditDisabled = ko.computed(() => {
+        return self.usedDt() == null;
+        //return false;
+    }, self);
 
     //#endregion
 
@@ -1223,11 +1424,6 @@ const giftVoucherViewModel = (({ rec, parent } = { rec: null, parent: null }) =>
             });
         } else {
 
-            window.confirm("Are you sure?", "Potato potato jibbering gibbon", () => {
-
-            }, () => {
-
-            });
         }
     }
 

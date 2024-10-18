@@ -29,58 +29,62 @@ namespace Portal.Utilities.Documents.GiftVoucher
     {
         public static MemoryStream Generate(string rootPath, SharedEFClasses.Models.GiftVoucher giftVoucher)
         {
+            var border = 0;
+
             var stopWatch = new System.Diagnostics.Stopwatch();
 
             var finalStream = new MemoryStream();
 
-            BaseFont gillSansMt = BaseFont.CreateFont(rootPath + "Content/fonts/Gill-Sans-MT.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
+            var gillSansMt = BaseFont.CreateFont(rootPath + "Content/fonts/Gill-Sans-MT.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
 
-            BaseFont cascadiaCodeMonoSemiLight = BaseFont.CreateFont(rootPath + "Content/fonts/CascadiaCode.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
+            var cascadiaCodeMonoSemiLight = BaseFont.CreateFont(rootPath + "Content/fonts/CascadiaCode.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
 
-            BaseFont kunstler = BaseFont.CreateFont(rootPath + "Content/fonts/kunstler.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
+            var kunstler = BaseFont.CreateFont(rootPath + "Content/fonts/kunstler.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
+
+            var trixieRoughHeavy = BaseFont.CreateFont(rootPath + "css\\src\\fonts\\src\\5353122\\TrixieRoughOTW05-Heavy.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
+
+            var backgroundImage = Image.GetInstance(AppDomain.CurrentDomain.BaseDirectory + "/content/images/backgrounds/gift-voucher-background.jpg");
 
             stopWatch.Start();
 
             System.Globalization.NumberFormatInfo nfi = new System.Globalization.CultureInfo("en-GB").NumberFormat;
 
             var normalFont = new Font(gillSansMt, 11, Font.NORMAL, BaseColor.BLACK);
+            var messageFontWhite = new Font(gillSansMt, 14, Font.NORMAL, BaseColor.WHITE);
+            var validityFontWhite = new Font(gillSansMt, 20, Font.NORMAL, BaseColor.WHITE);
             var smallerFont = new Font(gillSansMt, 10, Font.NORMAL, BaseColor.BLACK);
             var hugeFont = new Font(gillSansMt, 42, Font.NORMAL, BaseColor.BLACK);
-            var valueFont = new Font(gillSansMt, 64, Font.NORMAL, BaseColor.WHITE);
+            var hugeFontWhite = new Font(gillSansMt, 30, Font.NORMAL, BaseColor.WHITE);
+            var valueFont = new Font(gillSansMt, 56, Font.NORMAL, BaseColor.WHITE);
             var hugeFontWhiteCascadia = new Font(cascadiaCodeMonoSemiLight, 32, Font.NORMAL, BaseColor.WHITE);
             var normalFontWhiteCascadia = new Font(cascadiaCodeMonoSemiLight, 12, Font.NORMAL, BaseColor.WHITE);
+            var smallerFontWhiteCascadia = new Font(cascadiaCodeMonoSemiLight, 10, Font.NORMAL, BaseColor.WHITE);
             var hugeFontWhiteKunstler = new Font(kunstler, 52, Font.NORMAL, BaseColor.WHITE);
+            var hugeFontTrixieRoughHeavy = new Font(trixieRoughHeavy, 28, Font.NORMAL, BaseColor.WHITE);
             var smallerItalicFont = FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.ITALIC, BaseColor.BLACK);
             var boldFont = FontFactory.GetFont("Arial", 11, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
             var footerNormalFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
             var footerBoldFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
-            var codeFont = FontFactory.GetFont("Consolas", 32, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+            var codeFont = FontFactory.GetFont("Consolas", 36, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
-            System.Drawing.Image dgImage = System.Drawing.Image.FromFile(AppDomain.CurrentDomain.BaseDirectory + "/Content/Images/Logos/designers-guild-transparent-inversion.png");
+            System.Drawing.Image dgImage = System.Drawing.Image.FromFile(AppDomain.CurrentDomain.BaseDirectory + "/Content/Images/Logos/designers-guild-transparent-inversion-lg.png");
 
-            Image dgLogo = Image.GetInstance(dgImage, System.Drawing.Imaging.ImageFormat.Png);
+            var dgLogo = Image.GetInstance(dgImage, System.Drawing.Imaging.ImageFormat.Png);
 
-            dgLogo.ScaleAbsolute(280.0f, 26.0f);
+            string message = null;
+
+            if (giftVoucher.OrderLines?.Any() == true)
+            {
+                message = giftVoucher.OrderLines.First().GiftVoucherMessage;
+            }
 
             var streams = new List<MemoryStream>();
 
             var documentDate = DateTime.Now;
 
-            var columnCount = 4;
-
             var output = new MemoryStream();
 
-            var table = new PdfPTable(columnCount);
-
-            table.TotalWidth = 545.0f;
-            table.LockedWidth = true;
-            table.DefaultCell.Border = 0;
-            table.DefaultCell.Padding = 3;
-            table.DefaultCell.BorderWidth = 0;
-            table.DefaultCell.VerticalAlignment = Element.ALIGN_TOP;
-            table.DefaultCell.HorizontalAlignment = Element.ALIGN_LEFT;
-
-            var document = new iTextSharp.text.Document(new Rectangle(420f, 297f), 0, 0, 0, 0);// footerTable.TotalHeight + 30.0f);
+            var document = new iTextSharp.text.Document(new Rectangle(420f, 297f), 0, 0, 0, 0);
 
             var writer = PdfWriter.GetInstance(document, output);
 
@@ -88,56 +92,104 @@ namespace Portal.Utilities.Documents.GiftVoucher
 
             document.Open();
 
-            var shading = PdfShading.SimpleAxial(writer, 0, 0, 400, -50.0f, new BaseColor(29, 79, 138, 1), BaseColor.WHITE, true, false);
+            /*
+             
+            Outer Table holds Outer Cell which holds the background image (drawn via ImageEvent)
 
-            //Create a pattern from our shading object
-            var pattern = new PdfShadingPattern(shading);
+            Inner Table holds the other tables
 
-            //Create a color from our patter
-            var color = new ShadingColor(pattern);
+            Top Table 
+                Top Table Left Cell 
+                    Value Paragraph
+                Top Table Right Cell
+                    Top Table Right Cell Table
+                        Logo Cell
+                        "Gift Voucher" Paragraph Cell
+            Middle Table
+                Message Cell
 
-            //Create a standard two column table
+            Bottom Table
+                Bottom Table Left Cell
+                Bottom Table Right Cell
+                    Bottom Table Right Cell Table
+                        Code Paragraph Cell
+                        Expiry Paragraph Cell
+
+            */
+
             var outerTable = new PdfPTable(1);
 
             outerTable.WidthPercentage = 100.0f;
-
             outerTable.DefaultCell.Border = 0;
 
-            var outerCell = new PdfPCell() { BackgroundColor = color };
+            var outerCell = new PdfPCell();
 
+            outerCell.CellEvent = new ImageEvent(backgroundImage);
             outerCell.FixedHeight = 297.0f;
-
-
-
 
             var innerTable = new PdfPTable(1);
 
             innerTable.WidthPercentage = 100.0f;
-
             innerTable.DefaultCell.Padding = 0;
             innerTable.DefaultCell.Border = 0;
+
+            var topTable = new PdfPTable(2);
+
+            topTable.WidthPercentage = 100.0f;
+            topTable.SetWidths(new[] { 140.0f, 280.0f });
+            topTable.DefaultCell.Padding = 0;
+            topTable.DefaultCell.Border = 0;
+
+            #region Top Table
+
+            var topTableLeftCell = new PdfPCell();
+
+            topTableLeftCell.Padding = 0;
+            topTableLeftCell.PaddingLeft = 15.0f;
+            topTableLeftCell.Border = 0;
+            topTableLeftCell.BorderColor = BaseColor.WHITE;
+            topTableLeftCell.VerticalAlignment = Element.ALIGN_MIDDLE;
+
+            var topTableRightCellTable = new PdfPTable(1);
+
+            topTableRightCellTable.WidthPercentage = 100.0f;
+            topTableRightCellTable.DefaultCell.Padding = 0;
+            topTableRightCellTable.DefaultCell.Border = 0;
+
+            var topTableRightCell = new PdfPCell();
+
+            topTableRightCell.Padding = 0;
+            topTableRightCell.PaddingRight = 15.0f;
+            topTableRightCell.Border = 0;
+            topTableRightCell.BorderColor = BaseColor.WHITE;
+            topTableRightCell.VerticalAlignment = Element.ALIGN_MIDDLE;
 
             var logoCell = new PdfPCell();
 
             logoCell.AddElement(dgLogo);
 
-            logoCell.Padding = 10;
-            logoCell.PaddingLeft = 8;
+            logoCell.PaddingTop = 10;
+            logoCell.PaddingLeft = 12;
+            logoCell.PaddingRight = 12;
+            logoCell.PaddingBottom = 2;
 
             logoCell.Border = 0;
+            logoCell.BorderColor = BaseColor.WHITE;
 
-            innerTable.AddCell(logoCell);
+            logoCell.HorizontalAlignment = Element.ALIGN_CENTER;
+            logoCell.VerticalAlignment = Element.ALIGN_BOTTOM;
 
+            topTableRightCellTable.AddCell(logoCell);
 
-            var giftVoucherTextChunk = new Chunk("Gift Voucher", hugeFontWhiteKunstler);
+            var giftVoucherTextChunk = new Chunk("GIFT VOUCHER", hugeFontTrixieRoughHeavy);
+
+            giftVoucherTextChunk.SetCharacterSpacing(5.2f);
 
             var giftVoucherTextPhrase = new Phrase();
 
             giftVoucherTextPhrase.Add(giftVoucherTextChunk);
 
             var giftVoucherTextParagraph = new Paragraph();
-
-            giftVoucherTextParagraph.Leading = 24;
 
             giftVoucherTextParagraph.Add(giftVoucherTextPhrase);
 
@@ -148,14 +200,13 @@ namespace Portal.Utilities.Documents.GiftVoucher
             giftVoucherTextCell.AddElement(giftVoucherTextParagraph);
 
             giftVoucherTextCell.Padding = 0;
-
-            giftVoucherTextCell.PaddingTop = 12;
-
+            giftVoucherTextCell.PaddingTop = 5;
+            giftVoucherTextCell.PaddingLeft = 12;
+            giftVoucherTextCell.PaddingRight = 0;
             giftVoucherTextCell.Border = 0;
+            giftVoucherTextCell.BorderColor = BaseColor.WHITE;
 
-            innerTable.AddCell(giftVoucherTextCell);
-
-
+            topTableRightCellTable.AddCell(giftVoucherTextCell);
 
             var symbolChunk = new Chunk(giftVoucher.PriceList.Currency.Symbol, valueFont);
 
@@ -164,36 +215,63 @@ namespace Portal.Utilities.Documents.GiftVoucher
             var valuePhrase = new Phrase();
 
             valuePhrase.Add(symbolChunk);
-
             valuePhrase.Add(valueChunk);
 
             var valueParagraph = new Paragraph();
 
-            valueParagraph.IndentationLeft = -34;
-
+            valueParagraph.Leading = 48;
             valueParagraph.Alignment = Element.ALIGN_CENTER;
-
             valueParagraph.Add(valuePhrase);
 
-            valueParagraph.Leading = 52;
+            topTableLeftCell.VerticalAlignment = Element.ALIGN_CENTER;
+            topTableLeftCell.AddElement(valueParagraph);
 
-            valueParagraph.SpacingAfter = 12;
+            topTable.AddCell(topTableLeftCell);
 
-            var valueCell = new PdfPCell();
+            topTableRightCell.AddElement(topTableRightCellTable);
 
-            valueCell.AddElement(valueParagraph);
+            topTable.AddCell(topTableRightCell);
 
-            valueCell.Padding = 0;
+            var topCell = new PdfPCell();
 
-            valueCell.PaddingTop = 24;
+            topCell.FixedHeight = 54;
+            topCell.Border = border;
+            topCell.BorderColor = BaseColor.WHITE;
+            topCell.Padding = 0;
+            topCell.VerticalAlignment = Element.ALIGN_MIDDLE;
 
-            valueCell.Border = 0;
+            topCell.AddElement(topTable);
+            
+            innerTable.AddCell(topCell);
 
-            innerTable.AddCell(valueCell);
+            #endregion
 
+            #region Middle Table
 
+            var middleTable = new PdfPTable(1);
 
-            var codeChunk = new Chunk(giftVoucher.Code, hugeFontWhiteCascadia);
+            var middleCell = new PdfPCell();
+
+            middleCell.FixedHeight = 175.0f;
+            middleCell.Border = border;
+            middleCell.BorderColor = BaseColor.WHITE;
+            middleCell.PaddingLeft = 15.0f;
+            middleCell.PaddingRight = 15.0f;
+            middleCell.HorizontalAlignment = Element.ALIGN_LEFT;
+            middleCell.VerticalAlignment = Element.ALIGN_MIDDLE;
+
+            Paragraph messageParagraph = null;
+
+            if (!String.IsNullOrEmpty(message))
+            {
+                messageParagraph = new Paragraph(message, messageFontWhite);
+                
+                middleCell.AddElement(messageParagraph);
+            }
+
+            #endregion
+
+            var codeChunk = new Chunk(giftVoucher.Code, hugeFontWhite);
 
             var codePhrase = new Phrase();
 
@@ -202,52 +280,99 @@ namespace Portal.Utilities.Documents.GiftVoucher
             var codeParagraph = new Paragraph();
 
             codeParagraph.Leading = 24;
-
             codeParagraph.Add(codePhrase);
+            codeParagraph.Alignment = Element.ALIGN_RIGHT;
+            codeParagraph.SpacingAfter = 0;
 
-            codeParagraph.Alignment = Element.ALIGN_CENTER;
+            //innerTable.AddCell(codeCell);
+
+            //if (messageParagraph != null)
+            //{
+            //    middleCell.AddElement(messageParagraph);
+            //}
+
+            innerTable.AddCell(middleCell);
+
+            var bottomCell = new PdfPCell();
+
+            bottomCell.FixedHeight = 64.0f;
+            bottomCell.Border = border;
+            bottomCell.BorderColor = BaseColor.WHITE;
+            bottomCell.Padding = 0;
+            bottomCell.HorizontalAlignment = Element.ALIGN_CENTER;
+            bottomCell.VerticalAlignment = Element.ALIGN_TOP;
+
+            var bottomCellTable = new PdfPTable(2);
+
+            bottomCellTable.WidthPercentage = 100.0f;
+            bottomCellTable.SetWidths(new[] { 80.0f, 340.0f });
+            bottomCellTable.DefaultCell.Padding = 0;
+
+            var qrCodeCell = new PdfPCell();
+
+            qrCodeCell.Border = border;
+            qrCodeCell.BorderColor = BaseColor.BLUE;
+            qrCodeCell.Padding = 0;
+
+            var qrCodeBytes = PngByteQRCodeHelper.GetQRCode(giftVoucher.Code, 32, new byte[] { 255, 255, 255, 255 }, new byte[] { 255, 255, 255, 0 }, QRCodeGenerator.ECCLevel.L, false, false, QRCodeGenerator.EciMode.Default, 2, false);
+            var qrImage = System.Drawing.Image.FromStream(new MemoryStream(qrCodeBytes));
+            var qrCodeImg = Image.GetInstance(qrImage, System.Drawing.Imaging.ImageFormat.Png);
+
+            qrCodeImg.ScaleAbsolute(54.0f, 54.0f);
+            qrCodeImg.Alignment = Element.ALIGN_LEFT;
+            qrCodeImg.PaddingTop = 0;
+            qrCodeImg.SpacingBefore = 0;
+
+            qrCodeCell.PaddingTop = 3;
+            qrCodeCell.PaddingRight = 0;
+            qrCodeCell.PaddingLeft = 15;
+            qrCodeCell.AddElement(qrCodeImg);
+            qrCodeCell.VerticalAlignment = Element.ALIGN_TOP;
+            
+            bottomCellTable.AddCell(qrCodeCell);
+
+            var codeAndExpiryCell = new PdfPCell();
+
+            codeAndExpiryCell.Border = border;
+            codeAndExpiryCell.BorderColor = BaseColor.WHITE;
+            codeAndExpiryCell.Padding = 0;
+            codeAndExpiryCell.PaddingRight = 15.0f;
+            codeAndExpiryCell.HorizontalAlignment = Element.ALIGN_CENTER;
+            codeAndExpiryCell.VerticalAlignment = Element.ALIGN_CENTER;
+
+            var codeAndExpiryTable = new PdfPTable(1);
+
+            codeAndExpiryTable.WidthPercentage = 100.0f;
+            codeAndExpiryTable.DefaultCell.Padding = 0;
+            codeAndExpiryTable.DefaultCell.Border = 0;
 
             var codeCell = new PdfPCell();
 
+            codeCell.Padding = 0;
+            codeCell.Border = 0;
             codeCell.AddElement(codeParagraph);
 
-            codeCell.Padding = 0;
+            var expiryCell = new PdfPCell();
 
-            codeCell.Border = 0;
+            expiryCell.Padding = 0;
+            expiryCell.Border = 0;
 
-            var expiryParagraph = new Paragraph($"Valid Until {giftVoucher.ExpiryDT:yyyy-MM-dd}", normalFontWhiteCascadia);
+            var expiryParagraph = new Paragraph($"Valid Until: {giftVoucher.ExpiryDT:dddd} {giftVoucher.ExpiryDT.Value.Date.Day}{SharedEFClasses.Utilities.Framework.GetDaySuffix(giftVoucher.ExpiryDT.Value.Date.Day)} {giftVoucher.ExpiryDT:MMM yyyy}", validityFontWhite);
+            expiryParagraph.SpacingBefore = 0;
+            //expiryParagraph.Leading = 20;
+            expiryParagraph.Alignment = Element.ALIGN_RIGHT;
+            expiryCell.AddElement(expiryParagraph);
 
-            expiryParagraph.IndentationLeft = 32;
+            codeAndExpiryTable.AddCell(codeCell);
+            codeAndExpiryTable.AddCell(expiryCell);
 
-            codeCell.AddElement(expiryParagraph);
+            codeAndExpiryCell.AddElement(codeAndExpiryTable);
 
-            innerTable.AddCell(codeCell);
+            bottomCellTable.AddCell(codeAndExpiryCell);
 
+            bottomCell.AddElement(bottomCellTable);
 
-            var qrCodeBytes = PngByteQRCodeHelper.GetQRCode(giftVoucher.Code, 64, new byte[] { 29, 79, 138, 255 }, new byte[] { 255, 255, 255, 0 }, QRCodeGenerator.ECCLevel.L);
-
-            using (var image = System.Drawing.Image.FromStream(new MemoryStream(qrCodeBytes)))
-            {
-                var qrCodeImg = Image.GetInstance(image, System.Drawing.Imaging.ImageFormat.Png);
-
-                qrCodeImg.ScaleAbsolute(64.0f, 64.0f);
-
-                qrCodeImg.Alignment = Element.ALIGN_RIGHT;
-
-                var qrCodeCell = new PdfPCell();
-
-                qrCodeCell.Padding = 0;
-
-                qrCodeCell.PaddingTop = 22;
-
-                qrCodeCell.Border = 0;
-
-                qrCodeCell.HorizontalAlignment = Element.ALIGN_RIGHT;
-
-                qrCodeCell.AddElement(qrCodeImg);
-
-                innerTable.AddCell(qrCodeCell);
-            }
+            innerTable.AddCell(bottomCell);
 
             outerCell.AddElement(innerTable);
 
@@ -306,11 +431,36 @@ namespace Portal.Utilities.Documents.GiftVoucher
 
             dgImage.Dispose();
 
-            System.Diagnostics.Debug.WriteLine($"Generatiung Gift Voucher PDF took {stopWatch.Elapsed}");
+            System.Diagnostics.Debug.WriteLine($"Generating Gift Voucher PDF took {stopWatch.Elapsed}");
 
             finalStream.Close();
 
             return stamperStream;
+        }
+    }
+
+    class ImageEvent : IPdfPCellEvent
+    {
+        protected Image img;
+        public ImageEvent(Image img)
+        {
+            this.img = img;
+        }
+
+        public void CellLayout(PdfPCell cell, Rectangle position, PdfContentByte[] canvases)
+        {
+            img.ScaleToFit(position.Width, position.Height);
+            img.SetAbsolutePosition(position.Left + (position.Width - img.ScaledWidth) / 2,
+                    position.Bottom + (position.Height - img.ScaledHeight) / 2);
+            PdfContentByte canvas = canvases[PdfPTable.BACKGROUNDCANVAS];
+            try
+            {
+                canvas.AddImage(img);
+            }
+            catch (DocumentException ex)
+            {
+                // do nothing
+            }
         }
     }
 }

@@ -566,6 +566,9 @@
     <Compile Include="Areas\Customers\Controllers\CustomerEnquiryODataController.cs" />
     <Compile Include="Areas\Customers\Controllers\CustomerInviteController.cs" />
     <Compile Include="Areas\Customers\CustomersAreaRegistration.cs" />
+    <Compile Include="Areas\Customers\Models\PassGiftVoucherExtend.cs" />
+    <Compile Include="Areas\Customers\Models\PassGiftVoucherRedeem.cs" />
+    <Compile Include="Areas\Customers\Models\PassGiftVoucherSend.cs" />
     <Compile Include="Areas\Customers\ViewModels\ContractPricingViewModel.cs" />
     <Compile Include="Areas\Customers\ViewModels\GiftVouchersViewModel.cs" />
     <Compile Include="Areas\Customers\ViewModels\TradeAccountCreationEmailMaintenanceViewModel.cs" />
@@ -1046,6 +1049,7 @@
     <Content Include="Content\Components\visit-booker.css" />
     <Content Include="Content\Components\visit-search.css" />
     <Content Include="Content\css-shake.css" />
+    <Content Include="Content\images\backgrounds\gift-voucher-background.jpg" />
     <Content Include="Content\images\icons\flags%402x.png" />
     <Content Include="Content\images\icons\flags.png" />
     <Content Include="Content\images\icons\m1.png" />
@@ -1069,6 +1073,7 @@
     <Content Include="Content\images\logos\designers-guild-clearance.png" />
     <Content Include="Content\images\logos\designers-guild-essentials.png" />
     <Content Include="Content\images\logos\designers-guild-kids.png" />
+    <Content Include="Content\images\logos\designers-guild-transparent-inversion-lg.png" />
     <Content Include="Content\images\logos\designers-guild-transparent-inversion.png" />
     <Content Include="Content\images\logos\designers-guild-transparent.png" />
     <Content Include="Content\images\logos\designers-guild-unlimited.png" />
@@ -2293,6 +2298,7 @@
     <Content Include="css\src\fonts\src\bootstrap-icons.woff2" />
     <Content Include="Content\fonts\CascadiaCode.ttf" />
     <Content Include="Content\fonts\kunstler.ttf" />
+    <Content Include="css\src\fonts\src\5353122\TrixieRoughOTW05-Heavy.ttf" />
     <None Include="css\src\fonts\src\bootstrap-icons.woff2.bak" />
     <Content Include="css\src\fonts\src\courier-new-400-italic.woff2" />
     <Content Include="css\src\fonts\src\courier-new-400.woff2" />
@@ -3360,6 +3366,7 @@
     <Folder Include="Areas\Pricing\Views\PricingWebApi\" />
     <Folder Include="Areas\Pricing\Views\Shared\" />
     <Folder Include="Areas\Retail\Views\Shared\" />
+    <Folder Include="Content\fonts\trixie\" />
     <Folder Include="edge\x64\" />
     <Folder Include="edge\x86\" />
     <Folder Include="FileUploads\" />
