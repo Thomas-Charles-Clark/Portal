@@ -108,7 +108,16 @@
             <span data-bind="text: CreatedByMember?.FullName ?? 'eCommerce'"></span>
         </td>
         <td>
-            <button type="button" class="btn btn-secondary grid-btn" data-bind="click: $root.viewVoucher">
+            <button type="button" class="btn btn-primary grid-btn" data-bind="click: (data, event) => { $parent.giftVoucherExtender.show($data); }">
+                Extend
+            </button>
+            <button type="button" class="btn btn-success grid-btn" data-bind="click: (data, event) => { $parent.giftVoucherRedeemer.show($data); }">
+                Redeem
+            </button>
+            <button type="button" class="btn btn-danger grid-btn" data-bind="click: (data, event) => { $parent.giftVoucherCanceller.show($data); }">
+                Cancel
+            </button>
+            <button type="button" class="btn btn-secondary grid-btn" data-bind="click: (data, event) => { $root.viewVoucher($data); }">
                 View
             </button>
             <button type="button" class="btn btn-secondary grid-btn">
@@ -216,7 +225,7 @@
                         Message
                     </dt>
                     <dd class="col-8">
-                        <p data-bind="html: orderLine?.GiftVoucherMessage.replace('\n', '<br/><br/>') ?? '(No message)', css: { 'text-italic': orderLine?.GiftVoucherMessage == null }"></p>
+                        <p data-bind="html: Message ?? orderLine?.GiftVoucherMessage.replace('\n', '<br/><br/>') ?? '(No message)', css: { 'text-italic': (Message ?? orderLine?.GiftVoucherMessage) == null }"></p>
                     </dd>
                     <dt class="col-3 text-end mt-3">
                         Notes
@@ -229,11 +238,14 @@
                     </dt>
                     <dd id="actions-dd" class="col-8">
                         <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-primary" data-bind="disable: voucherEditDisabled, click: $parent.giftVoucherRedeemer.show">
-                                Redeem
-                            </button>
                             <button type="button" class="btn btn-primary" data-bind="disable: voucherEditDisabled, click: $parent.giftVoucherExtender.show">
                                 Extend
+                            </button>
+                            <button type="button" class="btn btn-success" data-bind="disable: voucherEditDisabled, click: $parent.giftVoucherRedeemer.show">
+                                Redeem
+                            </button>
+                            <button type="button" class="btn btn-danger" data-bind="disable: voucherEditDisabled, click: $parent.giftVoucherCanceller.show">
+                                Cancel
                             </button>
                             <button type="button" class="btn btn-primary ms-auto" data-bind="click: $parent.viewVoucher">
                                 View
@@ -277,14 +289,17 @@
                 <div data-bind="component: { name: 'kendo-mdc-dropdown-component', params: giftVoucherTypeParams }"></div>
                 <div data-bind="component: { name: 'mdc-text-area-component', params: messageParams }"></div>
                 <div class="d-flex gap-3">
-                    <div id="preview-container">
+                    <div id="preview-container" style="display: none" data-bind="visible: true">
+                        <h4 class="trixie-rough bold fs-2">
+                            Preview
+                        </h4>
                         <iframe id="gift-voucher-preview" data-bind="attr: { src: base64 }"></iframe>
                     </div>
                     <div id="internal-notes" data-bind="component: { name: 'mdc-text-area-component', params: notesParams }"></div>
                 </div>
             </fieldset>
             <div class="d-flex align-items-center justify-content-end mt-3">
-                <button type="button" class="btn btn-success" data-bind="click: saveChanges">
+                <button type="button" class="btn btn-success" data-bind="click: proceed">
                     Save
                 </button>
             </div>
@@ -346,6 +361,36 @@
                     Gift vouchers cannot be indefinite. Please avoid extending gift vouchers for more than a month at a time.
                 </p>
                 <div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: expiryDateParams }"></div>
+                <div class="mt-3" data-bind="component: { name: 'mdc-text-area-component', params: notesParams }"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bind="click: hide">
+                    Cancel
+                </button>
+                <button class="btn btn-primary" data-bind="click: proceed">
+                    Ok
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="cancel-voucher-modal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" data-bind="with: giftVoucherCanceller">
+            <div class="modal-header grey-blue">
+                <h4 class="modal-title">
+                    Cancel Gift Voucher
+                </h4>
+                <button class="btn-close btn-close-white" data-bind="click: hide"></button>
+            </div>
+            <div class="modal-body">
+                <p class="bold">
+                    Important Notes
+                </p>
+                <p>
+                    Please provide as much detail as you can as to why you are cancelling this gift voucher.
+                </p>
                 <div class="mt-3" data-bind="component: { name: 'mdc-text-area-component', params: notesParams }"></div>
             </div>
             <div class="modal-footer">

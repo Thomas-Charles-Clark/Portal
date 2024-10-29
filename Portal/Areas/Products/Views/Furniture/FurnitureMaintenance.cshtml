@@ -129,9 +129,18 @@
         <h3 class="heading" data-bind="with: modelDetails">
             Design: <span data-bind="text: Design.Name"></span>
         </h3>
-        <div class="margin-top-20 margin-bottom-15" data-bind="component: { name: 'mdc-kendo-multiselect-component', params: designSeatCushionFillingsParams }"></div>
-        <div class="margin-top-15 margin-bottom-15" data-bind="component: { name: 'mdc-kendo-multiselect-component', params: designBackCushionFillingsParams }"></div>
-        <div class="margin-top-15" data-bind="component: { name: 'mdc-kendo-multiselect-component', params: designLegTypesParams }"></div> 
+        <div class="default-wrapper margin-top-20 margin-bottom-15">
+            <div data-bind="component: { name: 'mdc-kendo-multiselect-component', params: designSeatCushionFillingsParams }"></div>
+            <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: designDefaultSeatCushionFillingsParams }"></div>
+        </div>
+        <div class="default-wrapper margin-top-15 margin-bottom-15">
+            <div data-bind="component: { name: 'mdc-kendo-multiselect-component', params: designBackCushionFillingsParams }"></div>
+            <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: designDefaultBackCushionFillingsParams }"></div>
+        </div>
+        <div class="default-wrapper margin-top-15">
+            <div data-bind="component: { name: 'mdc-kendo-multiselect-component', params: designLegTypesParams }"></div>
+            <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: designDefaultLegTypeParams }"></div>
+        </div>
         <div class="margin-top-15" data-bind="component: { name: 'mdc-checkbox-component', params: designPermitMixedFabric }"></div>
         <div class="design-flex-container">
             <div>

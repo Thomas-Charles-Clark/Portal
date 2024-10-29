@@ -66,6 +66,14 @@ namespace SharedEFClasses.Models
         [JsonIgnore]
         [InverseProperty("CushionFilling")]
         public virtual ICollection<FurnitureDesign_BackCushionFilling> DesignWithBacks { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("DefaultSeatCushionFilling")]
+        public virtual ICollection<FurnitureDesign> DefaultSeatCushionFillingForDesigns { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("DefaultBackCushionFilling")]
+        public virtual ICollection<FurnitureDesign> DefaultBackCushionFillingForDesigns { get; set; }
     }
 
     [Table("Design", Schema = "furniture")]
@@ -84,6 +92,24 @@ namespace SharedEFClasses.Models
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool Deleted { get; set; }
+
+        public short? DefaultSeatCushionFillingID { get; set; }
+
+        public short? DefaultBackCushionFillingID { get; set; }
+
+        public byte? DefaultLegTypeID { get; set; }
+
+        [ForeignKey("DefaultSeatCushionFillingID")]
+        [InverseProperty("DefaultSeatCushionFillingForDesigns")]
+        public virtual FurnitureCushionFilling DefaultSeatCushionFilling { get; set; }
+
+        [ForeignKey("DefaultBackCushionFillingID")]
+        [InverseProperty("DefaultBackCushionFillingForDesigns")]
+        public virtual FurnitureCushionFilling DefaultBackCushionFilling { get; set; }
+
+        [ForeignKey("DefaultLegTypeID")]
+        [InverseProperty("DefaultLegTypeForDesigns")]
+        public virtual FurnitureLegType DefaultLegType { get; set; }
 
         [InverseProperty("Design")]
         public virtual ICollection<FurnitureDesign_SeatCushionFilling> SeatCushionFillings { get; set; }
@@ -183,6 +209,8 @@ namespace SharedEFClasses.Models
         [Column(Order = 3)]
         public byte CoverTypeID { get; set; }
 
+        public bool Default { get; set; }
+
         [JsonIgnore]
         [ForeignKey("DesignID")]
         public virtual FurnitureDesign Design { get; set; }
@@ -268,6 +296,10 @@ namespace SharedEFClasses.Models
         [JsonIgnore]
         [InverseProperty("LegType")]
         public virtual ICollection<FurnitureDesign_LegType> Designs { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("DefaultLegType")]
+        public virtual ICollection<FurnitureDesign> DefaultLegTypeForDesigns { get; set; }
     }
 
     [Table("MaterialBreakdown", Schema = "furniture")]

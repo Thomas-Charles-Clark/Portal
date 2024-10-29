@@ -18246,8 +18246,7 @@ var memberBasketFetcher = function (parent) {
         title: 'Controls',
         width: 180,
         filterable: false
-    }
-    ];
+    }];
 
     self.heldOrdersGridDataSourceRead = function (options) {
 
@@ -18262,14 +18261,18 @@ var memberBasketFetcher = function (parent) {
             data[propertyName] = params[propertyName];
         }
 
+        console.log("memberBasketFetcher FetchHeldOrdersManagement calling with", data);
+
         $.ajax({
             url: '/api/componentapi/FetchHeldOrdersManagement',
             type: "GET",
             dataType: 'json',
             data: data,
-            success: function (data) {
-                self.heldOrdersCount(data.Total);
-                ko.utils.arrayForEach(data.Data, function (d) {
+            success: function (data) { 
+                console.log("memberBasketFetcher FetchHeldOrdersManagement returned", data);
+
+                self.heldOrdersCount(data.kendoResult.Total);
+                ko.utils.arrayForEach(data.kendoResult.Data, function (d) {
                     d.bootstrapPopoverDetails = {
                         title: 'Status',
                         label: d.Status,
@@ -18278,6 +18281,19 @@ var memberBasketFetcher = function (parent) {
                         template: self.popoverTemplate()
                     }
                 });
+
+                self.holdReasons = data.holdReasons;
+
+                let element = document.querySelector("#held-order-filter-list");
+
+                let parent = element?.parentNode;
+
+                if (element) {
+                    element.remove();
+                    element = self.generateHeldReasonList();
+                    parent.prepend(element);
+                }
+
                 //// testing...
                 //ko.utils.arrayForEach(data.Data, function (d) {
                 //    ko.utils.arrayForEach(Object.keys(d), function (k) {
@@ -18286,7 +18302,8 @@ var memberBasketFetcher = function (parent) {
                 //        }
                 //    })
                 //});
-                options.success(data);
+
+                options.success(data.kendoResult);
             },
             error: function (xhr, s, a) {
                 $.ajaxSettings.error(xhr, s, a);
@@ -18371,6 +18388,229 @@ var memberBasketFetcher = function (parent) {
         }).toString(), '_blank');
     }
 
+    self.holdReasons = getHoldReasons();
+
+    self.selectedHoldReasonIds = [];
+
+    self.generateHeldReasonList = () => {
+
+        let listContainerElement = document.createElement("div");// "<div class='custom-filter-checkbox-container'></div>").insertAfter(originalMultiCheck);
+
+        listContainerElement.setAttribute("id", "held-order-filter-list");
+
+        listContainerElement.classList.add('custom-filter-checkbox-container');
+
+        let holdReasons = self.holdReasons;
+
+        let outerList = document.createElement("ul");
+
+        outerList.classList.add("list-group");
+        outerList.classList.add("hold-reason-group-outer-list");
+
+        let groupedRoles = Object.groupBy(holdReasons, (hr, idx) => {
+            return hr.RoleID;
+        });
+
+        let roleGroups = [];
+
+        Object.keys(groupedRoles).forEach(roleId => {
+            let roleHoldReasons = groupedRoles[roleId];
+            roleHoldReasons = roleHoldReasons.sort((a, b) => a.RoleSortOrder > b.RoleSortOrder ? 1 : -1);
+
+            roleGroups.push({
+                roleId: roleId,
+                roleName: roleHoldReasons[0].RoleName,
+                roleSortOrder: roleHoldReasons[0].RoleSortOrder,
+                roleHoldReasons: roleHoldReasons,
+                count: roleHoldReasons.reduce((a, i) => a = a + i.Count, 0)
+            })
+        });
+
+        roleGroups.forEach(roleGroup => {
+
+            let groupedReasons = Object.groupBy(roleGroup.roleHoldReasons, (reason, idx) => {
+                return `${reason.HoldReasonGroupID}`;
+            });
+
+            let holdReasonGroups = [];
+
+            Object.keys(groupedReasons).forEach(holdReasonGroupId => {
+                let holdReasons = groupedReasons[holdReasonGroupId];
+                holdReasons = holdReasons.sort((a, b) => a.HoldReasonSortOrder > b.HoldReasonSortOrder ? 1 : -1);
+
+                holdReasonGroups.push({
+                    holdReasonGroupId: +holdReasonGroupId,
+                    holdReasonGroupSortOrder: holdReasons[0].HoldReasonGroupSortOrder,
+                    holdReasons: holdReasons
+                })
+            });
+
+            holdReasonGroups = holdReasonGroups.sort((a, b) => a.holdReasonGroupSortOrder > b.holdReasonGroupSortOrder ? 1 : -1);
+
+            roleGroup.roleHoldReasons = holdReasonGroups;
+        });
+
+        roleGroups.forEach(rg => {
+
+            let roleId = rg.roleId;
+
+            let roleHeadLi = document.createElement("li");
+
+            roleHeadLi.classList.add("list-group-item");
+            roleHeadLi.classList.add("role-group");
+
+            let roleHeadLiText = document.createElement("span");
+
+            roleHeadLiText.innerHTML = rg.roleName;
+
+            let roleHeadLiCount = document.createElement("span");
+
+            roleHeadLiCount.innerHTML = `(${rg.count})`;
+
+            let roleHeadLiSelectAll = document.createElement("span");
+
+            roleHeadLiSelectAll.classList.add("btn");
+            roleHeadLiSelectAll.classList.add("bi");
+            roleHeadLiSelectAll.classList.add("bi-check2-all");
+            roleHeadLiSelectAll.addEventListener("click", () => {
+                console.log("woo");
+                document.querySelectorAll(`input[type="checkbox"][data-hold-reason-role-id="${roleId}"]`).forEach(e => {
+                    e.checked = true;
+                });
+            });
+
+            let roleHeadLiClear = document.createElement("span");
+
+            roleHeadLiClear.classList.add("btn");
+            roleHeadLiClear.classList.add("bi");
+            roleHeadLiClear.classList.add("bi-x");
+            roleHeadLiClear.addEventListener("click", () => {
+                console.log("hoo");
+                document.querySelectorAll(`input[type="checkbox"][data-hold-reason-role-id="${roleId}"]`).forEach(e => {
+                    e.checked = false;
+                });
+            });
+
+            roleHeadLi.appendChild(roleHeadLiText);
+
+            roleHeadLi.appendChild(roleHeadLiCount);
+
+            roleHeadLi.appendChild(roleHeadLiSelectAll);
+
+            roleHeadLi.appendChild(roleHeadLiClear);
+
+            outerList.appendChild(roleHeadLi);
+
+            rg.roleHoldReasons.forEach(g => {
+                let reasons = g.holdReasons;
+
+                let holdReasonGroupId = g.holdReasonGroupId;
+
+                let group = reasons[0].HoldReasonGroup;
+
+                let headLi = document.createElement("li");
+
+                headLi.classList.add("list-group-item");
+                headLi.classList.add("hold-reason-group");
+
+                let headLiText = document.createElement("span");
+
+                headLiText.classList.add("me-auto");
+
+                headLiText.innerHTML = group.Name;
+
+                let headLiSelectAll = document.createElement("span");
+
+                headLiSelectAll.classList.add("btn");
+                headLiSelectAll.classList.add("bi");
+                headLiSelectAll.classList.add("bi-check2-all");
+                headLiSelectAll.addEventListener("click", () => {
+                    console.log("woowoo");
+                    document.querySelectorAll(`input[type="checkbox"][data-hold-reason-group-id="${holdReasonGroupId}"]`).forEach(e => {
+                        e.checked = true;
+                    });
+                });
+
+                let headLiClear = document.createElement("span");
+
+                headLiClear.classList.add("btn");
+                headLiClear.classList.add("bi");
+                headLiClear.classList.add("bi-x");
+                headLiClear.addEventListener("click", () => {
+                    console.log("hoohoo");
+                    document.querySelectorAll(`input[type="checkbox"][data-hold-reason-group-id="${holdReasonGroupId}"]`).forEach(e => {
+                        e.checked = false;
+                    });
+                });
+
+                headLi.appendChild(headLiText);
+
+                headLi.appendChild(headLiSelectAll);
+
+                headLi.appendChild(headLiClear);
+
+                outerList.appendChild(headLi);
+
+                reasons.forEach(r => {
+                    let childLi = document.createElement("li");
+
+                    childLi.classList.add("list-group-item");
+
+                    childLi.classList.add("list-group-item");
+
+                    childLi.classList.add("hold-reason-group-child");
+
+                    let checkWrapper = document.createElement("div");
+
+                    checkWrapper.classList.add("form-check")
+
+                    let checkInput = document.createElement("input");
+
+                    checkInput.classList.add("hold-order-checkbox");
+
+                    checkInput.classList.add("form-check-input");
+
+                    checkInput.type = "checkbox";
+
+                    checkInput.value = r.HoldReasonID;
+
+                    if (self.selectedHoldReasonIds.indexOf(r.HoldReasonID) > -1) {
+                        checkInput.checked = true;
+                    }
+
+                    let checkId = `hold-reason-${r.HoldReasonID}-checkbox`;
+
+                    checkInput.setAttribute("id", checkId);
+
+                    checkInput.dataset.holdReasonRoleId = roleId;
+
+                    checkInput.dataset.holdReasonGroupId = r.HoldReasonGroupID;
+
+                    let checkLabel = document.createElement("label");
+
+                    checkLabel.innerHTML = r.Name;
+
+                    checkLabel.classList.add("form-check-label");
+
+                    checkLabel.setAttribute("for", checkId);
+
+                    checkWrapper.appendChild(checkInput);
+
+                    checkWrapper.appendChild(checkLabel);
+
+                    childLi.appendChild(checkWrapper);
+
+                    outerList.appendChild(childLi);
+                });
+
+            });
+        });
+
+        listContainerElement.appendChild(outerList);
+
+        return listContainerElement;
+    }
+
     self.customHeldReasonFilterActive = ko.observable(false);
 
     self.heldOrdersResultGridSettings = {
@@ -18409,29 +18649,42 @@ var memberBasketFetcher = function (parent) {
         },
         filterMenuInit: function (e) {
             if (e.field === 'HeldReasons') {
-                var popup = e.container.data("kendoPopup");
-                var dataSource = this.dataSource;
-                var field = e.field;
-                var element = e.container.children(":first");
+                let popup = e.container.data("kendoPopup");
+                let dataSource = this.dataSource;
+                let field = e.field;
+                let containerElement = e.container.children(":first");
 
-                var originalMultiCheck = e.container.children(":first");
+                let originalMultiCheck = e.container.children(":first");
                 // helpTextElement.nextUntil(":has(.k-button)").remove();
-                var element = $("<div class='custom-filter-checkbox-container'></div>").insertAfter(originalMultiCheck).kendoListView({
-                    dataSource: getHoldReasons(),
-                    template: "<label><input type='checkbox' value='#:" + field + "#'/>#:" + field + "#</label>"
-                });
+                let listContainerElement = self.generateHeldReasonList();
+
+                e.container.prepend(listContainerElement);
+
+                //    .kendoListView({
+                //    dataSource: new kendo.data.DataSource({
+                //        data: getHoldReasons()
+                //    }),
+                //    template: "<label><input type='checkbox' value='#:" + field + "#'/>#:" + field + "#</label>"
+                //});
                 originalMultiCheck.remove();
+
                 e.container.children('.k-filter-selected-items').remove();
+
 
                 e.container.find("[type='submit']").click(function (e) {
                     e.preventDefault();
                     e.stopPropagation();
                     var filter = dataSource.filter() || { logic: "and", filters: [] };
-                    var fieldFilters = $.map(element.find('input[type="checkbox"]:checked'), function (input) {
+                    self.selectedHoldReasonIds = [];
+
+                    var fieldFilters = [...e.currentTarget.parentNode.querySelectorAll('input[type="checkbox"]:checked')].map(input => {
+
+                        self.selectedHoldReasonIds.push(+input.value);
+                        
                         return {
                             field: field,
                             operator: "contains",
-                            value: input.value
+                            value: self.holdReasons.find(hr => hr.HoldReasonID == +input.value).HoldReasonApproverMessage
                         };
                     });
                     if (fieldFilters.length) {
@@ -18448,6 +18701,7 @@ var memberBasketFetcher = function (parent) {
 
                 e.container.find("[type='reset']").click(function (e) {
                     self.customHeldReasonFilterActive(false);
+                    self.selectedHoldReasonIds = [];
                 });
             }
         }
@@ -18456,6 +18710,10 @@ var memberBasketFetcher = function (parent) {
     self.clearHeldOrdersGridFilters = function () {
         self.customHeldReasonFilterActive(false);
         self.heldOrdersGridWidget().dataSource.filter({});
+        document.querySelectorAll('.hold-order-checkbox').forEach(e => {
+            e.checked = false;
+        });
+        self.selectedHoldReasonIds = [];
     }
 
     self.uniqueForField = function (data, field) {

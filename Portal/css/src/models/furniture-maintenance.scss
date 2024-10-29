@@ -1,4 +1,6 @@
-﻿.mdc-select {
+﻿@import "./common.scss";
+
+.mdc-select {
     .k-dropdown-wrap.k-state-hover {
         background-color: white;
     }
@@ -103,14 +105,6 @@ h3.heading {
         grid-gap: 15px;
         grid-row-gap: 21px;
         grid-auto-rows: minmax(34px, auto);
-    }
-
-    .mdc-select {
-        .k-multiselect-wrap {
-            .k-button {
-                margin: 7px 2px 0px 4px;
-            }
-        }
     }
 
     > .design-flex-container {
@@ -401,5 +395,18 @@ a.stitch-colour {
         > .k-i-close {
             display: none !important;    
         }
+    }
+}
+
+.default-wrapper {
+    display: flex;
+    gap: $l-gutter;
+
+    > div:first-of-type {
+        flex: 1;
+    }
+
+    > div:last-of-type {
+        flex: 0 1 260px;
     }
 }

@@ -21,6 +21,8 @@ const giftVouchersViewModel = (() => {
 
     self.giftVoucherExtender = giftVoucherExtenderViewModel({ parent: self });
 
+    self.giftVoucherCanceller = giftVoucherCancellerViewModel({ parent: self });
+
     self.loadedCode = window.getGiftVoucherCode();
 
     self.emailer = emailer({ parent: self, sendLabel: 'Send <span class="bi bi-send ms-2"></span>' });
@@ -153,7 +155,7 @@ const giftVouchersViewModel = (() => {
         valueField: 'GiftVoucherID',
         virtual: true,
         pageSize: 1,
-        busy: self.emailBusy,
+        busy: ko.observable(),
         minLength: 16,
         enforceMinLength: true,
         virtualOptions: {
@@ -190,7 +192,7 @@ const giftVouchersViewModel = (() => {
             field: 'CreatedDT'
         }],
         requestStart: (e) => {
-            //self.busy(true);
+            self.giftVoucherParams.busy(true);
         },
         requestEnd: (e) => {
             console.log(e);
@@ -203,7 +205,8 @@ const giftVouchersViewModel = (() => {
                 self.giftVoucherParams.dropDownListSettings.widget().select(0);
                 self.giftVoucherParams.dropDownListSettings.widget().trigger('change');
             }
-            //self.busy(false);
+
+            self.giftVoucherParams.busy(false);
         },
         clearFunction: self.genericUnsavedChangesClear,
         afterClear: () => {
@@ -316,7 +319,7 @@ const giftVouchersViewModel = (() => {
     }, {
         field: 'CustomCommands',
         title: ' ',
-        width: 240,
+        width: 360,
         template: (e) => {
 
         }
@@ -452,32 +455,15 @@ const giftVouchersViewModel = (() => {
         sortable: true,
         groupable: false,
         filterable: true,
-        reorderable: false,
-        editable: true,
+        reorderable: true,
+        editable: false,
         selectable: false,
-        change: function () {
-            this.editRow(this.select());
-        },
-        toolbar: [{
-            name: "Create New",
-            template: kendo.template(document.querySelector("#grid-toolbar-create-new").innerHTML),
-            iconClass: "k-icon k-i-add"
-        }],
         navigatable: true,
         paging: true,
         pageSize: 20,
         pageable: {
             pageSize: 20,
             pageSizes: [10, 20, 50, 100, 250, 500, 'all']
-        },
-        dataBound: function (e) {
-            window.setTimeout(() => {
-                ko.cleanNode(document.querySelector("#create-new-btn"));
-                ko.applyBindings(self, document.querySelector("#create-new-btn"));
-            }, 0);
-        },
-        page: function (e) {
-
         }
     }
 
@@ -545,6 +531,16 @@ Thank you for shopping with Designers Guild`);
 
     self.viewVoucher = (voucher) => {
         window.open(`/customers/gift-vouchers/pdf?code=${voucher.Code}`, '_blank');
+    }
+
+    self.emailVoucher = (voucher) => {
+        self.giftVoucherId(voucher.GiftVoucherID);
+        bootstrap.Tab.getOrCreateInstance(document.querySelector('#find-tab-btn')).show();
+        window.setTimeout(() => {
+            document.querySelectorAll('.emailer-collapse').forEach(e => {
+                bootstrap.Collapse.getOrCreateInstance(e).show();
+            });
+        }, 150);
     }
 
     //#endregion
@@ -653,7 +649,12 @@ const giftVoucherCreatorViewModel = (({ parent } = { parent: null }) => {
 
     self.notes = ko.observable();
 
-    self.message = ko.observable();
+    self.message = ko.observable().extend({
+        rateLimit: {
+            timeout: 300,
+            method: 'notifyWhenChangesStop'
+        }
+    });
 
     self.base64 = ko.observable();
 
@@ -954,7 +955,8 @@ const giftVoucherCreatorViewModel = (({ parent } = { parent: null }) => {
         busy: ko.observable(false),
         clearable: ko.observable(true),
         revertible: ko.observable(false),
-        visible: ko.observable(true)
+        visible: ko.observable(true),
+        focusObservable: ko.observable(false)
     };
 
     self.notesParams = {
@@ -1005,6 +1007,12 @@ const giftVoucherCreatorViewModel = (({ parent } = { parent: null }) => {
             self.isVoucherCredit(false);
             self.creditOrderParams.clearFunction();
         }
+    });
+
+    self.messageParams.focusObservable.subscribe(nv => {
+        if (!nv) {
+            self.code.valueHasMutated();
+        }
     })
 
     //#endregion
@@ -1017,7 +1025,7 @@ const giftVoucherCreatorViewModel = (({ parent } = { parent: null }) => {
         let code = self.code();
         let priceListId = self.priceListId();
 
-        let message = self.message();
+        let message = self.message.peek();
 
         if (productId &&
             code &&
@@ -1072,7 +1080,31 @@ const giftVoucherCreatorViewModel = (({ parent } = { parent: null }) => {
     //#region Methods
 
     self.reset = () => {
-        self.giftVoucherProductParams.clearFunction();
+        self.validateNow(false);
+
+        self.base64(undefined);
+
+        self.code(crypto.randomUUID().toUpperCase().substring(4, 23));
+
+        self.priceListParams.clearFunction();
+
+        let expiry = new Date();
+
+        expiry.setFullYear(expiry.getFullYear() + 1);
+
+        self.expiryDate(expiry);
+
+        self.isVoucherCredit(false);
+
+        self.creditOrderParams.clearFunction();
+
+        self.productParams.clearFunction();
+
+        self.giftVoucherTypeParams.clearFunction();
+
+        self.messageParams.clearFunction();
+
+        self.notesParams.clearFunction();
     }
 
     self.proceed = () => {
@@ -1086,24 +1118,43 @@ const giftVoucherCreatorViewModel = (({ parent } = { parent: null }) => {
             });
         } else {
 
-            window.confirm("Are you sure?", "Potato potato jibbering gibbon", () => {
+            window.showConfirm("Are you sure?", "This action will create the gift voucher.", () => {
+
+                self.busy(true);
+
+                let params = {
+                    productId: self.productId(),
+                    guid: self.code(),
+                    creditOrderId: self.creditOrderId(),
+                    giftVoucherTypeId: self.giftVoucherTypeId(),
+                    priceListId: self.priceListId(),
+                    valueEx: 0,
+                    valueInc: 0,
+                    notes: self.notes(),
+                    message: self.message()
+                };
+
+                fetch("/api/giftvouchersapi/create", {
+                    method: "POST",
+                    headers: window.fetchHeaders,
+                    cache: "no-cache",
+                    credentials: "same-origin",
+                    body: JSON.stringify(params)
+                })
+                    .then(window.handleFetchResponse)
+                    .then(data => {
+                        self.reset();
+                        self.busy(false);
+                        window.showInfo("Thank you", "That gift voucher was created successfully.");
+                    })
+                    .catch(err => {
+                        self.busy(false);
+                        window.catchFetchError(err);
+                    })
 
             }, () => {
 
             });
-        }
-    }
-
-    self.saveChanges = () => {
-        self.validateNow(true);
-
-        if (self.errors().length) {
-            self.errors.showAllMessages(true);
-            self.errors.forEach(x => {
-                x.isValid.notifySubscribers(x.isValid());
-            });
-        } else {
-            console.log("Hooray!");
         }
     }
 
@@ -1165,7 +1216,7 @@ const giftVoucherRedeemerViewModel = (({ parent } = { parent: null }) => {
         }
     });
 
-    self.giftVoucher = self.parent.giftVoucher;
+    self.giftVoucher = ko.observable();
 
     //#endregion
 
@@ -1319,7 +1370,12 @@ const giftVoucherRedeemerViewModel = (({ parent } = { parent: null }) => {
         self.notesParams.clearFunction();
     }
 
-    self.show = () => {
+    self.show = (gv) => {
+
+        if (gv) {
+            self.giftVoucher(gv);
+        }
+
         self.modal.show();
     }
 
@@ -1360,9 +1416,13 @@ const giftVoucherRedeemerViewModel = (({ parent } = { parent: null }) => {
                         self.hide();
                         self.busy(false);
                         window.showInfo("Thank you", "This gift voucher has been redeemed.");
-                        self.giftVoucher().redeemOrderId(self.orderId());
-                        self.giftVoucher().notes(self.notes());
-                        self.giftVoucher().usedDt(data.usedDt);
+                        if (self.giftVoucher().hasOwnProperty('redeemOrderId')) {
+                            self.giftVoucher().redeemOrderId(self.orderId());
+                            self.giftVoucher().notes(self.notes());
+                            self.giftVoucher().usedDt(data.usedDt);
+                        } else {
+                            self.parent.gridDataSource.read();
+                        }
                     })
                     .catch(err => {
                         self.busy(false);
@@ -1422,7 +1482,7 @@ const giftVoucherExtenderViewModel = (({ parent } = { parent: null }) => {
         }
     });
 
-    self.giftVoucher = self.parent.giftVoucher;
+    self.giftVoucher = ko.observable();
 
     //#endregion
 
@@ -1568,7 +1628,12 @@ const giftVoucherExtenderViewModel = (({ parent } = { parent: null }) => {
         self.notesParams.clearFunction();
     }
 
-    self.show = () => {
+    self.show = (gv) => {
+
+        if (gv) {
+            self.giftVoucher(gv);
+        }
+
         self.modal.show();
     }
 
@@ -1607,8 +1672,12 @@ const giftVoucherExtenderViewModel = (({ parent } = { parent: null }) => {
                     .then(data => {
                         self.hide();
                         window.showInfo("Thank you", "This gift voucher has been extended.");
-                        self.giftVoucher().expiryDate(self.expiryDate());
-                        self.giftVoucher().notes(self.notes());
+                        if (self.giftVoucher().hasOwnProperty('expiryDate')) {
+                            self.giftVoucher().expiryDate(self.expiryDate());
+                            self.giftVoucher().notes(self.notes());
+                        } else {
+                            self.parent.gridDataSource.read();
+                        }
 
                         self.busy(false);
 
@@ -1620,6 +1689,190 @@ const giftVoucherExtenderViewModel = (({ parent } = { parent: null }) => {
                             },
                             viewDate: new Date(self.expiryDate())
                         });
+                    })
+                    .catch(err => {
+                        self.busy(false);
+                        window.catchFetchError(err);
+                    })
+            }, () => {
+
+            });
+        }
+    }
+
+    //#endregion
+
+
+    //#region Events
+
+
+
+    //#endregion
+
+    return self;
+});
+
+
+
+
+const giftVoucherCancellerViewModel = (({ parent } = { parent: null }) => {
+    var self = {
+        parent: parent
+    };
+
+    //#region Properties
+
+    self.ready = ko.observable(false);
+
+    self.busy = ko.observable(false);
+
+    self.busyMessage = ko.observable("Please wait");
+
+    self.validateNow = ko.observable(false);
+
+    self.modalElement = document.querySelector("#cancel-voucher-modal");
+
+    self.modal = bootstrap.Modal.getOrCreateInstance(self.modalElement);
+
+    self.notes = ko.observable().extend({
+        required: {
+            params: true,
+            onlyIf: () => {
+                return self.validateNow();
+            },
+            message: "Please provide some detail to accompany this action."
+        }
+    });
+
+    self.giftVoucher = ko.observable();
+
+    //#endregion
+
+
+    //#region Components
+
+    self.notesParams = {
+        label: 'Notes',
+        originalValue: ko.observable(),
+        observable: self.notes,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        showClear: true,
+        rows: 10,
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            $(self.observable.DOMElement).focus();
+        },
+        permitRevert: true,
+        revertFunction: function () {
+            self.notes(self.originalNotes());
+            $(self.notes.DOMElement).focus();
+        },
+        charsRemainingOptions: {
+            maxLength: 2000
+        },
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(true),
+        visible: ko.observable(true)
+    };
+
+    //#endregion
+
+
+    //#region Subscriptions
+
+    self.giftVoucher.subscribe(nv => {
+        console.log('giftVoucher', nv);
+        if (nv) {
+            self.notes(nv.Reason);
+        } else {
+            self.reset();
+        }
+    });
+
+    //#endregion
+
+
+    //#region Computeds
+
+
+
+    //#endregion
+
+
+    //#region Validation Groups
+
+    self.errors = ko.validation.group([
+        self.notes
+    ]);
+
+    //#endregion
+
+
+    //#region Methods
+
+    self.reset = () => {
+        self.validateNow(false);
+        self.notesParams.clearFunction();
+    }
+
+    self.show = (gv) => {
+
+        if (gv) {
+            self.giftVoucher(gv);
+        }
+
+        self.modal.show();
+    }
+
+    self.hide = () => {
+        self.modal.hide();
+    }
+
+    self.proceed = () => {
+        self.validateNow(true);
+        self.errors.showAllMessages(false);
+
+        if (self.errors().length) {
+            self.errors.showAllMessages(true);
+            self.errors.filter(x => {
+                x.isValid.notifySubscribers(x.isValid());
+            });
+        } else {
+            window.showConfirm("Are you sure?", "This action will cancel the gift voucher, rendering it unusable.", () => {
+
+                self.busy(true);
+
+                var params = {
+                    giftVoucherId: self.giftVoucher().GiftVoucherID,
+                    notes: self.notes()
+                }
+
+                fetch('/api/giftvouchersapi/cancel', {
+                    method: 'POST',
+                    headers: window.fetchHeaders,
+                    cache: 'no-cache',
+                    credentials: 'same-origin',
+                    body: JSON.stringify(params)
+                })
+                    .then(window.handleFetchResponse)
+                    .then(data => {
+                        self.hide()
+
+                        window.showInfo("Thank you", "This gift voucher has been cancelled.");
+
+                        if (self.giftVoucher().hasOwnProperty('notes')) {
+                            self.giftVoucher().notes(self.notes());
+                        } else {
+                            self.parent.gridDataSource.read();
+                        }
+
+                        self.busy(false);
                     })
                     .catch(err => {
                         self.busy(false);
@@ -1788,8 +2041,9 @@ const giftVoucherViewModel = (({ rec, parent } = { rec: null, parent: null }) =>
     }, self);
 
     self.voucherEditDisabled = ko.computed(() => {
-        return self.usedDt() == null;
-        //return false;
+        //return self.usedDt() != null;
+        return false;
+        // can't disable because users might want to flag as used before they have an OrderID
     }, self);
 
     //#endregion

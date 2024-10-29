@@ -635,30 +635,30 @@ namespace Portal.Controllers
         }
 
         [HttpGet]
-        public IHttpActionResult FetchHeldOrdersManagement([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
+        public async Task<IHttpActionResult> FetchHeldOrdersManagement([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
         {
             var memberId = User.Identity.GetUserId<int>();
 
-            var results = PortalDb.FetchHeldOrdersManagement(memberId);
+            var results = await PortalDb.FetchHeldOrdersManagement(memberId);
 
-            var response = results.AsQueryable().ToDataSourceResult(request);
+            var response = results.Data.AsQueryable().ToDataSourceResult(request);
 
-            foreach (var v in response.Data.Cast<HeldOrderSelectResult>().ToList())
-            {
-                v.TradeAccount = PortalDb.TradeAccounts.Where(p => p.Code == v.CustomerCode).Single();
+            //foreach (var v in response.Data.Cast<HeldOrderSelectResult>().ToList())
+            //{
+            //    v.TradeAccount = PortalDb.TradeAccounts.Where(p => p.Code == v.CustomerCode).Single();
 
-                v.BasketItems = PortalDb.BasketItems.Where(p => p.BasketID == v.BasketID && p.Deleted == false).ToList();
-                v.BasketItemLineMemos = PortalDb.BasketItemLineMemos.Where(p => p.BasketItem.BasketID == v.BasketID).ToList();
+            //    v.BasketItems = PortalDb.BasketItems.Where(p => p.BasketID == v.BasketID && p.Deleted == false).ToList();
+            //    v.BasketItemLineMemos = PortalDb.BasketItemLineMemos.Where(p => p.BasketItem.BasketID == v.BasketID).ToList();
 
-                v.BasketItemLineMemos.ForEach(d =>
-                {
-                    d.LineMemoType = PortalDb.LineMemoTypes.Where(p => p.LineMemoTypeID == d.LineMemoTypeID).Single();
-                });
+            //    v.BasketItemLineMemos.ForEach(d =>
+            //    {
+            //        d.LineMemoType = PortalDb.LineMemoTypes.Where(p => p.LineMemoTypeID == d.LineMemoTypeID).Single();
+            //    });
 
-                v.MertexMarket = PortalDb.Markets.Where(p => p.Code == v.Market).SingleOrDefault();
-            }
+            //    v.MertexMarket = PortalDb.Markets.Where(p => p.Code == v.Market).SingleOrDefault();
+            //}
 
-            return Ok(results.AsQueryable().ToDataSourceResult(request));
+            return Ok(new { kendoResult = response, holdReasons = results.HoldReasons });
         }
 
         [HttpGet]

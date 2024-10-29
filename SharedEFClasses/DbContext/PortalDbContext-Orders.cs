@@ -547,7 +547,7 @@ namespace SharedEFClasses.Models
             return results;
         }
 
-        public List<HeldOrderSelectResult> FetchHeldOrdersManagement(int memberId)
+        public async Task<HeldOrderResultWrapper> FetchHeldOrdersManagement(int memberId)
         {
             var results = new List<HeldOrderSelectResult>();
 
@@ -556,34 +556,45 @@ namespace SharedEFClasses.Models
                 new SqlParameter("@MemberID", memberId)
             };
 
-            // Create a SQL command to execute the sproc
-            var cmd = this.Database.Connection.CreateCommand();
-            cmd.CommandText = "[portal].[Basket_HeldForApproval_ManagementView]";
-            cmd.CommandType = CommandType.StoredProcedure;
-
-            cmd.Parameters.AddRange(parameters);
-
-            try
+            var reader = await this.Database.Connection.QueryMultipleAsync("portal.Basket_HeldForApproval_ManagementView", new
             {
-                this.Database.Connection.Open();
+                MemberID = memberId
+            }, null, null, CommandType.StoredProcedure);
 
-                var reader = cmd.ExecuteReader();
-
-                results = ((IObjectContextAdapter)this)
-                    .ObjectContext
-                    .Translate<HeldOrderSelectResult>(reader).ToList();
-            }
-            catch (SqlException e)
+            return new HeldOrderResultWrapper()
             {
-                PortalFramework.LogErrorToDatabase(e);
-                throw e;
-            }
-            finally
-            {
-                this.Database.Connection.Close();
-            }
+                Data = await reader.ReadAsync<HeldOrderSelectResult>(),
+                HoldReasons = await reader.ReadAsync<HoldReasonSelectResult>()
+            };
 
-            return results;
+            //// Create a SQL command to execute the sproc
+            //var cmd = this.Database.Connection.CreateCommand();
+            //cmd.CommandText = "[portal].[Basket_HeldForApproval_ManagementView]";
+            //cmd.CommandType = CommandType.StoredProcedure;
+
+            //cmd.Parameters.AddRange(parameters);
+
+            //try
+            //{
+            //    this.Database.Connection.Open();
+
+            //    var reader = cmd.ExecuteReader();
+
+            //    results = ((IObjectContextAdapter)this)
+            //        .ObjectContext
+            //        .Translate<HeldOrderSelectResult>(reader).ToList();
+            //}
+            //catch (SqlException e)
+            //{
+            //    PortalFramework.LogErrorToDatabase(e);
+            //    throw e;
+            //}
+            //finally
+            //{
+            //    this.Database.Connection.Close();
+            //}
+
+            //return results;
         }
 
         public List<HeldOrderSelectResult> FetchHeldOrdersOperator(int memberId)
@@ -715,13 +726,14 @@ namespace SharedEFClasses.Models
             return result;
         }
 
-        public int DeleteTransaction(PassTransactionID objTransactionId)
+        public int DeleteTransaction(PassTransactionID objTransactionId, int memberId)
         {
             var result = 0;
 
             var parameters = new SqlParameter[]
             {
                 new SqlParameter("@TransactionID", objTransactionId.TransactionID),
+                new SqlParameter("@MemberID", memberId),
                 new SqlParameter("@DeleteAssociatedBasket", true)
             };
 

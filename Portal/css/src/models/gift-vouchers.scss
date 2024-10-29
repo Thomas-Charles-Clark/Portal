@@ -89,6 +89,11 @@
     margin-top: $l-gutter;
     padding-top: $l-gutter;
 }
+
+#actions-dt {
+    padding-top: 18px;
+}
+
 #actions-dd {
     border-top: 1px solid $gray-300;
 }
@@ -105,10 +110,27 @@
     flex: 1;
 }
 
-#gift-voucher-preview {
-    width: 570px;
-    height: 456px;
-    border: none;
+#preview-container {
+    position: relative;
+
+    > .trixie-rough {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        margin-bottom: 0;
+        color: $gray-500;
+        z-index: 0;
+    }
+
+    #gift-voucher-preview {
+        width: 570px;
+        height: 456px;
+        border: 1px solid $gray-300;
+        position: relative;
+        z-index: 1;
+        background-color: transparent;
+    }
 }
 
 #internal-notes {

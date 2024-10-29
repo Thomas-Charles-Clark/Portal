@@ -19,6 +19,7 @@ using SharedEFClasses;
 using SharedEFClasses.Utilities;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
+using DocumentFormat.OpenXml.ExtendedProperties;
 
 namespace Portal.Areas.Products.Controllers
 {
@@ -234,7 +235,9 @@ namespace Portal.Areas.Products.Controllers
         [HttpPost]
         public IHttpActionResult DeleteTransaction([FromBody]PassTransactionID objTransactionId)
         {
-            return Ok(PortalDb.DeleteTransaction(objTransactionId));
+            var memberId = User.Identity.GetUserId<int>();
+
+            return Ok(PortalDb.DeleteTransaction(objTransactionId, memberId));
         }
 
         [HttpPost]

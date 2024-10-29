@@ -8,6 +8,7 @@ namespace Portal.Areas.Customers.Models
     public class PassGiftVoucherCreation
     {
         public int ProductID { get; set; }
+
         public string GUID { get; set; }
 
         public string CreditOrderID { get; set; }

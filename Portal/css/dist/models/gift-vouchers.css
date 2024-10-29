@@ -97,6 +97,10 @@
   padding-top: 1rem;
 }
 
+#actions-dt {
+  padding-top: 18px;
+}
+
 #actions-dd {
   border-top: 1px solid #dee2e6;
 }
@@ -109,10 +113,25 @@
   flex: 1;
 }
 
-#gift-voucher-preview {
+#preview-container {
+  position: relative;
+}
+#preview-container > .trixie-rough {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin-bottom: 0;
+  color: #adb5bd;
+  z-index: 0;
+}
+#preview-container #gift-voucher-preview {
   width: 570px;
   height: 456px;
-  border: none;
+  border: 1px solid #dee2e6;
+  position: relative;
+  z-index: 1;
+  background-color: transparent;
 }
 
 #internal-notes {

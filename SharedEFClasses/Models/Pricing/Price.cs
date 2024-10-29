@@ -1,4 +1,6 @@
-﻿using SharedEFClasses.Models.Products;
+﻿using Newtonsoft.Json;
+
+using SharedEFClasses.Models.Products;
 
 using System;
 using System.Collections.Generic;
@@ -25,6 +27,7 @@ namespace SharedEFClasses.Models.Pricing
 
         public decimal PriceEx { get; set; }
 
+        [JsonIgnore]
         [ForeignKey("ProductID")]
         public virtual Product Product { get; set; }
     }

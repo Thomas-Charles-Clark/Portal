@@ -83,7 +83,7 @@ namespace Portal.Utilities.Documents.GiftVoucher
             }
 
 //#if DEBUG
-//            message = "AISDJ ASNFJS LJK3NLKMZVIL 32WEOPA, AE[PLAE:! RGA09J2Q3L; QJOIP089;LKV njkdk EOI4W81M mkfsl;apo;94 SKDFMIG92 KLMDFLIJRO sert#P'L2OAKFL ADS;LKJ9084WMKO;LKGFL;MVCPIOSO;KWE,MA RIIPOA  ARLIJDFL;IKJ DFAML/KGEOI;ERAJKD 234IU8NIKW 'IOJSDFGO9JKL;ER90KLMREOPIKWER42";
+//            message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam molestie fringilla vulputate. Duis sagittis dapibus lobortis. Donec eget finibus magna, ac viverra nunc. Mauris imperdiet dapibus neque, eget porta ligula euismod a. Integer augue risus, consectetur vitae tempor sit amet, vulputate at elit.";
 //#endif
 
             var streams = new List<MemoryStream>();
@@ -216,6 +216,12 @@ namespace Portal.Utilities.Documents.GiftVoucher
 
             topTableRightCellTable.AddCell(giftVoucherTextCell);
 
+//#if DEBUG
+//            giftVoucher.ValueInc = 5;
+//            giftVoucher.Code = "0000-0000-0000-0000";
+//            giftVoucher.ExpiryDT = DateTime.Parse("2525/01/01");           
+//#endif
+
             var symbolChunk = new Chunk(giftVoucher.PriceList.Currency.Symbol, valueFont);
 
             var valueChunk = new Chunk(giftVoucher.ValueInc.ToString("N0"), valueFont);
@@ -263,10 +269,11 @@ namespace Portal.Utilities.Documents.GiftVoucher
             middleCell.FixedHeight = 175.0f;
             middleCell.Border = border;
             middleCell.BorderColor = BaseColor.WHITE;
+            middleCell.PaddingTop = 15.0f;
             middleCell.PaddingLeft = 15.0f;
             middleCell.PaddingRight = 15.0f;
             middleCell.HorizontalAlignment = Element.ALIGN_LEFT;
-            middleCell.VerticalAlignment = Element.ALIGN_MIDDLE;
+            middleCell.VerticalAlignment = Element.ALIGN_TOP;
 
             Paragraph messageParagraph = null;
 

@@ -1333,6 +1333,54 @@ namespace SharedEFClasses.Models.Orders
         }
     }
 
+    public class HoldReasonSelectResult
+    {
+        public short HoldReasonGroupID { get; set; }
+        public string HoldReasonGroupName { get; set; }
+        public int HoldReasonGroupSortOrder { get; set; }
+
+        [NotMapped]
+        public object HoldReasonGroup
+        {
+            get
+            {
+                return new
+                {
+                    Name = HoldReasonGroupName
+                };
+            }
+        }
+
+        public short HoldReasonID { get; set; }
+        public string HoldReasonApproverMessage { get; set; }
+        public string HoldReasonDisplayName { get; set; }
+        public int HoldReasonSortOrder { get; set; }
+
+        [NotMapped]
+        public string Name 
+        { 
+            get
+            {
+                return HoldReasonDisplayName;
+            }
+        }
+
+        public int RoleID { get; set; }
+
+        public string RoleName { get; set; }
+
+        public int RoleSortOrder { get; set; }
+
+        public int Count { get; set; }
+    }
+
+    public class HeldOrderResultWrapper
+    {
+        public IEnumerable<HeldOrderSelectResult> Data { get; set; }
+
+        public IEnumerable<HoldReasonSelectResult> HoldReasons { get; set; }
+    }
+
     public class PassBasketTradeAccount
     {
         public long BasketID { get; set; }
@@ -2793,6 +2841,7 @@ namespace SharedEFClasses.Models.Orders
         public short ReleaseSequence { get; set; }
         public string HoldWhere { get; set; }
         public string ApproverMessage { get; set; }
+        public short HoldReasonGroupID { get; set; }
 
         [NotMapped]
         public string HeldReasons
@@ -2809,6 +2858,22 @@ namespace SharedEFClasses.Models.Orders
         [JsonIgnore]
         [InverseProperty("HoldReason")]
         public virtual ICollection<TransactionHoldReason> TransactionsHeld { get; set; }
+
+        [ForeignKey("HoldReasonGroupID")]
+        public virtual HoldReasonGroup HoldReasonGroup { get; set; }
+    }
+
+    [Table("HoldReasonGroup", Schema = "portal")]
+    public class HoldReasonGroup
+    {
+        [Key]
+        public short HoldReasonGroupID { get; set; }
+
+        public string Name { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("HoldReasonGroup")]
+        public virtual ICollection<HoldReason> HoldReasons { get; set; }
     }
 
     public class PassPaymentTermsSearch

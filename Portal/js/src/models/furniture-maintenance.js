@@ -102,6 +102,7 @@
 
     self.designSeatCushionFillings = ko.observableArray([]);
     self.designSeatCushionFillingIds = ko.observableArray([]);
+    self.designDefaultSeatCushionFillingId = ko.observable();
 
     self.designSeatCushionFillingsParams = {
         observable: self.designSeatCushionFillings,
@@ -134,7 +135,7 @@
             autoBind: true,
             autoClose: false,
             optionLabel: ' ',
-            filter: 'startswith'
+            filter: false
         },
         clearFunction: function () {
             var self = this
@@ -144,8 +145,50 @@
         }
     };
 
+    self.designSeatCushionFillingsAvailableForDefault = ko.computed(() => {
+        if (self.designSeatCushionFillingIds().length) {
+            return self.cushionFillings().filter(cf => self.designSeatCushionFillingIds().indexOf(cf.CushionFillingID) > -1);
+        } else {
+            return self.cushionFillings();
+        }
+    }, self);
+
+    self.designDefaultSeatCushionFillingsParams = {
+        observable: self.designDefaultSeatCushionFillingId,
+        validate: self.designDefaultSeatCushionFillingId,
+        showClear: true,
+        width: 'auto',
+        label: 'Default Seat Cushion Filling',
+        valuePrimitive: false,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        controlClass: 'form-control',
+        dropDownListSettings: {
+            value: self.designDefaultSeatCushionFillingId,
+            dataValueField: 'CushionFillingID',
+            dataTextField: 'Name',
+            height: 300,
+            widget: ko.observable(),
+            data: self.designSeatCushionFillingsAvailableForDefault,
+            valuePrimitive: true,
+            autoWidth: false,
+            autoBind: true,
+            autoClose: false,
+            optionLabel: ' ',
+            filter: false
+        },
+        clearFunction: function () {
+            var self = this
+            self.dropDownListSettings.value(undefined);
+            self.dropDownListSettings.widget().value(undefined);
+            self.dropDownListSettings.widget().trigger('change');
+        }
+    };
+
     self.designBackCushionFillingIds = ko.observableArray([]);
     self.designBackCushionFillings = ko.observableArray([]);
+    self.designDefaultBackCushionFillingId = ko.observable();
 
     self.designBackCushionFillingsParams = {
         observable: self.designBackCushionFillings,
@@ -185,6 +228,47 @@
             self.multiSelectSettings.value([]);
             self.multiSelectSettings.widget().value([]);
             self.multiSelectSettings.widget().trigger('change');
+        }
+    };
+
+    self.designBackCushionFillingsAvailableForDefault = ko.computed(() => {
+        if (self.designBackCushionFillingIds().length) {
+            return self.cushionFillings().filter(cf => self.designBackCushionFillingIds().indexOf(cf.CushionFillingID) > -1);
+        } else {
+            return self.cushionFillings();
+        }
+    }, self);
+
+    self.designDefaultBackCushionFillingsParams = {
+        observable: self.designDefaultBackCushionFillingId,
+        validate: self.designDefaultBackCushionFillingId,
+        showClear: true,
+        width: 'auto',
+        label: 'Default Back Cushion Filling',
+        valuePrimitive: false,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        controlClass: 'form-control',
+        dropDownListSettings: {
+            value: self.designDefaultBackCushionFillingId,
+            dataValueField: 'CushionFillingID',
+            dataTextField: 'Name',
+            height: 300,
+            widget: ko.observable(),
+            data: self.designBackCushionFillingsAvailableForDefault,
+            valuePrimitive: true,
+            autoWidth: false,
+            autoBind: true,
+            autoClose: false,
+            optionLabel: ' ',
+            filter: false
+        },
+        clearFunction: function () {
+            var self = this
+            self.dropDownListSettings.value(undefined);
+            self.dropDownListSettings.widget().value(undefined);
+            self.dropDownListSettings.widget().trigger('change');
         }
     };
 
@@ -311,13 +395,15 @@
         results: self.designStitchColourRestrictionAutocompleteResults,
         additionalParams: {
             designId: self.designId
-        }
+        },
+        label: 'Search for Stitch Colour by ID or Name'
     });
 
     self.legTypes = ko.observableArray(getLegTypes());
 
     self.designLegTypeIds = ko.observableArray([]);
     self.designLegTypes = ko.observableArray([]);
+    self.designDefaultLegTypeId = ko.observable();
 
     self.designLegTypesParams = {
         observable: self.designLegTypes,
@@ -357,6 +443,47 @@
             self.multiSelectSettings.value([]);
             self.multiSelectSettings.widget().value([]);
             self.multiSelectSettings.widget().trigger('change');
+        }
+    };
+
+    self.designLegTypesAvailableForDefault = ko.computed(() => {
+        if (self.designLegTypeIds().length) {
+            return self.legTypes().filter(cf => self.designLegTypeIds().indexOf(cf.LegTypeID) > -1);
+        } else {
+            return self.legTypes();
+        }
+    }, self);
+
+    self.designDefaultLegTypeParams = {
+        observable: self.designDefaultLegTypeId,
+        validate: self.designDefaultLegTypeId,
+        showClear: true,
+        width: 'auto',
+        label: 'Default Leg Type',
+        valuePrimitive: false,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        controlClass: 'form-control',
+        dropDownListSettings: {
+            value: self.designLegTypeId,
+            dataValueField: 'LegTypeID',
+            dataTextField: 'Name',
+            height: 300,
+            widget: ko.observable(),
+            data: self.designLegTypesAvailableForDefault,
+            valuePrimitive: true,
+            autoWidth: false,
+            autoBind: true,
+            autoClose: false,
+            optionLabel: ' ',
+            filter: false
+        },
+        clearFunction: function () {
+            var self = this;
+            self.dropDownListSettings.value(undefined);
+            self.dropDownListSettings.widget().value(undefined);
+            self.dropDownListSettings.widget().trigger('change');
         }
     };
 
@@ -851,8 +978,14 @@
             self.modelLegNotes.observable(newValue.LegNotes);
             self.modelComments.observable(newValue.Comments);
             self.modelImageId(newValue.ImageID || 117989);
-            self.designSeatCushionFillingIds(Enumerable.From(newValue.Design.SeatCushionFillings).Select('$.CushionFillingID').ToArray());
-            self.designBackCushionFillingIds(Enumerable.From(newValue.Design.BackCushionFillings).Select('$.CushionFillingID').ToArray());
+            window.setTimeout(() => {
+                self.designSeatCushionFillingsParams.multiSelectSettings.widget().value(Enumerable.From(newValue.Design.SeatCushionFillings).Select('$.CushionFillingID').ToArray());
+                self.designSeatCushionFillingsParams.multiSelectSettings.widget().trigger('change');
+                self.designBackCushionFillingsParams.multiSelectSettings.widget().value(Enumerable.From(newValue.Design.BackCushionFillings).Select('$.CushionFillingID').ToArray());
+                self.designBackCushionFillingsParams.multiSelectSettings.widget().trigger('change');
+                self.designLegTypesParams.multiSelectSettings.widget().value(Enumerable.From(newValue.Design.LegTypes).Select('$.LegTypeID').ToArray());
+                self.designLegTypesParams.multiSelectSettings.widget().trigger('change');
+            }, 0);
             self.designPermitMixedFabric.observable(newValue.Design.PermitMixedFabric);
 
             self.designFabricRestrictions([]);
@@ -875,13 +1008,21 @@
                 var supplier = Enumerable.From(self.suppliers()).Where(function (x) {
                     return x.SupplierID == ct.SupplierID;
                 }).SingleOrDefault();
-                if (supplier)
+                if (supplier) {
                     supplier.designCoverTypeIds.push(ct.CoverTypeID);
+                }
             }
 
-            //self.designCoverTypeIds(Enumerable.From(newValue.Design.CoverTypes).Select('$.CoverTypeID').ToArray());
+            self.suppliers().forEach(s => {
+                s.designCoverTypesParams.multiSelectSettings.widget.subscribe(nv => {
+                    window.setTimeout(() => {
+                        s.designCoverTypesParams.multiSelectSettings.widget().value(s.designCoverTypeIds());
+                        s.designCoverTypesParams.multiSelectSettings.widget().trigger('change');
+                    }, 0);
+                });
+            });
 
-            self.designLegTypeIds(Enumerable.From(newValue.Design.LegTypes).Select('$.LegTypeID').ToArray());
+            //self.designCoverTypeIds(Enumerable.From(newValue.Design.CoverTypes).Select('$.CoverTypeID').ToArray());
 
 
             ko.utils.arrayForEach(self.suppliers(), function (s) {
@@ -1192,9 +1333,12 @@
         self.modelComments.observable(undefined);
         self.modelImageId(undefined);
         self.designSeatCushionFillingIds([]);
+        self.designDefaultSeatCushionFillingId(undefined);
         self.designBackCushionFillingIds([]);
+        self.designDefaultBackCushionFillingId(undefined);
         //self.designCoverTypeIds([]);
         self.designLegTypeIds([]);
+        self.designDefaultLegTypeId([]);
         self.designPermitMixedFabric.observable(false);
         self.designFabricRestrictions([]);
         self.designStitchColourRestrictions([]);

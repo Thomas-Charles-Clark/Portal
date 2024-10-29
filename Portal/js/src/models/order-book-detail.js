@@ -28,6 +28,7 @@ const detailColumn = ({
         self.columnName.indexOf("ID") > -1 ||
         self.columnName.indexOf("Date") > -1 ||
         self.columnName.indexOf("LineStatus") > -1 ||
+        self.columnName.indexOf("OrderYear") > -1 ||
         dataSet.find(ds => isNaN(ds[self.columnName]));
 
     if (self.isNaN) {

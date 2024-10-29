@@ -723,7 +723,7 @@ namespace Portal.Utilities.Document
                                         PaddingBottom = line == orderLines.Last() ? 0 : 10
                                     };
 
-            var memoParagraphs = ProcessJsonParagraphs(rootPath, m.FormattedLineMemos, 9, false, true);
+                                    var memoParagraphs = ProcessJsonParagraphs(rootPath, m.FormattedLineMemos, 9, false, true);
 
                                     foreach (var flm in memoParagraphs)
                                     {

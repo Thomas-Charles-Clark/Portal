@@ -1,3 +1,20 @@
+:root {
+  --vsm-gutter: 0.25rem;
+  --sm-gutter: 0.5rem;
+  --m-gutter: 0.75rem;
+  --l-gutter: 1rem;
+  --mxl-gutter: 1.5rem;
+  --xl-gutter: 2rem;
+  --xxl-gutter: 3rem;
+  --disco-color: #e51f7c;
+  --letter-spacing-slight: 0.05rem;
+  --page-heading-colour: #44546b;
+}
+
+.input-group-lg .btn {
+  font-size: 1rem;
+}
+
 .mdc-select .k-dropdown-wrap.k-state-hover {
   background-color: white;
 }
@@ -79,9 +96,6 @@ h3.heading {
   grid-gap: 15px;
   grid-row-gap: 21px;
   grid-auto-rows: minmax(34px, auto);
-}
-.model-details .mdc-select .k-multiselect-wrap .k-button {
-  margin: 7px 2px 0px 4px;
 }
 .model-details > .design-flex-container {
   margin-top: 15px;
@@ -290,5 +304,16 @@ a.stitch-colour {
 
 .k-multiselect > .k-multiselect-wrap > .k-i-close {
   display: none !important;
+}
+
+.default-wrapper {
+  display: flex;
+  gap: 1rem;
+}
+.default-wrapper > div:first-of-type {
+  flex: 1;
+}
+.default-wrapper > div:last-of-type {
+  flex: 0 1 260px;
 }
 /*# sourceMappingURL=furniture-maintenance.css.map */

@@ -64,10 +64,9 @@ namespace Portal.Areas.Customers.Controllers
 
             var price = PortalDb.Prices.Where(p => p.ProductID == dto.ProductID && p.PriceListID == dto.PriceListID).SingleOrDefault();
 
-            throw new Exception("Oh no you don't! You need to lookup valueInc and valueEx from the product...");
-
             var gv = new GiftVoucher()
             {
+                CreatorUserID = "Portal: Check CreatorMemberID",
                 CreatorMemberID = User.Identity.GetUserId<int>(),
                 AuthorisedDT = now,
                 CreatedDT = now,
@@ -122,6 +121,23 @@ namespace Portal.Areas.Customers.Controllers
                 voucher.Reason = dto.Notes;
 
                 voucher.ExpiryDT = dto.ExpiryDT;
+
+                await PortalDb.SaveChangesAsync();
+            }
+
+            return Ok(new { });
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> Cancel([FromBody] PassGiftVoucherCancellation dto)
+        {
+            var voucher = PortalDb.GiftVouchers.SingleOrDefault(gv => gv.GiftVoucherID == dto.GiftVoucherID);
+
+            if (voucher != null)
+            {
+                voucher.CancelledDT = DateTime.Now;
+
+                voucher.Reason = dto.Notes;
 
                 await PortalDb.SaveChangesAsync();
             }
