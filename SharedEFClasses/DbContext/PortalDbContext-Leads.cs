@@ -828,6 +828,7 @@ namespace SharedEFClasses.Models
             leadAddressTable.Columns.Add("CountryID", typeof(short));
             leadAddressTable.Columns.Add("DefaultInvoiceAddress", typeof(bool));
             leadAddressTable.Columns.Add("DefaultDeliveryAddress", typeof(bool));
+            leadAddressTable.Columns.Add("DefaultVisitAddress", typeof(bool));
 
             leadAddressTable.Rows.Add(
                 objLeadAddressUpsert.leadAddressId,
@@ -839,7 +840,8 @@ namespace SharedEFClasses.Models
                 objLeadAddressUpsert.postcode,
                 objLeadAddressUpsert.countryId,
                 objLeadAddressUpsert.defaultInvoiceAddress,
-                objLeadAddressUpsert.defaultDeliveryAddress
+                objLeadAddressUpsert.defaultDeliveryAddress,
+                objLeadAddressUpsert.defaultVisitAddress
             );
 
             SqlParameter leadAddress = new SqlParameter("@LeadAddresses", leadAddressTable);

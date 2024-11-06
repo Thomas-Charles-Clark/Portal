@@ -6407,4 +6407,11 @@ tr.readonly {
   margin-bottom: 0;
   cursor: pointer;
 }
+
+#order-entry-tabs-container .panel-title {
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 /*# sourceMappingURL=order-products.css.map */

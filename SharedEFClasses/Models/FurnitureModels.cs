@@ -97,7 +97,7 @@ namespace SharedEFClasses.Models
 
         public short? DefaultBackCushionFillingID { get; set; }
 
-        public byte? DefaultLegTypeID { get; set; }
+        public short? DefaultLegID { get; set; }
 
         [ForeignKey("DefaultSeatCushionFillingID")]
         [InverseProperty("DefaultSeatCushionFillingForDesigns")]
@@ -107,9 +107,9 @@ namespace SharedEFClasses.Models
         [InverseProperty("DefaultBackCushionFillingForDesigns")]
         public virtual FurnitureCushionFilling DefaultBackCushionFilling { get; set; }
 
-        [ForeignKey("DefaultLegTypeID")]
-        [InverseProperty("DefaultLegTypeForDesigns")]
-        public virtual FurnitureLegType DefaultLegType { get; set; }
+        [ForeignKey("DefaultLegID")]
+        [InverseProperty("DefaultLegForDesigns")]
+        public virtual FurnitureLeg DefaultLeg { get; set; }
 
         [InverseProperty("Design")]
         public virtual ICollection<FurnitureDesign_SeatCushionFilling> SeatCushionFillings { get; set; }
@@ -280,6 +280,22 @@ namespace SharedEFClasses.Models
         public DateTime? DeletedDT { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool Deleted { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("DefaultLeg")]
+        public virtual ICollection<FurnitureDesign> DefaultLegForDesigns { get; set; }
+
+        [ForeignKey("LegTypeID")]
+        public virtual FurnitureLegType LegType { get; set; }
+
+        [NotMapped]
+        public string Label
+        {
+            get
+            {
+                return $"{LegType.Name} - {Name}";
+            }
+        }
     }
 
     [Table("LegType", Schema = "furniture")]
@@ -298,8 +314,8 @@ namespace SharedEFClasses.Models
         public virtual ICollection<FurnitureDesign_LegType> Designs { get; set; }
 
         [JsonIgnore]
-        [InverseProperty("DefaultLegType")]
-        public virtual ICollection<FurnitureDesign> DefaultLegTypeForDesigns { get; set; }
+        [InverseProperty("LegType")]
+        public virtual ICollection<FurnitureLeg> Legs { get; set; }
     }
 
     [Table("MaterialBreakdown", Schema = "furniture")]
@@ -590,9 +606,12 @@ namespace SharedEFClasses.Models
         public bool woodenArms { get; set; }
         public string comments { get; set; }
         public List<PassDesignCushionFillingRecord> designSeatCushionFillingIds { get; set; }
+        public short? designDefaultSeatCushionFillingId { get; set; }
         public List<PassDesignCushionFillingRecord> designBackCushionFillingIds { get; set; }
+        public short? designDefaultBackCushionFillingId { get; set; }
         public List<PassDesignSupplierCoverTypeRecord> designSupplierCoverTypeIds { get; set; }
         public List<PassDesignLegTypeRecord> designLegTypeIds { get; set; }
+        public byte? designDefaultLegId { get; set; }
         public bool designPermitMixedFabric { get; set; }
         public List<PassDesignFabricRestriction> designFabricRestrictions { get; set; }
         public List<PassDesignStitchColourRestriction> designStitchColourRestrictions { get; set; }
@@ -637,6 +656,7 @@ namespace SharedEFClasses.Models
     {
         public short supplierId { get; set; }
         public short coverTypeId { get; set; }
+        public bool isDefault { get; set; }
     }
 
     public class PassDesignLegTypeRecord

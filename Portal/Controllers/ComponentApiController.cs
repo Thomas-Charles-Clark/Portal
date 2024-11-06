@@ -641,7 +641,7 @@ namespace Portal.Controllers
 
             var results = await PortalDb.FetchHeldOrdersManagement(memberId);
 
-            var response = results.Data.AsQueryable().ToDataSourceResult(request);
+            var response = results.Data.ToList().AsQueryable().ToDataSourceResult(request);
 
             //foreach (var v in response.Data.Cast<HeldOrderSelectResult>().ToList())
             //{
@@ -658,7 +658,12 @@ namespace Portal.Controllers
             //    v.MertexMarket = PortalDb.Markets.Where(p => p.Code == v.Market).SingleOrDefault();
             //}
 
-            return Ok(new { kendoResult = response, holdReasons = results.HoldReasons });
+            return Ok(new 
+            {
+                kendoResult = response,
+                holdReasons = results.HoldReasons,
+                holdReasonSummaryPods = results.SummaryPods
+            });
         }
 
         [HttpGet]

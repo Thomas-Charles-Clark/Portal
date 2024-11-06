@@ -89,7 +89,7 @@
                 </span>
                 <span class="stock-info" data-bind="with: StockData">
                     <span data-bind="with: StockLocationA">
-                        <span data-bind="text: `${Name}: ${Available}${Units}`, class: AvailableClass"></span>
+                        <span data-bind="text: `${Name}: ${Available}${(Units.indexOf('r') == 0 ? ' ' + Units : Units)}`, class: AvailableClass"></span>
                     </span>
                 </span>
             </div>
@@ -120,7 +120,7 @@
                 </span>
                 <span class="stock-info" data-bind="with: StockData">
                     <span data-bind="with: StockLocationA">
-                        <span data-bind="text: `${Name}: ${Available}${Units}`, class: AvailableClass"></span>
+                        <span data-bind="text: `${Name}: ${Available}${(Units.indexOf('r') == 0 ? ' ' + Units : Units)}`, class: AvailableClass"></span>
                     </span>
                 </span>
             </div>
@@ -150,7 +150,7 @@
                 </span>
                 <span class="stock-info" data-bind="with: StockData">
                     <span data-bind="with: StockLocationA">
-                        <span data-bind="text: `${Name}: ${Available}${Units}`, class: AvailableClass"></span>
+                        <span data-bind="text: `${Name}: ${Available}${(Units.indexOf('r') == 0 ? ' ' + Units : Units)}`, class: AvailableClass"></span>
                     </span>
                 </span>
             </div>

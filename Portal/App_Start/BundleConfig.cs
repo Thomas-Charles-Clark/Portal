@@ -38,7 +38,11 @@ namespace Portal
             bundles.Add(new StyleBundle("~/bundles/css/components").Include(
                     $"{cssPrefix}/lib/tiny-slider/tiny-slider{cssSuffix}",
                     $"{cssPrefix}/models/order-search{cssSuffix}",
-                    $"{cssPrefix}/models/order-products{cssSuffix}",
+                    $"{cssPrefix}/models/order-products-a{cssSuffix}",
+                    $"{cssPrefix}/models/order-products-b{cssSuffix}",
+                    $"{cssPrefix}/models/order-products-c{cssSuffix}",
+                    $"{cssPrefix}/models/order-products-d{cssSuffix}",
+                    $"{cssPrefix}/models/order-products-e{cssSuffix}",
                     $"{cssPrefix}/models/stock-viewer{cssSuffix}",
                     $"{cssPrefix}/models/care-search{cssSuffix}",
                     $"{cssPrefix}/models/task-search{cssSuffix}",
@@ -151,7 +155,11 @@ namespace Portal
                 ).Include($"{cssPrefix}/lib/intl-tel-input/intl-tel-input{cssSuffix}", new CssRewriteUrlTransform()));
 
             bundles.Add(new StyleBundle("~/bundles/css/order-products").Include(
-                        $"{cssPrefix}/models/order-products{cssSuffix}"
+                        $"{cssPrefix}/models/order-products-a{cssSuffix}",
+                        $"{cssPrefix}/models/order-products-b{cssSuffix}",
+                        $"{cssPrefix}/models/order-products-c{cssSuffix}",
+                        $"{cssPrefix}/models/order-products-d{cssSuffix}",
+                        $"{cssPrefix}/models/order-products-e{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/product-maintenance").Include(

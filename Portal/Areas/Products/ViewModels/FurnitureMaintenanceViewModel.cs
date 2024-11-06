@@ -23,6 +23,8 @@ namespace Portal.Areas.Products.ViewModels
 
         public List<FurnitureLegType> LegTypes { get; set; }
 
+        public List<FurnitureLeg> Legs { get; set; }
+
         public FurnitureMaintenanceViewModel(
             int? preselectedModelId,
             List<FurnitureSupplier> suppliers,
@@ -31,6 +33,7 @@ namespace Portal.Areas.Products.ViewModels
             List<FurnitureCushionFilling> cushionFillings,
             List<FurnitureCoverType> coverTypes,
             List<FurnitureLegType> legTypes,
+            List<FurnitureLeg> legs,
             RoleProperties properties,
             string applicationHeading,
             string applicationSubHeading)
@@ -45,6 +48,7 @@ namespace Portal.Areas.Products.ViewModels
             CushionFillings = cushionFillings;
             CoverTypes = coverTypes;
             LegTypes = legTypes;
+            Legs = legs;
         }
     }
 }

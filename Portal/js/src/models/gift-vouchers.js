@@ -1926,6 +1926,8 @@ const giftVoucherViewModel = (({ rec, parent } = { rec: null, parent: null }) =>
 
     self.usedDt = ko.observable(self.UsedDT);
 
+    self.cancelledDt = ko.observable(self.CancelledDT);
+
     //#endregion
 
 

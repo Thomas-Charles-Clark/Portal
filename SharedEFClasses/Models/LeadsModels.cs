@@ -1161,6 +1161,7 @@ namespace SharedEFClasses.Models.Leads
         public short countryId { get; set; }
         public bool defaultInvoiceAddress { get; set; }
         public bool defaultDeliveryAddress { get; set; }
+        public bool defaultVisitAddress { get; set; }
     }
 
     public class PassNewTradeAccountAddress

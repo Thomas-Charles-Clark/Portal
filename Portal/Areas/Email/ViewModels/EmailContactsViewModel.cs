@@ -12,11 +12,14 @@ using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.TradeAccounts;
 using System.Data.Entity;
 using SharedEFClasses.Models.DotDigital;
+using Kendo.Mvc.UI.Html;
 
 namespace Portal.Areas.Email.ViewModels
 {
     public class EmailContactsViewModel : BaseViewModel
     {
+        public string DefaultOperatorCode { get; set; }
+
         public List<Country> Countries { get; set; }
 
         public List<Market> Markets { get; set; }
@@ -28,19 +31,21 @@ namespace Portal.Areas.Email.ViewModels
         public List<Source> Sources { get; set; }
 
         private EmailContactsViewModel(
+            string defaultOperatorCode,
             RoleProperties properties,
             string applicationHeading,
             string applicationSubHeading) : base(properties, applicationHeading, applicationSubHeading)
         {
-
+            DefaultOperatorCode = defaultOperatorCode;
         }
 
         public static async Task<EmailContactsViewModel> CreateAsync(
+            string defaultOperatorCode,
             RoleProperties properties,
             string applicationHeading,
             string applicationSubHeading)
         {
-            var result = new EmailContactsViewModel(properties, applicationHeading, applicationSubHeading);
+            var result = new EmailContactsViewModel(defaultOperatorCode, properties, applicationHeading, applicationSubHeading);
 
             await result.Initialise();
 
@@ -65,12 +70,12 @@ namespace Portal.Areas.Email.ViewModels
             {
                 74,  // Join Mailing List - (Portal - eCommerce)
                 201, // Join Mailing List - (Retail - Other)
-                202, // Join Mailing List - (Retail - Kings Road)
-                203, // Join Mailing List - (Retail - Marylebone)
                 204, // Join Mailing List - (Warehouse Sale)
                 205, // Join Mailing List - (Retail - Paris Showroom)
                 206, // Join Mailing List - (Retail - New York Showroom)
-                208  // Join Mailing List - (Retail - Munich Paint Shop)
+                208, // Join Mailing List - (Retail - Munich Paint Shop)
+                209, // Join Mailing List - (Retail - Kings Road)
+                210  // Join Mailing List - (Retail - Marylebone)
             };
 
             var sources = db.Sources.ToList();

@@ -18,6 +18,10 @@
     @Scripts.Render("~/bundles/js/datetime-picker")
 
 <script type="text/javascript">
+        window.getDefaultOperatorCode = () => {
+            return '@Html.Raw(Model.DefaultOperatorCode)';
+        }
+
         window.getCountries = () => {
             return @Html.Raw(JsonConvert.SerializeObject(Model.Countries));
         }
@@ -283,7 +287,7 @@
     <div class="tab-pane fade" id="new-tab" role="tabpanel" aria-labelledby="new-tab-btn">
         <form class="form" onsubmit="return false;">
             <div data-bind="component: { name: 'kendo-mdc-dropdown-component', params: newSourceParams }"></div>
-            <div class="mt-3" style="display: none" data-bind="visible: newSource() && newSource().Retail, component: { name: 'kendo-mdc-dropdown-component', params: newOperatorParams }"></div>
+            <div class="mt-3" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: newOperatorParams }"></div>
             <div class="mt-3" data-bind="component: { name: 'mdc-text-field-component', params: newEmailParams }"></div>
             <span class="validation-message" data-bind="visible: emailExists">
                 This email address already exists in our database

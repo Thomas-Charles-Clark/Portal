@@ -801,6 +801,10 @@
         anchor.click();
     }
 
+    self.clearOrderEnquiryFilters = () => {
+        self.resultGridParams.widget().dataSource.filter({});
+    }
+
     //#endregion
 
     return self;

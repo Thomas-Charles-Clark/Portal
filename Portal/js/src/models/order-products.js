@@ -6904,164 +6904,6 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
 
     };
 
-    //self.deserializeViewSettings = function () {
-    //    var params = new URLSearchParams(window.location.search);
-
-    //    /*
-    //         * x
-    //             * Clearance             [2]
-    //             * searchDisplay         [1]
-    //             * filterViewMode        [1]
-    //             * selectedWidth         [1]
-    //             * searchNew             [1]
-    //         *
-    //         * k
-    //             * selectedPattern       [8] (max 12 on display, but a byte for a key)
-    //             * selectedStock         [8]
-    //             * selectedMartindale    [8]
-    //             * selectedSize          [8]
-    //         *
-    //         * c
-    //             * selectedLaunch       [16] (maximum 4 on display any time, but I have to work with IDs)
-    //             * selectedItemType     [16] (we have a ridiculous number of potential itemTypes and I must be able to represent any of them)
-    //         *
-    //         * d
-    //             * ProductFilterID       [8]
-    //             * selectedColour        [8] (maximum 14 colours)
-    //             * selectedBrand         [8] (maximum 6 brands, but... easier to have nice round numbers of bits?)
-
-    //     */
-
-    //    if (params.has('d')) {
-    //        var dVal = parseInt(params.get('d'), 16);
-
-    //        console.log('deserialising d: parseInt(d, 16)', dVal);
-
-    //        console.log('deserialising d: binaryString', self.createBinaryString(dVal));
-
-    //        var productFilterId = dVal >>> 0x10; // but what if... we did not pad by 16, given that we | 0 | 0 the end of this. Hmph.
-
-    //                        // left shift first to clear out unused and ProductFilterID
-    //                        // then zero-fill right shift by 24 to clear out brandId
-    //                        // you should just be left with colourId.
-    //        var colourId = (dVal << 0x10) >>> 0x18;
-
-    //                        // same approach, but left shift 24 to clear 3/4 of the 32 bits away,
-    //                        // then zero-fill 24 to shift our 8 salient bits to their appropriate position again.
-    //        var brandId = (dVal << 0x18) >>> 0x18;
-
-    //        var productFilter = Enumerable.From(self.productFilterButtons()).Where(function (x) {
-    //            return x.ProductFilterID == productFilterId;
-    //        }).SingleOrDefault();
-
-    //        if (productFilter) {
-    //            self.searchWidget(productFilter);
-    //            $('#category-accordion a.category-heading[data-product-filter-group-id="' + productFilter.ProductFilterGroupID + '"] + .collapse').collapse('show');
-    //        } else {
-    //            return;
-    //        }
-
-    //        if (colourId != 0)
-    //            self.selectedColour(colourId);
-
-    //        if (brandId != 0)
-    //            self.selectedBrand(brandId);
-    //    }
-
-    //    if (params.has('c')) {
-    //        var cVal = parseInt(params.get('c'), 16);
-
-    //        var selectedLaunch = cVal >> 0x10;
-
-    //        if (selectedLaunch != 0)
-    //            self.selectedLaunch(selectedLaunch);
-
-    //        var selectedItemType = (cVal << 0x10) >>> 0x10;
-
-    //        if (selectedItemType != 0)
-    //            self.selectedItemType(selectedItemType);
-    //    }
-
-    //    if (params.has('k')) {
-    //        var kVal = parseInt(params.get('k'), 16);
-
-    //        var selectedPattern = kVal >> 0x18;
-
-    //        var selectedStock = (kVal << 0x08) >>> 0x18;
-
-    //        var selectedMartindale = (kVal << 0x10) >>> 0x18;
-
-    //        var selectedSize = (kVal << 0x18) >>> 0x18;
-
-    //        if (selectedPattern != 0)
-    //            self.selectedPattern(selectedPattern);
-
-    //        if (selectedStock != 0)
-    //            self.selectedStock(selectedStock);
-
-    //        if (selectedMartindale != 0)
-    //            self.selectedMartindale(selectedMartindale);
-
-    //        if (selectedSize != 0)
-    //            self.selectedSize(selectedSize);
-    //    }
-
-    //    if (params.has('x')) {
-
-    //        var xVal = parseInt(params.get('x'), 16);
-
-    //        var clearance = xVal >> 0x05;
-
-    //        var width = (xVal << 0x1b) >>> 0x1f; 
-
-    //        var searchNew = (xVal << 0x1d) >>> 0x1f;
-
-    //        var filterViewMode = (xVal << 0x1e) >>> 0x1f;
-
-    //        var searchDisplay = (xVal << 0x1f) >>> 0x1f;
-
-    //        var clearanceToSet = null;
-
-    //        switch (clearance) {
-    //            case 2:
-    //                // noop
-    //                break;
-    //            case 1:
-    //            case 0:
-    //                clearanceToSet = clearance;
-    //                break;
-    //            default:
-    //                break;
-    //        }
-
-    //        var widthToSet = undefined;
-
-    //        switch (width) {
-    //            case 0:
-    //                break;
-    //            case 1:
-    //                widthToSet = 0;
-    //                break;
-    //            case 2:
-    //                widthToSet = 1;
-    //                break;
-    //            default: break;
-    //        }
-
-    //        self.clearance(clearanceToSet);
-
-    //        self.searchNew(searchNew);
-
-    //        self.selectedWidth(widthToSet);
-
-    //        self.filterViewMode(filterViewMode);
-
-    //        self.searchDisplay(searchDisplay);
-    //    }
-
-    //    self.show();
-    //}
-
     self.fetchBasket = function (complete, setMessage, recalculatePrices) {
         setMessage = typeof setMessage === 'undefined' ? true : setMessage;
         recalculatePrices = typeof recalculatePrices === 'undefined' ? true : recalculatePrices;
@@ -14218,6 +14060,19 @@ var bespokeFurnitureFactory = function (parent) {
         window.setTimeout(function () {
             if (newValue) {
                 if (newValue.hasOwnProperty('options')) {
+
+                    if (newValue.options.hasOwnProperty('defaultSeatCushionFillingId')) {
+                        self.seatFillingId(newValue.options.defaultSeatCushionFillingId);
+                    }
+
+                    if (newValue.options.hasOwnProperty('defaultBackCushionFillingId')) {
+                        self.backFillingId(newValue.options.defaultBackCushionFillingId);
+                    }
+
+                    if (newValue.options.hasOwnProperty('defaultLegId')) {
+                        self.legId(newValue.options.defaultLegId);
+                    }
+
                     if (newValue.options.hasOwnProperty('backFillings')) {
                         if (newValue.options.backFillings.length == 1 && self.backFillingId() == null) {
                             self.backFillingParams.dropDownListSettings.widget().value(self.availableBackFillings()[0].cushionFillingId);
@@ -17077,6 +16932,13 @@ var memberBasketFetcher = function (parent) {
             dataSource: getMyHeldOrderImportStatuses()
         }
     }, {
+        field: 'BasketID',
+        title: 'Basket ID',
+        width: 140,
+        filterable: {
+            multiple: false
+        }
+    }, {
         field: 'HeldReason',
         title: 'Held Reason',
         width: 140,
@@ -17891,8 +17753,21 @@ var memberBasketFetcher = function (parent) {
                     filterToggle(false);
                 });
             }
+        },
+        filterMenuOpen: (e) => {
+            if (self.customResultStatusFilterActive()) {
+                window.setTimeout(function () {
+                    $('th[data-field="Status"]', e.sender.element).find('a.k-grid-filter').addClass('k-state-active');
+                }, 0);
+            } else {
+                $('th[data-field="Status"]', e.sender.element).find('a.k-grid-filter').removeClass('k-state-active');
+            }
         }
     };
+
+    self.clearResultGridFilters = function () {
+        self.resultGridWidget().dataSource.filter({});
+    }
 
     self.focDeliveryGridDataSourceRead = function (options) {
 
@@ -18199,6 +18074,22 @@ var memberBasketFetcher = function (parent) {
                     filterToggle(false);
                 });
             }
+        },
+        filterMenuOpen: (e) => {
+            if (self.customImportStatusFilterActive()) {
+                window.setTimeout(function () {
+                    $('th[data-field="Status"]', e.sender.element).find('a.k-grid-filter').addClass('k-state-active');
+                }, 0);
+            } else {
+                $('th[data-field="Status"]', e.sender.element).find('a.k-grid-filter').removeClass('k-state-active');
+            }
+            if (self.customImportSourceFilterActive()) {
+                window.setTimeout(function () {
+                    $('th[data-field="OrderImportSourceID"]', e.sender.element).find('a.k-grid-filter').addClass('k-state-active');
+                }, 0);
+            } else {
+                $('th[data-field="OrderImportSourceID"]', e.sender.element).find('a.k-grid-filter').removeClass('k-state-active');
+            }
         }
     };
 
@@ -18248,6 +18139,8 @@ var memberBasketFetcher = function (parent) {
         filterable: false
     }];
 
+    self.holdReasonSummaryPods = ko.observableArray([]);
+
     self.heldOrdersGridDataSourceRead = function (options) {
 
         var webapi = new kendo.data.transports.webapi({ prefix: "" });
@@ -18283,6 +18176,31 @@ var memberBasketFetcher = function (parent) {
                 });
 
                 self.holdReasons = data.holdReasons;
+
+                self.holdReasonSummaryPods([]);
+
+                if (data.holdReasonSummaryPods.length) {
+
+                    let holdReasonPods = data.holdReasonSummaryPods;
+
+                    holdReasonPods = holdReasonPods.sort((a, b) => {
+                        if (a.RoleSortOrder > b.RoleSortOrder) {
+                            return 1;
+                        } else if (a.RoleSortOrder < b.RoleSortOrder) {
+                            return -1;
+                        }
+
+                        if (a.HoldReasonGroupSortOrder > b.HoldReasonGroupSortOrder)
+                            return 1;
+                        else if (a.HoldReasonGroupSortOrder < b.HoldReasonGroupSortOrder) { 
+                            return -1;
+                        }
+
+                        return 0;
+                    })
+
+                    self.holdReasonSummaryPods(data.holdReasonSummaryPods);
+                }
 
                 let element = document.querySelector("#held-order-filter-list");
 
@@ -18704,9 +18622,18 @@ var memberBasketFetcher = function (parent) {
                     self.selectedHoldReasonIds = [];
                 });
             }
+        },
+        filterMenuOpen: (e) => {
+            if (self.customHeldReasonFilterActive()) {
+                window.setTimeout(function () {
+                    $('th[data-field="HeldReasons"]', e.sender.element).find('a.k-grid-filter').addClass('k-state-active');
+                }, 0);
+            } else {
+                $('th[data-field="HeldReasons"]', e.sender.element).find('a.k-grid-filter').removeClass('k-state-active');
+            }
         }
     }
-
+ 
     self.clearHeldOrdersGridFilters = function () {
         self.customHeldReasonFilterActive(false);
         self.heldOrdersGridWidget().dataSource.filter({});
@@ -19107,12 +19034,14 @@ var memberBasketFetcher = function (parent) {
                 });
             }
         },
+        filterMenuOpen: (e) => {
+            if (self.customMyHeldReasonFilterActive()) {
+                $('th[data-field="HeldReasons"]').find('a.k-grid-filter').addClass('k-state-active');
+            } else {
+                $('th[data-field="HeldReasons"]').find('a.k-grid-filter').removeClass('k-state-active');
+            }
+        },
         noDataTemplate: 'There are no Held Orders for your consideration.'
-    }
-
-    self.clearMyHeldOrdersGridFilters = function () {
-        self.customHeldReasonFilterActive(false);
-        self.heldOrdersGridWidget().dataSource.filter({});
     }
 
     self.initBasketStatus = () => {
@@ -19272,6 +19201,119 @@ var memberBasketFetcher = function (parent) {
             }
         }
     };
+
+    self.clearMyHeldOrdersGridFilters = function () {
+        self.myHeldOrdersGridWidget().dataSource.filter({});
+    }
+
+    self.clearHeldOrdersGridFilters = function () {
+        self.customHeldReasonFilterActive(false);
+        self.heldOrdersGridWidget().dataSource.filter({});
+    }
+
+    self.clearImportGridFilters = () => {
+        self.importResultGridWidget().dataSource.filter({});
+    }
+
+    self.clearCustomerHeldGridFilters = () => {
+        self.customerHeldBasketsGridWidget().dataSource.filter({});
+    }
+
+    self.clearSubmittedGridFilters = () => {
+        self.submittedGridWidget().dataSource.filter({});
+    }
+
+    //#region Events
+
+    self.parent.ready.subscribe(nv => {
+        if (nv) {
+
+            let basketIdToLoad = window.getBasketIdToLoad();
+
+            if (basketIdToLoad) {
+                console.log(`basketIdToLoad`, basketIdToLoad);
+            }
+
+            let transactionIdToLoad = window.getTransactionIdToLoad();
+
+            if (transactionIdToLoad) {
+                console.log(`transactionIdToLoad`, transactionIdToLoad);
+            }
+
+            let orderHeadIdToLoad = window.getOrderHeadIdToLoad();
+
+            if (orderHeadIdToLoad) {
+                console.log(`orderHeadIdToLoad`, orderHeadIdToLoad);
+            }
+
+            let heldOrderReasonIdToLoad = window.getHeldOrderReasonIdToLoad();
+
+            if (heldOrderReasonIdToLoad) {
+                console.log(`heldOrderReasonIdToLoad`, heldOrderReasonIdToLoad);
+            }
+
+            let heldOrderReasonGroupIdToLoad = window.getHeldOrderReasonGroupIdToLoad();
+
+            if (heldOrderReasonGroupIdToLoad) {
+                console.log(`heldOrderReasonGroupIdToLoad`, heldOrderReasonGroupIdToLoad);
+            }
+
+            let tabToLoad = window.getTabToLoad();
+
+            let gridWidget = null;
+
+            switch (tabToLoad) {
+                case "mySavedOrders":
+                    gridWidget = self.resultGridWidget();
+                    break;
+                case "myHeldOrders":
+                    gridWidget = self.myHeldOrdersGridWidget();
+                    break;
+                case "customerHeldOrders":
+                    gridWidget = self.customerHeldBasketsGridWidget();
+                    break;
+                case "ordersToApprove":
+                    gridWidget = self.heldOrdersGridWidget();
+                    break;
+                default: break;
+            }
+
+            if (gridWidget) {
+                let filters = [];
+
+                if (tabToLoad == "ordersToApprove") {
+                    if (basketIdToLoad) {
+                        filters.push({ field: 'Reference', operator: 'contains', value: basketIdToLoad.toString() });
+                    }
+                    if (transactionIdToLoad) {
+                        filters.push({ field: 'Reference', operator: 'contains', value: transactionIdToLoad.toString() });
+                    }
+                    if (orderHeadIdToLoad) {
+                        filters.push({ field: 'Reference', operator: 'contains', value: orderHeadIdToLoad.toString() });
+                    }
+                    if (heldOrderReasonIdToLoad) {
+                        filters.push({ field: 'HoldReasonIDsString', operator: 'contains', value: `~${heldOrderReasonIdToLoad}~` });
+                        self.selectedHoldReasonIds = [heldOrderReasonIdToLoad];
+                        self.customHeldReasonFilterActive(true);
+                    }
+                    if (heldOrderReasonGroupIdToLoad) {
+                        filters.push({ field: 'HoldReasonGroupIDsString', operator: 'contains', value: `~${heldOrderReasonGroupIdToLoad}~` });
+                        self.customHeldReasonFilterActive(true);
+                    }
+                }
+                else {
+                    if (basketIdToLoad) {
+                        filters.push({ field: 'BasketID', operator: 'eq', value: basketIdToLoad.toString() });
+                    }
+                }
+
+                if (filters.length)
+                    gridWidget.dataSource.filter(filters);
+            }
+        }
+    })
+
+    //#endregion
 }
 
 var dispatchFactory = function (parent) {

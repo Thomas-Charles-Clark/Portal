@@ -65,11 +65,11 @@ const emailContactsViewModel = (() => {
 
     self.newSource = ko.observable();
 
-    self.newOperatorCode = ko.observable().extend({
+    self.newOperatorCode = ko.observable(getDefaultOperatorCode()).extend({
         required: {
             params: true,
             onlyIf: () => {
-                return self.validateNewContactNow() && self.newSource() && self.newSource().Retail;
+                return self.validateNewContactNow();
             },
             message: "You must select an operator"
         }
@@ -384,7 +384,7 @@ const emailContactsViewModel = (() => {
             valueMapper: function (options) {
                 if (options.value) {
                     $.ajax({
-                        url: `/odata/Mertex_Operators/Default.Mertex_OperatorValueMapper(code=${options.value})`,
+                        url: `/odata/Mertex_Operators/Default.Mertex_OperatorValueMapper(code='${options.value}')`,
                         type: 'GET',
                         success: function (data) {
                             options.success(data.value);
@@ -629,7 +629,7 @@ const emailContactsViewModel = (() => {
 
     self.newContactErrors = ko.validation.group([
         self.newSourceId,
-        self.newOperatorId,
+        self.newOperatorCode,
         self.newEmail,
         self.newFullName,
         self.newDotDigitalAccountId,

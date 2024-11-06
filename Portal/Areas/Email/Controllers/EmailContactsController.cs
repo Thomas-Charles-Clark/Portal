@@ -33,6 +33,7 @@ namespace Portal.Areas.Email.Controllers
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
             var model = await EmailContactsViewModel.CreateAsync(
+                user.DefaultMertexOperatorCode,
                 user.GetActiveRoleProperties(),
                 application.Heading,
                 application.SubHeading);

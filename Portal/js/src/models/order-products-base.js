@@ -24,6 +24,8 @@ var orderProductsBaseViewModel = function () {
     //    self.widthWatch(self.getWindowWidth());
     //});
 
+    self.ready = ko.observable(false);
+
     self.tradeAccountSelector = new tradeAccountSelector(undefined, function (selectedValue) {
         console.log('tradeAccountSelector select function hit', selectedValue)
     }, self);

@@ -44,6 +44,7 @@ namespace Portal.Areas.Products.Controllers
                 PortalDb.FurnitureCushionFillings.Where(p => p.Deleted == false).OrderBy(p => p.CushionFillingID).ToList(),
                 PortalDb.FurnitureCoverTypes.Where(p => p.Deleted == false).OrderBy(p => p.CoverTypeID).ToList(),
                 PortalDb.FurnitureLegTypes.Where(p => p.Deleted == false).OrderBy(p => p.LegTypeID).ToList(),
+                PortalDb.FurnitureLegs.Where(p => p.Deleted == false).OrderBy(p => p.LegID).ToList(),
                 user.GetActiveRoleProperties(),
                 application.Heading,
                 application.SubHeading);

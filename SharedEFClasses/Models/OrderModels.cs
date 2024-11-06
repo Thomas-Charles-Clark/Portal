@@ -1224,6 +1224,10 @@ namespace SharedEFClasses.Models.Orders
 
         public DateTime HeldSince { get; set; }
 
+        public string HoldReasonIDsString { get; set; }
+
+        public string HoldReasonGroupIDsString { get; set; }
+
         public string Documents { get; set; }
 
         public object documents
@@ -1333,6 +1337,17 @@ namespace SharedEFClasses.Models.Orders
         }
     }
 
+    public class HoldReasonSummaryPod
+    {
+        public string RoleName { get; set; }
+        public int RoleSortOrder { get; set; }
+        public int RoleID { get; set; }
+        public string HoldReasonGroupName { get; set; }
+        public short HoldReasonGroupSortOrder { get; set; }
+        public short HoldReasonGroupID { get; set; }
+        public int Count { get; set; }
+    }
+
     public class HoldReasonSelectResult
     {
         public short HoldReasonGroupID { get; set; }
@@ -1379,6 +1394,8 @@ namespace SharedEFClasses.Models.Orders
         public IEnumerable<HeldOrderSelectResult> Data { get; set; }
 
         public IEnumerable<HoldReasonSelectResult> HoldReasons { get; set; }
+
+        public IEnumerable<HoldReasonSummaryPod> SummaryPods { get; set; }
     }
 
     public class PassBasketTradeAccount

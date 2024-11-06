@@ -564,7 +564,8 @@ namespace SharedEFClasses.Models
             return new HeldOrderResultWrapper()
             {
                 Data = await reader.ReadAsync<HeldOrderSelectResult>(),
-                HoldReasons = await reader.ReadAsync<HoldReasonSelectResult>()
+                HoldReasons = await reader.ReadAsync<HoldReasonSelectResult>(),
+                SummaryPods = await reader.ReadAsync<HoldReasonSummaryPod>()
             };
 
             //// Create a SQL command to execute the sproc
@@ -3206,10 +3207,11 @@ namespace SharedEFClasses.Models
 
             coverTypes.Columns.Add("CoverTypeID", typeof(short));
             coverTypes.Columns.Add("SupplierID", typeof(short));
+            coverTypes.Columns.Add("Default", typeof(bool));
 
             foreach (var r in objSave.designSupplierCoverTypeIds)
             {
-                coverTypes.Rows.Add(r.coverTypeId, r.supplierId);
+                coverTypes.Rows.Add(r.coverTypeId, r.supplierId, r.isDefault);
             }
 
             var legTypes = new DataTable();
@@ -3274,11 +3276,13 @@ namespace SharedEFClasses.Models
                     SqlDbType = SqlDbType.Structured,
                     TypeName = "[furniture].[CushionFillingIDTableType]"
                 },
+                new SqlParameter("@DesignDefaultSeatCushionFillingID", objSave.designDefaultSeatCushionFillingId),
                 new SqlParameter("@DesignBackCushionFillingIDs",  backCushionFillings)
                 {
                     SqlDbType = SqlDbType.Structured,
                     TypeName = "[furniture].[CushionFillingIDTableType]"
                 },
+                new SqlParameter("@DesignDefaultBackCushionFillingID", objSave.designDefaultBackCushionFillingId),
                 new SqlParameter("@CoverTypeIDsSupplierIDs",  coverTypes)
                 {
                     SqlDbType = SqlDbType.Structured,
@@ -3289,6 +3293,7 @@ namespace SharedEFClasses.Models
                     SqlDbType = SqlDbType.Structured,
                     TypeName = "[furniture].[LegTypeIDTableType]"
                 },
+                new SqlParameter("@DefaultLegID", objSave.designDefaultLegId),
                 new SqlParameter("@ModelDetails",  recordsDt)
                 {
                     SqlDbType = SqlDbType.Structured,

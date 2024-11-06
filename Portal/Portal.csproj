@@ -1603,7 +1603,7 @@
     <Content Include="css\src\models\order-book-user-defined-filters.scss" />
     <Content Include="css\src\models\order-book.scss" />
     <Content Include="css\src\models\order-import.scss" />
-    <Content Include="css\src\models\order-products.scss" />
+    <Content Include="css\src\models\order-products-e.scss" />
     <Content Include="css\src\models\order-returns.scss" />
     <Content Include="css\src\models\order-search.scss" />
     <Content Include="css\src\models\order-tracking.scss" />
@@ -2938,6 +2938,10 @@
     <Content Include="css\src\models\pattern-books.scss" />
     <Content Include="css\src\models\gift-vouchers.scss" />
     <Content Include="css\src\models\email-contacts.scss" />
+    <Content Include="css\src\models\order-products-a.scss" />
+    <Content Include="css\src\models\order-products-c.scss" />
+    <Content Include="css\src\models\order-products-b.scss" />
+    <Content Include="css\src\models\order-products-d.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
