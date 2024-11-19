@@ -711,7 +711,6 @@ table.applied-treatment-table > tbody > tr > td > button.close:not(.text) > span
 .k-popup .k-list .k-item {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
 }
 .k-popup .k-list .k-item > .k-group {
   max-width: 80px;

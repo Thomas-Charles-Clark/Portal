@@ -587,6 +587,13 @@
     <Compile Include="Areas\Marketing\Controllers\MarketingBudgetController.cs" />
     <Compile Include="Areas\Marketing\Controllers\MarketingBudgetAPIController.cs" />
     <Compile Include="Areas\Marketing\ViewModels\MarketingBudgetViewModel.cs" />
+    <Compile Include="Areas\Marylebone\Controllers\MarylebonePackingAPIController.cs" />
+    <Compile Include="Areas\Marylebone\Controllers\MarylebonePackingController.cs" />
+    <Compile Include="Areas\Marylebone\MaryleboneAreaRegistration.cs" />
+    <Compile Include="Areas\Marylebone\Models\PassBoxDestination.cs" />
+    <Compile Include="Areas\Marylebone\Models\PassBoxIdentifier.cs" />
+    <Compile Include="Areas\Marylebone\Models\PassBoxingItem.cs" />
+    <Compile Include="Areas\Marylebone\ViewModels\MarylebonePackingViewModel.cs" />
     <Compile Include="Areas\Order-Book\Controllers\OrderBookDetailController.cs" />
     <Compile Include="Areas\Order-Book\OrderBookAreaRegistration.cs" />
     <Compile Include="Areas\Order-Book\Controllers\OrderBookApiController.cs" />
@@ -662,6 +669,7 @@
     <Compile Include="Controllers\ODataControllers\QualitiesController.cs" />
     <Compile Include="Controllers\ODataControllers\SalesAreasController.cs" />
     <Compile Include="Controllers\ODataControllers\SalesAgentsController.cs" />
+    <Compile Include="Controllers\ODataControllers\HoldReasonsController.cs" />
     <Compile Include="Controllers\ODataControllers\SalesRepresentativesController.cs" />
     <Compile Include="Controllers\ODataControllers\SalesMarketsController.cs" />
     <Compile Include="Controllers\ODataControllers\OrderLineDetailedStatusesController.cs" />
@@ -1154,7 +1162,11 @@
     <Content Include="Content\images\product-tests\usage\4.gif" />
     <Content Include="Content\images\product-tests\usage\5.gif" />
     <Content Include="Content\mdc\css\mdc-custom.min.css" />
+    <Content Include="Content\sounds\box-created.mp3" />
     <Content Include="Content\sounds\notification-sound.mp3" />
+    <Content Include="Content\sounds\scan-failed_1.mp3" />
+    <Content Include="Content\sounds\scan-failed_2.mp3" />
+    <Content Include="Content\sounds\scan-successful.mp3" />
     <Content Include="Content\tempus-dominus\tempus-dominus.css">
       <DependentUpon>tempus-dominus.scss</DependentUpon>
     </Content>
@@ -1706,6 +1718,7 @@
     <Content Include="js\src\models\email-contacts.js" />
     <Content Include="js\src\models\emailer.js" />
     <Content Include="js\src\models\extensions.js" />
+    <Content Include="js\src\models\marylebone-boxing.js" />
     <Content Include="js\src\models\fenwick-invoicing.js" />
     <Content Include="js\src\models\functions-new.js" />
     <Content Include="js\src\models\functions.js" />
@@ -2540,6 +2553,8 @@
     <Content Include="Areas\Customers\Views\GiftVouchers\GiftVouchers.cshtml" />
     <Content Include="Areas\Email\Views\web.config" />
     <Content Include="Areas\Email\Views\Contacts\EmailContacts.cshtml" />
+    <Content Include="Areas\Marylebone\Views\web.config" />
+    <Content Include="Areas\Marylebone\Views\Packing\MarylebonePacking.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
     <Content Include="Areas\Stock\Views\RangeManagement\RangeManagement.cshtml" />
     <None Include="compilerconfig.json" />
@@ -2942,6 +2957,7 @@
     <Content Include="css\src\models\order-products-c.scss" />
     <Content Include="css\src\models\order-products-b.scss" />
     <Content Include="css\src\models\order-products-d.scss" />
+    <Content Include="css\src\models\marylebone-boxing.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -3957,6 +3973,8 @@
     <Folder Include="Areas\Invoices\Views\Shared\" />
     <Folder Include="Areas\Marketing\Models\" />
     <Folder Include="Areas\Marketing\Views\Messages\" />
+    <Folder Include="Areas\Marylebone\Data\" />
+    <Folder Include="Areas\Marylebone\Views\Shared\" />
     <Folder Include="Areas\Order-Book\Data\" />
     <Folder Include="Areas\Orders\Views\Shared\" />
     <Folder Include="Areas\Paint\Data\" />

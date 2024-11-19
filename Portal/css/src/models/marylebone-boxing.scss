@@ -1,0 +1,201 @@
+﻿@import "common.scss";
+
+#marylebone-tabs-content {
+    background-color: $white;
+    border: 1px solid $gray-300;
+    border-top: 0;
+    padding: $l-gutter;
+}
+
+#new-box-modal {
+    .modal-header {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .modal-body {
+        .mdc-validating-field {
+            textarea {
+                transform: translate3d(0,0,0);
+                padding: $l-gutter;
+                resize: none;
+                margin: 0;
+                font-size: 2rem;
+            }
+
+            .controls {
+                max-height: unset;
+                align-self: center;
+            }
+        }
+    }
+}
+
+.k-grid {
+    tr {
+        cursor: pointer;
+
+        td {
+            &.k-state-focused {
+                box-shadow: none;
+            }
+        }
+    }
+}
+
+#box-container {
+    h4 {
+        margin: $sm-gutter 0 $l-gutter 0;
+        padding: $m-gutter 0;
+        border-bottom: 1px solid $gray-300;
+        font-size: 3rem !important;
+        display: flex;
+        justify-content: space-between;
+        gap: $xxl-gutter;
+
+        > span {
+            flex: 1;
+            text-align: center;
+        }
+
+        > div {
+            flex: 1;
+            justify-content: center;
+
+            .input-group {
+                width: 240px;
+            }
+        }
+    }
+
+    .form-control {
+        display: flex;
+        align-items: center;
+        gap: $xl-gutter;
+        padding: 0;
+        border: 0;
+
+        & + .form-control {
+            margin-top: $l-gutter;
+        }
+
+        .form-label {
+            font-size: $font-size-lg;
+            margin: 0;
+        }
+
+        .mdc-validating-field {
+            textarea {
+                transform: translate3d(0,0,0);
+                padding: 1.1rem;
+                resize: none;
+                margin: 0;
+                font-size: 2rem;
+            }
+
+            .controls {
+                max-height: unset;
+                align-self: center;
+            }
+        }
+    }
+
+    #boxing-grid {
+        display: grid;
+        grid-template-columns: 1fr 1px 1fr;
+        gap: $xl-gutter;
+        margin-bottom: $l-gutter;
+
+        .vr {
+            height: 100%;
+        }
+
+        #searcher {
+            width: 100%;
+
+            #search-term {
+                flex: 1;
+                transform: translate3d(0,0,0);
+
+
+                .mdc-notched-outline__trailing {
+                    border-top-right-radius: 0;
+                    border-bottom-right-radius: 0;
+                }
+            }
+        }
+
+        #scanner-results {
+            max-height: 600px;
+            overflow-y: auto;
+            font-size: $font-size-md;
+            margin-bottom: 0;
+            min-height: 8px;
+
+            .text-italic {
+                color: $gray-600;
+            }
+
+            .scan-result-success {
+                color: $green-300;
+            }
+
+            .scan-result-warning {
+                color: $orange-400;
+            }
+
+            .scan-result-failure {
+                color: $red-400;
+                margin: $l-gutter 0;
+            }
+
+            .scan-result-removal {
+                color: $body-color;
+            }
+        }
+    }
+
+    #contents-list {
+        margin-top: $l-gutter;
+
+        .list-group-item {
+            padding: 0;
+            border: 0;
+
+            & + .list-group-item {
+                margin-top: $m-gutter;
+            }
+
+            .boxed-product-display {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                border: 1px solid $gray-500;
+                border-radius: $border-radius;
+                color: $gray-600;
+
+                span {
+                    padding: 0 $m-gutter;
+                }
+
+                span:last-of-type {
+                    margin-right: $l-gutter;
+                }
+
+                .btn-increase {
+                    border-radius: 0;
+                    width: 60px;
+                    margin-right: $l-gutter;
+                }
+
+                .btn-decrease {
+                    border-top-left-radius: 0;
+                    border-bottom-left-radius: 0;
+                    border-top-right-radius: 2px;
+                    border-bottom-right-radius: 2px;
+                    width: 60px;
+                }
+            }
+        }
+    }
+}

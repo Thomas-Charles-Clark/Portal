@@ -16683,6 +16683,149 @@ var memberBasketFetcher = function (parent) {
 
     self.customerHeldBasketsCount = ko.observable();
 
+    self.displayPrefilteredString = ko.observable(false);
+
+    self.prefilteredDisplayProperty = ko.observable();
+
+    self.prefilteredDisplayString = ko.computed(() => {
+
+        let property = self.prefilteredDisplayProperty();
+
+        if (self.displayPrefilteredString()) {
+
+            if (property)
+                return `This display is filtered to ${property}`;
+            else
+                return null;
+
+        }
+
+        return null;
+
+    }, self);
+
+
+    self.customHeldReasonFilterActive = ko.observable(false);
+
+    
+    // []
+    self.buildInitialFilters = () => {
+
+        let filters = [];
+
+        let basketIdToLoad = window.getBasketIdToLoad();
+
+        if (basketIdToLoad) {
+            console.log(`basketIdToLoad`, basketIdToLoad);
+            self.prefilteredDisplayProperty(`Basket ID: ${basketIdToLoad}`);
+        }
+
+        let marketToLoad = window.getBasketIdToLoad();
+
+        if (marketToLoad) {
+            console.log(`marketToLoad`, marketToLoad);
+            self.prefilteredDisplayProperty(`Market: ${marketToLoad}`);
+        }
+        
+        let transactionIdToLoad = window.getTransactionIdToLoad();
+
+        if (transactionIdToLoad) {
+            console.log(`transactionIdToLoad`, transactionIdToLoad);
+            self.prefilteredDisplayProperty(`Transaction ID: ${transactionIdToLoad}`);
+        }
+
+        let orderHeadIdToLoad = window.getOrderHeadIdToLoad();
+
+        if (orderHeadIdToLoad) {
+            console.log(`orderHeadIdToLoad`, orderHeadIdToLoad);
+            self.prefilteredDisplayProperty(`Order ID: ${orderHeadIdToLoad}`);
+        }
+
+        let heldOrderReasonIdToLoad = window.getHeldOrderReasonIdToLoad();
+
+        if (heldOrderReasonIdToLoad) {
+            console.log(`heldOrderReasonIdToLoad`, heldOrderReasonIdToLoad);
+            self.prefilteredDisplayProperty(`Held Order Reason ID: ${heldOrderReasonIdToLoad}`);
+        }
+
+        let heldOrderReasonGroupIdToLoad = window.getHeldOrderReasonGroupIdToLoad();
+
+        if (heldOrderReasonGroupIdToLoad) {
+            console.log(`heldOrderReasonGroupIdToLoad`, heldOrderReasonGroupIdToLoad);
+            self.prefilteredDisplayProperty(`Held Order Reason Group ID: ${heldOrderReasonGroupIdToLoad}`);
+        }
+
+        let tabToLoad = window.getTabToLoad();
+
+        //let gridWidget = null;
+
+        //switch (tabToLoad) {
+        //    case "mySavedOrders":
+        //        gridWidget = self.resultGridWidget();
+        //        break;
+        //    case "myHeldOrders":
+        //        gridWidget = self.myHeldOrdersGridWidget();
+        //        break;
+        //    case "customerHeldOrders":
+        //        gridWidget = self.customerHeldBasketsGridWidget();
+        //        break;
+        //    case "ordersToApprove":
+        //        gridWidget = self.heldOrdersGridWidget();
+        //        break;
+        //    default: break;
+        //}
+
+        //if (gridWidget) {
+
+            if (tabToLoad == "ordersToApprove") {
+                if (basketIdToLoad) {
+                    filters.push({ field: 'Reference', operator: 'contains', value: basketIdToLoad.toString() });
+                }
+                if (transactionIdToLoad) {
+                    filters.push({ field: 'Reference', operator: 'contains', value: transactionIdToLoad.toString() });
+                }
+                if (orderHeadIdToLoad) {
+                    filters.push({ field: 'Reference', operator: 'contains', value: orderHeadIdToLoad.toString() });
+                }
+                if (marketToLoad) {
+                    filters.push({ field: 'Market', operator: 'eq', value: marketToLoad });
+                    self.heldOrdersMarketParams.dropDownListSettings.widget().value(marketToLoad);
+                    self.heldOrdersMarketParams.dropDownListSettings.widget().trigger('change');
+                }
+                if (heldOrderReasonIdToLoad) {
+                    filters.push({ field: 'HoldReasonIDsString', operator: 'contains', value: `~${heldOrderReasonIdToLoad}~` });
+
+                    self.heldOrderReasonIdToLoad = heldOrderReasonIdToLoad;
+
+                    self.customHeldReasonFilterActive(true);
+                }
+                if (heldOrderReasonGroupIdToLoad) {
+
+                    self.heldOrderReasonGroupIdToLoad = heldOrderReasonGroupIdToLoad;
+
+                    filters.push({ field: 'HoldReasonGroupIDsString', operator: 'contains', value: `~${heldOrderReasonGroupIdToLoad}~` });
+                    self.customHeldReasonFilterActive(true);
+                }
+            }
+            else {
+                if (basketIdToLoad) {
+                    filters.push({ field: 'BasketID', operator: 'eq', value: basketIdToLoad.toString() });
+                }
+            }
+
+            //if (filters.length)
+            //    gridWidget.dataSource.filter(filters);
+        //}
+
+        if (filters.length) {
+            self.displayPrefilteredString(true);
+        }
+
+        return filters;
+    }
+
+    let initialFilters = self.buildInitialFilters();
+
     self.fetch = function () {
         self.busy(true);
         $.ajax({
@@ -16772,6 +16915,100 @@ var memberBasketFetcher = function (parent) {
     self.focDeliveryGridWidget = ko.observable();
 
     self.customerHeldBasketsGridWidget = ko.observable();
+
+
+    self.customResultStatusFilterActive = ko.observable();
+
+
+    self.submittedGridColumns = [{
+        field: 'BasketID',
+        title: 'Basket ID',
+        width: 90
+    }, {
+        field: 'OrderDetails',
+        title: 'Order(s)',
+        width: 320
+    }, {
+        field: 'TradeAccountCode',
+        title: 'Trade Account',
+        width: 300
+    }, {
+        field: 'OrderReference',
+        title: 'Order Reference'
+    }, {
+        field: 'MemberName',
+        title: 'Order Taker',
+        width: 240
+    }, {
+        field: 'CreatedDT',
+        title: 'Submitted',
+        width: 180
+    }];
+
+    self.customImportStatusFilterActive = ko.observable(false);
+    self.customImportSourceFilterActive = ko.observable(false);
+
+    self.heldOrdersMarketId = ko.observable();
+
+    self.heldOrdersMarket = ko.observable();
+
+    self.heldOrdersHoldReasons = ko.observableArray([]);
+
+    self.heldOrdersHoldReasonIds = ko.observableArray([]);
+
+    self.heldOrdersSearchTerm = ko.observable();
+
+    self.heldOrdersCount = ko.observable();
+
+    self.heldOrdersGridWidget = ko.observable();
+
+    self.holdReasons = ko.observableArray([]);
+
+    self.heldOrdersGridColumns = [{
+        field: 'Reference',
+        title: 'Reference',
+        width: 240,
+        filterable: false
+    }, {
+        field: 'Market',
+        title: 'Market',
+        width: 95,
+        filterable: false
+    }, {
+        field: 'Label',
+        title: 'Trade Account',
+        filterable: false
+    }, {
+        field: 'CustomerReference',
+        title: 'Order Reference',
+        width: 130,
+        filterable: false
+    }, {
+        field: 'Value',
+        title: 'Value',
+        width: 100
+    }, {
+        field: 'HasAllocations',
+        title: ' ',
+        filterable: false,
+        width: 45,
+        attributes: {
+            class: 'text-center'
+        }
+    }, {
+        field: 'HeldReasons',
+        title: 'Held Reasons',
+        width: 200,
+        filterable: false
+    }, {
+        field: 'Controls',
+        title: 'Controls',
+        width: 180,
+        filterable: false
+    }];
+
+    self.holdReasonSummaryPods = ko.observableArray([]);
+
 
     self.statusFilter = function (element) {
 
@@ -17654,8 +17891,6 @@ var memberBasketFetcher = function (parent) {
         }
     });
 
-    self.customResultStatusFilterActive = ko.observable();
-
     self.resultGridSettings = {
         autoBind: true,
         widget: self.resultGridWidget,
@@ -17900,31 +18135,6 @@ var memberBasketFetcher = function (parent) {
         }
     };
 
-    self.submittedGridColumns = [{
-        field: 'BasketID',
-        title: 'Basket ID',
-        width: 90
-    }, {
-        field: 'OrderDetails',
-        title: 'Order(s)',
-        width: 320
-    }, {
-        field: 'TradeAccountCode',
-        title: 'Trade Account',
-        width: 300
-    }, {
-        field: 'OrderReference',
-        title: 'Order Reference'
-    }, {
-        field: 'MemberName',
-        title: 'Order Taker',
-        width: 240
-    }, {
-        field: 'CreatedDT',
-        title: 'Submitted',
-        width: 180
-    }];
-
     self.submittedGridSettings = {
         autoBind: true,
         widget: self.submittedGridWidget,
@@ -17958,9 +18168,6 @@ var memberBasketFetcher = function (parent) {
         //    }
         //}
     };
-
-    self.customImportStatusFilterActive = ko.observable(false);
-    self.customImportSourceFilterActive = ko.observable(false);
 
     self.importResultGridSettings = {
         autoBind: true,
@@ -18093,53 +18300,609 @@ var memberBasketFetcher = function (parent) {
         }
     };
 
-    self.heldOrdersCount = ko.observable();
+    self.heldOrdersMarketParams = kendoMDCDropDownList({
+        label: 'Market',
+        odata: true,
+        endPoint: '/odata/SalesMarkets',
+        textField: 'Label',
+        valueField: 'SalesMarketID',
+        virtual: true,
+        pageSize: 40,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/SalesMarkets/Default.SalesMarketValueMapperByCode(code='${options.value}')`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        idObservable: self.heldOrdersMarketId,
+        objObservable: self.heldOrdersMarket,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        showClear: true,
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'SalesMarketID'
+        },
+        clearFunction: (e) => {
+            self.heldOrdersMarketId(undefined);
+            self.heldOrdersMarket(undefined);
+            self.heldOrdersMarketParams.dropDownListSettings.widget().value('');
+            self.heldOrdersMarketParams.dropDownListSettings.widget().trigger('change');
+        },
+        dataBound: function (e) {
+            //self.genericSelectSoleResult(e, self.salesMarketId)k
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "Label")) {
+                let f = data.filter.filters.find(f => f.field === "Label");
+                data.filter.filters = data.filter.filters.filter(f => f.field != "Label");
+                data.filter.logic = "or";
+                data.filter.filters = [{
+                    field: "Name",
+                    ignoreCase: true,
+                    operator: "contains",
+                    value: f.value
+                }, {
+                    field: "Code",
+                    ignoreCase: true,
+                    operator: "startswith",
+                    value: f.value
+                }];
+            }
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
 
-    self.heldOrdersGridWidget = ko.observable();
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
 
-    self.heldOrdersGridColumns = [{
-        field: 'Reference',
-        title: 'Reference',
-        width: 240
-    }, {
-        field: 'Market',
-        title: 'Market',
-        width: 95
-    }, {
-        field: 'Label',
-        title: 'Trade Account',
-    }, {
-        field: 'CustomerReference',
-        title: 'Order Reference',
-        width: 130
-    }, {
-        field: 'Value',
-        title: 'Value',
-        width: 100
-    }, {
-        field: 'HasAllocations',
-        title: ' ',
-        filterable: false,
-        width: 45,
-        attributes: {
-            class: 'text-center'
+            d.$count = true;
+
+            return d;
+        },
+    });
+
+    self.heldOrdersHoldReasonsDataSource = new kendo.data.DataSource({
+        dataValueField: 'HoldReasonID',
+        dataTextField: 'Name',
+        serverFiltering: false,
+        serverSorting: false,
+        serverGrouping: false,
+        serverPaging: false,
+        //type: 'odata-v4',
+        data: self.holdReasons,
+        //transport: {
+        //    read: {
+        //        url: '/odata/HoldReasons'
+        //    },
+        //    parameterMap: (data) => {//Generate parameters in odata v4 format
+
+        //        let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+        //        delete d.$inlinecount; // <-- remove inlinecount
+        //        delete d.$format; // <-- remove format
+        //        delete d.$callback; // <-- remove callback
+
+        //        d.$count = true;
+
+        //        return d;
+        //    },
+        //    data: {}
+        //},
+        sort: "Name",
+        pageSize: 20,
+        serverPaging: false,
+        serverSorting: false,
+        serverFiltering: false,
+        autoSync: false,
+        schema: {
+            errors: 'error',
+            model: {
+                id: 'HoldReasonID',
+                fields: {
+                    HoldReasonID: {
+                        type: 'number',
+                        editable: false
+                    },
+                    Name: {
+                        type: 'string',
+                        editable: false
+                    },
+                    Description: {
+                        type: 'string',
+                        editable: false
+                    },
+                    HoldReasonGroupID: {
+                        type: 'number',
+                        editable: false
+                    },
+                    RoleID: {
+                        type: 'number',
+                        editable: false
+                    }
+                }
+            }
+        },
+        requestStart: (e) => { },
+        requestEnd: (e) => { }
+    });
+
+    self.heldReasonListSelection = ko.observableArray([]);
+
+    self.heldReasonListSelection.subscribe(nv => {
+        console.log('heldReasonListSelection', nv);
+
+        self.heldOrdersHoldReasonWidget().value(nv);
+        self.heldOrdersHoldReasonWidget().trigger('change');
+    });
+
+    self.generateHeldReasonList = () => {
+
+        //let listContainerElement = document.createElement("div");// "<div class='custom-filter-checkbox-container'></div>").insertAfter(originalMultiCheck);
+
+        //listContainerElement.setAttribute("id", "held-order-filter-list");
+
+        //listContainerElement.setAttribute("unselectable", "on");
+        //listContainerElement.setAttribute("tabindex", "-1");
+
+        //listContainerElement.classList.add('custom-filter-checkbox-container');
+
+        let holdReasons = self.holdReasons();
+
+        let outerList = document.createElement("ul");
+
+        outerList.classList.add("k-reset");
+        outerList.classList.add("k-list");
+        outerList.classList.add("list-group");
+        outerList.classList.add("hold-reason-group-outer-list");
+
+
+        let groupedRoles = Object.groupBy(holdReasons, (hr, idx) => {
+            return hr.RoleID;
+        });
+
+        let roleGroups = [];
+
+        Object.keys(groupedRoles).forEach(roleId => {
+            let roleHoldReasons = groupedRoles[roleId];
+            roleHoldReasons = roleHoldReasons.sort((a, b) => a.RoleSortOrder > b.RoleSortOrder ? 1 : -1);
+
+            roleGroups.push({
+                roleId: roleId,
+                roleName: roleHoldReasons[0].RoleName,
+                roleSortOrder: roleHoldReasons[0].RoleSortOrder,
+                roleHoldReasons: roleHoldReasons,
+                count: roleHoldReasons.reduce((a, i) => a = a + i.Count, 0)
+            })
+        });
+
+        let counter = 0;
+
+        roleGroups.forEach(roleGroup => {
+
+            let groupedReasons = Object.groupBy(roleGroup.roleHoldReasons, (reason, idx) => {
+                return `${reason.HoldReasonGroupID}`;
+            });
+
+            let holdReasonGroups = [];
+
+            Object.keys(groupedReasons).forEach(holdReasonGroupId => {
+                let holdReasons = groupedReasons[holdReasonGroupId];
+                holdReasons = holdReasons.sort((a, b) => a.HoldReasonSortOrder > b.HoldReasonSortOrder ? 1 : -1);
+
+                holdReasonGroups.push({
+                    holdReasonGroupId: +holdReasonGroupId,
+                    holdReasonGroupSortOrder: holdReasons[0].HoldReasonGroupSortOrder,
+                    holdReasons: holdReasons
+                })
+            });
+
+            holdReasonGroups = holdReasonGroups.sort((a, b) => a.holdReasonGroupSortOrder > b.holdReasonGroupSortOrder ? 1 : -1);
+
+            roleGroup.roleHoldReasons = holdReasonGroups;
+        });
+
+        roleGroups.forEach(rg => {
+
+            let roleId = rg.roleId;
+
+            let roleHeadLi = document.createElement("li");
+
+            roleHeadLi.dataset.offsetIndex = counter++;
+
+            roleHeadLi.classList.add("k-item");
+            roleHeadLi.classList.add("list-group-item");
+            roleHeadLi.classList.add("role-group");
+
+            let roleHeadLiText = document.createElement("span");
+
+            roleHeadLiText.innerHTML = rg.roleName;
+
+            let roleHeadLiCount = document.createElement("span");
+
+            roleHeadLiCount.innerHTML = `(${rg.count})`;
+
+            let roleHeadLiSelectAll = document.createElement("span");
+
+            roleHeadLiSelectAll.classList.add("btn");
+            roleHeadLiSelectAll.classList.add("bi");
+            roleHeadLiSelectAll.classList.add("bi-check2-all");
+            roleHeadLiSelectAll.addEventListener("click", () => {
+                console.log("woo");
+                let newSelection = [];
+                document.querySelectorAll(`input[type="checkbox"][data-hold-reason-role-id="${roleId}"]`).forEach(e => {
+                    newSelection.push(+e.dataset.holdReasonId);
+                    e.checked = true;
+                });
+                self.heldReasonListSelection([...new Set(self.heldReasonListSelection().concat(newSelection))]);
+            });
+
+            let roleHeadLiClear = document.createElement("span");
+
+            roleHeadLiClear.classList.add("btn");
+            roleHeadLiClear.classList.add("bi");
+            roleHeadLiClear.classList.add("bi-x");
+            roleHeadLiClear.addEventListener("click", () => {
+                console.log("hoo");
+                let removals = [];
+                document.querySelectorAll(`input[type="checkbox"][data-hold-reason-role-id="${roleId}"]`).forEach(e => {
+                    removals.push(+e.dataset.holdReasonId);
+                    e.checked = false;
+                });
+
+                self.heldReasonListSelection(self.heldReasonListSelection().filter(x => {
+                    if (removals.indexOf(x) == -1)
+                        return x;
+                }));
+            });
+
+            roleHeadLi.appendChild(roleHeadLiText);
+
+            roleHeadLi.appendChild(roleHeadLiCount);
+
+            roleHeadLi.appendChild(roleHeadLiSelectAll);
+
+            roleHeadLi.appendChild(roleHeadLiClear);
+
+            outerList.appendChild(roleHeadLi);
+
+            rg.roleHoldReasons.forEach(g => {
+                let reasons = g.holdReasons;
+
+                let holdReasonGroupId = g.holdReasonGroupId;
+
+                let group = reasons[0].HoldReasonGroup;
+
+                let headLi = document.createElement("li");
+
+                headLi.classList.add("k-item");
+                headLi.classList.add("list-group-item");
+                headLi.classList.add("hold-reason-group");
+
+                let headLiText = document.createElement("span");
+
+                headLiText.classList.add("me-auto");
+
+                headLiText.innerHTML = group.Name;
+
+                let headLiSelectAll = document.createElement("span");
+
+                headLiSelectAll.classList.add("btn");
+                headLiSelectAll.classList.add("bi");
+                headLiSelectAll.classList.add("bi-check2-all");
+                headLiSelectAll.addEventListener("click", () => {
+                    console.log("woowoo");
+                    let newSelection = [];
+                    document.querySelectorAll(`input[type="checkbox"][data-hold-reason-group-id="${holdReasonGroupId}"]`).forEach(e => {
+                        newSelection.push(+e.dataset.holdReasonId);
+                        e.checked = true;
+                    });
+
+                    self.heldReasonListSelection([...new Set(self.heldReasonListSelection().concat(newSelection))]);
+                });
+
+                let headLiClear = document.createElement("span");
+
+                headLiClear.classList.add("btn");
+                headLiClear.classList.add("bi");
+                headLiClear.classList.add("bi-x");
+                headLiClear.addEventListener("click", () => {
+                    console.log("hoohoo");
+                    let removals = [];
+                    document.querySelectorAll(`input[type="checkbox"][data-hold-reason-group-id="${holdReasonGroupId}"]`).forEach(e => {
+                        removals.push(+e.dataset.holdReasonId);
+                        e.checked = false;
+                    });
+
+                    self.heldReasonListSelection(self.heldReasonListSelection().filter(x => {
+                        if (removals.indexOf(x) == -1)
+                            return x;
+                    }));
+                });
+
+                headLi.appendChild(headLiText);
+
+                headLi.appendChild(headLiSelectAll);
+
+                headLi.appendChild(headLiClear);
+
+                outerList.appendChild(headLi);
+
+                reasons.forEach(r => {
+                    let childLi = document.createElement("li");
+
+                    childLi.classList.add("k-item");
+
+                    childLi.classList.add("list-group-item");
+
+                    childLi.classList.add("hold-reason-group-child");
+
+                    let checkWrapper = document.createElement("div");
+
+                    checkWrapper.classList.add("form-check")
+
+                    let checkInput = document.createElement("input");
+
+                    checkInput.classList.add("hold-order-checkbox");
+
+                    checkInput.classList.add("form-check-input");
+
+                    checkInput.type = "checkbox";
+
+                    checkInput.value = r.HoldReasonID;
+
+                    //if (self.selectedHoldReasonIds.indexOf(r.HoldReasonID) > -1) {
+                    //    checkInput.checked = true;
+                    //}
+
+                    let checkId = `hold-reason-${r.HoldReasonID}-checkbox`;
+
+                    checkInput.setAttribute("id", checkId);
+
+                    checkInput.setAttribute("tabindex", -1);
+
+                    checkInput.setAttribute("inert", "");
+
+                    checkInput.dataset.holdReasonRoleId = roleId;
+
+                    checkInput.dataset.holdReasonGroupId = r.HoldReasonGroupID;
+
+                    checkInput.dataset.holdReasonId = r.HoldReasonID;
+
+                    checkInput.setAttribute("data-bind", `checked: heldReasonListSelection, checkedValue: ${r.HoldReasonID}`);
+
+                    let checkLabel = document.createElement("label");
+
+                    checkLabel.innerHTML = r.Name;
+
+                    checkLabel.classList.add("form-check-label");
+
+                    checkLabel.setAttribute("for", checkId);
+
+                    checkWrapper.appendChild(checkInput);
+
+                    checkWrapper.appendChild(checkLabel);
+
+                    childLi.appendChild(checkWrapper);
+
+                    outerList.appendChild(childLi);
+                });
+
+            });
+        });
+
+        return outerList;
+    }
+
+    self.heldOrdersHoldReasonWidget = ko.observable();
+
+    self.heldOrdersHoldReasonsParams = {
+        observable: self.heldOrdersHoldReasons,
+        validate: self.heldOrdersHoldReasonIds,
+        showClear: true,
+        label: 'Hold Reason(s)',
+        valuePrimitive: false,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        controlClass: 'form-control',
+        multiSelectSettings: {
+            dataValueField: "HoldReasonID",
+            dataTextField: "Name",
+            value: self.heldOrdersHoldReasonIds,
+            dataItems: self.heldOrdersHoldReasons,
+            data: self.holdReasons,
+            height: 'auto',
+            widget: self.heldOrdersHoldReasonWidget,
+            filterable: false,
+            open: function (e) {
+
+                e.sender.popup.element[0].querySelector('.k-list-scroller').setAttribute('id', 'held-order-filter-list');
+
+                e.sender.popup.element[0].querySelector('.k-list-scroller ul').replaceWith(self.generateHeldReasonList());//.outerHTML;
+
+                e.sender.popup.element[0].classList.add('held-order-reason-popup');
+
+                let list = e.sender.popup.element[0].querySelector('.k-list-scroller ul');
+
+                $(e.sender._widgetOptions.dataItems.mdcSelect.root_).toggleClass('mdc-select--focused');
+
+                ko.cleanNode(list);
+
+                ko.applyBindings(self, list);
+
+                if (self.heldOrderReasonIdToLoad != null) {
+
+                    let newSelection = [self.heldOrderReasonIdToLoad];
+
+                    self.heldReasonListSelection(newSelection);
+
+                    self.heldOrderReasonIdToLoad = null;
+
+                    self.heldOrdersHoldReasonIds(newSelection);
+                }
+
+                if (self.heldOrderReasonGroupIdToLoad != null) {
+
+                    let newSelection = [];
+
+                    document.querySelectorAll(`.hold-order-checkbox[data-hold-reason-group-id="${self.heldOrderReasonGroupIdToLoad}"]`).forEach(e => {
+                        newSelection.push(+e.dataset.holdReasonId);
+                        e.checked = true;
+                    });
+                    self.heldReasonListSelection(newSelection);
+
+                    self.heldOrderReasonGroupIdToLoad = null;
+                            
+                    self.heldOrdersHoldReasonIds(newSelection);
+                }
+            },
+            close: function (e) {
+                //e.preventDefault();
+                $(e.sender._widgetOptions.dataItems.mdcSelect.root_).toggleClass('mdc-select--focused');
+            },
+            tagTemplate: (e) => {
+                let count = e.values.length;
+
+                return `${count} selected`;
+            },
+            valuePrimitive: true,
+            autoWidth: true,
+            autoBind: true,
+            autoClose: false,
+            optionLabel: ' ',
+            filter: false,
+            tagMode: 'single'
+        },
+        clearFunction: () => {
+            self.heldReasonListSelection([]);
+
+            self.heldOrdersHoldReasonsParams.multiSelectSettings.value([]);
+            self.heldOrdersHoldReasonsParams.multiSelectSettings.widget().value([]);
+            self.heldOrdersHoldReasonsParams.multiSelectSettings.widget().trigger('change');
         }
-    }, {
-        field: 'HeldReasons',
-        title: 'Held Reasons',
-        width: 200,
-        filterable: {
-            multi: true,
-            dataSource: getHoldReasons()
-        }
-    }, {
-        field: 'Controls',
-        title: 'Controls',
-        width: 180,
-        filterable: false
-    }];
+    };
 
-    self.holdReasonSummaryPods = ko.observableArray([]);
+    self.hoh2 = ko.observableArray([]);
+    self.hoh2d = ko.observableArray([]);
+    self.hoh2w = ko.observableArray([]);
+    self.heldOrdersHoldReasonsParams2 = {
+        observable: self.hoh2,
+        validate: self.hoh2,
+        showClear: true,
+        label: 'Hold Reason(s)',
+        valuePrimitive: false,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        controlClass: 'form-control',
+        multiSelectSettings: {
+            dataValueField: "HoldReasonID",
+            dataTextField: "Name",
+            value: self.hoh2,
+            dataItems: self.hoh2d,
+            data: self.holdReasons,
+            height: 'auto',
+            widget: self.hoh2w,
+            valuePrimitive: true,
+            autoWidth: true,
+            autoBind: true,
+            autoClose: false,
+            optionLabel: ' ',
+            filter: false,
+            tagMode: 'single'
+        },
+        clearFunction: function () {
+            var self = this;
+            self.multiSelectSettings.value([]);
+            self.multiSelectSettings.widget().value([]);
+            self.multiSelectSettings.widget().trigger('change');
+        }
+    };
+
+    self.heldOrdersSearchTermParams = {
+        label: 'Search by Order Number, Basket ID, Trade Account Code, etc.',
+        observable: self.heldOrdersSearchTerm,
+        showClear: true,
+        clearFunction: function () {
+            self.heldOrdersSearchTerm(undefined);
+        },
+        enterKey: function () {
+            let filters = [];
+
+            let market = self.heldOrdersMarketId();
+
+            let holdReasonIds = self.heldOrdersHoldReasonIds().map(r => `~${r}~`);
+
+            let searchTerm = self.heldOrdersSearchTerm();
+
+            if (market) {
+                filters.push({
+                    field: 'Market',
+                    operator: 'eq',
+                    value: market
+                });
+            }
+
+            if (holdReasonIds.length) {
+                let holdReasonFilters = [];
+
+                holdReasonIds.forEach(r => {
+                    holdReasonFilters.push({
+                        field: 'HoldReasonIDsString',
+                        operator: 'contains',
+                        value: r
+                    });
+                });
+
+                filters.push({
+                    logic: 'or',
+                    filters: holdReasonFilters
+                });
+            }
+
+            if (searchTerm) {
+                filters.push({
+                    logic: 'or',
+                    filters: [{
+                        field: 'Reference',
+                        operator: 'contains',
+                        value: searchTerm
+                    }, {
+                        field: 'CustomerCode',
+                        operator: 'eq',
+                        value: searchTerm
+                    }, {
+                        field: 'CustomerName',
+                        operator: 'contains',
+                        value: searchTerm
+                    }, {
+                        field: 'CustomerReference',
+                        operator: 'contains',
+                        value: searchTerm
+                    }]
+                });
+            }
+
+            self.heldOrdersGridWidget().dataSource.filter(filters);
+        }
+    };
 
     self.heldOrdersGridDataSourceRead = function (options) {
 
@@ -18175,7 +18938,34 @@ var memberBasketFetcher = function (parent) {
                     }
                 });
 
-                self.holdReasons = data.holdReasons;
+                self.holdReasons(data.holdReasons);
+
+                if (self.heldOrderReasonGroupIdToLoad) {
+                    console.log("woo");
+                    let newSelection = [];
+                    self.holdReasons().forEach(e => {
+                        if (e.HoldReasonGroupID == self.heldOrderReasonGroupIdToLoad)
+                            newSelection.push(e.HoldReasonID);
+                    });
+                    self.heldReasonListSelection(newSelection);
+
+                    self.heldOrdersHoldReasonWidget().value(newSelection);
+
+                    self.heldOrdersHoldReasonWidget().trigger('change');
+
+                }
+
+                if (self.heldOrderReasonIdToLoad) {
+                    console.log("woo");
+                    let newSelection = [self.heldOrderReasonIdToLoad];
+
+                    self.heldReasonListSelection(newSelection);
+
+                    self.heldOrdersHoldReasonWidget().value(newSelection);
+
+                    self.heldOrdersHoldReasonWidget().trigger('change');
+
+                }
 
                 self.holdReasonSummaryPods([]);
 
@@ -18192,24 +18982,17 @@ var memberBasketFetcher = function (parent) {
 
                         if (a.HoldReasonGroupSortOrder > b.HoldReasonGroupSortOrder)
                             return 1;
-                        else if (a.HoldReasonGroupSortOrder < b.HoldReasonGroupSortOrder) { 
+                        else if (a.HoldReasonGroupSortOrder < b.HoldReasonGroupSortOrder) {
                             return -1;
                         }
 
                         return 0;
-                    })
+                    }).map(p => holdReasonSummaryPod({
+                        rec: p,
+                        parent: self
+                    }));
 
-                    self.holdReasonSummaryPods(data.holdReasonSummaryPods);
-                }
-
-                let element = document.querySelector("#held-order-filter-list");
-
-                let parent = element?.parentNode;
-
-                if (element) {
-                    element.remove();
-                    element = self.generateHeldReasonList();
-                    parent.prepend(element);
+                    self.holdReasonSummaryPods(holdReasonPods);
                 }
 
                 //// testing...
@@ -18288,7 +19071,8 @@ var memberBasketFetcher = function (parent) {
         requestEnd: function (e) {
             $("#grid-loading").hide();
         },
-        noDataTemplate: 'There are no Held Orders for your consideration.'
+        noDataTemplate: 'There are no Held Orders for your consideration.',
+        filter: initialFilters
     });
 
     self.fetchDocument = function (document, parent) {
@@ -18306,230 +19090,9 @@ var memberBasketFetcher = function (parent) {
         }).toString(), '_blank');
     }
 
-    self.holdReasons = getHoldReasons();
+    //self.holdReasons = getHoldReasons();
 
-    self.selectedHoldReasonIds = [];
-
-    self.generateHeldReasonList = () => {
-
-        let listContainerElement = document.createElement("div");// "<div class='custom-filter-checkbox-container'></div>").insertAfter(originalMultiCheck);
-
-        listContainerElement.setAttribute("id", "held-order-filter-list");
-
-        listContainerElement.classList.add('custom-filter-checkbox-container');
-
-        let holdReasons = self.holdReasons;
-
-        let outerList = document.createElement("ul");
-
-        outerList.classList.add("list-group");
-        outerList.classList.add("hold-reason-group-outer-list");
-
-        let groupedRoles = Object.groupBy(holdReasons, (hr, idx) => {
-            return hr.RoleID;
-        });
-
-        let roleGroups = [];
-
-        Object.keys(groupedRoles).forEach(roleId => {
-            let roleHoldReasons = groupedRoles[roleId];
-            roleHoldReasons = roleHoldReasons.sort((a, b) => a.RoleSortOrder > b.RoleSortOrder ? 1 : -1);
-
-            roleGroups.push({
-                roleId: roleId,
-                roleName: roleHoldReasons[0].RoleName,
-                roleSortOrder: roleHoldReasons[0].RoleSortOrder,
-                roleHoldReasons: roleHoldReasons,
-                count: roleHoldReasons.reduce((a, i) => a = a + i.Count, 0)
-            })
-        });
-
-        roleGroups.forEach(roleGroup => {
-
-            let groupedReasons = Object.groupBy(roleGroup.roleHoldReasons, (reason, idx) => {
-                return `${reason.HoldReasonGroupID}`;
-            });
-
-            let holdReasonGroups = [];
-
-            Object.keys(groupedReasons).forEach(holdReasonGroupId => {
-                let holdReasons = groupedReasons[holdReasonGroupId];
-                holdReasons = holdReasons.sort((a, b) => a.HoldReasonSortOrder > b.HoldReasonSortOrder ? 1 : -1);
-
-                holdReasonGroups.push({
-                    holdReasonGroupId: +holdReasonGroupId,
-                    holdReasonGroupSortOrder: holdReasons[0].HoldReasonGroupSortOrder,
-                    holdReasons: holdReasons
-                })
-            });
-
-            holdReasonGroups = holdReasonGroups.sort((a, b) => a.holdReasonGroupSortOrder > b.holdReasonGroupSortOrder ? 1 : -1);
-
-            roleGroup.roleHoldReasons = holdReasonGroups;
-        });
-
-        roleGroups.forEach(rg => {
-
-            let roleId = rg.roleId;
-
-            let roleHeadLi = document.createElement("li");
-
-            roleHeadLi.classList.add("list-group-item");
-            roleHeadLi.classList.add("role-group");
-
-            let roleHeadLiText = document.createElement("span");
-
-            roleHeadLiText.innerHTML = rg.roleName;
-
-            let roleHeadLiCount = document.createElement("span");
-
-            roleHeadLiCount.innerHTML = `(${rg.count})`;
-
-            let roleHeadLiSelectAll = document.createElement("span");
-
-            roleHeadLiSelectAll.classList.add("btn");
-            roleHeadLiSelectAll.classList.add("bi");
-            roleHeadLiSelectAll.classList.add("bi-check2-all");
-            roleHeadLiSelectAll.addEventListener("click", () => {
-                console.log("woo");
-                document.querySelectorAll(`input[type="checkbox"][data-hold-reason-role-id="${roleId}"]`).forEach(e => {
-                    e.checked = true;
-                });
-            });
-
-            let roleHeadLiClear = document.createElement("span");
-
-            roleHeadLiClear.classList.add("btn");
-            roleHeadLiClear.classList.add("bi");
-            roleHeadLiClear.classList.add("bi-x");
-            roleHeadLiClear.addEventListener("click", () => {
-                console.log("hoo");
-                document.querySelectorAll(`input[type="checkbox"][data-hold-reason-role-id="${roleId}"]`).forEach(e => {
-                    e.checked = false;
-                });
-            });
-
-            roleHeadLi.appendChild(roleHeadLiText);
-
-            roleHeadLi.appendChild(roleHeadLiCount);
-
-            roleHeadLi.appendChild(roleHeadLiSelectAll);
-
-            roleHeadLi.appendChild(roleHeadLiClear);
-
-            outerList.appendChild(roleHeadLi);
-
-            rg.roleHoldReasons.forEach(g => {
-                let reasons = g.holdReasons;
-
-                let holdReasonGroupId = g.holdReasonGroupId;
-
-                let group = reasons[0].HoldReasonGroup;
-
-                let headLi = document.createElement("li");
-
-                headLi.classList.add("list-group-item");
-                headLi.classList.add("hold-reason-group");
-
-                let headLiText = document.createElement("span");
-
-                headLiText.classList.add("me-auto");
-
-                headLiText.innerHTML = group.Name;
-
-                let headLiSelectAll = document.createElement("span");
-
-                headLiSelectAll.classList.add("btn");
-                headLiSelectAll.classList.add("bi");
-                headLiSelectAll.classList.add("bi-check2-all");
-                headLiSelectAll.addEventListener("click", () => {
-                    console.log("woowoo");
-                    document.querySelectorAll(`input[type="checkbox"][data-hold-reason-group-id="${holdReasonGroupId}"]`).forEach(e => {
-                        e.checked = true;
-                    });
-                });
-
-                let headLiClear = document.createElement("span");
-
-                headLiClear.classList.add("btn");
-                headLiClear.classList.add("bi");
-                headLiClear.classList.add("bi-x");
-                headLiClear.addEventListener("click", () => {
-                    console.log("hoohoo");
-                    document.querySelectorAll(`input[type="checkbox"][data-hold-reason-group-id="${holdReasonGroupId}"]`).forEach(e => {
-                        e.checked = false;
-                    });
-                });
-
-                headLi.appendChild(headLiText);
-
-                headLi.appendChild(headLiSelectAll);
-
-                headLi.appendChild(headLiClear);
-
-                outerList.appendChild(headLi);
-
-                reasons.forEach(r => {
-                    let childLi = document.createElement("li");
-
-                    childLi.classList.add("list-group-item");
-
-                    childLi.classList.add("list-group-item");
-
-                    childLi.classList.add("hold-reason-group-child");
-
-                    let checkWrapper = document.createElement("div");
-
-                    checkWrapper.classList.add("form-check")
-
-                    let checkInput = document.createElement("input");
-
-                    checkInput.classList.add("hold-order-checkbox");
-
-                    checkInput.classList.add("form-check-input");
-
-                    checkInput.type = "checkbox";
-
-                    checkInput.value = r.HoldReasonID;
-
-                    if (self.selectedHoldReasonIds.indexOf(r.HoldReasonID) > -1) {
-                        checkInput.checked = true;
-                    }
-
-                    let checkId = `hold-reason-${r.HoldReasonID}-checkbox`;
-
-                    checkInput.setAttribute("id", checkId);
-
-                    checkInput.dataset.holdReasonRoleId = roleId;
-
-                    checkInput.dataset.holdReasonGroupId = r.HoldReasonGroupID;
-
-                    let checkLabel = document.createElement("label");
-
-                    checkLabel.innerHTML = r.Name;
-
-                    checkLabel.classList.add("form-check-label");
-
-                    checkLabel.setAttribute("for", checkId);
-
-                    checkWrapper.appendChild(checkInput);
-
-                    checkWrapper.appendChild(checkLabel);
-
-                    childLi.appendChild(checkWrapper);
-
-                    outerList.appendChild(childLi);
-                });
-
-            });
-        });
-
-        listContainerElement.appendChild(outerList);
-
-        return listContainerElement;
-    }
-
-    self.customHeldReasonFilterActive = ko.observable(false);
+    //self.selectedHoldReasonIds = [];
 
     self.heldOrdersResultGridSettings = {
         autoBind: true,
@@ -18564,64 +19127,69 @@ var memberBasketFetcher = function (parent) {
             } else {
                 $('th[data-field="HeldReasons"]', e.sender.element).find('a.k-grid-filter').removeClass('k-state-active');
             }
+
+            if (self.heldOrderReasonGroupIdToLoad) {
+                let ele = document.querySelector(`.hold-reason-summary-pod[data-hold-reason-group-id="${self.heldOrderReasonGroupIdToLoad}"]`);
+                ele && ele.classList.add("active");
+            }
         },
         filterMenuInit: function (e) {
-            if (e.field === 'HeldReasons') {
-                let popup = e.container.data("kendoPopup");
-                let dataSource = this.dataSource;
-                let field = e.field;
-                let containerElement = e.container.children(":first");
+            //if (e.field === 'HeldReasons') {
+            //    let popup = e.container.data("kendoPopup");
+            //    let dataSource = this.dataSource;
+            //    let field = e.field;
+            //    let containerElement = e.container.children(":first");
 
-                let originalMultiCheck = e.container.children(":first");
-                // helpTextElement.nextUntil(":has(.k-button)").remove();
-                let listContainerElement = self.generateHeldReasonList();
+            //    let originalMultiCheck = e.container.children(":first");
+            //    // helpTextElement.nextUntil(":has(.k-button)").remove();
+            //    let listContainerElement = self.generateHeldReasonList();
 
-                e.container.prepend(listContainerElement);
+            //    e.container.prepend(listContainerElement);
 
-                //    .kendoListView({
-                //    dataSource: new kendo.data.DataSource({
-                //        data: getHoldReasons()
-                //    }),
-                //    template: "<label><input type='checkbox' value='#:" + field + "#'/>#:" + field + "#</label>"
-                //});
-                originalMultiCheck.remove();
+            //    //    .kendoListView({
+            //    //    dataSource: new kendo.data.DataSource({
+            //    //        data: getHoldReasons()
+            //    //    }),
+            //    //    template: "<label><input type='checkbox' value='#:" + field + "#'/>#:" + field + "#</label>"
+            //    //});
+            //    originalMultiCheck.remove();
 
-                e.container.children('.k-filter-selected-items').remove();
+            //    e.container.children('.k-filter-selected-items').remove();
 
 
-                e.container.find("[type='submit']").click(function (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    var filter = dataSource.filter() || { logic: "and", filters: [] };
-                    self.selectedHoldReasonIds = [];
+            //    e.container.find("[type='submit']").click(function (e) {
+            //        e.preventDefault();
+            //        e.stopPropagation();
+            //        var filter = dataSource.filter() || { logic: "and", filters: [] };
+            //        self.selectedHoldReasonIds = [];
 
-                    var fieldFilters = [...e.currentTarget.parentNode.querySelectorAll('input[type="checkbox"]:checked')].map(input => {
+            //        var fieldFilters = [...e.currentTarget.parentNode.querySelectorAll('input[type="checkbox"]:checked')].map(input => {
 
-                        self.selectedHoldReasonIds.push(+input.value);
+            //            self.selectedHoldReasonIds.push(+input.value);
                         
-                        return {
-                            field: field,
-                            operator: "contains",
-                            value: self.holdReasons.find(hr => hr.HoldReasonID == +input.value).HoldReasonApproverMessage
-                        };
-                    });
-                    if (fieldFilters.length) {
-                        self.removeFiltersForField(filter, field);
-                        filter.filters.push({
-                            logic: "or",
-                            filters: fieldFilters
-                        });
-                        dataSource.filter(filter);
-                        self.customHeldReasonFilterActive(true);
-                    }
-                    popup.close();
-                });
+            //            return {
+            //                field: field,
+            //                operator: "contains",
+            //                value: self.holdReasons.find(hr => hr.HoldReasonID == +input.value).HoldReasonApproverMessage
+            //            };
+            //        });
+            //        if (fieldFilters.length) {
+            //            self.removeFiltersForField(filter, field);
+            //            filter.filters.push({
+            //                logic: "or",
+            //                filters: fieldFilters
+            //            });
+            //            dataSource.filter(filter);
+            //            self.customHeldReasonFilterActive(true);
+            //        }
+            //        popup.close();
+            //    });
 
-                e.container.find("[type='reset']").click(function (e) {
-                    self.customHeldReasonFilterActive(false);
-                    self.selectedHoldReasonIds = [];
-                });
-            }
+            //    e.container.find("[type='reset']").click(function (e) {
+            //        self.customHeldReasonFilterActive(false);
+            //        self.selectedHoldReasonIds = [];
+            //    });
+            //}
         },
         filterMenuOpen: (e) => {
             if (self.customHeldReasonFilterActive()) {
@@ -18631,18 +19199,19 @@ var memberBasketFetcher = function (parent) {
             } else {
                 $('th[data-field="HeldReasons"]', e.sender.element).find('a.k-grid-filter').removeClass('k-state-active');
             }
+
+            //if (self.heldOrderReasonGroupIdToLoad != null) {
+            //    window.setTimeout(function () {
+            //        document.querySelectorAll(`.hold-order-checkbox[data-hold-reason-group-id="${self.heldOrderReasonGroupIdToLoad}"]`).forEach(e => {
+            //            e.checked = true;
+            //        });
+
+            //        self.heldOrderReasonGroupIdToLoad = null;
+            //    }, 0);
+            //}
         }
     }
  
-    self.clearHeldOrdersGridFilters = function () {
-        self.customHeldReasonFilterActive(false);
-        self.heldOrdersGridWidget().dataSource.filter({});
-        document.querySelectorAll('.hold-order-checkbox').forEach(e => {
-            e.checked = false;
-        });
-        self.selectedHoldReasonIds = [];
-    }
-
     self.uniqueForField = function (data, field) {
         var map = {};
         var result = [];
@@ -19207,7 +19776,22 @@ var memberBasketFetcher = function (parent) {
     }
 
     self.clearHeldOrdersGridFilters = function () {
+        self.heldOrdersMarketParams.clearFunction();
+        self.marketToLoad = null;
+        
+        self.heldOrdersHoldReasonsParams.clearFunction();
+        self.heldOrderReasonGroupIdToLoad = null;
+        self.heldOrderReasonIdToLoad = null;
+
+        self.heldOrdersSearchTermParams.clearFunction();
+        self.transactionIdToLoad = null;
+        self.orderHeadIdToLoad = null;
+        self.basketIdToLoad = null;
+
+        self.heldOrdersHoldReasonIds([]);
+        self.holdReasonSummaryPods().forEach(p => p.active(false));
         self.customHeldReasonFilterActive(false);
+
         self.heldOrdersGridWidget().dataSource.filter({});
     }
 
@@ -19234,6 +19818,12 @@ var memberBasketFetcher = function (parent) {
                 console.log(`basketIdToLoad`, basketIdToLoad);
             }
 
+            let marketToLoad = window.getMarketToLoad();
+
+            if (marketToLoad) {
+                console.log(`marketToLoad`, marketToLoad);
+            }
+
             let transactionIdToLoad = window.getTransactionIdToLoad();
 
             if (transactionIdToLoad) {
@@ -19256,6 +19846,12 @@ var memberBasketFetcher = function (parent) {
 
             if (heldOrderReasonGroupIdToLoad) {
                 console.log(`heldOrderReasonGroupIdToLoad`, heldOrderReasonGroupIdToLoad);
+            }
+
+            let tradeAccountCodeToLoad = window.getTradeAccountCodeToLoad();
+
+            if (tradeAccountCodeToLoad) {
+                console.log(`tradeAccountCodeToLoad`, tradeAccountCodeToLoad);
             }
 
             let tabToLoad = window.getTabToLoad();
@@ -19285,21 +19881,49 @@ var memberBasketFetcher = function (parent) {
                     if (basketIdToLoad) {
                         filters.push({ field: 'Reference', operator: 'contains', value: basketIdToLoad.toString() });
                     }
+                    if (marketToLoad) {
+                        filters.push({ field: 'Market', operator: 'eq', value: marketToLoad });
+                        self.heldOrdersMarketParams.dropDownListSettings.widget().value(marketToLoad);
+                        self.heldOrdersMarketParams.dropDownListSettings.widget().trigger('change');
+                    }
                     if (transactionIdToLoad) {
                         filters.push({ field: 'Reference', operator: 'contains', value: transactionIdToLoad.toString() });
                     }
                     if (orderHeadIdToLoad) {
                         filters.push({ field: 'Reference', operator: 'contains', value: orderHeadIdToLoad.toString() });
                     }
+                    if (tradeAccountCodeToLoad) {
+                        filters.push({ field: 'CustomerCode', operator: 'equals', value: tradeAccountCodeToLoad.toString() });
+                    }
+
+                    if (transactionIdToLoad ||
+                        orderHeadIdToLoad ||
+                        basketIdToLoad
+                    ) {
+                        self.heldOrdersSearchTerm(transactionIdToLoad || orderHeadIdToLoad || basketIdToLoad);
+                        self.heldOrdersSearchTermParams.enterKey();
+                    }
+
+
                     if (heldOrderReasonIdToLoad) {
                         filters.push({ field: 'HoldReasonIDsString', operator: 'contains', value: `~${heldOrderReasonIdToLoad}~` });
-                        self.selectedHoldReasonIds = [heldOrderReasonIdToLoad];
+                        //self.selectedHoldReasonIds = [heldOrderReasonIdToLoad];
+
+                        self.heldOrderReasonIdToLoad = heldOrderReasonIdToLoad;
+
                         self.customHeldReasonFilterActive(true);
                     }
+
                     if (heldOrderReasonGroupIdToLoad) {
+
+                        // this is necessary here because the filterMenuOpen event handler needs to check the relevant checkboxes
+                        self.heldOrderReasonGroupIdToLoad = heldOrderReasonGroupIdToLoad;
+
                         filters.push({ field: 'HoldReasonGroupIDsString', operator: 'contains', value: `~${heldOrderReasonGroupIdToLoad}~` });
+
                         self.customHeldReasonFilterActive(true);
                     }
+
                 }
                 else {
                     if (basketIdToLoad) {
@@ -19307,14 +19931,57 @@ var memberBasketFetcher = function (parent) {
                     }
                 }
 
-                if (filters.length)
+                if (filters.length) {
                     gridWidget.dataSource.filter(filters);
+                }
             }
         }
     })
 
     //#endregion
 }
+
+const holdReasonSummaryPod = ({ rec, parent } = { rec: {}, parent: {} }) => {
+    let self = Object.assign({
+        parent
+    }, rec);
+
+    self.active = ko.observable(false);
+
+    self.active.subscribe(nv => {
+        if (nv) {
+            self.parent.heldOrderReasonGroupIdToLoad = self.HoldReasonGroupID;
+        }
+    })
+
+    self.apply = () => {
+
+        self.parent.holdReasonSummaryPods().forEach(p => p.active(false));
+
+        self.active(true);
+
+        let holdReasonIds = [];
+
+        document.querySelectorAll(`input[type="checkbox"][data-hold-reason-role-id="${self.RoleID}"]`).forEach(e => {
+            e.checked = true;
+            holdReasonIds.push(+e.dataset.holdReasonId);
+        });
+
+        self.parent.heldOrdersGridWidget().dataSource.filter({
+            field: 'HoldReasonGroupIDsString',
+            operator: 'contains',
+            value: `~${self.HoldReasonGroupID}~`
+        });
+
+        self.parent.heldOrderReasonGroupIdToLoad = self.HoldReasonGroupID;
+
+        //self.parent.selectedHoldReasonIds = holdReasonIds;
+
+        self.parent.customHeldReasonFilterActive(true);
+    }
+
+    return self;
+};
 
 var dispatchFactory = function (parent) {
     var self = this;

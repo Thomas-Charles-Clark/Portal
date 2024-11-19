@@ -8,6 +8,7 @@ using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Maintenance;
 using SharedEFClasses.Models.Marketing;
+using SharedEFClasses.Models.Marylebone;
 using SharedEFClasses.Models.Mertexer;
 using SharedEFClasses.Models.OrderBook;
 using SharedEFClasses.Models.Orders;
@@ -582,6 +583,10 @@ namespace SharedEFClasses.Models
         public DbSet<GiftVoucher> GiftVouchers { get; set; }
 
         public DbSet<GiftVoucherType> GiftVoucherTypes { get; set; }
+
+        public DbSet<Box> Boxes { get; set; }
+
+        public DbSet<BoxedItem> BoxedItems { get; set; }
 
         #endregion
 

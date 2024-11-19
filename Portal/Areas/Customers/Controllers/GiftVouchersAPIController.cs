@@ -89,6 +89,26 @@ namespace Portal.Areas.Customers.Controllers
         }
 
         [HttpPost]
+        public async Task<IHttpActionResult> SaveNotes([FromBody] PassGiftVoucherRedeem dto)
+        {
+            var voucher = PortalDb.GiftVouchers.SingleOrDefault(gv => gv.GiftVoucherID == dto.GiftVoucherID);
+
+            var now = DateTime.Now;
+
+            if (voucher != null)
+            {
+                voucher.RedeemOrderID = dto.OrderID;
+
+                voucher.Reason = dto.Notes;
+
+                await PortalDb.SaveChangesAsync();
+            }
+
+            return Ok(new { });
+        }
+
+
+        [HttpPost]
         public async Task<IHttpActionResult> Redeem([FromBody] PassGiftVoucherRedeem dto)
         {
             var voucher = PortalDb.GiftVouchers.SingleOrDefault(gv => gv.GiftVoucherID == dto.GiftVoucherID);

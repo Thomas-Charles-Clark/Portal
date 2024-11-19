@@ -242,6 +242,9 @@
                     </dt>
                     <dd id="actions-dd" class="col-8">
                         <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-primary" data-bind="click: $parent.giftVoucherNotesEditor.show">
+                                Edit Notes
+                            </button>
                             <button type="button" class="btn btn-primary" data-bind="disable: voucherEditDisabled, click: $parent.giftVoucherExtender.show">
                                 Extend
                             </button>
@@ -312,6 +315,37 @@
             <div data-bind="kendoGrid: giftVouchersGridSettings"></div>
         </div>
     }
+</div>
+
+<div id="notes-editor-modal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" data-bind="with: giftVoucherNotesEditor">
+            <div class="modal-header grey-blue">
+                <h4 class="modal-title">
+                    Edit Gift Voucher Notes
+                </h4>
+                <button class="btn-close btn-close-white" data-bind="click: hide"></button>
+            </div>
+            <div class="modal-body">
+                <p class="bold">
+                    Important Notes
+                </p>
+                <p>
+                    Please try to provide an Order ID for our records. If you cannot, please revisit this gift voucher when you have an order number from the redemption transaction.
+                </p>
+                <div data-bind="component: { name: 'kendo-mdc-dropdown-component', params: redeemOrderParams }"></div>
+                <div class="mt-3" data-bind="component: { name: 'mdc-text-area-component', params: notesParams }"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bind="click: hide">
+                    Cancel
+                </button>
+                <button class="btn btn-primary" data-bind="click: proceed">
+                    Ok
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div id="redeem-voucher-modal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

@@ -54,6 +54,15 @@ namespace Portal.Controllers
 
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
         [HttpGet]
+        public IQueryable<SalesMarket> SalesMarketValueMapperByCode(string code)
+        {
+            return PortalDb.SalesMarkets.Where(p =>
+                p.Code == code
+            ).AsQueryable();
+        }
+
+        [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
+        [HttpGet]
         public IQueryable<SalesMarket> SalesMarketOrderBookFilter(
             int? tradeAccountId = null,
             short? tradeAccountTypeId = null,

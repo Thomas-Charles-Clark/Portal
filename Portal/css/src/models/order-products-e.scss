@@ -365,83 +365,136 @@ tr.readonly {
     background: $readonly-background;
 }
 
-.hold-reason-group-outer-list {
-    margin-bottom: 0;
-    width: 400px;
+#held-orders-hold-reason-filter {
+    .k-multiselect {
+        &.k-state-border-down {
+            border-radius: $border-radius;
+        }
+    }
+}
 
-    li {
-        padding: $vsm-gutter $sm-gutter;
+.held-order-reason-popup {
+    border-radius: $border-radius;
+
+    &.k-list-container {
+        padding: 0;
+        border: 0;
+        border-radius: $border-radius;
     }
 
-    .role-group {
-        font-weight: bold;
-        display: flex;
-        justify-content: flex-end;
-        gap: $m-gutter;
-        background-color: $blue-700;
-        color: $white;
-        border-left: 1px solid $blue-900;
-        border-right: 1px solid $blue-900;
-
-        .btn {
-            padding: 0 0.5rem;
+    .k-nodata {
+        > div {
+            padding: 0;
+            text-align: initial;
         }
+    }
 
-        .bi {
-            cursor: pointer;
-            font-size: $font-size-lg;
-            &:hover {
+    #held-order-filter-list {
+        border-radius: $border-radius;
+
+        .hold-reason-group-outer-list {
+            border-radius: $border-radius;
+            margin-bottom: 0;
+            width: 400px;
+
+            .list-group-item {
+                padding: $vsm-gutter $sm-gutter;
+
+                &.k-state-hover {
+                    padding: $vsm-gutter $sm-gutter;
+                }
+
+                &.k-state-selected {
+                    color: initial;
+                    background-color: initial;
+                }
+            }
+
+            li {
+                border-radius: 0;
+                font-size: $font-size-base;
+            }
+
+            li:first-of-type {
+                border-top-left-radius: $border-radius;
+                border-top-right-radius: $border-radius;
+            }
+
+            .role-group {
+                font-weight: bold;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                gap: $m-gutter;
+                background-color: $blue-700;
                 color: $white;
-            }
-        }
+                border-top: 1px solid $blue-700;
+                border-left: 1px solid $blue-700;
+                border-right: 1px solid $blue-700;
 
-        span:nth-of-type(2) {
-            margin-right: auto;
-        }
-    }
+                .btn {
+                    padding: 0 0.5rem;
+                }
 
-    .hold-reason-group {
-        padding-left: $l-gutter;
-        font-weight: 500;
-        display: flex;
-        justify-content: flex-end;
-        gap: $m-gutter;
-        background-color: $gray-200;
+                .bi {
+                    cursor: pointer;
+                    font-size: $font-size-lg;
 
-        .btn {
-            padding: 0 0.5rem;
-        }
+                    &:hover {
+                        color: $white;
+                    }
+                }
 
-        .bi {
-            cursor: pointer;
-            font-size: $font-size-lg;
-        }
-
-        span:first-of-type {
-            margin-right: auto;
-        }
-    }
-
-    .hold-reason-group-child {
-        font-weight: normal;
-        padding-left: $xl-gutter;
-
-        .form-check {
-            display: inline-flex;
-            gap: $sm-gutter;
-            align-items: center;
-            cursor: pointer;
-
-            input {
-                margin: 0;
-                cursor: pointer;
+                span:nth-of-type(2) {
+                    margin-right: auto;
+                }
             }
 
-            label {
+            .hold-reason-group {
+                padding-left: $l-gutter;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: $m-gutter;
+                background-color: $gray-200;
+
+                .btn {
+                    padding: 0 0.5rem;
+                }
+
+                .bi {
+                    cursor: pointer;
+                    font-size: $font-size-lg;
+                }
+
+                span:first-of-type {
+                    margin-right: auto;
+                }
+            }
+
+            .hold-reason-group-child {
                 font-weight: normal;
-                line-height: 1.5rem;
-                margin-bottom: 0;
-                cursor: pointer;
+                padding: $sm-gutter $l-gutter $sm-gutter $xl-gutter;
+
+                .form-check {
+                    display: inline-flex;
+                    gap: $sm-gutter;
+                    align-items: center;
+                    cursor: pointer;
+
+                    input {
+                        margin: 0;
+                        cursor: pointer;
+                    }
+
+                    label {
+                        font-weight: normal;
+                        line-height: 1.5rem;
+                        margin-bottom: 0;
+                        cursor: pointer;
+                    }
+                }
             }
         }
     }
@@ -463,6 +516,44 @@ tr.readonly {
         }
     }
 
+    .prefilters {
+        display: flex;
+        gap: $m-gutter;
+        margin-bottom: $l-gutter;
+
+        .prefilter {
+            flex: 0 1 240px;
+        }
+
+        #held-orders-search-term-filter {
+            flex: 0 1 490px;
+        }
+
+        #held-orders-filter-search-btn {
+            flex: 0 1 105px;
+            margin-top: 0;
+            .bi {
+                margin-left: $sm-gutter;
+            }
+        }
+
+        #held-orders-filter-clear-btn {
+            flex: 0 1 105px;
+            margin-top: 0;
+        }
+
+        .k-dropdown-wrap,
+        .k-multiselect-wrap,
+        .mdc-text-field {
+            background-color: $white;
+            border-radius: $border-radius;
+
+            .k-clear-value {
+                display: none !important;
+            }
+        }
+    }
+
     #trade-account-collapse {
         .panel-body {
             min-height: 60px;
@@ -474,14 +565,25 @@ tr.readonly {
 
         .pods-wrapper {
             display: flex;
-            gap: $l-gutter;
+            gap: $m-gutter;
 
             .hold-reason-summary-pod {
                 padding: $m-gutter;
                 background-color: $white;
                 border: 1px solid $gray-300;
                 border-radius: $border-radius;
-                flex: 1;
+                cursor: pointer;
+                flex: 0 1 240px;
+                will-change: background-color, color;
+                transition: color 150ms ease-in-out, background-color 150ms ease-in-out;
+
+                &:hover,
+                &:focus,
+                &:focus-within,
+                &.active {
+                    background-color: $gray-700;
+                    color: $white;
+                }
 
                 .title-wrapper {
                     text-align: center;
@@ -497,5 +599,10 @@ tr.readonly {
                 }
             }
         }
+    }
+
+    .filter-display {
+        text-align: center;
+        margin: $xl-gutter 0 $l-gutter 0;
     }
 }

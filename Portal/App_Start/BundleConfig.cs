@@ -380,6 +380,10 @@ namespace Portal
                 $"{cssPrefix}/models/email-contacts{cssSuffix}"
             ));
 
+            bundles.Add(new StyleBundle("~/bundles/css/marylebone-boxing").Include(
+                        $"{cssPrefix}/models/marylebone-boxing{cssSuffix}"
+                ));
+
             //  
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             //
@@ -870,6 +874,10 @@ namespace Portal
             bundles.Add(new ScriptBundle("~/bundles/js/email-contacts").Include(
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/email-contacts{jsSuffix}"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/marylebone-boxing").Include(
+                        $"{jsPrefix}/models/marylebone-boxing{jsSuffix}"
                 ));
 
 

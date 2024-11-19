@@ -1382,13 +1382,15 @@ ko.bindingHandlers.keepElement = {
 
 ko.bindingHandlers.enterKey = {
     init: function (element, valueAccessor, allBindings, data, context) {
-        var wrapper = function (data, event) {
-            if (event.keyCode === 13) {
-                if (valueAccessor())
-                    valueAccessor().call();
-            }
-        };
-        ko.applyBindingsToNode(element, { event: { keyup: wrapper } }, context);
+        if (valueAccessor()) {
+            var wrapper = function (data, event) {
+                if (event.keyCode === 13) {
+                    if (valueAccessor())
+                        valueAccessor().call();
+                }
+            };
+            ko.applyBindingsToNode(element, { event: { keyup: wrapper } }, context);
+        }
     }
 }
 
@@ -3772,16 +3774,15 @@ ko.bindingHandlers.maxNewLines = {
     init: function (element, valueAccessor, allBindings, viewModel, context) {
         var maxNewLines = ko.unwrap(valueAccessor());
         if (maxNewLines) {
-            //console.log('maxNewLines bindingHandler init hit', maxNewLines);
+            $(element).on('keydown', function (event) {
+                var text = ko.unwrap(allBindings.get('textInput')) || '';
+                var maxNewLines = allBindings.get('maxNewLines');
+                var newLines = text.split(/\r*\n/).length;
+                if (event.keyCode === 13 && newLines >= maxNewLines) {
+                    event.preventDefault();
+                }
+            });
         }
-        $(element).on('keydown', function (event) {
-            var text = ko.unwrap(allBindings.get('textInput')) || '';
-            var maxNewLines = allBindings.get('maxNewLines');
-            var newLines = text.split(/\r*\n/).length;
-            if (event.keyCode === 13 && newLines >= maxNewLines) {
-                event.preventDefault();
-            }
-        });
     },
     update: function (element, valueAccessor, allBindings, viewModel, context) {
         var maxNewLines = ko.unwrap(valueAccessor());
@@ -3790,7 +3791,7 @@ ko.bindingHandlers.maxNewLines = {
             var maxNewLines = allBindings.get('maxNewLines');
             if (text) {
                 var split = text.split(/\r*\n/);
-                if (split.length > maxNewLines) {
+                if ((split.length - 1) > maxNewLines) {
                     text = split[0] + '\n' + split[1] + '\n' + split[2] + ' ' + split.splice(3).join(' ');
                 }
                 allBindings.get('textInput')(text);

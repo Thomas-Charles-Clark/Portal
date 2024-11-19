@@ -16,6 +16,8 @@ using System.Linq;
 using System.Web;
 using NLog.LayoutRenderers.Wrappers;
 using SharedEFClasses.Models.Pricing;
+using Microsoft.AnalysisServices.AdomdClient;
+using SharedEFClasses.Models.Marylebone;
 
 namespace SharedEFClasses.Models.Products
 {
@@ -106,6 +108,7 @@ namespace SharedEFClasses.Models.Products
         public string BuyerCode { get; set; }
 
         public string BuyerName { get; set; }
+        public string EAN { get; set; }
 
 
         [InverseProperty("Products")]
@@ -212,6 +215,10 @@ namespace SharedEFClasses.Models.Products
 
         [InverseProperty("Product")]
         public virtual ICollection<Price> Prices { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("Product")]
+        public ICollection<BoxedItem> BoxedForMHS { get; set; }
 
     }
 
@@ -1929,6 +1936,10 @@ namespace SharedEFClasses.Models.Products
 
         [ForeignKey("StockLocationOrderBookGroupID")]
         public virtual StockLocationGroup StockLocationGroup { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("DestinationStockLocation")]
+        public virtual ICollection<Box> InboundBoxesFromMarylebone { get; set; }
     }
 
     [Table("RingFencePreAllocation", Schema = "portal")]

@@ -19,107 +19,117 @@
     @Scripts.Render("~/bundles/js/tempus-dominus")
 
 <script type="text/javascript">
-        window.getTabToLoad = () => {
-            return '@Html.Raw(Model.Tab)';
-        }
+    window.getTabToLoad = () => {
+        return '@Html.Raw(Model.Tab)';
+    }
 
-        window.getBasketIdToLoad = () => {
-            return @Html.Raw(Model.BasketID);
-        }
+    window.getBasketIdToLoad = () => {
+        return @Html.Raw(Model.BasketID);
+    }
 
-        window.getTransactionIdToLoad = () => {
-            return @Html.Raw(Model.TransactionID);
-        }
+    window.getMarketToLoad = () => {
+        return '@Html.Raw(Model.Market)';
+    }
 
-        window.getOrderHeadIdToLoad = () => {
-            return @Html.Raw(Model.OrderHeadID);
-        }
+    window.getTransactionIdToLoad = () => {
+        return @Html.Raw(Model.TransactionID);
+    }
 
-        window.getHeldOrderReasonIdToLoad = () => {
-            return @Html.Raw(Model.HoldReasonID);
-        }
+    window.getOrderHeadIdToLoad = () => {
+        return @Html.Raw(Model.OrderHeadID);
+    }
 
-        window.getHeldOrderReasonGroupIdToLoad = () => {
-            return @Html.Raw(Model.HoldReasonGroupID);
-        }
+    window.getHeldOrderReasonIdToLoad = () => {
+        return @Html.Raw(Model.HoldReasonID);
+    }
 
-        function getAvailableTags() {
-            return [];
-        }
+    window.getHeldOrderReasonGroupIdToLoad = () => {
+        return @Html.Raw(Model.HoldReasonGroupID);
+    }
 
-        function getMyHeldOrderImportStatuses() {
-            return [{
-                Status: 'Active',
-                Name: 'Active Baskets'
-            }, {
-                Status: 'Held',
-                Name: 'Held Baskets'
-            }, {
-                Status: 'Parked',
-                Name: 'Parked Baskets'
-            }];
-        }
+    window.getTradeAccountCodeToLoad = () => {
+        return '@Html.Raw(Model.TradeAccountCode)';
+    }
 
-        function getOrderImportStatuses() {
-            return [{
-                Status: 'Sample',
-                Name: 'Sample Orders'
-            }, {
-                Status: 'Mixed',
-                Name: 'Mixed Orders'
-            }];
-        }
+    function getAvailableTags() {
+        return [];
+    }
 
-        function getOrderImportSources() {
-            return @Html.Raw(JsonConvert.SerializeObject(Model.OrderImportSources));
-        }
+    function getMyHeldOrderImportStatuses() {
+        return [{
+            Status: 'Active',
+            Name: 'Active Baskets'
+        }, {
+            Status: 'Held',
+            Name: 'Held Baskets'
+        }, {
+            Status: 'Parked',
+            Name: 'Parked Baskets'
+        }];
+    }
 
-        function getHoldReasons() {
-            return @Html.Raw(JsonConvert.SerializeObject(Model.HoldReasons));
-        }
+    function getOrderImportStatuses() {
+        return [{
+            Status: 'Sample',
+            Name: 'Sample Orders'
+        }, {
+            Status: 'Mixed',
+            Name: 'Mixed Orders'
+        }];
+    }
 
-        function formatSelectedCurrency(value) {
-            return formatCurrency(value, 2, viewModel.tradeAccount().CurrencyCulture, viewModel.tradeAccount().CurrencyCode);
-        }
+    function getOrderImportSources() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.OrderImportSources));
+    }
 
-        var viewModel = new orderProductsBaseViewModel();
+    function getHoldReasons() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.HoldReasons));
+    }
 
-        var orf = viewModel.orderFactory;
+    function formatSelectedCurrency(value) {
+        return formatCurrency(value, 2, viewModel.tradeAccount().CurrencyCulture, viewModel.tradeAccount().CurrencyCode);
+    }
 
-        var bfhf = orf.bespokeFabricHangerFactory;
+    var viewModel = new orderProductsBaseViewModel();
 
-        var bfsf = orf.bespokeFabricShowlengthFactory;
+    window.orf = viewModel.orderFactory;
 
-        var df = orf.dispatchFactory;
+    window.bfhf = orf.bespokeFabricHangerFactory;
 
-        var pd = viewModel.orderProductsDrilldown;
+    window.bfsf = orf.bespokeFabricShowlengthFactory;
 
-        var barf = orf.bespokeArchitectRingFactory;
+    window.df = orf.dispatchFactory;
 
-        var daf = orf.deliveryAddressFactory;
+    window.pd = viewModel.orderProductsDrilldown;
 
-        var bff = orf.bespokeFurnitureFactory;
+    window.barf = orf.bespokeArchitectRingFactory;
 
-        var pdfc = viewModel.orderProductsDrilldownFurnitureComponents;
+    window.daf = orf.deliveryAddressFactory;
 
-        ko.options.deferUpdates = true;
+    window.bff = orf.bespokeFurnitureFactory;
 
-        ko.validation.init({
-            decorateInputElement: true,
-            errorElementClass: 'alert-danger',
-            errorMessageClass: 'validation-message text-danger'
-        });
+    window.pdfc = viewModel.orderProductsDrilldownFurnitureComponents;
 
-        $(document).ready(function () {
-            ko.applyBindings(viewModel, document.body);
-            window.setTimeout(() => {
-                viewModel.ready(true);
-            }, 0);
-        });
+    window.mbf = viewModel.memberBasketFetcher;
 
-        function getMemberId() {
-            return @(User.Identity.GetUserId<int>())
-        }
+    ko.options.deferUpdates = true;
+
+    ko.validation.init({
+        decorateInputElement: true,
+        errorElementClass: 'alert-danger',
+        errorMessageClass: 'validation-message text-danger'
+    });
+
+    $(document).ready(function () {
+        ko.applyBindings(viewModel, document.body);
+        window.setTimeout(() => {
+            viewModel.ready(true);
+        }, 0);
+    });
+
+    function getMemberId() {
+        return @(User.Identity.GetUserId<int>())
+    }
 </script>
 
     @if (User.IsInRole("Super Admin") || User.IsInRole("Senior Manager") || User.IsInRole("User Masquerade") || User.IsInRole("Customer Services"))
@@ -616,7 +626,7 @@
             Start a New Order
         </a>
     </li>
-    <li class="@(tabToLoad == null || tabToLoad == "mySavedOrders" ? "active" : "")">
+    <li class="@(tabToLoad == "mySavedOrders" ? "active" : "")">
         <a href="#tab-saved" data-toggle="tab" data-url-value="mySavedOrders" data-bind="click: function() { $('#user-masquerade').show(); memberBasketFetcher.resultGridWidget().dataSource.read() }">
             My Saved Orders
             <!-- ko if: memberBasketFetcher.basketCount() -->
@@ -626,7 +636,7 @@
             <!-- /ko -->
         </a>
     </li>
-    <li class="@(tabToLoad == null || tabToLoad == "myHeldOrders" ? "active" : "")">
+    <li class="@(tabToLoad == "myHeldOrders" ? "active" : "")">
         <a href="#tab-my-held-orders" data-toggle="tab" data-url-value="myHeldOrders" data-bind="click: function() { $('#user-masquerade').show(); memberBasketFetcher.myHeldOrdersGridWidget().dataSource.read() }">
             My Held Orders
             <!-- ko if: memberBasketFetcher.myHeldOrdersCount() -->
@@ -636,7 +646,7 @@
             <!-- /ko -->
         </a>
     </li>
-    <li class="@(tabToLoad == null || tabToLoad == "customerHeldOrders" ? "active" : "")">
+    <li class="@(tabToLoad == "customerHeldOrders" ? "active" : "")">
         <a href="#tab-customer-held-baskets" data-url-value="customerHeldOrders" data-toggle="tab" data-bind="click: function() { $('#user-masquerade').hide(); memberBasketFetcher.customerHeldBasketsGridWidget().dataSource.read() }">
             Customer Held
             <!-- ko if: memberBasketFetcher.customerHeldBasketsCount() -->
@@ -650,7 +660,7 @@
                                       || User.IsInRole("Order Release - Credit Control")
                                       || User.IsInRole("Order Release - IT")))
     {
-        <li class="@(tabToLoad == null || tabToLoad == "ordersToApprove" ? "active" : "")">
+        <li class="@(tabToLoad == "ordersToApprove" ? "active" : "")">
             <a href="#tab-held-orders" data-url-value="ordersToApprove" data-toggle="tab" data-bind="click: function() { $('#user-masquerade').show(); memberBasketFetcher.heldOrdersGridWidget().dataSource.read() }">
                 Orders to Approve
                 <!-- ko if: memberBasketFetcher.heldOrdersCount() -->
@@ -663,7 +673,7 @@
     }
     @if (User.IsInRole("Super Admin") || User.IsInRole("Customer Services - Imported Order Processor"))
     {
-        <li class="@(tabToLoad == null || tabToLoad == "ordersToRelease" ? "active" : "")">
+        <li class="@(tabToLoad == "ordersToRelease" ? "active" : "")">
             <a href="#tab-imports" data-url-value="ordersToRelease" data-toggle="tab" data-bind="click: function() { $('#user-masquerade').show(); memberBasketFetcher.importResultGridWidget().dataSource.read() }">
                 Web Orders to Release
                 <!-- ko if: memberBasketFetcher.importBasketCount() -->
@@ -674,12 +684,12 @@
             </a>
         </li>
     }
-    <li class="@(tabToLoad == null || tabToLoad == "orderEnquiry" ? "active" : "")">
+    <li class="@(tabToLoad == "orderEnquiry" ? "active" : "")">
         <a href="#tab-order-enquiry" data-url-value="orderEnquiry" data-toggle="tab" data-bind="click: function() { $('#user-masquerade').hide(); }">
             Order Enquiry
         </a>
     </li>
-    <li class="pull-right @(tabToLoad == null || tabToLoad == "previousOrders" ? "active" : "")">
+    <li class="pull-right @(tabToLoad == "previousOrders" ? "active" : "")">
         <a href="#tab-submitted" data-url-value="previousOrders" data-toggle="tab" data-bind="click: function() { $('#user-masquerade').show(); memberBasketFetcher.submittedGridWidget().dataSource.read() }">
             Previous Orders
             <!-- ko if: memberBasketFetcher.submittedBasketCount() -->
@@ -717,7 +727,7 @@
     <div id="tab-new" class="tab-pane @(tabToLoad == null || tabToLoad == "newOrder" ? "active" : "")">
         @Html.Action("TradeAccountSelector", "Component", new { Area = "", CanSearch = true, canCollapse = false, orderProductsExtension = true })
     </div>
-    <div id="tab-saved" class="tab-pane @(tabToLoad == null || tabToLoad == "mySavedOrders" ? "active" : "")">
+    <div id="tab-saved" class="tab-pane @(tabToLoad == "mySavedOrders" ? "active" : "")">
         <div class="panel panel-primary" data-bind="with: memberBasketFetcher">
             <div class="panel-heading no-padding">
                 <h4 class="panel-title">
@@ -744,18 +754,15 @@
             </div>
         </div>
     </div>
-    @if (User.IsInRole("Super Admin") || (User.IsInRole("Order Release - Customer Services")
+    @*@if (User.IsInRole("Super Admin") || (User.IsInRole("Order Release - Customer Services")
                                       || User.IsInRole("Order Release - Credit Control")
                                       || User.IsInRole("Order Release - IT")))
-    {
-        <div id="tab-held-orders" class="tab-pane @(tabToLoad == null || tabToLoad == "ordersToApprove" ? "active" : "")">
+    {*@
+        <div id="tab-held-orders" class="tab-pane @(tabToLoad == "ordersToApprove" ? "active" : "")">
             <div class="panel panel-primary" data-bind="with: memberBasketFetcher">
                 <div class="panel-heading no-padding">
                     <h4 class="panel-title">
                         <span data-bind="text: busy() ? 'Loading...' :   heldOrdersCount() ? 'Select an Order' : 'There are no Held Orders'"></span>
-                        <span data-bind="click: clearHeldOrdersGridFilters">
-                            Clear Filters
-                        </span>
                     </h4>
                     <div class="clearfix"></div>
                 </div>
@@ -770,11 +777,28 @@
                                 <div class="rect5 alert alert-info"></div>
                             </div>
                         </div>
+                        <!--<div class="prefilters" style="display: none" data-bind="visible: true">
+                            <div id="held-orders-market-filter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: heldOrdersMarketParams }"></div>
+                            <div id="held-orders-hold-reason-filter" class="prefilter" data-bind="component: { name: 'mdc-kendo-multiselect-component', params: heldOrdersHoldReasonsParams }"></div>
+                            <div id="held-orders-search-term-filter" class="prefilter" data-bind="component: { name: 'mdc-text-field-component', params: heldOrdersSearchTermParams }"></div>
+                            <button id="held-orders-filter-search-btn" class="btn btn-flat" type="button" data-bind="click: heldOrdersSearchTermParams.enterKey">
+                                <span>
+                                    Search
+                                </span>
+                                <span class="bi bi-search ms-2"></span>
+                            </button>
+                            <button id="held-orders-filter-clear-btn" class="btn btn-flat" type="button" data-bind="click: clearHeldOrdersGridFilters">
+                                <span>
+                                    Clear Filters
+                                </span>
+                                <span class="bi bi-x ms-2"></span>
+                            </button>
+                        </div>-->
                         <!-- ko if: holdReasonSummaryPods().length -->
-                        <div class="hold-reason-summary-pods">
-                            <div class="pods-wrapper">
+                        <!--<div class="hold-reason-summary-pods" style="display: none" data-bind="visible: true">
+                            <div class="pods-wrapper">-->
                                 <!-- ko foreach: holdReasonSummaryPods -->
-                                <div class="card hold-reason-summary-pod">
+                                <!--<div class="card hold-reason-summary-pod" data-bind="click: apply, css: { 'active': active }, attr: { 'data-hold-reason-group-id': HoldReasonGroupID }">
                                     <div class="title-wrapper">
                                         <h4 class="title" data-bind="html: HoldReasonGroupName"></h4>
                                         <h5 class="subtitle" data-bind="html: RoleName"></h5>
@@ -782,18 +806,18 @@
                                     <div class="detail">
                                         <span data-bind="text: Count"></span>
                                     </div>
-                                </div>
+                                </div>-->
                                 <!-- /ko -->
-                            </div>
-                        </div>
+                            <!--</div>
+                        </div>-->
                         <!-- /ko -->
                         <div data-bind="kendoGrid: heldOrdersResultGridSettings"></div>
                     </div>
                 </div>
             </div>
         </div>
-    }
-    <div id="tab-my-held-orders" class="tab-pane @(tabToLoad == null || tabToLoad == "myHeldOrders" ? "active" : "")">
+    @* } *@
+    <div id="tab-my-held-orders" class="tab-pane @(tabToLoad == "myHeldOrders" ? "active" : "")">
         <div class="panel panel-primary" data-bind="with: memberBasketFetcher">
             <div class="panel-heading no-padding">
                 <h4 class="panel-title">
@@ -820,7 +844,7 @@
             </div>
         </div>
     </div>
-    <div id="tab-customer-held-baskets" class="tab-pane @(tabToLoad == null || tabToLoad == "customerHeldOrders" ? "active" : "")">
+    <div id="tab-customer-held-baskets" class="tab-pane @(tabToLoad == "customerHeldOrders" ? "active" : "")">
         <div class="panel panel-primary" data-bind="with: memberBasketFetcher">
             <div class="panel-heading no-padding">
                 <h4 class="panel-title">
@@ -847,7 +871,7 @@
             </div>
         </div>
     </div>
-    <div id="tab-imports" class="tab-pane @(tabToLoad == null || tabToLoad == "ordersToRelease" ? "active" : "")">
+    <div id="tab-imports" class="tab-pane @(tabToLoad == "ordersToRelease" ? "active" : "")">
         <div class="panel panel-primary" data-bind="with: memberBasketFetcher">
             <div class="panel-heading no-padding">
                 <h4 class="panel-title">
@@ -874,7 +898,7 @@
             </div>
         </div>
     </div>
-    <div id="tab-submitted" class="tab-pane @(tabToLoad == null || tabToLoad == "previousOrders" ? "active" : "")">
+    <div id="tab-submitted" class="tab-pane @(tabToLoad == "previousOrders" ? "active" : "")">
         <div class="panel panel-primary" data-bind="with: memberBasketFetcher">
             <div class="panel-heading no-padding">
                 <h4 class="panel-title">
@@ -917,7 +941,7 @@
             </div>
         </div>
     </div>
-    <div id="tab-order-enquiry" class="tab-pane @(tabToLoad == null || tabToLoad == "orderEnquiry" ? "active" : "")" data-bind="with: memberBasketFetcher.basketStatus">
+    <div id="tab-order-enquiry" class="tab-pane @(tabToLoad == "orderEnquiry" ? "active" : "")" data-bind="with: memberBasketFetcher.basketStatus">
         <div class="blocker" style="display: none;" data-bind="flexVisible: busy, toggleOpacity: busy">
             <div class="loading-spinner"></div>
             <h3 class="mt-3">

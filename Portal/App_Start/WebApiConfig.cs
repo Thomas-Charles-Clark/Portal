@@ -27,6 +27,7 @@ using SharedEFClasses.Models.OrderBook;
 using DocumentFormat.OpenXml.EMMA;
 using SharedEFClasses.Models.Mertex;
 using SharedEFClasses.Models.Parcel;
+using SharedEFClasses.Models.Orders;
 
 namespace Portal
 {
@@ -123,6 +124,7 @@ namespace Portal
             odataBuilder.EntitySet<ParcelType>("ParcelTypes");
             odataBuilder.EntitySet<ParcelDeliveryService>("ParcelDeliveryServices");
             odataBuilder.EntitySet<ParcelDestination>("ParcelDestinations");
+            odataBuilder.EntitySet<HoldReason>("HoldReason");
 
             odataBuilder.EntitySet<MertexProductClassificationSuperSet>("MertexProductClassificationSuperSet");
 
@@ -151,6 +153,13 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(OrderBookGrouped)).AddProperty(typeof(OrderBookGrouped).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(OrderTaker)).AddProperty(typeof(OrderTaker).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_DeliveryType)).AddProperty(typeof(Mertex_DeliveryType).GetProperty("ShortLabel"));
+
+            var holdReasonValueMapperFunction = odataBuilder.EntityType<HoldReason>()
+                .Collection
+                .Function("HoldReasonValueMapper")
+                .ReturnsCollectionFromEntitySet<HoldReason>("HoldReasons");
+
+            holdReasonValueMapperFunction.Parameter<short?>("holdReasonId");
 
             var transactionTypeValueMapperFunction = odataBuilder.EntityType<TransactionType>()
                 .Collection
@@ -680,6 +689,14 @@ namespace Portal
 
             salesMarketValueMapperFunction.Parameter<byte?>("salesMarketId");
 
+
+
+            var salesMarketValueMapperByCodeFunction = odataBuilder.EntityType<SalesMarket>()
+                .Collection
+                .Function("SalesMarketValueMapperByCode")
+                .ReturnsCollectionFromEntitySet<SalesMarket>("SalesMarket");
+
+            salesMarketValueMapperByCodeFunction.Parameter<string>("code");
 
 
             var salesMarketOrderBookFilterFunction = odataBuilder.EntityType<SalesMarket>()

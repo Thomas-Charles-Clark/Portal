@@ -17,6 +17,8 @@ const giftVouchersViewModel = (() => {
 
     self.giftVoucherCreator = giftVoucherCreatorViewModel({ parent: self });
 
+    self.giftVoucherNotesEditor = giftVoucherNotesEditorViewModel({ parent: self });
+
     self.giftVoucherRedeemer = giftVoucherRedeemerViewModel({ parent: self });
 
     self.giftVoucherExtender = giftVoucherExtenderViewModel({ parent: self });
@@ -525,7 +527,7 @@ Thank you for shopping with Designers Guild`);
     }
 
     self.proceedNewVoucher = () => {
-        console.warning("proceedNewVoucher");
+        console.warning("proceedNewVoucher incomplete");
         self.giftVoucherCreator.hide();
     }
 
@@ -1174,6 +1176,275 @@ const giftVoucherCreatorViewModel = (({ parent } = { parent: null }) => {
 
 
 
+const giftVoucherNotesEditorViewModel = (({ parent } = { parent: null }) => {
+    var self = {
+        parent: parent
+    };
+
+    //#region Properties
+
+    self.ready = ko.observable(false);
+
+    self.busy = ko.observable(false);
+
+    self.busyMessage = ko.observable("Please wait");
+
+    self.validateNow = ko.observable(false);
+
+    self.modalElement = document.querySelector("#notes-editor-modal");
+
+    self.modal = bootstrap.Modal.getOrCreateInstance(self.modalElement);
+
+    self.modal._element.addEventListener('shown.bs.modal', () => {
+        self.modal._focustrap.deactivate();
+    });
+
+    self.orderId = ko.observable().extend({
+        numberFormatted: {
+            digits: 0,
+            currency: ko.observable({ FormattingCulture: "en-GB" })
+        }
+    });
+
+    self.order = ko.observable();
+
+    self.notes = ko.observable().extend({
+        required: {
+            params: true,
+            onlyIf: () => {
+                return self.validateNow();
+            },
+            message: "Please provide some detail to accompany this action."
+        }
+    });
+
+    self.giftVoucher = ko.observable();
+
+    //#endregion
+
+
+    //#region Components
+
+    self.redeemOrderParams = kendoMDCDropDownList({
+        label: 'Order ID / Reference',
+        odata: true,
+        endPoint: `/odata/Orders`,
+        textField: 'ShortLabel',
+        valueField: 'OrderID',
+        virtual: true,
+        autoBind: false,
+        minLength: 3,
+        enforceMinLength: true,
+        pageSize: 10,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/Orders/Default.OrderValueMapper(orderId='${options.value}')`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        template: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        idObservable: self.orderId,
+        objObservable: self.order,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'desc',
+            field: 'OrderID'
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            if (data && data.filter && data.filter.filters && data.filter.filters.length) {
+                data.pageSize = 40;
+            } else {
+                data.pageSize = 0;
+            }
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
+                d.$filter = `${d.$filter.replace("ShortLabel", "CustomerOrderReference")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "OrderID")}`;
+            }
+
+            return d;
+        }
+    });
+
+    self.notesParams = {
+        label: 'Notes',
+        originalValue: ko.observable(),
+        observable: self.notes,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        showClear: true,
+        rows: 10,
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            $(self.observable.DOMElement).focus();
+        },
+        permitRevert: true,
+        revertFunction: function () {
+            self.notes(self.originalNotes());
+            $(self.notes.DOMElement).focus();
+        },
+        charsRemainingOptions: {
+            maxLength: 2000
+        },
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(true),
+        visible: ko.observable(true)
+    };
+
+    //#endregion
+
+
+    //#region Subscriptions
+
+    self.notes.subscribe(nv => {
+        //console.log("redeemer notes", nv);
+    });
+
+    self.giftVoucher.subscribe(nv => {
+        if (nv) {
+            self.orderId(nv.RedeemOrderID);
+            self.notes(nv.Reason);
+        } else {
+            self.reset();
+        }
+    });
+
+    //#endregion
+
+
+    //#region Computeds
+
+
+
+    //#endregion
+
+
+    //#region Validation Groups
+
+    self.errors = ko.validation.group([
+        self.notes
+    ]);
+
+    //#endregion
+
+
+    //#region Methods
+
+    self.reset = () => {
+        self.validateNow(false);
+        self.redeemOrderParams.clearFunction();
+        self.notesParams.clearFunction();
+    }
+
+    self.show = (gv) => {
+
+        if (gv) {
+            self.giftVoucher(gv);
+        }
+
+        self.modal.show();
+    }
+
+    self.hide = () => {
+        self.modal.hide();
+    }
+
+    self.proceed = () => {
+        self.validateNow(true);
+        self.errors.showAllMessages(false);
+
+        if (self.errors().length) {
+            self.errors.showAllMessages(true);
+            self.errors.filter(x => {
+                x.isValid.notifySubscribers(x.isValid());
+            });
+        } else {
+
+            self.busy(true);
+
+            var params = {
+                giftVoucherId: self.giftVoucher().GiftVoucherID,
+                orderId: self.orderId(),
+                notes: self.notes()
+            }
+
+            fetch('/api/giftvouchersapi/saveNotes', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                cache: 'no-cache',
+                credentials: 'same-origin',
+                body: JSON.stringify(params)
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    self.hide();
+                    self.busy(false);
+                    window.showInfo("Thank you", "Saved successfully.");
+
+                    self.giftVoucher().notes(self.notes());
+
+                    if (self.giftVoucher().hasOwnProperty('redeemOrderId')) {
+                        self.giftVoucher().redeemOrderId(self.orderId());
+                    } 
+
+                    self.parent.gridDataSource.read();
+                })
+                .catch(err => {
+                    self.busy(false);
+                    window.catchFetchError(err);
+                })
+        }
+    }
+
+    //#endregion
+
+
+    //#region Events
+
+
+
+    //#endregion
+
+    return self;
+});
+
+
 const giftVoucherRedeemerViewModel = (({ parent } = { parent: null }) => {
     var self = {
         parent: parent
@@ -1415,14 +1686,17 @@ const giftVoucherRedeemerViewModel = (({ parent } = { parent: null }) => {
                     .then(data => {
                         self.hide();
                         self.busy(false);
+
                         window.showInfo("Thank you", "This gift voucher has been redeemed.");
+
                         if (self.giftVoucher().hasOwnProperty('redeemOrderId')) {
                             self.giftVoucher().redeemOrderId(self.orderId());
-                            self.giftVoucher().notes(self.notes());
-                            self.giftVoucher().usedDt(data.usedDt);
-                        } else {
-                            self.parent.gridDataSource.read();
                         }
+
+                        self.giftVoucher().notes(self.notes());
+                        self.giftVoucher().usedDt(data.usedDt);
+
+                        self.parent.gridDataSource.read();
                     })
                     .catch(err => {
                         self.busy(false);
@@ -2043,9 +2317,8 @@ const giftVoucherViewModel = (({ rec, parent } = { rec: null, parent: null }) =>
     }, self);
 
     self.voucherEditDisabled = ko.computed(() => {
-        //return self.usedDt() != null;
-        return false;
         // can't disable because users might want to flag as used before they have an OrderID
+        return self.usedDt() != null;
     }, self);
 
     //#endregion

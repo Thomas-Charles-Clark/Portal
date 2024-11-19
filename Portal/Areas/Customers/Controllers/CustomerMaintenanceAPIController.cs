@@ -65,11 +65,11 @@ namespace Portal.Areas.Customers.Controllers
                     System.IO.Directory.CreateDirectory($"{dto.PathRoot}\\{dto.SalesMarketFolderName}\\{dto.ParentFolderName}");
                 }
 
-                if (!System.IO.File.Exists(dto.FinalFilePath))
+                if (dto.path != dto.FinalFilePath)
                 {
-                    System.IO.File.Copy(dto.path, dto.FinalFilePath);
+                    System.IO.File.Copy(dto.path, dto.FinalFilePath, overwrite: true);
                 }
-
+                
                 var fi = new FileInfo(dto.FinalFilePath);
 
                 return Ok(new { success = true, fileSizeBytes = fi.Length });
