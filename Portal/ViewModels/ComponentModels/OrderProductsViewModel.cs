@@ -82,7 +82,7 @@ namespace Portal.ViewModels.ComponentModels
 
             DeliveryFOCReasons = portalDb.DeliveryFOCReasons.OrderBy(p => p.DeliveryFOCReasonID).ToList();
 
-            DiscountReasons = portalDb.DiscountReasons.OrderBy(p => p.DiscountReasonID).ToList();
+            DiscountReasons = portalDb.DiscountReasons.OrderBy(d => d.Name).ToList();
 
             SortOptions = portalDb.FetchProductSortOptions();
 

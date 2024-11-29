@@ -547,18 +547,16 @@ namespace SharedEFClasses.Models
             return results;
         }
 
-        public async Task<HeldOrderResultWrapper> FetchHeldOrdersManagement(int memberId)
+        public async Task<HeldOrderResultWrapper> FetchHeldOrdersManagement(int memberId, string marketCode, string searchTerm, string holdReasonIds)
         {
             var results = new List<HeldOrderSelectResult>();
 
-            var parameters = new SqlParameter[]
-            {
-                new SqlParameter("@MemberID", memberId)
-            };
-
             var reader = await this.Database.Connection.QueryMultipleAsync("portal.Basket_HeldForApproval_ManagementView", new
             {
-                MemberID = memberId
+                MemberID = memberId,
+                MarketCode = marketCode,
+                SearchTerm = searchTerm,
+                HoldReasonIDs = holdReasonIds
             }, null, null, CommandType.StoredProcedure);
 
             return new HeldOrderResultWrapper()

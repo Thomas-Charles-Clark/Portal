@@ -477,15 +477,18 @@ tr.readonly {
                 font-weight: normal;
                 padding: $sm-gutter $l-gutter $sm-gutter $xl-gutter;
 
-                .form-check {
+                .form-check-label {
                     display: inline-flex;
                     gap: $sm-gutter;
                     align-items: center;
                     cursor: pointer;
+                    margin: 0;
+                    font-weight: normal;
 
                     input {
                         margin: 0;
                         cursor: pointer;
+                        top: 0;
                     }
 
                     label {
@@ -532,6 +535,7 @@ tr.readonly {
         #held-orders-filter-search-btn {
             flex: 0 1 105px;
             margin-top: 0;
+
             .bi {
                 margin-left: $sm-gutter;
             }
@@ -567,22 +571,45 @@ tr.readonly {
             display: flex;
             gap: $m-gutter;
 
+            $light-red-bg: #ca2121;
+
             .hold-reason-summary-pod {
                 padding: $m-gutter;
                 background-color: $white;
-                border: 1px solid $gray-300;
+                border: 4px solid $white;
                 border-radius: $border-radius;
                 cursor: pointer;
                 flex: 0 1 240px;
-                will-change: background-color, color;
-                transition: color 150ms ease-in-out, background-color 150ms ease-in-out;
+                will-change: background-color, border-color, color;
+                transition: background-color 150ms ease-in-out, border-color 150ms ease-in-out, color 150ms ease-in-out;
+                position: relative;
 
                 &:hover,
                 &:focus,
-                &:focus-within,
+                &:focus-within {
+                    background-color: $gray-700;
+                    border-color: $gray-700;
+                    color: $white;
+                }
+
                 &.active {
                     background-color: $gray-700;
+                    border-color: shade-color($gray-700, 40%);
                     color: $white;
+                }
+
+                &.priority {
+                    background-color: $red-500;
+                    border: 4px solid $red-500;
+                    color: $white;
+
+                    &:hover,
+                    &:focus,
+                    &:focus-within,
+                    &.active {
+                        background-color: $light-red-bg;
+                        border-color: shade-color($light-red-bg, 30%);
+                    }
                 }
 
                 .title-wrapper {
@@ -599,10 +626,24 @@ tr.readonly {
                 }
             }
         }
+
+        .filter-display {
+            text-align: center;
+            margin: $xl-gutter 0 $l-gutter 0;
+        }
     }
 
-    .filter-display {
-        text-align: center;
-        margin: $xl-gutter 0 $l-gutter 0;
+    td {
+        div.hold-reason {
+            p:last-of-type {
+                margin-bottom: 0;
+            }
+
+            & + .hold-reason {
+                padding-top: $m-gutter;
+                margin-top: $m-gutter;
+                border-top: 1px solid $gray-400;
+            }
+        }
     }
 }

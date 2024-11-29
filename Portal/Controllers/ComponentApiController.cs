@@ -635,11 +635,16 @@ namespace Portal.Controllers
         }
 
         [HttpGet]
-        public async Task<IHttpActionResult> FetchHeldOrdersManagement([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
+        public async Task<IHttpActionResult> FetchHeldOrdersManagement([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+            int? memberId,
+            string marketCode,
+            string searchTerm,
+            string holdReasonIds
+            )
         {
-            var memberId = User.Identity.GetUserId<int>();
+            var mid = memberId ?? User.Identity.GetUserId<int>();
 
-            var results = await PortalDb.FetchHeldOrdersManagement(memberId);
+            var results = await PortalDb.FetchHeldOrdersManagement(mid, marketCode, searchTerm, holdReasonIds);
 
             var response = results.Data.ToList().AsQueryable().ToDataSourceResult(request);
 

@@ -314,14 +314,14 @@
         <td style="white-space: normal">
             <span data-bind="html: Reference"></span>
         </td>
-        <td>
-            <!-- ko if: MertexMarket -->
-            <span data-bind="text: MertexMarket.Name"></span>
-            <!-- /ko -->
-            <!-- ko ifnot: MertexMarket -->
-            <span data-bind="text: Market"></span>
-            <!-- /ko -->
-        </td>
+        <!--<td>-->
+        <!-- ko if: MertexMarket -->
+        <!--<span data-bind="text: MertexMarket.Name"></span>-->
+        <!-- /ko -->
+        <!-- ko ifnot: MertexMarket -->
+        <!--<span data-bind="text: Market"></span>-->
+        <!-- /ko -->
+        <!--</td>-->
         <td>
             <span class="display-block" data-bind="text: CustomerCode"></span>
             <span class="display-block" data-bind="text: CustomerName"></span>
@@ -344,9 +344,13 @@
             </span>
             <!-- /ko -->
         </td>
+        <td>
+            <span class="held-since" data-bind="text: moment(HeldSince).format('dddd Do MMM YY')"></span>
+        </td>
         <td style="white-space: normal">
-            <div data-bind="html: Enumerable.From(JSON.parse(HeldReasons)).Select('$.HeldReason').ToArray().join('<br/><br/>')"></div>
-            <span class="display-block margin-top-5" data-bind="text: 'Held Since: ' + moment(HeldSince).format('dddd Do MMM YY')"></span>
+            <div data-bind="foreach: Enumerable.From(JSON.parse(HeldReasons)).Select('$.HeldReason').ToArray()">
+                <div class="hold-reason" data-bind="html: $data"></div>
+            </div>
         </td>
         <td>
             <!-- ko if: AllowBasketView -->
@@ -663,6 +667,11 @@
         <li class="@(tabToLoad == "ordersToApprove" ? "active" : "")">
             <a href="#tab-held-orders" data-url-value="ordersToApprove" data-toggle="tab" data-bind="click: function() { $('#user-masquerade').show(); memberBasketFetcher.heldOrdersGridWidget().dataSource.read() }">
                 Orders to Approve
+                <!-- ko if: memberBasketFetcher.priorityHeldOrdersCount() -->
+                <span class="counter counter-priority" data-bind="with: memberBasketFetcher, visible: true, attr: { title: `${memberBasketFetcher.priorityHeldOrdersCount()} priority order${(memberBasketFetcher.priorityHeldOrdersCount() > 1 ? 's' : '')}` }" style="display: none;">
+                    <span data-bind="text: priorityHeldOrdersCount"></span>
+                </span>
+                <!-- /ko -->
                 <!-- ko if: memberBasketFetcher.heldOrdersCount() -->
                 <span class="counter" data-bind="with: memberBasketFetcher, visible: true" style="display: none;">
                     <span data-bind="text: heldOrdersCount"></span>
@@ -777,7 +786,7 @@
                                 <div class="rect5 alert alert-info"></div>
                             </div>
                         </div>
-                        <!--<div class="prefilters" style="display: none" data-bind="visible: true">
+                        <div class="prefilters" style="display: none" data-bind="visible: true">
                             <div id="held-orders-market-filter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: heldOrdersMarketParams }"></div>
                             <div id="held-orders-hold-reason-filter" class="prefilter" data-bind="component: { name: 'mdc-kendo-multiselect-component', params: heldOrdersHoldReasonsParams }"></div>
                             <div id="held-orders-search-term-filter" class="prefilter" data-bind="component: { name: 'mdc-text-field-component', params: heldOrdersSearchTermParams }"></div>
@@ -793,12 +802,12 @@
                                 </span>
                                 <span class="bi bi-x ms-2"></span>
                             </button>
-                        </div>-->
+                        </div>
                         <!-- ko if: holdReasonSummaryPods().length -->
-                        <!--<div class="hold-reason-summary-pods" style="display: none" data-bind="visible: true">
-                            <div class="pods-wrapper">-->
+                        <div class="hold-reason-summary-pods" style="display: none" data-bind="visible: true">
+                            <div class="pods-wrapper">
                                 <!-- ko foreach: holdReasonSummaryPods -->
-                                <!--<div class="card hold-reason-summary-pod" data-bind="click: apply, css: { 'active': active }, attr: { 'data-hold-reason-group-id': HoldReasonGroupID }">
+                                <div class="card hold-reason-summary-pod" data-bind="click: apply, css: { 'active': active, 'priority': Priority }, attr: { 'data-hold-reason-group-id': HoldReasonGroupID }">
                                     <div class="title-wrapper">
                                         <h4 class="title" data-bind="html: HoldReasonGroupName"></h4>
                                         <h5 class="subtitle" data-bind="html: RoleName"></h5>
@@ -806,12 +815,13 @@
                                     <div class="detail">
                                         <span data-bind="text: Count"></span>
                                     </div>
-                                </div>-->
+                                </div>
                                 <!-- /ko -->
-                            <!--</div>
-                        </div>-->
+                            </div>
+                        </div>
                         <!-- /ko -->
                         <div data-bind="kendoGrid: heldOrdersResultGridSettings"></div>
+                        <pre id="json-viewer" class="prettyprint lang-js" style="display: none;" data-bind="visible: jsonViewer() != null, html: memberBasketFetcher.jsonViewer"></pre>
                     </div>
                 </div>
             </div>
@@ -1219,5 +1229,3 @@
         </div>
     </div>
 </div>
-
-<pre id="json-viewer" class="prettyprint lang-js" style="display: none;" data-bind="visible: memberBasketFetcher.jsonViewer() != null, html: memberBasketFetcher.jsonViewer"></pre>

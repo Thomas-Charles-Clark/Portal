@@ -40,5 +40,5 @@ var orderProductsBaseViewModel = function () {
 
     self.orderFactory = new orderProductsViewModel(self);
 
-    self.memberBasketFetcher = new memberBasketFetcher(self);
+    self.memberBasketFetcher = memberBasketFetcher(self);
 }

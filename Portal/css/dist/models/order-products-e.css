@@ -415,17 +415,20 @@ tr.readonly {
   font-weight: normal;
   padding: 0.5rem 1rem 0.5rem 2rem;
 }
-.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .hold-reason-group-child .form-check {
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .hold-reason-group-child .form-check-label {
   display: inline-flex;
   gap: 0.5rem;
   align-items: center;
   cursor: pointer;
+  margin: 0;
+  font-weight: normal;
 }
-.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .hold-reason-group-child .form-check input {
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .hold-reason-group-child .form-check-label input {
   margin: 0;
   cursor: pointer;
+  top: 0;
 }
-.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .hold-reason-group-child .form-check label {
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .hold-reason-group-child .form-check-label label {
   font-weight: normal;
   line-height: 1.5rem;
   margin-bottom: 0;
@@ -490,16 +493,32 @@ tr.readonly {
 #order-entry-tabs-container .hold-reason-summary-pods .pods-wrapper .hold-reason-summary-pod {
   padding: 0.75rem;
   background-color: #fff;
-  border: 1px solid #dee2e6;
+  border: 4px solid #fff;
   border-radius: 0.375rem;
   cursor: pointer;
   flex: 0 1 240px;
-  will-change: background-color, color;
-  transition: color 150ms ease-in-out, background-color 150ms ease-in-out;
+  will-change: background-color, border-color, color;
+  transition: background-color 150ms ease-in-out, border-color 150ms ease-in-out, color 150ms ease-in-out;
+  position: relative;
 }
-#order-entry-tabs-container .hold-reason-summary-pods .pods-wrapper .hold-reason-summary-pod:hover, #order-entry-tabs-container .hold-reason-summary-pods .pods-wrapper .hold-reason-summary-pod:focus, #order-entry-tabs-container .hold-reason-summary-pods .pods-wrapper .hold-reason-summary-pod:focus-within, #order-entry-tabs-container .hold-reason-summary-pods .pods-wrapper .hold-reason-summary-pod.active {
+#order-entry-tabs-container .hold-reason-summary-pods .pods-wrapper .hold-reason-summary-pod:hover, #order-entry-tabs-container .hold-reason-summary-pods .pods-wrapper .hold-reason-summary-pod:focus, #order-entry-tabs-container .hold-reason-summary-pods .pods-wrapper .hold-reason-summary-pod:focus-within {
   background-color: #495057;
+  border-color: #495057;
   color: #fff;
+}
+#order-entry-tabs-container .hold-reason-summary-pods .pods-wrapper .hold-reason-summary-pod.active {
+  background-color: #495057;
+  border-color: #2c3034;
+  color: #fff;
+}
+#order-entry-tabs-container .hold-reason-summary-pods .pods-wrapper .hold-reason-summary-pod.priority {
+  background-color: #dc3545;
+  border: 4px solid #dc3545;
+  color: #fff;
+}
+#order-entry-tabs-container .hold-reason-summary-pods .pods-wrapper .hold-reason-summary-pod.priority:hover, #order-entry-tabs-container .hold-reason-summary-pods .pods-wrapper .hold-reason-summary-pod.priority:focus, #order-entry-tabs-container .hold-reason-summary-pods .pods-wrapper .hold-reason-summary-pod.priority:focus-within, #order-entry-tabs-container .hold-reason-summary-pods .pods-wrapper .hold-reason-summary-pod.priority.active {
+  background-color: #ca2121;
+  border-color: #8d1717;
 }
 #order-entry-tabs-container .hold-reason-summary-pods .pods-wrapper .hold-reason-summary-pod .title-wrapper {
   text-align: center;
@@ -511,8 +530,16 @@ tr.readonly {
   text-align: center;
   font-size: 28px;
 }
-#order-entry-tabs-container .filter-display {
+#order-entry-tabs-container .hold-reason-summary-pods .filter-display {
   text-align: center;
   margin: 2rem 0 1rem 0;
+}
+#order-entry-tabs-container td div.hold-reason p:last-of-type {
+  margin-bottom: 0;
+}
+#order-entry-tabs-container td div.hold-reason + .hold-reason {
+  padding-top: 0.75rem;
+  margin-top: 0.75rem;
+  border-top: 1px solid #ced4da;
 }
 /*# sourceMappingURL=order-products-e.css.map */

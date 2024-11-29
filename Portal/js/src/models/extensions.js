@@ -5,7 +5,7 @@
             $("#error-modal-title").html('Sorry');
         }
 
-        if (window.basketId) {
+        if (ko.unwrap(window.basketId)) {
             $('#error-modal-title').html(`Error - Basket ID: ${ko.unwrap(window.basketId)}`);
         }
 

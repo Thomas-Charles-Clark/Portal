@@ -1342,7 +1342,7 @@ table.discounter-table {
                 background-color: #5382c4;
                 border: 1px solid #0e4f7b;
                 border-radius: 12px;
-                min-width: 24px;
+                min-width: 26px;
                 height: 24px;
                 display: flex;
                 flex-direction: row;
@@ -1356,6 +1356,13 @@ table.discounter-table {
                     flex: 1 1 auto;
                     text-align: center;
                     color: white;
+                }
+
+                &.counter-priority {
+                    min-width: 26px;
+                    right: 14px;
+                    background-color: $red-500;
+                    border-color: $red-700;
                 }
             }
         }

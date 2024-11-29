@@ -8,7 +8,7 @@ namespace Portal.Areas.Marylebone
         {
             get 
             {
-                return "Marylebone";
+                return "marylebone";
             }
         }
 
@@ -16,7 +16,7 @@ namespace Portal.Areas.Marylebone
         {
             context.MapRoute(
                 "Marylebone_default",
-                "Marylebone/{controller}/{action}/{id}",
+                "marylebone/{controller}/{action}/{id}",
                 new { action = "Index", id = UrlParameter.Optional }
             );
         }

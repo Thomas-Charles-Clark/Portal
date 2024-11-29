@@ -600,11 +600,14 @@
     <Compile Include="Areas\Order-Book\Controllers\OrderBookSummaryController.cs" />
     <Compile Include="Areas\Order-Book\ViewModels\OrderBookDetailViewModel.cs" />
     <Compile Include="Areas\Orders\Controllers\OrderImportAPIController.cs" />
+    <Compile Include="Areas\Orders\Controllers\NeimanMarcusOrderStatusApiController.cs" />
+    <Compile Include="Areas\Orders\Controllers\NeimanMarcusOrderStatusController.cs" />
     <Compile Include="Areas\Orders\Controllers\OrderTrackingApiController.cs" />
     <Compile Include="Areas\Orders\Controllers\OrderTrackingController.cs" />
     <Compile Include="Areas\Orders\ViewModels\OrderImportViewModel.cs" />
     <Compile Include="Areas\Order-Book\ViewModels\OrderBookSummaryViewModel.cs" />
     <Compile Include="Areas\Orders\ViewModels\OrderTrackingViewModel.cs" />
+    <Compile Include="Areas\Orders\ViewModels\NeimanMarcusOrderStatusViewModel.cs" />
     <Compile Include="Areas\Paint\Controllers\PaintMixingAPIController.cs" />
     <Compile Include="Areas\Paint\Controllers\PaintMixingController.cs" />
     <Compile Include="Areas\Paint\PaintAreaRegistration.cs" />
@@ -620,6 +623,7 @@
     <Compile Include="Areas\Products\Controllers\PatternBooksApiController.cs" />
     <Compile Include="Areas\Products\Controllers\PatternBooksController.cs" />
     <Compile Include="Areas\Products\Controllers\ProductCategoriesController.cs" />
+    <Compile Include="Areas\Products\Models\FetchHeldOrdersManagementDTO.cs" />
     <Compile Include="Areas\Products\Models\PassGiftVoucher.cs" />
     <Compile Include="Areas\Products\Models\PassPatternBookFetch.cs" />
     <Compile Include="Areas\Products\ViewModels\PatternBooksViewModel.cs" />
@@ -1739,6 +1743,8 @@
     <Content Include="js\src\models\marketing-budget.js" />
     <Content Include="js\src\models\marketing-messages.js" />
     <Content Include="js\src\models\member-search.js" />
+    <Content Include="js\src\models\_example-view-model.js" />
+    <Content Include="js\src\models\neiman-marcus-order-status.js" />
     <Content Include="js\src\models\notifications.js" />
     <Content Include="js\src\models\order-book-advanced-filters.js" />
     <Content Include="js\src\models\order-book-date-filters.js" />
@@ -1754,6 +1760,7 @@
     <Content Include="js\src\models\order-products-base.js" />
     <Content Include="js\src\models\order-products-basket-splitter.js" />
     <Content Include="js\src\models\order-products-drilldown.js" />
+    <Content Include="js\src\models\order-products-member-basket-fetcher.js" />
     <Content Include="js\src\models\order-products.js" />
     <Content Include="js\src\models\order-search.js" />
     <Content Include="js\src\models\order-tracking.js" />
@@ -2555,6 +2562,7 @@
     <Content Include="Areas\Email\Views\Contacts\EmailContacts.cshtml" />
     <Content Include="Areas\Marylebone\Views\web.config" />
     <Content Include="Areas\Marylebone\Views\Packing\MarylebonePacking.cshtml" />
+    <Content Include="Areas\Orders\Views\NeimanMarcus\NeimanMarcusOrderStatus.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
     <Content Include="Areas\Stock\Views\RangeManagement\RangeManagement.cshtml" />
     <None Include="compilerconfig.json" />
@@ -2958,6 +2966,7 @@
     <Content Include="css\src\models\order-products-b.scss" />
     <Content Include="css\src\models\order-products-d.scss" />
     <Content Include="css\src\models\marylebone-boxing.scss" />
+    <Content Include="css\src\models\neiman-marcus-order-status.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -3976,6 +3985,7 @@
     <Folder Include="Areas\Marylebone\Data\" />
     <Folder Include="Areas\Marylebone\Views\Shared\" />
     <Folder Include="Areas\Order-Book\Data\" />
+    <Folder Include="Areas\Orders\Models\" />
     <Folder Include="Areas\Orders\Views\Shared\" />
     <Folder Include="Areas\Paint\Data\" />
     <Folder Include="Areas\Parcel\Data\" />

@@ -793,8 +793,11 @@ createBinding({
     events: {
         change: function (options, e) {
             console.log('kendoMultiSelect change event', options, e);
-            options.dataItems(e.sender.dataItems());
-            options.value(e.sender.value());
+
+            if (JSON.stringify(options.dataItems()) != JSON.stringify(e.sender.dataItems())) {
+                options.dataItems(e.sender.dataItems());
+                options.value(e.sender.value());
+            }
         },
         dataBound: function (options, e) {
             //console.log('kendoMultiSelect dataBound event', options, e);

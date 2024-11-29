@@ -384,6 +384,10 @@ namespace Portal
                         $"{cssPrefix}/models/marylebone-boxing{cssSuffix}"
                 ));
 
+            bundles.Add(new StyleBundle("~/bundles/css/neiman-marcus-order-status").Include(
+                        $"{cssPrefix}/models/neiman-marcus-order-status{cssSuffix}"
+                ));
+
             //  
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             //
@@ -455,6 +459,7 @@ namespace Portal
                     $"{jsPrefix}/models/order-products-basket-splitter{jsSuffix}",
                     $"{jsPrefix}/models/order-products{jsSuffix}",
                     $"{jsPrefix}/models/order-products-drilldown{jsSuffix}",
+                    $"{jsPrefix}/models/order-products-member-basket-fetcher{jsSuffix}",
                     $"{jsPrefix}/models/care-search{jsSuffix}",
                     $"{jsPrefix}/models/task-search{jsSuffix}",
                     $"{jsPrefix}/models/visit-search{jsSuffix}",
@@ -878,6 +883,10 @@ namespace Portal
 
             bundles.Add(new ScriptBundle("~/bundles/js/marylebone-boxing").Include(
                         $"{jsPrefix}/models/marylebone-boxing{jsSuffix}"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/neiman-marcus-order-status").Include(
+                        $"{jsPrefix}/models/neiman-marcus-order-status{jsSuffix}"
                 ));
 
 

@@ -1,0 +1,149 @@
+﻿@model Portal.Areas.Orders.ViewModels.NeimanMarcusOrderStatusViewModel
+@{
+    Layout = "~/Views/Shared/_Layout-New.cshtml";
+    ViewBag.Title = "Neiman Marcus Order Status";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/neiman-marcus-order-status")
+    @Styles.Render("~/bundles/css/tempus-dominus")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/components")
+    @Scripts.Render("~/bundles/js/neiman-marcus-order-status")
+    @Scripts.Render("~/bundles/js/tempus-dominus")
+
+    <script type="text/javascript">
+
+        let viewModel = neimanMarcusOrderStatusViewModel();
+
+        ko.options.deferUpdates = true;
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        ko.applyBindings(viewModel, document.body);
+
+        window.self = viewModel;
+
+        viewModel.ready();
+    </script>
+}
+@section beforeContainer {
+    <div class="blocker" data-bind="flexVisible: busy, toggleOpacity: busy">
+        <div class="loading-spinner"></div>
+        <h3 class="mt-3">
+            Please Wait...
+        </h3>
+    </div>
+}
+
+<script type="text/html" id="row-template">
+    <tr class="order-row">
+        <td>
+            <span data-bind="text: moment(OrderDT).format('DD/MM/YYYY')"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: NeimanMarcus_OrderID"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: DG_OrderID"></span>
+        </td>
+        <td>
+            <span data-bind="text: ProductCode"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: Quantity"></span>
+        </td>
+        <td class="slanted-column received">
+            <div class="cell received" data-bind="class: ReceivedCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></div>
+        </td>
+        <td class="slanted-column exploded">
+            <div class="cell exploded" data-bind="class: ExplodedCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></div>
+        </td>
+        <td class="slanted-column imported">
+            <div class="cell imported" data-bind="class: ImportedCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></div>
+        </td>
+        <td class="slanted-column verified">
+            <div class="cell verified" data-bind="class: VerifiedCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></div>
+        </td>
+        <td class="slanted-column acknowledged">
+            <div class="cell acknowledged" data-bind="class: AcknowledgedCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></div>
+        </td>
+        <td class="slanted-column drop-shipped">
+            <div class="cell drop-shipped" data-bind="class: DropShipCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></div>
+        </td>
+        <td class="slanted-column shipped">
+            <div class="cell shipped" data-bind="class: ShippedCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></div>
+        </td>
+        <td class="slanted-column invoiced">
+            <div class="cell invoiced" data-bind="class: InvoicedCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></div>
+        </td>
+        <td class="slanted-column cancelled">
+            <div class="cell cancelled" data-bind="class: CancelledCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></div>
+        </td>
+    </tr>
+</script>
+
+<div class="form-group row">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+
+@*<ul class="nav nav-tabs nav-justified" id="neiman-marcus-order-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="order-status-tab-btn" data-bs-toggle="tab" data-bs-target="#order-status-tab" type="button" role="tab" aria-controls="Order Status" aria-selected="true">
+                Order Status
+            </button>
+        </li>
+    </ul>
+    <div class="tab-content" id="neiman-marcus-tabs-content">
+        <div class="tab-pane fade show active" id="order-status-tab" role="tabpanel" aria-labelledby="order-status-tab-btn">
+            <div id="order-status-grid" data-bind="kendoGrid: orderStatusGridSettings"></div>
+        </div>
+        <div class="tab-pane fade" id="new-tab" role="tabpanel" aria-labelledby="new-tab-btn">
+
+        </div>
+    </div>*@
+
+<div id="prefilters" style="display: none;" data-bind="visible: true">
+    <div id="order-status-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statusParams }"></div>
+    <div id="order-date-prefilter">
+        <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: dateRangeParams }"></div>
+        <div class="custom-date-wrapper" style="display: none" data-bind="visible: dateRangeId() == -1">
+            <div id="from-date" class="date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: fromDateParams }"></div>
+        </div>
+        <div class="custom-date-wrapper" style="display: none" data-bind="visible: dateRangeId() == -1">
+            <div id="to-date" class="date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: toDateParams }"></div>
+            <span class="validation-message text-danger" data-bind="validationMessage: fromDate"></span>
+            <span class="validation-message text-danger" data-bind="validationMessage: toDate"></span>
+            <span class="validation-message text-danger" data-bind="validationMessage: fromPreceedsTo"></span>
+        </div>
+    </div>
+    <div id="search-term-prefilter" data-bind="component: { name: 'mdc-text-field-component', params: searchTermParams }"></div>
+    <button id="search-btn" class="btn btn-dark" data-bind="click: performSearch">
+        Search
+        <i class="ms-3 bi bi-search"></i>
+    </button>
+</div>
+
+<div id="order-status-grid" data-bind="kendoGrid: orderStatusGridSettings"></div>

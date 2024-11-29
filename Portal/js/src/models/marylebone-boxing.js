@@ -43,10 +43,7 @@ const maryleboneBoxingViewModel = (() => {
         insertValidationMessages: false,
         showClear: false,
         rows: 1,
-        maxNewLines: 1,
-        enterKey: (e) => {
-            console.log("enterKey", e);
-        },
+        maxNewLines: 2,
         clearFunction: function () {
             var self = this;
             self.observable(undefined);
@@ -96,7 +93,7 @@ const maryleboneBoxingViewModel = (() => {
         insertValidationMessages: false,
         showClear: false,
         rows: 1,
-        maxNewLines: 1,
+        maxNewLines: 2,
         clearFunction: function () {
             var self = this;
             self.observable(undefined);
@@ -127,15 +124,17 @@ const maryleboneBoxingViewModel = (() => {
         field: "DestinationStockLocation",
         title: "Destination"
     }, {
-        field: "BoxedItems",
-        title: "Count",
-        sortable: false
+        field: "ProductCount",
+        title: "No. Products",
     }, {
         field: "CreatedDT",
         title: "Created"
     }, {
         field: "Controls",
-        title: ""
+        title: "",
+        sortable: false,
+        filterable: false,
+        width: 90
     }];
 
     self.gridDataSourceRead = function (options) {
@@ -175,14 +174,14 @@ const maryleboneBoxingViewModel = (() => {
             read: self.gridDataSourceRead
         },
         batch: false,
-        sortable: false,
-        filterable: false,
+        sortable: true,
+        filterable: true,
         grouping: false,
-        serverFiltering: true,
+        serverFiltering: false,
         serverGrouping: false,
-        serverPaging: true,
-        serverAggregates: true,
-        serverSorting: true,
+        serverPaging: false,
+        serverAggregates: false,
+        serverSorting: false,
         pageSize: 20,
         schema: $.extend({}, kendo.data.schemas.webapi, {
             data: "Data",
@@ -194,21 +193,18 @@ const maryleboneBoxingViewModel = (() => {
                 fields: {
                     BoxID: { type: 'number', editable: false },
                     DestinationStockLocationID: { type: 'number', editable: true },
+                    ProductCount: { type: 'number', editable: false },
                     CreatedDT: { type: 'date', editable: false },
                     ModifiedDT: { type: 'date', editable: false },
                     ExpiryDT: { type: 'date', editable: false },
                     DestinationStockLocation: { type: 'object', editable: false },
-                    BoxedItems: {
-                        defaultValue: {
-
-                        }
-                    }
+                    BoxedItems: { type: 'object' }
                 }
             }
         }),
         aggregate: [],
         sort: {
-            field: 'BoxID',
+            field: 'CreatedDT',
             dir: 'desc'
         },
         //sort: { field: "BasketID", dir: "desc" },
@@ -317,6 +313,10 @@ const maryleboneBoxingViewModel = (() => {
     self.newBoxCode.subscribe(nv => {
         console.log('newBoxCode', nv);
 
+        if (nv && nv.indexOf('\n') == 0) {
+            self.newBoxCode(nv.substring(1, nv.length));
+        }
+
         if (nv && nv.indexOf('\n') == nv.length - 1) {
             console.log('ended with newline');
             self.newBoxCode(nv.substring(0, nv.length - 1));
@@ -373,7 +373,7 @@ const maryleboneBoxingViewModel = (() => {
             self.newBoxErrors.showAllMessages(true);
             self.newBoxErrors.filter(x => x.isValid.notifySubscribers(x.isValid()));
         } else {
-            window.showConfirm("Are you sure?", "This will create a new, empty box record.", () => {
+            //window.showConfirm("Are you sure?", "This will create a new, empty box record.", () => {
 
                 let data = {
                     boxCode: self.newBoxCode(),
@@ -403,8 +403,32 @@ const maryleboneBoxingViewModel = (() => {
                         }
                     });
 
-            });
+            //});
         }
+    }
+
+    self.deleteBox = (box) => {
+
+        window.showConfirm("Are you sure?", `This will delete box ${box.BoxCode}`, () => {
+
+        let data = {
+            boxId: box.BoxID
+        };
+
+            console.log("deleteBox calling with", data);
+
+            fetch("/api/MarylebonePackingAPI/deleteBox", {
+                method: "POST",
+                headers: window.fetchHeaders,
+                body: JSON.stringify(data)
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    console.log("deleteBox returned", data);
+                    self.gridWidget().dataSource.read();
+                })
+                .catch(window.catchFetchError);
+         });
     }
 
     self.resetNewBox = () => {
@@ -451,15 +475,13 @@ const boxViewModel = ({ record, parent } = { record: {}, parent: {} }) => {
 
     self.boxedItems = ko.observableArray(record.BoxedItems.map(b => boxedItemViewModel({ record: b, parent: self })));
 
-    self.destinationStockLocationCode = ko.observable(record.DestinationStockLocation.Code);
-
     self.stockLocationCodeValid = ko.observable(true);
 
-    self.scannedText = ko.observable('<i class="text-italic">Activity History</i>');
+    self.scannedText = ko.observable('<i id="activity-history-placeholder" class="text-italic">Activity History</i>');
 
     self.validateNow = ko.observable(false);
 
-    self.stockLocationCode = ko.observable().extend({
+    self.stockLocationCode = ko.observable(record.DestinationStockLocation.Code).extend({
         required: {
             params: true,
             onlyIf: self.validateNow,
@@ -482,9 +504,9 @@ const boxViewModel = ({ record, parent } = { record: {}, parent: {} }) => {
     });
 
     self.stockLocationCodeParams = {
-        label: 'Stock Location Code (scan or type)',
+        label: 'Stock Location Code',
         originalValue: ko.observable(record.DestinationStockLocation.Code),
-        observable: self.destinationStockLocationCode,
+        observable: self.stockLocationCode,
         useNativeValidation: false,
         decorateInputElement: false,
         insertValidationMessages: false,
@@ -517,11 +539,11 @@ const boxViewModel = ({ record, parent } = { record: {}, parent: {} }) => {
         insertValidationMessages: false,
         showClear: false,
         rows: 1,
-        maxNewLines: 1,
-        enterKey: (e) => {
-            if (self.inputSearchTerm())
-                self.addItem();
-        },
+        maxNewLines: 2,
+        //enterKey: (e) => {
+        //    if (self.inputSearchTerm())
+        //        self.addItem();
+        //},
         clearFunction: function () {
             var self = this;
             self.observable(undefined);
@@ -529,9 +551,9 @@ const boxViewModel = ({ record, parent } = { record: {}, parent: {} }) => {
         },
         permitRevert: false,
         enable: ko.observable(true),
-        disable: ko.observable(false),
+        disable: self.busy,
         readonly: ko.observable(true),
-        busy: ko.observable(false),
+        busy: self.busy,
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         visible: ko.observable(true)
@@ -549,7 +571,7 @@ const boxViewModel = ({ record, parent } = { record: {}, parent: {} }) => {
     //#region Computeds
 
     self.undeletedBoxedItems = ko.computed(() => {
-        return self.boxedItems().filter(bi => bi.Deleted == false);
+        return self.boxedItems().filter(bi => bi.Deleted == false).sort((a, b) => a.BoxedItemID < b.BoxedItemID ? 1 : -1);
     }, self);
 
     self.totalItemsDisplay = ko.computed(() => {
@@ -572,11 +594,18 @@ const boxViewModel = ({ record, parent } = { record: {}, parent: {} }) => {
     self.inputSearchTerm.subscribe(nv => {
         console.log('inputSearchTerm', nv);
 
+        if (nv && nv.indexOf('\n') == 0) {
+            self.inputSearchTerm(nv.substring(1, nv.length));
+        }
+
         if (nv && nv.indexOf('\n') == nv.length - 1) {
             console.log('ended with newline');
             self.inputSearchTerm(nv.substring(0, nv.length - 1));
-            self.inputSearchTerm.mdcTextField.root_.querySelector("textarea").focus();
-            self.addItem();
+            self.addItem(() => {
+                window.setTimeout(() => {
+                    self.inputSearchTerm.mdcTextField.root_.querySelector("textarea").focus();
+                }, 0);
+            });
         }
     });
 
@@ -595,7 +624,7 @@ const boxViewModel = ({ record, parent } = { record: {}, parent: {} }) => {
 
     //#region Functions
 
-    self.addItem = () => {
+    self.addItem = (onComplete) => {
 
         let term = self.inputSearchTerm();
 
@@ -607,6 +636,8 @@ const boxViewModel = ({ record, parent } = { record: {}, parent: {} }) => {
             }
 
             let callStart = new Date();
+
+            self.busy(true);
 
             console.log("verifyPartNumber calling with", data);
 
@@ -650,27 +681,31 @@ const boxViewModel = ({ record, parent } = { record: {}, parent: {} }) => {
                         comment = ` was not found`;
                     }
 
-                    if (self.scannedText() === '<i class="text-italic">Activity History</i>') {
-                        self.scannedText(`<span class="d-block scan-result ${resultType}">${term}${comment}</span>`);
-                    } else {
-                        self.scannedText(`${self.scannedText()}<span class="d-block scan-result ${resultType}">${term}${comment}</span>`)
-                    }
-
+                    self.scannedText(`<span class="d-block scan-result ${resultType}">${term}${comment}</span>${self.scannedText()}`);
+                    
                     self.inputSearchTermParams.clearFunction();
 
+                    self.busy(false);
+
                     self.inputSearchTerm.mdcTextField.root_.querySelector("textarea").focus();
+
+                    if (typeof onComplete === 'function') {
+                        onComplete();
+                    }
                 })
                 .catch(err => {
                     self.failedMp3.play();
                     self.failedMp3.play();
                     self.failedMp3.play();
                     window.catchFetchError(err);
+                    self.busy(false);
+
                 })
         }
     }
 
     self.save = () => {
-        self.validateNow();
+        self.validateNow(true);
 
         if (self.errors().length) {
             self.errors.showAllMessages(true);
@@ -682,8 +717,10 @@ const boxViewModel = ({ record, parent } = { record: {}, parent: {} }) => {
 
             let data = {
                 boxId: self.BoxID,
-                stockLocationCode: self.destinationStockLocationCode()
+                stockLocationCode: self.stockLocationCode()
             }
+            self.busy(true);
+
 
             fetch("/api/MarylebonePackingAPI/SaveBox", {
                 method: "POST",
@@ -693,10 +730,16 @@ const boxViewModel = ({ record, parent } = { record: {}, parent: {} }) => {
                 .then(window.handleFetchResponse)
                 .then(data => {
                     self.currentBox(undefined);
-                    document.querySelector('#reviewing-tab-btn').click();
+                    self.busy(false);
                 })
                 .catch(err => {
-                    window.catchFetchError(err);
+                    self.busy(false);
+
+                    if (err.exception && err.exception == "stockLocation") {
+                        self.stockLocationCodeValid(false);
+                    } else {
+                        window.catchFetchError(err);
+                    }
                 })
         }
     }
@@ -723,21 +766,17 @@ const boxViewModel = ({ record, parent } = { record: {}, parent: {} }) => {
                     boxedItem.quantity(data);
                     self.successMp3.play();
 
-                    if (self.scannedText() === '<i class="text-italic">Activity History</i>') {
-                        self.scannedText(`<span class="d-block scan-result scan-result-warning">${boxedItem.Product.Code} quantity reduced to ${data}</span>`);
-                    } else {
-                        self.scannedText(`${self.scannedText()}<span class="d-block scan-result scan-result-warning">${boxedItem.Product.Code} quantity reduced to ${data}</span>`);
-                    }
+                    self.scannedText(`<span class="d-block scan-result scan-result-warning">${boxedItem.Product.Code} quantity reduced to ${data}</span>${self.scannedText()}`);
                 } else {
                     self.boxedItems.remove(boxedItem);
                     self.successMp3.play();
 
-                    if (self.scannedText() === '<i class="text-italic">Activity History</i>') {
-                        self.scannedText(`<span class="d-block scan-result scan-result-removal">${boxedItem.Product.Code} was removed</span>`);
-                    } else {
-                        self.scannedText(`${self.scannedText()}<span class="d-block scan-result scan-result-removal">${boxedItem.Product.Code} was removed</span>`);
-                    }
+                    self.scannedText(`<span class="d-block scan-result scan-result-removal">${boxedItem.Product.Code} was removed</span>${self.scannedText()}`);
                 }
+
+                window.setTimeout(() => {
+                    self.inputSearchTerm.mdcTextField.root_.querySelector("textarea").focus();
+                }, 0);
 
             })
             .catch(err => {
@@ -770,12 +809,12 @@ const boxViewModel = ({ record, parent } = { record: {}, parent: {} }) => {
                     boxedItem.quantity(data);
                     self.successMp3.play();
 
-                    if (self.scannedText() === '<i class="text-italic">Activity History</i>') {
-                        self.scannedText(`<span class="d-block scan-result scan-result-success">${boxedItem.Product.Code} quantity increased to ${data}</span>`);
-                    } else {
-                        self.scannedText(`${self.scannedText()}<span class="d-block scan-result scan-result-success">${boxedItem.Product.Code} quantity increased to ${data}</span>`);
-                    }
+                    self.scannedText(`<span class="d-block scan-result scan-result-success">${boxedItem.Product.Code} quantity increased to ${data}</span>${self.scannedText()}`);
                 } 
+
+                window.setTimeout(() => {
+                    self.inputSearchTerm.mdcTextField.root_.querySelector("textarea").focus();
+                }, 0);
 
             })
             .catch(err => {

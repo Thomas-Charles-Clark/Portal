@@ -356,6 +356,7 @@
     <Compile Include="BaseViewModel.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-ContractPricing.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-DotDigital.cs" />
+    <Compile Include="DbContext\Dapper\PortalDbContext-NeimanMarcus.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-Fenwick.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-Baskets.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-RangeManagement.cs" />
@@ -490,6 +491,10 @@
     <Compile Include="Models\Mertex\TradeAccountInvoiceAccount.cs" />
     <Compile Include="Models\Mertex_DeliveryType.cs" />
     <Compile Include="Models\Mertex_Operator.cs" />
+    <Compile Include="Models\NeimanMarcus\NeimanMarcusOrderStatusGridDto.cs" />
+    <Compile Include="Models\NeimanMarcus\NeimanMarcusOrderStatusOrderResult.cs" />
+    <Compile Include="Models\NeimanMarcus\NeimanMarcusOrderStatusTitleExplanationResult.cs" />
+    <Compile Include="Models\NeimanMarcus\NeimanMarcusOrderStatusResponse.cs" />
     <Compile Include="Models\OrderBook\OrderBook.cs" />
     <Compile Include="Models\OrderBook\OrderBookGrouped.cs" />
     <Compile Include="Models\OrderBook\OrderBookRingFenceInspectData.cs" />

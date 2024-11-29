@@ -1346,6 +1346,7 @@ namespace SharedEFClasses.Models.Orders
         public short HoldReasonGroupSortOrder { get; set; }
         public short HoldReasonGroupID { get; set; }
         public int Count { get; set; }
+        public bool Priority { get; set; }
     }
 
     public class HoldReasonSelectResult

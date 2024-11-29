@@ -46,20 +46,22 @@
 }
 <script id="row-template" type="text/html">
     <tr>
-        <td class="text-end">
+        <td>
             <span data-bind="text: BoxCode"></span>
         </td>
         <td>
             <span data-bind="text: `${DestinationStockLocation.Code} - ${DestinationStockLocation.Name}`"
         </td>
-        <td>
+        <td class="text-end">
             <span data-bind="text: BoxedItems.reduce((a, i) => a += i.Deleted == true ? 0 : i.Quantity, 0)"></span>
         </td>
         <td>
             <span data-bind="text: moment(CreatedDT).format('DD/MM/YYYY HH:mm')"></span>
         </td>
         <td>
-
+            <button class="btn btn-danger" data-bind="click: $parent.deleteBox, clickBubble: false">
+                <i class="bi bi-trash3"></i>
+            </button>
         </td>
     </tr>
 </script>
@@ -107,41 +109,46 @@
                     <i class="bi bi-box ms-3"></i>
                     <span class="ms-3" data-bind="text: totalItemsDisplay"></span>
                 </span>
-                <div class="form-control">
-                    <label class="form-label">
-                        Destination
-                    </label>
-                    <div class="input-group">
-                        <div data-bind="component: { name: 'mdc-text-field-component', params: stockLocationCodeParams }"></div>
-                        <span class="validation-message" data-bind="validationMessage: stockLocationCode"></span>
-                    </div>
-                </div>
-            </h4>
-            <div id="boxing-grid">
                 <div>
                     <div class="form-control">
                         <label class="form-label">
-                            Scan
+                            Destination
                         </label>
-                        <div id="searcher" class="input-group">
-                            <div id="search-term" data-bind="component: { name: 'mdc-text-area-component', params: inputSearchTermParams }"></div>
-                            <button class="btn btn-secondary" type="button" id="button-scan" data-bind="click: () => { addItem(inputSearchTerm()) }">
-                                Enter
-                            </button>
+                        <div class="input-group">
+                            <div data-bind="component: { name: 'mdc-text-field-component', params: stockLocationCodeParams }"></div>
+                            <span class="validation-message" data-bind="validationMessage: stockLocationCode"></span>
                         </div>
                     </div>
+                </div>
+            </h4>
+            <div id="searcher" class="form-control">
+                <label class="form-label">
+                    Scan
+                </label>
+                <div class="input-group">
+                    <div id="search-term" data-bind="component: { name: 'mdc-text-area-component', params: inputSearchTermParams }"></div>
+                    <button class="btn btn-secondary" type="button" id="button-scan" data-bind="disable: busy, click: () => { addItem(inputSearchTerm()) }">
+                        Enter
+                    </button>
+                </div>
+            </div>
+            <div id="boxing-grid">
+                <div>
                     <!-- ko if: undeletedBoxedItems().length -->
                     <ul id="contents-list" class="list-group">
                         <!-- ko foreach: undeletedBoxedItems -->
                         <li class="list-group-item">
                             <div class="boxed-product-display">
+                                <!-- ko if: Product.ImageID -->
+                                <img class="thumb" data-bind="attr: { src: `https://www.designersguild.com/image/90/${Product.ImageID}`, alt: Product.ImageID, title: `Image ID: ${Product.ImageID}` }" />
+                                <!-- /ko -->
                                 <span class="me-auto" data-bind="text: Product.ShortLabel"></span>
                                 <button class="btn btn-secondary btn-increase" data-bind="click: $parent.increaseQuantity">
                                     <i class="bi bi-plus-lg"></i>
                                 </button>
-                                <span data-bind="html: `&times; ${quantity()}`"></span>
+                                <span class="quantity-display" data-bind="html: `&times; ${quantity()}`"></span>
                                 <button class="btn btn-secondary btn-decrease" data-bind="click: $parent.reduceQuantity">
-                                    <i class="bi bi-x-lg"></i>
+                                    <i class="bi bi-trash3" data-bind="css: { 'bi-trash3': quantity() == 1, 'bi-dash': quantity() != 1 }"></i>
                                 </button>
                             </div>
                         </li>
@@ -161,13 +168,13 @@
                 </div>
             </div>
         </div>
-        <button class="btn btn-success w-100 fs-5 text-align-center" style="display: none" data-bind="visible: currentBox() != null, click: closeCurrentBox">
+        <button class="btn btn-success w-100 text-align-center" style="display: none" data-bind="visible: currentBox() != null, click: closeCurrentBox">
             Save Box
-            <i class="bi bi-floppy2 ms-1"></i>
+            <i class="bi bi-floppy2"></i>
         </button>
-        <button class="btn btn-primary w-100 fs-5 text-align-center" style="display: none" data-bind="visible: currentBox() == null, click: showNewBoxModal">
+        <button class="btn btn-primary w-100 text-align-center" style="display: none" data-bind="visible: currentBox() == null, click: showNewBoxModal">
             New Box
-            <i class="bi bi-plus-lg ms-1 bold"></i>
+            <i class="bi bi-plus-lg bold"></i>
         </button>
     </div>
     <div class="tab-pane fade" id="reviewing-tab" role="tabpanel" aria-labelledby="boxing-tab-btn">

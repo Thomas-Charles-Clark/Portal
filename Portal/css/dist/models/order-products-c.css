@@ -1016,7 +1016,7 @@ table.discounter-table > tbody > tr.total-row > th {
   background-color: #5382c4;
   border: 1px solid #0e4f7b;
   border-radius: 12px;
-  min-width: 24px;
+  min-width: 26px;
   height: 24px;
   display: flex;
   flex-direction: row;
@@ -1030,6 +1030,12 @@ table.discounter-table > tbody > tr.total-row > th {
   flex: 1 1 auto;
   text-align: center;
   color: white;
+}
+#new-or-saved-tabs.nav.nav-pills li a span.counter.counter-priority {
+  min-width: 26px;
+  right: 14px;
+  background-color: #dc3545;
+  border-color: #842029;
 }
 #new-or-saved-tabs.nav.nav-pills li:not(.active) a {
   border: 1px solid #7f97c1;

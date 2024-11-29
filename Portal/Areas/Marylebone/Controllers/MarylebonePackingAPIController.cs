@@ -37,6 +37,7 @@ namespace Portal.Areas.Marylebone.Controllers
             var boxes = PortalDb.Boxes
                 .Include(p => p.BoxedItems)
                 .Include(p => p.BoxedItems.Select(b => b.Product))
+                .Include(p => p.BoxedItems.Select(b => b.Product.Product_Images))
                 .Include(p => p.DestinationStockLocation)
                 .Where(b => b.Deleted == false)
                 .ToList();
@@ -73,6 +74,21 @@ namespace Portal.Areas.Marylebone.Controllers
             }
 
             return BadRequest();
+        }
+
+
+        [HttpPost]
+        public IHttpActionResult DeleteBox([FromBody] PassBoxIdentifier dto)
+        {
+            var now = DateTime.Now;
+
+            var box = PortalDb.Boxes.Single(b => b.BoxID == dto.BoxID);
+
+            box.DeletedDT = DateTime.Now;
+
+            PortalDb.SaveChanges();
+
+            return Ok(box);
         }
 
         [HttpPost]

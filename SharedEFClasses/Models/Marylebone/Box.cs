@@ -34,5 +34,14 @@ namespace SharedEFClasses.Models.Marylebone
 
         [InverseProperty("Box")]
         public ICollection<BoxedItem> BoxedItems { get; set; }
+
+        [NotMapped]
+        public decimal ProductCount
+        {
+            get
+            {
+                return BoxedItems?.Where(bi => bi.Deleted == false).Select(bi => bi.Quantity).Sum() ?? 0;
+            }
+        }
     }
 }
