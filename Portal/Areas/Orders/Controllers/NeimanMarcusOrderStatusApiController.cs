@@ -52,7 +52,8 @@ namespace Portal.Areas.Orders.Controllers
             return Ok(new
             {
                 kendoResult = results.Orders.ToDataSourceResult(request),
-                titleExplanations = results.TitleExplanations
+                titleExplanations = results.TitleExplanations,
+                summaryPods = results.SummaryPods
             });
         }
     }

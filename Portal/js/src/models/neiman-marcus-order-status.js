@@ -8,6 +8,9 @@
     dateRangeId: 1,
     name: 'This Month'
 }, {
+    dateRangeId: 30,
+    name: 'Last 30 Days'
+}, {
     dateRangeId: -1,
     name: 'Custom'
 }];
@@ -49,7 +52,7 @@ const neimanMarcusOrderStatusViewModel = ({ } = {}) => {
 
     self.toDate = ko.observable(new Date());
 
-    self.dateRangeId = ko.observable(12);
+    self.dateRangeId = ko.observable(6);
 
     self.dateRangeType = ko.observable(1);
 
@@ -80,28 +83,46 @@ const neimanMarcusOrderStatusViewModel = ({ } = {}) => {
 
     self.gridWidget = ko.observable();
 
-    self.titleExplanations = ko.observable();
+    self.titleExplanations = ko.observableArray([]);
+
+    self.summaryPods = ko.observableArray([]);
+
+    self.quietPrefilters = ko.observable(false);
+
+    self.activePodId = ko.observable();
 
     //#endregion
 
 
     //#region Templates
 
-    self.slantedHeaderTemplate = (heading) => {
-        return `<label class="slanted-column-heading">${heading}</label>`;
+    self.slantedHeaderTemplate = (heading, fieldName) => {
+        return `<label class="slanted-column-heading" data-field-name="${(fieldName ?? heading)}Explanation" data-bind="attr: { title: title }">${heading}</label>`;
+    }
+
+    self.groupHeaderTemplate = (item) => {
+        console.log(item);
+        let first = item.items[0];
+        return `<span>DSCO Order ID: <span class="font-normal">${first.DSCO_OrderID}</span><span class="ms-5">NM Order ID: <span class="font-normal">${(first.NeimanMarcus_OrderID ?? 'pending')}</span></span><span class="ms-5">Order Date: <span class="font-normal">${moment(first.OrderDT).format('DD/MM/YYYY HH:mm:ss')}</span></span>`;
     }
 
     self.gridColumns = [{
         field: "OrderDT",
         title: "Order Date",
-        filterable: false,
-        width: 120
+        hidden: true
+    }, {
+        field: "DSCO_OrderID",
+        title: "DSCO Order ID",
+        hidden: true,
+        groupHeaderTemplate: self.groupHeaderTemplate
     }, {
         field: "NeimanMarcus_OrderID",
-        title: "NM Order Number"
+        title: "NM Order ID",
+        hidden: true,
+        groupHeaderTemplate: self.groupHeaderTemplate
     }, {
         field: "DG_OrderID",
-        title: "DG Order Number"
+        title: "DG Order ID"
     }, {
         field: "ProductCode",
         title: "Product Code"
@@ -110,59 +131,62 @@ const neimanMarcusOrderStatusViewModel = ({ } = {}) => {
         title: "Quantity",
         width: 120
     }, {
+        field: "SummaryStatus",
+        title: "Summary"
+    }, {
         field: "ReceivedCell",
         title: "Received",
         filterable: false,
         headerTemplate: self.slantedHeaderTemplate("Received"),
-        width: 47
+        width: 57
     }, {
         field: "ExplodedCell",
         title: "Exploded",
         filterable: false,
         headerTemplate: self.slantedHeaderTemplate("Exploded"),
-        width: 47
+        width: 57
     }, {
         field: "ImportedCell",
         title: "Imported",
         filterable: false,
         headerTemplate: self.slantedHeaderTemplate("Imported"),
-        width: 47
+        width: 57
     }, {
         field: "VerifiedCell",
         title: "Verified",
         filterable: false,
         headerTemplate: self.slantedHeaderTemplate("Verified"),
-        width: 47
+        width: 57
     }, {
         field: "AcknowledgedCell",
         title: "Acknowledged",
         filterable: false,
         headerTemplate: self.slantedHeaderTemplate("Acknowledged"),
-        width: 47
+        width: 57
     }, {
         field: "DropShipCell",
         title: "Drop Shipped",
         filterable: false,
-        headerTemplate: self.slantedHeaderTemplate("Drop Shipped"),
-        width: 47
+        headerTemplate: self.slantedHeaderTemplate("Drop Shipped", "DropShip"),
+        width: 57
     }, {
         field: "ShippedCell",
         title: "Shipped",
         filterable: false,
         headerTemplate: self.slantedHeaderTemplate("Shipped"),
-        width: 47
+        width: 57
     }, {
         field: "InvoicedCell",
         title: "Invoiced",
         filterable: false,
         headerTemplate: self.slantedHeaderTemplate("Invoiced"),
-        width: 47
+        width: 57
     }, {
         field: "CancelledCell",
         title: "Cancelled",
         filterable: false,
         headerTemplate: self.slantedHeaderTemplate("Cancelled"),
-        width: 47
+        width: 57
     }];
 
     //#endregion
@@ -170,7 +194,19 @@ const neimanMarcusOrderStatusViewModel = ({ } = {}) => {
 
     //#region Methods
 
-    self.performSearch = () => {
+    self.summaryPodClick = (data) => {
+        self.quietPrefilters(true);
+        self.activePodId(data.PodID);
+        self.dateRangeId(-1);
+        self.fromDate(new Date(data.StartDate));
+        self.toDate(new Date(data.EndDate));
+        self.gridRequestEndOnComplete = () => {
+            self.quietPrefilters(false);
+        }
+        self.performSearch();
+    }
+
+    self.performSearch = (onComplete) => {
         self.gridWidget().dataSource.read();
     };
 
@@ -211,7 +247,18 @@ const neimanMarcusOrderStatusViewModel = ({ } = {}) => {
 
                 console.log('gridDataSourceRead returned', data);
 
-                self.titleExplanations(data.titleExplanations);
+                self.titleExplanations(Object.keys(data.titleExplanations).map(k => neimanMarcusColumnTitleViewModel({
+                    rec: {
+                        heading: k,
+                        title: `${data.titleExplanations[k]}Explanation`
+                    },
+                    parent: self
+                })));
+
+                self.summaryPods(data.summaryPods.map(sp => neimanMarcusSummaryPodViewModel({
+                    rec: sp,
+                    parent: self
+                })));
 
                 data.kendoResult.Data = data.kendoResult.Data.map(d => neimanMarcusOrderStatusResult({
                     rec: d
@@ -246,7 +293,10 @@ const neimanMarcusOrderStatusViewModel = ({ } = {}) => {
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         readOnly: false,
-        autoBind: true
+        autoBind: true,
+        afterClear: () => {
+            self.activePodId(undefined);
+        }
     });
 
     self.dateRangeParams = kendoMDCDropDownList({
@@ -261,7 +311,10 @@ const neimanMarcusOrderStatusViewModel = ({ } = {}) => {
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         readOnly: false,
-        autoBind: true
+        autoBind: true,
+        afterClear: () => {
+            self.activePodId(undefined);
+        }
     });
 
     self.fromDateParams = {
@@ -307,7 +360,8 @@ const neimanMarcusOrderStatusViewModel = ({ } = {}) => {
         },
         clearable: ko.observable(false),
         clearFunction: () => {
-            self.expiryDate(undefined);
+            self.activePodId(undefined);
+            self.fromDate(undefined);
         },
         revertible: ko.observable(true),
         revertFunction: () => {
@@ -361,6 +415,7 @@ const neimanMarcusOrderStatusViewModel = ({ } = {}) => {
         },
         clearable: ko.observable(false),
         clearFunction: () => {
+            self.activePodId(undefined);
             self.toDate(undefined);
         },
         revertible: ko.observable(true),
@@ -389,6 +444,7 @@ const neimanMarcusOrderStatusViewModel = ({ } = {}) => {
             var self = this;
             self.observable(undefined);
             $(self.observable.DOMElement).focus();
+            self.activePodId(undefined);
         },
         permitRevert: false,
         enable: ko.observable(true),
@@ -405,7 +461,7 @@ const neimanMarcusOrderStatusViewModel = ({ } = {}) => {
         batch: false,
         sortable: true,
         filterable: true,
-        grouping: false,
+        grouping: true,
         serverFiltering: false,
         serverGrouping: false,
         serverPaging: false,
@@ -425,9 +481,7 @@ const neimanMarcusOrderStatusViewModel = ({ } = {}) => {
                     ProductCount: { type: 'number', editable: false },
                     CreatedDT: { type: 'date', editable: false },
                     ModifiedDT: { type: 'date', editable: false },
-                    ExpiryDT: { type: 'date', editable: false },
-                    DestinationStockLocation: { type: 'object', editable: false },
-                    BoxedItems: { type: 'object' }
+                    ExpiryDT: { type: 'date', editable: false }
                 }
             }
         }),
@@ -449,7 +503,20 @@ const neimanMarcusOrderStatusViewModel = ({ } = {}) => {
                         });
                     }
                 });
+
+                document.querySelectorAll('.slanted-column-heading').forEach(e => {
+                    ko.cleanNode(e);
+                    let d = self.titleExplanations().find(t => t.heading == `${e.dataset.fieldName}`);
+                    ko.applyBindings(d, e);
+                });
+
+                if (typeof self.gridRequestEndOnComplete === 'function') {
+                    self.gridRequestEndOnComplete();
+                }
             }, 0);
+        },
+        group: {
+            field: 'DSCO_OrderID'
         }
     });
 
@@ -517,19 +584,22 @@ const neimanMarcusOrderStatusViewModel = ({ } = {}) => {
     //#region Subscriptions
 
     self.orderStatusId.subscribe(nv => {
-        self.performSearch();
+        if (!self.quietPrefilters())
+            self.performSearch();
     });
 
     self.fromDate.subscribe(nv => {
-        self.performSearch();
+        if (!self.quietPrefilters())
+            self.performSearch();
     });
 
     self.toDate.subscribe(nv => {
-        self.performSearch();
+        if (!self.quietPrefilters())
+            self.performSearch();
     });
 
     self.dateRangeId.subscribe(nv => {
-        if (nv != -1) {
+        if (nv != -1 && !self.quietPrefilters()) {
             self.performSearch();
         }
     });
@@ -547,6 +617,144 @@ const neimanMarcusOrderStatusViewModel = ({ } = {}) => {
 
     return self;
 };
+
+const neimanMarcusSummaryPodViewModel = ({
+    rec,
+    parent
+} = {
+        rec: null,
+        parent: null
+    }) => {
+
+    let self = Object.assign(rec, {
+        activePodId: parent.activePodId
+    });
+
+    //#region Properties
+
+
+
+    //#endregion
+
+
+
+    //#region Methods
+
+
+
+    //#endregion
+
+
+
+    //#region Components
+
+
+    //#endregion
+
+
+
+    //#region Computeds
+
+    self.orderCountDisplay = ko.computed(() => {
+        let count = self.OrderCount;
+        return `${count} Order${(count == 1 ? '' : 's')}`;
+    }, self);
+
+    self.salesTitle = ko.computed(() => {
+        let count = self.OrderCount;
+        return `${count} Order${(count == 1 ? '' : 's')}`;
+    }, self);
+
+    self.salesTotalDisplay = ko.computed(() => {
+        return formatCurrency(self.SalesTotal, 0, 'en-us', 'USD');
+    }, self);
+
+    self.active = ko.computed(() => {
+        return self.PodID == self.activePodId();
+    }, self);
+
+    //#endregion
+
+
+
+
+
+    //#region Subscriptions
+
+
+
+    //#endregion
+
+
+
+    //#region Events
+
+
+
+    //#endregion
+
+    return self;
+}
+
+const neimanMarcusColumnTitleViewModel = ({
+    rec
+} = {
+        rec: null,
+        parent: null
+    }) => {
+    let self = Object.assign(rec, {
+        titleExplanations: parent.titleExplanations
+    });
+
+    //#region Properties
+
+
+
+    //#endregion
+
+
+
+    //#region Methods
+
+
+
+    //#endregion
+
+
+
+    //#region Components
+
+
+    //#endregion
+
+
+
+    //#region Computeds
+
+
+
+    //#endregion
+
+
+
+
+
+    //#region Subscriptions
+
+
+
+    //#endregion
+
+
+
+    //#region Events
+
+
+
+    //#endregion
+
+    return self;
+}
 
 const neimanMarcusOrderStatusResult = ({
     rec
@@ -596,27 +804,61 @@ const neimanMarcusOrderStatusResult = ({
         content: (element) => {
             let e = ko.dataFor(element);
 
+            let markup = null;
+
             if (element.classList.contains('received')) {
-                return e.ReceivedDetails;
+                markup = e.ReceivedDetails;
             } else if (element.classList.contains('exploded')) {
-                return e.ExplodedDetails;
+                markup = e.ExplodedDetails;
             } else if (element.classList.contains('imported')) {
-                return e.ImportedDetails;
+                markup = e.ImportedDetails;
             } else if (element.classList.contains('verified')) {
-                return e.VerifiedDetails;
+                markup = e.VerifiedDetails;
             } else if (element.classList.contains('acknowledged')) {
-                return e.AcknowledgedDetails;
+                markup = e.AcknowledgedDetails;
             } else if (element.classList.contains('drop-shipped')) {
-                return e.DropShipDetails;
+                markup = e.DropShipDetails;
             } else if (element.classList.contains('shipped')) {
-                return e.ShippedDetails;
+                markup = e.ShippedDetails;
             } else if (element.classList.contains('invoiced')) {
-                return e.InvoicedDetails;
+                markup = e.InvoicedDetails;
             } else if (element.classList.contains('cancelled')) {
-                return e.CancelledDetails;
+                markup = e.CancelledDetails;
             }
 
-            return null;
+            if (markup) {
+
+                let parser = new DOMParser();
+                
+                let content = parser.parseFromString(markup, 'text/html');
+
+                console.log('content', content);
+
+                let body = content.body;
+
+                console.log('body', body);
+
+                markup = [...body.childNodes].reduce((a, n) => {
+                    if (n && n.attributes) {
+                        let type = n.attributes['type']?.value;
+
+                        if (type == 'json') {
+                            a += `<pre>${PR.prettyPrintOne(n.innerHTML, 'json', true)}</pre>`
+                        } else {
+                            a += n.outerHTML ?? n.innerHTML ?? n.innerText ?? n.textContent;
+                        }
+                    } else {
+                        a += n.outerHTML ?? n.innerHTML ?? n.innerText ?? n.textContent;
+                    }
+
+                    return a;
+                }, '');
+
+                return markup;
+
+            } else {
+                return null;
+            }
         },
         trigger: 'click',
         //container: 'td',
@@ -655,9 +897,21 @@ const neimanMarcusOrderStatusResult = ({
 
 
 
-    //#region Events
+    //#region Events / Event Handlers
 
+    self.keydown = (data, event) => {
+        if (event.originalEvent && event.originalEvent.keyCode) {
+            switch (event.originalEvent.keyCode) {
+                case 13:
+                case 32:
+                    event.target.click();
+                    return false;
+                default: break;
+            }
+        }
 
+        return true;
+    }
 
     //#endregion
 

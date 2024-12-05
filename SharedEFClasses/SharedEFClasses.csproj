@@ -493,6 +493,8 @@
     <Compile Include="Models\Mertex_Operator.cs" />
     <Compile Include="Models\NeimanMarcus\NeimanMarcusOrderStatusGridDto.cs" />
     <Compile Include="Models\NeimanMarcus\NeimanMarcusOrderStatusOrderResult.cs" />
+    <Compile Include="Models\NeimanMarcus\NeimanMarcusOrderStatusOrderResultGroupingObject.cs" />
+    <Compile Include="Models\NeimanMarcus\NeimanMarcusOrderStatusSummaryPod.cs" />
     <Compile Include="Models\NeimanMarcus\NeimanMarcusOrderStatusTitleExplanationResult.cs" />
     <Compile Include="Models\NeimanMarcus\NeimanMarcusOrderStatusResponse.cs" />
     <Compile Include="Models\OrderBook\OrderBook.cs" />

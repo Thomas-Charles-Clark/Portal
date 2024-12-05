@@ -42,47 +42,45 @@
 
 <script type="text/html" id="row-template">
     <tr class="order-row">
+        <td class="k-group-cell"></td>
         <td>
-            <span data-bind="text: moment(OrderDT).format('DD/MM/YYYY')"></span>
-        </td>
-        <td class="text-end">
-            <span data-bind="text: NeimanMarcus_OrderID"></span>
-        </td>
-        <td class="text-end">
             <span data-bind="text: DG_OrderID"></span>
         </td>
         <td>
             <span data-bind="text: ProductCode"></span>
         </td>
-        <td class="text-end">
+        <td>
             <span data-bind="text: Quantity"></span>
         </td>
+        <td>
+            <div data-bind="html: SummaryStatus"></div>
+        </td>
         <td class="slanted-column received">
-            <div class="cell received" data-bind="class: ReceivedCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></div>
+            <div class="cell received" data-bind="class: ReceivedCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }, event: { keydown: keydown }" tabindex="0"></div>
         </td>
         <td class="slanted-column exploded">
-            <div class="cell exploded" data-bind="class: ExplodedCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></div>
+            <div class="cell exploded" data-bind="class: ExplodedCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }, event: { keydown: keydown }" tabindex="0"></div>
         </td>
         <td class="slanted-column imported">
-            <div class="cell imported" data-bind="class: ImportedCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></div>
+            <div class="cell imported" data-bind="class: ImportedCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }, event: { keydown: keydown }" tabindex="0"></div>
         </td>
         <td class="slanted-column verified">
-            <div class="cell verified" data-bind="class: VerifiedCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></div>
+            <div class="cell verified" data-bind="class: VerifiedCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }, event: { keydown: keydown }" tabindex="0"></div>
         </td>
         <td class="slanted-column acknowledged">
-            <div class="cell acknowledged" data-bind="class: AcknowledgedCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></div>
+            <div class="cell acknowledged" data-bind="class: AcknowledgedCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }, event: { keydown: keydown }" tabindex="0"></div>
         </td>
         <td class="slanted-column drop-shipped">
-            <div class="cell drop-shipped" data-bind="class: DropShipCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></div>
+            <div class="cell drop-shipped" data-bind="class: DropShipCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }, event: { keydown: keydown }" tabindex="0"></div>
         </td>
         <td class="slanted-column shipped">
-            <div class="cell shipped" data-bind="class: ShippedCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></div>
+            <div class="cell shipped" data-bind="class: ShippedCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }, event: { keydown: keydown }" tabindex="0"></div>
         </td>
         <td class="slanted-column invoiced">
-            <div class="cell invoiced" data-bind="class: InvoicedCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></div>
+            <div class="cell invoiced" data-bind="class: InvoicedCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }, event: { keydown: keydown }" tabindex="0"></div>
         </td>
         <td class="slanted-column cancelled">
-            <div class="cell cancelled" data-bind="class: CancelledCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></div>
+            <div class="cell cancelled" data-bind="class: CancelledCell, actualBootstrapPopover: { details: bootstrapPopoverDetails }, event: { keydown: keydown }" tabindex="0"></div>
         </td>
     </tr>
 </script>
@@ -125,6 +123,23 @@
         </div>
     </div>*@
 
+<div id="summary-pods" style="display: none" data-bind="visible: true, foreach: summaryPods">
+    <div class="summary-pod card" data-bind="css: { 'active': active }, click: $parent.summaryPodClick" tabindex="0">
+        <div class="card-body">
+            <h5 class="card-title" data-bind="text: Label"></h5>
+            <p data-bind="text: orderCountDisplay"></p>
+            <p data-bind="text: salesTotalDisplay"></p>
+            @*<p class="date-display">
+                    <span data-bind="text: moment(StartDate).format('DD/MM/YYYY')"></span>
+                    <span>
+                        to
+                    </span>
+                    <span data-bind="text: moment(EndDate).format('DD/MM/YYYY')"></span>
+                </p>*@
+        </div>
+    </div>
+</div>
+
 <div id="prefilters" style="display: none;" data-bind="visible: true">
     <div id="order-status-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statusParams }"></div>
     <div id="order-date-prefilter">
@@ -147,3 +162,40 @@
 </div>
 
 <div id="order-status-grid" data-bind="kendoGrid: orderStatusGridSettings"></div>
+
+<div id="grid-key" class="card">
+    <div class="card-body">
+        <div id="key-display">
+            <div class="key-item">
+                <div class="colour-box success"></div>
+                <label>
+                    Success / Complete
+                </label>
+            </div>
+            <div class="key-item">
+                <div class="colour-box in-progress"></div>
+                <label>
+                    In Progress
+                </label>
+            </div>
+            <div class="key-item">
+                <div class="colour-box delayed"></div>
+                <label>
+                    Overdue / Delayed
+                </label>
+            </div>
+            <div class="key-item">
+                <div class="colour-box errored"></div>
+                <label>
+                    Errored
+                </label>
+            </div>
+            @*<div class="key-item">
+                <div class="colour-box cancelled"></div>
+                <label>
+                    Cancelled
+                </label>
+            </div>*@
+        </div>
+    </div>
+</div>

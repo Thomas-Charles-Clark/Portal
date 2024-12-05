@@ -11,5 +11,7 @@ namespace SharedEFClasses.Models.NeimanMarcus
         public IEnumerable<NeimanMarcusOrderStatusOrderResult> Orders { get; set; }
 
         public NeimanMarcusOrderStatusTitleExplanationResult TitleExplanations { get; set; }
+
+        public IEnumerable<NeimanMarcusOrderStatusSummaryPod> SummaryPods { get; set; }
     }
 }

@@ -35,6 +35,9 @@ namespace SharedEFClasses.Models
                 case 1:
                     fromDt = DateTime.Now.AddDays(-DateTime.Now.Day).AddDays(1);
                     break;
+                case 30:
+                    fromDt = DateTime.Now.AddDays(-30);
+                    break;
                 case -1:
                     toDt = dto.toDate;
                     fromDt = dto.fromDate;
@@ -53,6 +56,7 @@ namespace SharedEFClasses.Models
             {
                 Orders = reply.Read<NeimanMarcusOrderStatusOrderResult>(),
                 TitleExplanations = reply.ReadSingle<NeimanMarcusOrderStatusTitleExplanationResult>(),
+                SummaryPods = reply.Read<NeimanMarcusOrderStatusSummaryPod>(),
             };
         }
     }

@@ -381,12 +381,16 @@ namespace Portal
             ));
 
             bundles.Add(new StyleBundle("~/bundles/css/marylebone-boxing").Include(
-                        $"{cssPrefix}/models/marylebone-boxing{cssSuffix}"
-                ));
+                $"{cssPrefix}/models/marylebone-boxing{cssSuffix}"
+            ));
 
             bundles.Add(new StyleBundle("~/bundles/css/neiman-marcus-order-status").Include(
-                        $"{cssPrefix}/models/neiman-marcus-order-status{cssSuffix}"
-                ));
+                $"{cssPrefix}/models/neiman-marcus-order-status{cssSuffix}"
+            ));
+
+            bundles.Add(new StyleBundle("~/bundles/css/full-width-app").Include(
+                $"{cssPrefix}/models/full-width-app{cssSuffix}"
+            ));
 
             //  
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

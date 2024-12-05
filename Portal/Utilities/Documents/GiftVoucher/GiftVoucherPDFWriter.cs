@@ -2,11 +2,6 @@
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 
-using Microsoft.Ajax.Utilities;
-using Microsoft.PowerShell.Commands;
-
-using Org.BouncyCastle.Crypto;
-
 using QRCoder;
 
 using Resources;
