@@ -6851,6 +6851,23 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
 
                     self.phase(ORDERFACTORY_PHASE_BLANK);
                 }
+
+                if (data.hasOwnProperty('notifications') && data.notifications != null) {
+                    let result = data.notifications.json;
+
+                    ko.utils.arrayForEach(result.notifications, function (n) {
+                        self.basketItemAddNotifications.push(tradeAccountOrderNotification({ record: n, result: result, parent: self }));
+                    });
+
+                    for (var i = 0; i < self.basketItemAddNotifications().length; i++) {
+                        if (i < self.basketItemAddNotifications().length)
+                            self.basketItemAddNotifications()[i].nextNotice = self.basketItemAddNotifications()[i + 1];
+                    }
+
+                    if (self.basketItemAddNotifications().length) {
+                        self.basketItemAddNotifications()[0].show();
+                    }
+                }
             },
             error: function (xhr, s, a) {
                 self.busy(false);
@@ -7885,7 +7902,7 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                                 }
                             }
 
-                            basket.mertexVATLookupSuccessful = ko.observable(basket.MertexVATLookupSuccessful);
+                            basket.mertexVATLookupSuccessful = ko.observable(data.basket.MertexVATLookupSuccessful);
 
                             self.basketServerObject(basket);
 

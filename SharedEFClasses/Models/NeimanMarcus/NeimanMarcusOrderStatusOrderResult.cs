@@ -39,6 +39,8 @@ namespace SharedEFClasses.Models.NeimanMarcus
 
         public string AcknowledgedCell { get; set; }
 
+        public string PackedCell { get; set; }
+
         public string DropShipCell { get; set; }
 
         public string ShippedCell { get; set; }
@@ -56,6 +58,8 @@ namespace SharedEFClasses.Models.NeimanMarcus
         public string VerifiedDetails { get; set; }
 
         public string AcknowledgedDetails { get; set; }
+
+        public string PackedDetails { get; set; }
 
         public string DropShipDetails { get; set; }
 

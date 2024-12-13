@@ -1537,10 +1537,15 @@
     }
 
     self.editBasket = function (heldOrder) {
+
         self.busy(true);
-        self.parent.orderFactory.loadBasket(heldOrder, function () {
+
+        heldOrder.CanEditBasket = heldOrder.AllowBasketEdit;
+
+        self.basketStatus.editBasket(heldOrder, () => {
             self.busy(false);
-        });
+        })
+
     }
 
     self.provideRetailPaymentDetails = function (heldOrder) {
@@ -1971,7 +1976,8 @@
                     CustomerRequestsFullDespatch: { type: 'bool' },
                     Imported: { type: 'bool' },
                     MertexVATLookupSuccessful: { type: 'bool' },
-                    CreatedDT: { type: 'date' }
+                    CreatedDT: { type: 'date' },
+                    TradeAccountID: { type: 'number' }
                 }
             }
         }),

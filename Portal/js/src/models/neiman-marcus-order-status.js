@@ -164,6 +164,12 @@ const neimanMarcusOrderStatusViewModel = ({ } = {}) => {
         headerTemplate: self.slantedHeaderTemplate("Acknowledged"),
         width: 57
     }, {
+        field: "PackedCell",
+        title: "Packed",
+        filterable: false,
+        headerTemplate: self.slantedHeaderTemplate("Packed"),
+        width: 57
+    }, {
         field: "DropShipCell",
         title: "Drop Shipped",
         filterable: false,
@@ -250,7 +256,7 @@ const neimanMarcusOrderStatusViewModel = ({ } = {}) => {
                 self.titleExplanations(Object.keys(data.titleExplanations).map(k => neimanMarcusColumnTitleViewModel({
                     rec: {
                         heading: k,
-                        title: `${data.titleExplanations[k]}Explanation`
+                        title: `${data.titleExplanations[k]}`
                     },
                     parent: self
                 })));
@@ -816,6 +822,8 @@ const neimanMarcusOrderStatusResult = ({
                 markup = e.VerifiedDetails;
             } else if (element.classList.contains('acknowledged')) {
                 markup = e.AcknowledgedDetails;
+            } else if (element.classList.contains('packed')) {
+                markup = e.PackedDetails;
             } else if (element.classList.contains('drop-shipped')) {
                 markup = e.DropShipDetails;
             } else if (element.classList.contains('shipped')) {

@@ -16,7 +16,7 @@
     self.data = ko.observableArray([]);
 
     self.orderDetail = ko.observable();
-
+    
     self.orderImportDetail = ko.observable();
 
     self.tradeAccountSelector = new tradeAccountSelector()
@@ -742,7 +742,7 @@
         }
     }
 
-    self.editBasket = (dataItem) => {
+    self.editBasket = (dataItem, onComplete) => {
         if (dataItem.CanEditBasket) {
             self.busy(true);
             fetch('/api/ComponentAPI/RefreshTradeAccountVATNumbers', {
@@ -754,39 +754,43 @@
                     basketId: dataItem.BasketID
                 })
             })
-            .then(window.handleFetchResponse)
-            .then(data => {
-                dataItem.VATNumber = data.VATNumber;
-                dataItem.VATCountryCode = data.VATCountryCode;
-                dataItem.mertexVATLookupSuccessful = ko.observable(!data.Errored);
-
-                fetch('/api/BasketStatusAPI/FetchTradeAccount', {
-                    method: 'POST',
-                    headers: window.fetchHeaders,
-                    cache: 'no-store',
-                    credentials: 'same-origin',
-                    body: JSON.stringify({
-                        tradeAccountId: dataItem.TradeAccountID
-                    })
-                })
                 .then(window.handleFetchResponse)
-                .then(tradeAccount => {
+                .then(data => {
+                    dataItem.VATNumber = data.VATNumber;
+                    dataItem.VATCountryCode = data.VATCountryCode;
+                    dataItem.mertexVATLookupSuccessful = ko.observable(!data.Errored);
 
-                    dataItem.TradeAccount = tradeAccount;
+                    fetch('/api/BasketStatusAPI/FetchTradeAccount', {
+                        method: 'POST',
+                        headers: window.fetchHeaders,
+                        cache: 'no-store',
+                        credentials: 'same-origin',
+                        body: JSON.stringify({
+                            tradeAccountId: dataItem.TradeAccountID
+                        })
+                    })
+                        .then(window.handleFetchResponse)
+                        .then(tradeAccount => {
 
-                    self.parent.parent.orderFactory.loadBasket(dataItem, () => {
-                        self.busy(false);
-                    });
+                            dataItem.TradeAccount = tradeAccount;
+
+                            self.parent.parent.orderFactory.loadBasket(dataItem, () => {
+                                self.busy(false);
+                                if (typeof onComplete === 'function')
+                                    onComplete();
+                            });
+                        })
+                        .catch(err => {
+                            self.busy(false);
+                            window.catchFetchError(err);
+                        });
                 })
                 .catch(err => {
                     self.busy(false);
                     window.catchFetchError(err);
-                });
-            })
-            .catch(err => {
-                self.busy(false);
-                window.catchFetchError(err);
-            })
+                })
+        } else {
+            $.info("Sorry", "Editing this basket is not permitted.");
         }
     }
 

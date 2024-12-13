@@ -123,7 +123,7 @@
 
         Object.assign(params, preDefinedFilterCriteria);
 
-        self.detailModalTitleElement.innerHTML = preDefinedFilter.Label;
+        self.detailModalTitleElement.innerHTML = `${preDefinedFilter.Label} <span class="ms-5" data-bind="attr: { title: '${preDefinedFilter.View}'' }">${preDefinedFilter.View}</span>`;
 
         let qs = new URLSearchParams(params).toString();
 

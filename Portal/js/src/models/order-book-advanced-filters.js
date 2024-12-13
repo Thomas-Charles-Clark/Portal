@@ -55,21 +55,24 @@ const orderBookAdvancedFiltersViewModel = ({
     self.orderStatusGroup = ko.observable();
     self.orderStatusGroupAwaitingBinding = ko.observable(params.orderStatusGroupId != null && params.orderStatusGroupId != '');
 
-    self.hasLinkedPOId = ko.observable(["1", "true", true].indexOf(params.hasLinkedPO) > -1 ? "true" : ["0", "false", false].indexOf(params.hasLinkedPO) > -1 ? "false" : '');
+    self.hasLinkedPOId = ko.observable(["1", 1, "true", true].indexOf(params.hasLinkedPO) > -1 ? "true" : ["0", 0, "false", false].indexOf(params.hasLinkedPO) > -1 ? "false" : '');
     self.hasLinkedPO = ko.observable();
 
-    self.linkedPODelayedId = ko.observable(["1", "true", true].indexOf(params.linkedPODelayed) > -1 ? "true" : ["0", "false", false].indexOf(params.linkedPODelayed) > -1 ? "false" : '');
+    self.linkedPODelayedId = ko.observable(["1", 1, "true", true].indexOf(params.linkedPODelayed) > -1 ? "true" : ["0", 0, "false", false].indexOf(params.linkedPODelayed) > -1 ? "false" : '');
     self.linkedPODelayed = ko.observable();
 
 
 
 
 
-    self.couldBeFulfilledFromFreeStockId = ko.observable(["1", "true", true].indexOf(params.couldBeFulfilledFromFreeStock) > -1 ? "true" : ["0", "false", false].indexOf(params.couldBeFulfilledFromFreeStock) > -1 ? "false" : '');
+    self.couldBeFulfilledFromFreeStockId = ko.observable(["1", 1, "true", true].indexOf(params.couldBeFulfilledFromFreeStock) > -1 ? "true" : ["0", 0, "false", false].indexOf(params.couldBeFulfilledFromFreeStock) > -1 ? "false" : '');
     self.couldBeFulfilledFromFreeStock = ko.observable();
 
-    self.couldBeFulfilledFromStockAllocatedToAnotherOrderId = ko.observable(["1", "true", true].indexOf(params.couldBeFulfilledFromStockAllocatedToAnotherOrder) > -1 ? "true" : ["0", "false", false].indexOf(params.couldBeFulfilledFromStockAllocatedToAnotherOrder) > -1 ? "false" : '');
+    self.couldBeFulfilledFromStockAllocatedToAnotherOrderId = ko.observable(["1", 1, "true", true].indexOf(params.couldBeFulfilledFromStockAllocatedToAnotherOrder) > -1 ? "true" : ["0", 0, "false", false].indexOf(params.couldBeFulfilledFromStockAllocatedToAnotherOrder) > -1 ? "false" : '');
     self.couldBeFulfilledFromStockAllocatedToAnotherOrder = ko.observable();
+
+    self.couldBeFulfilledFromPurchaseOrderStockId = ko.observable(["1", 1, "true", true].indexOf(params.couldBeFulfilledFromPurchaseOrderStock) > -1 ? "true" : ["0", 0, "false", false].indexOf(params.couldBeFulfilledFromPurchaseOrderStock) > -1 ? "false" : '');
+    self.couldBeFulfilledFromPurchaseOrderStock = ko.observable();
 
     self.lineStatusIdGreaterThanId = ko.observable(params.lineStatusIdGreaterThan ?? '');
     self.lineStatusIdGreaterThan = ko.observable();
@@ -79,25 +82,25 @@ const orderBookAdvancedFiltersViewModel = ({
     self.lineStatusIdLessThan = ko.observable();
     self.lineStatusIdLessThanAwaitingBinding = ko.observable(params.lineStatusIdLessThan != null && params.lineStatusIdLessThan != '');
 
-    self.lineStatusChangedTodayId = ko.observable(["1", "true", true].indexOf(params.lineStatusChangedToday) > -1 ? "true" : ["0", "false", false].indexOf(params.lineStatusChangedToday) > -1 ? "false" : '');
+    self.lineStatusChangedTodayId = ko.observable(["1", 1, "true", true].indexOf(params.lineStatusChangedToday) > -1 ? "true" : ["0", 0, "false", false].indexOf(params.lineStatusChangedToday) > -1 ? "false" : '');
     self.lineStatusChangedToday = ko.observable();
 
-    self.detailedLineStatusIsNullId = ko.observable(["1", "true", true].indexOf(params.detailedLineStatusIsNull) > -1 ? "true" : ["0", "false", false].indexOf(params.detailedLineStatusIsNull) > -1 ? "false" : '');
+    self.detailedLineStatusIsNullId = ko.observable(["1", 1, "true", true].indexOf(params.detailedLineStatusIsNull) > -1 ? "true" : ["0", 0, "false", false].indexOf(params.detailedLineStatusIsNull) > -1 ? "false" : '');
     self.detailedLineStatusIsNull = ko.observable();
 
-    self.expressDeliveryId = ko.observable(["1", "true", true].indexOf(params.expressDelivery) > -1 ? "true" : ["0", "false", false].indexOf(params.expressDelivery) > -1 ? "false" : '');
+    self.expressDeliveryId = ko.observable(["1", 1, "true", true].indexOf(params.expressDelivery) > -1 ? "true" : ["0", 0, "false", false].indexOf(params.expressDelivery) > -1 ? "false" : '');
     self.expressDelivery = ko.observable();
 
-    self.freeDeliveryId = ko.observable(["1", "true", true].indexOf(params.freeDelivery) > -1 ? "true" : ["0", "false", false].indexOf(params.freeDelivery) > -1 ? "false" : '');
+    self.freeDeliveryId = ko.observable(["1", 1, "true", true].indexOf(params.freeDelivery) > -1 ? "true" : ["0", 0, "false", false].indexOf(params.freeDelivery) > -1 ? "false" : '');
     self.freeDelivery = ko.observable();
 
-    self.reservedId = ko.observable(["1", "true", true].indexOf(params.reserved) > -1 ? "true" : ["0", "false", false].indexOf(params.reserved) > -1 ? "false" : '');
+    self.reservedId = ko.observable(["1", 1, "true", true].indexOf(params.reserved) > -1 ? "true" : ["0", 0, "false", false].indexOf(params.reserved) > -1 ? "false" : '');
     self.reserved = ko.observable();
 
-    self.customerHeldForFullDespatchId = ko.observable(["1", "true", true].indexOf(params.customerHeldForFullDespatch) > -1 ? "true" : ["0", "false", false].indexOf(params.customerHeldForFullDespatch) > -1 ? "false" : '');
+    self.customerHeldForFullDespatchId = ko.observable(["1", 1, "true", true].indexOf(params.customerHeldForFullDespatch) > -1 ? "true" : ["0", 0, "false", false].indexOf(params.customerHeldForFullDespatch) > -1 ? "false" : '');
     self.customerHeldForFullDespatch = ko.observable();
 
-    self.unpaidProformaId = ko.observable(["1", "true", true].indexOf(params.unpaidProforma) > -1 ? "true" : ["0", "false", false].indexOf(params.unpaidProforma) > -1 ? "false" : '');
+    self.unpaidProformaId = ko.observable(["1", 1, "true", true].indexOf(params.unpaidProforma) > -1 ? "true" : ["0", 0, "false", false].indexOf(params.unpaidProforma) > -1 ? "false" : '');
     self.unpaidProforma = ko.observable();
 
     //#endregion
@@ -470,6 +473,32 @@ const orderBookAdvancedFiltersViewModel = ({
         }
     });
 
+    self.couldBeFulfilledFromPurchaseOrderStockParams = kendoMDCDropDownList({
+        label: 'Fulfillable from PO Stock',
+        data: yesNoOptions,
+        textField: 'Name',
+        valueField: 'Value',
+        idObservable: self.couldBeFulfilledFromPurchaseOrderStockId,
+        objObservable: self.couldBeFulfilledFromPurchaseOrderStock,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        clearFunction: self.genericUnsavedChangesClear,
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        popupSettings: {
+            appendTo: document.getElementById('fulfilled-from-po-stock-prefilter')
+        }
+    });
 
     self.lineStatusIdGreaterThanParams = kendoMDCDropDownList({
         label: 'Line Status ID >',
@@ -808,6 +837,9 @@ const orderBookAdvancedFiltersViewModel = ({
         self.couldBeFulfilledFromStockAllocatedToAnotherOrderId(EMPTY_STRING);
         self.couldBeFulfilledFromStockAllocatedToAnotherOrder(undefined);
 
+        self.couldBeFulfilledFromPurchaseOrderStockId(EMPTY_STRING);
+        self.couldBeFulfilledFromPurchaseOrderStock(undefined);
+
         self.lineStatusIdGreaterThanId(EMPTY_STRING);
         self.lineStatusIdGreaterThan(undefined);
 
@@ -847,6 +879,7 @@ const orderBookAdvancedFiltersViewModel = ({
                 hasLinkedPO: self.hasLinkedPOId() === '' ? null : self.hasLinkedPOId(),
                 linkedPODelayed: self.linkedPODelayedId() === '' ? null : self.linkedPODelayedId(),
                 couldBeFulfilledFromFreeStock: self.couldBeFulfilledFromFreeStockId() === '' ? null : self.couldBeFulfilledFromFreeStockId(),
+                couldBeFulfilledFromPurchaseOrderStock: self.couldBeFulfilledFromPurchaseOrderStockId() === '' ? null : self.couldBeFulfilledFromPurchaseOrderStockId(),
                 couldBeFulfilledFromStockAllocatedToAnotherOrder: self.couldBeFulfilledFromStockAllocatedToAnotherOrderId() === '' ? null : self.couldBeFulfilledFromStockAllocatedToAnotherOrderId(),
                 lineStatusIdGreaterThan: self.lineStatusIdGreaterThanId() === '' ? null : self.lineStatusIdGreaterThanId(),
                 lineStatusIdLessThan: self.lineStatusIdLessThanId() === '' ? null : self.lineStatusIdLessThanId(),

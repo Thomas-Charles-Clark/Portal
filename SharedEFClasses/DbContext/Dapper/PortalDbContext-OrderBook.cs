@@ -342,7 +342,7 @@ namespace SharedEFClasses.Models
 
             var marketIds = ((IDictionary<string, object>)dto)["marketIds"] as List<object>;
 
-            marketIds.ForEach(mid => 
+            marketIds.ForEach(mid =>
             {
                 if (Convert.ToByte(mid) != 0)
                 {
@@ -354,9 +354,12 @@ namespace SharedEFClasses.Models
 
             orderLineDetailedStatusGroupsIdsDataTable.Columns.Add("ID", typeof(byte));
 
-            var oldsgids = ((IDictionary<string, object>)dto)["orderLineDetailedStatusGroupIds"] as List<object>;
+            if (((IDictionary<string, object>)dto).Keys.Contains("orderLineDetailedStatusGroupIds"))
+            {
+                var oldsgids = ((IDictionary<string, object>)dto)["orderLineDetailedStatusGroupIds"] as List<object>;
 
-            oldsgids?.ForEach(mid => orderLineDetailedStatusGroupsIdsDataTable.Rows.Add(mid));
+                oldsgids?.ForEach(mid => orderLineDetailedStatusGroupsIdsDataTable.Rows.Add(mid));
+            }
 
             var dynParams = new DynamicParameters();
 

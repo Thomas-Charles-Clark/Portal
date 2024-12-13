@@ -189,7 +189,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         Value: 'R'
     }];
 
-    self.allocatedId = ko.observable(((params.allocated == "1") || (params.allocated == "true")) ? true : ((params.allocated == "0") || (params.allocated == "false")) ? false : '');
+    self.allocatedId = ko.observable(((params.allocated == "1") || (params.allocated == "true")) ? 'true' : ((params.allocated == "0") || (params.allocated == "false")) ? 'false' : '');
     self.allocated = ko.observable();
 
     self.dataSourceId = ko.observable(params.dataSource ?? '');

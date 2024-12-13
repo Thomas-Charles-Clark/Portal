@@ -45,7 +45,7 @@
   transform: translate3d(0, 0, 0);
 }
 #order-book-detail-scroller-container #order-book-detail-table colgroup col {
-  width: 140px;
+  width: var(--default-column-width);
 }
 #order-book-detail-scroller-container #order-book-detail-table colgroup col:nth-of-type(2) {
   width: 280px;
@@ -55,10 +55,10 @@
 }
 #order-book-detail-scroller-container #order-book-detail-table colgroup col:nth-of-type(4),
 #order-book-detail-scroller-container #order-book-detail-table colgroup col:nth-of-type(4) ~ col {
-  width: 140px;
+  width: var(--default-column-width);
 }
 #order-book-detail-scroller-container #order-book-detail-table colgroup col:nth-of-type(4) ~ col {
-  width: 140px;
+  width: var(--default-column-width);
 }
 #order-book-detail-scroller-container #order-book-detail-table:has(tr:first-child .group-cell-popover) thead {
   z-index: 0;
@@ -117,10 +117,10 @@
   border-bottom: 1px solid #ced4da;
 }
 #order-book-detail-scroller-container #order-book-detail-table tbody tr td:nth-of-type(2) {
-  text-align: right;
+  /*text-align: right;*/
 }
 #order-book-detail-scroller-container #order-book-detail-table tbody tr td:nth-of-type(4) {
-  text-align: center;
+  /*text-align: center;*/
 }
 #order-book-detail-scroller-container #order-book-detail-table tbody tr td span {
   display: block;
@@ -217,7 +217,7 @@
 #order-book-detail-scroller-container #order-book-detail-table tbody tr td .group-cell-popover .popover-body .table-container .totals-table thead tr td,
 #order-book-detail-scroller-container #order-book-detail-table tbody tr td .group-cell-popover .popover-body .table-container .totals-table tbody tr th,
 #order-book-detail-scroller-container #order-book-detail-table tbody tr td .group-cell-popover .popover-body .table-container .totals-table tbody tr td {
-  text-align: right;
+  /*text-align: right;*/
   vertical-align: middle;
   font-weight: 700;
 }
@@ -823,7 +823,7 @@
 #order-book-detail-scroller-container #order-book-detail-table thead th:nth-of-type(4) ~ th,
 #order-book-detail-scroller-container #order-book-detail-table tbody td:nth-of-type(4) ~ td,
 #order-book-detail-scroller-container #order-book-detail-table tbody th:nth-of-type(4) ~ th {
-  text-align: right;
+  /*text-align: right;*/
 }
 #order-book-detail-scroller-container #order-book-detail-table thead th:nth-of-type(5),
 #order-book-detail-scroller-container #order-book-detail-table thead td:nth-of-type(5),
@@ -833,7 +833,7 @@
   border-right: 1px solid #ced4da;
   position: sticky;
   z-index: 7;
-  left: 140px;
+  left: var(--default-column-width);
 }
 #order-book-detail-scroller-container #order-book-detail-table thead th:nth-of-type(6),
 #order-book-detail-scroller-container #order-book-detail-table thead td:nth-of-type(6),
@@ -843,7 +843,7 @@
   border-right: 1px solid #ced4da;
   position: sticky;
   z-index: 7;
-  left: 280px;
+  left: calc(var(--default-column-width) * 2);
 }
 #order-book-detail-scroller-container #order-book-detail-table thead th:nth-of-type(7),
 #order-book-detail-scroller-container #order-book-detail-table thead td:nth-of-type(7),

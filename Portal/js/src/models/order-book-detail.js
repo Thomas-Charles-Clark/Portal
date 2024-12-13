@@ -20,7 +20,7 @@ const detailColumn = ({
 
     self.columnName = propertyName;
 
-    self.columnNameDisplay = propertyName.replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5');
+    self.columnNameDisplay = propertyName.replace('Grouped', '').replace(/_/g, '').replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5');
 
     self.direction = ko.observable(); // undefined / "asc" / "desc"
 

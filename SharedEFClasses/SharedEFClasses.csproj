@@ -526,6 +526,7 @@
     <Compile Include="Models\OrderBook\PassOrderBookDetailViewSalesBudget.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookRingFencePopoverFetch.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookOrderLinePopoverFetch.cs" />
+    <Compile Include="Models\OrderBook\PassOrderBookTotalPopoverFetch.cs" />
     <Compile Include="Models\OrderGroup.cs" />
     <Compile Include="Models\OrderLineDetailedStatus.cs" />
     <Compile Include="Models\OrderLineDetailedStatusGroup.cs" />

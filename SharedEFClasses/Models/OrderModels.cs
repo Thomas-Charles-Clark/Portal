@@ -1271,6 +1271,8 @@ namespace SharedEFClasses.Models.Orders
         //public bool Imported { get; set; }
         //public bool MertexVATLookupSuccessful { get; set; }
 
+        public int TradeAccountID { get; set; }
+
         public TradeAccount TradeAccount { get; set; }
         public Market MertexMarket { get; set; }
         public List<BasketItem> BasketItems { get; set; }

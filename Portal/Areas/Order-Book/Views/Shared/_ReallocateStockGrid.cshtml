@@ -13,17 +13,17 @@
 <!-- /ko -->
 <!-- ko ifnot: noResults -->
 <div id="order-book-detail-scroller-container" class="virtual-scroller-container" data-bind="with: virtualScroller">
-    <table id="order-book-detail-table" class="table table-condensed table-striped table-hover order-book-detail-table">
+    <table id="order-book-detail-table" class="table table-condensed table-striped table-hover order-book-detail-table" data-bind="style: { '--default-column-width': `${$parent.defaultColumnWidth()}px` }">
         <colgroup>
             <!-- ko foreach: $parent.columns -->
-            <col />
+            <col data-bind="style: { width: `${$data.width}px` }" />
             <!-- /ko -->
             <col />
         </colgroup>
         <thead>
             <tr>
                 <!-- ko foreach: $parent.columns -->
-                <th class="sortable-column" data-bind="">
+                <th class="sortable-column" data-bind="style: { '--prev-col-widths': `${$data.accumulatedColumnWidths}px` }">
                     <span data-bind="text: columnNameDisplay"></span>
                 </th>
                 <!-- /ko -->
@@ -31,14 +31,14 @@
             </tr>
             <tr class="subtotal-row">
                 <!-- ko foreach: $parent.columns -->
-                <th>
+                <th data-bind="style: { '--prev-col-widths': `${$data.accumulatedColumnWidths}px` }">
                     <!-- ko if: $index() == 1 -->
-                    <span class="d-block text-end">
+                    <span class="d-block">
                         Totals
                     </span>
                     <!-- /ko -->
                     <!-- ko if: displayModes.indexOf(DISPLAY_MODE_VALUE_SUM) > -1 -->
-                    <span data-bind="with: detailColumns().find(dc => dc.columnName == `${$data.columnName}_OrderValue`)">
+                    <span data-bind="with: detailColumns().find(dc => dc.columnName == `${$data.columnName}OrderValue`)">
                         <span class="sortable-column d-block" data-bind="click: $root.sortByColumn">
                             <span data-bind="text: formatCurrency(total, 0, 'en-GB', 'GBP'), attr: { title: `Order Value: ${formatCurrency(total, 0, 'en-GB', 'GBP')} (Click to Sort)` }"></span>
                             <!-- ko if: direction -->
@@ -48,7 +48,7 @@
                     </span>
                     <!-- /ko -->
                     <!-- ko if: displayModes.indexOf(DISPLAY_MODE_QUANTITY_SUM) > -1 -->
-                    <span data-bind="with: detailColumns().find(dc => dc.columnName == `${$data.columnName}_OrderQuantity`)">
+                    <span data-bind="with: detailColumns().find(dc => dc.columnName == `${$data.columnName}OrderQuantity`)">
                         <span class="sortable-column d-block" data-bind="click: $root.sortByColumn">
                             <span data-bind="text: formatNumber(total, 2), attr: { title: `Order Quantity: ${formatNumber(total, 2)} (Click to Sort)` }"></span>
                             <!-- ko if: direction -->
@@ -58,7 +58,7 @@
                     </span>
                     <!-- /ko -->
                     <!-- ko if: displayModes.indexOf(DISPLAY_MODE_LINE_COUNT) > -1 -->
-                    <span data-bind="with: detailColumns().find(dc => dc.columnName == `${$data.columnName}_LineCount`)">
+                    <span data-bind="with: detailColumns().find(dc => dc.columnName == `${$data.columnName}LineCount`)">
                         <span class="sortable-column d-block" data-bind="click: $root.sortByColumn">
                             <span data-bind="text: formatNumber(total, 0), attr: { title: `Line Count: ${formatNumber(total, 2)} (Click to Sort)` }"></span>
                             <!-- ko if: direction -->
@@ -68,7 +68,7 @@
                     </span>
                     <!-- /ko -->
                     <!-- ko if: displayModes.indexOf(DISPLAY_MODE_ORDER_COUNT) > -1 -->
-                    <span data-bind="with: detailColumns().find(dc => dc.columnName == `${$data.columnName}_OrderCount`)">
+                    <span data-bind="with: detailColumns().find(dc => dc.columnName == `${$data.columnName}OrderCount`)">
                         <span class="sortable-column d-block" data-bind="click: $root.sortByColumn">
                             <span data-bind="text: formatNumber(total, 0), attr: { title: `Order Count: ${formatNumber(total, 2)} (Click to Sort)` }"></span>
                             <!-- ko if: direction -->
@@ -79,7 +79,7 @@
                     <!-- /ko -->
                 </th>
                 <!-- /ko -->
-                <th colspan="500"></th>
+                <th colspan="500" data-bind="style: { '--prev-col-widths': `${$data.accumulatedColumnWidths}px` }"></th>
             </tr>
         </thead>
         <tbody class="virtual-spacing">
@@ -91,19 +91,19 @@
             <tr>
                 <!-- ko foreach: $parentContext.$parent.columns -->
                 <!-- ko if: $index() < 4 -->
-                <td>
+                <td data-bind="style: { '--prev-col-widths': `${$data.accumulatedColumnWidths}px` }">
                     <span data-bind="html: $parent[`${columnName}_Display`]"></span>
                 </td>
                 <!-- /ko -->
                 <!-- ko ifnot: $index() < 4 -->
-                <td class="popover-cell">
+                <td class="popover-cell" data-bind="style: { '--prev-col-widths': `${$data.accumulatedColumnWidths}px` }">
                     <div class="relative">
                         <a href="javascript:;" data-bind="html: $parent[`${columnName}_Display`], actualBootstrapPopover: { context: $parent, details: $parent[`${columnName}_PopoverDetails`] }"></a>
                     </div>
                 </td>
                 <!-- /ko -->
                 <!-- /ko -->
-                <td colspan="500"></td>
+                <td colspan="500" data-bind="style: { '--prev-col-widths': `${$data.accumulatedColumnWidths}px` }"></td>
             </tr>
         </tbody>
         <tbody class="virtual-spacing">

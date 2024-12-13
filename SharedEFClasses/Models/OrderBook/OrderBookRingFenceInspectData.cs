@@ -18,5 +18,7 @@ namespace SharedEFClasses.Models.OrderBook
         public decimal? CurrentQuantity { get; set; }
         public string Piece { get; set; }
         public string Batch { get; set; }
+        public string ReservedSince { get; set; }
+        public string ReservedUntil { get; set; }
     }
 }

@@ -251,6 +251,15 @@ namespace Portal.Areas.Sales.Controllers
         }
 
         [HttpPost]
+        public async Task<IHttpActionResult> FetchTotalPopoverContents([FromBody]PassOrderBookTotalPopoverFetch dto)
+        {
+            var orderLines = await PortalDB.FetchOrderBookOrderLineInspect(new PassOrderBookOrderLinePopoverFetch() { OrderLineIDs = dto.OrderLineIDs });
+            var ringFences = await PortalDB.FetchOrderBookRingFenceInspect(new PassOrderBookRingFencePopoverFetch() { RingFenceIDs = dto.RingFenceIDs });
+
+            return Ok(new { Totals = orderLines.Totals, Data = orderLines.Data, ringFences });
+        }
+
+        [HttpPost]
         public async Task<IHttpActionResult> RefreshSalesSummary([FromBody]PassOrderBookDetailViewSalesBudget dto)
         {
             return Ok(await PortalDB.FetchOrderBookDetailViewSalesBudget(dto));

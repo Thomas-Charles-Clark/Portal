@@ -22,7 +22,7 @@ namespace Portal.Areas.Orders.ViewModels
     {
         public string ProcedureName { get; set; }
         public ExpandoObject Parameters { get; set; }
-        public bool Filterable 
+        public bool Filterable
         { 
             get
             {

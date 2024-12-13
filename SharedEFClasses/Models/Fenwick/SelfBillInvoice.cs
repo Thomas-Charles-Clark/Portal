@@ -72,7 +72,7 @@ namespace SharedEFClasses.Models.Fenwick
         {
             get
             {
-                if (InvoicePDF == null)
+                if (true || InvoicePDF == null || String.IsNullOrEmpty(Convert.ToBase64String(InvoicePDF)))
                 {
                     return null;
                 }

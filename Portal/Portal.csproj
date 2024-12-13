@@ -1743,6 +1743,7 @@
     <Content Include="js\src\models\marketing-budget.js" />
     <Content Include="js\src\models\marketing-messages.js" />
     <Content Include="js\src\models\member-search.js" />
+    <Content Include="js\src\models\order-book-back-orders-without-purchase-orders.js" />
     <Content Include="js\src\models\_example-view-model.js" />
     <Content Include="js\src\models\neiman-marcus-order-status.js" />
     <Content Include="js\src\models\notifications.js" />
@@ -2563,6 +2564,8 @@
     <Content Include="Areas\Marylebone\Views\web.config" />
     <Content Include="Areas\Marylebone\Views\Packing\MarylebonePacking.cshtml" />
     <Content Include="Areas\Orders\Views\NeimanMarcus\NeimanMarcusOrderStatus.cshtml" />
+    <Content Include="Areas\Order-Book\Views\OrderBookDetail\BackOrdersWithoutPurchaseOrders.cshtml" />
+    <Content Include="Areas\Order-Book\Views\Shared\_BackOrdersWithoutPurchaseOrdersGrid.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
     <Content Include="Areas\Stock\Views\RangeManagement\RangeManagement.cshtml" />
     <None Include="compilerconfig.json" />
@@ -2967,6 +2970,7 @@
     <Content Include="css\src\models\order-products-d.scss" />
     <Content Include="css\src\models\marylebone-boxing.scss" />
     <Content Include="css\src\models\neiman-marcus-order-status.scss" />
+    <Content Include="css\src\models\order-book-back-orders-without-purchase-orders.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

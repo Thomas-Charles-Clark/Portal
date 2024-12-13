@@ -870,6 +870,8 @@ const orderBookViewModel = (() => {
         if (cell.stockLocationGroupName)
             title.push(`<span data-bind="attr: { title: 'StockLocationGroupID: ${cell.stockLocationGroupId} - ${cell.stockLocationGroupName}' }">Stock Location Group: ${cell.stockLocationGroupName}</span>`);
 
+        title.push(`<span class="ms-5" data-bind="attr: { title: '${view}'' }">${view}</span>`);
+
         self.detailModalTitleElement.innerHTML = title.join("");
 
         let qs = new URLSearchParams(params).toString();

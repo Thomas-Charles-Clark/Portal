@@ -215,5 +215,149 @@ namespace Portal.Areas.Orders.Controllers
 
             return View("OrderBookDetail", model);
         }
+
+        [Route("back-orders-fulfilled-from-stock")]
+        public async Task<ActionResult> BackOrdersFulfilledFromStock()
+        {
+            if (Request.QueryString.HasKeys() && Request.QueryString.AllKeys.Contains("partial"))
+            {
+                ViewBag.Partial = true;
+            }
+
+            ViewBag.HideSidebar = true;
+
+            var objParams = new ExpandoObject();
+
+            var objParamsDict = objParams as IDictionary<string, object>;
+
+            Request.QueryString.AllKeys.ForEach(key =>
+            {
+                if (key != "partial" && Request.QueryString[key] != "null")
+                {
+                    objParamsDict.Add(key, Request.QueryString[key]);
+                }
+            });
+
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "OrderBookDetail" && p.AreaName == "order-book" && p.ActionName == "back-orders-fulfilled-from-stock").Single();
+
+            var user = UserManager.FindById(User.Identity.GetUserId<int>());
+
+            var model = await OrderBookDetailViewModel.CreateAsync(
+                "BackOrdersFulfilledFromStock",
+                objParams,
+                user.GetActiveRoleProperties(),
+                application.Heading,
+                application.SubHeading);
+
+            return View("OrderBookDetail", model);
+        }
+
+        [Route("back-orders-fulfilled-from-stock-allocated-to-another-order")]
+        public async Task<ActionResult> BackOrdersFulfilledFromStockAllocatedToAnotherOrder()
+        {
+            if (Request.QueryString.HasKeys() && Request.QueryString.AllKeys.Contains("partial"))
+            {
+                ViewBag.Partial = true;
+            }
+
+            ViewBag.HideSidebar = true;
+
+            var objParams = new ExpandoObject();
+
+            var objParamsDict = objParams as IDictionary<string, object>;
+
+            Request.QueryString.AllKeys.ForEach(key =>
+            {
+                if (key != "partial" && Request.QueryString[key] != "null")
+                {
+                    objParamsDict.Add(key, Request.QueryString[key]);
+                }
+            });
+
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "OrderBookDetail" && p.AreaName == "order-book" && p.ActionName == "back-orders-fulfilled-from-stock-allocated-to-another-order").Single();
+
+            var user = UserManager.FindById(User.Identity.GetUserId<int>());
+
+            var model = await OrderBookDetailViewModel.CreateAsync(
+                "BackOrdersFulfilledFromStockAllocatedToAnotherOrder",
+                objParams,
+                user.GetActiveRoleProperties(),
+                application.Heading,
+                application.SubHeading);
+
+            return View("ReallocateStock", model);
+        }
+
+        [Route("back-orders-fulfilled-from-purchase-orders")]
+        public async Task<ActionResult> BackOrdersFulfilledFromPurchaseOrders()
+        {
+            if (Request.QueryString.HasKeys() && Request.QueryString.AllKeys.Contains("partial"))
+            {
+                ViewBag.Partial = true;
+            }
+
+            ViewBag.HideSidebar = true;
+
+            var objParams = new ExpandoObject();
+
+            var objParamsDict = objParams as IDictionary<string, object>;
+
+            Request.QueryString.AllKeys.ForEach(key =>
+            {
+                if (key != "partial" && Request.QueryString[key] != "null")
+                {
+                    objParamsDict.Add(key, Request.QueryString[key]);
+                }
+            });
+
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "OrderBookDetail" && p.AreaName == "order-book" && p.ActionName == "back-orders-fulfilled-from-purchase-orders").Single();
+
+            var user = UserManager.FindById(User.Identity.GetUserId<int>());
+
+            var model = await OrderBookDetailViewModel.CreateAsync(
+                "BackOrdersFulfilledFromPurchaseOrders",
+                objParams,
+                user.GetActiveRoleProperties(),
+                application.Heading,
+                application.SubHeading);
+
+            return View("OrderBookDetail", model);
+        }
+
+        [Route("back-orders-without-purchase-orders")]
+        public async Task<ActionResult> BackOrdersWithoutPurchaseOrders()
+        {
+            if (Request.QueryString.HasKeys() && Request.QueryString.AllKeys.Contains("partial"))
+            {
+                ViewBag.Partial = true;
+            }
+
+            ViewBag.HideSidebar = true;
+
+            var objParams = new ExpandoObject();
+
+            var objParamsDict = objParams as IDictionary<string, object>;
+
+            Request.QueryString.AllKeys.ForEach(key =>
+            {
+                if (key != "partial" && Request.QueryString[key] != "null")
+                {
+                    objParamsDict.Add(key, Request.QueryString[key]);
+                }
+            });
+
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "OrderBookDetail" && p.AreaName == "order-book" && p.ActionName == "back-orders-without-purchase-orders").Single();
+
+            var user = UserManager.FindById(User.Identity.GetUserId<int>());
+
+            var model = await OrderBookDetailViewModel.CreateAsync(
+                "BackOrdersWithoutPurchaseOrders",
+                objParams,
+                user.GetActiveRoleProperties(),
+                application.Heading,
+                application.SubHeading);
+
+            return View("BackOrdersWithoutPurchaseOrders", model);
+        }
     }
 }

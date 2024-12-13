@@ -1,0 +1,111 @@
+﻿@model Portal.Areas.Orders.ViewModels.OrderBookDetailViewModel
+@{
+    ViewBag.Title = "Order Book Detail";
+    Layout = "~/Views/Shared/_Layout-New.cshtml";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/components")
+    @Styles.Render("~/bundles/css/kendo-custom")
+    @Styles.Render("~/bundles/css/order-book-back-orders-without-purchase-orders")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/components")
+    @Scripts.Render("~/bundles/js/tempus-dominus")
+    @Scripts.Render("~/bundles/js/order-book-back-orders-without-purchase-orders")
+
+    <script type="text/javascript">
+        window.getDetailParameters = () => {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.Parameters));
+        }
+    </script>
+
+    <script type="text/javascript">
+
+        var viewModel = orderBookDetailViewModel();
+
+        ko.options.deferUpdates = true;
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        ko.applyBindings(viewModel, document.body);
+
+        window.self = viewModel;
+
+    </script>
+}
+@if (ViewBag.Partial == null || ViewBag.Partial == false)
+{
+    @section navbarTitle {
+        <div>
+            <h2 class="d-flex gap-3 align-items-center">
+                @(Request.QueryString["title"])
+            </h2>
+        </div>
+    }
+    <style type="text/css">
+        #order-book-detail-scroller-container {
+            max-height: calc(100vh - 50px);
+        }
+
+        #main-summary-container {
+            max-height: calc(100vh - 50px);
+        }
+    </style>
+}
+
+@*else
+    {
+        <style>
+            html {
+                overflow-y: hidden;
+            }
+        </style>
+    }*@
+
+<div class="blocker" style="@(ViewBag.Partial == true ? "display: none; opacity: 0" : "display: flex; opacity: 1")" data-bind="flexFadeVisible: busy">
+    <div class="loading-spinner"></div>
+    <h4 class="mt-3">
+        Please wait...
+    </h4>
+</div>
+
+<div id="main-summary-container" class="d-flex align-items-start w-100" style="opacity: 0" data-bind="flexFadeVisible: true">
+    <sidebar id="filters-sidebar" class="collapse collapse-horizontal sidebar sticky-top @(ViewBag.HideSidebar == true ? "" : "show pinned") @(Model.Filterable ? "" : "d-none")">
+        <div class="sidebar-inner">
+            <div class="sidebar-header" data-bind="click: userDefinedFilters.togglePinning">
+                <button type="button"
+                        class="btn btn-light"
+                        title="Toggle Pinning">
+                    <i class="bi bi-pin-angle-fill fs-5"></i>
+                </button>
+            </div>
+            <div id="sidebar-collapse" class="sidebar-body">
+                <div id="sidebar-collapse-inner">
+                    @Html.Partial("_UserDefinedFilters")
+                    <div class="vr"></div>
+                    @Html.Partial("_AdvancedFilters")
+                </div>
+            </div>
+        </div>
+    </sidebar>
+    <main id="order-book-main">
+        @Html.Partial("_BackOrdersWithoutPurchaseOrdersGrid")
+    </main>
+</div>
+
+<script type="text/javascript">
+    document.body.addEventListener('click', (event) => {
+        if (event.target.closest('.group-cell-popover') == null) {
+            let list = document.querySelectorAll('.popover-cell a').forEach(e => {
+                let pop = bootstrap.Popover.getInstance(e);
+                if (pop)
+                    pop.hide();
+            });
+        }
+    });
+</script>

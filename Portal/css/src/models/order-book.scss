@@ -937,3 +937,26 @@ $selected-color: $white;
         }
     }
 }
+
+.horizontal-scrolling-table-container {
+    overflow-x: scroll;
+    max-width: 100%;
+
+    table {
+        table-layout: fixed;
+
+        th, td {
+            text-align: left !important;
+            padding: $vsm-gutter;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .popover-cell {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+    }
+}

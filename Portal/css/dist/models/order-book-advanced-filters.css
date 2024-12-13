@@ -19,7 +19,7 @@
   align-self: stretch;
 }
 #filters-sidebar:hover, #filters-sidebar:focus, #filters-sidebar:focus-within, #filters-sidebar.pinned {
-  width: 560px;
+  width: 575px;
 }
 
 /* Only exists in the detailed view */

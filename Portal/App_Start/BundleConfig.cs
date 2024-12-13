@@ -361,6 +361,19 @@ namespace Portal
                 $"{cssPrefix}/models/order-book-reallocate-stock{cssSuffix}"
             ));
 
+            bundles.Add(new StyleBundle("~/bundles/css/order-book-back-orders-without-purchase-orders").Include(
+                $"{cssPrefix}/mopdels/virtual-scrolling-deferred-data{cssSuffix}",
+                $"{cssPrefix}/models/full-width-app{cssSuffix}",
+                $"{cssPrefix}/lib/tempus-dominus/tempus-dominus{cssSuffix}",
+                $"{cssPrefix}/models/order-book-user-defined-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book-date-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book-pre-defined-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book-sales{cssSuffix}",
+                $"{cssPrefix}/models/order-book-advanced-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book{cssSuffix}",
+                $"{cssPrefix}/models/order-book-back-orders-without-purchase-orders{cssSuffix}"
+            ));
+
             bundles.Add(new StyleBundle("~/bundles/css/parcel-calculator").Include(
                 $"{cssPrefix}/models/parcel-calculator{cssSuffix}"
             ));
@@ -862,6 +875,21 @@ namespace Portal
                         $"{jsPrefix}/models/order-book-advanced-filters{jsSuffix}",
                         $"{jsPrefix}/models/order-book-main-cell{jsSuffix}",
                         $"{jsPrefix}/models/order-book-reallocate-stock{jsSuffix}"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/order-book-back-orders-without-purchase-orders").Include(
+                        $"{jsPrefix}/models/virtual-scrolling-deferred-data{jsSuffix}",
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-advanced-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-summary-filter{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-user-defined-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-date-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-pre-defined-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-sales-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-advanced-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-main-cell{jsSuffix}",
+                        $"{jsPrefix}/models/order-book-back-orders-without-purchase-orders{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/parcel-calculator").Include(

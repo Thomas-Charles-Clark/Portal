@@ -77,10 +77,10 @@ const orderBookMainCell = ({ parent, data, grouping } = {
 
     self.buildGroup = (groupName) => {
         self[`${groupName}_Display`] = ko.computed(() => {
-            let orderValuePropertyName = `${groupName}_OrderValue`;
-            let orderQuantityPropertyName = `${groupName}_OrderQuantity`;
-            let lineCountPropertyName = `${groupName}_LineCount`;
-            let orderCountPropertyName = `${groupName}_OrderCount`;
+            let orderValuePropertyName = `${groupName}OrderValue`;
+            let orderQuantityPropertyName = `${groupName}OrderQuantity`;
+            let lineCountPropertyName = `${groupName}LineCount`;
+            let orderCountPropertyName = `${groupName}OrderCount`;
             //let percentageFullPropertyName = `${groupName}_PercentageOfFullOrderBook`;
             //let percentageFilteredPropertyName = `${groupName}_PercentageOfFilteredOrderBook`;
 
@@ -95,7 +95,11 @@ const orderBookMainCell = ({ parent, data, grouping } = {
                 //self[percentageFullPropertyName] === undefined &&
                 //self[percentageFilteredPropertyName] === undefined
             ) {
-                return `<span title="${groupName}: ${self[groupName]}">${self[groupName]}</span>`
+                if (self[groupName] != null) {
+                    return `<span title="${groupName}: ${self[groupName]}">${self[groupName]}</span>`
+                } else {
+                    return '';
+                }
             }
 
             if (displayModes.indexOf(DISPLAY_MODE_VALUE_SUM) > -1 && self[orderValuePropertyName] != null) {
@@ -148,11 +152,23 @@ const orderBookMainCell = ({ parent, data, grouping } = {
 
                 }
                 let fn = null;
-                if (groupName.indexOf("Ring") == -1) {
-                    data = { OrderLineIDs: mainCell[`${groupName}_OrderLineIDs`] }
+                if (groupName.indexOf('Total_') > -1) {
+                    
+                    if (mainCell[`${groupName}OrderLineIDs`]) {
+                        data.OrderLineIDs = mainCell[`${groupName}OrderLineIDs`];
+                    }
+
+                    if (mainCell[`RingFenced_OrderLineIDs`]) {
+                        data.RingFenceIDs = mainCell[`RingFenced_OrderLineIDs`]
+                    }
+
+                    fn = self.parent.fetchTotalPopoverContents;
+
+                } else if (groupName.indexOf("Ring") == -1) {
+                    data = { OrderLineIDs: mainCell[`${groupName}OrderLineIDs`] }
                     fn = self.parent.fetchOrderLinePopoverContents;
                 } else {
-                    data = { RingFenceIDs: mainCell[`${groupName}_OrderLineIDs`] }
+                    data = { RingFenceIDs: mainCell[`${groupName}OrderLineIDs`] }
                     fn = self.parent.fetchRingFencePopoverContents;
                 }
                 await fn(data)
@@ -183,9 +199,76 @@ const orderBookMainCell = ({ parent, data, grouping } = {
             </h4>
         </div>
         <div class="table-container" style="display: none;" data-bind="fadeVisible: !busy()">
+            <!-- ko if: data() && data().hasOwnProperty('Totals') -->
             <div class="d-inline-flex gap-5 mb-3 justify-content-center align-items-center">
                 <table class="totals-table table table-bordered table-condensed mb-0" data-bind="with: data">
                     <colgroup>
+                        <col />
+                        <!-- ko foreach: Object.keys(Totals) -->
+                        <col />
+                        <!-- /ko -->
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <!-- ko foreach: Object.keys(Totals) -->
+                            <th data-bind="attr: { title: $data.replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5') }">
+                                <span data-bind="text: $data.replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5');"></span>
+                            </th>
+                            <!-- /ko -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="subtotal-row">
+                        <th>
+                        Totals
+                        </th>
+                        <!-- ko foreach: Object.keys(Totals) -->
+                        <td>
+                            <span data-bind="text: ($parent.Totals)[$data]"></span>
+                        </td>
+                        <!-- /ko -->
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- ko if: data() && data().Data.length -->
+            <div class="horizontal-scrolling-table-container">
+                <table class="lines-table table table-bordered table-condensed" data-bind="with: data">
+                    <colgroup>
+                        <!-- ko foreach: Object.keys(Data[0]) -->
+                        <col />
+                        <!-- /ko -->
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <!-- ko foreach: Object.keys(Data[0]) -->
+                            <th data-bind="attr: { title: $data.replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5') }">
+                                <span data-bind="text: $data.replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5');"></span>
+                            </th>
+                            <!-- /ko -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- ko foreach: Data -->
+                        <tr>
+                            <!-- ko foreach: Object.keys($data) -->
+                            <td  data-bind="attr: { title: $parent[$data] }">
+                                <span data-bind="text: $parent[$data]"></span>
+                            </td>
+                            <!-- /ko -->
+                        </tr>
+                        <!-- /ko -->
+                    </tbody>
+                </table>
+            </div>
+            <!-- /ko -->
+            <!-- /ko -->
+            <!-- ko if: data() && data().hasOwnProperty('ringFences') && data().ringFences.Data.length -->
+            <div class="d-inline-flex gap-5 mb-3 justify-content-center align-items-center mt-5">
+                <table class="totals-table table table-bordered table-condensed mb-0" data-bind="with: data().ringFences">
+                    <colgroup>
+                        <col />
                         <!-- ko foreach: Object.keys(Totals) -->
                         <col />
                         <!-- /ko -->
@@ -214,33 +297,38 @@ const orderBookMainCell = ({ parent, data, grouping } = {
                     </tbody>
                 </table>
             </div>
-            <table class="lines-table table table-bordered table-condensed" data-bind="with: data">
-                <colgroup>
-                    <!-- ko foreach: Object.keys(Data[0]) -->
-                    <col />
-                    <!-- /ko -->
-                </colgroup>
-                <thead>
-                    <tr>
+            <!-- ko if: data() && data().hasOwnProperty('ringFences') && data().ringFences.Data.length -->
+            <div class="horizontal-scrolling-table-container">
+                <table class="lines-table table table-bordered table-condensed" data-bind="with: data">
+                    <colgroup>
                         <!-- ko foreach: Object.keys(Data[0]) -->
-                        <th data-bind="attr: { title: $data.replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5') }">
-                            <span data-bind="text: $data.replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5');"></span>
-                        </th>
+                        <col />
                         <!-- /ko -->
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- ko foreach: Data -->
-                    <tr>
-                        <!-- ko foreach: Object.keys($data) -->
-                        <td  data-bind="attr: { title: $parent[$data] }">
-                            <span data-bind="text: $parent[$data]"></span>
-                        </td>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <!-- ko foreach: Object.keys(Data[0]) -->
+                            <th data-bind="attr: { title: $data.replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5') }">
+                                <span data-bind="text: $data.replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5');"></span>
+                            </th>
+                            <!-- /ko -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- ko foreach: Data -->
+                        <tr>
+                            <!-- ko foreach: Object.keys($data) -->
+                            <td  data-bind="attr: { title: $parent[$data] }">
+                                <span data-bind="text: $parent[$data]"></span>
+                            </td>
+                            <!-- /ko -->
+                        </tr>
                         <!-- /ko -->
-                    </tr>
-                    <!-- /ko -->
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
+            <!-- /ko -->
+            <!-- /ko -->
         </div>`
 
     //self.bootstrapPopoverParams = {
@@ -266,10 +354,17 @@ const orderBookMainCell = ({ parent, data, grouping } = {
     //}
 
     self.fetchPopover = (columnName, data) => {
-        if (columnName.indexOf('RingFence') == -1) {
-            self.parent.fetchOrderLinePopoverContents(data[`${columnName}_OrderLineIDs`]);
+        if (columnName == "Total") {
+            if (data[`${columnName}_OrderLineIDs`])
+                self.parent.fetchOrderLinePopoverContents(data[`${columnName}_OrderLineIDs`]);
+            if (data[`${columnName}_RingFenceIDs`])
+                self.parent.fetchRingFencePopoverContents(data[`${columnName}_RingFenceIDs`]);
+        } else if (columnName.indexOf('RingFence') == -1) {
+            if (data[`${columnName}_OrderLineIDs`])
+                self.parent.fetchOrderLinePopoverContents(data[`${columnName}_OrderLineIDs`]);
         } else {
-            self.parent.fetchRingFencePopoverContents(data[`${columnName}_RingFenceIDs`]);
+            if (data[`${columnName}_RingFenceIDs`])
+                self.parent.fetchRingFencePopoverContents(data[`${columnName}_RingFenceIDs`]);
         }
     }
 
@@ -280,7 +375,7 @@ const orderBookMainCell = ({ parent, data, grouping } = {
 
     if (self.grouping) {
 
-        self.columnNameGroupingRegex = /^(\w*_)?/gm;
+        self.columnNameGroupingRegex = /^Grouped_[^_]+_?/gm;
 
         let columnNames = Object.keys(self).filter(k => {
             return ["parent",
@@ -290,13 +385,16 @@ const orderBookMainCell = ({ parent, data, grouping } = {
                 "grouping",
                 "offsetY",
                 "originalOffsetY",
-                "runningHeight"].indexOf(k) == -1;
+                "runningHeight",
+                "_OrderValue",
+                "_OrderQuantity",
+                "_OrderLineIDs"].indexOf(k) == -1;
         });
 
         let groups = Object.groupBy(columnNames, cn => {
             let match = cn.match(self.columnNameGroupingRegex);
-            if (match != '') {
-                return match[0].replace('_', '');
+            if (match != null) {
+                return match[0];
             } else {
                 return cn;
             }

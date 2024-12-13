@@ -369,7 +369,7 @@
             </button>
             <!-- /ko -->
             <!-- ko if: AllowBasketDelete -->
-            <button class="btn btn-red" data-bind="click: function () { $parentContext.$parent.orderFactory.deleteBasket(BasketID, true); }">
+            <button class="btn btn-red" data-bind="click: function () { $parentContext.$parent.orderFactory.deleteBasket(BasketID, true, () => { $parentContext.$parent.memberBasketFetcher.heldOrdersGridWidget().dataSource.read() }); }">
                 Delete Basket
             </button>
             <!-- /ko -->

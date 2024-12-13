@@ -19,6 +19,8 @@ namespace SharedEFClasses.Models.NeimanMarcus
 
         public string AcknowledgedExplanation { get; set; }
 
+        public string PackedExplanation { get; set; }
+
         public string DropShipExplanation { get; set; }
 
         public string ShippedExplanation { get; set; }

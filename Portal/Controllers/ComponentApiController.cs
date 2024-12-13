@@ -644,7 +644,7 @@ namespace Portal.Controllers
         {
             var mid = memberId ?? User.Identity.GetUserId<int>();
 
-            var results = await PortalDb.FetchHeldOrdersManagement(mid, marketCode, searchTerm, holdReasonIds);
+            var results = await PortalDb.FetchHeldOrders(mid, marketCode, searchTerm, holdReasonIds, "M");
 
             var response = results.Data.ToList().AsQueryable().ToDataSourceResult(request);
 
@@ -672,13 +672,13 @@ namespace Portal.Controllers
         }
 
         [HttpGet]
-        public IHttpActionResult FetchHeldOrdersOperator([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
+        public async Task<IHttpActionResult> FetchHeldOrdersOperator([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request, int? memberId)
         {
-            var memberId = User.Identity.GetUserId<int>();
+            memberId = memberId ?? User.Identity.GetUserId<int>();
+             
+            var result = await PortalDb.FetchHeldOrders(memberId.Value, null, null, null, "O");
 
-            var results = PortalDb.FetchHeldOrdersOperator(memberId);
-
-            var response = results.AsQueryable().ToDataSourceResult(request);
+            var response = result.Data.AsQueryable().ToDataSourceResult(request);
 
             foreach (var v in response.Data.Cast<HeldOrderSelectResult>().ToList())
             {
@@ -695,7 +695,7 @@ namespace Portal.Controllers
                 v.MertexMarket = PortalDb.Markets.Where(p => p.Code == v.Market).SingleOrDefault();
             }
 
-            return Ok(results.AsQueryable().ToDataSourceResult(request));
+            return Ok(result.Data.AsQueryable().ToDataSourceResult(request));
         }
 
 
@@ -1929,7 +1929,9 @@ namespace Portal.Controllers
 
             var stagesResult = PortalDb.FetchBasketItemStageInformation(objBasketItem.BasketItemID, objBasketItem.TradeAccountID);
 
-            return Ok(new { searchResults, stages = stagesResult });
+            var notificationsResult = PortalDb.FetchBasketItemNotifications(objBasketItem.BasketItemID);
+
+            return Ok(new { searchResults, stages = stagesResult, notifications = notificationsResult });
         }
 
         [HttpPost]

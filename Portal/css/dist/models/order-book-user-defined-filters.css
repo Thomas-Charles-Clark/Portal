@@ -100,7 +100,7 @@
   transition: transform 50ms linear;
 }
 #filters-sidebar:hover, #filters-sidebar:focus-within, #filters-sidebar.pinned {
-  width: 560px;
+  width: 575px;
 }
 #filters-sidebar:hover .filters-count, #filters-sidebar:focus-within .filters-count, #filters-sidebar.pinned .filters-count {
   opacity: 0;

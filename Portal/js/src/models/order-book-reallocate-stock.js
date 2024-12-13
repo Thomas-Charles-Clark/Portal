@@ -16,7 +16,9 @@ const groupedDetailColumn = ({
     originalRowHeight,
     rowPaddingY,
     lineHeight,
-    borderWidth
+    borderWidth,
+    width,
+    accumulatedColumnWidths
 } = {
         group: {},
         dataSet: [],
@@ -27,7 +29,9 @@ const groupedDetailColumn = ({
         originalRowHeight: 36,
         rowPaddingY: 14,
         lineHeight: 21,
-        borderWidth: 1
+        borderWidth: 1,
+        width: undefined,
+        accumulatedColumnWidths: undefined
     }) => {
 
     let self = {
@@ -36,7 +40,7 @@ const groupedDetailColumn = ({
 
     self.columnName = group.columnName;
 
-    self.columnNameDisplay = self.columnName.replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5');
+    self.columnNameDisplay = self.columnName.replace('Grouped', '').replace(/_/g, '').replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5');
 
     self.detailColumns = ko.observableArray(group.columns.map(cn => {
         return detailColumn({
@@ -70,6 +74,10 @@ const groupedDetailColumn = ({
     self.lineHeight = lineHeight;
 
     self.borderWidth = borderWidth;
+
+    self.width = width;
+
+    self.accumulatedColumnWidths = accumulatedColumnWidths;
 
     self.displayModes.subscribe(nv => {
         self.rowHeightObservable(self.rowPaddingY + (self.lineHeight * nv.length) + self.borderWidth);
@@ -192,7 +200,7 @@ const detailColumn = ({
 
     self.columnName = propertyName;
 
-    self.columnNameDisplay = propertyName.replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5');
+    self.columnNameDisplay = propertyName.replace('Grouped').replace(/_/g, '').replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5');
 
     self.direction = ko.observable(); // undefined / "asc" / "desc"
 
@@ -315,6 +323,8 @@ const orderBookDetailViewModel = (() => {
 
     self.borderWidth = 1;
 
+    self.defaultColumnWidth = ko.observable(140);
+
     // if multiple column sort chaining is desired, this must be done by nesting within the one sort function.
     // suggest allowing sorting by two columns at most.
     // this would look something like:
@@ -378,7 +388,7 @@ const orderBookDetailViewModel = (() => {
 
     self.virtualScrollerContainer = document.getElementById("order-book-detail-scroller-container")
 
-    self.columnNameGroupingRegex = /^(\w*_)?/gm;
+    self.columnNameGroupingRegex = /^Grouped_[^_]+_?/gm;
 
     self.virtualScroller = virtualScrollingDeferredDataFactory({
         busy: self.busy,
@@ -406,8 +416,8 @@ const orderBookDetailViewModel = (() => {
 
                 let groups = Object.groupBy(columnNames, cn => {
                     let match = cn.match(self.columnNameGroupingRegex);
-                    if (match != '') {
-                        return match[0].replace('_', '');
+                    if (match != null) {
+                        return match[0];
                     } else {
                         return cn;
                     }
@@ -419,10 +429,22 @@ const orderBookDetailViewModel = (() => {
                     }
                 });
 
+                let accumulatedColumnWidths = 0;
+
+                let defaultColumnWidth = results.Columns.find(c => c.Name == "Default").Width;
+
+                self.defaultColumnWidth(defaultColumnWidth);
+
                 console.log(groupedColumns);
 
+                // this is to acommodate the zeroth column, "ProductID", being display: none
+                let skipper = 0;
+
                 groupedColumns = groupedColumns.map(gc => {
-                    return groupedDetailColumn({
+
+                    var width = results.Columns.find(c => c.Name == gc.columnName)?.Width;
+
+                    let groupedColumn = groupedDetailColumn({
                         parent: self,
                         group: gc,
                         dataSet: results.Data,
@@ -433,8 +455,18 @@ const orderBookDetailViewModel = (() => {
                         originalRowHeight: self.originalRowHeight,
                         rowPaddingY: self.rowPaddingY,
                         lineHeight: self.lineHeight,
-                        borderWidth: self.borderWidth
-                    })
+                        borderWidth: self.borderWidth,
+                        width: width,
+                        accumulatedColumnWidths: accumulatedColumnWidths
+                    });
+
+                    if (skipper > 0) {
+                        accumulatedColumnWidths += width;
+                    } else {
+                        skipper = 1;
+                    }
+
+                    return groupedColumn;
                 });
             }
             else {
@@ -669,6 +701,29 @@ const orderBookDetailViewModel = (() => {
                 .then(window.handleFetchResponse)
                 .then(data => {
                     console.log("FetchRingFencePopoverContents returned", data);
+                    resolve(data);
+                })
+                .catch(err => {
+                    window.catchFetchError(err);
+                    reject(err);
+                });
+        });
+    }
+
+    self.fetchTotalPopoverContents = (data) => {
+        return new Promise((resolve, reject) => {
+            console.log("FetchTotalPopoverContents calling with", data);
+
+            fetch('/api/orderbook/FetchTotalPopoverContents', {
+                method: "POST",
+                headers: window.fetchHeaders,
+                cache: 'no-store',
+                credentials: 'same-origin',
+                body: JSON.stringify(data)
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    console.log("FetchTotalPopoverContents returned", data);
                     resolve(data);
                 })
                 .catch(err => {

@@ -696,4 +696,24 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
   padding: 0.25rem 0.5rem;
   color: #fff;
 }
+
+.horizontal-scrolling-table-container {
+  overflow-x: scroll;
+  max-width: 100%;
+}
+.horizontal-scrolling-table-container table {
+  table-layout: fixed;
+}
+.horizontal-scrolling-table-container table th, .horizontal-scrolling-table-container table td {
+  text-align: left !important;
+  padding: 0.25rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.horizontal-scrolling-table-container table .popover-cell {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
 /*# sourceMappingURL=order-book.css.map */

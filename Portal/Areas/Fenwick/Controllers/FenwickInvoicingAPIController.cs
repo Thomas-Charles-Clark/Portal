@@ -143,7 +143,7 @@ namespace Portal.Areas.Fenwick.Controllers
                     TotalVAT = sbi.TotalVAT,
                     TotalCommission = sbi.TotalCommission,
                     FenwicksVariance = sbi.FenwicksVariance,
-                    InvoiceDocumentBase64 = sbi.InvoicePDFBase64,
+                    InvoiceDocumentBase64 = String.IsNullOrEmpty(sbi.InvoicePDFBase64) ? null : sbi.InvoicePDFBase64,
                     Reconciliations = selectResults.RecSummaries,
                     Invoices = selectResults.Invoices
                 }
@@ -235,8 +235,11 @@ namespace Portal.Areas.Fenwick.Controllers
         }
 
         [HttpPost]
+        [System.Web.Mvc.AsyncTimeout(300000)]
         public async Task<IHttpActionResult> SubmitSignedOffInvoices()
         {
+            HttpContext.Current.Server.ScriptTimeout = 300;
+
             await PortalDb.FenwickInvoiceProcess();
 
             return Ok(new { });

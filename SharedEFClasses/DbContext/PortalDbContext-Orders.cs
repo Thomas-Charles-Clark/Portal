@@ -547,16 +547,17 @@ namespace SharedEFClasses.Models
             return results;
         }
 
-        public async Task<HeldOrderResultWrapper> FetchHeldOrdersManagement(int memberId, string marketCode, string searchTerm, string holdReasonIds)
+        public async Task<HeldOrderResultWrapper> FetchHeldOrders(int memberId, string marketCode, string searchTerm, string holdReasonIds, string tab)
         {
             var results = new List<HeldOrderSelectResult>();
 
-            var reader = await this.Database.Connection.QueryMultipleAsync("portal.Basket_HeldForApproval_ManagementView", new
+            var reader = await this.Database.Connection.QueryMultipleAsync("portal.Basket_HeldForApproval_Select", new
             {
                 MemberID = memberId,
                 MarketCode = marketCode,
                 SearchTerm = searchTerm,
-                HoldReasonIDs = holdReasonIds
+                HoldReasonIDs = holdReasonIds,
+                Tab = tab
             }, null, null, CommandType.StoredProcedure);
 
             return new HeldOrderResultWrapper()
@@ -596,44 +597,44 @@ namespace SharedEFClasses.Models
             //return results;
         }
 
-        public List<HeldOrderSelectResult> FetchHeldOrdersOperator(int memberId)
-        {
-            var results = new List<HeldOrderSelectResult>();
+        //public List<HeldOrderSelectResult> FetchHeldOrdersOperator(int memberId)
+        //{
+        //    var results = new List<HeldOrderSelectResult>();
 
-            var parameters = new SqlParameter[]
-            {
-                new SqlParameter("@MemberID", memberId)
-            };
+        //    var parameters = new SqlParameter[]
+        //    {
+        //        new SqlParameter("@MemberID", memberId)
+        //    };
 
-            // Create a SQL command to execute the sproc
-            var cmd = this.Database.Connection.CreateCommand();
-            cmd.CommandText = "[portal].[Basket_HeldForApproval_OperatorView]";
-            cmd.CommandType = CommandType.StoredProcedure;
+        //    // Create a SQL command to execute the sproc
+        //    var cmd = this.Database.Connection.CreateCommand();
+        //    cmd.CommandText = "[portal].[Basket_HeldForApproval_OperatorView]";
+        //    cmd.CommandType = CommandType.StoredProcedure;
 
-            cmd.Parameters.AddRange(parameters);
+        //    cmd.Parameters.AddRange(parameters);
 
-            try
-            {
-                this.Database.Connection.Open();
+        //    try
+        //    {
+        //        this.Database.Connection.Open();
 
-                var reader = cmd.ExecuteReader();
+        //        var reader = cmd.ExecuteReader();
 
-                results = ((IObjectContextAdapter)this)
-                    .ObjectContext
-                    .Translate<HeldOrderSelectResult>(reader).ToList();
-            }
-            catch (SqlException e)
-            {
-                PortalFramework.LogErrorToDatabase(e);
-                throw e;
-            }
-            finally
-            {
-                this.Database.Connection.Close();
-            }
+        //        results = ((IObjectContextAdapter)this)
+        //            .ObjectContext
+        //            .Translate<HeldOrderSelectResult>(reader).ToList();
+        //    }
+        //    catch (SqlException e)
+        //    {
+        //        PortalFramework.LogErrorToDatabase(e);
+        //        throw e;
+        //    }
+        //    finally
+        //    {
+        //        this.Database.Connection.Close();
+        //    }
 
-            return results;
-        }
+        //    return results;
+        //}
 
         public List<TransactionSelectResult> FetchTransactions(PassTransactionSearch objSearch)
         {
