@@ -22,9 +22,18 @@ namespace SharedEFClasses.Models
 
         public string Name { get; set; }
 
+        public byte? SupplierTypeID { get; set; }
+
         [JsonIgnore]
         [InverseProperty("DefaultSupplier")]
         public virtual ICollection<Product> DefaultSupplierForProducts { get; set; }
+
+        [ForeignKey("SupplierTypeID")]
+        public virtual SupplierType SupplierType { get;  set; }
+
+        [JsonIgnore]
+        [InverseProperty("Supplier")]
+        public virtual ICollection<MertexProductClassificationSuperSet> MertexProductClassificationSuperSetRecords { get; set; }
     }
 
     public class SupplierSelectResult

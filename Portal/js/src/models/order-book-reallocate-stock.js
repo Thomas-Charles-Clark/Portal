@@ -80,10 +80,10 @@ const groupedDetailColumn = ({
     self.accumulatedColumnWidths = accumulatedColumnWidths;
 
     self.displayModes.subscribe(nv => {
+
         self.rowHeightObservable(self.rowPaddingY + (self.lineHeight * nv.length) + self.borderWidth);
+
         self.gridHeaderHeightObservable(self.originalGridHeaderHeight + self.rowHeightObservable());
-
-
 
         let cumulativeHeight = 0;
 
@@ -234,7 +234,7 @@ const orderBookDetailViewModel = (() => {
 
     self.params = window.getDetailParameters();
 
-    let parseExclusions = ['marketIds', 'startDate', 'endDate', 'orderLineDetailedStatusGroupIds'];
+    let parseExclusions = ['marketIds', 'startDate', 'endDate', 'orderLineDetailedStatusGroupIds', 'displayModes'];
 
     Object.keys(self.params).forEach(k => {
         if (parseExclusions.indexOf(k) === -1) {
@@ -325,6 +325,10 @@ const orderBookDetailViewModel = (() => {
 
     self.defaultColumnWidth = ko.observable(140);
 
+    self.filterButtons = ko.observableArray([]);
+
+    self.filtersCountDisplay = ko.observable(undefined);
+
     // if multiple column sort chaining is desired, this must be done by nesting within the one sort function.
     // suggest allowing sorting by two columns at most.
     // this would look something like:
@@ -381,6 +385,65 @@ const orderBookDetailViewModel = (() => {
         }
     });
 
+    self.selectedFilterCount = ko.computed(() => {
+        let udfCount = Object.keys(self.userDefinedFilters)
+            .filter(k => {
+                return (k.length)
+                    && (k != 'initialParams')
+                    && (k.indexOf('Params') > -1)
+                    && (k.indexOf('Params') == k.length - 6);
+            }).map(k => self.userDefinedFilters[k])
+            .filter(p => {
+                let selected = false;
+
+                if (p.hasOwnProperty('locked')) {
+                    if (p.locked() == false) {
+                        if (p.hasOwnProperty('multiSelectSettings')) {
+                            if (p.multiSelectSettings.observableArray().length)
+                                selected = true;
+                        } else if (p.hasOwnProperty('observable')) {
+                            if (p.observable())
+                                selected = true;
+                        }
+                    }
+                } else {
+                    console.log(p);
+                }
+
+                return selected;
+            }).length;
+
+        console.log('udfCount', udfCount);
+
+        let advCount = Object.keys(self.advancedFilters)
+            .filter(k => {
+                return (k.length)
+                    && (k != 'initialParams')
+                    && (k.indexOf('Params') > -1)
+                    && (k.indexOf('Params') == k.length - 6);
+            }).map(k => self.advancedFilters[k])
+            .filter(p => {
+                let selected = false;
+                if (p.hasOwnProperty('locked')) {
+                    if (p.locked() == false) {
+                        if (p.hasOwnProperty('multiSelectSettings')) {
+                            if (p.multiSelectSettings.observableArray().length)
+                                selected = true;
+                        } else if (p.hasOwnProperty('observable')) {
+                            if (p.observable())
+                                selected = true;
+                        }
+                    }
+                } else {
+                    console.log(p);
+                }
+
+                return selected;
+            }).length;
+
+        return udfCount + advCount;
+    }, self);
+
     //#endregion
 
 
@@ -394,6 +457,7 @@ const orderBookDetailViewModel = (() => {
         busy: self.busy,
         tableSelector: "#order-book-detail-table",
         rowHeight: self.rowHeight,
+        displayModes: self.displayModes,
         primaryFetchParams: self.primaryFetchParams,
         primaryFetchEndpoint: "/api/orderbook/DetailRefresh",
         primaryFetchResultSetName: "Data",
@@ -509,7 +573,7 @@ const orderBookDetailViewModel = (() => {
         container: self.virtualScrollerContainer,
         gridHeaderHeight: self.gridHeaderHeight,
         gridPositionTop: 0,
-        maxYMultiplier: 1
+        maxYMultiplier: 1,
     });
 
     //#endregion
@@ -526,6 +590,26 @@ const orderBookDetailViewModel = (() => {
         window.setTimeout(() => {
             self.virtualScroller.maxY.valueHasMutated();
         }, 0);
+    });
+
+    self.selectedFilterCount.subscribe(nv => {
+        if (nv == 0) {
+            self.filtersCountDisplay(undefined);
+        } else if (nv == 1) {
+            self.filtersCountDisplay('1 Filter Selected')
+        } else if (nv > 1) {
+            self.filtersCountDisplay(`${nv} Filters Selected`)
+        }
+    });
+
+    self.filtersCountDisplay.subscribe(nv => {
+        if (window.parent) {
+            if (nv) {
+                window.parent.document.querySelector('#filter-top-btn-display').innerHTML = nv;
+            } else {
+                window.parent.document.querySelector('#filter-top-btn-display').innerHTML = 'Filters';
+            }
+        }
     });
 
     //#endregion
@@ -733,6 +817,10 @@ const orderBookDetailViewModel = (() => {
         });
     }
 
+    self.toggleFilters = () => {
+        self.userDefinedFilters.togglePinning();
+    }
+
     //#endregion
 
 
@@ -746,6 +834,9 @@ const orderBookDetailViewModel = (() => {
                     break;
                 case "copyLink":
                     self.copyLink();
+                    break;
+                case "toggleFilters":
+                    self.toggleFilters();
                     break;
                 default: break;
 

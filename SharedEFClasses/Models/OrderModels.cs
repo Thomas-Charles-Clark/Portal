@@ -3,6 +3,7 @@
 using SharedEFClasses.Models.Fenwick;
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Mertexer;
+using SharedEFClasses.Models.OrderEntry;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.TradeAccounts;
 using SharedEFClasses.Utilities;
@@ -881,9 +882,11 @@ namespace SharedEFClasses.Models.Orders
 
     public class PassBasketItemAllocationFetch
     {
+        public int MemberID { get; set; }
         public int ProductID { get; set; }
         public int TradeAccountID { get; set; }
         public long BasketItemID { get; set; }
+        public int BasketID { get; set; }
     }
 
     public class PassBasketItemAllocationSave
@@ -1004,12 +1007,15 @@ namespace SharedEFClasses.Models.Orders
     {
         public List<ProductStockFetchResult> stockResults { get; set; }
         public List<StockInfoAvailabilityMessage> availabilityMessages { get; set; }
+        public StockCheckRequestSelectResult stockCheckRequest { get; set; }
     }
 
     public class StockInfoAvailabilityMessage
     {
         public int ProductID { get; set; }
         public string SupplierAvailabilityMessage { get; set; }
+        public bool ExecuteStockCheckRequest { get; set; }
+        public string @Class { get; set; }
     }
 
     public class PassBasketItemAllocationInstruction

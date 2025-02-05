@@ -6,6 +6,7 @@ using SharedEFClasses.Models.Components;
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Maintenance;
+using SharedEFClasses.Models.OrderEntry;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.RangeManagement;
@@ -1387,111 +1388,9 @@ namespace SharedEFClasses.Models
             return results;
         }
 
-        public FetchStockInfoResult FetchStockInfo(PassFetchProductStockInfo objFetch)
+        public async Task<StockCheckRequestResult> StockCheckRequest_Insert(PassInsertStockCheckRequest dto)
         {
-            var result = new FetchStockInfoResult();
-
-            var productIdTable = new DataTable();
-
-            productIdTable.Columns.Add("ProductID", typeof(int));
-
-            foreach (var i in objFetch.ProductIDs)
-            {
-                productIdTable.Rows.Add(i);
-            }
-
-            var parameters = new List<SqlParameter>()
-            {
-                new SqlParameter("@TradeAccountID", objFetch.TradeAccountID ?? (object)DBNull.Value),
-                new SqlParameter("@ProductIDs",  productIdTable)
-                {
-                    SqlDbType = SqlDbType.Structured,
-                    TypeName = "[dbo].[ProductIDsTableType]"
-                },
-                new SqlParameter("EnquiryType", objFetch.EnquiryType)
-            };
-
-            var cmd = this.Database.Connection.CreateCommand();
-
-            cmd.CommandText = "[portal].[Stock_Select]";
-
-            cmd.CommandType = CommandType.StoredProcedure;
-
-            cmd.Parameters.AddRange(parameters.ToArray());
-
-            try
-            {
-                this.Database.Connection.Open();
-
-                var reader = cmd.ExecuteReader();
-
-                result.stockResults = ((IObjectContextAdapter)this)
-                    .ObjectContext
-                    .Translate<ProductStockFetchResult>(reader).ToList();
-
-                reader.NextResult();
-
-                result.availabilityMessages = ((IObjectContextAdapter)this)
-                    .ObjectContext
-                    .Translate<StockInfoAvailabilityMessage>(reader).ToList();
-            }
-            catch (SqlException e)
-            {
-                PortalFramework.LogErrorToDatabase(e);
-                throw e;
-            }
-            finally
-            {
-                this.Database.Connection.Close();
-            }
-
-            return result;
-        }
-
-        public FetchStockInfoResult FetchStockInfoSingular(PassFetchProductStockInfoSingular objFetch)
-        {
-            var result = new FetchStockInfoResult();
-
-            var parameters = new List<SqlParameter>()
-            {
-                new SqlParameter("@TradeAccountID", objFetch.TradeAccountID),
-                new SqlParameter("@ProductID", objFetch.ProductID ?? (object)DBNull.Value),
-                new SqlParameter("@ProductCode", objFetch.ProductCode ?? (object)DBNull.Value)
-            };
-
-            var cmd = this.Database.Connection.CreateCommand();
-
-            cmd.CommandText = "[portal].[Stock_Select_Singular]";
-
-            cmd.CommandType = CommandType.StoredProcedure;
-
-            cmd.Parameters.AddRange(parameters.ToArray());
-
-            try
-            {
-                this.Database.Connection.Open();
-
-                var reader = cmd.ExecuteReader();
-
-                result.stockResults = ((IObjectContextAdapter)this)
-                    .ObjectContext
-                    .Translate<ProductStockFetchResult>(reader).ToList();
-
-                reader.NextResult();
-
-                result.availabilityMessages = ((IObjectContextAdapter)this)
-                    .ObjectContext
-                    .Translate<StockInfoAvailabilityMessage>(reader).ToList();
-            }
-            catch (SqlException e)
-            {
-                PortalFramework.LogErrorToDatabase(e);
-                throw e;
-            }
-            finally
-            {
-                this.Database.Connection.Close();
-            }
+            var result = await this.Database.Connection.QuerySingleAsync<StockCheckRequestResult>("portal.StockCheckRequest_Insert", dto, null, null, CommandType.StoredProcedure);
 
             return result;
         }

@@ -39,8 +39,14 @@ $font-size-md: 1.15rem;
 $font-size-regular: 1.0rem;
 $mdc-error-color: #db0028;
 
+$readonly-background: repeating-linear-gradient(-45deg, rgb(0 0 0 / 5%), transparent 1rem, rgba(0, 0, 0, 0.05) 1rem, transparent 2rem);
+
 .input-group-lg {
     .btn {
         font-size: 1rem;
     }
+}
+
+.mb-0 {
+    margin-bottom: 0;
 }

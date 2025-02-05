@@ -3295,7 +3295,8 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
             var data = {
                 tradeAccountId: self.parent.orderFactory.tradeAccount().TradeAccountID,
                 basketItemId: self.addingProductToBasket().basketItemId,
-                productId: self.addingProductToBasket().record.ProductID
+                productId: self.addingProductToBasket().record.ProductID,
+                basketId: self.parent.orderFactory.basketId()
             };
 
             console.log('orderProductsDrilldown fetchBasketItemAllocationStock calling with', data);

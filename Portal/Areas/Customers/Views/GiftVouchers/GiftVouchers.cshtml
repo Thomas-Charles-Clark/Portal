@@ -5,6 +5,7 @@
 }
 @section styles {
     @Styles.Render("~/bundles/css/kendo-custom")
+    @Styles.Render("~/bundles/css/generic-forms")
     @Styles.Render("~/bundles/css/gift-vouchers")
     @Styles.Render("~/bundles/css/tempus-dominus")
     @Styles.Render("~/bundles/css/mdc-custom")
@@ -12,6 +13,7 @@
 @section scripts {
     @Scripts.Render("~/bundles/js/jqueryui")
     @Scripts.Render("~/bundles/js/datetime-picker")
+    @Scripts.Render("~/bundles/js/generic-forms")
     @Scripts.Render("~/bundles/js/gift-vouchers")
     @Scripts.Render("~/bundles/js/tempus-dominus")
 
@@ -78,10 +80,10 @@
             <span data-bind="text: Code"></span>
         </td>
         <td class="text-end">
-            <span data-bind="text: formatCurrency(ValueInc, 2, PriceList.Currency.FormattingCulture, PriceList.Currency.Code)"></span>
+            <span data-bind="text: formatCurrency(ValueInc, 2, PriceList.Currency.FormattingCulture, CurrencyCode)"></span>
         </td>
         <td class="text-end">
-            <span data-bind="text: formatCurrency(ValueEx, 2, PriceList.Currency.FormattingCulture, PriceList.Currency.Code)"></span>
+            <span data-bind="text: formatCurrency(ValueEx, 2, PriceList.Currency.FormattingCulture, CurrencyCode)"></span>
         </td>
         <td>
             <span data-bind="text: CreatedDT ? moment(CreatedDT).format('DD/MM/YYYY HH:MM') : ''"></span>
@@ -184,7 +186,8 @@
 <div class="tab-content" id="gift-vouchers-tabs-content">
     <div class="tab-pane fade" id="find-tab" role="tabpanel" aria-labelledby="find-tab-btn">
         <div id="prefilters">
-            <div id="gift-voucher-prefilter" class="prefilter" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: giftVoucherParams }"></div>
+            @*<div id="gift-voucher-prefilter" class="prefilter" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: giftVoucherParams }"></div>*@
+            <div id="gift-voucher-autocomplete" class="prefilter" data-bind="component: { name: 'mdc-text-field-autocomplete-component', params: giftVoucherAutocompleteParams }"></div>
         </div>
         <div id="gift-voucher-container-wrapper" style="display: none" data-bind="visible: true, with: giftVoucher">
             <div id="gift-voucher-container">
@@ -229,7 +232,7 @@
                         Message
                     </dt>
                     <dd class="col-8">
-                        <p data-bind="html: Message ?? orderLine?.GiftVoucherMessage.replace('\n', '<br/><br/>') ?? '(No message)', css: { 'text-italic': (Message ?? orderLine?.GiftVoucherMessage) == null }"></p>
+                        <p data-bind="html: Message ?? orderLine?.GiftVoucherMessage?.replace('\n', '<br/><br/>') ?? '(No message)', css: { 'text-italic': (Message ?? orderLine?.GiftVoucherMessage) == null }"></p>
                     </dd>
                     <dt class="col-3 text-end mt-3">
                         Notes
@@ -453,5 +456,8 @@
     <li>
         Somehow work this in to the eCommerce gift voucher creation route. There are new voucher part numbers prefixed with DIGITAL.
         We want to offer a combination of digital and postal... do we... I don't know.
+    </li>
+    <li>
+        Reload selected gift voucher after cancelling / redeeming / extending.
     </li>
 </ul>

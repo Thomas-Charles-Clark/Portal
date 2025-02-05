@@ -69,17 +69,20 @@
 <div id="main-summary-container" class="d-flex align-items-start w-100" style="opacity: 0" data-bind="flexFadeVisible: true">
     <sidebar id="filters-sidebar" class="collapse collapse-horizontal sidebar sticky-top @(ViewBag.HideSidebar == true ? "" : "show pinned") @(Model.Filterable ? "" : "d-none")">
         <div class="sidebar-inner">
-            <div class="sidebar-header" data-bind="click: userDefinedFilters.togglePinning">
-                <button type="button"
-                        class="btn btn-light"
-                        title="Toggle Pinning">
-                    <i class="bi bi-pin-angle-fill fs-5"></i>
-                </button>
-            </div>
+            @if (Model.Filterable)
+            {
+                <div class="sidebar-header" data-bind="click: userDefinedFilters.togglePinning">
+                    <button type="button"
+                            class="btn btn-light"
+                            title="Toggle Pinning">
+                        <i class="bi bi-pin-angle-fill fs-5"></i>
+                    </button>
+                    <label class="filters-count" data-bind="html: filtersCountDisplay"></label>
+                </div>
+            }
             <div id="sidebar-collapse" class="sidebar-body">
                 <div id="sidebar-collapse-inner">
                     @Html.Partial("_UserDefinedFilters")
-                    <div class="vr"></div>
                     @Html.Partial("_AdvancedFilters")
                 </div>
             </div>

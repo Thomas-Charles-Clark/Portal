@@ -522,11 +522,15 @@ namespace SharedEFClasses.Models.Products
         public string LaunchName { get; set; }
     }
 
-    public class PassFetchProductStockInfo
+    public class PassStockFetch
     {
+        public int MemberID { get; set; }
+        public int? BasketID { get; set; }
         public int? TradeAccountID { get; set; }
-        public List<int> ProductIDs { get; set; }
+        public int? ProductID { get; set; }
+        public IEnumerable<int> ProductIDs { get; set; }
         public string EnquiryType { get; set; } = "P";
+        public long? BasketItemID { get; set; }
     }
 
     public class PassFetchProductStockInfoSingular

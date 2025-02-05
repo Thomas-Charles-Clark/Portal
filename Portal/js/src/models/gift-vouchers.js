@@ -27,6 +27,13 @@ const giftVouchersViewModel = (() => {
 
     self.loadedCode = window.getGiftVoucherCode();
 
+    // exists just to satisfy demand from generic-form-fields.js:28
+    self.parent = {
+        ready: ko.observable(true)
+    }
+    self.validateNow = ko.observable(false);
+    // hmph
+
     self.emailer = emailer({ parent: self, sendLabel: 'Send <span class="bi bi-send ms-2"></span>' });
 
     self.emailer.to(getUserEmail());
@@ -140,6 +147,76 @@ const giftVouchersViewModel = (() => {
 
     //#region Components (Knockout-specific)
 
+    self.giftVoucherAutocomplete = fieldFactory.createField({
+        value: self.giftVoucher,
+        fieldId: "gift-voucher-autocomplete",
+        fieldName: "GiftVoucherAutocomplete",
+        label: "Gift Voucher",
+        layoutClass: "mb-3",
+        labelField: 'Code',
+        tooltip: null,
+        note: null,
+        required: true,
+        postable: true,
+        disabled: false,
+        fieldTypeId: 6,
+        autocompleteMinLength: 2,
+        autocompleteEndpoint: '/api/GiftVouchersAPI/Autocomplete',
+        select: (obj, event) => {
+            console.log('select', obj, event);
+
+            self.busy(true);
+
+            fetch('/api/giftVouchersApi/GiftVoucherSelect', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                cache: "no-cache",
+                credentials: "same-origin",
+                body: JSON.stringify({
+                    code: obj.Code
+                })
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    console.log('GiftVoucher_Select returned', data);
+                    self.busy(false);
+                    self.giftVoucher(data);
+                })
+                .catch(err => {
+                    self.busy(false);
+                    window.catchFetchError(err);
+                })
+        },
+        responseMap: (data) => {
+
+            let results = data.map(d => giftVoucherViewModel({
+                rec: d, parent: self
+            }));
+
+            return results;
+        },
+        afterResponse: (data) => {
+            if (data.length) {
+                if (data.length == 1) {
+                    self.giftVoucher(data[0]);
+                    self.giftVoucherAutocompleteParams.autocompleteSettings.observable(data[0].Code);
+                    $(self.giftVoucherAutocomplete.value.DOMElement).autocomplete('close')
+                }
+            }
+            else {
+                window.setTimeout(() => {
+                    document.querySelector('#gift-voucher-autocomplete input').focus();
+                }, 0);
+            }
+        },
+        clearFunction: () => {
+            self.giftVoucher(undefined);
+            self.giftVoucherAutocompleteParams.autocompleteSettings.value(undefined);
+        }
+    }, self);
+
+    self.giftVoucherAutocompleteParams = self.giftVoucherAutocomplete.params;
+
     self.giftVoucherTemplate = (item) => {
         if (item.GiftVoucherID != null && item.Code != '') {
             return `<span class="gift-voucher-label" title="GiftVoucherID: ${item.GiftVoucherID}">${item.Code}</span>`;
@@ -199,13 +276,15 @@ const giftVouchersViewModel = (() => {
         requestEnd: (e) => {
             console.log(e);
 
-            let arr = e.response.value.map(gv => giftVoucherViewModel({ rec: gv, parent: self }));
+            if (e.response.value.length) {
+                let arr = e.response.value.map(gv => giftVoucherViewModel({ rec: gv, parent: self }));
 
-            e.response.value = arr;
+                e.response.value = arr;
 
-            if (arr.length == 1 && self.loadedCode) {
-                self.giftVoucherParams.dropDownListSettings.widget().select(0);
-                self.giftVoucherParams.dropDownListSettings.widget().trigger('change');
+                if (arr.length == 1 && self.loadedCode) {
+                    self.giftVoucherParams.dropDownListSettings.widget().select(0);
+                    self.giftVoucherParams.dropDownListSettings.widget().trigger('change');
+                }
             }
 
             self.giftVoucherParams.busy(false);
@@ -481,7 +560,7 @@ const giftVouchersViewModel = (() => {
 Please find attached your Designers Guild Gift Voucher.
 
 Code: ${nv.Code}
-Value: ${nv.PriceList.Currency.Symbol}${nv.ValueInc}
+Value: ${nv.CurrencySymbol}${nv.ValueInc}
 
 
 Thank you for shopping with Designers Guild`);
@@ -2179,7 +2258,9 @@ const giftVoucherViewModel = (({ rec, parent } = { rec: null, parent: null }) =>
 
     //#region Properties
 
-    self.busy = parent.busy
+    self.busy = parent.busy;
+
+    self.label = self.Code;
 
     self.productId = ko.observable(rec.ProductID).extend({
         required: {

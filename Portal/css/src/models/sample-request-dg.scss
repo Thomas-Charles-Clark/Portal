@@ -742,3 +742,30 @@ thead.k-grid-header {
         }
     }
 }
+
+#stock-check-request-modal {
+
+    .modal-body {
+        > .d-flex {
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .validation-message {
+            display: block;
+            margin: 0.5rem auto 0 auto;
+            color: darkred;
+            text-align: center;
+        }
+    }
+
+    .quantity-control {
+        margin: 0;
+        display: flex;
+
+        input.form-control {
+            width: 80px;
+        }
+    }
+}

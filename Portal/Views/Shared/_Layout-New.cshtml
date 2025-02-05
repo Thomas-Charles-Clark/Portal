@@ -87,16 +87,27 @@
             }
         }
 
-        window.logClientSideError = (message) => {
-            fetch('/api/generalapi/LogClientError', {
-            method: 'POST',
+        // thanks https://stackoverflow.com/questions/71278917/how-to-properly-log-error-object-in-javascript#answer-71375503
+        window.errorToPOJO = (error) => {
+            const ret = {};
+            for (const properyName of Object.getOwnPropertyNames(error)) {
+                ret[properyName] = error[properyName];
+            }
+            return ret;
+        };
+
+        window.logClientSideError = (error) => {
+            window.setTimeout(() => {
+                fetch('/api/generalapi/LogClientError', {
+                    method: 'POST',
                     headers: window.fetchHeaders,
                     cache: 'no-store',
                     credentials: 'same-origin',
-                    body: message
+                    body: JSON.stringify(window.errorToPOJO(error))
                 }).catch((e) => {
-                console.error(e);
-            })
+                    console.error(e);
+                })
+            }, 3000);
         }
 
         window.catchFetchError = (error) => {
@@ -106,10 +117,15 @@
                 credentialsModal.show();
             } else {
                 console.error(error);
+
                 if (error instanceof TypeError)
                     error = { message: error.message };
-                window.showError();
-                window.logClientSideError(JSON.stringify(error));
+
+                document.addEventListener("DOMContentLoaded", function (event) {
+                    window.showError(error.message);
+                    window.logClientSideError(error);
+                });
+
             }
         }
 
@@ -1353,6 +1369,9 @@
             </div>
             @*<span class="validation-message text-danger" data-bind="validationMessage: observable"></span>*@
         </div>
+        <!-- ko if: typeof locked != 'undefined' && ko.unwrap(locked) -->
+        <i class="bi bi-lock-fill fs-4 ms-2"></i>
+        <!-- /ko -->
     </script>
 
     <script id="mdc-kendo-dropdown-component-no-outline" type="text/html">
@@ -1998,7 +2017,7 @@
                     </button>
                     <ul class="dropdown-menu" data-bind="attr: { 'aria-labelledby': multiSelectSettings.elementId }">
                         <!-- ko if: typeof multiSelectSettings.controls != "undefined" -->
-                        <li class="dropdown-menu-controls d-flex gap-2">
+                        <li class="dropdown-menu-controls d-flex gap-2" data-bind="click: () => { }, clickBubble: false">
                             <!-- ko if: multiSelectSettings.controls.selectAll -->
                             <button class="btn btn-secondary btn-sm" data-bind="click: multiSelectSettings.controls.selectAll">
                                 Select All
@@ -3251,5 +3270,6 @@
         </div>
     </div>
     @Scripts.Render("~/bundles/js/common-modals")
+    <div id="popper-target"></div>
 </body>
 </html>

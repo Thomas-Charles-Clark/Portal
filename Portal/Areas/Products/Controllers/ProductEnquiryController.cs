@@ -15,6 +15,7 @@ using SharedEFClasses.Models.Samples;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.TradeAccounts;
 using SharedEFClasses.Models.Products;
+using System.Threading.Tasks;
 
 namespace Portal.Areas.Products.Controllers
 {
@@ -50,11 +51,11 @@ namespace Portal.Areas.Products.Controllers
         }
 
         [HttpPost]
-        public ActionResult LoadStockInfo(PassFetchProductStockInfoSingular objFetch)
+        public async Task<ActionResult> LoadStockInfo(PassStockFetch dto)
         {
-            var result = PortalDb.FetchStockInfoSingular(objFetch);
+            var result = await PortalDb.FetchStock(dto);
 
-            return Json(result, JsonRequestBehavior.DenyGet);
+            return Json(result);
         }
 
         [HttpPost]

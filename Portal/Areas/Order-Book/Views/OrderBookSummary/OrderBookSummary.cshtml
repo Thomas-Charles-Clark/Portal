@@ -14,11 +14,20 @@
     @Scripts.Render("~/bundles/js/tempus-dominus")
     @Scripts.Render("~/bundles/js/order-book")
 
-    <script type="text/javascript">
+<script type="text/javascript">
 
         window.getMainResult = () => {
             return @Html.Raw(JsonConvert.SerializeObject(Model.MainResult));
         }
+
+        window.getOrderLineDetailedStatusGroups = () => {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.OrderLineDetailedStatusGroups));
+        }
+
+        window.getPreDefinedFilterGroups = () => {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.PreDefinedFilterGroups));
+        }
+
 
         var viewModel = orderBookViewModel();
 
@@ -34,7 +43,7 @@
 
         window.self = viewModel;
 
-    </script>
+</script>
 }
 @section modals {
     @Html.Partial("Modals/_ImageModalNew")
@@ -92,7 +101,7 @@
 
 <script type="text/html" id="values-dropdown-container">
     <ul class="dropdown-menu display-mode-list">
-        <li class="dropdown-menu-controls d-flex gap-2">
+        <li class="dropdown-menu-controls d-flex gap-2" data-bind="click: () => { }, clickBubble: false">
             <button class="btn btn-secondary btn-sm" data-bind="click: () => { displayModes([...$root.availableDisplayModes().flatMap(adm => [...adm.children.map(c => c.value)].concat([adm.value]))]); }, clickBubble: false">
                 Select All
             </button>
@@ -134,7 +143,7 @@
 
 <script type="text/html" id="sales-values-dropdown-container">
     <ul class="dropdown-menu display-mode-list">
-        <li class="dropdown-menu-controls d-flex gap-2">
+        <li class="dropdown-menu-controls d-flex gap-2" data-bind="click: () => { }, clickBubble: false">
             <button class="btn btn-secondary btn-sm" data-bind="click: () => { displayModes([...$root.availableDisplayModesSales().flatMap(adm => [...adm.children.map(c => c.value)].concat([adm.value]))]); }, clickBubble: false">
                 Select All
             </button>
@@ -176,8 +185,8 @@
 
 <script type="text/html" id="management-prompt-tabs-values-dropdown-container">
     <ul class="dropdown-menu display-mode-list">
-        <li class="dropdown-menu-controls d-flex gap-2">
-            <button class="btn btn-secondary btn-sm" data-bind="click: () => { displayTabs($root.preDefinedFilters.availableManagementPromptTabs().map(adm => adm.value)); }, clickBubble: false">
+        <li class="dropdown-menu-controls d-flex gap-2" data-bind="click: () => { }, clickBubble: false">
+            <button class="btn btn-secondary btn-sm" data-bind="click: () => { displayTabs($root.preDefinedFilters.availableManagementPromptTabs().map(adm => adm.groupId)); }, clickBubble: false">
                 Select All
             </button>
             <button class="btn btn-secondary btn-sm" data-bind="click: () => { displayTabs([]); }, clickBubble: false">
@@ -189,11 +198,11 @@
         </li>
         <!-- ko foreach: $root.preDefinedFilters.availableManagementPromptTabs -->
         <li>
-            <label class="form-check" data-bind="attr: { 'for': `management-prompt-${value}-display-tab-${value}` }, click: function() { return true }, clickBubble: false">
+            <label class="form-check" data-bind="attr: { 'for': `management-prompt-${groupId}-display-tab-${groupId}` }, click: function() { return true }, clickBubble: false">
                 <input class="form-check-input" type="checkbox" data-bind="checked: $parent.displayTabs,
-                        checkedValue: value,
+                        checkedValue: groupId,
                         attr: {
-                            id: `management-prompt-${value}-display-tab-${value}`
+                            id: `management-prompt-${groupId}-display-tab-${groupId}`
                         }" />
                 <span data-bind="text: label"></span>
             </label>
@@ -298,7 +307,7 @@
                                 </a>
                                 <ul class="dropdown-menu" data-bind="attr: { 'aria-labelledby': elementId }">
                                     <!-- ko if: controls != "undefined" -->
-                                    <li class="dropdown-menu-controls d-flex gap-2">
+                                    <li class="dropdown-menu-controls d-flex gap-2" data-bind="click: () => { }, clickBubble: false">
                                         <!-- ko if: controls.selectAll -->
                                         <a href="#" class="btn btn-secondary btn-sm" data-bind="click: controls.selectAll, clickBubble: false">
                                             Select All
@@ -330,6 +339,12 @@
                                     <!-- /ko -->
                                 </ul>
                             </div>
+                        </div>
+                        <div class="dropdown">
+                            <a class="btn display-control-btn btn-sm dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
+                                <i class="bi bi-list-check"></i>
+                            </a>
+                            <!-- ko template: { name: 'values-dropdown-container', data: $data.dateFilters } --><!-- /ko -->
                         </div>
                         <a class="btn no-ripple" style="text-decoration: underline" href="#" type="button" data-bind="click: $root.showSummaryModal, clickBubble: false">
                             Summary
@@ -427,7 +442,9 @@
                 </h5>
                 <div class="d-flex gap-5">
                     <button id="filter-top-btn" class="btn btn-light btn-export" data-bind="click: toggleFilters">
-                        Filters
+                        <span id="filter-top-btn-display">
+                            Filters
+                        </span>
                         <i class="bi bi-filter"></i>
                     </button>
                     <button id="copy-to-clipboard-btn" class="btn btn-light btn-export" data-bind="click: copyLink" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Copied to Clipboard" data-bs-trigger="manual">

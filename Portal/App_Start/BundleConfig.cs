@@ -474,6 +474,7 @@ namespace Portal
                     $"{jsPrefix}/models/product-search{jsSuffix}",
                     $"{jsPrefix}/models/order-search{jsSuffix}",
                     $"{jsPrefix}/models/order-products-basket-splitter{jsSuffix}",
+                    $"{jsPrefix}/models/order-products-stock-check-request{jsSuffix}",
                     $"{jsPrefix}/models/order-products{jsSuffix}",
                     $"{jsPrefix}/models/order-products-drilldown{jsSuffix}",
                     $"{jsPrefix}/models/order-products-member-basket-fetcher{jsSuffix}",
@@ -587,6 +588,7 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/sample-request-dg").Include(
+                        $"{jsPrefix}/models/order-products-stock-check-request{jsSuffix}",
                         $"{jsPrefix}/models/sample-request-dg{jsSuffix}"
                 ));
 

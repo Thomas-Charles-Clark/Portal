@@ -825,5 +825,14 @@ WHERE X.RowNumber = 1
 
             return result;
         }
+
+        public async Task<GiftVoucher_SelectResult> GiftVoucher_Select(PassGiftVoucher dto)
+        {
+            return await this.Database.Connection.QuerySingleAsync<GiftVoucher_SelectResult>("[pub].[GiftVoucher_Select]", new
+            {
+                VisitorID = 0,
+                GiftVoucherCode = dto.Code
+            }, null, 30, CommandType.StoredProcedure);
+        }
     }
 }

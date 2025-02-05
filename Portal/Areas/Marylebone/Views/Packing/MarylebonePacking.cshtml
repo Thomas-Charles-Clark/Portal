@@ -159,7 +159,7 @@
                 <div>
                     <div class="vr"></div>
                 </div>
-                <div>
+                <div id="scan-results-container">
                     <div class="card">
                         <div class="card-body">
                             <pre id="scanner-results" data-bind="html: scannedText"></pre>
@@ -168,7 +168,7 @@
                 </div>
             </div>
         </div>
-        <button class="btn btn-success w-100 text-align-center" style="display: none" data-bind="visible: currentBox() != null, click: closeCurrentBox">
+        <button id="save-box-btn" class="btn btn-primary w-100 text-align-center" style="display: none" data-bind="disable: currentBox() && currentBox().boxedItems().length == 0, visible: currentBox() != null, click: closeCurrentBox, attr: { title: currentBox() && currentBox().boxedItems().length == 0 ? 'You cannot save an empty box' : '' }">
             Save Box
             <i class="bi bi-floppy2"></i>
         </button>
@@ -194,6 +194,7 @@
             <div class="modal-body">
                 <div>
                     <div class="mb-3" data-bind="component: { name: 'mdc-text-area-component', params: newBoxCodeParams }"></div>
+                    <span class="validation-message box-code-validation" data-bind="validationMessage: newBoxCode"></span>
                     <div data-bind="component: { name: 'mdc-text-area-component', params: newBoxStockLocationCodeParams }"></div>
                     <span class="validation-message" data-bind="validationMessage: newBoxStockLocationCode"></span>
                 </div>

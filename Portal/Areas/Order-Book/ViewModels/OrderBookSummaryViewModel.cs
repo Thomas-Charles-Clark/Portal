@@ -9,6 +9,7 @@ using SharedEFClasses.Models.OrderBook;
 
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core.Common.CommandTrees;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -22,6 +23,10 @@ namespace Portal.Areas.Orders.ViewModels
         public JArray PreDefinedFilters { get; set; }
 
         public OrderBook_MainSummary_SelectResult MainResult { get; set; }
+
+        public IEnumerable<OrderLineDetailedStatusGroup_SelectResult> OrderLineDetailedStatusGroups { get; set; }
+        
+        public IEnumerable<OrderBookPreDefineFilterGroup> PreDefinedFilterGroups { get; set; }
 
         public OrderBookSummaryViewModel(RoleProperties properties, string applicationHeading, string applicationSubHeading)
             : base(properties,
@@ -38,14 +43,11 @@ namespace Portal.Areas.Orders.ViewModels
         {
             var result = new OrderBookSummaryViewModel(properties, applicationHeading, applicationSubHeading);
 
-            //using (var db = new PortalDbContext())
-            //{
-            //    var objParams = new PassOrderBookBaseParams();
-
-            //    result.DateFilters = await db.FetchOrderBookDateSummaries(objParams);
-            //    result.PreDefinedFilters = JArray.Parse(await db.FetchOrderBookPreDefinedSummaries(objParams));
-            //    result.MainResult = await db.FetchOrderBookMainSummary(objParams);
-            //}
+            using (var db = new PortalDbContext())
+            {
+                result.OrderLineDetailedStatusGroups = await db.OrderLineDetailedStatusGroup_Select();
+                result.PreDefinedFilterGroups = await db.OrderBookPreDefinedFiltersGroups_Select();
+            }
 
             return result;
         }

@@ -937,7 +937,8 @@
                 dataType: 'json',
                 cache: false,
                 data: {
-                    productCode: result.Code,
+                    productCode: result.ProductID,
+                    basketId: null,
                     tradeAccountId: self.tradeAccountSelector().selected().TradeAccountID
                 },
                 success: function (data) {

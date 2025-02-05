@@ -767,9 +767,6 @@
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        <!-- ko with: supplierAvailabilityMessage -->
-                                                        <div class="alert alert-warning" data-bind="text: $data"></div>
-                                                        <!-- /ko -->
                                                         <!-- ko if: record.WideWidthFabricDefaultPoleWidth != null -->
                                                         <div class="alert alert-warning">
                                                             <span>
@@ -782,6 +779,21 @@
                                                                 <!-- /ko -->
                                                             </span>
                                                         </div>
+                                                        <!-- /ko -->
+                                                        <!-- ko if: supplierAvailabilityMessage() -->
+                                                        <div class="alert alert-warning">
+                                                            <div data-bind="html: supplierAvailabilityMessage"></div>
+                                                        </div>
+                                                        <!-- /ko -->
+                                                        <!-- ko if: showStockCheckRequester -->
+                                                        <!-- ko with: $root.orderProductsDrilldown.stockCheckRequester -->
+                                                        <div class="alert" data-bind="class: cssClass">
+                                                            <div data-bind="html: message"></div>
+                                                            <button class="btn btn-blue request-stock-check-btn" data-bind="enable: allowStockCheckRequest, click: parent.beginStockCheckRequest">
+                                                                Request Stock Check
+                                                            </button>
+                                                        </div>
+                                                        <!-- /ko -->
                                                         <!-- /ko -->
                                                         <!-- ko if: stockInfo() -->
                                                         <table class="stock-allocation-table allocation-table table table-condensed" data-bind="with: stockInfo, visible: !backOrder()">
@@ -1833,9 +1845,7 @@
                             <div class="tab-content">
                                 <!-- ko foreach: supplierInfo -->
                                 <div class="alert alert-warning">
-                                    <p class="margin-bottom-0">
-                                        <span data-bind="text: supplierAvailabilityMessage"></span>
-                                    </p>
+                                    <div class="mb-0" data-bind="html: supplierAvailabilityMessage"></div>
                                 </div>
                                 <div class="flex-container">
                                     @*<div>
@@ -2706,7 +2716,9 @@
                         <div class="loading-spinner"></div>
                     </div>
                     <!-- ko with: $parent.supplierAvailabilityMessage -->
-                    <div class="alert alert-warning" data-bind="text: $data"></div>
+                    <div class="alert alert-warning">
+                        <div data-bind="html: $data"></div>
+                    </div>
                     <!-- /ko -->
                     <!-- ko if: record.WideWidthFabricDefaultPoleWidth != null -->
                     <div class="alert alert-warning">
@@ -2720,6 +2732,16 @@
                             <!-- /ko -->
                         </span>
                     </div>
+                    <!-- /ko -->
+                    <!-- ko if: $parent.showStockCheckRequester() -->
+                    <!-- ko with: $parent.stockCheckRequester -->
+                    <div class="alert" data-bind="class: cssClass">
+                        <div data-bind="html: message"></div>
+                        <button class="btn btn-blue request-stock-check-btn" data-bind="enable: allowStockCheckRequest, click: $parentContext.$parent.beginStockCheckRequest">
+                            Request Stock Check
+                        </button>
+                    </div>
+                    <!-- /ko -->
                     <!-- /ko -->
                     <!-- ko if: $parent.showAllocationStockRefreshButton() -->
                     <button class="btn btn-secondary-blue" data-bind="click: function () { $parent.fetchBasketItemAllocationStock(); }">
@@ -2914,7 +2936,7 @@
                         <sup class="font-normal">3</sup> "Ring Fenced" = Stock Ring Fenced for other Customers
                     </p>
                 </div>
-            </div>
+                </div>
         </div>
     </div>
     <div class="product-progression-stage" data-bind="fadeBetweenMany: {
@@ -4959,6 +4981,46 @@
                 </button>
                 <button class="btn btn-green" data-bind="click: splitBasket">
                     Split
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="stock-check-request-modal" class="modal fade" data-backdrop="static" data-keyboard="false" data-bind="with: currentlyActiveDrilldown">
+    <div class="modal-dialog" data-bind="with: stockCheckRequester">
+        <div class="modal-content">
+            <div class="blocker" data-bind="visible: busy">
+                <div class="loading-spinner"></div>
+                <h4>
+                    Please wait..
+                </h4>
+            </div>
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-bind="click: hideModal">
+                    <span aria-hidden="true">
+                        &times;
+                    </span>
+                </button>
+                <h4 class="modal-title">
+                    Stock Check Request
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex">
+                    <h5>
+                        Quantity Required
+                    </h5>
+                    <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: quantityParams }"></div>
+                </div>
+                <span class="validation-message" data-bind="validationMessage: quantity"></span>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-red" data-bind="click: hideModal">
+                    Cancel
+                </button>
+                <button class="btn btn-green" data-bind="click: submit">
+                    Submit
                 </button>
             </div>
         </div>

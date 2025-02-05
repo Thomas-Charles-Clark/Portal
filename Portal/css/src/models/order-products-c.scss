@@ -964,6 +964,16 @@ select.fulfilment-option {
 .allocation-stock-breakdown-inner {
     position: relative;
     min-height: 300px;
+
+    p {
+        & + p {
+            margin-bottom: 0;
+        }
+    }
+
+    .request-stock-check-btn {
+        margin-top: $l-gutter;
+    }
 }
 
 .product-progression-nav-btns {

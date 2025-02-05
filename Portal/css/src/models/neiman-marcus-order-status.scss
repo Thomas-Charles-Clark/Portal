@@ -50,34 +50,48 @@ $shadow-cancelled: 0 0 2px 0 shade-color($gray-300, 8%) inset;
 
     .summary-pod {
         flex: 1;
-        will-change: background-color, color, border-color;
-        transition: background-color $quickEase, color $quickEase, border-color $quickEase;
-        cursor: pointer;
 
         &.active {
-            background-color: $gray-700;
-            border-color: $gray-500;
-            color: $white;
-        }
-
-        &:hover,
-        &:focus,
-        &:focus-within {
-            background-color: $gray-600;
-            border-color: $gray-300;
-            color: $white;
+            .card-body {
+                > div {
+                    background-color: $gray-700;
+                    border-color: $gray-500;
+                    color: $white;
+                }
+            }
         }
 
         .card-body {
-            padding: $l-gutter $sm-gutter;
+            padding: 0;
+
+            > div {
+                border-bottom-left-radius: $border-radius;
+                border-bottom-right-radius: $border-radius;
+                will-change: background-color, color, border-color;
+                transition: background-color $quickEase, color $quickEase, border-color $quickEase;
+                cursor: pointer;
+                padding: $m-gutter $l-gutter;
+
+                &:hover,
+                &:focus,
+                &:focus-within {
+                    background-color: $gray-600;
+                    border-color: $gray-300;
+                    color: $white;
+                }
+            }
         }
 
         .card-title {
             text-align: center;
-            margin: 0 0 $m-gutter 0;
-            padding-bottom: $m-gutter;
+            margin: 0;
+            padding: $m-gutter 0;
             font-size: $font-size-lg;
             border-bottom: 1px solid $gray-200;
+            background-color: $blue-700;
+            color: $white;
+            border-top-left-radius: $border-radius;
+            border-top-right-radius: $border-radius;
         }
 
         p {
@@ -88,7 +102,6 @@ $shadow-cancelled: 0 0 2px 0 shade-color($gray-300, 8%) inset;
                 margin-bottom: 0;
             }
         }
-
         /*p.date-display {
             margin: 0;
             display: flex;
@@ -356,7 +369,7 @@ $shadow-cancelled: 0 0 2px 0 shade-color($gray-300, 8%) inset;
 }
 
 .detail-popover {
-    max-width: unset;
+    max-width: 800px;
     width: auto;
     box-shadow: 0 0 8px 0 rgba(0,0,0,0.4);
     border-top-right-radius: 0;
@@ -386,6 +399,10 @@ $shadow-cancelled: 0 0 2px 0 shade-color($gray-300, 8%) inset;
             & > * {
                 margin-top: $l-gutter;
             }
+        }
+
+        > div:last-of-type {
+            margin-bottom: 0;
         }
     }
 }

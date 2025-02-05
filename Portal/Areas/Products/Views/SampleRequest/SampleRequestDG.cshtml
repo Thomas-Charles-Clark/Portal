@@ -25,7 +25,7 @@
 
 @section navbarCollapsedRight {
     <button type="button" class="basket-toggle-btn navbar-toggle navbar-toggle-right" data-toggle="modal" data-target="#basket-modal" href="#basket-modal" aria-expanded="true" aria-controls="basket-modal" style="display: none;" data-bind="visible: true">
-       <span class="glyphicon glyphicon-shopping-cart" style="margin-right: 6px;"></span>
+        <span class="glyphicon glyphicon-shopping-cart" style="margin-right: 6px;"></span>
         View Basket
         <!-- ko if: basket().length -->
         <span id="basket-count" data-bind="text: Enumerable.From(basket()).Select('Number($.Quantity())').Sum()"></span>
@@ -62,10 +62,10 @@
         </td>
         <td>
             <!-- ko if: ProductPageID -->
-                <a class="code-display" data-bind="text: Code, attr: { href: 'https://www.designersguild.com/uk/p' + ProductPageID, target: '_blank'}"></a>
+            <a class="code-display" data-bind="text: Code, attr: { href: 'https://www.designersguild.com/uk/p' + ProductPageID, target: '_blank'}"></a>
             <!-- /ko -->
             <!-- ko ifnot: ProductPageID -->
-                <span class="code-display" data-bind="text: Code"></span>
+            <span class="code-display" data-bind="text: Code"></span>
             <!-- /ko -->
         </td>
         <td>
@@ -258,23 +258,23 @@
 </div>
 
 @*<div id="image-modal" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header grey-blue">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 id="large-image-title" class="modal-title"></h4>
-            </div>
-            <div class="modal-body">
-                <div id="large-image-container">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header grey-blue">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="large-image-title" class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                    <div id="large-image-container">
 
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="success-close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button id="success-close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
         </div>
-    </div>
-</div>*@
+    </div>*@
 
 <div id="stock-modal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg modal-xl" role="document">
@@ -323,7 +323,17 @@
                                             </td>
                                             <td>
                                                 <!-- ko with: supplierAvailabilityMessage -->
-                                                <div class="alert alert-warning" data-bind="text: $data"></div>
+                                                <div class="alert alert-warning" data-bind="html: $data"></div>
+                                                <!-- /ko -->
+                                                <!-- ko if: $parent.showStockCheckRequester() -->
+                                                <!-- ko with: $parent.stockCheckRequester -->
+                                                <div class="alert" data-bind="class: cssClass">
+                                                    <div data-bind="html: message"></div>
+                                                    <button class="btn btn-blue request-stock-check-btn" data-bind="enable: allowStockCheckRequest, click: $parentContext.$parent.beginStockCheckRequest">
+                                                        Request Stock Check
+                                                    </button>
+                                                </div>
+                                                <!-- /ko -->
                                                 <!-- /ko -->
                                                 <!-- ko if: stockInfo() -->
                                                 <table class="stock-allocation-table allocation-table table table-condensed" data-bind="with: stockInfo">
@@ -659,19 +669,19 @@
                     <div class="row">
                         <div class="col-sm-12">
                             @*<div id="account-selector" class="row">
-                                <label for="account-number" class="col-xs-2 col-form-label">Account Number</label>
-                                <div class="col-xs-8">
-                                    <div class="input-group">
-                                        <input id="account-number" type="text" class="form-control" maxlength="20" />
-                                        <span class="input-group-addon">
-                                            <button class="clear-btn btn btn-primary @(Model.Properties?.Application_ButtonClass)" type="button" data-bind="click: function() { reset(); $('#account-number').val(null); }">×</button>
-                                        </span>
-                                        <span class="input-group-btn">
-                                            <button class="search-btn btn btn-primary @(Model.Properties?.Application_ButtonClass)" data-bind="click: function() { $('#account-number').autocomplete('search'); }"><span class="glyphicon glyphicon-search"></span></button>
-                                        </span>
+                                    <label for="account-number" class="col-xs-2 col-form-label">Account Number</label>
+                                    <div class="col-xs-8">
+                                        <div class="input-group">
+                                            <input id="account-number" type="text" class="form-control" maxlength="20" />
+                                            <span class="input-group-addon">
+                                                <button class="clear-btn btn btn-primary @(Model.Properties?.Application_ButtonClass)" type="button" data-bind="click: function() { reset(); $('#account-number').val(null); }">×</button>
+                                            </span>
+                                            <span class="input-group-btn">
+                                                <button class="search-btn btn btn-primary @(Model.Properties?.Application_ButtonClass)" data-bind="click: function() { $('#account-number').autocomplete('search'); }"><span class="glyphicon glyphicon-search"></span></button>
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>*@
+                                </div>*@
                             <div id="order-taker-container" class="row" data-bind="visible: !orderTakerHidden()">
                                 <label for="order-taker" class="col-xs-2 col-form-label">Order Taker*</label>
                                 <div class="col-xs-8">
@@ -1190,7 +1200,7 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                    <!-- ko foreach: basketItems -->
+                                                        <!-- ko foreach: basketItems -->
                                                         <tr>
                                                             <td>
                                                                 <!-- ko if: ImageID -->
@@ -1219,7 +1229,7 @@
                                                                 <span data-bind="text: Quantity"></span>
                                                             </td>
                                                         </tr>
-                                                    <!-- /ko -->
+                                                        <!-- /ko -->
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -1265,27 +1275,27 @@
     </div>
 
     @*<div class="col-xs-4 panel-group" id="basket" role="tablist" aria-multiselectable="false">
-        <div class="panel panel-primary">
-            <div id="basket-tab" class="panel-heading no-padding non-search" role="tab">
-                <h4 class="panel-title">
-                    <a role="button" data-toggle="collapse" data-parent="#basket" href="#basket-collapse" aria-expanded="true" aria-controls="basket-collapse">
-                        <label id="basket-label" class="margin-bottom-0" for="basket-summary">Basket</label>
-                        <!-- ko if: basket().length -->
-                        <span id="basket-count" data-bind="text: Enumerable.From(basket()).Select('Number($.Quantity())').Sum()"></span>
-                        <!-- ko if: account() -->
-                        <span id="basket-value">Grand Total: <span data-bind="text: formatCurrency(totalPrice(), 2, account().CurrencyCulture, account().CurrencyCode)"></span></span>
-                        <span id="despatch-value">Delivery: <span data-bind="text: deliverySelector().despatchPriceDisplaySmall()"></span></span>
-                        <!-- /ko -->
-                        <!-- /ko -->
-                        <span class="clearfix"></span>
-                    </a>
-                </h4>
+            <div class="panel panel-primary">
+                <div id="basket-tab" class="panel-heading no-padding non-search" role="tab">
+                    <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#basket" href="#basket-collapse" aria-expanded="true" aria-controls="basket-collapse">
+                            <label id="basket-label" class="margin-bottom-0" for="basket-summary">Basket</label>
+                            <!-- ko if: basket().length -->
+                            <span id="basket-count" data-bind="text: Enumerable.From(basket()).Select('Number($.Quantity())').Sum()"></span>
+                            <!-- ko if: account() -->
+                            <span id="basket-value">Grand Total: <span data-bind="text: formatCurrency(totalPrice(), 2, account().CurrencyCulture, account().CurrencyCode)"></span></span>
+                            <span id="despatch-value">Delivery: <span data-bind="text: deliverySelector().despatchPriceDisplaySmall()"></span></span>
+                            <!-- /ko -->
+                            <!-- /ko -->
+                            <span class="clearfix"></span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="basket-collapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="basket-tab">
+
+                </div>
             </div>
-            <div id="basket-collapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="basket-tab">
-                
-            </div>
-        </div>
-    </div>*@
+        </div>*@
 </div>
 
 @section modals {
@@ -1343,3 +1353,42 @@
         //})
     </script>
 }
+<div id="stock-check-request-modal" class="modal fade" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" data-bind="with: stockCheckRequester">
+        <div class="modal-content">
+            <div class="blocker" data-bind="visible: busy">
+                <div class="loading-spinner"></div>
+                <h4>
+                    Please wait..
+                </h4>
+            </div>
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-bind="click: hideModal">
+                    <span aria-hidden="true">
+                        &times;
+                    </span>
+                </button>
+                <h4 class="modal-title">
+                    Stock Check Request
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex">
+                    <h5>
+                        Quantity Required
+                    </h5>
+                    <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: quantityParams }"></div>
+                </div>
+                <span class="validation-message" data-bind="validationMessage: quantity"></span>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-red" data-bind="click: hideModal">
+                    Cancel
+                </button>
+                <button class="btn btn-green" data-bind="click: submit">
+                    Submit
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

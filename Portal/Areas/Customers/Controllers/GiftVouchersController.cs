@@ -61,7 +61,7 @@ namespace Portal.Areas.Customers.Controllers
 
         public async Task<ActionResult> PDF(string code)
         {
-            var gv = await PortalDb.GiftVouchers.Include(p => p.PriceList).SingleAsync(p => p.Code == code);
+            var gv = await PortalDb.GiftVoucher_Select(new PassGiftVoucher() { Code = code });
 
             var ms = Utilities.Documents.GiftVoucher.GiftVoucherPDFWriter.Generate(System.Web.Hosting.HostingEnvironment.MapPath("~"), gv);
 

@@ -68,9 +68,5 @@ namespace SharedEFClasses.Models.MertexLive
         [JsonIgnore]
         [InverseProperty("SupplierCodeNavigation")]
         public virtual ICollection<PurchasePrice> PurchasePrices { get; set; } = new List<PurchasePrice>();
-
-        [JsonIgnore]
-        [InverseProperty("Supplier")]
-        public virtual ICollection<MertexProductClassificationSuperSet> MertexProductClassificationSuperSetRecords { get; set; }
     }
 }

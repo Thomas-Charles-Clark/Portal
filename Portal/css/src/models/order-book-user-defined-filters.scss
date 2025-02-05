@@ -46,6 +46,10 @@ $light-blue-bg: tint-color($blue-100, 80%);
         margin-bottom: $xs-gutter;
     }
 
+    .mdc-validating-field {
+        flex: 1;
+    }
+
     .mdc-validating-field,
     .sidebar-heading,
     .dropdown-toggle {
@@ -119,7 +123,7 @@ $light-blue-bg: tint-color($blue-100, 80%);
 
         .btn-reset,
         .btn-refresh {
-            width: 530px;
+            width: 545px;
             padding-left: $btn-padding-x;
             padding-right: $btn-padding-x;
             opacity: 1;
@@ -371,6 +375,8 @@ $light-blue-bg: tint-color($blue-100, 80%);
     .user-defined-filter {
         position: relative;
         height: 28px;
+        display: flex;
+        align-items: center;
     }
 }
 /*

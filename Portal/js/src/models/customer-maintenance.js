@@ -6,7 +6,7 @@
         //#region Properties
 
         self.busy = ko.observable(false);
-        self.busyMessage = ko.observable('We wish you a Merry Christmas');
+        self.busyMessage = ko.observable(null);
 
         self.matrixLoader = {
             visible: self.busy,

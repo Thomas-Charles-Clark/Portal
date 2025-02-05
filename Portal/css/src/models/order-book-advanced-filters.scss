@@ -10,23 +10,22 @@
     }
 
     align-self: stretch;
+
+    .btn-reset,
+    .btn-refresh {
+        width: 529px;
+    }
 }
 
 /* Only exists in the detailed view */
 #sidebar-collapse-inner {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    gap: $l-gutter;
-    justify-self: stretch;
-
     #user-defined-filters {
-        flex: 1;
+
     }
 
     #advanced-filters {
-        flex: 1;
         border: 0;
         padding: 0;
     }
 }
+

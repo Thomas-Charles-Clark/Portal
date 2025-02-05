@@ -1376,7 +1376,11 @@ ko.extenders.element = function (target, element) {
 
 ko.bindingHandlers.keepElement = {
     init: function (element, valueAccessor, allBindingsAccessor, viewModel) {
-        valueAccessor().extend({ element: element });
+        if (valueAccessor && ko.isObservable(valueAccessor())) {
+            valueAccessor().extend({ element: element });
+        } else {
+            viewModel.DOMElement = element;
+        }
     }
 };
 
@@ -2871,21 +2875,24 @@ ko.bindingHandlers.stopBinding = {
 ko.virtualElements.allowedBindings.stopBinding = true;
 
 
-const matrixLoaderPoint = (({
-    x,
-    y,
-    cw,
-    ch,
-    ca
+const matrixLoaderPoint = ({
+    xPosition,
+    yPosition,
+    canvasWidth,
+    canvasHeight,
+    character,
+    itemIndex,
 } = {
-    x: 0,
-    y: 0,
-    cw: 0,
-    ch: 0,
-    ca: []
+    xPosition: 0,
+    yPosition: 0,
+    canvasWidth: 0,
+    canvasHeight: 0,
+    character: null,
+    itemIndex: -1
 }) => {
     let self = {
-        charArr: ca
+        character,
+        itemIndex
     };
 
     self.randomInt = function (min, max) {
@@ -2895,31 +2902,31 @@ const matrixLoaderPoint = (({
         return Math.random() * (max - min) + min;
     }
 
-    self.charIndex = self.randomInt(0, self.charArr.length);
-    self.x = x;
-    self.originalX = x;
-    self.y = y;
+    self.x = xPosition;
+    self.originalX = xPosition;
+    self.y = yPosition;
     self.ySpeed = self.randomFloat(2, 3.5);
-    self.value = self.charArr[self.charIndex];//.toUpperCase();
+    self.value = character;
     self.xSpeed = self.randomInt(-1.5, 1.5);
     self.rotation = self.randomFloat(-(Math.PI / 45), (Math.PI / 45));
-    self.canvasWidth = cw;
-    self.canvasHeight = ch;
+    self.canvasWidth = canvasWidth;
+    self.canvasHeight = canvasHeight;
 
     self.imageBitmap = null;
 
     self.draw = (ctx) => {
 
         //if (this.value == String.fromCodePoint(0x2744)) {
-        //    self.ctx.translate(this.x, this.y);
-        //    self.ctx.setTransform(1, 0, 0, 1, this.x - self.imageWidth * 2, this.y - self.textHeight * 2);
-        //    self.ctx.rotate(this.rotation);
+        //ctx.translate(self.x, self.y);
+        //ctx.setTransform(1, 0, 0, 1, self.x - (self.canvasWidth * 2), self.y - (self.canvasHeight * 2));
+        //ctx.rotate(self.rotation);
         //}
         //else {
         //    self.ctx.setTransform(1, 0, 0, 1, 0, 0);
         //}
 
-        ctx.drawImage(self.imageBitmap, self.x, self.y);
+        if (self.imageBitmap)
+            ctx.drawImage(self.imageBitmap, self.x, self.y);
 
         if (self.xSpeed > 0) {
             self.xSpeed -= (self.ySpeed);
@@ -2927,12 +2934,12 @@ const matrixLoaderPoint = (({
             self.xSpeed += (self.ySpeed);
         }
 
-        if (self.rotation > 0) {
-            self.rotation += (self.ySpeed / 400);
-        } else {
-            self.rotation -= (self.ySpeed / 400);
-        }
-
+        //if (self.rotation > 0) {
+        //    self.rotation += (self.ySpeed / 400);
+        //} else {
+        //    self.rotation -= (self.ySpeed / 400);
+        //}
+        
         self.x += self.xSpeed;
         self.y += self.ySpeed;
 
@@ -2947,32 +2954,20 @@ const matrixLoaderPoint = (({
     }
 
     return self;
-});
+};
 
 ko.bindingHandlers.matrixLoader = {
     init: function (element, valueAccessor, allBindingsAccessor) {
 
-        var self = $.extend(ko.unwrap(valueAccessor()), {});
+        let self = $.extend(ko.unwrap(valueAccessor()), {});
 
-        self.parent = $(element).parent()[0];
+        //#region Lifted Methods
 
-        self.resize = function () {
-            self.determineSize();
-            self.reset();
-        }
+        self.generateItemArray = () => {
 
-        window.addEventListener('resize', self.resize);
+            //#region Generally Emoji sets
 
-        self.visible.subscribe(function (newValue) {
-            if (newValue) {
-                self.startAnimating();
-            } else {
-                self.reset();
-            }
-        });
-
-        //0x2744 snowflake...?
-        self.newCharArray = function () {//U+26F7
+            //U+26F7
             //Spring
             //return [
             //    String.fromCodePoint(0x1F490), // Bouquet of flowers
@@ -2991,55 +2986,55 @@ ko.bindingHandlers.matrixLoader = {
             //return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F343), String.fromCodePoint(0x2614), String.fromCodePoint(0x1F36C), String.fromCodePoint(0x26C4), String.fromCodePoint(0x1F3BF), String.fromCodePoint(0x1F3C2), String.fromCodePoint(0x2B50)]
 
             // Christmas
-            return [String.fromCodePoint(0x2744),
-                String.fromCodePoint(0x26C4),
-                String.fromCodePoint(0x1F381),
-                String.fromCodePoint(0x1F380), // ribbon
-                String.fromCodePoint(0x1F384), // christmas tree
-                String.fromCodePoint(0x2B50),
-                String.fromCodePoint(0x1F385),
-                String.fromCodePoint(0x1F98C),
-                String.fromCodePoint(0x1F328),
-                String.fromCodePoint(0x1F384), // christmas tree
-                String.fromCodePoint(0x2603),
-                String.fromCodePoint(0x1F941), // drum
-                String.fromCodePoint(0x26C4),
-                String.fromCodePoint(0x2728),
-                String.fromCodePoint(0x1F56F), // candle
-                String.fromCodePoint(0x1F384), // christmas tree
-                String.fromCodePoint(0x1F514), // bell
-                String.fromCodePoint(0x1F370)
-            ]
-
-            //Valentine's
-            //return [String.fromCodePoint(0x1F970), // smiling face with hearts
-            //String.fromCodePoint(0x1F3F5), // yellow rosette
-            //String.fromCodePoint(0x1F490), // bouquet
-            //String.fromCodePoint(0x1F490), // bouquet
-            //String.fromCodePoint(0x1F490), // bouquet
-            //String.fromCodePoint(0x1F337), // tuplip
-            //String.fromCodePoint(0x1F33C), // daisy
-            //String.fromCodePoint(0x1F380), // ribbon
-            //String.fromCodePoint(0x1F33A), // hibiscus
-            //String.fromCodePoint(0x1F36D), // lollipop
-            //String.fromCodePoint(0x2764), // red heart
-            //String.fromCodePoint(0x1F9E1), // orange heart
-            //String.fromCodePoint(0x1F49B), // yellow heart
-            //String.fromCodePoint(0x1F49A), // green heart
-            //String.fromCodePoint(0x1F499), // blue heart
-            //String.fromCodePoint(0x1F49C),  // purple heart
-            //String.fromCodePoint(0x1F49D), // heart with ribbon
-            //String.fromCodePoint(0x1F498), // heart with arrow
-            //String.fromCodePoint(0x1F49F), // heart decoration
-            //String.fromCodePoint(0x1F49E), // revolving hearts
+            //return [String.fromCodePoint(0x2744),
+            //    String.fromCodePoint(0x26C4),
+            //    String.fromCodePoint(0x1F381),
+            //    String.fromCodePoint(0x1F380), // ribbon
+            //    String.fromCodePoint(0x1F384), // christmas tree
+            //    String.fromCodePoint(0x2B50),
+            //    String.fromCodePoint(0x1F385),
+            //    String.fromCodePoint(0x1F98C),
+            //    String.fromCodePoint(0x1F328),
+            //    String.fromCodePoint(0x1F384), // christmas tree
+            //    String.fromCodePoint(0x2603),
+            //    String.fromCodePoint(0x1F941), // drum
+            //    String.fromCodePoint(0x26C4),
+            //    String.fromCodePoint(0x2728),
+            //    String.fromCodePoint(0x1F56F), // candle
+            //    String.fromCodePoint(0x1F384), // christmas tree
+            //    String.fromCodePoint(0x1F514), // bell
+            //    String.fromCodePoint(0x1F370)
             //]
 
+            //Valentine's
+            return [
+                String.fromCodePoint(0x1F970), // smiling face with hearts
+                String.fromCodePoint(0x1F3F5), // yellow rosette
+                String.fromCodePoint(0x1F490), // bouquet
+                String.fromCodePoint(0x1F490), // bouquet
+                String.fromCodePoint(0x1F490), // bouquet
+                String.fromCodePoint(0x1F337), // tuplip
+                String.fromCodePoint(0x1F33C), // daisy
+                String.fromCodePoint(0x1F380), // ribbon
+                String.fromCodePoint(0x1F33A), // hibiscus
+                String.fromCodePoint(0x1F36D), // lollipop
+                String.fromCodePoint(0x2764), // red heart
+                String.fromCodePoint(0x1F9E1), // orange heart
+                String.fromCodePoint(0x1F49B), // yellow heart
+                String.fromCodePoint(0x1F49A), // green heart
+                String.fromCodePoint(0x1F499), // blue heart
+                String.fromCodePoint(0x1F49C),  // purple heart
+                String.fromCodePoint(0x1F49D), // heart with ribbon
+                String.fromCodePoint(0x1F498), // heart with arrow
+                String.fromCodePoint(0x1F49F), // heart decoration
+                String.fromCodePoint(0x1F49E), // revolving hearts
+            ]
+
             /*
-             
-Lianne's contribution:
-Summer theme
-bg #1ca9c9
-*/
+            Lianne's contribution:
+            Summer theme
+            bg #1ca9c9
+            */
             //return [
             //    String.fromCodePoint(0x1F60E), //smiling face w / sunglasses
             //    String.fromCodePoint(0x1F33B), //sunflower
@@ -3084,6 +3079,75 @@ bg #1ca9c9
 
             //return [...Array(Math.round(1))].map(() => String.fromCharCode(0x2744));
             //return [...Array(Math.round(60))].map(() => String.fromCharCode(0x1F030 + Math.random() * (0x1F3BE - 0x0460 + 1)));
+            //#endregion
+
+        }
+
+
+        //#endregion
+
+        //#region Properties
+        
+        self.parent = $(element).parent()[0];
+
+        self.canvas = element;
+        self.ctx = self.canvas.getContext('2d', {
+            willReadFrequently: true
+        });
+
+        self.canvas2 = $(self.canvas).parent().find('canvas').last()[0];
+        self.ctx2 = self.canvas2.getContext('2d', {
+            willReadFrequently: true
+        });
+        self.ctx2cache = [];
+
+        self.itemArray = self.generateItemArray();
+        self.matrixLoadingPointArray = [];
+        self.fontSize = 48;
+        self.fpsInterval = 1000 / 120;
+        self.then = null;
+        self.startTime = null;
+
+        self.textHeightOffset = 0;
+        self.textWidth = 48;
+        self.textHeight = 48;
+
+        //#endregion
+
+        //#region Subscriptions
+
+        self.visible.subscribe(function (newValue) {
+            self.reset();
+
+            if (newValue) {
+                self.startAnimating();
+            }
+        });
+
+        //#endregion
+
+        //#region Methods
+
+        // Called on window.resize
+        self.resize = () => {
+            self.determineSize();
+            self.reset();
+        }
+
+        self.determineSize = () => {
+            self.canvas2.width = self.canvas.width = self.canvas.parentElement.clientWidth;
+            self.canvas2.height = self.canvas.height = self.canvas.parentElement.clientHeight;
+
+            self.canvasWidth = self.canvas.width;
+            self.canvasHeight = self.canvas.height;
+
+            self.fontSize = 24;
+
+            self.maxColumns = Math.round(((self.canvasWidth / self.fontSize) * 100) / 100);
+
+            self.ctx.font = self.fontSize + "px Segoe UI Emoji";
+            self.ctx.font = self.fontSize + "px Segoe UI Emoji";
+            self.ctx2.font = self.fontSize + "px Segoe UI Emoji";
         }
 
         self.randomInt = function (min, max) {
@@ -3093,152 +3157,33 @@ bg #1ca9c9
             return Math.random() * (max - min) + min;
         }
 
-        self.canvas = element;
-        self.ctx = self.canvas.getContext('2d');
+        self.drawItemArrayToCanvas = () => {
 
-        self.canvas2 = $(self.canvas).parent().find('canvas').last()[0];
-        self.ctx2 = self.canvas2.getContext('2d');
-        self.ctx2cache = [];
-
-        self.charArr = self.newCharArray();
-        self.fallingCharArr = [];
-        self.fontSize = 48;
-        self.fpsInterval = 1000 / 120;
-        self.then = null;
-        self.startTime = null;
-
-        self.reset = function () {
-
-            //self.ctx.fillStyle = "#020202"; // black
-            //self.ctx.fillStyle = "rgba(0,0,0,0.25)";
-
-            //self.ctx.fillStyle = "#da5e04"; // autumn (bright)
-            //self.ctx.fillStyle = '#c86e2d'; // autumn (darker)
-            //self.ctx.fillStyle = "#f0b447"; // autumn (golden yellow)
-            //self.ctx.fillStyle = '#003153'; // autumn (prussian blue)
-
-
-            self.ctx.fillStyle = "#66b8ff"; //winter
-            //self.ctx.fillStyle = "#ffbbd7"; //valentine's (pink)
-            //self.ctx.fillStyle = '#f8c9dd'; // spring (pink)
-            //self.ctx.fillStyle = '#53bfea'; // spring (sky blue)
-            //self.ctx.fillStyle = '#c1e0ff'; // summer
-            //self.ctx.fillStyle = '#1ca9c9'; // summer, Lianne's Pacific Ocean Blue
-
-            self.ctx.clearRect(0, 0, self.cw, self.ch);
-            self.ctx.fillRect(0, 0, self.cw, self.ch);
-
-            self.ctx2.fillStyle = "rgba(255,255,255,1.0)";
-            self.ctx2.clearRect(0, 0, self.cw, self.ch);
-            self.ctx2.fillRect(0, 0, self.cw, self.ch);
-
-            self.charArr = self.newCharArray();
-            self.fallingCharArr = [];
-
-            //self.cw = $(self.parent).closest('.modal-body').outerWidth();
-            //self.ch = $(self.parent).closest('.modal-body').outerHeight();
-
-            //if (self.canvas.width == 0) {
-            //self.canvas.width = self.cw;
-            //self.canvas.height = self.ch;
-            //self.canvas.width = self.canvas2.width = self.cw;
-            //self.canvas.height = self.canvas2.height = self.ch;
-            //}
-
-            console.log('matrixLoader resetting, charCount: ', self.maxColumns);
-
-            for (var i = 0; i < self.maxColumns; i++) {
-                self.fallingCharArr.push(matrixLoaderPoint({
-                    x: i * self.fontSize,
-                    y: self.randomFloat(-500, 0),
-                    cw: self.cw,
-                    ch: self.ch,
-                    ca: self.charArr
-                }));
-            }
-
-            self.drawCharArrayToCanvas2();
-
-            let imagePromises = self.fallingCharArr.map((fca, i) => {
-                return createImageBitmap(self.ctx2.getImageData(i * (self.textWidth), 0, self.textWidth, self.textHeight));
-            });
-
-            Promise.all(imagePromises).then(images => {
-                self.ctx2cache = images;
-
-                self.fallingCharArr.forEach(c => {
-                    c.imageBitmap = self.ctx2cache[c.charIndex];
-                });
-            });
-        }
-
-        self.textHeightOffset = 0;
-        self.textWidth = 48;
-        self.textHeight = 48;
-
-        self.canvas3 = document.createElement('canvas');
-        self.ctx3 = self.canvas3.getContext('2d');
-
-        self.canvas.parentElement.appendChild(self.canvas3);
-
-
-        for (var i = 0; i < self.maxColumns; i++) {
-            self.fallingCharArr.push(new self.Point(i * self.fontSize, self.randomFloat(-500, 0)));
-        }
-
-        self.drawCharArrayToCanvas2 = function () {
             self.ctx2.fillStyle = "#020202";
-            self.ctx2.clearRect(0, 0, self.cw, self.ch);
+            self.ctx2.clearRect(0, 0, self.canvasWidth, self.canvasHeight);
 
-            var ca = self.newCharArray().join('');
+            var ca = self.itemArray.join('');
 
             // ta https://stackoverflow.com/questions/56814735/origin-point-for-html5-canvas-filltext#answer-68077015
             let groupMetrics = self.ctx2.measureText(ca);
 
             self.textHeightOffset = groupMetrics.actualBoundingBoxAscent + groupMetrics.actualBoundingBoxDescent;
 
-            let c = self.newCharArray();
-
-            for (var i = 0; i < c.length; i++) {
-                self.ctx2.fillText(c[i], i * self.textWidth, 0 + self.textHeightOffset - 3);
+            for (var i = 0; i < self.itemArray.length; i++) {
+                self.ctx2.fillText(self.itemArray[i], i * self.textWidth, 0 + self.textHeightOffset - 3);
             }
 
-            let imagePromises = self.fallingCharArr.map((fca, i) => {
-                return createImageBitmap(self.ctx2.getImageData(i * (self.textWidth), 0, self.textWidth, self.textHeight));
+            let imagePromises = self.matrixLoadingPointArray.map((fca, i) => {
+                return createImageBitmap(self.ctx2.getImageData(i * self.textWidth, 0, self.textWidth, self.textHeight));
             });
 
             Promise.all(imagePromises).then(images => {
                 self.ctx2cache = images;
+
+                self.matrixLoadingPointArray.forEach(c => {
+                    c.imageBitmap = self.ctx2cache[c.itemIndex];
+                });
             });
-        }
-
-        self.drawCharArrayToCanvas2();
-
-        //self.canvas.width = self.cw;
-        //self.canvas.height = self.ch;
-        //self.canvas2.width = self.cw;
-        //self.canvas2.height = self.ch;
-
-        self.canvas3.width = self.textWidth;
-        self.canvas3.height = self.textHeight;
-
-        self.determineSize = function () {
-            self.canvas2.width = self.canvas.width = self.canvas.parentElement.clientWidth;
-            self.canvas2.height = self.canvas.height = self.canvas.parentElement.clientHeight;
-
-            self.cw = self.canvas.width;
-            self.ch = self.canvas.height;
-
-            self.originalWidth = self.cw;
-            self.originalHeight = self.ch;
-
-            self.fontSize = 24;
-
-            self.maxColumns = Math.round(((self.cw / self.fontSize) * 100) / 100);
-
-            self.ctx.font = self.fontSize + "px Segoe UI Emoji";
-            self.ctx.font = self.fontSize + "px Segoe UI Emoji";
-            self.ctx2.font = self.fontSize + "px Segoe UI Emoji";
         }
 
         self.startAnimating = function () {
@@ -3263,28 +3208,86 @@ bg #1ca9c9
 
             if (elapsed > self.fpsInterval) {
 
-                self.ctx.clearRect(0, 0, self.cw, self.ch);
-                self.ctx.fillRect(0, 0, self.cw, self.ch);
-                self.ctx2.clearRect(0, 0, self.cw, self.ch);
-                self.ctx2.clearRect(0, 0, self.cw, self.ch);
-                self.ctx3.clearRect(0, 0, self.cw, self.ch);
-                self.ctx3.clearRect(0, 0, self.cw, self.ch);
+                self.ctx.clearRect(0, 0, self.canvasWidth, self.canvasHeight);
+                self.ctx.fillRect(0, 0, self.canvasWidth, self.canvasHeight);
+                self.ctx2.clearRect(0, 0, self.canvasWidth, self.canvasHeight);
 
                 // with thanks: http://jsfiddle.net/chicagogrooves/nRpVD/2/
                 // Get ready for next frame by setting then=now, but...
                 // Also, adjust for fpsInterval not being multiple of 16.67
                 self.then = now - (elapsed % self.fpsInterval);
 
-                var i = self.fallingCharArr.length;
-
-                while (i--) {
-                    self.fallingCharArr[i].draw(self.ctx);
-                }
+                self.matrixLoadingPointArray.forEach(fca => fca.draw(self.ctx));
 
                 if (self.visible())
                     requestAnimationFrame(self.update);
             }
         }
+
+        self.reset = () => {
+
+            self.determineSize();
+
+            self.itemArray = self.generateItemArray();
+
+            //#region Background Colour
+
+            //self.ctx.fillStyle = "#020202"; // black
+            //self.ctx.fillStyle = "rgba(0,0,0,0.25)";
+            //self.ctx.fillStyle = "#da5e04"; // autumn (bright)
+            //self.ctx.fillStyle = '#c86e2d'; // autumn (darker)
+            //self.ctx.fillStyle = "#f0b447"; // autumn (golden yellow)
+            //self.ctx.fillStyle = '#003153'; // autumn (prussian blue)
+            //self.ctx.fillStyle = "#66b8ff"; //winter
+            //self.ctx.fillStyle = "#ffbbd7"; //valentine's (pink)
+            //self.ctx.fillStyle = '#f8c9dd'; // spring (pink)
+
+            self.ctx.fillStyle = '#53bfea'; // spring (sky blue)
+
+            //self.ctx.fillStyle = '#c1e0ff'; // summer
+            //self.ctx.fillStyle = '#1ca9c9'; // summer, Lianne's Pacific Ocean Blue
+
+            //#endregion
+
+            self.ctx.clearRect(0, 0, self.canvasWidth, self.canvasHeight);
+            self.ctx.fillRect(0, 0, self.canvasWidth, self.canvasHeight);
+
+            self.ctx2.fillStyle = "rgba(255,255,255,1.0)";
+            self.ctx2.clearRect(0, 0, self.canvasWidth, self.canvasHeight);
+            self.ctx2.fillRect(0, 0, self.canvasWidth, self.canvasHeight);
+
+            self.matrixLoadingPointArray = [];
+
+            console.log('matrixLoader resetting');
+
+            for (var i = 0; i < self.maxColumns * 2; i++) {
+
+                let characterIndex = self.randomInt(0, self.itemArray.length - 1);
+
+                self.matrixLoadingPointArray.push(matrixLoaderPoint({
+                    xPosition: self.randomInt(0, self.canvasWidth),
+                    yPosition: self.randomFloat(-500, 0),
+                    canvasWidth: self.canvasWidth,
+                    canvasHeight: self.canvasHeight,
+                    character: self.itemArray[characterIndex],
+                    itemIndex: characterIndex
+                }));
+
+            }
+
+            self.drawItemArrayToCanvas();
+        }
+
+
+        //#endregion
+
+        //#region Events
+
+        window.addEventListener('resize', self.resize);
+
+        self.reset();
+
+        //#endregion
     }
 }
 

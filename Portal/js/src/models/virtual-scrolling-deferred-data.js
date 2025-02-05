@@ -16,7 +16,7 @@
             </tr>
         </tbody>
         <tbody data-bind="foreach: visibleItems">
-            <tr>
+            <tr class="visible-item">
                 [... interesting interactive gubbins ...]
             </tr>
         </tbody>
@@ -59,10 +59,12 @@ const virtualScrollingDeferredDataFactory = ({
     unfilledRecordFn,
     maxYMultiplier,
     primaryFetchSortFn,
+    displayModes
 } = {
         busy: ko.observable(false),
         tableSelector: "#virtual-scrolling-table",
         rowHeight: ko.observable(50),
+        displayModes: [1],
         primaryFetchParams: ko.computed(() => {
             //console.trace();
             // build some set of parameters required by primaryFetch
@@ -107,85 +109,60 @@ const virtualScrollingDeferredDataFactory = ({
             return 1;
         }
     }) => {
-    let self = {};
-
-    // the question is this: how can I provide bare-bones fetches which just know about the endpoint...
-    // I... can't really, I can just ask for the end point though?
-
 
     if (!document.querySelector(tableSelector)) {
         console.warn(`tableSelector "${tableSelector}" did not exist`);
     }
 
+    // the question is this: how can I provide bare-bones fetches which just know about the endpoint...
+    // I... can't really, I can just ask for the end point though?
+
     //#region Properties
 
-    self.busy = busy;
+    let self = {
+        busy: busy,
+        rateLimitFactor:  1 / 30,
+        rowHeight:  ko.isObservable(rowHeight) ? rowHeight : ko.observable(rowHeight),
+        displayModes:  displayModes,
+        scrollY:  ko.observable(0),
+        tableSelector:  tableSelector,
+        container:  container,
+        maxYMultiplier:  maxYMultiplier ?? 1,
+        gridHeaderHeight:  ko.isObservable(gridHeaderHeight) ? gridHeaderHeight : ko.observable(gridHeaderHeight),
+        gridTotalHeight:  ko.observable(),
+        finalRowVisible:  ko.observable(false),
+        gridPositionTop:  gridPositionTop,
+        primaryFetchParams:  primaryFetchParams,
+        primaryFetchEndpoint:  primaryFetchEndpoint,
+        primaryFetchResultSetName:  primaryFetchResultSetName,
+        primaryFetchBeforeFn:  primaryFetchBeforeFn,
+        primaryFetchAfterFn:  primaryFetchAfterFn,
+        primaryFetchResultFn:  primaryFetchResultFn,
+        primaryFetchSortFn:  primaryFetchSortFn,
+        secondaryFetchParams:  secondaryFetchParams,
+        secondaryFetchEndpoint:  secondaryFetchEndpoint,
+        secondaryFetchResultSetName:  secondaryFetchResultSetName,
+        secondaryFetchQueueRecordId:  secondaryFetchQueueRecordId,
+        secondaryFetchResultProcessingFunction:  secondaryFetchResultProcessingFn,
+        searchResults:  ko.observableArray([]),
+        haveSearchResults:  ko.observable(false),
+        //// this is used to hold the records we need to data fetch for those which the dataSource has deemed to be "in view"
+        secondaryFetchQueue:  ko.observableArray([]),
+        //// this holds those records which have been fleshed out by the fetchData results
+        secondaryFetchedRecords:  ko.observableArray([]),
+        intersectionObserver: new IntersectionObserver((entries, observer) => {
+            entries.forEach((entry) => {
+                self.finalRowVisible(entry.isIntersecting);
+            })
+        }, {
+            rootMargin: "1px"
+        }),
+        unfilledRecordFn:  unfilledRecordFn
+    };
 
-    self.rateLimitFactor = 1 / 30;
-
-    self.rowHeight = ko.isObservable(rowHeight) ? rowHeight : ko.observable(rowHeight);
-
-    self.scrollY = ko.observable(0);
-
-    self.tableSelector = tableSelector;
-
-    self.container = container;
-
-    self.maxYMultiplier = maxYMultiplier ?? 1;
-
-    self.gridHeaderHeight = ko.isObservable(gridHeaderHeight) ? gridHeaderHeight : ko.observable(gridHeaderHeight);
+    self.originalRowHeight = +self.rowHeight();
 
     self.maxY = ko.observable(+window.getComputedStyle(self.container)['max-height'].replace(/px/, '') - self.gridHeaderHeight());
-
-    self.gridTotalHeight = ko.observable();
-
-    self.finalRowVisible = ko.observable(false);
-
-    self.gridPositionTop = gridPositionTop;
-
-    self.primaryFetchParams = primaryFetchParams;
-
-    self.primaryFetchEndpoint = primaryFetchEndpoint;
-
-    self.primaryFetchResultSetName = primaryFetchResultSetName;
-
-    self.primaryFetchBeforeFn = primaryFetchBeforeFn;
-
-    self.primaryFetchAfterFn = primaryFetchAfterFn;
-
-    self.primaryFetchResultFn = primaryFetchResultFn;
-
-    self.primaryFetchSortFn = primaryFetchSortFn;
-
-    self.secondaryFetchParams = secondaryFetchParams;
-
-    self.secondaryFetchEndpoint = secondaryFetchEndpoint;
-
-    self.secondaryFetchResultSetName = secondaryFetchResultSetName;
-
-    self.secondaryFetchQueueRecordId = secondaryFetchQueueRecordId;
-
-    self.secondaryFetchResultProcessingFunction = secondaryFetchResultProcessingFn;
-
-    self.searchResults = ko.observableArray([]);
-
-    self.haveSearchResults = ko.observable(false);
-
-    //// this is used to hold the records we need to data fetch for those which the dataSource has deemed to be "in view"
-    self.secondaryFetchQueue = ko.observableArray([]);
-
-    //// this holds those records which have been fleshed out by the fetchData results
-    self.secondaryFetchedRecords = ko.observableArray([]);
-
-    self.intersectionObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach((entry) => {
-            self.finalRowVisible(entry.isIntersecting);
-        });
-    }, {
-        rootMargin: "1px"
-    });
-
-    self.unfilledRecordFn = unfilledRecordFn;
 
     //#endregion
 
@@ -242,9 +219,7 @@ const virtualScrollingDeferredDataFactory = ({
 
             let filledRecords = self.secondaryFetchedRecords.peek();
 
-            let results = [];
-
-            results = self.searchResults().filter((i, index) => {
+            let results = self.searchResults().filter((i, index) => {
 
                 let actuallyVisible = (i.offsetY) >= (scrollY) && (i.offsetY) <= (maxY);
 
@@ -270,12 +245,18 @@ const virtualScrollingDeferredDataFactory = ({
 
             let scrollY = self.scrollY();
 
-            return self.searchResults().filter((i, index) => {
+            let results = self.searchResults().filter((i, index) => {
 
                 let actuallyVisible = (i.offsetY) >= (scrollY) && (i.offsetY) <= (maxY);
 
+                if (i.DOMElement && i.DOMElement.querySelector('.popover.show')) {
+                    actuallyVisible = true;
+                }
+
                 return actuallyVisible;
             });
+
+            return results;
         });
     }
 
@@ -312,6 +293,8 @@ const virtualScrollingDeferredDataFactory = ({
 
         if (!self.finalRowVisible()) {
             result = self.gridTotalHeight.peek() - (self.visibleItems().length * self.rowHeight.peek()) - self.gridScrollTopPadding.peek() - self.gridPositionTop
+        } else {
+            result = 1; // PHEW! Doing this FINALLY seems to have sorted out my bouncy bottom.
         }
 
         console.log("gridScrollBottomPadding", result)
@@ -350,33 +333,39 @@ const virtualScrollingDeferredDataFactory = ({
 
 
     */
-    
-    
+
+
     //#endregion
 
 
     //#region Subscriptions
 
+    self.displayModes.subscribe(nv => {
+        self.setRowHeight();
+    });
+
+    self.rowHeight.subscribe(nv => {
+
+        let cumulativeHeight = nv;
+
+        self.searchResults.peek().forEach((sr, idx) => {
+            sr.runningHeight = cumulativeHeight;
+            cumulativeHeight += nv;
+        });
+
+        self.searchResults(self.recalculateOffsetYs(self.searchResults()));
+    });
+
     if (self.primaryFetchSortFn) {
         self.primaryFetchSortFn.subscribe(nv => {
+
             let data = self.searchResults();
-
-            let gridHeaderHeight = self.gridHeaderHeight();
-
-            let rowHeight = self.rowHeight();
-
-            let startingOffset = self.gridPositionTop + gridHeaderHeight;
-
-            let additionalOffset = startingOffset;
-
 
             if (typeof nv === 'function') {
 
                 data.sort(nv);
 
-                data.forEach((result, index) => {
-                    result.offsetY = (((index) * rowHeight) + additionalOffset) - gridHeaderHeight;
-                });
+                data = self.recalculateOffsetYs(data);
 
                 self.searchResults(data);
             } else {
@@ -385,9 +374,7 @@ const virtualScrollingDeferredDataFactory = ({
                     return a.originalOffsetY > b.originalOffsetY ? 1 : -1;
                 });
 
-                data.forEach((result, index) => {
-                    result.offsetY = (((index) * rowHeight) + additionalOffset) - gridHeaderHeight;
-                });
+                data = self.recalculateOffsetYs(data);
 
                 self.searchResults(data);
             }
@@ -399,7 +386,77 @@ const virtualScrollingDeferredDataFactory = ({
 
     //#region Methods
 
+    self.recalculateOffsetYs = (searchResults) => {
 
+        let gridHeaderHeight = self.gridHeaderHeight();
+
+        let rowHeight = self.rowHeight();
+
+        let startingOffset = self.gridPositionTop + gridHeaderHeight;
+
+        let additionalOffset = startingOffset;
+
+        searchResults.forEach((result, index) => {
+            result.offsetY = (((index) * rowHeight) + additionalOffset) - gridHeaderHeight;
+        });
+
+        return searchResults;
+    }
+
+    self.setRowHeight = () => {
+        let height = self.originalRowHeight;
+
+        if (container.querySelector('tr.visible-item td span.order-value')) {
+
+            let spanHeight = container.querySelector('tr.visible-item td span.order-value').getBoundingClientRect().height;
+
+            // subtract one because originalRowHeight should be provided given one span height and the padding top and bottom of a cell.
+            // in the instance I'm debugging right now - Order Book: Back Orders without PO Cover, the rowHeight is provided initially as 36
+            // that breaks down to 1 x span of height 19 + padding top and bottom of 7px each + 1px border-bottom height == 19 + 14 + 1 == 36
+
+            height += (self.displayModes().length - 1) * spanHeight;
+
+            console.log('setting rowHeight', height);
+
+            self.rowHeight(height);
+
+            self.scrollY.valueHasMutated();
+
+        } else { 
+            console.log("virtualDeferredScroller could not set rowHeight");
+        }
+    }
+
+    self.processResults = (data) => {
+
+        let gridHeaderHeight = self.gridHeaderHeight();
+
+        let rowHeight = self.rowHeight();
+
+        let startingOffset = self.gridPositionTop + gridHeaderHeight;
+
+        let additionalOffset = startingOffset;
+
+        let cumulativeHeight = 0;
+
+        let results = data[self.primaryFetchResultSetName].map((result, index) => {
+
+            result.offsetY = (((index + 1) * rowHeight) + additionalOffset) - gridHeaderHeight;
+
+            result.originalOffsetY = result.offsetY;
+
+            cumulativeHeight += rowHeight;
+
+            result.runningHeight = cumulativeHeight;
+
+            return self.primaryFetchResultFn(result);
+            //return result;
+        });
+
+        self.gridTotalHeight(cumulativeHeight);
+
+        return results;
+    }
 
     self.primaryFetch = ko.computed(() => {
         //console.trace();
@@ -440,35 +497,15 @@ const virtualScrollingDeferredDataFactory = ({
                     if (data[self.primaryFetchResultSetName].length > 0)
                         self.haveSearchResults(true);
 
-                    let gridHeaderHeight = self.gridHeaderHeight();
+                    window.setTimeout(() => {
+                        self.setRowHeight();
+                    }, 0);
 
-                    let rowHeight = self.rowHeight();
-
-                    let startingOffset = self.gridPositionTop + gridHeaderHeight;
-
-                    let additionalOffset = startingOffset;
-
-                    let cumulativeHeight = 0;
-
-                    let results = data[self.primaryFetchResultSetName].map((result, index) => {
-
-                        result.offsetY = (((index + 1) * rowHeight) + additionalOffset) - gridHeaderHeight;
-
-                        result.originalOffsetY = result.offsetY;
-
-                        cumulativeHeight += rowHeight;
-
-                        result.runningHeight = cumulativeHeight;
-
-                        return self.primaryFetchResultFn(result);
-                        //return result;
-                    });
+                    let results = self.processResults(data);
 
                     if (self.primaryFetchSortFn && self.primaryFetchSortFn()) {
                         results.sort(self.primaryFetchSortFn());
                     } 
-
-                    self.gridTotalHeight(cumulativeHeight);
 
                     self.searchResults(results);
 

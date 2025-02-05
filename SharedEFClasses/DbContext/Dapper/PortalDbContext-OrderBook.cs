@@ -1,6 +1,7 @@
 ﻿using Dapper;
 
 using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.OData.Json;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -8,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Mertexer;
 using SharedEFClasses.Models.OrderBook;
+using SharedEFClasses.Models.OrderEntry;
 using SharedEFClasses.Models.Orders;
 
 using System;
@@ -196,49 +198,51 @@ namespace SharedEFClasses.Models
 
             var db = new PortalDbContext();
 
+            var parameters = new
+            {
+                // Hmmm.
+                dto.DataSource,
+                OrderLineDetailedStatusGroupIDs,
+
+                // Trade Account Filters
+                dto.MarketID,
+                MarketIDs,
+                dto.SalesRepresentativeID,
+                dto.SalesAgentID,
+                dto.SalesAreaID,
+                dto.CountryID,
+                dto.TradeAccountTypeID,
+                dto.TradeAccountGroupID,
+                dto.PaymentTermsID,
+                dto.PaymentTermsTypeID,
+                dto.TradeAccountID,
+
+                // Order Filters
+                dto.OrderID,
+                dto.OrderTakerCode,
+                dto.StartDate,
+                dto.EndDate,
+                dto.HaulierCode,
+                dto.Allocated,
+                dto.TransactionTypeID,
+                dto.DeliveryType,
+
+                // Product Filters
+                dto.ProductGroupID,
+                dto.ItemTypeID,
+                dto.BrandID,
+                dto.CollectionID,
+                dto.LaunchID,
+                dto.QualityID,
+                dto.DesignID,
+                dto.SupplierCode,
+                dto.BuyerCode,
+                dto.ProductID,
+                dto.ProductStatus,
+            };
+
             var results = await db.Database.Connection.QueryAsync<string>("[portal].[OrderBook_ProblemSummary_Select]",
-                new
-                {
-                    // Hmmm.
-                    dto.DataSource,
-                    OrderLineDetailedStatusGroupIDs,
-
-                    // Trade Account Filters
-                    dto.MarketID,
-                    MarketIDs,
-                    dto.SalesRepresentativeID,
-                    dto.SalesAgentID,
-                    dto.SalesAreaID,
-                    dto.CountryID,
-                    dto.TradeAccountTypeID,
-                    dto.TradeAccountGroupID,
-                    dto.PaymentTermsID,
-                    dto.PaymentTermsTypeID,
-                    dto.TradeAccountID,
-
-                    // Order Filters
-                    dto.OrderID,
-                    dto.OrderTakerCode,
-                    dto.StartDate,
-                    dto.EndDate,
-                    dto.HaulierCode,
-                    dto.Allocated,
-                    dto.TransactionTypeID,
-                    dto.DeliveryType,
-
-                    // Product Filters
-                    dto.ProductGroupID,
-                    dto.ItemTypeID,
-                    dto.BrandID,
-                    dto.CollectionID,
-                    dto.LaunchID,
-                    dto.QualityID,
-                    dto.DesignID,
-                    dto.SupplierCode,
-                    dto.BuyerCode,
-                    dto.ProductID,
-                    dto.ProductStatus,
-                }, null, 30, CommandType.StoredProcedure);
+                parameters, null, 30, CommandType.StoredProcedure);
 
             var sb = new StringBuilder();
 
@@ -247,7 +251,14 @@ namespace SharedEFClasses.Models
                 sb.Append(part);
             }
 
-            return sb.ToString();
+            var result = sb.ToString();
+
+            if (String.IsNullOrEmpty(result))
+            {
+                result = "[]";
+            }
+
+            return result;
         }
 
         public async Task<OrderBook_MainSummary_SelectResult> FetchOrderBookMainSummary(PassOrderBookBaseParams dto)
@@ -332,7 +343,7 @@ namespace SharedEFClasses.Models
                 "View",
                 "view",
                 "filterable",
-                "marketIds",
+                "salesMarketIds",
                 "orderLineDetailedStatusGroupIds"
             };
 
@@ -340,7 +351,7 @@ namespace SharedEFClasses.Models
 
             marketIdsDataTable.Columns.Add("ID", typeof(byte));
 
-            var marketIds = ((IDictionary<string, object>)dto)["marketIds"] as List<object>;
+            var marketIds = ((IDictionary<string, object>)dto)["salesMarketIds"] as List<object>;
 
             marketIds.ForEach(mid =>
             {
@@ -404,7 +415,7 @@ namespace SharedEFClasses.Models
 
             //foreach (var part in results)
             //{
-            //    sb.Append(part);
+            //    sb.Append(part);a href="#" class="btn btn-primary stretched-link"
             //}
 
             var reader = await this.Database.Connection.QueryMultipleAsync($"[portal].[OrderBook_DetailView_{procedureName}]", dynParams, null, 30, CommandType.StoredProcedure);
@@ -425,11 +436,26 @@ namespace SharedEFClasses.Models
                 columnData = "[]";
             }
 
+
+
+            IEnumerable<OrderBook_DetailView_ButtonRow> buttonData = new List<OrderBook_DetailView_ButtonRow>();
+
+            try
+            {
+                buttonData = await reader.ReadAsync<OrderBook_DetailView_ButtonRow>();
+            }
+            catch (System.ObjectDisposedException)
+            {
+                // not all DetailView procedures actually produce this result set,
+                // those that don't cause an ObjectDisposed exception because all data has been read already
+            }
+
             return new OrderBook_DetailView_SelectResult()
             {
                 AccurateAsOfDT = accurateDt,
                 Columns = JArray.Parse(columnData),
-                Data = JArray.Parse(data)
+                Data = JArray.Parse(data),
+                FilterButtons = buttonData
             };
 
             //return sb.ToString();
@@ -462,6 +488,27 @@ namespace SharedEFClasses.Models
                 Totals = await reader.ReadSingleAsync<OrderBookRingFenceInspectTotal>(),
                 Data = await reader.ReadAsync<OrderBookRingFenceInspectData>()
             };
+        }
+
+        public async Task<OrderBookProductInspectResult> FetchOrderBookProductInspect(PassOrderBookProductPopoverFetch dto)
+        {
+            var reader = await this.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_Product_Inspect]", dto, null, 30, CommandType.StoredProcedure);
+
+            var result = new OrderBookProductInspectResult()
+            {
+                ProductInfo = await reader.ReadSingleAsync<OrderBook_ProductInspect_ProductInfo>(),
+                OrderLines = await reader.ReadAsync<OrderBook_ProductInspect_OrderLine>(),
+                StockInfo = await reader.ReadAsync<OrderBook_ProductInspect_StockInfo>(),
+                AvailabilityMessage = await reader.ReadSingleAsync<StockInfoAvailabilityMessage>(),
+                StockCheckRequestSelectResult = new StockCheckRequestSelectResult()
+            };
+
+            if (result.AvailabilityMessage?.ExecuteStockCheckRequest == true)
+            {
+                result.StockCheckRequestSelectResult = await reader.ReadSingleAsync<StockCheckRequestSelectResult>();
+            }
+
+            return result;
         }
 
         public async Task<OrderBookSummaryResult> FetchOrderBookOveriew(PassOrderBookBaseParams dto)

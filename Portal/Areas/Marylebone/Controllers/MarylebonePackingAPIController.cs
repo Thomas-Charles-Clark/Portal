@@ -14,6 +14,9 @@ using System.Web.Http.ModelBinding;
 using SharedEFClasses.Models.Orders;
 using Portal.Areas.Marylebone.Models;
 using SharedEFClasses.Models.Marylebone;
+using Unity.Interception.Utilities;
+using SharedEFClasses.Models.Products;
+using System.Windows.Controls;
 
 namespace Portal.Areas.Marylebone.Controllers
 {
@@ -57,23 +60,37 @@ namespace Portal.Areas.Marylebone.Controllers
                 return BadRequest("stockLocation");
             }
 
-            if (!String.IsNullOrEmpty(dto.BoxCode)) 
+            var extant = PortalDb.Boxes.SingleOrDefault(b => b.Deleted == false && b.BoxCode == dto.BoxCode);
+
+            if (extant != null) 
             {
-                var box = PortalDb.Boxes.Add(new SharedEFClasses.Models.Marylebone.Box()
-                {
-                    BoxCode = dto.BoxCode,
-                    DestinationStockLocationID = stockLocation.StockLocationID,
-                    CreatedDT = now,
-                    ModifiedDT = now,
-                    BoxedItems = new List<BoxedItem>()
-                });
-
-                PortalDb.SaveChanges();
-
-                return Ok(box);
+                return BadRequest("boxCode");
             }
 
-            return BadRequest();
+            // Sarah doesn't want me saving boxes... before they've added... an item.
+            return Ok(new {
+                BoxCode = dto.BoxCode,
+                BoxedItems = new List<BoxedItem>() { }, 
+                DestinationStockLocation = stockLocation
+            });
+
+            //if (!String.IsNullOrEmpty(dto.BoxCode)) 
+            //{
+            //    var box = PortalDb.Boxes.Add(new SharedEFClasses.Models.Marylebone.Box()
+            //    {
+            //        BoxCode = dto.BoxCode,
+            //        DestinationStockLocationID = stockLocation.StockLocationID,
+            //        CreatedDT = now,
+            //        ModifiedDT = now,
+            //        BoxedItems = new List<BoxedItem>()
+            //    });
+
+            //    PortalDb.SaveChanges();
+
+            //    return Ok(box);
+            //}
+            //
+            //return BadRequest();
         }
 
 
@@ -82,7 +99,12 @@ namespace Portal.Areas.Marylebone.Controllers
         {
             var now = DateTime.Now;
 
-            var box = PortalDb.Boxes.Single(b => b.BoxID == dto.BoxID);
+            var box = PortalDb.Boxes.Include(b => b.BoxedItems).Single(b => b.BoxID == dto.BoxID);
+
+            box.BoxedItems.ForEach(bi => 
+            {
+                bi.DeletedDT = now;
+            });
 
             box.DeletedDT = DateTime.Now;
 
@@ -114,6 +136,29 @@ namespace Portal.Areas.Marylebone.Controllers
         {
             var now = DateTime.Now;
 
+            StockLocation NewBoxDestinationStockLocation = null;
+            var NewBoxBoxedItems = new List<BoxedItem>();
+
+            if (dto.BoxID == 0)
+            {
+                NewBoxDestinationStockLocation = PortalDb.StockLocations.Single(s => s.Code == dto.DestinationStockLocationCode);
+
+                var newBox = new Box()
+                {
+                    BoxCode = dto.BoxCode,
+                    DestinationStockLocationID = NewBoxDestinationStockLocation.StockLocationID,
+                    CreatedDT = now,
+                    ModifiedDT = now,
+                    
+                };
+
+                PortalDb.Boxes.Add(newBox);
+
+                PortalDb.SaveChanges();
+
+                dto.BoxID = newBox.BoxID;
+            }
+
             var product = PortalDb.Products.FirstOrDefault(p => p.Code == dto.Input || p.EAN == dto.Input);
             
             if (product != null)
@@ -144,8 +189,11 @@ namespace Portal.Areas.Marylebone.Controllers
 
                 return Ok(new
                 {
+                    boxId = item.BoxID,
                     valid = true,
-                    record = item
+                    record = item,
+                    DestinationStockLocation = NewBoxDestinationStockLocation,
+                    BoxedItems = NewBoxBoxedItems
                 });
             }
 

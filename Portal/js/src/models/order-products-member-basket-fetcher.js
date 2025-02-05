@@ -184,10 +184,6 @@
             class: 'text-center'
         }
     }, {
-        field: 'HeldSince',
-        title: 'Held Since',
-        width: 180
-    }, {
         field: 'HeldReasons',
         title: 'Held Reasons',
         width: 200,
@@ -204,15 +200,11 @@
         title: 'Reference',
         width: 160
     }, {
-        field: 'Market',
-        title: 'Market',
-        width: 95
-    }, {
         field: 'Label',
         title: 'Trade Account',
     }, {
         field: 'CustomerReference',
-        title: 'Order Reference',
+        title: 'Customer Order Reference',
         width: 130
     }, {
         field: 'Value',
@@ -439,52 +431,6 @@
     }, {
         field: 'BasketBOTError',
         hidden: true
-    }];
-
-
-    self.myHeldOrdersGridColumns = [{
-        field: 'Reference',
-        title: 'Reference',
-        width: 160
-    }, {
-        field: 'Market',
-        title: 'Market',
-        width: 95
-    }, {
-        field: 'Label',
-        title: 'Trade Account',
-    }, {
-        field: 'CustomerReference',
-        title: 'Order Reference',
-        width: 130
-    }, {
-        field: 'Value',
-        title: 'Basket Value',
-        width: 100
-    }, {
-        field: 'HasAllocations',
-        title: ' ',
-        filterable: false,
-        width: 45,
-        attributes: {
-            class: 'text-center'
-        }
-    }, {
-        field: 'HeldReasons',
-        title: 'Held Reasons',
-        width: 240,
-        filterable: {
-            multi: true,
-            dataSource: getHoldReasons(),
-            operators: {
-                contains: "Contains"
-            }
-        }
-    }, {
-        field: 'Controls',
-        title: 'Controls',
-        width: 180,
-        filterable: false
     }];
 
     //#endregion
@@ -834,12 +780,16 @@
             data[propertyName] = params[propertyName];
         }
 
+        console.log("memberBasketFetcher resultGridDataSourceRead calling with", data);
+
         $.ajax({
             url: '/api/componentapi/FetchMemberBaskets',
             type: "GET",
             dataType: 'json',
             data: data,
             success: function (data) {
+                console.log("memberBasketFetcher resultGridDataSourceRead returned", data);
+
                 self.basketCount(data.Total);
                 ko.utils.arrayForEach(data.Data, function (d) {
                     d.bootstrapPopoverDetails = {
@@ -863,12 +813,16 @@
 
         var webapi = new kendo.data.transports.webapi({ prefix: "" });
         var mapped = webapi.parameterMap(options.data);
+
         var data = {
             memberId: self.memberId()
         };
+
         for (var propertyName in mapped) {
             data[propertyName] = mapped[propertyName];
         }
+
+        console.log("memberBasketFetcher importResultGridDataSourceRead calling with", data);
 
         $.ajax({
             url: '/api/componentapi/FetchImportedBaskets',
@@ -876,6 +830,9 @@
             dataType: 'json',
             data: data,
             success: function (data) {
+
+                console.log("memberBasketFetcher importResultGridDataSourceRead returned", data);
+
                 self.importBasketCount(data.Total);
                 ko.utils.arrayForEach(data.Data, function (d) {
                     d.bootstrapPopoverDetails = {
@@ -936,12 +893,16 @@
 
         //let qs = new URLSearchParams(data);
 
+        console.log("memberBasketFetcher submittedGridDataSourceRead calling with", data);
+
         $.ajax({
             url: `/api/orderproducts/TransactionSearch`,
             type: "GET",
             dataType: 'json',
             data: data,
             success: function (data) {
+                console.log("memberBasketFetcher submittedGridDataSourceRead returned", data);
+
                 self.submittedBasketCount(data.Total);
                 ko.utils.arrayForEach(data.Data, function (d) {
                     ko.utils.arrayForEach(d.orderDetails, function (od) {
@@ -1049,12 +1010,16 @@
             data[propertyName] = params[propertyName];
         }
 
+        console.log("memberBasketFetcher focDeliveryGridDataSourceRead calling with", data);
+
         $.ajax({
             url: '/api/componentapi/FetchFoCDeliveryBaskets',
             type: "GET",
             dataType: 'json',
             data: data,
             success: function (data) {
+                console.log("memberBasketFetcher focDeliveryGridDataSourceRead returned", data);
+
                 self.focDeliveryBasketCount(data.Total);
                 ko.utils.arrayForEach(data.Data, function (d) {
                     d.bootstrapPopoverDetails = {
@@ -1384,7 +1349,7 @@
             data[propertyName] = params[propertyName];
         }
 
-        console.log("memberBasketFetcher FetchHeldOrdersManagement calling with", data);
+        console.log("memberBasketFetcher heldOrdersGridDataSourceRead calling with", data);
 
         $.ajax({
             url: '/api/componentapi/FetchHeldOrdersManagement',
@@ -1680,12 +1645,16 @@
             data[propertyName] = params[propertyName];
         }
 
+        console.log("memberBasketFetcher myHeldOrdersGridDataSourceRead calling with", data);
+
         $.ajax({
             url: '/api/componentapi/FetchHeldOrdersOperator',
             type: "GET",
             dataType: 'json',
             data: data,
             success: function (data) {
+                console.log("memberBasketFetcher myHeldOrdersGridDataSourceRead returned", data);
+
                 self.myHeldOrdersCount(data.Total);
                 ko.utils.arrayForEach(data.Data, function (d) {
                     d.bootstrapPopoverDetails = {
@@ -1750,12 +1719,16 @@
             data[propertyName] = params[propertyName];
         }
 
+        console.log("memberBasketFetcher customerHeldBasketsGridDataSourceRead calling with", data);
+
         $.ajax({
             url: '/api/componentapi/FetchCustomerHeldBaskets',
             type: "GET",
             dataType: 'json',
             data: data,
             success: function (data) {
+                console.log("memberBasketFetcher customerHeldBasketsGridDataSourceRead returned", data);
+
                 self.focDeliveryBasketCount(data.Total);
                 ko.utils.arrayForEach(data.Data, function (d) {
                     d.bootstrapPopoverDetails = {
@@ -2903,7 +2876,7 @@
     self.myHeldOrdersResultGridSettings = {
         autoBind: true,
         widget: self.myHeldOrdersGridWidget,
-        columns: self.myHeldOrdersGridColumns,
+        columns: self.heldOrdersGridColumns,
         data: self.myHeldOrdersGridDataSource,
         useKOTemplates: true,
         rowTemplate: 'held-order-row-template',
@@ -3140,7 +3113,7 @@
         if (newValue == null) {
             self.justMyOrders(false);
         }
-        self.requeryAllGrids();
+        //self.requeryAllGrids();
     });
 
     self.heldOrdersMarketId.subscribe(nv => {

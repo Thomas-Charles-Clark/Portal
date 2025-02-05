@@ -15,26 +15,23 @@
   font-size: 1rem;
 }
 
+.mb-0 {
+  margin-bottom: 0;
+}
+
 #filters-sidebar {
   align-self: stretch;
 }
 #filters-sidebar:hover, #filters-sidebar:focus, #filters-sidebar:focus-within, #filters-sidebar.pinned {
   width: 575px;
 }
+#filters-sidebar .btn-reset,
+#filters-sidebar .btn-refresh {
+  width: 529px;
+}
 
 /* Only exists in the detailed view */
-#sidebar-collapse-inner {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  gap: 1rem;
-  justify-self: stretch;
-}
-#sidebar-collapse-inner #user-defined-filters {
-  flex: 1;
-}
 #sidebar-collapse-inner #advanced-filters {
-  flex: 1;
   border: 0;
   padding: 0;
 }

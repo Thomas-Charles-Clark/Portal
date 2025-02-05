@@ -577,4 +577,23 @@ thead.k-grid-header th.k-header:first-child {
   text-align: center;
   color: white;
 }
+
+#stock-check-request-modal .modal-body > .d-flex {
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+#stock-check-request-modal .modal-body .validation-message {
+  display: block;
+  margin: 0.5rem auto 0 auto;
+  color: darkred;
+  text-align: center;
+}
+#stock-check-request-modal .quantity-control {
+  margin: 0;
+  display: flex;
+}
+#stock-check-request-modal .quantity-control input.form-control {
+  width: 80px;
+}
 /*# sourceMappingURL=sample-request-dg.css.map */

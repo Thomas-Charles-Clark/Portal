@@ -5,6 +5,75 @@
     DISPLAY_MODE_PERCENTAGE_FULL = 5,
     DISPLAY_MODE_PERCENTAGE_FILTER = 6
 
+const filterButton = ({
+    rec,
+    parent,
+    active
+} = {
+    rec: {},
+    parent: null,
+    active: false
+}) => {
+    let self = Object.assign({
+        active: active,
+        parent: parent,
+        typeName: "filterButton"
+    }, rec);
+
+    self.criteria = JSON.parse(self.Criteria);
+
+    self.load = () => {
+        self.parent.busy(true);
+        if (self.ProductLifeCycleID) {
+            self.parent.userDefinedFilters.productLifeCycleId(`${self.ProductLifeCycleID}`);
+        } else {
+            self.parent.userDefinedFilters.productLifeCycleId(``);
+        }
+    }
+
+    self.display = ko.computed(() => {
+
+        let displayModes = self.parent.displayModes();
+
+        let result = [];
+
+        if (displayModes.indexOf(DISPLAY_MODE_VALUE_SUM) > -1) {
+            if (self.OrderValue)
+                result.push(`<span class="order-value" title="Order Value: ${self.OrderValue}">${self.OrderValue}</span>`);
+        }
+
+        if (displayModes.indexOf(DISPLAY_MODE_QUANTITY_SUM) > -1) {
+            if (self.OrderQuantity)
+                result.push(`<span class="order-quantity" title="Order Quantity: ${self.OrderQuantity}">Q ${self.OrderQuantity}</span>`);
+        }
+
+        if (displayModes.indexOf(DISPLAY_MODE_LINE_COUNT) > -1) {
+            if (self.LineCount)
+                result.push(`<span class="line-count" title="Line Count: ${self.LineCount}">L ${self.LineCount}</span>`);
+        }
+
+        if (displayModes.indexOf(DISPLAY_MODE_ORDER_COUNT) > -1) {
+            if (self.OrderCount)
+                result.push(`<span class="order-count" title="Order Count: ${self.OrderCount}">O ${self.OrderCount}</span>`);
+        }
+
+        if (displayModes.indexOf(DISPLAY_MODE_PERCENTAGE_FULL) > -1) {
+            if (self.PercentageOfFullOrderBook)
+                result.push(`<span class="percentage-of-full" title="Percentage of Full Order Book: ${self.PercentageOfFullOrderBook}">% Full ${self.PercentageOfFullOrderBook}</span>`);
+        }
+
+        if (displayModes.indexOf(DISPLAY_MODE_PERCENTAGE_FILTER) > -1) {
+            if (self.PercentageOfFilteredOrderBook)
+                result.push(`<span class="percentage-of-filtered" title="Percentage of Filtered Order Book: ${self.PercentageOfFilteredOrderBook}">% Filtered ${self.PercentageOfFilteredOrderBook}</span>`);
+        }
+
+        return result.join('\n');
+    }, self);
+
+
+    return self;
+}
+
 const groupedDetailColumn = ({
     parent,
     group,
@@ -23,6 +92,7 @@ const groupedDetailColumn = ({
 } = {
         group: {},
         grouped: false,
+        array: false,
         dataSet: [],
         displayModes: [],
         gridHeaderHeightObservable: ko.observable(),
@@ -37,10 +107,11 @@ const groupedDetailColumn = ({
     }) => {
 
     let self = {
-        parent: parent
+        parent: parent,
+        grouped: grouped,
+        array: false,
+        typeName: "groupedDetailColumn"
     };
-
-    self.grouped = grouped;
 
     self.columnName = group.columnName;
 
@@ -193,6 +264,115 @@ const groupedDetailColumn = ({
     return self;
 };
 
+const arrayDetailColumn = ({
+    parent,
+    group,
+    dataSet,
+    displayModes,
+    gridHeaderHeightObservable,
+    originalGridHeaderHeight,
+    rowHeightObservable,
+    originalRowHeight,
+    rowPaddingY,
+    lineHeight,
+    borderWidth,
+    width,
+    accumulatedColumnWidths
+} = {
+        array: true,
+        group: {},
+        dataSet: [],
+        displayModes: [],
+        gridHeaderHeightObservable: ko.observable(),
+        originalGridHeaderHeight: 93,
+        rowHeightObservable: ko.observable(),
+        originalRowHeight: 36,
+        rowPaddingY: 14,
+        lineHeight: 21,
+        borderWidth: 1,
+        width: undefined,
+        accumulatedColumnWidths: undefined
+    }) => {
+
+    let self = {
+        array: true,
+        grouped: false,
+        parent: parent,
+        typeName: "arrayDetailColumn"
+    };
+
+    self.columnName = group.columnName;
+
+    self.columnNameDisplay = self.columnName.replace('Array', '').replace(/_/g, '').replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5');
+
+    self.detailColumns = ko.observableArray(group.columns.map(cn => {
+        return detailColumn({
+            propertyName: cn,
+            dataSet: dataSet
+        })
+    }));
+
+    self.displayModes = displayModes;
+
+    self.originalGridHeaderHeight = originalGridHeaderHeight;
+
+    self.gridHeaderHeightObservable = gridHeaderHeightObservable;
+
+    self.originalRowHeight = originalRowHeight;
+
+    self.rowHeightObservable = rowHeightObservable;
+
+    self.rowPaddingY = rowPaddingY;
+
+    self.lineHeight = lineHeight;
+
+    self.borderWidth = borderWidth;
+
+    self.width = width;
+
+    self.accumulatedColumnWidths = accumulatedColumnWidths;
+
+    self.displayModes.subscribe(nv => {
+        self.rowHeightObservable(self.rowPaddingY + (self.lineHeight * nv.length) + self.borderWidth);
+        self.gridHeaderHeightObservable(self.originalGridHeaderHeight + self.rowHeightObservable());
+
+        let cumulativeHeight = 0;
+
+        let gridHeaderHeight = self.gridHeaderHeightObservable();
+
+        let rowHeight = self.rowHeightObservable();
+
+        let startingOffset = gridHeaderHeight;
+
+        let additionalOffset = startingOffset;
+
+        self.parent.virtualScroller.searchResults().forEach((result, index) => {
+
+            result.offsetY = (((index) * rowHeight) + additionalOffset) - gridHeaderHeight + rowHeight;
+
+            result.originalOffsetY = result.offsetY;
+
+            cumulativeHeight += rowHeight;
+
+            result.runningHeight = cumulativeHeight;
+        });
+    });
+
+    let sortFunctions = [];
+
+    self.detailColumns().forEach(dc => {
+        sortFunctions.push(self.parent.generateSorting(dc.columnName));
+    });
+
+    let extant = self.parent.allSortingOperations();
+
+    sortFunctions.push(extant);
+
+    self.parent.allSortingOperations(sortFunctions.flat());
+
+    return self;
+};
+
 const detailColumn = ({
     propertyName,
     dataSet
@@ -201,6 +381,8 @@ const detailColumn = ({
     dataSet: []
 }) => {
     let self = {};
+
+    self.typeName = "detailColumn";
 
     self.columnName = propertyName;
 
@@ -234,11 +416,13 @@ const detailColumn = ({
 
 const orderBookDetailViewModel = (() => {
 
-    let self = {};
+    let self = {
+        typeName: "orderBookDetailViewModel"
+    };
 
     self.params = window.getDetailParameters();
 
-    let parseExclusions = ['marketIds', 'startDate', 'endDate', 'orderLineDetailedStatusGroupIds'];
+    let parseExclusions = ['salesMarketIds', 'startDate', 'endDate', 'orderLineDetailedStatusGroupIds', 'displayModes'];
 
     Object.keys(self.params).forEach(k => {
         if (parseExclusions.indexOf(k) === -1) {
@@ -297,7 +481,7 @@ const orderBookDetailViewModel = (() => {
     //    : [DISPLAY_MODE_VALUE_SUM]
     //);
 
-    self.displayModes = ko.observableArray([DISPLAY_MODE_QUANTITY_SUM]);
+    self.displayModes = ko.observableArray(self.params.displayModes ? self.params.displayModes?.toString().split(',').map(a => +a) : [DISPLAY_MODE_QUANTITY_SUM]);
 
     self.userDefinedFilters = orderBookUserDefinedFiltersViewModel({ parent: self, params: self.params });
 
@@ -328,6 +512,10 @@ const orderBookDetailViewModel = (() => {
     self.borderWidth = 1;
 
     self.defaultColumnWidth = ko.observable(140);
+
+    self.filterButtons = ko.observableArray([]);
+
+    self.filtersCountDisplay = ko.observable(undefined);
 
     // if multiple column sort chaining is desired, this must be done by nesting within the one sort function.
     // suggest allowing sorting by two columns at most.
@@ -376,7 +564,9 @@ const orderBookDetailViewModel = (() => {
         if (udf && adv) {
             console.log('primaryFetchParams computed');
 
-            return JSON.stringify(Object.assign(window.getDetailParameters() , udf, adv, { procedure: self.params.procedure }));
+            return JSON.stringify(Object.assign(window.getDetailParameters(), udf, adv, {
+                procedure: self.params.procedure
+            }));
         }
     }, self).extend({
         rateLimit: {
@@ -385,6 +575,65 @@ const orderBookDetailViewModel = (() => {
         }
     });
 
+    self.selectedFilterCount = ko.computed(() => {
+        let udfCount = Object.keys(self.userDefinedFilters)
+            .filter(k => {
+                return (k.length)
+                    && (k != 'initialParams')
+                    && (k.indexOf('Params') > -1)
+                    && (k.indexOf('Params') == k.length - 6);
+            }).map(k => self.userDefinedFilters[k])
+            .filter(p => {
+                let selected = false;
+
+                if (p.hasOwnProperty('locked')) {
+                    if (p.locked() == false) {
+                        if (p.hasOwnProperty('multiSelectSettings')) {
+                            if (p.multiSelectSettings.observableArray().length)
+                                selected = true;
+                        } else if (p.hasOwnProperty('observable')) {
+                            if (p.observable())
+                                selected = true;
+                        }
+                    }
+                } else {
+                    console.log(p);
+                }
+
+                return selected;
+            }).length;
+
+        console.log('udfCount', udfCount);
+
+        let advCount = Object.keys(self.advancedFilters)
+            .filter(k => {
+                return (k.length)
+                    && (k != 'initialParams')
+                    && (k.indexOf('Params') > -1)
+                    && (k.indexOf('Params') == k.length - 6);
+            }).map(k => self.advancedFilters[k])
+            .filter(p => {
+                let selected = false; 
+                if (p.hasOwnProperty('locked')) {
+                    if (p.locked() == false) {
+                        if (p.hasOwnProperty('multiSelectSettings')) {
+                            if (p.multiSelectSettings.observableArray().length)
+                                selected = true;
+                        } else if (p.hasOwnProperty('observable')) {
+                            if (p.observable())
+                                selected = true;
+                        }
+                    }
+                } else {
+                    console.log(p);
+                }
+
+                return selected;
+            }).length;
+
+        return udfCount + advCount;
+    }, self);
+
     //#endregion
 
 
@@ -392,12 +641,13 @@ const orderBookDetailViewModel = (() => {
 
     self.virtualScrollerContainer = document.getElementById("order-book-detail-scroller-container")
 
-    self.columnNameGroupingRegex = /^Grouped_[^_]+_?/gm;
+    self.columnNameGroupingRegex = /^(Grouped_|Array_)[^_]+_?/gm;
 
     self.virtualScroller = virtualScrollingDeferredDataFactory({
         busy: self.busy,
         tableSelector: "#order-book-detail-table",
         rowHeight: self.rowHeight,
+        displayModes: self.displayModes,
         primaryFetchParams: self.primaryFetchParams,
         primaryFetchEndpoint: "/api/orderbook/DetailRefresh",
         primaryFetchResultSetName: "Data",
@@ -417,6 +667,8 @@ const orderBookDetailViewModel = (() => {
             self.defaultColumnWidth(defaultColumnWidth);
 
             if (rec) {
+
+                self.noResults(false);
 
                 let columnNames = Object.keys(rec).filter(k => {
                     return [
@@ -441,6 +693,7 @@ const orderBookDetailViewModel = (() => {
                 groupedColumns = Object.keys(groups).map(g => {
                     return {
                         grouped: g.indexOf('Grouped') == 0,
+                        array: g.indexOf('Array') == 0,
                         columnName: g,
                         columns: groups[g]
                     }
@@ -457,11 +710,26 @@ const orderBookDetailViewModel = (() => {
                 // this is to acommodate the zeroth column, "ProductID", being display: none
                 let skipper = 0;
 
-                groupedColumns = groupedColumns.map(gc => {
+                groupedColumns = groupedColumns.map((gc, i) => {
 
-                    var width = results.Columns.find(c => c.Name == gc.columnName)?.Width;
+                    // we want to fix just the following columns: 3, 5, 6, 7, 8
 
-                    let groupedColumn = groupedDetailColumn({
+                    // so nth must stop at the accumulated width belonging to n-1 in that list?
+
+                    let widthAdjuster = accumulatedColumnWidths;
+
+                    if (i == 4) {
+                        widthAdjuster = results.Columns.find(c => c.Name == "ProductName").Width ?? defaultColumnWidth;
+                        widthAdjuster += results.Columns.find(c => c.Name == "ProductCode").Width ?? defaultColumnWidth;
+                    } else if (i == 5) {
+                        widthAdjuster = results.Columns.find(c => c.Name == "ProductName").Width ?? defaultColumnWidth;
+                        widthAdjuster += results.Columns.find(c => c.Name == "ProductCode").Width ?? defaultColumnWidth;
+                        widthAdjuster += results.Columns.find(c => c.Name == "ProductStatus").Width ?? defaultColumnWidth;
+                    }
+
+                    var width = results.Columns.find(c => c.Name == gc.columnName)?.Width ?? defaultColumnWidth;
+
+                    let resultantColumn = groupedDetailColumn({
                         parent: self,
                         group: gc,
                         grouped: gc.grouped,
@@ -475,8 +743,27 @@ const orderBookDetailViewModel = (() => {
                         lineHeight: self.lineHeight,
                         borderWidth: self.borderWidth,
                         width: width,
-                        accumulatedColumnWidths: accumulatedColumnWidths
+                        accumulatedColumnWidths: widthAdjuster
                     });
+
+                    if (gc.array) {
+                        resultantColumn = arrayDetailColumn({
+                            parent: self,
+                            group: gc,
+                            grouped: false,
+                            dataSet: results.Data,
+                            displayModes: self.displayModes,
+                            gridHeaderHeightObservable: self.gridHeaderHeight,
+                            originalGridHeaderHeight: self.originalGridHeaderHeight,
+                            rowHeightObservable: self.rowHeight,
+                            originalRowHeight: self.originalRowHeight,
+                            rowPaddingY: self.rowPaddingY,
+                            lineHeight: self.lineHeight,
+                            borderWidth: self.borderWidth,
+                            width: width,
+                            accumulatedColumnWidths: widthAdjuster
+                        });
+                    }
 
                     if (skipper > 0) {
                         accumulatedColumnWidths += width;
@@ -484,16 +771,35 @@ const orderBookDetailViewModel = (() => {
                         skipper = 1;
                     }
 
-                    return groupedColumn;
+                    return resultantColumn;
                 });
+
+                console.log("setting columns", groupedColumns);
+
+                self.columns(groupedColumns);
             }
             else {
                 self.noResults(true);
+
+                console.log("setting columns", []);
+
+                self.columns([]);
             }
 
-            console.log("setting columns", groupedColumns);
+            let filterButtons = results.FilterButtons.map(fb => filterButton({
+                rec: fb,
+                parent: self,
+                active: fb.ProductLifeCycleID == fb.ActiveButtonID
+            }));
 
-            self.columns(groupedColumns);
+            console.log("setting filter buttons", filterButtons);
+
+            self.filterButtons(filterButtons.sort((a, b) => {
+                if (a.SortOrder > b.SortOrder)
+                    return 1;
+                else
+                    return -1;
+            }));
 
             //window.setTimeout(() => {
 
@@ -544,6 +850,26 @@ const orderBookDetailViewModel = (() => {
         window.setTimeout(() => {
             self.virtualScroller.maxY.valueHasMutated();
         }, 0);
+    });
+
+    self.selectedFilterCount.subscribe(nv => {
+        if (nv == 0) {
+            self.filtersCountDisplay(undefined);
+        } else if (nv == 1) {
+            self.filtersCountDisplay('1 Filter Selected')
+        } else if (nv > 1) {
+            self.filtersCountDisplay(`${nv} Filters Selected`)
+        }
+    });
+
+    self.filtersCountDisplay.subscribe(nv => {
+        if (window.parent) {
+            if (nv) {
+                window.parent.document.querySelector('#filter-top-btn-display').innerHTML = nv;
+            } else {
+                window.parent.document.querySelector('#filter-top-btn-display').innerHTML = 'Filters';
+            }
+        }
     });
 
     //#endregion
@@ -751,6 +1077,34 @@ const orderBookDetailViewModel = (() => {
         });
     }
 
+
+    self.fetchProductCodePopoverContents = (data) => {
+        return new Promise((resolve, reject) => {
+            console.log("FetchProductCodePopoverContents calling with", data);
+
+            fetch('/api/orderbook/FetchProductCodePopoverContents', {
+                method: "POST",
+                headers: window.fetchHeaders,
+                cache: 'no-store',
+                credentials: 'same-origin',
+                body: JSON.stringify(data)
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    console.log("FetchProductCodePopoverContents returned", data);
+                    resolve(data);
+                })
+                .catch(err => {
+                    window.catchFetchError(err);
+                    reject(err);
+                });
+        });
+    }
+
+    self.toggleFilters = () => {
+        self.userDefinedFilters.togglePinning();
+    }
+
     //#endregion
 
 
@@ -764,6 +1118,9 @@ const orderBookDetailViewModel = (() => {
                     break;
                 case "copyLink":
                     self.copyLink();
+                    break;
+                case "toggleFilters":
+                    self.toggleFilters();
                     break;
                 default: break;
 

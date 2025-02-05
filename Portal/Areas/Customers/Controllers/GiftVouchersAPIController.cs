@@ -30,6 +30,7 @@ using SharedEFClasses.Models.Documents;
 using SharedEFClasses.Utilities;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using System.Data.SqlTypes;
+using SharedEFClasses.Models.General;
 
 namespace Portal.Areas.Customers.Controllers
 {
@@ -50,11 +51,33 @@ namespace Portal.Areas.Customers.Controllers
             [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
         {
             return PortalDb.GiftVouchers
-                .Include(gv => gv.GiftVoucherType)
-                .Include(gv => gv.CreatedByMember)
-                .Include(gv => gv.PriceList)
-                .Include(gv => gv.PriceList.Currency)
+                //.Include(gv => gv.GiftVoucherType)
+                //.Include(gv => gv.CreatedByMember)
+                //.Include(gv => gv.PriceList)
+                //.Include(gv => gv.PriceList.Currency)
                 .AsQueryable().ToDataSourceResult(request);
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> Autocomplete([FromBody] PassAutocomplete objAutocomplete)
+        {
+            var results = PortalDb.GiftVouchers
+                .Where(gv => gv.Code.StartsWith(objAutocomplete.term))
+                //.Include(gv => gv.GiftVoucherType)
+                //.Include(gv => gv.CreatedByMember)
+                //.Include(gv => gv.PriceList)
+                //.Include(gv => gv.PriceList.Currency)
+                .AsQueryable<GiftVoucher>();
+
+            return Ok(results);
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> GiftVoucherSelect([FromBody] PassGiftVoucher dto)
+        {
+            var result = await PortalDb.GiftVoucher_Select(dto);
+
+            return Ok(result);
         }
 
         [HttpPost]
@@ -166,23 +189,13 @@ namespace Portal.Areas.Customers.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchGiftVoucherPreview([FromBody] PassGiftVoucherPreview dto)
+        public async Task<IHttpActionResult> FetchGiftVoucherPreview([FromBody] PassGiftVoucherPreview dto)
         {
             var price = PortalDb.Prices.Where(p => p.ProductID == dto.ProductID && p.PriceListID == dto.PriceListID).SingleOrDefault();
 
-            var stream = Utilities.Documents.GiftVoucher.GiftVoucherPDFWriter.Generate(System.Web.Hosting.HostingEnvironment.MapPath("~"), new GiftVoucher() { 
-                ExpiryDT = dto.ExpiryDT,
-                Code = dto.Code,
-                Message = dto.Message,
-                PriceList = new SharedEFClasses.Models.General.PriceList() { 
-                    Currency = new SharedEFClasses.Models.General.Currency()
-                    {
-                        Symbol = dto.CurrencySymbol
-                    }
-                },
-                ValueInc = price?.PriceInc ?? 0,
-                ValueEx = price?.PriceEx ?? 0
-            });
+            var gc = await PortalDb.GiftVoucher_Select(new PassGiftVoucher() { Code = dto.Code });
+
+            var stream = Utilities.Documents.GiftVoucher.GiftVoucherPDFWriter.Generate(System.Web.Hosting.HostingEnvironment.MapPath("~"), gc);
 
             var bytes = stream.ToArray();
 
@@ -211,7 +224,7 @@ namespace Portal.Areas.Customers.Controllers
             </container>
             ";
 
-            var gv = await PortalDb.GiftVouchers.Include(p => p.PriceList).SingleAsync(p => p.Code == dto.GiftVoucherCode);
+            var gv = await PortalDb.GiftVoucher_Select(new PassGiftVoucher() { Code = dto.GiftVoucherCode });
 
             var stream = Utilities.Documents.GiftVoucher.GiftVoucherPDFWriter.Generate(System.Web.Hosting.HostingEnvironment.MapPath("~"), gv);
 

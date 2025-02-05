@@ -15,6 +15,10 @@
   font-size: 1rem;
 }
 
+.mb-0 {
+  margin-bottom: 0;
+}
+
 #filters-sidebar {
   display: flex;
   align-self: stretch;
@@ -58,6 +62,9 @@
   font-weight: 800;
   font-size: 1.5rem;
   margin-bottom: 0.1rem;
+}
+#filters-sidebar .mdc-validating-field {
+  flex: 1;
 }
 #filters-sidebar .mdc-validating-field,
 #filters-sidebar .sidebar-heading,
@@ -115,7 +122,7 @@
 #filters-sidebar:hover .btn-refresh, #filters-sidebar:focus-within .btn-reset,
 #filters-sidebar:focus-within .btn-refresh, #filters-sidebar.pinned .btn-reset,
 #filters-sidebar.pinned .btn-refresh {
-  width: 530px;
+  width: 545px;
   padding-left: 0.75rem;
   padding-right: 0.75rem;
   opacity: 1;
@@ -337,6 +344,8 @@
 #advanced-filters .user-defined-filter {
   position: relative;
   height: 28px;
+  display: flex;
+  align-items: center;
 }
 
 /*

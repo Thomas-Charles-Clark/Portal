@@ -3341,7 +3341,8 @@ const qualityEditor = ({
         unfilledRecordFn: (rec) => {
             let self = Object.assign({}, rec);
             return self;
-        }
+        },
+        displayModes: []
     });
     
     self.launchParams = kendoMDCDropDownList({

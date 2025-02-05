@@ -62,13 +62,13 @@ $vertical-border: 1px solid $gray-400;
             }
         }
 
-        &:has(tr:first-child .group-cell-popover) {
+        &:has(.group-cell-popover) {
             thead {
                 z-index: 0;
             }
         }
 
-        tbody.virtual-spacing {
+        > tbody.virtual-spacing {
             tr {
                 td {
                     padding: 0;
@@ -78,11 +78,11 @@ $vertical-border: 1px solid $gray-400;
             }
         }
 
-        thead {
+        > thead {
             position: relative;
             z-index: 1;
 
-            tr {
+            > tr {
                 border: none;
                 border-width: 0;
 
@@ -93,6 +93,7 @@ $vertical-border: 1px solid $gray-400;
                     background-color: $white;
                     z-index: 1;
                     border-bottom: 1px solid $gray-400;
+                    cursor: pointer;
 
                     &:first-of-type {
                         border-left: none;
@@ -109,15 +110,16 @@ $vertical-border: 1px solid $gray-400;
                     background-color: $light-blue-background;
                     height: 26px;
                     top: 57px;
+                    cursor: default;
                 }
             }
         }
 
-        tbody {
+        > tbody:not(.virtual-spacing) {
             position: relative;
             z-index: 0;
 
-            tr {
+            > tr {
                 border: none;
                 border-width: 0;
 
@@ -128,16 +130,17 @@ $vertical-border: 1px solid $gray-400;
                     }
                 }
 
-                th {
+                > th {
                     border-left: 0;
                     border-right: 1px solid $gray-400;
                     border-bottom: 1px solid $gray-400;
                 }
 
-                td {
+                > td {
                     height: 36px;
                     overflow-x: hidden;
                     border-bottom: 1px solid $gray-400;
+                    vertical-align: middle;
 
                     &:nth-of-type(2) {
                         /*text-align: right;*/
@@ -152,6 +155,7 @@ $vertical-border: 1px solid $gray-400;
                         white-space: nowrap;
                         text-overflow: ellipsis;
                         overflow: hidden;
+                        line-height: 1;
                     }
 
                     .group-cell-popover {
@@ -164,7 +168,7 @@ $vertical-border: 1px solid $gray-400;
                             position: relative;
                             min-width: 240px;
                             min-height: 120px;
-                            padding: $xl-gutter;
+                            padding: 0;
 
                             .blocker {
                                 border-radius: $popover-inner-border-radius;
@@ -294,117 +298,68 @@ $vertical-border: 1px solid $gray-400;
             }
         }
 
-        thead {
+        > thead {
             position: sticky;
             top: 0;
         }
 
-        thead,
-        tbody {
-
-            td:nth-of-type(1),
-            th:nth-of-type(1) {
+        > colgroup {
+            col:nth-of-type(1) {
                 display: none;
             }
+        }
 
-            @for $i from 1 through 7 {
-
-                td:nth-of-type(#{$i}) {
-                    background-color: $white;
+        > thead,
+        > tbody {
+            > tr {
+                > th:nth-of-type(1),
+                > td:nth-of-type(1) {
+                    display: none;
                 }
 
-                tr.subtotal-row {
-                    th:nth-of-type(#{$i}) {
-                        background-color: $light-blue-background;
-                    }
-                }
-
-                th:nth-of-type(#{$i}),
-                td:nth-of-type(#{$i}) {
-                    z-index: $i;
+                > td:nth-of-type(2),
+                > th:nth-of-type(2) {
+                    border-left: none;
+                    z-index: 3;
                     position: sticky;
                     left: 0;
+                    border-right: 1px solid $gray-400;
+                    background-color: $white;
+                }
+
+                > th:nth-of-type(3),
+                > td:nth-of-type(3) {
+                    z-index: 4;
+                    position: sticky;
+                    left: var(--prev-col-widths);
                     border-left: $vertical-border;
+                    background-color: $white;
+                    border-left: none;
+                    border-right: $vertical-border;
+                }
+
+                > th:nth-of-type(4),
+                > td:nth-of-type(4) {
+                    z-index: 5;
+                    position: sticky;
+                    border-left: $vertical-border;
+                    background-color: $white;
+                    left: var(--prev-col-widths);
+                    border-right: $vertical-border;
+                    border-left: none;
                     //calc($i * $col-width);
                 }
-            }
 
-            @for $j from 7 through 30 {
-
-                td:nth-of-type(#{$j}) {
-                    background-color: $white;
-                    position: relative;
-                    z-index: $j;
-                    top: 0;
-                }
-
-                th:nth-of-type(#{$j}) {
-                    position: relative;
-                    z-index: $j;
-                    top: 0;
-                }
-
-                tr.subtotal-row {
-                    th {
-                        top: 0;
+                &.subtotal-row {
+                    > th {
                         background-color: $light-blue-background;
                     }
                 }
             }
 
-            td:nth-of-type(2),
-            th:nth-of-type(2) {
-                border-left: none;
-                z-index: 50;
-                border-right: 1px solid $gray-400;
-            }
-
-            td:nth-of-type(3),
-            th:nth-of-type(3) {
-                border-left: none;
-            }
-
-            td:nth-of-type(4),
-            th:nth-of-type(4) {
-                border-right: $vertical-border;
-                border-left: $vertical-border;
-            }
-
-            td:nth-of-type(4) ~ td,
-            th:nth-of-type(4) ~ th {
-                /*text-align: right;*/
-            }
-
-            th:nth-of-type(5),
-            td:nth-of-type(5) {
-                border-left: none;
-                border-right: $vertical-border;
-                position: sticky;
-                z-index: 7;
-                left: $col-width;
-            }
-
-            th:nth-of-type(6),
-            td:nth-of-type(6) {
-                border-left: none;
-                border-right: $vertical-border;
-                position: sticky;
-                z-index: 7;
-                left: calc($col-width * 2);
-            }
-
-            th:nth-of-type(7),
-            td:nth-of-type(7) {
-                border-left: none;
-            }
-
-            th:nth-of-type(7) ~ th,
-            td:nth-of-type(7) ~ td {
-                border-left: $vertical-border;
-            }
 
             @for $k from 1 through 50 {
-                tr:nth-child(#{$k}) {
+                > tr:nth-child(#{$k}) {
                     z-index: calc(#{$k} * -1);
 
                     @for $j from 7 through 30 {
@@ -459,7 +414,7 @@ $vertical-border: 1px solid $gray-400;
 
 
                         span {
-                            display: inline;
+                            display: block;
                         }
                     }
                 }

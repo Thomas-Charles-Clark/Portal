@@ -149,8 +149,8 @@
       <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.3.0\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=9.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.9.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
@@ -166,9 +166,8 @@
       <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.1.0.0\lib\netstandard1.1\Microsoft.Extensions.DependencyInjection.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.1.0.0\lib\netstandard1.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=9.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.9.0.0\lib\net462\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.OData.Core, Version=7.8.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.OData.Core.7.8.2\lib\net45\Microsoft.OData.Core.dll</HintPath>
@@ -203,9 +202,8 @@
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.5.3\lib\net45\NLog.dll</HintPath>
@@ -239,8 +237,8 @@
     </Reference>
     <Reference Include="System.Runtime" />
     <Reference Include="System.Runtime.Caching" />
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.6.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.1.0\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.InteropServices" />
     <Reference Include="System.Runtime.Serialization" />
@@ -257,8 +255,8 @@
     <Reference Include="System.Text.Json, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Text.Json.4.6.0\lib\net461\System.Text.Json.dll</HintPath>
     </Reference>
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.2\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Thread" />
     <Reference Include="System.Transactions" />
@@ -374,6 +372,7 @@
     <Compile Include="DbContext\PortalDbContext-General.cs" />
     <Compile Include="DbContext\PortalDbContext-Invoices.cs" />
     <Compile Include="DbContext\PortalDbContext-Product-Maintenance.cs" />
+    <Compile Include="DbContext\PortalDbContext-OrderBook.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Models\ArchiveResponse.cs" />
     <Compile Include="Models\Attribute\Attribute.cs" />
@@ -414,6 +413,7 @@
     <Compile Include="Models\GenericFormModels.cs" />
     <Compile Include="Models\GiftVoucher.cs" />
     <Compile Include="Models\GiftVoucherType.cs" />
+    <Compile Include="Models\GiftVoucher_SelectResult.cs" />
     <Compile Include="Models\ImageDownloadTask.cs" />
     <Compile Include="Models\InvoiceModels.cs" />
     <Compile Include="Models\DocumentModels.cs" />
@@ -499,6 +499,8 @@
     <Compile Include="Models\NeimanMarcus\NeimanMarcusOrderStatusResponse.cs" />
     <Compile Include="Models\OrderBook\OrderBook.cs" />
     <Compile Include="Models\OrderBook\OrderBookGrouped.cs" />
+    <Compile Include="Models\OrderBook\OrderBookPreDefineFilterGroup.cs" />
+    <Compile Include="Models\OrderBook\OrderBookProductInspectResult.cs" />
     <Compile Include="Models\OrderBook\OrderBookRingFenceInspectData.cs" />
     <Compile Include="Models\OrderBook\OrderBookRingFenceInspectResult.cs" />
     <Compile Include="Models\OrderBook\OrderBookOrderLineInspectResult.cs" />
@@ -508,6 +510,7 @@
     <Compile Include="Models\OrderBook\OrderBookSummaryRecord.cs" />
     <Compile Include="Models\OrderBook\OrderBookSummaryResult.cs" />
     <Compile Include="Models\OrderBook\OrderBook_BudgetSummary_Result.cs" />
+    <Compile Include="Models\OrderBook\OrderBook_DetailView_ButtonRow.cs" />
     <Compile Include="Models\OrderBook\OrderBook_DetailView_DataRow.cs" />
     <Compile Include="Models\OrderBook\OrderBook_DetailView_SalesBudget_Record.cs" />
     <Compile Include="Models\OrderBook\OrderBook_DetailView_SalesBudget_Result.cs" />
@@ -518,15 +521,24 @@
     <Compile Include="Models\OrderBook\OrderBook_DetailView_SelectResult.cs" />
     <Compile Include="Models\OrderBook\OrderBook_MainSummary_SelectResult.cs" />
     <Compile Include="Models\OrderBook\OrderBook_PreDefinedSummary_SelectResult.cs" />
+    <Compile Include="Models\OrderBook\OrderBook_ProductInspect_OrderLine.cs" />
+    <Compile Include="Models\OrderBook\OrderBook_ProductInspect_StockInfo.cs" />
     <Compile Include="Models\OrderBook\OrderBook_SalesSummary_BlockerResult.cs" />
     <Compile Include="Models\OrderBook\OrderBook_SalesSummary_Result.cs" />
     <Compile Include="Models\OrderBook\OrderBook_SalesSummary_SelectResult.cs" />
+    <Compile Include="Models\OrderBook\OrderLineDetailedStatusGroup_SelectResult.cs" />
+    <Compile Include="Models\OrderBook\OrderBook_ProductInspect_ProductInfo.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookDetailViewParams.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookBaseParams.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookDetailViewSalesBudget.cs" />
+    <Compile Include="Models\OrderBook\PassOrderBookProductPopoverFetch.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookRingFencePopoverFetch.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookOrderLinePopoverFetch.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookTotalPopoverFetch.cs" />
+    <Compile Include="Models\OrderEntry\PassInsertStockCheckRequest.cs" />
+    <Compile Include="Models\OrderEntry\PassStockCheckRequest.cs" />
+    <Compile Include="Models\OrderEntry\StockCheckRequestResult.cs" />
+    <Compile Include="Models\OrderEntry\StockCheckRequestSelectResult.cs" />
     <Compile Include="Models\OrderGroup.cs" />
     <Compile Include="Models\OrderLineDetailedStatus.cs" />
     <Compile Include="Models\OrderLineDetailedStatusGroup.cs" />
@@ -538,6 +550,7 @@
     <Compile Include="Models\Parcel\PassParcelCalculation.cs" />
     <Compile Include="Models\Parcel\PassParcelRateFetch.cs" />
     <Compile Include="Models\Parcel\ParcelDeliveryServiceSurcharge.cs" />
+    <Compile Include="Models\PassGiftVoucher.cs" />
     <Compile Include="Models\PassMertexCurrencyCode.cs" />
     <Compile Include="Models\PaymentTerms.cs" />
     <Compile Include="Models\PaymentTermsType.cs" />
@@ -545,8 +558,10 @@
     <Compile Include="Models\Pricing\Price.cs" />
     <Compile Include="Models\ProductFilterGroup\ProductFilterGroup.cs" />
     <Compile Include="Models\ProductFilter\ProductFilter.cs" />
+    <Compile Include="Models\ProductLifeCycle.cs" />
     <Compile Include="Models\ProductPage\ProductPage.cs" />
     <Compile Include="Models\ProductPage\ProductPage_Attribute.cs" />
+    <Compile Include="Models\PurchasingRecommendation.cs" />
     <Compile Include="Models\RangeManagement\RangeManagementBasketItemRemovalDto.cs" />
     <Compile Include="Models\RangeManagement\RangeManagementBranchCheckDto.cs" />
     <Compile Include="Models\RangeManagement\RangeManagementBranchTransferBasketRecord.cs" />
@@ -595,6 +610,7 @@
     <Compile Include="Models\StockManagement\StockManagementProductFetchDto.cs" />
     <Compile Include="Models\StockManagement\StockManagementProductSearchResponse.cs" />
     <Compile Include="Models\StockManagement\SupplierInfoResult.cs" />
+    <Compile Include="Models\SupplierType.cs" />
     <Compile Include="Models\Supplier.cs" />
     <Compile Include="Models\TradeAccountCreationEmail.cs" />
     <Compile Include="Models\TradeAccountCreationEmailAttachment.cs" />

@@ -56,7 +56,9 @@ namespace Portal.Controllers
             }
             else
             {
-                return PortalDb.Users.Where(p => p.Deleted == false).OrderBy(p => p.FullName).AsQueryable();
+                return PortalDb.Users.Where(p => p.Roles.Any() &&
+                                                 p.Deleted == false &&
+                                                 p.Email.EndsWith("@designersguild.com")).OrderBy(p => p.FullName).AsQueryable();
             }
         }
 

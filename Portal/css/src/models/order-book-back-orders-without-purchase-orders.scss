@@ -22,6 +22,10 @@ $vertical-border: 1px solid $gray-400;
     /*max-height: calc(100vh - 57px);*/
     max-height: 100vh;
     overflow-y: auto;
+    /*
+    &:has(.popover) {
+        overflow: visible; 
+    }*/
 
     #order-book-detail-table {
         table-layout: fixed;
@@ -34,7 +38,7 @@ $vertical-border: 1px solid $gray-400;
         border-spacing: 0;
         transform: translate3d(0, 0, 0);
         $col-width: var(--default-column-width);
-        
+
         colgroup {
             col {
                 width: $col-width;
@@ -47,7 +51,7 @@ $vertical-border: 1px solid $gray-400;
             }
         }
 
-        tbody.virtual-spacing {
+        > tbody.virtual-spacing {
             tr {
                 td {
                     padding: 0;
@@ -57,7 +61,7 @@ $vertical-border: 1px solid $gray-400;
             }
         }
 
-        thead {
+        > thead {
             position: relative;
             z-index: 1;
 
@@ -77,7 +81,7 @@ $vertical-border: 1px solid $gray-400;
                         border-left: none;
                     }
 
-                    .sortable-column {
+                    &.sortable-column {
                         cursor: pointer;
                     }
                 }
@@ -92,11 +96,11 @@ $vertical-border: 1px solid $gray-400;
             }
         }
 
-        tbody {
+        > tbody {
             position: relative;
             z-index: 0;
 
-            tr {
+            > tr {
                 border: none;
                 border-width: 0;
 
@@ -107,13 +111,13 @@ $vertical-border: 1px solid $gray-400;
                     }
                 }
 
-                th {
+                > th {
                     border-left: 0;
                     border-right: 1px solid $gray-400;
                     border-bottom: 1px solid $gray-400;
                 }
 
-                td {
+                > td {
                     height: 36px;
                     overflow-x: hidden;
                     border-bottom: 1px solid $gray-400;
@@ -125,25 +129,25 @@ $vertical-border: 1px solid $gray-400;
                     &:nth-of-type(4) {
                         /*text-align: center;*/
                     }
-
+                    /*
                     span {
                         display: block;
                         white-space: nowrap;
                         text-overflow: ellipsis;
                         overflow: hidden;
-                    }
+                    }*/
 
                     .group-cell-popover {
                         z-index: 2;
-                        width: 1240px;
+                        /*width: 1240px;*/
+                        width: auto;
                         max-width: unset;
                         box-shadow: 0 0 12px 3px #888;
 
                         .popover-body {
                             position: relative;
                             min-width: 240px;
-                            min-height: 120px;
-                            padding: $xl-gutter;
+                            min-height: 120px; 
 
                             .blocker {
                                 border-radius: $popover-inner-border-radius;
@@ -166,57 +170,46 @@ $vertical-border: 1px solid $gray-400;
                                         }
                                     }
 
-                                    thead {
-                                        tr {
-                                            th {
+                                    > thead {
+                                        > tr {
+                                            > th {
                                                 font-size: $font-size-sm;
                                                 height: auto;
                                                 border-left: 1px solid $gray-400;
-
-                                                &:last-of-type {
-                                                    border-right: none;
-                                                }
                                             }
 
-                                            td {
+                                            > td {
                                                 font-weight: $font-weight-bold;
                                             }
                                         }
                                     }
 
-                                    tbody {
-                                        tr {
-                                            td {
+                                    > tbody {
+                                        > tr {
+                                            > td {
                                                 border-left: 1px solid $gray-400;
-
-                                                &:first-of-type {
-                                                    border-left: none;
-                                                }
-
-                                                &:last-of-type {
-                                                    border-right: none;
-                                                }
                                             }
                                         }
                                     }
 
-                                    thead, tbody {
-                                        td:nth-of-type(1),
-                                        th:nth-of-type(1) {
+                                    > thead,
+                                    > tbody {
+                                        > td:nth-of-type(1),
+                                        > th:nth-of-type(1) {
                                             display: table-cell;
                                             border-left: 0;
                                         }
 
-                                        td:last-of-type {
+                                        > td:last-of-type {
                                             border-right: 0;
                                         }
 
-                                        th:first-of-type {
+                                        > th:first-of-type {
                                             border-right: $vertical-border;
                                         }
 
 
-                                        td {
+                                        > td {
                                             border-right: 0;
                                         }
                                     }
@@ -226,18 +219,19 @@ $vertical-border: 1px solid $gray-400;
                                     align-self: flex-start;
                                     margin-bottom: $xl-gutter;
 
-                                    thead,
-                                    tbody {
-                                        tr {
-                                            th,
-                                            td {
+                                    > thead,
+                                    > tbody {
+                                        > tr {
+                                            > th,
+                                            > td {
                                                 /*text-align: right;*/
                                                 vertical-align: middle;
                                                 font-weight: $font-weight-bold;
                                             }
 
                                             &.subtotal-row {
-                                                th, td {
+                                                > th,
+                                                > td {
                                                     background-color: $light-blue-background;
                                                 }
                                             }
@@ -248,17 +242,18 @@ $vertical-border: 1px solid $gray-400;
                                 .lines-table {
                                     margin-bottom: 0;
 
-                                    thead {
-                                        tr {
-                                            th, td {
+                                    > thead {
+                                        > tr {
+                                            > th,
+                                            > td {
                                                 font-size: $font-size-sm;
                                             }
                                         }
                                     }
 
-                                    tbody {
-                                        tr {
-                                            td {
+                                    > tbody {
+                                        > tr {
+                                            > td {
                                                 font-size: $font-size-sm;
                                                 height: $sm-gutter;
                                                 padding: $vsm-gutter;
@@ -273,126 +268,109 @@ $vertical-border: 1px solid $gray-400;
             }
         }
 
-        thead {
+        > thead {
             position: sticky;
             top: 0;
         }
 
-        colgroup {
+        > colgroup {
             col:nth-of-type(1) {
                 display: none;
             }
         }
 
-        thead,
-        tbody {
+        > thead,
+        > tbody {
 
-            td:nth-of-type(1),
-            th:nth-of-type(1) {
-                display: none;
-            }
-
-            @for $i from 1 through 4 {
-
-                td:nth-of-type(#{$i}) {
-                    background-color: $white;
+            > tr {
+                > td:nth-of-type(1),
+                > th:nth-of-type(1) {
+                    display: none;
                 }
 
-                tr.subtotal-row {
-                    th:nth-of-type(#{$i}) {
-                        background-color: $light-blue-background;
-                    }
-                }
-
-                th:nth-of-type(#{$i}),
-                td:nth-of-type(#{$i}) {
-                    z-index: $i;
+                > th:nth-of-type(3),
+                > td:nth-of-type(3) {
+                    z-index: 3;
                     position: sticky;
-                    left: var(--prev-col-widths);
+                    left: 0;
                     border-left: $vertical-border;
+                    background-color: $white;
                     //calc($i * $col-width);
                 }
-            }
 
-            @for $j from 7 through 30 {
-
-                td:nth-of-type(#{$j}) {
+                > th:nth-of-type(4),
+                > td:nth-of-type(4) {
+                    z-index: 3;
+                    position: sticky;
+                    border-left: $vertical-border;
                     background-color: $white;
-                    position: relative;
-                    /*z-index: $j;*/
-                    top: 0;
+                    left: calc(var(--prev-col-widths) - var(--default-column-width));
+                    //calc($i * $col-width);
                 }
 
-                th:nth-of-type(#{$j}) {
-                    position: relative;
-                    /*z-index: $j;*/
-                    top: 0;
+                > th:nth-of-type(5),
+                > td:nth-of-type(5) {
+                    z-index: 5;
+                    position: sticky;
+                    border-left: none;
+                    border-right: $vertical-border;
+                    background-color: $white;
+                    left: calc(var(--prev-col-widths));
+                    //calc($i * $col-width);
                 }
 
-                tr.subtotal-row {
-                    th {
-                        top: 0;
+
+                > td:nth-of-type(2),
+                > th:nth-of-type(2) {
+                    border-left: none;
+                    z-index: 50;
+                    border-right: 1px solid $gray-400;
+                }
+
+                > td:nth-of-type(3),
+                > th:nth-of-type(3) {
+                    border-left: none;
+                    border-right: $vertical-border;
+                }
+
+                > td:nth-of-type(4),
+                > th:nth-of-type(4) {
+                    border-right: $vertical-border;
+                    border-left: none;
+                }
+
+                > th:nth-of-type(6),
+                > td:nth-of-type(6) {
+                    border-left: none;
+                    border-right: $vertical-border;
+                    background-color: $white;
+                    position: sticky;
+                    z-index: 7;
+                    left: var(--prev-col-widths);
+                }
+
+                > th:nth-of-type(7),
+                > td:nth-of-type(7) {
+                    border-left: none;
+                }
+
+                > th:nth-of-type(7) ~ th,
+                > td:nth-of-type(7) ~ td {
+                    border-left: $vertical-border;
+                }
+
+                &.subtotal-row {
+                    > th {
                         background-color: $light-blue-background;
                     }
                 }
-            }
-
-            td:nth-of-type(2),
-            th:nth-of-type(2) {
-                border-left: none;
-                z-index: 50;
-                border-right: 1px solid $gray-400;
-            }
-
-            td:nth-of-type(3),
-            th:nth-of-type(3) {
-                border-left: none;
-            }
-
-            td:nth-of-type(4),
-            th:nth-of-type(4) {
-                border-right: $vertical-border;
-                border-left: $vertical-border;
-            }
-
-            td:nth-of-type(4) ~ td,
-            th:nth-of-type(4) ~ th {
-                /*text-align: right;*/
-            }
-
-            th:nth-of-type(5),
-            td:nth-of-type(5) {
-                border-left: none;
-                border-right: $vertical-border;
-                position: sticky;
-                z-index: 7;
-                left: $col-width;
-            }
-
-            th:nth-of-type(6),
-            td:nth-of-type(6) {
-                border-left: none;
-                border-right: $vertical-border;
-                position: sticky;
-                z-index: 7;
-                left: calc($col-width * 2);
-            }
-
-            th:nth-of-type(7),
-            td:nth-of-type(7) {
-                border-left: none;
-            }
-
-            th:nth-of-type(7) ~ th,
-            td:nth-of-type(7) ~ td {
-                border-left: $vertical-border;
             }
 
             @for $k from 1 through 50 {
-                tr:nth-child(#{$k}) {
+                > tr:nth-child(#{$k}) {
                     z-index: calc(#{$k} * -1);
 
-                    @for $j from 5 through 30 {
+                    @for $j from 7 through 30 {
                         th:nth-child(#{$j}),
                         td:nth-child(#{$j}) {
                             z-index: calc(#{$j} * -1);
@@ -425,7 +403,7 @@ $vertical-border: 1px solid $gray-400;
 
 #order-book-detail-scroller-container {
     #order-book-detail-table {
-        tbody {
+        > tbody {
             tr {
                 td.popover-cell {
                     overflow: visible;
@@ -444,7 +422,212 @@ $vertical-border: 1px solid $gray-400;
 
 
                         span {
-                            display: inline;
+                            display: block;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.info-cell-popover {
+    min-width: 420px;
+
+    .popover-title {
+        margin-bottom: 0;
+    }
+
+    .popover-body {
+        padding: 0;
+        min-width: 240px;
+        min-height: 120px;
+
+        .info-container {
+            padding: $l-gutter;
+        }
+
+        .card {
+            margin: 0;
+            font-size: $font-size-base;
+
+            p:last-of-type {
+                margin-bottom: 0;
+            }
+
+            & + .card {
+                margin-top: $l-gutter;
+            }
+        }
+    }
+}
+
+#filter-buttons-container {
+    display: flex;
+    gap: $l-gutter;
+    justify-content: space-between;
+    padding: $l-gutter;
+
+    .filter-button-card {
+        flex: 1;
+        border: 0;
+
+        .card-body {
+            padding: 0;
+
+            .card-title {
+                margin: 0;
+                text-align: center;
+
+                button {
+                    width: 100%;
+                    display: block;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                }
+
+                span {
+                    display: block;
+                }
+            }
+        }
+    }
+}
+
+
+#filters-sidebar {
+    &:hover,
+    &:focus-within,
+    &.pinned {
+        .btn-reset,
+        .btn-refresh {
+            width: 529px;
+        }
+    }
+}
+
+
+
+.info-cell-popover {
+    z-index: 2;
+    /*width: 1240px;*/
+    width: auto;
+    max-width: unset;
+    box-shadow: 0 0 12px 3px #888;
+
+    .popover-body {
+        position: relative;
+        min-width: 240px;
+        min-height: 120px;
+
+        .blocker {
+            border-radius: $popover-inner-border-radius;
+        }
+
+        .table-container {
+            display: flex;
+            flex-direction: column;
+
+            .totals-table,
+            .lines-table {
+                width: 100%;
+                max-width: 640px;
+                table-layout: fixed;
+                margin-bottom: $l-gutter;
+
+                colgroup {
+                    col {
+                        width: 120px;
+                    }
+                }
+
+                > thead {
+                    > tr {
+                        > th {
+                            font-size: $font-size-sm;
+                            height: auto;
+                            border-left: 1px solid $gray-400;
+                        }
+
+                        > td {
+                            font-weight: $font-weight-bold;
+                        }
+                    }
+                }
+
+                > tbody {
+                    > tr {
+                        > td {
+                            border-left: 1px solid $gray-400;
+                        }
+                    }
+                }
+
+                > thead,
+                > tbody {
+                    > td:nth-of-type(1),
+                    > th:nth-of-type(1) {
+                        display: table-cell;
+                        border-left: 0;
+                    }
+
+                    > td:last-of-type {
+                        border-right: 0;
+                    }
+
+                    > th:first-of-type {
+                        border-right: $vertical-border;
+                    }
+
+
+                    > td {
+                        border-right: 0;
+                    }
+                }
+            }
+
+            .totals-table {
+                align-self: flex-start;
+                margin-bottom: $xl-gutter;
+
+                > thead,
+                > tbody {
+                    > tr {
+                        > th,
+                        > td {
+                            /*text-align: right;*/
+                            vertical-align: middle;
+                            font-weight: $font-weight-bold;
+                        }
+
+                        &.subtotal-row {
+                            > th,
+                            > td {
+                                background-color: $light-blue-background;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .lines-table {
+                margin-bottom: 0;
+
+                > thead {
+                    > tr {
+                        > th,
+                        > td {
+                            font-size: $font-size-sm;
+                        }
+                    }
+                }
+
+                > tbody {
+                    > tr {
+                        > td {
+                            font-size: $font-size-sm;
+                            height: $sm-gutter;
+                            padding: $vsm-gutter;
                         }
                     }
                 }

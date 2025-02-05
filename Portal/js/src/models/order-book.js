@@ -80,7 +80,7 @@ const orderBookViewModel = (() => {
         datesCollapse: false,
         pods: [DISPLAY_MODE_VALUE_SUM, DISPLAY_MODE_ORDER_COUNT],
         podsCollapse: false,
-        podTabIndex: 0,
+        predefinedFiltersTabsSelectedGroupId: 1,
         sales: [DISPLAY_MODE_BUDGET, DISPLAY_MODE_COMBINED],
         salesCollapse: false,
         gridCollapse: false,
@@ -100,21 +100,20 @@ const orderBookViewModel = (() => {
     }
 
 
-    self.displayModes = ko.observableArray(self.displayConfig.totals); // this now belongs to just the main summary grid Totals segment at the top
+    self.displayModes = ko.observableArray(self.displayConfig.totals); 
 
-
-    self.datesDisplayModes = ko.observableArray(self.displayConfig.dates); // this now belongs to just the main summary grid Totals segment at the top
+    self.datesDisplayModes = ko.observableArray(self.displayConfig.dates);
     self.datesCollapse = ko.observable(self.displayConfig.datesCollapse);
     self.dateFilters = orderBookDateFiltersViewModel(self);
 
 
-    self.podsDisplayModes = ko.observableArray(self.displayConfig.pods); // this now belongs to just the main summary grid Totals segment at the top
+    self.podsDisplayModes = ko.observableArray(self.displayConfig.pods);
     self.podsCollapse = ko.observable(self.displayConfig.podsCollapse);
-    self.podTabIndex = ko.observable(self.displayConfig.podTabIndex);
+    self.predefinedFiltersTabsSelectedGroupId = ko.observable(self.displayConfig.predefinedFiltersTabsSelectedGroupId);
     self.preDefinedFilters = orderBookPreDefinedFiltersViewModel(self);
 
 
-    self.salesDisplayModes = ko.observableArray(self.displayConfig.sales); // this now belongs to just the main summary grid Totals segment at the top
+    self.salesDisplayModes = ko.observableArray(self.displayConfig.sales);
     self.salesCollapse = ko.observable(self.displayConfig.salesCollapse);
     self.salesFilters = orderBookSalesFiltersViewModel(self);
 
@@ -177,6 +176,8 @@ const orderBookViewModel = (() => {
 
     //#region Components
 
+    let defaultDisplayConfigColumnHeadings = [];
+
     self.displayColumnHeadingsParams = {
         widget: ko.observable(),
         btnMarkup: `<i class="bi bi-collection ms-auto"></i>`,
@@ -194,7 +195,7 @@ const orderBookViewModel = (() => {
             applySelection: (hide) => {
                 //console.log('apply');
                 if (hide != false) {
-                    bootstrap.Dropdown.getOrCreateInstance(self.displayColumnHeadingsSelection.DOMElement).hide();
+                    bootstrap.Dropdown.getOrCreateInstance(`#${self.displayColumnHeadingsParams.elementId}`).hide();
                 }
 
                 let a = JSON.stringify(self.displayColumnHeadings());
@@ -207,8 +208,46 @@ const orderBookViewModel = (() => {
             }
         },
         observableArray: self.displayColumnHeadingsSelection,
-        options: self.columnHeadings
+        options: window.getOrderLineDetailedStatusGroups().reduce((array, current) => {
+            let extant = array.find(gh => gh.orderStatusGroupId == current.OrderStatusGroupID);
+            if (extant) {
+                extant.orderStatuses.push({
+                    orderStatusId: current.OrderStatusID,
+                    orderStatusName: current.OrderStatusName,
+                    orderStatusSortOrder: current.OrderStatusSortOrder,
+                    orderStatusGroupId: current.OrderStatusGroupID,
+                    view: current.View,
+                    procedure: current.Procedure
+                })
+            } else {
+                array.push({
+                    orderStatusGroupId: current.OrderStatusGroupID,
+                    orderStatusGroupName: current.OrderStatusGroupName,
+                    orderStatusGroupSortOrder: current.OrderStatusGroupSortOrder,
+                    view: current.View,
+                    procedure: current.Procedure,
+                    disabled: ko.computed(() => {
+                        return self.displayColumnHeadingsSelection().length == 1 && self.displayColumnHeadingsSelection()[0] === current.OrderStatusGroupID;
+                    }, self),
+                    orderStatuses: [{
+                        orderStatusId: current.OrderStatusID,
+                        orderStatusName: current.OrderStatusName,
+                        orderStatusSortOrder: current.OrderStatusSortOrder,
+                        orderStatusGroupId: current.OrderStatusGroupID,
+                        view: current.View,
+                        procedure: current.Procedure
+                    }]
+                });
+
+                defaultDisplayConfigColumnHeadings.push(current.OrderStatusGroupID);
+            }
+            return array;
+        }, []).sort((a, b) => {
+            return a.orderStatusGroupSortOrder < b.orderStatusGroupSortOrder ? -1 : 1;
+        })
     }
+
+    self.defaultConfig.columnHeadings = defaultDisplayConfigColumnHeadings;
 
     //#endregion
 
@@ -241,7 +280,7 @@ const orderBookViewModel = (() => {
         let datesCollapse = self.datesCollapse();
         let pods = self.podsDisplayModes();
         let podsCollapse = self.podsCollapse();
-        let podTabIndex = self.podTabIndex();
+        let predefinedFiltersTabsSelectedGroupId = self.predefinedFiltersTabsSelectedGroupId();
         let sales = self.salesDisplayModes();
         let salesCollapse = self.salesCollapse();
 
@@ -261,7 +300,7 @@ const orderBookViewModel = (() => {
                 datesCollapse: datesCollapse,
                 pods: pods,
                 podsCollapse: podsCollapse,
-                podTabIndex: podTabIndex,
+                predefinedFiltersTabsSelectedGroupId: predefinedFiltersTabsSelectedGroupId,
                 sales: sales,
                 salesCollapse: salesCollapse,
                 gridCollapse: gridCollapse,
@@ -296,6 +335,28 @@ const orderBookViewModel = (() => {
 
 
     //#region Subscriptions
+
+
+    self.preDefinedFilters.displayTabs.subscribe(nv => {
+        // if your active tab is in this nv list, fine
+        // if not, set active tab zeroth in this list
+        window.setTimeout(() => {
+            // need to relinquish to the engine to allow the tabs to actually change
+            let active = document.querySelector('#pre-defined-filters-tab-container button.active');
+
+            if (active) {
+                // noop
+            } else {
+                if (nv.length) {
+                    let zeroth = document.querySelector(`#pre-defined-filters-tab-container button[data-group-id="${nv[0]}"]`);
+
+                    if (zeroth) {
+                        bootstrap.Tab.getOrCreateInstance(zeroth).show();
+                    }
+                }
+            }
+        }, 0);
+    });
 
     self.displayModes.subscribe(changes => {
         if (changes.find(c => c.status == 'deleted' && c.value == DISPLAY_MODE_VALUE_SUM)) {
@@ -460,9 +521,15 @@ const orderBookViewModel = (() => {
             r.OrderStatusGroupID == orderStatus.orderStatusGroupId &&
             r.StockLocationGroupID == stockLocation?.stockLocationGroupId &&
             r.OrderGroupID == stockLocation?.orderGroupId);
-        
+
         return record;
     } 
+
+    self.getRowHeading = () => {
+        return self.rowHeadings().find(rh => {
+            return rh.orderGroupId == c.orderGroupId
+        });
+    }
 
     self.parse = (result, fetchSalesFilters) => {
 
@@ -552,6 +619,7 @@ const orderBookViewModel = (() => {
         let defaultDisplayConfigColumnHeadings = [];
 
         let columnHeadings = result.ColumnHeadings.reduce((array, current) => {
+        //let columnHeadings = window.getOrderLineDetailedStatusGroups().reduce((array, current) => {
             let extant = array.find(gh => gh.orderStatusGroupId == current.OrderStatusGroupID);
             if (extant) {
                 extant.orderStatuses.push({
@@ -581,8 +649,6 @@ const orderBookViewModel = (() => {
                         procedure: current.Procedure
                     }]
                 });
-
-                defaultDisplayConfigColumnHeadings.push(current.OrderStatusGroupID);
             }
             return array;
         }, []).sort((a, b) => {
@@ -592,8 +658,6 @@ const orderBookViewModel = (() => {
         //let columnHeadingsEndMs = +new Date();
 
         //console.log(`fetchMain primary parse: columnHeadings s1 took ${columnHeadingsEndMs - columnHeadingsStartMs}ms`);
-
-        self.defaultConfig.columnHeadings = defaultDisplayConfigColumnHeadings;
 
         columnHeadings.forEach(ch => {
             if (ch.orderStatuses.length > 1) {
@@ -618,10 +682,18 @@ const orderBookViewModel = (() => {
 
         //let resultsFillStartMs = +new Date();
 
-        self.results(result.Data.map(d => orderBookMainCell({
-            parent: self.rowHeadings().find(rh => rh.orderGroupId == d.OrderGroupID) ?? self, // I want parent from here to be the rowHeading the cell resides in
-            data: d
-        })));
+        self.results(result.Data.map(d => {
+            let parent = rowHeadings.find(rh => {
+                return rh.orderGroupId == d.OrderGroupID
+            }) ?? self;
+
+            let cell = orderBookMainCell({
+                parent: parent, // I want parent from here to be the rowHeading the cell resides in
+                data: d
+            });
+
+            return cell;
+        }));
 
         //let resultsFillEndMs = +new Date();
 
@@ -792,7 +864,7 @@ const orderBookViewModel = (() => {
 
                 self.podsDisplayModes(self.defaultConfig.pods);
                 self.podsCollapse(self.defaultConfig.podsCollapse);
-                self.podTabIndex(self.defaultConfig.podTabIndex);
+                self.predefinedFiltersTabsSelectedGroupId(self.defaultConfig.predefinedFiltersTabsSelectedGroupId);
 
                 self.salesDisplayModes(self.defaultConfig.sales);
                 self.salesCollapse(self.defaultConfig.salesCollapse);
@@ -822,7 +894,7 @@ const orderBookViewModel = (() => {
         self.fetch(self.userDefinedFilters.json());
     }
 
-    self.showDetail = (cell) => {
+    self.showDetail = (cell, displayModes) => {
         console.log("showDetail called", cell);
 
         let iFrame = document.createElement("iframe");
@@ -834,7 +906,7 @@ const orderBookViewModel = (() => {
         let filterable = cell.filterable ?? true;
 
         let preDefinedFilterCriteria = {
-            displayModes: self.displayModes(),
+            displayModes: typeof displayModes == 'function' ? displayModes() : self.displayModes(),
             orderLineDetailedStatusGroupIds: self.visibleColumns().map(v => v.orderStatusGroupId),
             accurateAsOfDateTime: self.accurateAsOfDateTime(),
             procedure: procedure,
@@ -870,7 +942,7 @@ const orderBookViewModel = (() => {
         if (cell.stockLocationGroupName)
             title.push(`<span data-bind="attr: { title: 'StockLocationGroupID: ${cell.stockLocationGroupId} - ${cell.stockLocationGroupName}' }">Stock Location Group: ${cell.stockLocationGroupName}</span>`);
 
-        title.push(`<span class="ms-5" data-bind="attr: { title: '${view}'' }">${view}</span>`);
+        title.push(`<span class="detail-view-name ms-5" data-bind="attr: { title: '${view}'' }">${view}</span>`);
 
         self.detailModalTitleElement.innerHTML = title.join("");
 
@@ -1033,6 +1105,8 @@ const orderBookViewModel = (() => {
         self.accuracyCheck
         , 900000); // this is 15m in ms
         //, 10000); // this is 10s in ms
+
+
 
     //#endregion
 

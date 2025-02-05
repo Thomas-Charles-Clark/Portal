@@ -2,16 +2,16 @@
 
 <div id="advanced-filters" data-bind="css: 'd-flex', with: advancedFilters">
     <div>
-        <h5 class="sidebar-heading">
+        <h5 class="sidebar-heading mt-5">
             Advanced
         </h5>
-        <div id="product-status-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productStatusParams }"></div>
         <div id="order-group-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: orderGroupParams }"></div>
         <div id="stock-location-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: stockLocationGroupParams }"></div>
         <div id="order-status-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: orderStatusParams }"></div>
         <div id="order-status-group-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: orderStatusGroupParams }"></div>
         <div id="has-linked-po-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: hasLinkedPOParams }"></div>
         <div id="linked-po-delayed-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: linkedPODelayedParams }"></div>
+        <div id="purchasing-recommendation-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: purchasingRecommendationParams }"></div>
 
         <div id="fulfilled-from-free-stock-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: couldBeFulfilledFromFreeStockParams }"></div>
         <div id="fulfilled-from-another-order-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: couldBeFulfilledFromStockAllocatedToAnotherOrderParams }"></div>
@@ -25,7 +25,10 @@
         <div id="reserved-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: reservedParams }"></div>
         <div id="customer-held-for-full-despatch-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: customerHeldForFullDespatchParams }"></div>
         <div id="unpaid-proforma-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: unpaidProformaParams }"></div>
-
+        <hr class="mt-3 mb-3"/>
+        <!-- ko foreach: passThroughFilters -->
+        <div class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: $data }"></div>
+        <!-- /ko -->
     </div>
     <div>
         <div id="accurate-as-of" class="gap-0">

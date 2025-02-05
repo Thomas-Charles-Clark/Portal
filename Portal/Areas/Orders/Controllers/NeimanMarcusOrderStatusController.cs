@@ -25,7 +25,7 @@ namespace Portal.Areas.Orders.Controllers
         // GET: Orders/Neiman-Marcus/Status
         public ActionResult Status()
         {
-            var application = PortalDb.Applications.Where(p => p.ControllerName == "neiman-marcus" && p.AreaName == "orders" && p.ActionName == "status").Single();
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "neimanmarcus" && p.AreaName == "orders" && p.ActionName == "status").Single();
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 

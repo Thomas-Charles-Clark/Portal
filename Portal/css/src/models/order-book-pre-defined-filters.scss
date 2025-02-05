@@ -93,6 +93,21 @@
                 margin-bottom: 0;
                 cursor: pointer;
                 flex: 0 0 240px;
+                min-height: 114px;
+
+                &#nothing-to-display-card {
+                    .card-body {
+                        padding: 0;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        align-self: stretch;
+                    }
+                }
+
+                &.default {
+                    cursor: default;
+                }
 
                 .card-body {
                     display: flex;

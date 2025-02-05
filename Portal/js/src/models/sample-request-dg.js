@@ -1619,7 +1619,42 @@ var SamplesViewModel = function () {
 
     self.stockInfoProducts = ko.observableArray([]);
 
+    self.currentlyActiveDrilldown = ko.observable();
+
+    self.parent = {
+        orderFactory: {
+            tradeAccountId: ko.computed(() => {
+                let ta = self.tradeAccountSelector.selected();
+                return ta?.TradeAccountID;
+            }, self),
+            basketId: ko.observable()
+        }
+    }
+
+    self.searchResult = ko.observable();
+
+    self.stockCheckRequester = stockCheckRequestViewModel({
+        parent: self
+    });
+
+    self.showStockCheckRequester = ko.observable(false);
+
+    self.beginStockCheckRequest = function (data, event) {
+        self.stockCheckRequester.showModal();
+    }
+
+    self.stockCheckRequester.extendQuantity({
+        QuantityPrecision: 0
+    });
+
     self.showStockInfo = function (product) {
+
+        self.searchResult({
+            record: product,
+            productFilterOptions: ko.observable({
+                QuantityPrecision: 0
+            })
+        });
 
         self.stockInfoProducts([$.extend(product, {
             stockInfo: ko.observable(),
@@ -1638,7 +1673,8 @@ var SamplesViewModel = function () {
             dataType: 'json',
             data: {
                 tradeAccountId: self.tradeAccountSelector.selected().TradeAccountID,
-                productIds: [product.ProductID]
+                productIds: [product.ProductID],
+                basketId: 0
             },
             success: function (data) {
                 self.stockInfoBusy(false);
@@ -1785,6 +1821,14 @@ var SamplesViewModel = function () {
 
                     item.stockInfo(processed);
                 });
+
+                self.showStockCheckRequester(data.stockCheckRequest != null);
+
+                if (data.stockCheckRequest != null) {
+                    self.stockCheckRequester.allowStockCheckRequest(data.stockCheckRequest.AllowStockCheckRequest);
+                    self.stockCheckRequester.message(data.stockCheckRequest.Response);
+                    self.stockCheckRequester.cssClass(data.stockCheckRequest.Class);
+                }
 
                 self.stockInfoBusy(false);
 

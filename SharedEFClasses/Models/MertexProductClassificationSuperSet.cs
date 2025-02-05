@@ -1,4 +1,6 @@
-﻿using SharedEFClasses.Models.General;
+﻿using Microsoft.Owin.Security;
+
+using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Products;
 
 using System;
@@ -32,11 +34,18 @@ namespace SharedEFClasses.Models
 
         public int? DesignID { get; set; }
 
-        public string SupplierCode { get; set; }
+        public int? SupplierID { get; set; }
 
         public string BuyerCode { get; set; }
 
         public string Status { get; set; }
+
+        public byte? SupplierTypeID { get; set; }
+
+        public byte? ProductLifeCycleID { get; set; }
+
+        [ForeignKey("SupplierTypeID")]
+        public virtual SupplierType SupplierType { get; set; }
 
         [ForeignKey("Status")]
         public virtual ProductStatus ProductStatus { get; set; }
@@ -65,7 +74,10 @@ namespace SharedEFClasses.Models
         [ForeignKey("DesignID")]
         public virtual Design Design { get; set; }
 
-        [ForeignKey("SupplierCode")]
-        public virtual MertexLive.SupplierLive Supplier { get; set; }
+        [ForeignKey("SupplierID")]
+        public virtual Supplier Supplier { get; set; }
+
+        [ForeignKey("ProductLifeCycleID")]
+        public virtual ProductLifeCycle ProductLifeCycle { get; set; }
     }
 }

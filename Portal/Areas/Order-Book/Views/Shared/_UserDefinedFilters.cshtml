@@ -42,8 +42,10 @@
         <div id="quality-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: qualityParams }"></div>
         <div id="design-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: designParams }"></div>
         <div id="supplier-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+        <div id="supplier-type-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierTypeParams }"></div>
         <div id="buyer-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: buyerParams }"></div>
         <div id="product-status-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productStatusParams }"></div>
+        <div id="product-lifecycle-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productLifeCycleParams }"></div>
         <div id="product-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: productParams }"></div>
     </div>
     <div>
@@ -61,9 +63,6 @@
             Restore Display Defaults
         </a>
     </div>
-    <div>
-        <div id="data-source-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: dataSourceParams }"></div>
-    </div>
     @if (ViewBag.Partial == null)
     {
         <div id="accurate-as-of" class="gap-0">
@@ -75,4 +74,7 @@
             <!-- /ko -->
         </div>
     }
+    <div>
+        <div id="data-source-prefilter" class="user-defined-filter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: dataSourceParams }"></div>
+    </div>
 </div>

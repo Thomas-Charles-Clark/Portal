@@ -56,7 +56,9 @@ namespace Portal.Areas.Sales.Controllers
 
             var dateFilters = await dateFiltersTask;
 
-            var preDefinedFilters = JArray.Parse(await preDefinedFiltersTask);
+            var preDefinedFiltersResult = await preDefinedFiltersTask;
+
+            var preDefinedFilters = JArray.Parse(preDefinedFiltersResult);
 
             var mainResult = await mainResultTask;
 
@@ -95,6 +97,7 @@ namespace Portal.Areas.Sales.Controllers
 
         public async Task<IHttpActionResult> DetailRefresh([FromBody]ExpandoObject dto)
         {
+            
             var detailResult = await PortalDB.FetchOrderBookDetail((string)dto.FirstOrDefault(kvp => kvp.Key == "procedure").Value, dto);
 
             return Ok(detailResult);
@@ -158,11 +161,11 @@ namespace Portal.Areas.Sales.Controllers
                 //    bytes = fs.GetBuffer();// result.Content.ReadAsByteArrayAsync().Result;
                 //}
 
-//#if DEBUG
-                //var result = await client.PostAsync("https://localhost:44354/api/excel/GetFileStream", content);
-//#else
+#if DEBUG
+                var result = await client.PostAsync("https://localhost:44354/api/excel/GetFileStream", content);
+#else
                 var result = await client.PostAsync("https://excel.designersguild.com/api/excel/GetFileStream", content);
-//#endif
+#endif
 
                 if (result.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -257,6 +260,14 @@ namespace Portal.Areas.Sales.Controllers
             var ringFences = await PortalDB.FetchOrderBookRingFenceInspect(new PassOrderBookRingFencePopoverFetch() { RingFenceIDs = dto.RingFenceIDs });
 
             return Ok(new { Totals = orderLines.Totals, Data = orderLines.Data, ringFences });
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> FetchProductCodePopoverContents([FromBody] PassOrderBookProductPopoverFetch dto)
+        {
+            var results = await PortalDB.FetchOrderBookProductInspect(dto);
+
+            return Ok(results);
         }
 
         [HttpPost]

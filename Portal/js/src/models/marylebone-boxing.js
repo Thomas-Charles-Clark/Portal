@@ -21,17 +21,29 @@ const maryleboneBoxingViewModel = (() => {
 
     self.validateNewBoxNow = ko.observable(false);
 
+    self.newBoxCodeValid = ko.observable('unknown');
+
     self.newBoxCode = ko.observable().extend({
         required: {
             params: true,
             onlyIf: self.validateNewBoxNow,
             message: "Please scan or type in the Box Code"
+        },
+        validation: {
+            validator: () => {
+                if (self.validateNewBoxNow()) {
+                    return self.newBoxCodeValid();
+                } else {
+                    return true;
+                }
+            },
+            message: 'Please provide a unique Box Code'
         }
     });
 
     self.newBoxCode.subscribe(nv => {
         self.validateNewBoxNow(false);
-        self.newBoxStockLocationCodeValid('unknown');
+        self.newBoxCodeValid('unknown');
     });
 
     self.newBoxCodeParams = {
@@ -311,7 +323,7 @@ const maryleboneBoxingViewModel = (() => {
     //#region Subscriptions
 
     self.newBoxCode.subscribe(nv => {
-        console.log('newBoxCode', nv);
+        //console.log('newBoxCode', nv);
 
         if (nv && nv.indexOf('\n') == 0) {
             self.newBoxCode(nv.substring(1, nv.length));
@@ -325,7 +337,7 @@ const maryleboneBoxingViewModel = (() => {
     });
 
     self.newBoxStockLocationCode.subscribe(nv => {
-        console.log('newBoxStockLocationCode', nv);
+        //console.log('newBoxStockLocationCode', nv);
 
         if (nv && nv.indexOf('\n') == nv.length - 1) {
             self.newBoxStockLocationCode(nv.substring(0, nv.length - 1));
@@ -390,14 +402,17 @@ const maryleboneBoxingViewModel = (() => {
                     .then(window.handleFetchResponse)
                     .then(data => {
                         console.log("createNewBox returned", data);
-                        self.gridWidget().dataSource.read();
+
                         self.currentBox(boxViewModel({ record: data, parent: self }));
+
                         self.hideNewBoxModal();
                     })
                     .catch(err => {
                         console.log(err);
                         if (err.exception == "stockLocation") {
                             self.newBoxStockLocationCodeValid(false);
+                        } else if (err.exception == "boxCode") {
+                            self.newBoxCodeValid(false);
                         } else {
                             window.catchFetchError(err);
                         }
@@ -411,9 +426,17 @@ const maryleboneBoxingViewModel = (() => {
 
         window.showConfirm("Are you sure?", `This will delete box ${box.BoxCode}`, () => {
 
+            self.busy(true);
+
         let data = {
             boxId: box.BoxID
-        };
+            };
+
+            let clearCurrent = false;
+
+            if (data.boxId == self.currentBox()?.BoxID) {
+                clearCurrent = true;
+            }
 
             console.log("deleteBox calling with", data);
 
@@ -424,8 +447,16 @@ const maryleboneBoxingViewModel = (() => {
             })
                 .then(window.handleFetchResponse)
                 .then(data => {
+
                     console.log("deleteBox returned", data);
+
+                    if (clearCurrent) {
+                        self.currentBox(undefined);
+                    }
+
                     self.gridWidget().dataSource.read();
+
+                    self.busy(false);
                 })
                 .catch(window.catchFetchError);
          });
@@ -436,6 +467,7 @@ const maryleboneBoxingViewModel = (() => {
         self.newBoxCodeParams.clearFunction();
         self.newBoxStockLocationCodeParams.clearFunction();
         self.newBoxStockLocationCodeValid('unknown');
+        self.newBoxCodeValid('unknown');
     }
 
     self.closeCurrentBox = () => {
@@ -592,7 +624,7 @@ const boxViewModel = ({ record, parent } = { record: {}, parent: {} }) => {
     //#region Subscriptions
 
     self.inputSearchTerm.subscribe(nv => {
-        console.log('inputSearchTerm', nv);
+        //console.log('inputSearchTerm', nv);
 
         if (nv && nv.indexOf('\n') == 0) {
             self.inputSearchTerm(nv.substring(1, nv.length));
@@ -631,15 +663,17 @@ const boxViewModel = ({ record, parent } = { record: {}, parent: {} }) => {
         if (term) {
 
             let data = {
-                boxId: self.BoxID,
-                input: term
+                boxId: self.BoxID ?? 0,
+                input: term,
+                destinationStockLocationCode: self.stockLocationCode(),
+                boxCode: self.BoxCode
             }
 
             let callStart = new Date();
 
             self.busy(true);
 
-            console.log("verifyPartNumber calling with", data);
+            console.log("addItem calling with", data);
 
             fetch(`/api/MarylebonePackingAPI/AddItem`, {
                 method: "POST",
@@ -648,8 +682,13 @@ const boxViewModel = ({ record, parent } = { record: {}, parent: {} }) => {
             })
                 .then(window.handleFetchResponse)
                 .then(data => {
+
+                    if ((self.BoxID == null) && (data.boxId != null)) {
+                        self.BoxID = data.boxId;
+                    }
+
                     let callReturn = new Date();
-                    console.log(`verifyPartNumber returned in ${callReturn - callStart}ms`, data);
+                    console.log(`addItem returned in ${callReturn - callStart}ms`, data);
 
                     let resultType = "scan-result-success";
 
@@ -759,18 +798,15 @@ const boxViewModel = ({ record, parent } = { record: {}, parent: {} }) => {
         })
             .then(window.handleFetchResponse)
             .then(data => {
-
                 console.log(`reduceItemQuantity returned`, data);
 
                 if (data) {
                     boxedItem.quantity(data);
                     self.successMp3.play();
-
                     self.scannedText(`<span class="d-block scan-result scan-result-warning">${boxedItem.Product.Code} quantity reduced to ${data}</span>${self.scannedText()}`);
                 } else {
                     self.boxedItems.remove(boxedItem);
                     self.successMp3.play();
-
                     self.scannedText(`<span class="d-block scan-result scan-result-removal">${boxedItem.Product.Code} was removed</span>${self.scannedText()}`);
                 }
 
@@ -824,7 +860,6 @@ const boxViewModel = ({ record, parent } = { record: {}, parent: {} }) => {
                 window.catchFetchError(err);
             })
     }
-
 
     //#endregion
 

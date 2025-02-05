@@ -15,6 +15,10 @@
   font-size: 1rem;
 }
 
+.mb-0 {
+  margin-bottom: 0;
+}
+
 #marylebone-tabs-content {
   background-color: #fff;
   border: 1px solid #dee2e6;
@@ -152,29 +156,32 @@
 #box-container #boxing-grid .vr {
   height: 100%;
 }
-#box-container #boxing-grid #scanner-results {
+#box-container #boxing-grid #scan-results-container .card-body {
+  padding: 1.1rem 0.75rem;
+}
+#box-container #boxing-grid #scan-results-container .card-body #scanner-results {
   max-height: 600px;
   overflow-y: auto;
   font-size: 1.15rem;
   margin-bottom: 0;
   min-height: 8px;
 }
-#box-container #boxing-grid #scanner-results .text-italic {
+#box-container #boxing-grid #scan-results-container .card-body #scanner-results .text-italic {
   color: #6c757d;
 }
-#box-container #boxing-grid #scanner-results .scan-result-success {
+#box-container #boxing-grid #scan-results-container .card-body #scanner-results .scan-result-success {
   color: #75b798;
 }
-#box-container #boxing-grid #scanner-results .scan-result-warning {
+#box-container #boxing-grid #scan-results-container .card-body #scanner-results .scan-result-warning {
   color: #fd9843;
 }
-#box-container #boxing-grid #scanner-results .scan-result-failure {
+#box-container #boxing-grid #scan-results-container .card-body #scanner-results .scan-result-failure {
   color: #e35d6a;
 }
-#box-container #boxing-grid #scanner-results .scan-result-removal {
+#box-container #boxing-grid #scan-results-container .card-body #scanner-results .scan-result-removal {
   color: #212529;
 }
-#box-container #boxing-grid #scanner-results span + #activity-history-placeholder {
+#box-container #boxing-grid #scan-results-container .card-body #scanner-results span + #activity-history-placeholder {
   display: none;
 }
 #box-container #contents-list .list-group-item {
@@ -228,5 +235,16 @@
   border-top-right-radius: 2px;
   border-bottom-right-radius: 2px;
   width: 60px;
+}
+
+.box-code-validation {
+  position: relative;
+  top: -5px;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+#save-box-btn[disabled] {
+  cursor: not-allowed;
 }
 /*# sourceMappingURL=marylebone-boxing.css.map */

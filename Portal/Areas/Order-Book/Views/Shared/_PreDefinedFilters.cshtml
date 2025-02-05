@@ -4,33 +4,15 @@
         return @Html.Raw(JsonConvert.SerializeObject(Model.PreDefinedFilters))
     }
 </script>
-@*<div id="pre-defined-filters" data-bind="with: preDefinedFilters, style: { '--grid-column-count': preDefinedFilters.groups().reduce((a, i) => a += i.summaries().length, 0) }">
-    <!-- ko foreach: groups -->
-    <div class="pre-defined-filter-heading" data-bind="style: {
-         '--grid-column-start' : $parent.groups().reduce((a, i, idx)=>
-        a += (idx < $index() ? i.summaries().length : 0), 0) + 1,
-        '--grid-column-end':  $parent.groups().reduce((a, i, idx) => a += (idx < $index() ? i.summaries().length : 0), 1) + (summaries().length - 1) + 1
-        }">
-        <h5 data-bind="text: name"></h5>
-    </div>
-    <!-- /ko -->
-    <!-- ko foreach: groups -->
-    <!-- ko foreach: summaries -->
-    <div class="card filter-card alert" data-bind="css: AlertClass, click: $parentContext.$parent.showDetail">
-        <div class="card-body">
-            <h5 class="card-title" data-bind="html: Label"></h5>
-            <p class="card-text" data-bind="html: display"></p>
-        </div>
-    </div>
-    <!-- /ko -->
-    <!-- /ko -->
-</div>*@
 
 <div id="pre-defined-filters-tab-container" data-bind="with: preDefinedFilters">
     <ul class="nav nav-tabs">
         <!-- ko foreach: visibleManagementPromptTabs -->
         <li class="nav-item">
-            <button class="nav-link" type="button" data-bind="click: (data, event) => { $root.podTabIndex($index()); }, attr: { 'data-bs-target': `#pre-defined-tab-${$index()}` }, css: { 'active': $index() == $root.podTabIndex() }">
+            <button class="nav-link" type="button" data-bind="
+                    click: (data, event) => { $root.predefinedFiltersTabsSelectedGroupId($data.groupId); },
+                    attr: { 'data-bs-target': `#pre-defined-tab-${$data.groupId}`, 'data-group-id': $data.groupId  },
+                    css: { 'active': $data.groupId == $root.predefinedFiltersTabsSelectedGroupId() }">
                 <span data-bind="text: name"></span>
             </button>
         </li>
@@ -38,34 +20,29 @@
     </ul>
     <div class="tab-content">
         <!-- ko foreach: visibleManagementPromptTabs -->
-        <div class="tab-pane fade" data-bind="attr: { id: `pre-defined-tab-${$index()}` }, css: { 'show active': $index() == $root.podTabIndex() }">
+        <div class="tab-pane fade" data-bind="attr: { id: `pre-defined-tab-${$data.groupId}` }, css: { 'show active': $data.groupId == $root.predefinedFiltersTabsSelectedGroupId() }">
+            <!-- ko if: summaries().length == 0 -->
+            <div class="pre-defined-filter-summaries">
+                <div id="nothing-to-display-card" class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-0">
+                            Nothing to Display
+                        </h5>
+                    </div>
+                </div>
+            </div>
+            <!-- /ko -->
+            <!-- ko if: summaries().length > 0 -->
             <div class="pre-defined-filter-summaries" data-bind="foreach: summaries, style: {  '--grid-column-count': summaries().length }">
-                <div class="card filter-card alert" data-bind="css: AlertClass, click: $parentContext.$parent.showDetail">
+                <div class="card filter-card alert" data-bind="css: AlertClass, click: (data, event) => { $parentContext.$parent.showDetail(data, data.parent.displayModes) }">
                     <div class="card-body">
                         <h5 class="card-title" data-bind="html: Label"></h5>
                         <p class="card-text" data-bind="html: display"></p>
                     </div>
                 </div>
             </div>
+            <!-- /ko -->
         </div>
         <!-- /ko -->
     </div>
 </div>
-
-@*<div id="pre-defined-filters-flex" data-bind="with: preDefinedFilters">
-    <!-- ko foreach: groups -->
-    <div class="pre-defined-filter-group">
-        <div class="pre-defined-filter-heading">
-            <h5 data-bind="text: name"></h5>
-        </div>
-        <div class="pre-defined-filter-summaries" data-bind="foreach: summaries, style: {  '--grid-column-count': summaries().length }">
-            <div class="card filter-card alert" data-bind="css: AlertClass, click: $parentContext.$parent.showDetail">
-                <div class="card-body">
-                    <h5 class="card-title" data-bind="html: Label"></h5>
-                    <p class="card-text" data-bind="html: display"></p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- /ko -->
-</div>*@

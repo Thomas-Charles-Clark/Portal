@@ -252,6 +252,42 @@ namespace Portal.Areas.Orders.Controllers
             return View("OrderBookDetail", model);
         }
 
+        [Route("back-orders-fulfilled-from-stock-in-another-stock-location")]
+        public async Task<ActionResult> BackOrdersFulfilledFromStockInAnotherStockLocation()
+        {
+            if (Request.QueryString.HasKeys() && Request.QueryString.AllKeys.Contains("partial"))
+            {
+                ViewBag.Partial = true;
+            }
+
+            ViewBag.HideSidebar = true;
+
+            var objParams = new ExpandoObject();
+
+            var objParamsDict = objParams as IDictionary<string, object>;
+
+            Request.QueryString.AllKeys.ForEach(key =>
+            {
+                if (key != "partial" && Request.QueryString[key] != "null")
+                {
+                    objParamsDict.Add(key, Request.QueryString[key]);
+                }
+            });
+
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "OrderBookDetail" && p.AreaName == "order-book" && p.ActionName == "back-orders-fulfilled-from-stock-in-another-stock-location").Single();
+
+            var user = UserManager.FindById(User.Identity.GetUserId<int>());
+
+            var model = await OrderBookDetailViewModel.CreateAsync(
+                "BackOrdersFulfilledFromStockInAnotherStockLocation",
+                objParams,
+                user.GetActiveRoleProperties(),
+                application.Heading,
+                application.SubHeading);
+
+            return View("OrderBookDetail", model);
+        }
+
         [Route("back-orders-fulfilled-from-stock-allocated-to-another-order")]
         public async Task<ActionResult> BackOrdersFulfilledFromStockAllocatedToAnotherOrder()
         {

@@ -26,16 +26,13 @@ const orderBookAdvancedFiltersViewModel = ({
     //#region Properties
 
     let self = {
-        parent: parent
+        parent: parent,
+        params: params
     };
 
     self.busy = self.parent.busy;
 
     self.loadedWithTitle = ko.observable(params.title);
-
-    self.productStatusId = ko.observable(params.productStatus ?? '');
-    self.productStatus = ko.observable();
-    self.productStatusAwaitingBinding = ko.observable(params.productStatus != null && params.productStatus != '');
 
     self.orderGroupId = ko.observable(params.orderGroupId ?? '');
     self.orderGroup = ko.observable();
@@ -102,6 +99,10 @@ const orderBookAdvancedFiltersViewModel = ({
 
     self.unpaidProformaId = ko.observable(["1", 1, "true", true].indexOf(params.unpaidProforma) > -1 ? "true" : ["0", 0, "false", false].indexOf(params.unpaidProforma) > -1 ? "false" : '');
     self.unpaidProforma = ko.observable();
+
+    self.purchasingRecommendationId = ko.observable(params.purchasingRecommendationId ?? '');
+    self.purchasingRecommendation = ko.observable();
+    self.purchasingRecommendationsAwaitingBinding = ko.observable(params.purchasingRecommendationId != null && params.purchasingRecommendationId != '');
 
     //#endregion
 
@@ -203,58 +204,6 @@ const orderBookAdvancedFiltersViewModel = ({
 
     //#region Components
 
-    self.productStatusParams = kendoMDCDropDownList({
-        label: 'Product Status',
-        data: [{
-            Name: "C - Current",
-            Value: "C"
-        }, {
-            Name: "L - Limited, Customer Informed",
-            Value: "L"
-        }, {
-            Name: "Y - Limited, Customer Not Informed",
-            Value: "Y"
-        }, {
-            Name: "S - Clearance",
-            Value: "S"
-        }, {
-            Name: "P - PreLaunch",
-            Value: "P"
-        }, {
-            Name: "O - In Development",
-            Value: "O"
-        }, {
-            Name: "D - Discontinued",
-            Value: "D"
-        }, {
-            Name: "X - Dropped",
-            Value: "X"
-        }],
-        dataBound: (e) => self.productStatusAwaitingBinding(false),
-        textField: 'Name',
-        valueField: 'Value',
-        idObservable: self.productStatusId,
-        objObservable: self.productStatus,
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertible: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        autoBind: true,
-        height: 340,
-        clearFunction: self.genericUnsavedChangesClear,
-        template: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        valueTemplate: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        popupSettings: {
-            appendTo: document.getElementById('product-status-prefilter')
-        }
-    });
-
     self.orderGroupParams = kendoMDCDropDownList({
         label: 'Order Group',
         odata: true,
@@ -264,6 +213,7 @@ const orderBookAdvancedFiltersViewModel = ({
         valueField: 'OrderGroupID',
         idObservable: self.orderGroupId,
         objObservable: self.orderGroup,
+        locked: ko.observable(self.orderGroupId() != ''),
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -279,6 +229,16 @@ const orderBookAdvancedFiltersViewModel = ({
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
             appendTo: document.getElementById('order-group-prefilter')
+        },
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            if ((e.Name != '') && (e.OrderGroupID != null)) {
+                return `<span title="${e.Name}">Order Group: ${e.Name}</span>`
+            } else {
+                return '';
+            }
         }
     });
 
@@ -291,6 +251,7 @@ const orderBookAdvancedFiltersViewModel = ({
         valueField: 'StockLocationOrderBookGroupID',
         idObservable: self.stockLocationGroupId,
         objObservable: self.stockLocationGroup,
+        locked: ko.observable(self.stockLocationGroupId() != ''),
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -306,6 +267,13 @@ const orderBookAdvancedFiltersViewModel = ({
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
             appendTo: document.getElementById('stock-location-group-prefilter')
+        },
+        valueTemplate: (e) => {
+            if ((e.Name != '') && (e.StockLocationOrderBookGroupID != null)) {
+                return `<span title="${e.Name}">Stock Location Group: ${e.Name}</span>`
+            } else {
+                return '';
+            }
         }
     });
 
@@ -318,6 +286,7 @@ const orderBookAdvancedFiltersViewModel = ({
         valueField: 'OrderLineDetailedStatusID',
         idObservable: self.orderStatusId,
         objObservable: self.orderStatus,
+        locked: ko.observable(self.orderStatusId() != ''),
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -333,6 +302,13 @@ const orderBookAdvancedFiltersViewModel = ({
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
             appendTo: document.getElementById('order-status-prefilter')
+        },
+        valueTemplate: (e) => {
+            if ((e.Name != '') && (e.OrderLineDetailedStatusID != null)) {
+                return `<span title="${e.Name}">Order Status: ${e.Name}</span>`
+            } else {
+                return '';
+            }
         }
     });
 
@@ -345,6 +321,7 @@ const orderBookAdvancedFiltersViewModel = ({
         valueField: 'OrderLineDetailedStatusGroupID',
         idObservable: self.orderStatusGroupId,
         objObservable: self.orderStatusGroup,
+        locked: ko.observable(self.orderStatusGroupId() != ''),
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -360,6 +337,13 @@ const orderBookAdvancedFiltersViewModel = ({
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
             appendTo: document.getElementById('order-status-group-prefilter')
+        },
+        valueTemplate: (e) => {
+            if ((e.Name != '') && (e.OrderLineDetailedStatusGroupID != null)) {
+                return `<span title="${e.Name}">Order Status Group: ${e.Name}</span>`
+            } else {
+                return '';
+            }
         }
     });
 
@@ -370,6 +354,7 @@ const orderBookAdvancedFiltersViewModel = ({
         valueField: 'Value',
         idObservable: self.hasLinkedPOId,
         objObservable: ko.hasLinkedPO,
+        locked: ko.observable(self.hasLinkedPOId()),
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -387,6 +372,13 @@ const orderBookAdvancedFiltersViewModel = ({
         },
         popupSettings: {
             appendTo: document.getElementById('has-linked-po-prefilter')
+        },
+        valueTemplate: (e) => {
+            if ((e.Name != '') && (e.Value != null)) {
+                return `<span title="${e.Name}">Has Linked PO: ${e.Name}</span>`
+            } else {
+                return '';
+            }
         }
     });
 
@@ -397,6 +389,7 @@ const orderBookAdvancedFiltersViewModel = ({
         valueField: 'Value',
         idObservable: self.linkedPODelayedId,
         objObservable: self.linkedPODelayed,
+        locked: ko.observable(self.linkedPODelayedId()),
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -414,6 +407,13 @@ const orderBookAdvancedFiltersViewModel = ({
         },
         popupSettings: {
             appendTo: document.getElementById('linked-po-delayed-prefilter')
+        },
+        valueTemplate: (e) => {
+            if ((e.Name != '') && (e.Value != null)) {
+                return `<span title="${e.Name}">Linked PO Delayed: ${e.Name}</span>`
+            } else {
+                return '';
+            }
         }
     });
 
@@ -426,6 +426,7 @@ const orderBookAdvancedFiltersViewModel = ({
         valueField: 'Value',
         idObservable: self.couldBeFulfilledFromFreeStockId,
         objObservable: self.couldBeFulfilledFromFreeStock,
+        locked: ko.observable(self.couldBeFulfilledFromFreeStockId()),
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -438,11 +439,15 @@ const orderBookAdvancedFiltersViewModel = ({
         template: (e) => {
             return `<span title="${e.Name}">${e.Name}</span>`
         },
-        valueTemplate: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
         popupSettings: {
             appendTo: document.getElementById('fulfilled-from-free-stock-prefilter')
+        },
+        valueTemplate: (e) => {
+            if ((e.Name != '') && (e.Value != null)) {
+                return `<span title="${e.Name}">Fulfillable from Stock: ${e.Name}</span>`
+            } else {
+                return '';
+            }
         }
     });
 
@@ -453,6 +458,7 @@ const orderBookAdvancedFiltersViewModel = ({
         valueField: 'Value',
         idObservable: self.couldBeFulfilledFromStockAllocatedToAnotherOrderId,
         objObservable: self.couldBeFulfilledFromStockAllocatedToAnotherOrder,
+        locked: ko.observable(self.couldBeFulfilledFromStockAllocatedToAnotherOrderId()),
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -470,6 +476,13 @@ const orderBookAdvancedFiltersViewModel = ({
         },
         popupSettings: {
             appendTo: document.getElementById('fulfilled-from-another-order-prefilter')
+        },
+        valueTemplate: (e) => {
+            if ((e.Name != '') && (e.Value != null)) {
+                return `<span title="${e.Name}">Fulfillable from another Order: ${e.Name}</span>`
+            } else {
+                return '';
+            }
         }
     });
 
@@ -480,6 +493,7 @@ const orderBookAdvancedFiltersViewModel = ({
         valueField: 'Value',
         idObservable: self.couldBeFulfilledFromPurchaseOrderStockId,
         objObservable: self.couldBeFulfilledFromPurchaseOrderStock,
+        locked: ko.observable(self.couldBeFulfilledFromPurchaseOrderStockId()),
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -497,6 +511,13 @@ const orderBookAdvancedFiltersViewModel = ({
         },
         popupSettings: {
             appendTo: document.getElementById('fulfilled-from-po-stock-prefilter')
+        },
+        valueTemplate: (e) => {
+            if ((e.Name != '') && (e.Value != null)) {
+                return `<span title="${e.Name}">Fulfillable from PO Stock: ${e.Name}</span>`
+            } else {
+                return '';
+            }
         }
     });
 
@@ -507,6 +528,7 @@ const orderBookAdvancedFiltersViewModel = ({
         valueField: 'Value',
         idObservable: self.lineStatusIdGreaterThanId,
         objObservable: self.lineStatusIdGreaterThan,
+        locked: ko.observable(self.lineStatusIdGreaterThanId() != ''),
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -524,6 +546,13 @@ const orderBookAdvancedFiltersViewModel = ({
         },
         popupSettings: {
             appendTo: document.getElementById('line-status-greater-than-prefilter')
+        },
+        valueTemplate: (e) => {
+            if ((e.Name != '') && (e.Value != null)) {
+                return `<span title="${e.Name}">Line Status ID > ${e.Name}</span>`
+            } else {
+                return '';
+            }
         }
     });
 
@@ -535,6 +564,7 @@ const orderBookAdvancedFiltersViewModel = ({
         valueField: 'Value',
         idObservable: self.lineStatusIdLessThanId,
         objObservable: self.lineStatusIdLessThan,
+        locked: ko.observable(self.lineStatusIdLessThanId() != ''),
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -544,14 +574,18 @@ const orderBookAdvancedFiltersViewModel = ({
         autoBind: true,
         height: 340,
         clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: document.getElementById('line-status-less-than-prefilter')
+        },
         template: (e) => {
             return `<span title="${e.Name}">${e.Name}</span>`
         },
         valueTemplate: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        popupSettings: {
-            appendTo: document.getElementById('line-status-less-than-prefilter')
+            if ((e.Name != '') && (e.Value != null)) {
+                return `<span title="${e.Name}">Line Status ID < ${e.Name}</span>`
+            } else {
+                return '';
+            }
         }
     });
 
@@ -563,6 +597,7 @@ const orderBookAdvancedFiltersViewModel = ({
         valueField: 'Value',
         idObservable: self.lineStatusChangedTodayId,
         objObservable: self.lineStatusChangedToday,
+        locked: ko.observable(self.lineStatusChangedTodayId()),
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -572,14 +607,18 @@ const orderBookAdvancedFiltersViewModel = ({
         autoBind: true,
         height: 340,
         clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: document.getElementById('line-status-changed-today-prefilter')
+        },
         template: (e) => {
             return `<span title="${e.Name}">${e.Name}</span>`
         },
         valueTemplate: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        popupSettings: {
-            appendTo: document.getElementById('line-status-changed-today-prefilter')
+            if ((e.Name != '') && (e.Value != null)) {
+                return `<span title="${e.Name}">Line Status Changed Today: ${e.Name}</span>`
+            } else {
+                return '';
+            }
         }
     });
 
@@ -591,6 +630,7 @@ const orderBookAdvancedFiltersViewModel = ({
         valueField: 'Value',
         idObservable: self.detailedLineStatusIsNullId,
         objObservable: self.detailedLineStatusIsNull,
+        locked: ko.observable(self.detailedLineStatusIsNullId()),
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -600,14 +640,18 @@ const orderBookAdvancedFiltersViewModel = ({
         autoBind: true,
         height: 340,
         clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: document.getElementById('detailed-line-status-is-null-prefilter')
+        },
         template: (e) => {
             return `<span title="${e.Name}">${e.Name}</span>`
         },
         valueTemplate: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        popupSettings: {
-            appendTo: document.getElementById('detailed-line-status-is-null-prefilter')
+            if ((e.Name != '') && (e.Value != null)) {
+                return `<span title="${e.Name}">Detailed Line Status is NULL: ${e.Name}</span>`
+            } else {
+                return '';
+            }
         }
     });
 
@@ -619,6 +663,7 @@ const orderBookAdvancedFiltersViewModel = ({
         valueField: 'Value',
         idObservable: self.expressDeliveryId,
         objObservable: self.expressDelivery,
+        locked: ko.observable(self.expressDeliveryId()),
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -628,14 +673,18 @@ const orderBookAdvancedFiltersViewModel = ({
         autoBind: true,
         height: 340,
         clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: document.getElementById('express-delivery-prefilter')
+        },
         template: (e) => {
             return `<span title="${e.Name}">${e.Name}</span>`
         },
         valueTemplate: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        popupSettings: {
-            appendTo: document.getElementById('express-delivery-prefilter')
+            if ((e.Name != '') && (e.Value != null)) {
+                return `<span title="${e.Name}">Express Delivery: ${e.Name}</span>`
+            } else {
+                return '';
+            }
         }
     });
 
@@ -647,6 +696,7 @@ const orderBookAdvancedFiltersViewModel = ({
         valueField: 'Value',
         idObservable: self.freeDeliveryId,
         objObservable: self.freeDelivery,
+        locked: ko.observable(self.freeDeliveryId()),
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -656,14 +706,18 @@ const orderBookAdvancedFiltersViewModel = ({
         autoBind: true,
         height: 340,
         clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: document.getElementById('free-delivery-prefilter')
+        },
         template: (e) => {
             return `<span title="${e.Name}">${e.Name}</span>`
         },
         valueTemplate: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        popupSettings: {
-            appendTo: document.getElementById('free-delivery-prefilter')
+            if ((e.Name != '') && (e.Value != null)) {
+                return `<span title="${e.Name}">Free Delivery: ${e.Name}</span>`
+            } else {
+                return '';
+            }
         }
     });
 
@@ -675,6 +729,7 @@ const orderBookAdvancedFiltersViewModel = ({
         valueField: 'Value',
         idObservable: self.reservedId,
         objObservable: self.reserved,
+        locked: ko.observable(self.reservedId()),
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -684,14 +739,18 @@ const orderBookAdvancedFiltersViewModel = ({
         autoBind: true,
         height: 340,
         clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: document.getElementById('reserved-prefilter')
+        },
         template: (e) => {
             return `<span title="${e.Name}">${e.Name}</span>`
         },
         valueTemplate: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        popupSettings: {
-            appendTo: document.getElementById('reserved-prefilter')
+            if ((e.Name != '') && (e.Value != null)) {
+                return `<span title="${e.Name}">Reserved: ${e.Name}</span>`
+            } else {
+                return '';
+            }
         }
     });
 
@@ -703,6 +762,7 @@ const orderBookAdvancedFiltersViewModel = ({
         valueField: 'Value',
         idObservable: self.customerHeldForFullDespatchId,
         objObservable: self.customerHeldForFullDespatch,
+        locked: ko.observable(self.customerHeldForFullDespatchId()),
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -712,14 +772,18 @@ const orderBookAdvancedFiltersViewModel = ({
         autoBind: true,
         height: 340,
         clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: document.getElementById('customer-held-for-full-despatch-prefilter')
+        },
         template: (e) => {
             return `<span title="${e.Name}">${e.Name}</span>`
         },
         valueTemplate: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        popupSettings: {
-            appendTo: document.getElementById('customer-held-for-full-despatch-prefilter')
+            if ((e.Name != '') && (e.Value != null)) {
+                return `<span title="${e.Name}">Customer Held for Full Despatch: ${e.Name}</span>`
+            } else {
+                return '';
+            }
         }
     });
 
@@ -731,6 +795,7 @@ const orderBookAdvancedFiltersViewModel = ({
         valueField: 'Value',
         idObservable: self.unpaidProformaId,
         objObservable: self.unpaidProforma,
+        locked: ko.observable(self.unpaidProformaId()),
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -740,22 +805,130 @@ const orderBookAdvancedFiltersViewModel = ({
         autoBind: true,
         height: 340,
         clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: document.getElementById('unpaid-proforma-prefilter')
+        },
         template: (e) => {
             return `<span title="${e.Name}">${e.Name}</span>`
         },
         valueTemplate: (e) => {
-            return `<span title="${e.Name}">${e.Name}</span>`
-        },
-        popupSettings: {
-            appendTo: document.getElementById('unpaid-proforma-prefilter')
+            if ((e.Name != '') && (e.Value != null)) {
+                return `<span title="${e.Name}">Unpaid Proforma: ${e.Name}</span>`
+            } else {
+                return '';
+            }
         }
     });
 
 
+    self.purchasingRecommendationParams = kendoMDCDropDownList({
+        label: 'Purchasing Recommendations',
+        odata: true,
+        endPoint: '/odata/PurchasingRecommendations',
+        dataBound: (e) => self.purchasingRecommendationsAwaitingBinding(false),
+        textField: 'Name',
+        valueField: 'PurchasingRecommendationID',
+        idObservable: self.purchasingRecommendationId,
+        objObservable: self.purchasingRecommendation,
+        locked: ko.observable(self.purchasingRecommendationId() != ''),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'Name'
+        },
+        clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: document.getElementById('purchasing-recommendation-prefilter')
+        },
+        template: (e) => {
+            return `<span title="${e.Name}">${e.Name}</span>`
+        },
+        valueTemplate: (e) => {
+            if ((e.Name != '') && (e.PurchasingRecommendationID != null)) {
+                return `<span title="${e.Name}">Purchasing Recommendation: ${e.Name}</span>`
+            } else {
+                return '';
+            }
+        }
+    });
 
 
+    //#region Dropped Computeds
 
+    self.passThroughFilters = ko.computed(() => {
+        let result = [];
 
+        Object.keys(self.params).forEach(p => {
+
+            let properCaseLabel = p.replace(/([A-Z])/g, ' $1')
+                .replace(/^./, function (str) {
+                    return str.toUpperCase();
+                });
+
+            let label = `${p.replace('Id', '')}Params`;
+
+            let exceptions = ['displayModes', 'accurateAsOfDateTime', 'title', 'procedure', 'view', 'filterable'];
+
+            // if this property is not mapped as a filter either here or in userDefinedFilters...
+            if (self[label] == null && self.parent.userDefinedFilters[label] == null) {
+
+                if (self.params[p] === 0) {
+                    self.params[p] = 'No';
+                }
+
+                if (self.params[p] != null && exceptions.indexOf(p) == -1) {
+                    result.push(kendoMDCDropDownList({
+                        label: properCaseLabel,
+                        odata: false,
+                        textField: 'Name',
+                        valueField: 'Value',
+                        data: [{
+                            Name: properCaseLabel,
+                            Value: self.params[p],
+                        }],
+                        idObservable: ko.observable(self.params[p]),
+                        objObservable: ko.observable(),
+                        locked: ko.observable(true),
+                        enable: ko.observable(true),
+                        disable: ko.observable(false),
+                        clearable: ko.observable(true),
+                        revertible: ko.observable(false),
+                        readOnly: false,
+                        autoBind: true,
+                        height: 340,
+                        sort: {
+                            dir: 'asc',
+                            field: 'Name'
+                        },
+                        clearFunction: self.genericUnsavedChangesClear,
+                        template: (e) => {
+                            return `<span title="${self.params[p]}">${self.params[p]}</span>`
+                        },
+                        valueTemplate: (e) => {
+                            if ((e.Name != '') && (e.Value != null)) {
+                                return `<span title="${self.params[p]}">${properCaseLabel}: ${self.params[p]}</span>`
+                            } else {
+                                return '';
+                            }
+                        }
+                    }));
+                }
+            }
+        });
+
+        console.log('passThroughFilters', result);
+
+        return result;
+    });
+
+    //#endregion
 
 
 
@@ -809,9 +982,6 @@ const orderBookAdvancedFiltersViewModel = ({
     // these id observables start as and reset to the empty string value intentionally
     // should probably set that as a constant
     self.reset = () => {
-        self.productStatusId(EMPTY_STRING);
-        self.productStatus(undefined);
-
         self.orderGroupId(EMPTY_STRING);
         self.orderGroup(undefined);
 
@@ -866,12 +1036,17 @@ const orderBookAdvancedFiltersViewModel = ({
 
         self.unpaidProformaId(EMPTY_STRING);
         self.unpaidProforma(undefined);
+
+        self.purchasingRecommendationId(EMPTY_STRING);
+        self.purchasingRecommendation(undefined);
+
+        self.creditStoppedId(EMPTY_STRING);
+        self.creditStopped(undefined);
     }
 
     self.json = ko.computed(() => {
         if (self.allBound()) {
             let result = {
-                productStatus: self.productStatusId() === '' ? null : self.productStatusId(),
                 orderGroupId: self.orderGroupId() === '' ? null : self.orderGroupId(),
                 stockLocationGroupId: self.stockLocationGroupId() === '' ? null : self.stockLocationGroupId(),
                 orderStatusId: self.orderStatusId() === '' ? null : self.orderStatusId(),
@@ -889,11 +1064,13 @@ const orderBookAdvancedFiltersViewModel = ({
                 freeDelivery: self.freeDeliveryId() === '' ? null : self.freeDeliveryId(),
                 reserved: self.reservedId() === '' ? null : self.reservedId(),
                 customerHeldForFullDespatch: self.customerHeldForFullDespatchId() === '' ? null : self.customerHeldForFullDespatchId(),
-                unpaidProforma: self.unpaidProformaId() === '' ? null : self.unpaidProformaId()
+                unpaidProforma: self.unpaidProformaId() === '' ? null : self.unpaidProformaId(),
+                purchasingRecommendationId: self.purchasingRecommendationId() == '' ? null : self.purchasingRecommendationId()
             };
 
             let title = []
 
+            // if your thingie is a stringie then do this dance...
             if (self.orderStatusGroup())
                 title.push(`<span data-bind="OrderStatusGroupID: ${self.orderStatusGroupId()} - ${self.orderStatusGroup().Name}">Order Status Group: ${self.orderStatusGroup().Name}</span>`);
 

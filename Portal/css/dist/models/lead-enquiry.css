@@ -15,6 +15,10 @@
   font-size: 1rem;
 }
 
+.mb-0 {
+  margin-bottom: 0;
+}
+
 .dash-panel > .panel-heading {
   height: 75px;
 }

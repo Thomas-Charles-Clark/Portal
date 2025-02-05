@@ -53,7 +53,7 @@ namespace Portal.Controllers
         {
             var userId = User.Identity.GetUserId<int>();
 
-            if (objError?.message?.StartsWith("QuotaExceededError") == true)
+             if (objError?.message?.StartsWith("QuotaExceededError") == true)
             {
                 return Ok(new { });
             }
@@ -61,11 +61,11 @@ namespace Portal.Controllers
             PortalDb.SaveErrorToLog(
                 userId,
                 "Client-Side Error",
+                objError?.name,
                 objError?.message,
-                objError?.source,
-                objError?.message,
-                $"Line No. {objError?.lineno}",
-                $"Column No. {objError?.colno}",
+                objError?.stack,
+                null,
+                null,
                 null,
                 null,
                 objError?.url,

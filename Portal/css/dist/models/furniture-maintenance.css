@@ -15,6 +15,10 @@
   font-size: 1rem;
 }
 
+.mb-0 {
+  margin-bottom: 0;
+}
+
 .mdc-select .k-dropdown-wrap.k-state-hover {
   background-color: white;
 }

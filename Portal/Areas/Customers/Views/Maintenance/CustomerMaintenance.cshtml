@@ -62,12 +62,12 @@
 </div>
 
 <ul id="create-or-maintain-tabs" class="nav nav-pills margin-top-30">
-    <li class="active">
+    <li>
         <a href="#tab-maintain" data-toggle="tab">
             Maintain
         </a>
     </li>
-    <li>
+    <li class="active">
         <a href="#tab-create" data-toggle="tab">
             Create
         </a>
@@ -75,7 +75,7 @@
 </ul>
 
 <div class="tab-content">
-    <div id="tab-maintain" class="tab-pane active">
+    <div id="tab-maintain" class="tab-pane">
         <div class="margin-bottom-15">
             @Html.Action("TradeAccountSelector", "Component", new { Area = "", canSearch = Model.Properties?.AccountSelector_CanSearch ?? false, canCollapse = false })
         </div>
@@ -222,7 +222,7 @@
         </div>
         <!-- /ko -->
     </div>
-    <div id="tab-create" class="tab-pane">
+    <div id="tab-create" class="tab-pane active">
         <div class="panel panel-primary">
             <div class="panel-body modal-body" style="min-height: 600px;">
                 <div data-bind="component: { name: 'matrix-loading-component', params: matrixLoader }"></div>

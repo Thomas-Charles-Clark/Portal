@@ -21,7 +21,7 @@ const fieldViewModel = ((data, parent) => {
         let f = 0;
     }
 
-    self.value = initFn().extend({ // after binding this holds self.value.DOMElement
+    self.value = self.value ? self.value : initFn().extend({ // after binding this holds self.value.DOMElement
         required: {
             params: self.required,
             onlyIf: () => {
@@ -137,6 +137,8 @@ const fieldViewModel = ((data, parent) => {
         clearFunction: function () {
             var self = this;
             self.observable(undefined);
+            if (self.observable.DOMElement.value)
+                self.observable.DOMElement.value = '';
             $(self.observable.DOMElement).focus();
         },
         charsRemainingOptions: {
@@ -510,6 +512,77 @@ const fieldViewModel = ((data, parent) => {
     }
 
     self.buildMDCAutocompleteProperties = () => {
+        //Object.assign(self.params, {
+        //    enterKeyFunction: () => {
+        //        $(self.value.DOMElement).autocomplete('search');
+        //    },
+        //    autocompleteSettings: {
+        //        value: self.value,
+        //        observable: ko.observable(),
+        //        appendTo: 'body',
+        //        classes: {
+        //            "ui-autocomplete": "busy",
+        //            "ui-autocomplete-loading": "busy",
+        //        },
+        //        mapFunction: function (i) {
+        //            return {
+        //                label: i,
+        //                value: i,
+        //                obj: i
+        //            }
+        //        },
+        //        source: function (request, response) {
+        //            //if (self.tradeAccount()) {
+        //            var data = {
+        //                term: request.term
+        //            };
+        //            $.ajax({
+        //                url: self.autocompleteEndpoint,
+        //                type: "POST",
+        //                dataType: "json",
+        //                data: data,
+        //                success: function (data) {
+        //                    response($.map(data, function (item) {
+        //                        return {
+        //                            label: item.Item2,
+        //                            value: item.Item1,
+        //                            obj: item
+        //                        };
+        //                    }));
+        //                }
+        //            });
+        //            //} else {
+        //            //    response([]);
+        //            //}
+        //        },
+        //        minLength: self.autocompleteMinLength,
+        //        autoFocus: true,
+        //        search: (ev, ui) => {
+        //            self.busy(true);
+        //        },
+        //        open: (ev, ui) => {
+        //            self.busy(false);
+        //        },
+        //        select: function (event, ui) {
+        //            self.busy(false);
+        //            event.preventDefault();
+        //            self.value(ui.item.value);
+        //            self.params.autocompleteSettings.observable(ui.item.label);
+
+        //        },
+        //        response: (ev, ui) => {
+        //            self.busy(false);
+        //        },
+        //        create: function () {
+        //            $(this).data("ui-autocomplete")._renderItem = function (ul, item) {
+        //                var li = $("<li>");
+        //                var div = li.append("<div class='ui-menu-item-wrapper'>" + item.label + "</div>");
+        //                return li.appendTo(ul);
+        //            };
+        //        }
+        //    }
+        //})
+
         Object.assign(self.params, {
             enterKeyFunction: () => {
                 $(self.value.DOMElement).autocomplete('search');
@@ -530,7 +603,6 @@ const fieldViewModel = ((data, parent) => {
                     }
                 },
                 source: function (request, response) {
-                    //if (self.tradeAccount()) {
                     var data = {
                         term: request.term
                     };
@@ -540,18 +612,34 @@ const fieldViewModel = ((data, parent) => {
                         dataType: "json",
                         data: data,
                         success: function (data) {
-                            response($.map(data, function (item) {
-                                return {
-                                    label: item.Item2,
-                                    value: item.Item1,
-                                    obj: item
-                                };
-                            }));
+
+                            let results = [];
+
+                            if (typeof self.responseMap === 'function') {
+                                results = self.responseMap(data);
+                            } else {
+
+                                results = $.map(data, function (item) {
+                                    return {
+                                        label: item.Item2,
+                                        value: item.Item1,
+                                        obj: item
+                                    };
+                                });
+                            }
+
+                            response(results)
+
+                            self.busy(false);
+
+                            if (typeof self.afterResponse === 'function') {
+                                self.afterResponse(results);
+                            }
+                        },
+                        error: (request, error, errorThrown) => {
+                            self.busy(false);
                         }
                     });
-                    //} else {
-                    //    response([]);
-                    //}
                 },
                 minLength: self.autocompleteMinLength,
                 autoFocus: true,
@@ -564,9 +652,12 @@ const fieldViewModel = ((data, parent) => {
                 select: function (event, ui) {
                     self.busy(false);
                     event.preventDefault();
-                    self.value(ui.item.value);
-                    self.params.autocompleteSettings.observable(ui.item.label);
-
+                    if (typeof self.select === 'function') {
+                        self.select(ui.item, event);
+                    } else {
+                        self.value(ui.item);
+                        self.params.autocompleteSettings.observable(ui.item.label);
+                    } 
                 },
                 response: (ev, ui) => {
                     self.busy(false);

@@ -15,6 +15,10 @@
   font-size: 1rem;
 }
 
+.mb-0 {
+  margin-bottom: 0;
+}
+
 span.shining {
   display: block;
   font-family: "courier new";
@@ -541,5 +545,40 @@ tr.readonly {
   padding-top: 0.75rem;
   margin-top: 0.75rem;
   border-top: 1px solid #ced4da;
+}
+
+#submission-results-container .alert {
+  margin-top: 1rem;
+}
+
+.request-stock-check-btn {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+#stock-check-request-modal .modal-body > .d-flex {
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+#stock-check-request-modal .modal-body .validation-message {
+  display: block;
+  margin: 0.75rem auto 0 auto;
+  color: #dc3545;
+  text-align: center;
+}
+#stock-check-request-modal .quantity-control {
+  margin: 0;
+  display: flex;
+}
+#stock-check-request-modal .quantity-control input.form-control {
+  width: 80px;
+}
+
+.drilldown-stock-table .alert p + p {
+  margin-bottom: 0;
+}
+.drilldown-stock-table .alert .request-stock-check-btn {
+  margin-top: 1rem;
 }
 /*# sourceMappingURL=order-products-e.css.map */

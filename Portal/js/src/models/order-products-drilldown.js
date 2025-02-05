@@ -412,6 +412,8 @@ var orderProductsDrilldownViewModel = function (parent, name) {
 
     self.supplierAvailabilityMessage = ko.observable();
 
+    self.showStockCheckRequester = ko.observable(false);
+
     self.emailInputVisible.subscribe(function (newValue) {
         window.setTimeout(function () {
             $('#large-image-email').focus();
@@ -1141,7 +1143,11 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
 
     // #endregion
 
-    // #region Components / Slicers
+    // #region Components
+
+    self.stockCheckRequester = stockCheckRequestViewModel({
+        parent: self
+    });
 
     // #endregion
 
@@ -3046,6 +3052,8 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
 
                     self.reserveBatchCuttingIndicator(data.BasketItemDetails.BatchCuttingIndicator);
 
+                    // is this now surplus to requirements? 24/01/2025
+                    // the allocationStock fetch now returns a supplierAvailabilityMessage
                     self.supplierAvailabilityMessage(data.BasketItemDetails.SupplierAvailabilityMessage);
 
                     self.wideWidthFabric(data.BasketItemDetails.WideWidthFabric);
@@ -3297,7 +3305,8 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
             var data = {
                 tradeAccountId: self.parent.orderFactory.tradeAccount().TradeAccountID,
                 basketItemId: self.addingProductToBasket().basketItemId,
-                productId: self.addingProductToBasket().record.ProductID
+                productId: self.addingProductToBasket().record.ProductID,
+                basketId: self.parent.orderFactory.basketId()
             };
 
             console.log('orderProductsDrilldown fetchBasketItemAllocationStock calling with', data);
@@ -3311,7 +3320,7 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
 
                     console.log('orderProductsDrilldown fetchBasketItemAllocationStock returned', data);
 
-                    data = Enumerable.From(data).GroupBy(function (piece) {
+                    data.stockResults = Enumerable.From(data.stockResults).GroupBy(function (piece) {
                         return {
                             stockLocationId: piece.StockLocationID,
                             stockLocationCode: piece.StockLocationCode,
@@ -3429,7 +3438,7 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
                             return grouping.stockLocation.sortOrder;
                         }).ToArray();
 
-                    ko.utils.arrayForEach(data, function (item) {
+                    ko.utils.arrayForEach(data.stockResults, function (item) {
 
                         item.stockLocation.totalQuantity = ko.pureComputed(function () {
                             return (this.availableNowTotal + this.bulkTotal + this.onReserveTotal + this.waitingTotal);
@@ -3452,8 +3461,26 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
 
                     });
 
-                    self.addingProductAllocationStockData(data);
+                    self.addingProductAllocationStockData(data.stockResults);
 
+                    if (data.availabilityMessages.length) {
+                        self.supplierAvailabilityMessage(data.availabilityMessages[0].Response);
+                    } else {
+                        self.supplierAvailabilityMessage(undefined);
+                    }
+
+                    if (data.stockCheckRequest) {
+                        self.showStockCheckRequester(true);
+                        self.stockCheckRequester.allowStockCheckRequest(data.stockCheckRequest.AllowStockCheckRequest)
+                        self.stockCheckRequester.message(data.stockCheckRequest.Response);
+                        self.stockCheckRequester.cssClass(data.stockCheckRequest.Class);
+                    } else {
+                        self.showStockCheckRequester(false);
+                        self.stockCheckRequester.allowStockCheckRequest(false)
+                        self.stockCheckRequester.message(undefined);
+                        self.stockCheckRequester.cssClass(undefined);
+                    }
+                      
                     self.allocationStockRegionBusy(false);
 
                     resolve();
@@ -3905,6 +3932,10 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
 
         self.generalAllocationMessage(undefined);
         self.supplierAvailabilityMessage(undefined);
+
+        self.showStockCheckRequester(false);
+        self.stockCheckRequester.reset();
+
         self.ringFenceWarning(undefined);
         self.freeStockWarning(undefined);
         self.allocationRequest(undefined);
@@ -4024,6 +4055,8 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
 
         self.reset();
 
+        searchResult.stockCheckRequester = self.stockCheckRequester;
+
         self.searchResult(searchResult);
 
         self.products(searchResult.products);
@@ -4031,6 +4064,7 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
         for (var i in searchResult.products) {
             searchResult.products[i].stockInfo = ko.observable();
             searchResult.products[i].supplierAvailabilityMessage = ko.observable();
+            searchResult.products[i].showStockCheckRequester = ko.observable(false);
         }
 
         self.busy(true);
@@ -4627,11 +4661,12 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
 
             if (productIds.length) {
                 var data = {
+                    basketId: self.parent.orderFactory.basketId(),
                     tradeAccountId: self.tradeAccount.TradeAccountID,
                     productIds: productIds,
                     enquiryType: enquiryType
                 }
-                console.log('orderProductsDrilldown fetchStockInfo calling with', data);
+                console.log('orderProductsDrilldown GetPieceLevelStockInfo calling with', data);
                 $.ajax({
                     url: '/api/componentapi/GetPieceLevelStockInfo',
                     type: 'POST',
@@ -4789,15 +4824,35 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
                             // exist in the searchResult which was clicked to invoke the drilldown modal's products collection
                             // anything which falls into that category has not been processed by our load method in here, so won't have
                             // a supplierAvailabilityMessage observable attached
-                            if (item.hasOwnProperty('supplierAvailabilityMessage')) {
-                                item.supplierAvailabilityMessage(Enumerable.From(data.availabilityMessages).Where(function (y) {
-                                    return y.ProductID == item.record.ProductID
-                                }).Select(function (y) {
-                                    return y.SupplierAvailabilityMessage;
-                                }).SingleOrDefault());
+                            let sam = data.availabilityMessages.find(a => a.ProductID == item.record.ProductID);
 
-                                item.stockInfo(processed);
+                            if (sam) {
+                                item.hasOwnProperty('supplierAvailabilityMessage') && item.supplierAvailabilityMessage(sam.SupplierAvailabilityMessage);
                             }
+
+                            let sar = data.stockCheckRequest; // this property being non-null indicates that the portal.StockCheckRequest_Select call was made
+                            // and thus we should display the stockCheckRequester.
+
+                            if (sar) {
+                                item.hasOwnProperty('showStockCheckRequester') && item.showStockCheckRequester(true);
+                            }
+
+
+                            if (item.hasOwnProperty('showStockCheckRequester')) {
+                                if (data.stockCheckRequest) {
+                                    self.showStockCheckRequester(true);
+                                    self.stockCheckRequester.allowStockCheckRequest(data.stockCheckRequest.AllowStockCheckRequest);
+                                    self.stockCheckRequester.message(data.stockCheckRequest.Response);
+                                    self.stockCheckRequester.cssClass(data.stockCheckRequest.Class);
+                                } else {
+                                    self.showStockCheckRequester(false);
+                                    self.stockCheckRequester.allowStockCheckRequest(false)
+                                    self.stockCheckRequester.message(undefined);
+                                    self.stockCheckRequester.cssClass(undefined);
+                                }
+                            }
+
+                            item.stockInfo(processed);
                         });
 
                         //if (data.hasOwnProperty('Code')) {
@@ -5381,6 +5436,10 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
         //$('#order-products-drilldown-modal').modal('hide');
 
         $('#image-modal').modal('hide');
+    }
+
+    self.beginStockCheckRequest = function (data, event) {
+        self.stockCheckRequester.showModal();
     }
 
     // #endregion

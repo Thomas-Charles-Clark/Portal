@@ -16,6 +16,10 @@
   font-size: 1rem;
 }
 
+.mb-0 {
+  margin-bottom: 0;
+}
+
 /* This just to prevent the absolutely positioned basket count on the sample request screen
     from causing viewport overflow. Right-overflowing absolutely positioned elements do cause
     increases in widths; left-overflow absolutely positioned elements do not. 

@@ -27,6 +27,8 @@ using SharedEFClasses.Models.Mertexer;
 using DeliveryTerm = SharedEFClasses.Models.Mertexer.DeliveryTerm;
 using SharedEFClasses.Models.Mertex;
 using System.Web.Http.Results;
+using Org.BouncyCastle.Asn1.Mozilla;
+using SharedEFClasses.Models.OrderEntry;
 
 namespace SharedEFClasses.Models
 {
@@ -252,20 +254,30 @@ namespace SharedEFClasses.Models
             return result;
         }
 
-        public List<BasketItemAllocationStockFetchResult> FetchBasketItemAllocationStock(PassBasketItemAllocationFetch objFetch)
+        public async Task<FetchStockInfoResult> FetchStock(PassStockFetch dto)
         {
-            var results = new List<BasketItemAllocationStockFetchResult>();
+            var result = new FetchStockInfoResult();
 
             var productIdTable = new DataTable();
 
             productIdTable.Columns.Add("ProductID", typeof(int));
 
-            productIdTable.Rows.Add(objFetch.ProductID);
+
+            if (dto.ProductID != null)
+            {
+                productIdTable.Rows.Add(dto.ProductID);
+            }
+
+            if (dto.ProductIDs != null && dto.ProductIDs.Any())
+            {
+                foreach (var p in dto.ProductIDs)
+                    productIdTable.Rows.Add(p);
+            }
 
             var parameters = new List<SqlParameter>()
             {
-                new SqlParameter("@BasketItemID",  objFetch.BasketItemID),
-                new SqlParameter("@TradeAccountID", objFetch.TradeAccountID),
+                new SqlParameter("@BasketItemID",  dto.BasketItemID),
+                new SqlParameter("@TradeAccountID", dto.TradeAccountID),
                 new SqlParameter("@ProductIDs",  productIdTable)
                 {
                     SqlDbType = SqlDbType.Structured,
@@ -286,9 +298,15 @@ namespace SharedEFClasses.Models
 
                 var reader = cmd.ExecuteReader();
 
-                results = ((IObjectContextAdapter)this)
+                result.stockResults = ((IObjectContextAdapter)this)
                     .ObjectContext
-                    .Translate<BasketItemAllocationStockFetchResult>(reader).ToList();
+                    .Translate<ProductStockFetchResult>(reader).ToList();
+
+                reader.NextResult();
+
+                result.availabilityMessages = ((IObjectContextAdapter)this)
+                    .ObjectContext
+                    .Translate<StockInfoAvailabilityMessage>(reader).ToList();
             }
             catch (SqlException e)
             {
@@ -299,6 +317,31 @@ namespace SharedEFClasses.Models
             {
                 this.Database.Connection.Close();
             }
+
+            if (result.availabilityMessages.Count > 0)
+            {
+                if (result.availabilityMessages[0].ExecuteStockCheckRequest)
+                {
+                    result.stockCheckRequest = await this.Database.Connection.QuerySingleAsync<StockCheckRequestSelectResult>("portal.StockCheckRequest_Select",
+                        new 
+                        {
+                            MemberID = dto.MemberID,
+                            ProductID = dto.ProductID ?? dto.ProductIDs?.FirstOrDefault(),
+                            TradeAccountID = dto.TradeAccountID,
+                            BasketID = dto.BasketID
+                        }, null, null, CommandType.StoredProcedure);
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<StockCheckRequestSelectResult> StockCheckRequest_Select(PassStockCheckRequest dto)
+        {
+            var results = await this.Database.Connection.QuerySingleAsync<StockCheckRequestSelectResult>(
+                "portal.StockCheckRequest_Select",
+                dto,
+                commandType: CommandType.StoredProcedure);
 
             return results;
         }

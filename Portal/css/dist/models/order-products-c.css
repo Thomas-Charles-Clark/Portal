@@ -15,6 +15,10 @@
   font-size: 1rem;
 }
 
+.mb-0 {
+  margin-bottom: 0;
+}
+
 div.section > h4 {
   margin-bottom: 15px;
 }
@@ -774,6 +778,12 @@ select.fulfilment-option {
 .allocation-stock-breakdown-inner {
   position: relative;
   min-height: 300px;
+}
+.allocation-stock-breakdown-inner p + p {
+  margin-bottom: 0;
+}
+.allocation-stock-breakdown-inner .request-stock-check-btn {
+  margin-top: 1rem;
 }
 
 .product-progression-nav-btns {

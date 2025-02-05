@@ -130,15 +130,10 @@
     <div class="summary-pod card" data-bind="css: { 'active': active }, click: $parent.summaryPodClick" tabindex="0">
         <div class="card-body">
             <h5 class="card-title" data-bind="text: Label"></h5>
-            <p data-bind="text: orderCountDisplay"></p>
-            <p data-bind="text: salesTotalDisplay"></p>
-            @*<p class="date-display">
-                    <span data-bind="text: moment(StartDate).format('DD/MM/YYYY')"></span>
-                    <span>
-                        to
-                    </span>
-                    <span data-bind="text: moment(EndDate).format('DD/MM/YYYY')"></span>
-                </p>*@
+            <div>
+                <p data-bind="text: orderCountDisplay"></p>
+                <p data-bind="text: salesTotalDisplay"></p>
+            </div>
         </div>
     </div>
 </div>

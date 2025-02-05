@@ -16,6 +16,7 @@ using SharedEFClasses.Models.Applications;
 using SharedEFClasses.Models.Components;
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Mertexer;
+using SharedEFClasses.Models.OrderEntry;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.Samples;
@@ -754,17 +755,30 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult GetPieceLevelStockInfo([FromBody] PassFetchProductStockInfo objProductIds)
+        public async Task<IHttpActionResult> GetPieceLevelStockInfo([FromBody] PassStockFetch dto)
         {
-            var result = PortalDb.FetchStockInfo(objProductIds);
+            dto.MemberID = User.Identity.GetUserId<int>();
+
+            var result = await PortalDb.FetchStock(dto);
+
+            return Ok(result);
+        }
+
+
+        [HttpPost]
+        public async Task<IHttpActionResult> InsertStockCheckRequest([FromBody] PassInsertStockCheckRequest dto)
+        {
+            dto.MemberID = User.Identity.GetUserId<int>();
+
+            var result = await PortalDb.StockCheckRequest_Insert(dto);
 
             return Ok(result);
         }
 
         [HttpPost]
-        public IHttpActionResult FetchCoordinatingProducts([FromBody] PassStockViewerLoad objProduct)
+        public IHttpActionResult FetchCoordinatingProducts([FromBody] PassStockViewerLoad dto)
         {
-            var result = PortalDb.FetchCoordinatingProducts(objProduct);
+            var result = PortalDb.FetchCoordinatingProducts(dto);
 
             return Ok(result);
         }
@@ -820,14 +834,16 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> SendProductInfoEmail([FromBody] PassSendProductInfo objSend)
+        public async Task<IHttpActionResult> SendProductInfoEmail([FromBody] PassSendProductInfo dto)
         {
             var member = UserManager.FindById(User.Identity.GetUserId<int>());
 
-            var stockInfo = PortalDb.FetchStockInfoSingular(new PassFetchProductStockInfoSingular()
+            var stockInfo = await PortalDb.FetchStock(new PassStockFetch()
             {
-                TradeAccountID = objSend.tradeAccountId.Value,
-                ProductCode = objSend.product.Code
+                MemberID = member.MemberID,
+                BasketID = null,
+                TradeAccountID = dto.tradeAccountId,
+                ProductIDs = new[] { dto.product.ProductID }
             });
 
             //var stockInfo = await PortalDb.StockEnquiry(objSend.product.Code);
@@ -870,13 +886,13 @@ namespace Portal.Controllers
 		                <columns small=""2"" large=""3"">
 			                <p>
 				                <strong>
-					                {objSend.product.Code}
+					                {dto.product.Code}
 				                </strong>
 			                </p>
 		                </columns>
 		                <columns small=""8"" large=""9"">
 			                <p>
-				                {objSend.product.OrderFormName}
+				                {dto.product.OrderFormName}
 			                </p>
 		                </columns>
 	                </row>
@@ -890,13 +906,13 @@ namespace Portal.Controllers
 		                </columns>
 		                <columns small=""8"" large=""9"">
 			                <p>
-				                {objSend.product.StockStatus}
+				                {dto.product.StockStatus}
 			                </p>
 		                </columns>
 	                </row>
 	                <row>
 		                <columns>
-			                <img src=""https://www.designersguild.com/image-nonwebp/600/{objSend.product.ImageID}"" width=""600"" height=""600"" />
+			                <img src=""https://www.designersguild.com/image-nonwebp/600/{dto.product.ImageID}"" width=""600"" height=""600"" />
 		                </columns>
 	                </row>
 	                <spacer size=""10""></spacer>
@@ -913,7 +929,7 @@ namespace Portal.Controllers
 			                <strong>Available Stock</strong>
 		                </columns>
 		                <columns small=""8"" large=""9"">
-			                <span>{stockInfo.stockResults.Select(s => s.AvailableNowQuantity).Sum()?.ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}</span>
+			                <span>{stockInfo.stockResults.Select(s => s.AvailableNowQuantity).Sum()?.ToString($"N{dto.product.QuantityPrecisionA}")} {dto.product.Units}</span>
 		                </columns>
 	                </row>
 	                <row>
@@ -921,7 +937,7 @@ namespace Portal.Controllers
 			                <strong>Incoming Stock</strong>
 		                </columns>
 		                <columns small=""8"" large=""9"">
-			                <span>{stockInfo.stockResults.Select(s => s.DueInQuantity).Sum().ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}</span>
+			                <span>{stockInfo.stockResults.Select(s => s.DueInQuantity).Sum().ToString($"N{dto.product.QuantityPrecisionA}")} {dto.product.Units}</span>
 		                </columns>
 	                </row>";
 
@@ -990,12 +1006,12 @@ namespace Portal.Controllers
 		                            </columns>
 		                            <columns small=""3"">
 			                            <p class=""text-right"">
-				                            {piece.AvailableNowQuantity?.ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}
+				                            {piece.AvailableNowQuantity?.ToString($"N{dto.product.QuantityPrecisionA}")} {dto.product.Units}
 			                            </p>
 		                            </columns>
 		                            <columns small=""3"">
 			                            <p class=""text-right"">
-				                            {(1 * Convert.ToDecimal(piece.AvailableNowQuantity)).ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}
+				                            {(1 * Convert.ToDecimal(piece.AvailableNowQuantity)).ToString($"N{dto.product.QuantityPrecisionA}")} {dto.product.Units}
 			                            </p>
 		                            </columns>
 	                            </row>";
@@ -1016,12 +1032,12 @@ namespace Portal.Controllers
 		                            </columns>
 		                            <columns small=""3"">
 			                            <p class=""text-right"">
-				                            {piece.AvailableNowQuantity?.ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}
+				                            {piece.AvailableNowQuantity?.ToString($"N{dto.product.QuantityPrecisionA}")} {dto.product.Units}
 			                            </p>
 		                            </columns>
 		                            <columns small=""3"">
 			                            <p class=""text-right"">
-				                            {(1 * Convert.ToDecimal(piece.AvailableNowQuantity)).ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}
+				                            {(1 * Convert.ToDecimal(piece.AvailableNowQuantity)).ToString($"N{dto.product.QuantityPrecisionA}")} {dto.product.Units}
 			                            </p>
 		                            </columns>
 	                            </row>";
@@ -1047,7 +1063,7 @@ namespace Portal.Controllers
 		                <columns small=""3"">
 			                <p class=""text-right"">
 				                <strong>
-					                {stockInfo.stockResults.Select(p => Convert.ToDecimal(p.AvailableNowQuantity)).Sum().ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}
+					                {stockInfo.stockResults.Select(p => Convert.ToDecimal(p.AvailableNowQuantity)).Sum().ToString($"N{dto.product.QuantityPrecisionA}")} {dto.product.Units}
 				                </strong>
 			                </p>
 		                </columns>
@@ -1108,7 +1124,7 @@ namespace Portal.Controllers
 		                    </columns>
 		                    <columns small=""3"" large=""4"">
 			                    <p class=""text-right"">
-				                    {Convert.ToDecimal(po.DueInQuantity).ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}
+				                    {Convert.ToDecimal(po.DueInQuantity).ToString($"N{dto.product.QuantityPrecisionA}")} {dto.product.Units}
 			                    </p>
 		                    </columns>
 	                    </row>";
@@ -1129,7 +1145,7 @@ namespace Portal.Controllers
 		                    <columns small=""3"" large=""4"">
 			                    <p class=""text-right"">
 				                    <strong>
-				                        {stockInfo.stockResults.Where(s => s.DueInQuantity > 0).Select(p => Convert.ToDecimal(p.DueInQuantity)).Sum().ToString($"N{objSend.product.QuantityPrecisionA}")} {objSend.product.Units}
+				                        {stockInfo.stockResults.Where(s => s.DueInQuantity > 0).Select(p => Convert.ToDecimal(p.DueInQuantity)).Sum().ToString($"N{dto.product.QuantityPrecisionA}")} {dto.product.Units}
                                     </strong>
 			                    </p>
 		                    </columns>
@@ -1168,7 +1184,7 @@ namespace Portal.Controllers
                 var body = "";
                 var subject = "";
 
-                subject = $"{objSend.product.Code} -  Product Info Designers Guild";
+                subject = $"{dto.product.Code} -  Product Info Designers Guild";
 
                 body = inkyMarkup;
 
@@ -1176,7 +1192,7 @@ namespace Portal.Controllers
                 {
                     Body = body,
                     Subject = subject,
-                    Destination = objSend.recipient
+                    Destination = dto.recipient
                 });
             });
 #pragma warning restore 4014
@@ -1951,9 +1967,19 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchBasketItemAllocationStock([FromBody] PassBasketItemAllocationFetch objFetch)
+        public async Task<IHttpActionResult> FetchBasketItemAllocationStock([FromBody] PassStockFetch dto)
         {
-            var results = PortalDb.FetchBasketItemAllocationStock(objFetch);
+            dto.MemberID = User.Identity.GetUserId<int>();
+
+            var result = await PortalDb.FetchStock(dto);
+
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public IHttpActionResult FetchStockCheckRequest([FromBody] PassStockCheckRequest dto)
+        {
+            var results = PortalDb.StockCheckRequest_Select(dto);
 
             return Ok(results);
         }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.Owin.Security;
 
 using SharedEFClasses.Models.Applications;
 using SharedEFClasses.Models.Attributes;
@@ -43,6 +44,7 @@ namespace SharedEFClasses.Models
         public PortalDbContext(string connectionName = "vm-sql")
             : base(connectionName)
         {
+            //this.Database.Log = (s) => System.Diagnostics.Debug.WriteLine(s);
         }
 
         static PortalDbContext()
@@ -99,6 +101,7 @@ namespace SharedEFClasses.Models
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Mertex.OrderTaker> OrderTakers { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
+        public DbSet<SupplierType> SupplierTypes { get; set; }
 
         #endregion
 
@@ -133,7 +136,7 @@ namespace SharedEFClasses.Models
         public DbSet<ProductFilterGroup> ProductFilterGroups { get; set; }
 
         public DbSet<ContractProductRestriction> ContractProductRestrictions { get; set; }
-
+        public DbSet<ProductLifeCycle> ProductLifeCycles { get; set; }
         public DbSet<MertexProductClassificationSuperSet> MertexProductClassificationSuperSet { get; set; }
         public DbSet<MertexTradeAccountClassificationSuperSet> MertexTradeAccountClassificationSuperSet { get; set; }
 
@@ -150,6 +153,8 @@ namespace SharedEFClasses.Models
         public DbSet<MaintenanceBuyer> MaintenanceBuyers { get; set; }
 
         public DbSet<MaintenanceSupplier> MaintenanceSuppliers { get; set; }
+
+        public DbSet<PurchasingRecommendation> PurchasingRecommendations { get; set; }
 
         #endregion
 

@@ -18,7 +18,7 @@
     @Scripts.Render("~/bundles/js/popper")
     @Scripts.Render("~/bundles/js/tempus-dominus")
 
-<script type="text/javascript">
+    <script type="text/javascript">
     window.getTabToLoad = () => {
         return '@Html.Raw(Model.Tab)';
     }
@@ -130,7 +130,7 @@
     function getMemberId() {
         return @(User.Identity.GetUserId<int>())
     }
-</script>
+    </script>
 
     @if (User.IsInRole("Super Admin") || User.IsInRole("Senior Manager") || User.IsInRole("User Masquerade") || User.IsInRole("Customer Services"))
     {
@@ -138,7 +138,7 @@
             window.memberMasqueradeParams = kendoMDCDropDownList({
                 label: 'User',
                 odata: true,
-                endPoint:  '/odata/Members',
+                endPoint:  '/odata/Members/Default.MemberFilter(searchTerm=null)',
                 textField: 'FullName',
                 valueField: 'Id',
                 virtual: true,
@@ -314,14 +314,6 @@
         <td style="white-space: normal">
             <span data-bind="html: Reference"></span>
         </td>
-        <!--<td>-->
-        <!-- ko if: MertexMarket -->
-        <!--<span data-bind="text: MertexMarket.Name"></span>-->
-        <!-- /ko -->
-        <!-- ko ifnot: MertexMarket -->
-        <!--<span data-bind="text: Market"></span>-->
-        <!-- /ko -->
-        <!--</td>-->
         <td>
             <span class="display-block" data-bind="text: CustomerCode"></span>
             <span class="display-block" data-bind="text: CustomerName"></span>
@@ -343,9 +335,6 @@
                 close
             </span>
             <!-- /ko -->
-        </td>
-        <td>
-            <span class="held-since" data-bind="text: moment(HeldSince).format('dddd Do MMM YY')"></span>
         </td>
         <td style="white-space: normal">
             <div data-bind="foreach: Enumerable.From(JSON.parse(HeldReasons)).Select('$.HeldReason').ToArray()">
@@ -764,68 +753,68 @@
         </div>
     </div>
     @*@if (User.IsInRole("Super Admin") || (User.IsInRole("Order Release - Customer Services")
-                                      || User.IsInRole("Order Release - Credit Control")
-                                      || User.IsInRole("Order Release - IT")))
-    {*@
-        <div id="tab-held-orders" class="tab-pane @(tabToLoad == "ordersToApprove" ? "active" : "")">
-            <div class="panel panel-primary" data-bind="with: memberBasketFetcher">
-                <div class="panel-heading no-padding">
-                    <h4 class="panel-title">
-                        <span data-bind="text: busy() ? 'Loading...' :   heldOrdersCount() ? 'Select an Order' : 'There are no Held Orders'"></span>
-                    </h4>
-                    <div class="clearfix"></div>
-                </div>
-                <div class="panel-collapse">
-                    <div class="selector panel-body bg-info">
-                        <div class="blocker" data-bind="visible: busy">
-                            <div class="busy-bars">
-                                <div class="rect1 alert alert-info"></div>
-                                <div class="rect2 alert alert-info"></div>
-                                <div class="rect3 alert alert-info"></div>
-                                <div class="rect4 alert alert-info"></div>
-                                <div class="rect5 alert alert-info"></div>
-                            </div>
+                                          || User.IsInRole("Order Release - Credit Control")
+                                          || User.IsInRole("Order Release - IT")))
+        {*@
+    <div id="tab-held-orders" class="tab-pane @(tabToLoad == "ordersToApprove" ? "active" : "")">
+        <div class="panel panel-primary" data-bind="with: memberBasketFetcher">
+            <div class="panel-heading no-padding">
+                <h4 class="panel-title">
+                    <span data-bind="text: busy() ? 'Loading...' :   heldOrdersCount() ? 'Select an Order' : 'There are no Held Orders'"></span>
+                </h4>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-collapse">
+                <div class="selector panel-body bg-info">
+                    <div class="blocker" data-bind="visible: busy">
+                        <div class="busy-bars">
+                            <div class="rect1 alert alert-info"></div>
+                            <div class="rect2 alert alert-info"></div>
+                            <div class="rect3 alert alert-info"></div>
+                            <div class="rect4 alert alert-info"></div>
+                            <div class="rect5 alert alert-info"></div>
                         </div>
-                        <div class="prefilters" style="display: none" data-bind="visible: true">
-                            <div id="held-orders-market-filter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: heldOrdersMarketParams }"></div>
-                            <div id="held-orders-hold-reason-filter" class="prefilter" data-bind="component: { name: 'mdc-kendo-multiselect-component', params: heldOrdersHoldReasonsParams }"></div>
-                            <div id="held-orders-search-term-filter" class="prefilter" data-bind="component: { name: 'mdc-text-field-component', params: heldOrdersSearchTermParams }"></div>
-                            <button id="held-orders-filter-search-btn" class="btn btn-flat" type="button" data-bind="click: heldOrdersSearchTermParams.enterKey">
-                                <span>
-                                    Search
-                                </span>
-                                <span class="bi bi-search ms-2"></span>
-                            </button>
-                            <button id="held-orders-filter-clear-btn" class="btn btn-flat" type="button" data-bind="click: clearHeldOrdersGridFilters">
-                                <span>
-                                    Clear Filters
-                                </span>
-                                <span class="bi bi-x ms-2"></span>
-                            </button>
-                        </div>
-                        <!-- ko if: holdReasonSummaryPods().length -->
-                        <div class="hold-reason-summary-pods" style="display: none" data-bind="visible: true">
-                            <div class="pods-wrapper">
-                                <!-- ko foreach: holdReasonSummaryPods -->
-                                <div class="card hold-reason-summary-pod" data-bind="click: apply, css: { 'active': active, 'priority': Priority }, attr: { 'data-hold-reason-group-id': HoldReasonGroupID }">
-                                    <div class="title-wrapper">
-                                        <h4 class="title" data-bind="html: HoldReasonGroupName"></h4>
-                                        <h5 class="subtitle" data-bind="html: RoleName"></h5>
-                                    </div>
-                                    <div class="detail">
-                                        <span data-bind="text: Count"></span>
-                                    </div>
-                                </div>
-                                <!-- /ko -->
-                            </div>
-                        </div>
-                        <!-- /ko -->
-                        <div data-bind="kendoGrid: heldOrdersResultGridSettings"></div>
-                        <pre id="json-viewer" class="prettyprint lang-js" style="display: none;" data-bind="visible: jsonViewer() != null, html: memberBasketFetcher.jsonViewer"></pre>
                     </div>
+                    <div class="prefilters" style="display: none" data-bind="visible: true">
+                        <div id="held-orders-market-filter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: heldOrdersMarketParams }"></div>
+                        <div id="held-orders-hold-reason-filter" class="prefilter" data-bind="component: { name: 'mdc-kendo-multiselect-component', params: heldOrdersHoldReasonsParams }"></div>
+                        <div id="held-orders-search-term-filter" class="prefilter" data-bind="component: { name: 'mdc-text-field-component', params: heldOrdersSearchTermParams }"></div>
+                        <button id="held-orders-filter-search-btn" class="btn btn-flat" type="button" data-bind="click: heldOrdersSearchTermParams.enterKey">
+                            <span>
+                                Search
+                            </span>
+                            <span class="bi bi-search ms-2"></span>
+                        </button>
+                        <button id="held-orders-filter-clear-btn" class="btn btn-flat" type="button" data-bind="click: clearHeldOrdersGridFilters">
+                            <span>
+                                Clear Filters
+                            </span>
+                            <span class="bi bi-x ms-2"></span>
+                        </button>
+                    </div>
+                    <!-- ko if: holdReasonSummaryPods().length -->
+                    <div class="hold-reason-summary-pods" style="display: none" data-bind="visible: true">
+                        <div class="pods-wrapper">
+                            <!-- ko foreach: holdReasonSummaryPods -->
+                            <div class="card hold-reason-summary-pod" data-bind="click: apply, css: { 'active': active, 'priority': Priority }, attr: { 'data-hold-reason-group-id': HoldReasonGroupID }">
+                                <div class="title-wrapper">
+                                    <h4 class="title" data-bind="html: HoldReasonGroupName"></h4>
+                                    <h5 class="subtitle" data-bind="html: RoleName"></h5>
+                                </div>
+                                <div class="detail">
+                                    <span data-bind="text: Count"></span>
+                                </div>
+                            </div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <!-- /ko -->
+                    <div data-bind="kendoGrid: heldOrdersResultGridSettings"></div>
+                    <pre id="json-viewer" class="prettyprint lang-js" style="display: none;" data-bind="visible: jsonViewer() != null, html: memberBasketFetcher.jsonViewer"></pre>
                 </div>
             </div>
         </div>
+    </div>
     @* } *@
     <div id="tab-my-held-orders" class="tab-pane @(tabToLoad == "myHeldOrders" ? "active" : "")">
         <div class="panel panel-primary" data-bind="with: memberBasketFetcher">
@@ -1067,21 +1056,26 @@
 </div>
 
 <div id="submitted-basket-modal" class="modal fade" data-backdrop="static" data-keyboard="false" data-bind="with: memberBasketFetcher">
-    <div class="modal-dialog" data-bind="css: { 'modal-lg modal-xl': basketSubmissionResults().length }">
+    <div class="modal-dialog modal-lg modal-xl" data-bind="css: { 'modal-lg modal-xl': basketSubmissionResults().length }">
         <div class="modal-content">
             <div class="modal-header grey-blue">
                 <h4 class="modal-title">
                     <a class="close pull-right" data-bind="click: closeSubmissionModal">
                         &times;
                     </a>
-                    Thank You
+                    <span>
+                        Thank You
+                    </span>
+                    <!-- ko if: $parent.orderFactory.basketId() -->
+                    <span class="margin-left-15" data-bind="text: `Basket ID: ${$parent.orderFactory.basketId()}`"></span>
+                    <!-- /ko -->
                 </h4>
             </div>
             <div class="modal-body">
                 <p>
                     Your order was submitted successfully. Please review the submission results below.
                 </p>
-                <div data-bind="html: submissionResultText"></div>
+                <div id="submission-results-container" data-bind="html: submissionResultText"></div>
                 <!-- ko if: basketSubmissionResults().length -->
                 <div class="margin-top-30" data-bind="kendoGrid: basketSubmissionResultGrid"></div>
                 <!-- /ko -->
@@ -1175,9 +1169,9 @@
                 <!-- ko if: typeof PhoneNumber !== 'undefined' -->
                 <!-- ko if: PhoneNumber -->
                 <!--The primary phone number we have on file for
-    <span data-bind="text: Label"></span>
-    is
-    <a href="javascript" data-bind="attr: { title: 'Click to Copy Below' }, text: PhoneNumber, click: function (data) { $parent.lastChancePhone.observable(data.PhoneNumber); }"></a>-->
+                <span data-bind="text: Label"></span>
+                is
+                <a href="javascript" data-bind="attr: { title: 'Click to Copy Below' }, text: PhoneNumber, click: function (data) { $parent.lastChancePhone.observable(data.PhoneNumber); }"></a>-->
                 <!-- /ko -->
                 <!-- ko ifnot: PhoneNumber -->
                 <!--We don't appear to have a telephone number on file for <span data-bind="text: Label"></span>. Please inform Credit Control.-->

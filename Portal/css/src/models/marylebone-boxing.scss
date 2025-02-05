@@ -176,36 +176,42 @@
             height: 100%;
         }
 
-        #scanner-results {
-            max-height: 600px;
-            overflow-y: auto;
-            font-size: $font-size-md;
-            margin-bottom: 0;
-            min-height: 8px;
+        #scan-results-container {
+            .card-body {
+                padding: 1.10rem 0.75rem; 
+                
+                #scanner-results {
+                    max-height: 600px;
+                    overflow-y: auto;
+                    font-size: $font-size-md;
+                    margin-bottom: 0;
+                    min-height: 8px;
 
-            .text-italic {
-                color: $gray-600;
-            }
+                    .text-italic {
+                        color: $gray-600;
+                    }
 
-            .scan-result-success {
-                color: $green-300;
-            }
+                    .scan-result-success {
+                        color: $green-300;
+                    }
 
-            .scan-result-warning {
-                color: $orange-400;
-            }
+                    .scan-result-warning {
+                        color: $orange-400;
+                    }
 
-            .scan-result-failure {
-                color: $red-400;
-            }
+                    .scan-result-failure {
+                        color: $red-400;
+                    }
 
-            .scan-result-removal {
-                color: $body-color;
-            }
+                    .scan-result-removal {
+                        color: $body-color;
+                    }
 
-            span {
-                & + #activity-history-placeholder {
-                    display: none;
+                    span {
+                        & + #activity-history-placeholder {
+                            display: none;
+                        }
+                    }
                 }
             }
         }
@@ -277,5 +283,18 @@
                 }
             }
         }
+    }
+}
+
+.box-code-validation {
+    position: relative;
+    top: -5px;
+    margin-top: 0;
+    margin-bottom: $l-gutter;
+}
+
+#save-box-btn {
+    &[disabled] {
+        cursor: not-allowed;
     }
 }

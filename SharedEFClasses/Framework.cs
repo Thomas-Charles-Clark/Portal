@@ -213,15 +213,15 @@ namespace SharedEFClasses.Utilities
             String innerExceptionMessage = "";
             String innerExceptionSource = "";
             String innerExceptionStackTrace = "";
-
+                
             var exc = e;
 
             exceptionType = "Javascript Error";
             exceptionMessage = e.message;
-            exceptionSource = e.source;
+            exceptionSource = e.stack;
             innerExceptionMessage = e.error;
 
-            stackTrace = exc.lineno;
+            stackTrace = exc.lineNo;
 
             ErrorDbContext objError = new ErrorDbContext();
 

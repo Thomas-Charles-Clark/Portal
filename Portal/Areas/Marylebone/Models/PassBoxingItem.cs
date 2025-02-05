@@ -12,5 +12,9 @@ namespace Portal.Areas.Marylebone.Models
         public string Input { get; set; }
 
         public int? BoxedItemID { get; set; }
+        
+        public string BoxCode { get; set; }
+
+        public string DestinationStockLocationCode { get; set; }
     }
 }

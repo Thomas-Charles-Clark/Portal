@@ -1,7 +1,5 @@
 ﻿@import "../models/common.scss";
 
-$readonly-background: repeating-linear-gradient(-45deg, rgb(0 0 0 / 5%), transparent 1rem, rgba(0, 0, 0, 0.05) 1rem, transparent 2rem);
-
 span.shining {
     display: block;
     font-family: "courier new";
@@ -644,6 +642,59 @@ tr.readonly {
                 margin-top: $m-gutter;
                 border-top: 1px solid $gray-400;
             }
+        }
+    }
+}
+
+#submission-results-container {
+    .alert {
+        margin-top: $l-gutter;
+    }
+}
+
+.request-stock-check-btn {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+#stock-check-request-modal {
+
+    .modal-body {
+        > .d-flex {
+            align-items: center;
+            justify-content: center;
+            gap: $l-gutter;
+        }
+
+        .validation-message {
+            display: block;
+            margin: $m-gutter auto 0 auto;
+            color: $red;
+            text-align: center;
+        }
+    }
+
+    .quantity-control {
+        margin: 0;
+        display: flex;
+
+        input.form-control {
+            width: 80px;
+        }
+    }
+}
+
+.drilldown-stock-table {
+    .alert {
+        p {
+            & + p {
+
+                margin-bottom: 0;
+            }
+        }
+
+        .request-stock-check-btn {
+            margin-top: $l-gutter;
         }
     }
 }

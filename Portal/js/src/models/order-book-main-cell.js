@@ -1,6 +1,6 @@
 ﻿
 
-const orderBookMainCell = ({ parent, data, grouping } = {
+const orderBookMainCell = ({ parent, data, grouping, array } = {
 
 }) => {
 
@@ -8,7 +8,9 @@ const orderBookMainCell = ({ parent, data, grouping } = {
 
     let self = Object.assign({
         parent: parent,
-        grouping: grouping
+        grouping: grouping,
+        array: array,
+        displayModes: parent.displayModes
     }, data);
 
     //#endregion
@@ -25,7 +27,7 @@ const orderBookMainCell = ({ parent, data, grouping } = {
 
     self.display = ko.computed(() => {
 
-        let displayModes = self.parent.displayModes();
+        let displayModes = self.displayModes();
 
         let result = [];
 
@@ -76,131 +78,20 @@ const orderBookMainCell = ({ parent, data, grouping } = {
     //#region Functions
 
     self.buildGroup = (groupName) => {
-        self[`${groupName}_Display`] = ko.computed(() => {
-            let orderValuePropertyName = `${groupName}OrderValue`;
-            let orderQuantityPropertyName = `${groupName}OrderQuantity`;
-            let lineCountPropertyName = `${groupName}LineCount`;
-            let orderCountPropertyName = `${groupName}OrderCount`;
-            //let percentageFullPropertyName = `${groupName}_PercentageOfFullOrderBook`;
-            //let percentageFilteredPropertyName = `${groupName}_PercentageOfFilteredOrderBook`;
 
-            let displayModes = self.parent.displayModes();
-
-            let result = [];
-
-            if (self[orderValuePropertyName] === undefined &&
-                self[orderQuantityPropertyName] === undefined &&
-                self[lineCountPropertyName] === undefined &&
-                self[orderCountPropertyName] === undefined// &&
-                //self[percentageFullPropertyName] === undefined &&
-                //self[percentageFilteredPropertyName] === undefined
-            ) {
-                if (self[groupName] != null) {
-                    return `<span title="${groupName}: ${self[groupName]}">${self[groupName]}</span>`
-                } else {
-                    return '';
-                }
-            }
-
-            if (displayModes.indexOf(DISPLAY_MODE_VALUE_SUM) > -1 && self[orderValuePropertyName] != null) {
-                result.push(`<span class="order-value" title="Order Value: ${formatCurrency(self[orderValuePropertyName], 2, 'en-GB', 'GBP') }">${formatCurrency(self[orderValuePropertyName], 2, 'en-GB', 'GBP')}</span>`);
-            }
-
-            if (displayModes.indexOf(DISPLAY_MODE_QUANTITY_SUM) > -1 && self[orderQuantityPropertyName] != null) {
-                result.push(`<span class="order-quantity"  title="Order Quantity: ${formatNumber(self[orderQuantityPropertyName], 2) }">${formatNumber(self[orderQuantityPropertyName], 2)}</span>`);
-            }
-
-            if (displayModes.indexOf(DISPLAY_MODE_LINE_COUNT) > -1 && self[lineCountPropertyName] != null) {
-                result.push(`<span class="line-count" title="Line Count: ${formatNumber(self[lineCountPropertyName], 0) }">${formatNumber(self[lineCountPropertyName], 0)}</span>`);
-            }
-
-            if (displayModes.indexOf(DISPLAY_MODE_ORDER_COUNT) > -1 && self[orderCountPropertyName] != null) {
-                result.push(`<span class="order-count" title="Order Count: ${formatNumber(self[orderCountPropertyName], 0)}">${formatNumber(self[orderCountPropertyName], 0)}</span>`);
-            }
-
-            //if (displayModes.indexOf(DISPLAY_MODE_PERCENTAGE_FULL) > -1) {
-            //    result.push(`<span class="percentage-of-full" title="Percentage of Full Order Book: ${self[percentageFullPropertyName]}">${self[percentageFullPropertyName]}</span>`);
-            //}
-
-            //if (displayModes.indexOf(DISPLAY_MODE_PERCENTAGE_FILTER) > -1) {
-            //    result.push(`<span class="percentage-of-filtered" title = "Percentage of Filtered Order Book: ${self[percentageFilteredPropertyName]}" > ${self[percentageFilteredPropertyName]}</span>`);
-            //}
-
-            return result.join('<br/>');
-        }, self);
-
-        self[`${groupName}_PopoverDetails`] = {
-            html: true,
-            sanitize: false,
-            busy: ko.observable(true),
-            data: ko.observable(),
-            element: ko.observable(),
-            container: 'div.relative',
-            placement: 'bottom',
-            fallbackPlacements: ['top'],
-            customClass: 'group-cell-popover',
-            content: self.popoverContent,
-            trigger: 'click',
-            //container: 'td',
-            show: null,
-            shown: null,
-            hide: null,
-            hidden: null,
-            inserted: async function (event) {
-                let mainCell = ko.contextFor(event.target).$parent;
-                let data = {
-
-                }
-                let fn = null;
-                if (groupName.indexOf('Total_') > -1) {
-                    
-                    if (mainCell[`${groupName}OrderLineIDs`]) {
-                        data.OrderLineIDs = mainCell[`${groupName}OrderLineIDs`];
-                    }
-
-                    if (mainCell[`RingFenced_OrderLineIDs`]) {
-                        data.RingFenceIDs = mainCell[`RingFenced_OrderLineIDs`]
-                    }
-
-                    fn = self.parent.fetchTotalPopoverContents;
-
-                } else if (groupName.indexOf("Ring") == -1) {
-                    data = { OrderLineIDs: mainCell[`${groupName}OrderLineIDs`] }
-                    fn = self.parent.fetchOrderLinePopoverContents;
-                } else {
-                    data = { RingFenceIDs: mainCell[`${groupName}OrderLineIDs`] }
-                    fn = self.parent.fetchRingFencePopoverContents;
-                }
-                await fn(data)
-                    .then(data => {
-                        let popEl = self[`${groupName}_PopoverDetails`].popover.tip;
-                        if (popEl) {
-                            ko.cleanNode(popEl);
-                            let vm = self[`${groupName}_PopoverDetails`];
-                            ko.applyBindings(vm, popEl);
-
-                            let dat = ko.dataFor(popEl);
-
-                            dat.data(data);
-                            dat.busy(false);
-                        }
-                    });
-            },
-            popperConfig: function (defaultBsPopperConfig) {
-                return defaultBsPopperConfig;
-            }
-        };
-    }
-
-    self.popoverContent = `<div class="blocker" style="display: flex; opacity: 1.0" data-bind="flexFadeVisible: busy, click: (data, event) => { event.preventDefault(); }">
+        self[`${groupName}_popoverContent`] = `<div class="blocker" style="display: flex; opacity: 1.0" data-bind="flexFadeVisible: busy, click: (data, event) => { event.preventDefault(); }">
             <div class="loading-spinner"></div>
             <h4 class="mt-3">
                 Please wait...
             </h4>
         </div>
+        <h4 class="popover-title" style="display: none;" data-bind="fadeVisible: !busy()">
+            <span data-bind="html: title"></span>
+            <button class="btn-close btn-close-white" data-bind="click: (data, event) => { data.popover.hide(); }"></button>
+        </h4>
         <div class="table-container" style="display: none;" data-bind="fadeVisible: !busy()">
             <!-- ko if: data() && data().hasOwnProperty('Totals') -->
-            <div class="d-inline-flex gap-5 mb-3 justify-content-center align-items-center">
+            <div class="d-inline-flex gap-5 mb-3 justify-content-start align-items-center">
                 <table class="totals-table table table-bordered table-condensed mb-0" data-bind="with: data">
                     <colgroup>
                         <col />
@@ -265,7 +156,7 @@ const orderBookMainCell = ({ parent, data, grouping } = {
             <!-- /ko -->
             <!-- /ko -->
             <!-- ko if: data() && data().hasOwnProperty('ringFences') && data().ringFences.Data.length -->
-            <div class="d-inline-flex gap-5 mb-3 justify-content-center align-items-center mt-5">
+            <div class="d-inline-flex gap-5 mb-3 justify-content-start align-items-center mt-5">
                 <table class="totals-table table table-bordered table-condensed mb-0" data-bind="with: data().ringFences">
                     <colgroup>
                         <col />
@@ -331,42 +222,208 @@ const orderBookMainCell = ({ parent, data, grouping } = {
             <!-- /ko -->
         </div>`
 
-    //self.bootstrapPopoverParams = {
-    //    title: 'Order Line Details',
-    //    content: (e, data) => {
-    //        self.fetchPopover(self.grouping.groupedColumnName, [`${columnName}_OrderLineIDs`]);
+        self[`${groupName}_Display`] = ko.computed(() => {
+            let orderValuePropertyName = `${groupName}OrderValue`;
+            let orderQuantityPropertyName = `${groupName}OrderQuantity`;
+            let lineCountPropertyName = `${groupName}LineCount`;
+            let orderCountPropertyName = `${groupName}OrderCount`;
+            //let percentageFullPropertyName = `${groupName}_PercentageOfFullOrderBook`;
+            //let percentageFilteredPropertyName = `${groupName}_PercentageOfFilteredOrderBook`;
 
-    //        return '<h3>POTATO!</h3>';
-    //    },
-    //    placement: 'auto',
-    //    trigger: 'click',
-    //    template: `<div class="popover product-details-popover" role="tooltip">
-    //            <div class="arrow"></div>
-    //            <div class="modal-header grey-blue">
-    //                <button class="close pull-right" data-bind="click: function () { $(popObject).popover('hide'); }">
-    //                    <span aria-hidden="true">&times;</span>
-    //                </button>
-    //                <h4 class="modal-title popover-title"></h4>
-    //            </div>
-    //            <div class="blocker" data-bind="flexFadeVisible: true"></div>
-    //            <div class="popover-content"></div>
-    //        </div>`
-    //}
+            let displayModes = self.parent.displayModes();
 
-    self.fetchPopover = (columnName, data) => {
-        if (columnName == "Total") {
-            if (data[`${columnName}_OrderLineIDs`])
-                self.parent.fetchOrderLinePopoverContents(data[`${columnName}_OrderLineIDs`]);
-            if (data[`${columnName}_RingFenceIDs`])
-                self.parent.fetchRingFencePopoverContents(data[`${columnName}_RingFenceIDs`]);
-        } else if (columnName.indexOf('RingFence') == -1) {
-            if (data[`${columnName}_OrderLineIDs`])
-                self.parent.fetchOrderLinePopoverContents(data[`${columnName}_OrderLineIDs`]);
-        } else {
-            if (data[`${columnName}_RingFenceIDs`])
-                self.parent.fetchRingFencePopoverContents(data[`${columnName}_RingFenceIDs`]);
+            let result = [];
+
+            if (self[orderValuePropertyName] === undefined &&
+                self[orderQuantityPropertyName] === undefined &&
+                self[lineCountPropertyName] === undefined &&
+                self[orderCountPropertyName] === undefined// &&
+                //self[percentageFullPropertyName] === undefined &&
+                //self[percentageFilteredPropertyName] === undefined
+            ) {
+                if (groupName.indexOf('Array') == 0) {
+
+                    if (!Array.isArray(self[groupName])) {
+                        try {
+                            self[groupName] = JSON.parse(self[groupName]);
+                            return `<span title="${groupName}: ${self[groupName]}">${self[groupName][0]}</span>`
+                        } catch {
+                            // ah well
+                            return `<span title="${groupName}: ${self[groupName]}">${self[groupName]}</span>`
+                        }
+                    }
+
+                } else {
+                    if (self[groupName] != null) {
+                        return `<span title="${groupName}: ${self[groupName]}">${self[groupName]}</span>`
+                    } else {
+                        return '';
+                    }
+                }
+            }
+
+            if (displayModes.indexOf(DISPLAY_MODE_VALUE_SUM) > -1 && self[orderValuePropertyName] != null) {
+                result.push(`<span class="order-value" title="Order Value: ${formatCurrency(self[orderValuePropertyName], 2, 'en-GB', 'GBP') }">${formatCurrency(self[orderValuePropertyName], 2, 'en-GB', 'GBP')}</span>`);
+            }
+
+            if (displayModes.indexOf(DISPLAY_MODE_QUANTITY_SUM) > -1 && self[orderQuantityPropertyName] != null) {
+                result.push(`<span class="order-quantity"  title="Order Quantity: ${formatNumber(self[orderQuantityPropertyName], 2) }">${formatNumber(self[orderQuantityPropertyName], 2)}</span>`);
+            }
+
+            if (displayModes.indexOf(DISPLAY_MODE_LINE_COUNT) > -1 && self[lineCountPropertyName] != null) {
+                result.push(`<span class="line-count" title="Line Count: ${formatNumber(self[lineCountPropertyName], 0) }">${formatNumber(self[lineCountPropertyName], 0)}</span>`);
+            }
+
+            if (displayModes.indexOf(DISPLAY_MODE_ORDER_COUNT) > -1 && self[orderCountPropertyName] != null) {
+                result.push(`<span class="order-count" title="Order Count: ${formatNumber(self[orderCountPropertyName], 0)}">${formatNumber(self[orderCountPropertyName], 0)}</span>`);
+            }
+
+            //if (displayModes.indexOf(DISPLAY_MODE_PERCENTAGE_FULL) > -1) {
+            //    result.push(`<span class="percentage-of-full" title="Percentage of Full Order Book: ${self[percentageFullPropertyName]}">${self[percentageFullPropertyName]}</span>`);
+            //}
+
+            //if (displayModes.indexOf(DISPLAY_MODE_PERCENTAGE_FILTER) > -1) {
+            //    result.push(`<span class="percentage-of-filtered" title = "Percentage of Filtered Order Book: ${self[percentageFilteredPropertyName]}" > ${self[percentageFilteredPropertyName]}</span>`);
+            //}
+
+            return result.join('\n');
+        }, self);
+
+        if (groupName.indexOf('Array_') == 0) {
+            self[`${groupName}_popoverContent`] = `<div class="blocker" style="display: flex; opacity: 1.0" data-bind="flexFadeVisible: busy, click: (data, event) => { event.preventDefault(); }">
+                <h4 class="mt-3">
+                    Please wait...
+                </h4>
+            </div>
+            <h4 class="popover-title" style="display: none;" data-bind="fadeVisible: !busy()">
+                <span data-bind="html: title"></span>
+                <button class="btn-close btn-close-white" data-bind="click: (data, event) => { data.popover.hide(); }"></button>
+            </h4>
+            <div class="info-container" style="display: none;" data-bind="fadeVisible: !busy()">
+                <!-- ko foreach: data -->
+                <div class="card info-card">
+                    <div class="card-body">
+                        <div data-bind="html: $data"></div>
+                    </div>
+                </div>
+                <!-- /ko -->
+            </div>`;
         }
+
+        self[`${groupName}_PopoverDetails`] = {
+            html: true,
+            sanitize: false,
+            busy: ko.observable(true),
+            title: groupName.replace('Array', '').replace('Grouped', '').replace(/_/g, '').replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5'),
+            data: ko.observable(),
+            element: ko.observable(),
+            container: 'div.relative',
+            placement: 'bottom',
+            fallbackPlacements: ['top'],
+            customClass: (groupName.indexOf('Array_') == -1) ? 'group-cell-popover' : 'info-cell-popover',
+            content: self[`${groupName}_popoverContent`],
+            trigger: 'click',
+            //container: 'td',
+            show: (event, data) => {
+
+                let popoverCells = [...document.querySelectorAll('.popover-cell')];
+
+                popoverCells.forEach((c, i) => {
+                    c._zIndexOriginal = +c.style.zIndex;
+                });
+
+                popoverCells.forEach((c, i) => {
+                    c.style.zIndex = `${popoverCells.length - i}`;
+                });
+
+                self.parent.virtualScroller.maxY.valueHasMutated();
+            },
+            shown: null,
+            hide: (event, data) => {
+
+                let popoverCells = [...document.querySelectorAll('.popover-cell')];
+
+                popoverCells.forEach((c, i) => {
+                    c.style.zIndex = `${c._zIndexOriginal}`;
+                });
+
+                self.parent.virtualScroller.maxY.valueHasMutated();
+            },
+            hidden: null,
+            inserted: async function (event) {
+                let mainCell = ko.contextFor(event.target).$parent;
+                let data = {
+
+                }
+                let fn = null;
+
+                if (groupName == 'Array_ProductCode') {
+
+                    data = self[groupName];
+
+                    fn = self.parent.fetchProductCodePopoverContents;
+
+                } else if (groupName.indexOf('Array_') == 0) {
+                    data = self[groupName];
+                    fn = (data) => {
+                        return new Promise((resolve, reject) => {
+                            resolve(data);
+                        });
+                    }
+                } else if (groupName.indexOf('Total_') > -1) {
+                    
+                    if (mainCell[`${groupName}OrderLineIDs`]) {
+                        data.OrderLineIDs = mainCell[`${groupName}OrderLineIDs`];
+                    }
+
+                    if (mainCell[`RingFenced_OrderLineIDs`]) {
+                        data.RingFenceIDs = mainCell[`RingFenced_OrderLineIDs`];
+                    }
+
+                    fn = self.parent.fetchTotalPopoverContents;
+
+                } else if (groupName.indexOf("Ring") == -1) {
+                    data = { OrderLineIDs: mainCell[`${groupName}OrderLineIDs`] }
+                    fn = self.parent.fetchOrderLinePopoverContents;
+                } else {
+                    data = { RingFenceIDs: mainCell[`${groupName}OrderLineIDs`] }
+                    fn = self.parent.fetchRingFencePopoverContents;
+                }
+                await fn(data)
+                    .then(data => {
+                        let popEl = self[`${groupName}_PopoverDetails`].popover.tip;
+                        if (popEl) {
+                            ko.cleanNode(popEl);
+                            let vm = self[`${groupName}_PopoverDetails`];
+                            ko.applyBindings(vm, popEl);
+
+                            let dat = ko.dataFor(popEl);
+
+                            dat.data(data);
+                            dat.busy(false);
+                        }
+                    });
+            },
+            popperConfig: (defaultBsPopperConfig) => defaultBsPopperConfig
+        };
     }
+
+    //self.fetchPopover = (columnName, data) => {
+    //    if (columnName == "Total") {
+    //        if (data[`${columnName}_OrderLineIDs`])
+    //            self.parent.fetchOrderLinePopoverContents(data[`${columnName}_OrderLineIDs`]);
+    //        if (data[`${columnName}_RingFenceIDs`])
+    //            self.parent.fetchRingFencePopoverContents(data[`${columnName}_RingFenceIDs`]);
+    //    } else if (columnName.indexOf('RingFence') == -1) {
+    //        if (data[`${columnName}_OrderLineIDs`])
+    //            self.parent.fetchOrderLinePopoverContents(data[`${columnName}_OrderLineIDs`]);
+    //    } else if (columnName.indexOf('RingFence') > -1) {
+    //        if (data[`${columnName}_RingFenceIDs`])
+    //            self.parent.fetchRingFencePopoverContents(data[`${columnName}_RingFenceIDs`]);
+    //    } else if (columnName == 'Array_ProductCode') {
+    //        self.parent.fetchProductCodePopoverContents(data[`Array_${columnName}`]);
+    //    }
+    //}
 
     //#endregion
 
@@ -375,7 +432,7 @@ const orderBookMainCell = ({ parent, data, grouping } = {
 
     if (self.grouping) {
 
-        self.columnNameGroupingRegex = /^Grouped_[^_]+_?/gm;
+        self.columnNameGroupingRegex = /^(Grouped_|Array_)[^_]+_?/gm;
 
         let columnNames = Object.keys(self).filter(k => {
             return ["parent",
@@ -402,7 +459,8 @@ const orderBookMainCell = ({ parent, data, grouping } = {
 
         groupedColumns = Object.keys(groups).map(g => {
             return {
-                groupedColumnName: g, columns: groups[g]
+                groupedColumnName: g,
+                columns: groups[g]
             }
         });
 

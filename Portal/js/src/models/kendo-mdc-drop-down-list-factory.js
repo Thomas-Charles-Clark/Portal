@@ -52,7 +52,8 @@
     ignoreCase,
     minLength,
     enforceMinLength,
-    busy
+    busy,
+    locked
 } = {
         widget: ko.observable(),
         endPoint: null,
@@ -104,7 +105,8 @@
         ignoreCase: true,
         minLength: null,
         enforceMinLength: false,
-        busy: ko.observable(false)
+        busy: ko.observable(false),
+        locked: ko.observable(false)
     }) {
 
     if (endPoint == null && data == null) {
@@ -204,6 +206,14 @@
 
     dataSource.requestEnd = requestEnd;
 
+    if (locked == null) {
+        locked = ko.observable(false);
+    } else {
+        if (!ko.isObservable(locked)) {
+            locked = ko.observable(locked);
+        }
+    }
+
     var result = {
         originalValue: ko.unwrap(idObservable),
         observable: idObservable,
@@ -217,6 +227,7 @@
         disabled: disabled,
         readOnly: readOnly,
         busy: busy,
+        locked: locked,
         dropDownListSettings: {
             isKendoMDCDropDownList: true,
             enable: !disabled,
@@ -315,6 +326,14 @@
 
     if (typeof disable === 'function') {
         result.disable = disable;
+
+        result.locked.subscribe(nv => {
+            result.disable(nv);
+        });
+    }
+
+    if (ko.unwrap(result.locked) && result.hasOwnProperty('disable')) {
+        result.disable(result.locked());
     }
 
     if (typeof clearable === 'function') {

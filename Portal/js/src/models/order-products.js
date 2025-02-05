@@ -7408,7 +7408,7 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
     // Resets the filters seen in the advanced-filters div
     self.resetFilters = function () {
         self.selectedColour(undefined);
-        self.selectedBrand(undefined);
+        self.selectedBrand(undefined); 
         self.selectedLaunch(undefined);
         self.selectedPattern(undefined);
         self.selectedItemType(undefined);

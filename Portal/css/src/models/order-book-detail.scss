@@ -30,7 +30,7 @@ $light-blue-background: tint-color($blue-200, 90%);
         width: 100%;
         border-spacing: 0;
 
-        tbody.virtual-spacing {
+        > tbody.virtual-spacing {
             tr {
                 td {
                     padding: 0;
@@ -40,7 +40,7 @@ $light-blue-background: tint-color($blue-200, 90%);
             }
         }
 
-        thead {
+        > thead {
             position: relative;
             z-index: 1;
 
@@ -88,7 +88,7 @@ $light-blue-background: tint-color($blue-200, 90%);
             }
         }
 
-        tbody {
+        > tbody {
             position: relative;
             z-index: 0;
 

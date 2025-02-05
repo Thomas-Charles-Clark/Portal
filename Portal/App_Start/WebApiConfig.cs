@@ -124,7 +124,9 @@ namespace Portal
             odataBuilder.EntitySet<ParcelType>("ParcelTypes");
             odataBuilder.EntitySet<ParcelDeliveryService>("ParcelDeliveryServices");
             odataBuilder.EntitySet<ParcelDestination>("ParcelDestinations");
+            odataBuilder.EntitySet<PurchasingRecommendation>("PurchasingRecommendations");
             odataBuilder.EntitySet<HoldReason>("HoldReason");
+            odataBuilder.EntitySet<ProductLifeCycle>("ProductLifeCycle");
 
             odataBuilder.EntitySet<MertexProductClassificationSuperSet>("MertexProductClassificationSuperSet");
 
@@ -208,6 +210,14 @@ namespace Portal
                 .ReturnsCollectionFromEntitySet<PaymentTermsType>("PaymentTermsTypes");
 
             paymentTermsTypeValueMapperFunction.Parameter<byte>("paymentTermsTypeId");
+
+
+            var purchasingRecommendationsValueMapperFunction = odataBuilder.EntityType<PurchasingRecommendation>()
+                .Collection
+                .Function("PurchasingRecommendationsValueMapper")
+                .ReturnsCollectionFromEntitySet<PurchasingRecommendation>("PurchasingRecommendations");
+
+            purchasingRecommendationsValueMapperFunction.Parameter<byte>("purchasingRecommendationId");
 
 
 
@@ -815,6 +825,14 @@ namespace Portal
                 .ReturnsCollectionFromEntitySet<SelfBillInvoice>("SelfBillInvoice");
 
             selfBillInvoiceValueMapperFunction.Parameter<int?>("selfBillInvoiceId");
+
+
+            var productLifecycleValueMapperFunction = odataBuilder.EntityType<ProductLifeCycle>()
+                .Collection
+                .Function("ProductLifeCycleValueMapper")
+                .ReturnsCollectionFromEntitySet<ProductLifeCycle>("ProductLifeCycles");
+
+            productLifecycleValueMapperFunction.Parameter<byte>("productLifeCycleId");
 
 
             var odataBatchHandler = new DefaultODataBatchHandler(GlobalConfiguration.DefaultServer);

@@ -49,9 +49,9 @@
     //#region Computeds
 
     self.visibleManagementPromptTabs = ko.computed(() => {
-        return self.groups().filter((g, i) => {
-            return self.displayTabs().find(a => a == i) != null;
-        })
+        return self.groups().filter((g) => {
+            return self.displayTabs().find(a => a == g.groupId) != null;
+        });
     }, self);
 
     //#endregion
@@ -72,44 +72,68 @@
 
     //#region Functions
 
-    self.parse = (preDefinedFilter) => {
+    self.parse = (preDefinedFilters) => {
 
-        let groups = preDefinedFilter.map(g => {
+        let groups = preDefinedFilters.map(g => {
             return {
                 name: g.Name,
-                summaries: ko.observableArray(g.ProblemPods.map(ds => orderBookSummaryFilter({
-                    parent: self,
-                    data: ds
-                })))
+                groupId: g.GroupID,
+                summaries: ko.observableArray(g.ProblemPods.map(ds => {
+                    // opportunity to exclude those problemPods which are empty
+                    if (ds.Label && ds.View && ds.Procedure) {
+                        return orderBookSummaryFilter({
+                            parent: self,
+                            data: ds
+                        });
+                    } else {
+
+                    }
+                }).filter(ds => ds != null))
             }
         });
 
-        self.availableManagementPromptTabs(groups.map((g, i) => {
-            return {
-                label: g.name,
-                value: i,
-                children: []
-            }
-        }));
+        // 2025/01/31 - I worked rather hard to ensure this application
+        // only displayed those options which were reflected in the result set
+        // managerial decisions have chucked that notion out of the window.
 
+        //self.availableManagementPromptTabs(groups.map((g, i) => {
+        //        return {
+        //            label: g.name,
+        //            value: i,
+        //            children: []
+        //        }
+        //    })
+        //);
+
+        // So now I need to elbow something like this in...
+
+        self.availableManagementPromptTabs(window.getPreDefinedFilterGroups().map((g, i) => {
+                return {
+                    label: g.GroupName,
+                    groupId: g.GroupID,
+                    children: []
+                }
+            })
+        );
+        
         if (self.parent.displayConfig.managementPromptTabs.length) {
             self.displayTabs(self.parent.displayConfig.managementPromptTabs);
         } else {
-            self.displayTabs(self.availableManagementPromptTabs().map(a => a.value));
+            self.displayTabs(self.availableManagementPromptTabs().map(a => a.groupId));
         }
 
-        self.parent.defaultConfig.managementPromptTabs = self.availableManagementPromptTabs().map(a => a.value);
+        self.parent.defaultConfig.managementPromptTabs = self.availableManagementPromptTabs().map(a => a.groupId);
 
         self.groups(groups);
     }
 
-    self.showDetail = (preDefinedFilter) => {
+    self.showDetail = (preDefinedFilter, displayModes) => {
         let iFrame = document.createElement("iframe");
 
         let params = JSON.parse(self.parent.userDefinedFilters.json());
 
         let preDefinedFilterCriteria = {
-            displayModes: self.parent.displayModes(),
+            displayModes: typeof displayModes == 'function' ? displayModes() : self.parent.displayModes(),
             accurateAsOfDateTime: self.parent.accurateAsOfDateTime(),
             title: preDefinedFilter.Label,
             procedure: preDefinedFilter.Procedure,
@@ -123,7 +147,7 @@
 
         Object.assign(params, preDefinedFilterCriteria);
 
-        self.detailModalTitleElement.innerHTML = `${preDefinedFilter.Label} <span class="ms-5" data-bind="attr: { title: '${preDefinedFilter.View}'' }">${preDefinedFilter.View}</span>`;
+        self.detailModalTitleElement.innerHTML = `${preDefinedFilter.Label} <span class="detail-view-name ms-5" data-bind="attr: { title: '${preDefinedFilter.View}'' }">${preDefinedFilter.View}</span>`;
 
         let qs = new URLSearchParams(params).toString();
 

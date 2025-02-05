@@ -93,18 +93,17 @@
                 <!-- ko foreach: orderStatuses -->
                 <div class="main-cell"
                      data-bind="css: {
-                     'order-status-group-start' : $parentContext.$index()>
-                    0 && $index() == 0,
-                    'intersectable':  $root.getCell($data, $parentContext.$parent),
-                    'border-bottom-0': $parentContext.$parentContext.$index() == $parentContext.$parentContext.$parent.stockLocationGroups.length - 1,
-                    'alternate-row': ($parentContext.$parentContext.$index() + 1) % 2 == 0
-                    },
-                    with: $root.getCell($data, $parentContext.$parent),
-                    click: () => {
-                    if ($root.getCell($data, $parentContext.$parent)) {
-                    $root.showDetail(Object.assign($data, $parentContext.$parent, { orderStatusGroupName: $parentContext.$data.orderStatusGroupName, orderGroupName: $parentContext.$parentContext.$parentContext.$data.orderGroupName, }))
-                    }
-                    }">
+                            'order-status-group-start' : $parentContext.$index() > 0 && $index() == 0,
+                            'intersectable':  $root.getCell($data, $parentContext.$parent),
+                            'border-bottom-0': $parentContext.$parentContext.$index() == $parentContext.$parentContext.$parent.stockLocationGroups.length - 1,
+                            'alternate-row': ($parentContext.$parentContext.$index() + 1) % 2 == 0
+                        },
+                        with: $root.getCell($data, $parentContext.$parent),
+                        click: () => {
+                            if ($root.getCell($data, $parentContext.$parent)) {
+                                $root.showDetail(Object.assign($data, $parentContext.$parent, { orderStatusGroupName: $parentContext.$data.orderStatusGroupName, orderGroupName: $parentContext.$parentContext.$parentContext.$data.orderGroupName, }))
+                            }
+                        }">
                     <p class="values-display" data-bind="html: display">
                     </p>
                 </div>

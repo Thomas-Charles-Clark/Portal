@@ -1,5 +1,7 @@
 ﻿using Microsoft.Owin.Security;
 
+using Newtonsoft.Json;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,8 +17,12 @@ namespace SharedEFClasses.Models.OrderBook
         public IEnumerable<byte> OrderLineDetailedStatusGroupIDs { get; set; }
 
         // Trade Account Filters
+        [JsonProperty("salesMarketId")]
         public byte? MarketID { get; set; }
+
+        [JsonProperty("salesMarketIds")]
         public IEnumerable<byte> MarketIDs { get; set; }
+
         public int? TradeAccountID { get; set; }
         public short? TradeAccountGroupID { get; set; }
         public byte? PaymentTermsID { get; set; }

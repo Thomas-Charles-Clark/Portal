@@ -29,6 +29,7 @@ namespace Portal.Areas.Orders.ViewModels
                 return Convert.ToBoolean(((IDictionary<string, object>)Parameters)["filterable"]) == true;
             } 
         }
+
         //public OrderBook_DetailView_SelectResult DetailResult { get; set; }
 
         public OrderBookDetailViewModel(ExpandoObject parameters, RoleProperties properties, string applicationHeading, string applicationSubHeading)
@@ -47,12 +48,6 @@ namespace Portal.Areas.Orders.ViewModels
             string applicationSubHeading)
         {
             var result = new OrderBookDetailViewModel(objParams, properties, applicationHeading, applicationSubHeading);
-
-            //if (!String.IsNullOrEmpty(procedureName))
-            //using (var db = new PortalDbContext())
-            //{
-            //    result.DetailResult = await db.FetchOrderBookDetail(procedureName, objParams);
-            //}
 
             return result;
         }

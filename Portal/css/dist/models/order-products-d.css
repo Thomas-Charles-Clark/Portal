@@ -15,6 +15,10 @@
   font-size: 1rem;
 }
 
+.mb-0 {
+  margin-bottom: 0;
+}
+
 #delivery-services-modal .modal-body .tab-content {
   padding: 15px 0 0;
   color: #31548B;

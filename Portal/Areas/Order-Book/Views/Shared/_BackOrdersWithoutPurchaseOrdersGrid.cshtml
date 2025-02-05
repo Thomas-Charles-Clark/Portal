@@ -1,4 +1,20 @@
 ﻿@model SharedEFClasses.BaseViewModel
+<!-- ko if: filterButtons().length -->
+<div id="filter-buttons-container">
+    <!-- ko foreach: filterButtons -->
+    <div class="card filter-button-card">
+        <div class="card-body">
+            <div class="card-title">
+                <button class="btn btn-primary" data-bind="class: active ? 'btn-primary' : 'btn-secondary', click: load">
+                    <span data-bind="html: Label, attr: { title: Label }"></span>
+                    <p class="card-text" data-bind="html: display"></p>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- /ko -->
+</div>
+<!-- /ko -->
 <!-- ko if: noResults -->
 <div id="no-results">
     <div class="alert alert-secondary text-center alert-lg px-4 py-3">
@@ -23,8 +39,13 @@
         <thead>
             <tr>
                 <!-- ko foreach: $parent.columns -->
-                <th class="sortable-column" data-bind="style: { '--prev-col-widths': `${$data.accumulatedColumnWidths}px` }">
+                <th class="sortable-column" data-bind="click: (data, event) => { $root.sortByColumn(data.detailColumns()[0]) }, style: { '--prev-col-widths': `${$data.accumulatedColumnWidths}px` }">
                     <span data-bind="text: columnNameDisplay"></span>
+                    <!-- ko with: detailColumns()[0] -->
+                    <!-- ko if: ((Object.hasOwn($data, 'direction') && $data.direction())) -->
+                    <i class="bi" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
+                    <!-- /ko -->
+                    <!-- /ko -->
                 </th>
                 <!-- /ko -->
                 <th colspan="500"></th>
@@ -41,7 +62,7 @@
                     <span data-bind="with: detailColumns().find(dc => dc.columnName == `${$data.columnName}OrderValue`)">
                         <span class="sortable-column d-block" data-bind="click: $root.sortByColumn">
                             <span data-bind="text: formatCurrency(total, 0, 'en-GB', 'GBP'), attr: { title: `Order Value: ${formatCurrency(total, 0, 'en-GB', 'GBP')} (Click to Sort)` }"></span>
-                            <!-- ko if: direction -->
+                            <!-- ko if: (Object.hasOwn($data, 'direction') && $data.direction()) -->
                             <i class="bi" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
                             <!-- /ko -->
                         </span>
@@ -51,7 +72,7 @@
                     <span data-bind="with: detailColumns().find(dc => dc.columnName == `${$data.columnName}OrderQuantity`)">
                         <span class="sortable-column d-block" data-bind="click: $root.sortByColumn">
                             <span data-bind="text: formatNumber(total, 2), attr: { title: `Order Quantity: ${formatNumber(total, 2)} (Click to Sort)` }"></span>
-                            <!-- ko if: direction -->
+                            <!-- ko if: (Object.hasOwn($data, 'direction') && $data.direction()) -->
                             <i class="bi" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
                             <!-- /ko -->
                         </span>
@@ -61,7 +82,7 @@
                     <span data-bind="with: detailColumns().find(dc => dc.columnName == `${$data.columnName}LineCount`)">
                         <span class="sortable-column d-block" data-bind="click: $root.sortByColumn">
                             <span data-bind="text: formatNumber(total, 0), attr: { title: `Line Count: ${formatNumber(total, 2)} (Click to Sort)` }"></span>
-                            <!-- ko if: direction -->
+                            <!-- ko if: (Object.hasOwn($data, 'direction') && $data.direction()) -->
                             <i class="bi" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
                             <!-- /ko -->
                         </span>
@@ -71,7 +92,7 @@
                     <span data-bind="with: detailColumns().find(dc => dc.columnName == `${$data.columnName}OrderCount`)">
                         <span class="sortable-column d-block" data-bind="click: $root.sortByColumn">
                             <span data-bind="text: formatNumber(total, 0), attr: { title: `Order Count: ${formatNumber(total, 2)} (Click to Sort)` }"></span>
-                            <!-- ko if: direction -->
+                            <!-- ko if: (Object.hasOwn($data, 'direction') && $data.direction()) -->
                             <i class="bi" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
                             <!-- /ko -->
                         </span>
@@ -88,14 +109,14 @@
             </tr>
         </tbody>
         <tbody data-bind="foreach: visibleItems">
-            <tr>
+            <tr class="visible-item" data-bind="keepElement">
                 <!-- ko foreach: $parentContext.$parent.columns -->
-                <!-- ko ifnot: grouped -->
+                <!-- ko ifnot: (grouped || array) -->
                 <td data-bind="style: { '--prev-col-widths': `${$data.accumulatedColumnWidths}px` }">
                     <span data-bind="html: $parent[`${columnName}_Display`]"></span>
                 </td>
                 <!-- /ko -->
-                <!-- ko if: grouped -->
+                <!-- ko if: (grouped || array) -->
                 <td class="popover-cell" data-bind="style: { '--prev-col-widths': `${$data.accumulatedColumnWidths}px` }">
                     <div class="relative">
                         <a href="javascript:;" data-bind="html: $parent[`${columnName}_Display`], actualBootstrapPopover: { context: $parent, details: $parent[`${columnName}_PopoverDetails`] }"></a>

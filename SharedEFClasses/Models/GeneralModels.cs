@@ -1352,10 +1352,11 @@ namespace SharedEFClasses.Models.General
 
     public class PassClientError
     {
+        public string name { get; set; }
         public string message { get; set; }
-        public string source { get; set; }
-        public string lineno { get; set; }
-        public string colno { get; set; }
+        public string stack { get; set; }
+        public string lineNo { get; set; }
+        public string colNo { get; set; }
         public string error { get; set; }
         public string url { get; set; }
     }
