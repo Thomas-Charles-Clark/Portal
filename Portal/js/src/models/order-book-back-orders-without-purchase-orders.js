@@ -432,6 +432,8 @@ const orderBookDetailViewModel = (() => {
             }
         }
     });
+    
+    self.productDetail = ko.observable(); // loading of this is deferred until UI interaction
 
     //#region Lifted Methods
 
@@ -541,6 +543,39 @@ const orderBookDetailViewModel = (() => {
     
     */
     self.activeSortingOperation = ko.observable();
+
+
+
+    // fooling the stock thingie
+
+    self.searchResult = ko.observable();
+
+    self.productDetail.subscribe(nv => {
+        self.searchResult({
+            record: nv,
+            productFilterOptions: ko.observable({
+                QuantityPrecision: 0
+            })
+        });
+    });
+
+    self.stockCheckRequester = stockCheckRequestViewModel({
+        parent: self
+    });
+
+    self.showStockCheckRequester = ko.observable(false);
+
+    self.beginStockCheckRequest = function (data, event) {
+        self.stockCheckRequester.showModal();
+    }
+
+    self.orderProductsDrilldown = {
+        stockCheckRequester: self.stockCheckRequester
+    }
+
+    // end of fooling the stock thingie
+
+
 
     //#endregion
 
@@ -863,7 +898,7 @@ const orderBookDetailViewModel = (() => {
     });
 
     self.filtersCountDisplay.subscribe(nv => {
-        if (window.parent) {
+        if (window.parent && window.parent.document.querySelector('#filter-top-btn-display')) {
             if (nv) {
                 window.parent.document.querySelector('#filter-top-btn-display').innerHTML = nv;
             } else {
@@ -1078,11 +1113,11 @@ const orderBookDetailViewModel = (() => {
     }
 
 
-    self.fetchProductCodePopoverContents = (data) => {
+    self.fetchProductCodeModalContents = (data) => {
         return new Promise((resolve, reject) => {
-            console.log("FetchProductCodePopoverContents calling with", data);
+            console.log("fetchProductCodeModalContents calling with", data);
 
-            fetch('/api/orderbook/FetchProductCodePopoverContents', {
+            fetch('/api/orderbook/FetchProductCodeModalContents', {
                 method: "POST",
                 headers: window.fetchHeaders,
                 cache: 'no-store',
@@ -1091,7 +1126,7 @@ const orderBookDetailViewModel = (() => {
             })
                 .then(window.handleFetchResponse)
                 .then(data => {
-                    console.log("FetchProductCodePopoverContents returned", data);
+                    console.log("fetchProductCodeModalContents returned", data);
                     resolve(data);
                 })
                 .catch(err => {

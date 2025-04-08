@@ -234,7 +234,7 @@ const orderBookDetailViewModel = (() => {
 
     self.params = window.getDetailParameters();
 
-    let parseExclusions = ['marketIds', 'startDate', 'endDate', 'orderLineDetailedStatusGroupIds', 'displayModes'];
+    let parseExclusions = ['salesMarketIds', 'startDate', 'endDate', 'orderLineDetailedStatusGroupIds', 'displayModes'];
 
     Object.keys(self.params).forEach(k => {
         if (parseExclusions.indexOf(k) === -1) {
@@ -603,7 +603,7 @@ const orderBookDetailViewModel = (() => {
     });
 
     self.filtersCountDisplay.subscribe(nv => {
-        if (window.parent) {
+        if (window.parent && window.parent.document.querySelector('#filter-top-btn-display')) {
             if (nv) {
                 window.parent.document.querySelector('#filter-top-btn-display').innerHTML = nv;
             } else {

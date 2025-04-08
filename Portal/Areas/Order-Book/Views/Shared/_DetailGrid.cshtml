@@ -22,7 +22,7 @@
         <thead>
             <tr>
                 <!-- ko foreach: $parent.columns -->
-                <th class="sortable-column" data-bind="click: (data, event) => { $root.sortByColumn(data.detailColumns()[0]) }, style: { '--left-offset': `${$parentContext.$parent.columns().reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }">
+                <th class="sortable-column" data-bind="click: $root.sortByColumn, style: { '--left-offset': `${$parentContext.$parent.columns().reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }">
                     <span data-bind="text: columnNameDisplay"></span>
                     <!-- ko if: (Object.hasOwn($data, 'direction') && $data.direction()) -->
                     <i class="bi" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>

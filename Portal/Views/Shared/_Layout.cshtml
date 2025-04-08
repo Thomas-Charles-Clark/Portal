@@ -65,6 +65,7 @@
     </script>
 </head>
 <body>
+    @Html.Partial("~/Views/Shared/_Common.cshtml")
     @RenderSection("beforeContainer", required: false)
 
     <div data-bind="component: 'send-tarf-component'"></div>
@@ -1782,7 +1783,7 @@
                     });
                 }
             }
-            
+
            @if (!Request.Url.AbsoluteUri.ToLowerInvariant().Contains("/account/login"))
             {
                 @:$.get('/api/forceauth/forceAuth');

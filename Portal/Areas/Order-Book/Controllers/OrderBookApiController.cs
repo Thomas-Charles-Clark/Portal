@@ -5,6 +5,8 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
+using Microsoft.AspNet.Identity;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -14,6 +16,7 @@ using Portal.Utilities;
 using SharedEFClasses;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Components;
+using SharedEFClasses.Models.ContractPricing;
 using SharedEFClasses.Models.OrderBook;
 using SharedEFClasses.Models.Products;
 
@@ -263,8 +266,10 @@ namespace Portal.Areas.Sales.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> FetchProductCodePopoverContents([FromBody] PassOrderBookProductPopoverFetch dto)
+        public async Task<IHttpActionResult> FetchProductCodeModalContents([FromBody] PassOrderBookProductModalFetch dto)
         {
+            dto.MemberID = User.Identity.GetUserId<int>();
+
             var results = await PortalDB.FetchOrderBookProductInspect(dto);
 
             return Ok(results);

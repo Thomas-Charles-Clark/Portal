@@ -96,6 +96,8 @@ namespace SharedEFClasses.Models
                     dto.QualityID,
                     dto.DesignID,
                     dto.SupplierCode,
+                    dto.SupplierTypeID,
+                    dto.ProductLifeCycleID,
                     dto.BuyerCode,
                     dto.ProductID,
                     dto.ProductStatus,
@@ -159,6 +161,8 @@ namespace SharedEFClasses.Models
                     dto.QualityID,
                     dto.DesignID,
                     dto.SupplierCode,
+                    dto.SupplierTypeID,
+                    dto.ProductLifeCycleID,
                     dto.BuyerCode,
                     dto.ProductID,
                     dto.ProductStatus,
@@ -236,6 +240,8 @@ namespace SharedEFClasses.Models
                 dto.QualityID,
                 dto.DesignID,
                 dto.SupplierCode,
+                dto.SupplierTypeID,
+                dto.ProductLifeCycleID,
                 dto.BuyerCode,
                 dto.ProductID,
                 dto.ProductStatus,
@@ -316,6 +322,8 @@ namespace SharedEFClasses.Models
                     dto.QualityID,
                     dto.DesignID,
                     dto.SupplierCode,
+                    dto.SupplierTypeID,
+                    dto.ProductLifeCycleID,
                     dto.BuyerCode,
                     dto.ProductID,
                     dto.ProductStatus,
@@ -490,22 +498,30 @@ namespace SharedEFClasses.Models
             };
         }
 
-        public async Task<OrderBookProductInspectResult> FetchOrderBookProductInspect(PassOrderBookProductPopoverFetch dto)
+        public async Task<OrderBookProductInspectResult> FetchOrderBookProductInspect(PassOrderBookProductModalFetch dto)
         {
-            var reader = await this.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_Product_Inspect]", dto, null, 30, CommandType.StoredProcedure);
+            var reader = await this.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_Product_Inspect]", new { 
+                dto.ProductCode
+            }, null, 30, CommandType.StoredProcedure);
 
             var result = new OrderBookProductInspectResult()
             {
-                ProductInfo = await reader.ReadSingleAsync<OrderBook_ProductInspect_ProductInfo>(),
-                OrderLines = await reader.ReadAsync<OrderBook_ProductInspect_OrderLine>(),
-                StockInfo = await reader.ReadAsync<OrderBook_ProductInspect_StockInfo>(),
-                AvailabilityMessage = await reader.ReadSingleAsync<StockInfoAvailabilityMessage>(),
-                StockCheckRequestSelectResult = new StockCheckRequestSelectResult()
+                productInfo = await reader.ReadSingleAsync<OrderBook_ProductInspect_ProductInfo>(),
+                orderLines = await reader.ReadAsync<OrderBook_ProductInspect_OrderLine>(),
+                stockResults = await reader.ReadAsync<OrderBook_ProductInspect_StockInfo>(),
+                availabilityMessages = await reader.ReadAsync<StockInfoAvailabilityMessage>(),
+                stockCheckRequestSelectResult = new StockCheckRequestSelectResult()
             };
 
-            if (result.AvailabilityMessage?.ExecuteStockCheckRequest == true)
+            if (result.availabilityMessages?.FirstOrDefault().ExecuteStockCheckRequest == true)
             {
-                result.StockCheckRequestSelectResult = await reader.ReadSingleAsync<StockCheckRequestSelectResult>();
+                result.stockCheckRequestSelectResult = await this.StockCheckRequest_Select(new PassStockCheckRequest()
+                {
+                    BasketID = dto.BasketID,
+                    MemberID = dto.MemberID,
+                    ProductID = dto.ProductID,
+                    TradeAccountID = dto.TradeAccountID
+                });
             }
 
             return result;
@@ -566,6 +582,8 @@ namespace SharedEFClasses.Models
                     dto.QualityID,
                     dto.DesignID,
                     dto.SupplierCode,
+                    dto.SupplierTypeID,
+                    dto.ProductLifeCycleID,
                     dto.BuyerCode,
                     dto.ProductID,
                     dto.ProductStatus,
@@ -632,6 +650,8 @@ namespace SharedEFClasses.Models
                     dto.QualityID,
                     dto.DesignID,
                     dto.SupplierCode,
+                    dto.SupplierTypeID,
+                    dto.ProductLifeCycleID,
                     dto.BuyerCode,
                     dto.ProductID,
                     dto.ProductStatus,

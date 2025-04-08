@@ -889,7 +889,7 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
         },
         clearFunction: function () {
             var self = this;
-            self.transactionType.observable(undefined);
+            self.observable(undefined);
         }
     };
 
@@ -5072,7 +5072,7 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
             async: true,
             message: 'This Order must have an EORI number',
             validator: function (val, parms, callback) {
-                if (val) {
+                if (val && self.basketRequiresEORI()) {
                     val = val.replace(/EORI/g, '');
                     let endpoint = '/api/componentapi/ValidateEORINumberEU';
                     if (val.toLowerCase().indexOf('gb') == 0) {
@@ -6768,6 +6768,11 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                     self.busy(false);
                     console.log('loadBasketItemForEdit returned', data);
                     var sr = new searchResult(data.searchResults.SearchResult, self, null);
+
+                    sr.supplierAvailabilityMessage = ko.observable();
+                    sr.stockInfo = ko.observable();
+                    sr.showStockCheckRequester = ko.observable(false);
+
                     sr.basketItemId = basketItem.BasketItemID;
                     sr.record.BasketItemLineMemos = basketItem.BasketItemLineMemos;
                     sr.fulfilmentOption({
@@ -6815,6 +6820,11 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                     self.busy(false);
 
                     var sr = new searchResult(data.searchResults.SearchResult, self, null);
+
+                    sr.supplierAvailabilityMessage = ko.observable();
+                    sr.stockInfo = ko.observable();
+                    sr.showStockCheckRequester = ko.observable(false);
+
                     sr.basketItemId = basketItem.BasketItemID;
                     sr.fulfilmentOption({
                         StockLocationID: data.searchResults.ExtensionFields.StockLocationID,
@@ -7900,6 +7910,8 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                                     self.emailManager.addEmail();
                                     self.emailManager.emails()[i].observable(emails[i]);
                                 }
+                            } else {
+                                self.emailManager.addEmail();
                             }
 
                             basket.mertexVATLookupSuccessful = ko.observable(data.basket.MertexVATLookupSuccessful);
@@ -8281,107 +8293,110 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
 
         self.validateBasketDetailsNow(true);
 
-        self.newBasketErrors.showAllMessages(false);
+        window.setTimeout(() => {
 
-        if (self.newBasketErrors().length) {
-            self.newBasketErrors.showAllMessages(true);
-            self.newBasketErrors.filter(function (x) {
-                if (!x.isValid()) {
-                    x.isValid.notifySubscribers(false);
-                }
-            });
-            if (self.euExitingConfirmed()) {
-                self.validateEUExitDestinationNow(true);
-                self.euExitErrors.showAllMessages(false);
-                if (self.euExitErrors().length) {
-                    self.euExitErrors.showAllMessages(true);
-                    self.euExitFinalDestinationAddress.notifySubscribers();
-                    //self.euExitCode.observable.isValid.notifySubscribers(self.euExitCode.observable.isValid());
-                }
-            }
-        } else {
+            self.newBasketErrors.showAllMessages(false);
 
-            if ((self.euExitingConfirmed() || self.euExitingDenied()) && skipEUExitSave == false) {
-                self.saveEUExitDetails(function () {
-                    self.saveBasketDetails(function () {
-                        self.phase(ORDERFACTORY_PHASE_SEARCH);
-                    }, true)
+            if (self.newBasketErrors().length) {
+                self.newBasketErrors.showAllMessages(true);
+                self.newBasketErrors.filter(function (x) {
+                    if (!x.isValid()) {
+                        x.isValid.notifySubscribers(false);
+                    }
                 });
+                if (self.euExitingConfirmed()) {
+                    self.validateEUExitDestinationNow(true);
+                    self.euExitErrors.showAllMessages(false);
+                    if (self.euExitErrors().length) {
+                        self.euExitErrors.showAllMessages(true);
+                        self.euExitFinalDestinationAddress.notifySubscribers();
+                        //self.euExitCode.observable.isValid.notifySubscribers(self.euExitCode.observable.isValid());
+                    }
+                }
             } else {
 
-                self.busy(true);
-                self.busyMessage('Saving...');
+                if ((self.euExitingConfirmed() || self.euExitingDenied()) && skipEUExitSave == false) {
+                    self.saveEUExitDetails(function () {
+                        self.saveBasketDetails(function () {
+                            self.phase(ORDERFACTORY_PHASE_SEARCH);
+                        }, true)
+                    });
+                } else {
 
-                var data = {
-                    basketId: self.basketServerObject().BasketID,
-                    transactionTypeId: self.transactionType(),
-                    orderReference: self.orderReference.observable(),
-                    email: $.map(self.emailManager.emails(), function (email) {
-                        return email.observable()
-                    }).join('; '),
-                    orderTaker: self.orderTaker().Code,
-                    paymentTermsId: self.creditTerms().PaymentTermsID,
-                    salesRepresentativeId: self.salesRepresentative().SalesRepresentativeID,
-                    salesAgentId: self.salesAgent() ? self.salesAgent().SalesAgentID : null,
-                    raisedAsResultOfClaim: self.customerCareRecord(),
-                    replacementOrderComment: self.replacementOrderMemo.observable(),
-                    haulierAccountShipping: self.customerHaulierAccountShipping.observable(),
-                    haulierAccountDuty: self.customerHaulierAccountDuty.observable(),
-                    allocateProforma: self.allocateProforma(),
-                    fullDespatch: self.customerRequestsFullDispatch(),
-                    heldForSales: self.holdForSales(),
-                    heldForSalesReasonCode: self.heldForSalesRecord(),
-                    contractOrder: self.contractOrder(),
-                    usTaxExemptionCertificate: self.usTaxExemptionCertificate.observable(),
-                    vatNumber: self.vatNumberParams.observable(),
-                    vatCountryCode: self.vatCountryCode(),
-                    validVATNumber: self.vatNumberValid(),
-                    viesConsultationNumber: self.vatNumberRequestIdentifier(),
-                    eoriNumber: self.eoriNumberParams.observable(),
-                    callTypeId: self.callType(),
-                    callerName: self.callerParams.observable()
-                };
+                    self.busy(true);
+                    self.busyMessage('Saving...');
 
-                if (self.deliveryAddress) {
-                    if (self.deliveryAddress.country()) {
-                        if (!self.deliveryAddress.country().EU) {
-                            data.vatNumber = null;
-                            data.vatCountryCode = null;
-                            data.eoriNumber = null;
+                    var data = {
+                        basketId: self.basketServerObject().BasketID,
+                        transactionTypeId: self.transactionType(),
+                        orderReference: self.orderReference.observable(),
+                        email: $.map(self.emailManager.emails(), function (email) {
+                            return email.observable()
+                        }).join('; '),
+                        orderTaker: self.orderTaker().Code,
+                        paymentTermsId: self.creditTerms().PaymentTermsID,
+                        salesRepresentativeId: self.salesRepresentative().SalesRepresentativeID,
+                        salesAgentId: self.salesAgent() ? self.salesAgent().SalesAgentID : null,
+                        raisedAsResultOfClaim: self.customerCareRecord(),
+                        replacementOrderComment: self.replacementOrderMemo.observable(),
+                        haulierAccountShipping: self.customerHaulierAccountShipping.observable(),
+                        haulierAccountDuty: self.customerHaulierAccountDuty.observable(),
+                        allocateProforma: self.allocateProforma(),
+                        fullDespatch: self.customerRequestsFullDispatch(),
+                        heldForSales: self.holdForSales(),
+                        heldForSalesReasonCode: self.heldForSalesRecord(),
+                        contractOrder: self.contractOrder(),
+                        usTaxExemptionCertificate: self.usTaxExemptionCertificate.observable(),
+                        vatNumber: self.vatNumberParams.observable(),
+                        vatCountryCode: self.vatCountryCode(),
+                        validVATNumber: self.vatNumberValid(),
+                        viesConsultationNumber: self.vatNumberRequestIdentifier(),
+                        eoriNumber: self.eoriNumberParams.observable(),
+                        callTypeId: self.callType(),
+                        callerName: self.callerParams.observable()
+                    };
+
+                    if (self.deliveryAddress) {
+                        if (self.deliveryAddress.country()) {
+                            if (!self.deliveryAddress.country().EU) {
+                                data.vatNumber = null;
+                                data.vatCountryCode = null;
+                                data.eoriNumber = null;
+                            }
                         }
                     }
+
+                    console.log('orderFactory saveBasketDetails calling with', data)
+
+                    $.ajax({
+                        url: '/api/componentapi/saveBasketDetails',
+                        type: 'POST',
+                        dataType: 'json',
+                        data: data,
+                        success: function (data) {
+                            console.log('orderFactory saveBasketDetails returned', data)
+                            self.busy(false);
+                            self.busyMessage(undefined);
+                            if (self.basketServerObject().DeliveryAlertEmail == null &&
+                                self.emailManager.emails().length >= 1) {
+                                self.basketServerObject().DeliveryAlertEmail = self.emailManager.emails()[0].observable();
+                            }
+
+                            self.fetchFulfilmentOptions();
+
+                            //self.creditTerms.mdcTextField.disabled = true;
+                            if (typeof onComplete === 'function')
+                                onComplete();
+                        },
+                        error: function (xhr, s, a) {
+                            self.busy(false);
+                            $.ajaxSettings.error(xhr, s, a);
+                        }
+                    });
+
                 }
-
-                console.log('orderFactory saveBasketDetails calling with', data)
-
-                $.ajax({
-                    url: '/api/componentapi/saveBasketDetails',
-                    type: 'POST',
-                    dataType: 'json',
-                    data: data,
-                    success: function (data) {
-                        console.log('orderFactory saveBasketDetails returned', data)
-                        self.busy(false);
-                        self.busyMessage(undefined);
-                        if (self.basketServerObject().DeliveryAlertEmail == null &&
-                            self.emailManager.emails().length >= 1) {
-                            self.basketServerObject().DeliveryAlertEmail = self.emailManager.emails()[0].observable();
-                        }
-
-                        self.fetchFulfilmentOptions();
-
-                        //self.creditTerms.mdcTextField.disabled = true;
-                        if (typeof onComplete === 'function')
-                            onComplete();
-                    },
-                    error: function (xhr, s, a) {
-                        self.busy(false);
-                        $.ajaxSettings.error(xhr, s, a);
-                    }
-                });
-
             }
-        }
+        }, 0);
     };
 
     // Set the BasketLockerComponent's createNewBasket function.
@@ -18542,8 +18557,8 @@ var dispatchFactory = function (parent) {
         permitRevert: false
     }
 
-    self.lastChanceErrors = new ko.validation.group([
-        self.lastChanceDeliveryEmail.observable,
+    self.lastChanceErrors = ko.validation.group([
+        self.lastChanceDeliveryEmail,
         self.lastChanceContactName.observable,
         self.parent.eoriNumber
     ]);
@@ -18648,9 +18663,8 @@ var dispatchFactory = function (parent) {
     }
 
     self.saveLastChanceModal = function () {
-        // eee
-        //self.validateLastChanceNow(false);
-        // ooo
+
+        self.validateLastChanceNow(false);
 
         if (self.validateLastChanceNow()) {
             self.validateLastChanceNow.valueHasMutated();
@@ -18662,12 +18676,15 @@ var dispatchFactory = function (parent) {
         //let lastChanceMobile = self.isLastChanceMobilePhoneValid();
 
         window.setTimeout(function () {
+
             if (self.lastChanceErrors().length) {
+
                 self.lastChanceErrors.filter(function (x) {
                     x.isValid.notifySubscribers(x.isValid());
                 });
 
                 var lastChancePhonesValid = self.validateLastChancePhones();
+
             } else {
 
                 var lastChancePhonesValid = self.validateLastChancePhones();

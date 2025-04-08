@@ -153,7 +153,8 @@ namespace SharedEFClasses.Models.TradeAccounts
 
         public bool PurchaseOrderLineNumberRequired { get; set; }
 
-
+        [Column("CreditStop")]
+        public bool CreditStopped { get; set; }
 
 
 
@@ -181,7 +182,7 @@ namespace SharedEFClasses.Models.TradeAccounts
         {
             get
             {
-                return $"{Code} - {Name}";
+                return $"{Code} - {Name}{(CreditStopped ? " (On Stop)" : "")}";
             }
         }
 

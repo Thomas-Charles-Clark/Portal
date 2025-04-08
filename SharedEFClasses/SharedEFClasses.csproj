@@ -531,7 +531,7 @@
     <Compile Include="Models\OrderBook\PassOrderBookDetailViewParams.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookBaseParams.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookDetailViewSalesBudget.cs" />
-    <Compile Include="Models\OrderBook\PassOrderBookProductPopoverFetch.cs" />
+    <Compile Include="Models\OrderBook\PassOrderBookProductModalFetch.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookRingFencePopoverFetch.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookOrderLinePopoverFetch.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookTotalPopoverFetch.cs" />

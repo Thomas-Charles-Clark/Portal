@@ -19,9 +19,5 @@ namespace SharedEFClasses.Models
         public byte StockLocationGroupID { get; set; }
 
         public string Name { get; set; }
-
-        [JsonIgnore]
-        [InverseProperty("StockLocationGroup")]
-        public virtual ICollection<StockLocation> StockLocations { get; set; }
     }
 }

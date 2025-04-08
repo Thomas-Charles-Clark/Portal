@@ -55,5 +55,7 @@ namespace SharedEFClasses.Models.OrderBook
         public byte? TransactionTypeID { get; set; }
         public string OrderTakerCode { get; set; }
         public string DeliveryType { get; set; }
+        public byte? ProductLifeCycleID { get; set; }
+        public byte? SupplierTypeID { get; set; }
     }
 }

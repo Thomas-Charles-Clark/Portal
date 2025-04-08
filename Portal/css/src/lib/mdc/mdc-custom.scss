@@ -558,6 +558,13 @@ label.mdc-floating-label {
                 color: $white;
             }
         }
+
+        &.mdc-select--disabled {
+            .k-select { 
+                color: #000;
+                opacity: 0.2;
+            }
+        }
     }
 
     .dropdown {

@@ -298,6 +298,35 @@ textarea.mdc-text-field__input {
 .mdc-validating-field .mdc-text-field--disabled.mdc-text-field--outlined .controls {
   pointer-events: none;
 }
+.mdc-validating-field .mdc-bootstrap-multiselect.mdc-select--disabled, .mdc-validating-field .mdc-bootstrap-multiselect.mdc-select--disabled.mdc-select--outlined, .mdc-validating-field .mdc-bootstrap-multiselect.mdc-text-field--disabled, .mdc-validating-field .mdc-bootstrap-multiselect.mdc-text-field--disabled.mdc-text-field--outlined {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+.mdc-validating-field .mdc-bootstrap-multiselect.mdc-select--disabled .k-dropdown-wrap.k-state-default span.k-input, .mdc-validating-field .mdc-bootstrap-multiselect.mdc-select--disabled.mdc-select--outlined .k-dropdown-wrap.k-state-default span.k-input, .mdc-validating-field .mdc-bootstrap-multiselect.mdc-text-field--disabled .k-dropdown-wrap.k-state-default span.k-input, .mdc-validating-field .mdc-bootstrap-multiselect.mdc-text-field--disabled.mdc-text-field--outlined .k-dropdown-wrap.k-state-default span.k-input {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+.mdc-validating-field .mdc-bootstrap-multiselect.mdc-select--disabled .mdc-floating-label,
+.mdc-validating-field .mdc-bootstrap-multiselect.mdc-select--disabled .mdc-text-field__input, .mdc-validating-field .mdc-bootstrap-multiselect.mdc-select--disabled.mdc-select--outlined .mdc-floating-label,
+.mdc-validating-field .mdc-bootstrap-multiselect.mdc-select--disabled.mdc-select--outlined .mdc-text-field__input, .mdc-validating-field .mdc-bootstrap-multiselect.mdc-text-field--disabled .mdc-floating-label,
+.mdc-validating-field .mdc-bootstrap-multiselect.mdc-text-field--disabled .mdc-text-field__input, .mdc-validating-field .mdc-bootstrap-multiselect.mdc-text-field--disabled.mdc-text-field--outlined .mdc-floating-label,
+.mdc-validating-field .mdc-bootstrap-multiselect.mdc-text-field--disabled.mdc-text-field--outlined .mdc-text-field__input {
+  color: rgba(0, 0, 0, 0.6);
+}
+.mdc-validating-field .mdc-bootstrap-multiselect.mdc-select--disabled .mdc-notched-outline__leading,
+.mdc-validating-field .mdc-bootstrap-multiselect.mdc-select--disabled .mdc-notched-outline__notch,
+.mdc-validating-field .mdc-bootstrap-multiselect.mdc-select--disabled .mdc-notched-outline__trailing, .mdc-validating-field .mdc-bootstrap-multiselect.mdc-select--disabled.mdc-select--outlined .mdc-notched-outline__leading,
+.mdc-validating-field .mdc-bootstrap-multiselect.mdc-select--disabled.mdc-select--outlined .mdc-notched-outline__notch,
+.mdc-validating-field .mdc-bootstrap-multiselect.mdc-select--disabled.mdc-select--outlined .mdc-notched-outline__trailing, .mdc-validating-field .mdc-bootstrap-multiselect.mdc-text-field--disabled .mdc-notched-outline__leading,
+.mdc-validating-field .mdc-bootstrap-multiselect.mdc-text-field--disabled .mdc-notched-outline__notch,
+.mdc-validating-field .mdc-bootstrap-multiselect.mdc-text-field--disabled .mdc-notched-outline__trailing, .mdc-validating-field .mdc-bootstrap-multiselect.mdc-text-field--disabled.mdc-text-field--outlined .mdc-notched-outline__leading,
+.mdc-validating-field .mdc-bootstrap-multiselect.mdc-text-field--disabled.mdc-text-field--outlined .mdc-notched-outline__notch,
+.mdc-validating-field .mdc-bootstrap-multiselect.mdc-text-field--disabled.mdc-text-field--outlined .mdc-notched-outline__trailing {
+  border-color: rgba(0, 0, 0, 0.16);
+}
+.mdc-validating-field .mdc-bootstrap-multiselect.mdc-select--disabled .controls, .mdc-validating-field .mdc-bootstrap-multiselect.mdc-select--disabled.mdc-select--outlined .controls, .mdc-validating-field .mdc-bootstrap-multiselect.mdc-text-field--disabled .controls, .mdc-validating-field .mdc-bootstrap-multiselect.mdc-text-field--disabled.mdc-text-field--outlined .controls {
+  pointer-events: none;
+}
 .mdc-validating-field .mdc-text-field--textarea.clearable textarea,
 .mdc-validating-field .mdc-text-field--textarea.revertible textarea {
   padding-right: 36px;

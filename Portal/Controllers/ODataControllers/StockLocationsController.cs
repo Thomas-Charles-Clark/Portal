@@ -41,6 +41,16 @@ namespace Portal.Controllers
             return PortalDb.StockLocations.Where(sl => sl.StockLocationID == 107).AsQueryable();
         }
 
+        // GET: odata/StockLocations
+        [EnableQuery]
+        [HttpGet]
+        public IQueryable<StockLocation> AllStockLocations()
+        {
+            var PortalDb = new PortalDbContext();
+
+            return PortalDb.StockLocations.AsQueryable();
+        }
+
         [EnableQuery(MaxNodeCount = 200)]
         [HttpGet]
         public IQueryable<StockLocation> StockLocationValueMapper(short? stockLocationId)

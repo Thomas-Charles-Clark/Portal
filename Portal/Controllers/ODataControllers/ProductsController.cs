@@ -92,5 +92,12 @@ namespace Portal.Controllers
                 (p.ProductGroupID == 2 || p.ProductGroupID == 8 || p.ProductGroupID == 16)
             ).AsQueryable();
         }
+
+        [EnableQuery(MaxNodeCount = 200)]
+        [HttpGet]
+        public IQueryable<Product> OrderBookProductValueMapper(int? productId)
+        {
+            return PortalDb.Products.Where(p => p.ProductID == productId).AsQueryable();
+        }
     }
 }

@@ -3306,6 +3306,9 @@ ko.bindingHandlers.codeMirror = {
 
 ko.validation.rules['numeric'] = {
     validator: function (value, params) {
+        if (!params.required && typeof value == 'undefined') {
+            return true;
+        }
         if (params.required && value == null)
             return false;
 

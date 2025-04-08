@@ -26,6 +26,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         tradeAccountGroupId: '',
         paymentTermsId: '',
         paymentTermsTypeId: '',
+        creditStoppedId: '',
         tradeAccountId: '',
         orderId: '',
         fromDate: undefined,
@@ -44,6 +45,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         productId: '',
         dataSource: '',
         transactionTypeId: '',
+        stockLocationCodes: '',
         buyerId: '',
         productStatusId: ''
     }
@@ -113,6 +115,10 @@ const orderBookUserDefinedFiltersViewModel = ({
     self.paymentTermsTypeId = ko.observable(params.paymentTermsTypeId ?? '');
     self.paymentTermsType = ko.observable();
     self.paymentTermsTypeAwaitingBinding = ko.observable(params.paymentTermsTypeId != null && params.paymentTermsTypeId != '');
+
+    self.creditStoppedId = ko.observable(params.creditStoppedId ?? '');
+    self.creditStopped = ko.observable();
+    self.creditStoppedAwaitingBinding = ko.observable(params.creditStoppedId != null && params.creditStoppedId != '');
 
     self.tradeAccountId = ko.observable(params.tradeAccountId ?? '');
     self.tradeAccount = ko.observable();
@@ -203,9 +209,23 @@ const orderBookUserDefinedFiltersViewModel = ({
     self.transactionTypeId = ko.observable(params.transactionTypeId ?? '');
     self.transactionType = ko.observable();
 
+
+    self.availableStockLocations = ko.observableArray([]);
+    self.stockLocationCodes = ko.observableArray(params.stockLocationCodes == '' ? [] : params.stockLocationCodes?.split(','));
+    self.stockLocations = ko.observableArray([]);
+    self.stockLocationSelection = ko.observableArray(self.stockLocationCodes()); // this is just what's selected in the control, not what we pass to the fetch call
+    self.stockLocationsAwaitingBinding = ko.observable(params.stockLocationCodes != null && params.stockLocationCodes.length > 0);
+
+    self.selectedStockLocationCodes = ko.observableArray(self.stockLocationCodes());
+
+    // because we want this multiselect to be grouped
+    self.stockLocationOrderBookGroups = ko.observableArray([]);
+
+
     self.productLifeCycleId = ko.observable(params.productLifeCycleId ?? '');
     self.productLifeCycle = ko.observable();
     self.productLifeCycleAwaitingBinding = ko.observable(params.productLifeCycleId != null && params.productLifeCycleId != '');
+
 
 
     //#endregion
@@ -392,6 +412,7 @@ const orderBookUserDefinedFiltersViewModel = ({
             let tradeAccountGroupId = null;
             let paymentTermsId = null;
             let paymentTermsTypeId = null;
+            let creditStoppedId = null;
             let tradeAccountTypeId = null;
             
             if (defaultOp.indexOf("SalesMarketID") == -1) {
@@ -440,6 +461,12 @@ const orderBookUserDefinedFiltersViewModel = ({
                 paymentTermsTypeId = self.paymentTermsTypeId();
             } else {
                 paymentTermsTypeId = self.paymentTermsTypeId.peek();
+            }
+
+            if (defaultOp.indexOf("CreditStopped") == -1) {
+                creditStoppedId = self.creditStoppedId();
+            } else {
+                creditStoppedId = self.creditStoppedId.peek();
             }
 
             if (defaultOp.indexOf("TradeAccountTypeID") == -1) {
@@ -507,6 +534,14 @@ const orderBookUserDefinedFiltersViewModel = ({
                 } else {
                     filters.push(`PaymentTerms/PaymentTermsTypeID eq ${paymentTermsTypeId}`);
                 }
+            }
+
+            if (defaultOp.indexOf('CreditStopped') == -1 && creditStoppedId != '') {
+                //if (defaultOp != 'TRADEACCOUNT') {
+                    filters.push(`CreditStopped eq ${creditStoppedId}`);
+                //} else {
+                //    filters.push(`CreditStopped eq ${creditStoppedId}`);
+                //}
             }
 
             if (defaultOp.indexOf('TradeAccountTypeID') == -1 && tradeAccountTypeId != '') {
@@ -1078,6 +1113,232 @@ const orderBookUserDefinedFiltersViewModel = ({
         parameterMap: self.generateTradeAccountSuperSetParameterMap(self.paymentTermsTypeGroupBy),
         popupSettings: {
             appendTo: document.getElementById('payment-terms-type-prefilter')
+        }
+    });
+
+    self.stockLocationCodesParams = {
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: false,
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        busy: ko.observable(false),
+        disable: ko.observable(self.stockLocationCodes().length > 0),
+        locked: ko.observable(self.stockLocationCodes().length > 0),
+        enable: ko.observable(true),
+        multiSelectSettings: {
+            widget: ko.observable(),
+            label: "Stock Location(s)",
+            class: "btn-sm",
+            elementId: "stock-locations-prefilter",
+            autoClose: "outside",
+            //groupTemplate: "Stock Location Group: #: data #",
+            controls: {
+                selectAll: () => {
+                    console.log('selectAll');
+                    self.stockLocationSelection(self.stockLocationCodesParams.multiSelectSettings.widget().dataSource.data().map(d => d.StockLocation.Code));
+                },
+                deselectAll: () => {
+                    console.log('deselectAll');
+                    self.stockLocationSelection([]);
+                },
+                applySelection: (hide) => {
+                    console.log('apply');
+                    if (hide != false) {
+                        bootstrap.Dropdown.getOrCreateInstance(self.stockLocationSelection.DOMElement).hide();
+                    }
+                    self.stockLocationCodes(self.stockLocationSelection());
+                }
+            },
+            label: ko.computed(() => {
+
+                let plural = 's';
+
+                let d = {
+                    values: self.stockLocationCodes()
+                }
+
+                let count = d.values.length;
+
+                if (count === 1) {
+                    plural = '';
+                }
+
+                if (count == 1) {
+                    let rec = self.availableStockLocations().find(dat => dat.value == d.values[0]);
+                    if (rec)
+                        return `Stock Location: ${rec.label}`;
+                }
+            
+                if (count === 0) {
+                    return 'Stock Location(s)';
+                } else {
+                    let stockLocationCodesDisplay = [];
+
+                    for (let i = 0; i < 6; i++) {
+                        if (d.values.length > i)
+                            stockLocationCodesDisplay.push(d.values[i]);
+                    }
+
+                    if (d.values.length > 6) {
+                        stockLocationCodesDisplay.push('[...]');
+                    }
+
+                    return `${count} Stock Location${plural} Selected: ${(stockLocationCodesDisplay.join(', '))}`;
+                }
+            }, self),
+            selectedState: ko.computed(() => {
+                return self.stockLocationCodes().length > 0;
+            }, self),
+            observableArray: self.stockLocationSelection,
+            data: new kendo.data.DataSource({
+                serverFiltering: true,
+                serverSorting: true,
+                serverGrouping: false,
+                serverPaging: true,
+                type: 'odata-v4',
+                transport: {
+                    read: {
+                        url: '/odata/StockLocations/Default.AllStockLocations()?$expand=StockLocationOrderBookGroup'
+                    },
+                    data: {}
+                },
+                sort: {
+                    dir: 'asc',
+                    field: 'Name'
+                },
+                requestEnd: (data) => {
+                    console.log("Default.AllStockLocations returned", data);
+
+                    self.availableStockLocations(data.response.value);
+
+                    let groups = [];
+
+                    Object.keys(Object.groupBy(self.availableStockLocations(), (item) => item.StockLocationOrderBookGroupID)).forEach(k => {
+
+                        let entries = self.availableStockLocations().filter(sl => sl.StockLocationOrderBookGroupID == k);
+
+                        let codes = entries.map(e => e.Code);
+
+                        let state = ko.observable(false);
+
+                        let group = {
+                            stockLocationOrderBookGroupId: k,
+                            name: entries[0].StockLocationOrderBookGroup?.Name,
+                            entries: entries,
+                            stockLocationCodes: codes,
+                            state: state,
+                            groupSortOrder: entries[0].StockLocationOrderBookGroup?.SortOrder,
+                            locationSortOrder: entries[0].SortOrder,
+                            toggleStockLocationCodes: () => {
+
+                                if (state()) {
+                                    self.stockLocationSelection(self.stockLocationSelection().filter(sl => codes.indexOf(sl) == -1));
+                                } else {
+                                    self.stockLocationSelection([...new Set(self.stockLocationSelection().concat(codes))]);
+                                }
+
+                                self.stockLocationCodes(self.stockLocationSelection());
+
+                                state(!state());
+                            }
+                        }
+
+                        groups.push(group);
+                    });
+
+                    console.log("stockLocationOrderBookGroups", groups);
+
+                    groups = groups.sort((a, b) => {
+                        if (a.groupSortOrder > b.groupSortOrder)
+                            return 1;
+                        if (a.groupSortOrder < b.groupSortOrder)
+                            return -1;
+                        return 0;
+                    });
+
+                    groups.forEach(g => {
+                        g.entries = g.entries.sort((a, b) => {
+                            if (a.SortOrder > b.SortOrder)
+                                return 1;
+                            if (a.SortOrder < b.SortOrder)
+                                return -1;
+
+                            if (a.Name > b.Name)
+                                return 1;
+                            if (a.Name < b.Name)
+                                return -1;
+                        })
+                    });
+
+                    self.stockLocationOrderBookGroups(groups);
+
+                    //.map(d => {
+                    //    return {
+                    //        disabled: false,
+                    //        value: d.Code,
+                    //        label: d.Name
+                    //    }
+                    //}));
+                }
+            }),
+            group: self.stockLocationOrderBookGroups,
+            options: self.availableStockLocations
+        },
+        revertFunction: () => {
+
+        },
+        clearFunction: () => {
+            self.stockLocationCodesParams.multiSelectSettings.controls.deselectAll();
+            self.stockLocationCodesParams.multiSelectSettings.controls.applySelection(false);
+        }
+    }
+
+
+    self.creditStoppedTemplate = (e) => {
+        return `<span title="${e.name}">${e.name}</span>`;
+    }
+
+    self.creditStoppedValueTemplate = (e) => {
+        if (e.name) {
+            return `<span title="${e.name}">Credit Stopped: ${e.name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.creditStoppedParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Credit Stopped',
+        data: [{
+            name: 'Not on Stop',
+            value: false
+        }, {
+            name: 'On Stop',
+            value: true
+        }],
+        textField: 'name',
+        valueField: 'value',
+        template: self.creditStoppedTemplate,
+        valueTemplate: self.creditStoppedValueTemplate,
+        idObservable: self.creditStoppedId,
+        objObservable: self.creditStopped,
+        locked: ko.observable(self.creditStoppedId() != ''),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        select: function (e) {
+            console.log('creditStopped select', e);
+            self.tradeAccountComputer.valueHasMutated();
+        },
+        clearFunction: self.genericUnsavedChangesClear,
+        dataBound: (e) => self.creditStoppedAwaitingBinding(false),
+        popupSettings: {
+            appendTo: document.getElementById('credit-stopped-prefilter')
         }
     });
 
@@ -2411,7 +2672,7 @@ const orderBookUserDefinedFiltersViewModel = ({
             valueMapper: function (options) {
                 if (options.value) {
                     $.ajax({
-                        url: `/odata/Products/Default.ProductValueMapper(productId=${options.value})`,
+                        url: `/odata/Products/Default.OrderBookProductValueMapper(productId=${options.value})`,
                         type: 'GET',
                         success: function (data) {
                             options.success(data.value);
@@ -2498,7 +2759,7 @@ const orderBookUserDefinedFiltersViewModel = ({
         autoBind: true,
         height: 340,
         sort: {
-            dir: 'desc',
+            dir: 'asc',
             field: 'ProductLifeCycle.ProductLifeCycleID'
         },
         ignoreCase: false,
@@ -2565,6 +2826,14 @@ const orderBookUserDefinedFiltersViewModel = ({
 
     //#region Subscriptions
 
+    //self.creditStoppedId.subscribe(nv => {
+    //    if (nv == -1) {
+    //        window.setTimeout(() => {
+    //            self.creditStoppedParams.clearFunction();
+    //        }, 0);
+    //    }
+    //})
+
     self.tradeAccountComputer.subscribe(nv => {
         self.tradeAccountParams.dropDownListSettings.widget().dataSource.query();
     });
@@ -2575,6 +2844,17 @@ const orderBookUserDefinedFiltersViewModel = ({
                 self.salesMarketsParams.multiSelectSettings.widget().value(self.salesMarketIds());
                 window.setTimeout(() => {
                     self.salesMarketsParams.multiSelectSettings.widget().trigger('change');
+                }, 10);
+            }, 0);
+        }
+    });
+
+    self.stockLocationCodesParams.multiSelectSettings.widget.subscribe(nv => {
+        if (self.stockLocationCodes().length) {
+            window.setTimeout(() => {
+                self.stockLocationCodesParams.multiSelectSettings.widget().value(self.stockLocationCodes());
+                window.setTimeout(() => {
+                    self.stockLocationCodesParams.multiSelectSettings.widget().trigger('change');
                 }, 10);
             }, 0);
         }
@@ -2733,6 +3013,9 @@ const orderBookUserDefinedFiltersViewModel = ({
         self.paymentTermsTypeId(EMPTY_STRING);
         self.paymentTermsType(undefined);
 
+        self.creditStoppedId(EMPTY_STRING);
+        self.creditStopped(undefined);
+
         //self.tradeAccountId(EMPTY_STRING);
         //self.tradeAccount(undefined);
         self.tradeAccountParams.clearFunction();
@@ -2835,7 +3118,8 @@ const orderBookUserDefinedFiltersViewModel = ({
             allocated: self.allocatedId() || null,
             dataSource: self.dataSourceId() || null,
             transactionTypeId: self.transactionTypeId() || null,
-            productLifeCycleId: self.productLifeCycleId() || null
+            productLifeCycleId: self.productLifeCycleId() || null,
+            stockLocationCodes: self.stockLocationCodes().length == 0 ? null : self.stockLocationCodes().join(',')
         };
 
         console.log("userDefinedFilters.json returning", result);

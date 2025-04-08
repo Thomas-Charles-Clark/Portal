@@ -9279,6 +9279,18 @@ kendo-sortable {
         }
     }*/
 
+    &.mdc-select--selected {
+        .k-dropdown-wrap {
+            .k-select {
+                .k-icon {
+                    &.k-i-loading {
+                        background-image: url(/Content/images/icons/bootstrap-kendo-loading-light.gif);
+                    }
+                }
+            }
+        }
+    }
+
     .k-dropdown-wrap.k-state-active {
         background-color: transparent;
         box-shadow: none;

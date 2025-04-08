@@ -7170,6 +7170,9 @@ kendo-sortable {
 .mdc-select .k-dropdown-wrap {
   border-bottom-color: rgba(0, 0, 0, 0.12);
 }
+.mdc-select.mdc-select--selected .k-dropdown-wrap .k-select .k-icon.k-i-loading {
+  background-image: url(/Content/images/icons/bootstrap-kendo-loading-light.gif);
+}
 .mdc-select .k-dropdown-wrap.k-state-active {
   background-color: transparent;
   box-shadow: none;

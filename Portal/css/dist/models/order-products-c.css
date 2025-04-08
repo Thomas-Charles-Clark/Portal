@@ -774,6 +774,9 @@ select.fulfilment-option {
   flex: 1 1 auto;
   padding-left: 60px;
 }
+.allocation-stock-breakdown .stock-info {
+  width: 100%;
+}
 
 .allocation-stock-breakdown-inner {
   position: relative;

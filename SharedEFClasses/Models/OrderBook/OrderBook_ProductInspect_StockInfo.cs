@@ -11,6 +11,7 @@ namespace SharedEFClasses.Models.OrderBook
     {
         public short StockLocationID { get; set; }
         public byte StockLocationTypeID { get; set; }
+        public string StockLocationCode { get; set; }
         public string StockLocationType { get; set; }
         public string StockLocationName { get; set; }
         public int StockLocationSortOrder { get; set; } 

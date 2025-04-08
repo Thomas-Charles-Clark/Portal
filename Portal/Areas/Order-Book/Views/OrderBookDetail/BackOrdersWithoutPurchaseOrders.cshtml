@@ -69,6 +69,221 @@
         </style>
     }*@
 
+<script id="product-code-info-popover-template" type="text/html">
+    <div class="blocker" style="display: flex; opacity: 1.0" data-bind="flexFadeVisible: busy, click: (data, event) => { event.preventDefault(); }">
+        <h4 class="mt-3">
+            Please wait...
+        </h4>
+    </div>
+    <h4 class="popover-title" style="display: none;" data-bind="fadeVisible: !busy()">
+        <span data-bind="html: title"></span>
+        <button class="btn-close btn-close-white" data-bind="click: (data, event) => { data.popover.hide(); }"></button>
+    </h4>
+    <div class="info-container" style="display: none;" data-bind="fadeVisible: !busy()">
+        <div class="card info-card">
+            <div class="card-body" data-bind="with: contentData">
+                <div class="product-info-display">
+                    <!-- ko if: ProductInfo.ProductImageID -->
+                    <img class="thumb" width="90" height="90" data-bind="attr: { src: `https://www.designersguild.com/image/90/${ProductInfo.ProductImageID}` }" />
+                    <!-- /ko -->
+                    <div class="product-info-details" data-bind="with: ProductInfo">
+                        <h2>
+                            <span data-bind="text: "product-info-details" ProductName"></span>
+                            <span data-bind="text: ProductCode"></span>
+                        </h2>
+                        <h4>
+                            <span class="text-end" data-bind="text: LaunchDate"></span>
+                            <span class="text-end" data-bind="text: `Status: ${ProductStatus}`"></span>
+                        </h4>
+                        <a data-bind="attr: { href: Link, target: '_blank' }, text: Link"></a>
+                    </div>
+                    <!-- ko with: AvailabilityMessage -->
+                    <div class="stock-details">
+                        <div class="alert alert-info" data-bind="class: Class">
+                            <div data-bind="html: SupplierAvailabilityMessage"></div>
+                        </div>
+                    </div>
+                    <!-- ko if: ExecuteStockCheckRequest -->
+                    <!-- ko with: $parentContext.$parent.stockCheckRequester -->
+                    <div class="alert" data-bind="class: cssClass">
+                        <div data-bind="html: message"></div>
+                        <button class="btn btn-blue request-stock-check-btn" data-bind="enable: allowStockCheckRequest, click: parent.beginStockCheckRequest">
+                            Request Stock Check
+                        </button>
+                    </div>
+                    <!-- /ko -->
+                    <!-- /ko -->
+                    <!-- /ko -->
+                </div>
+                <div class="product-results-wrapper">
+                    <div class="order-line-details">
+                        <!-- ko if: OrderLines.length -->
+                        <table class="order-line-detail-table table table-bordered">
+                            <colgroup>
+                                <col />
+                                <col />
+                                <col />
+                                <col />
+                                <col />
+                                <col />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Data Source
+                                    </th>
+                                    <th>
+                                        Order Line
+                                    </th>
+                                    <th>
+                                        Order Line Status
+                                    </th>
+                                    <th>
+                                        Quantity Ordered
+                                    </th>
+                                    <th>
+                                        Trade Account
+                                    </th>
+                                    <th>
+                                        Trade Account Status
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- ko foreach: OrderLines -->
+                                <tr>
+                                    <td>
+                                        <span data-bind="text: DataSource"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: OrderLine"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: OrderLineStatus"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: formatNumber(QuantityOrdered, 2, 'en-GB')"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: TradeAccount"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: TradeAccountStatus"></span>
+                                    </td>
+                                </tr>
+                                <!-- /ko -->
+                            </tbody>
+                        </table>
+                        <!-- /ko -->
+                        <!-- ko ifnot: OrderLines.length -->
+                        <h4 class="no-order-lines-heading">
+                            No Order Lines
+                        </h4>
+                        <!-- /ko -->
+                    </div>
+                    <div class="product-stock-details">
+                        <table class="table table-bordered">
+                            <colgroup></colgroup>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Data Source
+                                    </th>
+                                    <th>
+                                        Product Code
+                                    </th>
+                                    <th>
+                                        Stock Location
+                                    </th>
+                                    <th>
+                                        Batch & Piece
+                                    </th>
+                                    <th>
+                                        Available Now
+                                    </th>
+                                    <th>
+                                        Bulk Quantity
+                                    </th>
+                                    <th>
+                                        On Reserve
+                                    </th>
+                                    <th>
+                                        Other Customers' Ring Fences
+                                    </th>
+                                    <th>
+                                        Due In
+                                    </th>
+                                    <th>
+                                        Due Date
+                                    </th>
+                                    <th>
+                                        Due Message
+                                    </th>
+                                    <th>
+                                        PO Confirmed
+                                    </th>
+                                    <th>
+                                        PO On CallOff
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- ko foreach: StockInfo -->
+                                <tr>
+                                    <td>
+                                        <span data-bind="text: DataSource"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: ProductCode, attr: { title: `${ProductCode} - ProductID: ${ProductID}` }"></span>
+                                    </td>
+                                    <td>
+                                        <!-- ko if: StockLocationType -->
+                                        <span data-bind="text: StockLocationType, attr: { title: `StockLocationTypeID: ${StockLocationTypeID} - ${StockLocationType}` }"></span>
+                                        <!-- /ko -->
+                                        <span data-bind="text: StockLocationName, attr: { title: `StockLocationID: ${StockLocationID} - ${StockLocationName}` }"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: Batch"></span>
+                                        <!-- <span data-bind="text: Piece"></span> -->
+                                    </td>
+                                    <td class="text-end">
+                                        <span data-bind="text: AvailableNowQuantity"></span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span data-bind="text: BulkQuantity"></span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span data-bind="text: OnReserveQuantity"></span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span data-bind="text: OtherCustomerRingFencedQuantity"></span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span data-bind="text: DueInQuantity"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: DueInDate ? moment(DueInDate).format('DD/MM/YYYY') : ''"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: DueInMessage"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: POConfirmed == null ? '' : POConfirmed ? '✔' : '✖'"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: POOnCallOff == null ? '' : POOnCallOff ? '✔' : '✖' "></span>
+                                    </td>
+                                </tr>
+                                <!-- /ko -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
 <div class="blocker" style="@(ViewBag.Partial == true ? "display: none; opacity: 0" : "display: flex; opacity: 1")" data-bind="flexFadeVisible: busy">
     <div class="loading-spinner"></div>
     <h4 class="mt-3">
@@ -105,7 +320,8 @@
 
 <script type="text/javascript">
     document.body.addEventListener('click', (event) => {
-        if (event.target.closest('.group-cell-popover') == null) {
+        if (event.target.closest('.group-cell-popover') == null &&
+            event.target.closest('.info-cell-popover') == null) {
             let list = document.querySelectorAll('.popover-cell a').forEach(e => {
                 let pop = bootstrap.Popover.getInstance(e);
                 if (pop)
@@ -114,3 +330,156 @@
         }
     });
 </script>
+
+<div id="product-detail-modal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content" data-bind="with: productDetail">
+            <div class="blocker" style="display: flex; opacity: 1" data-bind="flexFadeVisible: busy">
+                <div class="loading-spinner"></div>
+                <h4 class="mt-3">
+                    Please wait...
+                </h4>f
+            </div>
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    Product Details
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="info-container">
+                    <div class="card info-card">
+                        <div class="card-body">
+                            <div class="product-info-display">
+                                <!-- ko if: productInfo.ProductImageID -->
+                                <img class="thumb" width="422" height="422" data-bind="attr: { src: `https://www.designersguild.com/image/488/${productInfo.ProductImageID}` }" />
+                                <!-- /ko -->
+                                <div class="product-info-details" data-bind="with: productInfo">
+                                    <h2>
+                                        <span data-bind="text: ProductName"></span>
+                                        <span data-bind="text: ProductCode"></span>
+                                    </h2>
+                                    <h4>
+                                        <span data-bind="text: LaunchDate"></span>
+                                        <span data-bind="text: `Status: ${ProductStatus}`"></span>
+                                    </h4>
+                                    <a data-bind="attr: { href: Link, target: '_blank' }, text: Link"></a>
+                                </div>
+                            </div>
+                            <div class="product-results-wrapper">
+                                <div class="order-line-details">
+                                    <!-- ko if: orderLines.length -->
+                                    <table class="order-line-detail-table table table-bordered">
+                                        <colgroup>
+                                            <col />
+                                            <col />
+                                            <col />
+                                            <col />
+                                            <col />
+                                            <col />
+                                        </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    Data Source
+                                                </th>
+                                                <th>
+                                                    Order Line
+                                                </th>
+                                                <th>
+                                                    Order Line Status
+                                                </th>
+                                                <th>
+                                                    Quantity Ordered
+                                                </th>
+                                                <th>
+                                                    Trade Account
+                                                </th>
+                                                <th>
+                                                    Trade Account Status
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- ko foreach: orderLines -->
+                                            <tr>
+                                                <td>
+                                                    <span data-bind="text: DataSource"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: OrderLine"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: OrderLineStatus"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: formatNumber(QuantityOrdered, 2, 'en-GB')"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: TradeAccount"></span>
+                                                </td>
+                                                <td>
+                                                    <span data-bind="text: TradeAccountStatus"></span>
+                                                </td>
+                                            </tr>
+                                            <!-- /ko -->
+                                        </tbody>
+                                    </table>
+                                    <!-- /ko -->
+                                    <!-- ko ifnot: orderLines.length -->
+                                    <h4 class="no-order-lines-heading">
+                                        No Order Lines
+                                    </h4>
+                                    <!-- /ko -->
+                                </div>
+                                <!-- ko template: { name: 'stock-info-template' } --><!-- /ko -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="stock-check-request-modal" class="modal fade" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <!-- ko if: productDetail -->
+        <div class="modal-content" data-bind="with: stockCheckRequester">
+            <div class="blocker" data-bind="visible: busy">
+                <div class="loading-spinner"></div>
+                <h4>
+                    Please wait..
+                </h4>
+            </div>
+            <div class="modal-header grey-blue">
+                <button type="button" class="close" data-bind="click: hideModal">
+                    <span aria-hidden="true">
+                        &times;
+                    </span>
+                </button>
+                <h4 class="modal-title">
+                    Stock Check Request
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex">
+                    <h5>
+                        Quantity Required
+                    </h5>
+                    <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: quantityParams }"></div>
+                </div>
+                <span class="validation-message" data-bind="validationMessage: quantity"></span>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-red" data-bind="click: hideModal">
+                    Cancel
+                </button>
+                <button class="btn btn-green" data-bind="click: submit">
+                    Submit
+                </button>
+            </div>
+        </div>
+        <!-- /ko -->
+    </div>
+</div>

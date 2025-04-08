@@ -1055,6 +1055,7 @@ This customer wishes their deliveries to be consolidated. Please double check th
     }, self);
 
     self.deliveryTerms = ko.observable(undefined).extend({ // 21/06/2023 Sarah wants to default this NULL to find out if it causes a throw in the Portal eventually
+                                                           // 26/02/2025 Evidently it hasn't caused much of an issue so far...
         //required: {
         //    params: true,
         //    message: 'You must provide INCO Delivery Terms'
@@ -1065,7 +1066,7 @@ This customer wishes their deliveries to be consolidated. Please double check th
       required: {
         params: true,
         onlyIf: () => {
-            return self.vatRegistered() && (self.countryId() != 238)
+            return self.vatRegistered() && (self.countryId() != 238 && self.countryId() != 237 && self.countryId() != 41)
         },
         message: ' '
       }

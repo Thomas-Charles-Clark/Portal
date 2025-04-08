@@ -10,7 +10,7 @@ namespace SharedEFClasses.Models.OrderEntry
     {
         public int MemberID { get; set; }
         public int ProductID { get; set; }
-        public int TradeAccountID { get; set; }
-        public int BasketID { get; set; }
+        public int? TradeAccountID { get; set; }
+        public long? BasketID { get; set; }
     }
 }

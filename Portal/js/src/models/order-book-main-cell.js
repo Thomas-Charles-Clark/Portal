@@ -77,6 +77,52 @@ const orderBookMainCell = ({ parent, data, grouping, array } = {
 
     //#region Functions
 
+
+    self.showProductDetailModal = () => {
+
+        (async () => {
+            let data = {
+                productId: self.ProductID,
+                productCode: self.Array_ProductCode,
+                tradeAccountId: null
+            }
+            self.parent.stockCheckRequester.busy(true);
+
+            await self.parent.fetchProductCodeModalContents(data)
+                .then(data => {
+                    let am = data.availabilityMessages.length ? data.availabilityMessages[0] : {};
+
+                    self.parent.productDetail(Object.assign(data, {
+                        busy: ko.observable(false),
+                        supplierAvailabilityMessage: ko.observable(am.SupplierAvailabilityMessage),
+                        showStockCheckRequester: ko.observable(am.ExecuteStockCheckRequest),
+                        record: {
+                            ImageID: null
+                        },
+                        stockStatus: ko.observable(),
+                        backOrder: ko.observable(false),
+                        stockInfo: ko.observable(self.parent.stockCheckRequester.processStockEnquiryResults([{
+                            productId: self.ProductID,
+                            units: self.Units
+                        }], data)),
+                        availabilityMessage: am,
+                        productFilterOptions: () => {
+                            return {
+                                QuantityPrecision: 1,
+                                Units: self.Units
+                            }
+                        },
+                        showThumb: false
+                    }));
+
+                    self.parent.stockCheckRequester.busy(false);
+                });
+        })();
+
+        document.querySelector('#product-detail-modal') &&
+        bootstrap.Modal.getOrCreateInstance(document.querySelector('#product-detail-modal')).show();
+    };
+
     self.buildGroup = (groupName) => {
 
         self[`${groupName}_popoverContent`] = `<div class="blocker" style="display: flex; opacity: 1.0" data-bind="flexFadeVisible: busy, click: (data, event) => { event.preventDefault(); }">
@@ -90,9 +136,9 @@ const orderBookMainCell = ({ parent, data, grouping, array } = {
             <button class="btn-close btn-close-white" data-bind="click: (data, event) => { data.popover.hide(); }"></button>
         </h4>
         <div class="table-container" style="display: none;" data-bind="fadeVisible: !busy()">
-            <!-- ko if: data() && data().hasOwnProperty('Totals') -->
+            <!-- ko if: contentData() && contentData().hasOwnProperty('Totals') -->
             <div class="d-inline-flex gap-5 mb-3 justify-content-start align-items-center">
-                <table class="totals-table table table-bordered table-condensed mb-0" data-bind="with: data">
+                <table class="totals-table table table-bordered table-condensed mb-0" data-bind="with: contentData">
                     <colgroup>
                         <col />
                         <!-- ko foreach: Object.keys(Totals) -->
@@ -123,9 +169,9 @@ const orderBookMainCell = ({ parent, data, grouping, array } = {
                     </tbody>
                 </table>
             </div>
-            <!-- ko if: data() && data().Data.length -->
+            <!-- ko if: contentData() && contentData().Data.length -->
             <div class="horizontal-scrolling-table-container">
-                <table class="lines-table table table-bordered table-condensed" data-bind="with: data">
+                <table class="lines-table table table-bordered table-condensed" data-bind="with: contentData">
                     <colgroup>
                         <!-- ko foreach: Object.keys(Data[0]) -->
                         <col />
@@ -155,9 +201,9 @@ const orderBookMainCell = ({ parent, data, grouping, array } = {
             </div>
             <!-- /ko -->
             <!-- /ko -->
-            <!-- ko if: data() && data().hasOwnProperty('ringFences') && data().ringFences.Data.length -->
+            <!-- ko if: contentData() && contentData().hasOwnProperty('ringFences') && contentData().ringFences.Data.length -->
             <div class="d-inline-flex gap-5 mb-3 justify-content-start align-items-center mt-5">
-                <table class="totals-table table table-bordered table-condensed mb-0" data-bind="with: data().ringFences">
+                <table class="totals-table table table-bordered table-condensed mb-0" data-bind="with: contentData().ringFences">
                     <colgroup>
                         <col />
                         <!-- ko foreach: Object.keys(Totals) -->
@@ -188,9 +234,8 @@ const orderBookMainCell = ({ parent, data, grouping, array } = {
                     </tbody>
                 </table>
             </div>
-            <!-- ko if: data() && data().hasOwnProperty('ringFences') && data().ringFences.Data.length -->
             <div class="horizontal-scrolling-table-container">
-                <table class="lines-table table table-bordered table-condensed" data-bind="with: data">
+                <table class="lines-table table table-bordered table-condensed" data-bind="with: contentData">
                     <colgroup>
                         <!-- ko foreach: Object.keys(Data[0]) -->
                         <col />
@@ -218,7 +263,6 @@ const orderBookMainCell = ({ parent, data, grouping, array } = {
                     </tbody>
                 </table>
             </div>
-            <!-- /ko -->
             <!-- /ko -->
         </div>`
 
@@ -300,112 +344,164 @@ const orderBookMainCell = ({ parent, data, grouping, array } = {
                 <button class="btn-close btn-close-white" data-bind="click: (data, event) => { data.popover.hide(); }"></button>
             </h4>
             <div class="info-container" style="display: none;" data-bind="fadeVisible: !busy()">
-                <!-- ko foreach: data -->
+                <!-- ko foreach: contentData -->
+                <!-- ko if: $data -->
                 <div class="card info-card">
                     <div class="card-body">
                         <div data-bind="html: $data"></div>
                     </div>
                 </div>
                 <!-- /ko -->
+                <!-- /ko -->
             </div>`;
+
+            if (groupName == "Array_ProductCode") {
+                self[`${groupName}_popoverContent`] = document.querySelector('#product-code-info-popover-template').innerHTML
+            }
         }
 
-        self[`${groupName}_PopoverDetails`] = {
-            html: true,
-            sanitize: false,
-            busy: ko.observable(true),
-            title: groupName.replace('Array', '').replace('Grouped', '').replace(/_/g, '').replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5'),
-            data: ko.observable(),
-            element: ko.observable(),
-            container: 'div.relative',
-            placement: 'bottom',
-            fallbackPlacements: ['top'],
-            customClass: (groupName.indexOf('Array_') == -1) ? 'group-cell-popover' : 'info-cell-popover',
-            content: self[`${groupName}_popoverContent`],
-            trigger: 'click',
-            //container: 'td',
-            show: (event, data) => {
+        if (groupName == "Array_ProductCode") {
 
-                let popoverCells = [...document.querySelectorAll('.popover-cell')];
+            //ko.bindingHandlers.bootstrapModal = {
+            //    init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+            //        var params = ko.utils.unwrapObservable(valueAccessor());
 
-                popoverCells.forEach((c, i) => {
-                    c._zIndexOriginal = +c.style.zIndex;
-                });
+            //        var options = params.details;
 
-                popoverCells.forEach((c, i) => {
-                    c.style.zIndex = `${popoverCells.length - i}`;
-                });
+            //        if (!options.modalElementId)
+            //            console.error('boostrapModal demands options.modalElementId');
 
-                self.parent.virtualScroller.maxY.valueHasMutated();
-            },
-            shown: null,
-            hide: (event, data) => {
+            //        var props = {
+            //            element: element,
+            //            modalElement: document.querySelector(options.modalElementId),
+            //            modal: bootstrap.Modal.getOrCreateInstance(options.modalElementId, {
+            //                backdrop: true,
+            //                focus: true,
+            //                keyboard: true
+            //            }),
+            //            model: options.model,
+            //            customClass: options.customClass,
+            //            content: options.content || `<div class="blocker" style="display: flex; opacity: 1">
+            //            <div class="loading-spinner"></div>
+            //            <h4 class="mt-3">
+            //                Please wait...
+            //            </h4>
+            //        </div>`,
+            //        };
 
-                let popoverCells = [...document.querySelectorAll('.popover-cell')];
+            //        params.details = props;
 
-                popoverCells.forEach((c, i) => {
-                    c.style.zIndex = `${c._zIndexOriginal}`;
-                });
+            //        props.modalElement.addEventListener('show.bs.modal', () => {
 
-                self.parent.virtualScroller.maxY.valueHasMutated();
-            },
-            hidden: null,
-            inserted: async function (event) {
-                let mainCell = ko.contextFor(event.target).$parent;
-                let data = {
+            //            ko.cleanNode(props.modalElement);
 
-                }
-                let fn = null;
+            //            ko.applyBindings(props.model, props.modalElement);
 
-                if (groupName == 'Array_ProductCode') {
+            //            options.show && options.show();
+            //        });
 
-                    data = self[groupName];
+            //        props.modalElement.addEventListener('shown.bs.modal', options.shown);
+            //        props.modalElement.addEventListener('hide.bs.modal', options.hide);
+            //        props.modalElement.addEventListener('hidden.bs.modal', options.hidden);
+            //    }
+            //}
 
-                    fn = self.parent.fetchProductCodePopoverContents;
+            self[`${groupName}_ModalDetails`] = {};
+            self[`${groupName}_Display`] = self[groupName];
 
-                } else if (groupName.indexOf('Array_') == 0) {
-                    data = self[groupName];
-                    fn = (data) => {
-                        return new Promise((resolve, reject) => {
-                            resolve(data);
-                        });
-                    }
-                } else if (groupName.indexOf('Total_') > -1) {
-                    
-                    if (mainCell[`${groupName}OrderLineIDs`]) {
-                        data.OrderLineIDs = mainCell[`${groupName}OrderLineIDs`];
-                    }
 
-                    if (mainCell[`RingFenced_OrderLineIDs`]) {
-                        data.RingFenceIDs = mainCell[`RingFenced_OrderLineIDs`];
-                    }
+        } else {
+            self[`${groupName}_PopoverDetails`] = {
+                html: true,
+                sanitize: false,
+                busy: ko.observable(true),
+                title: groupName.replace('Array', '').replace('Grouped', '').replace(/_/g, '').replace(/([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g, '$1$4 $2$3$5'),
+                contentData: ko.observable(),
+                element: ko.observable(),
+                container: 'div.relative',
+                placement: 'bottom',
+                fallbackPlacements: ['top'],
+                customClass: groupName == 'Array_ProductCode' ? 'info-cell-popover' : 'group-cell-popover', // (groupName.indexOf('Array_') == -1) ? 
+                content: self[`${groupName}_popoverContent`],
+                trigger: 'click',
+                //container: 'td',
+                show: (event, data) => {
 
-                    fn = self.parent.fetchTotalPopoverContents;
+                    let popoverCells = [...document.querySelectorAll('.popover-cell')];
 
-                } else if (groupName.indexOf("Ring") == -1) {
-                    data = { OrderLineIDs: mainCell[`${groupName}OrderLineIDs`] }
-                    fn = self.parent.fetchOrderLinePopoverContents;
-                } else {
-                    data = { RingFenceIDs: mainCell[`${groupName}OrderLineIDs`] }
-                    fn = self.parent.fetchRingFencePopoverContents;
-                }
-                await fn(data)
-                    .then(data => {
-                        let popEl = self[`${groupName}_PopoverDetails`].popover.tip;
-                        if (popEl) {
-                            ko.cleanNode(popEl);
-                            let vm = self[`${groupName}_PopoverDetails`];
-                            ko.applyBindings(vm, popEl);
-
-                            let dat = ko.dataFor(popEl);
-
-                            dat.data(data);
-                            dat.busy(false);
-                        }
+                    popoverCells.forEach((c, i) => {
+                        c._zIndexOriginal = +c.style.zIndex;
                     });
-            },
-            popperConfig: (defaultBsPopperConfig) => defaultBsPopperConfig
-        };
+
+                    popoverCells.forEach((c, i) => {
+                        c.style.zIndex = `${popoverCells.length - i}`;
+                    });
+
+                    self.parent.virtualScroller.maxY.valueHasMutated();
+                },
+                shown: null,
+                hide: (event, data) => {
+
+                    let popoverCells = [...document.querySelectorAll('.popover-cell')];
+
+                    popoverCells.forEach((c, i) => {
+                        c.style.zIndex = `${c._zIndexOriginal}`;
+                    });
+
+                    self.parent.virtualScroller.maxY.valueHasMutated();
+                },
+                hidden: null,
+                inserted: async function (event) {
+                    let mainCell = ko.contextFor(event.target).$parent;
+                    let data = {
+
+                    }
+                    let fn = null;
+
+                    if (groupName.indexOf('Array_') == 0) {
+                        data = self[groupName];
+                        fn = (data) => {
+                            return new Promise((resolve, reject) => {
+                                resolve(data);
+                            });
+                        }
+                    } else if (groupName.indexOf('Total_') > -1) {
+
+                        if (mainCell[`${groupName}OrderLineIDs`]) {
+                            data.OrderLineIDs = mainCell[`${groupName}OrderLineIDs`];
+                        }
+
+                        if (mainCell[`RingFenced_OrderLineIDs`]) {
+                            data.RingFenceIDs = mainCell[`RingFenced_OrderLineIDs`];
+                        }
+
+                        fn = self.parent.fetchTotalPopoverContents;
+
+                    } else if (groupName.indexOf("Ring") == -1) {
+                        data = { OrderLineIDs: mainCell[`${groupName}OrderLineIDs`] }
+                        fn = self.parent.fetchOrderLinePopoverContents;
+                    } else {
+                        data = { RingFenceIDs: mainCell[`${groupName}OrderLineIDs`] }
+                        fn = self.parent.fetchRingFencePopoverContents;
+                    }
+                    await fn(data)
+                        .then(data => {
+                            let popEl = self[`${groupName}_PopoverDetails`].popover.tip;
+                            if (popEl) {
+                                ko.cleanNode(popEl);
+                                let vm = self[`${groupName}_PopoverDetails`];
+                                ko.applyBindings(vm, popEl);
+
+                                let dat = ko.dataFor(popEl);
+
+                                dat.contentData(data);
+                                dat.busy(false);
+                            }
+                        });
+                },
+                popperConfig: (defaultBsPopperConfig) => defaultBsPopperConfig
+            };
+        }
     }
 
     //self.fetchPopover = (columnName, data) => {
@@ -468,7 +564,6 @@ const orderBookMainCell = ({ parent, data, grouping, array } = {
             self.buildGroup(gc.groupedColumnName);
         });
     }
-
 
     //#endregion
 

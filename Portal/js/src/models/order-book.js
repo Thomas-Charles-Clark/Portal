@@ -186,7 +186,7 @@ const orderBookViewModel = (() => {
         controls: {
             selectAll: () => {
                 //console.log('selectAll');
-                self.displayColumnHeadingsSelection(self.columnHeadings().map(d => d.orderStatusGroupId));
+                self.displayColumnHeadingsSelection(window.getOrderLineDetailedStatusGroups().map(d => d.OrderStatusGroupID));
             },
             deselectAll: () => {
                 //console.log('deselectAll');
@@ -883,6 +883,7 @@ const orderBookViewModel = (() => {
 
                 self.fetch(self.userDefinedFilters.json(), () => {
                     self.displayColumnHeadingsSelection(self.columnHeadings().map(d => d.orderStatusGroupId));
+                    self.busy(false);
                 });
 
             }, 0);

@@ -1067,6 +1067,7 @@
     <Content Include="Content\Components\visit-search.css" />
     <Content Include="Content\css-shake.css" />
     <Content Include="Content\images\backgrounds\gift-voucher-background.jpg" />
+    <Content Include="Content\images\icons\bootstrap-kendo-loading-light.gif" />
     <Content Include="Content\images\icons\flags%402x.png" />
     <Content Include="Content\images\icons\flags.png" />
     <Content Include="Content\images\icons\m1.png" />
@@ -6312,6 +6313,7 @@
     <Content Include="Views\Shared\Components\_GenericFormsTemplates.cshtml" />
     <Content Include="Views\Shared\Components\_MenuNotifications.cshtml" />
     <Content Include="Views\Shared\Modals\_ImageModalNew.cshtml" />
+    <Content Include="Views\Shared\_Common.cshtml" />
     <None Include="Web References\EU_EORI_Lookup\validation.wsdl" />
     <None Include="Web References\EU_EORI_Lookup\validation.xsd">
       <SubType>Designer</SubType>
@@ -6479,6 +6481,7 @@
     <Folder Include="edge\x86\" />
     <Folder Include="FileUploads\" />
     <Folder Include="FurnitureDownloads\projects\temp\" />
+    <Folder Include="node_modules\material\src\" />
     <Folder Include="Programmatic\ImageDownloads\" />
     <Folder Include="Scripts\int-tel\assets\" />
     <Folder Include="Uploads\" />

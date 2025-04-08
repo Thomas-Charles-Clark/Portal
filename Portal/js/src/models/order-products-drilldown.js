@@ -3298,201 +3298,219 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
     self.fetchBasketItemAllocationStock = function () {
         return new Promise(function (resolve, reject) {
 
-            self.showAllocationStockRefreshButton(false);
-
-            self.allocationStockRegionBusy(true);
-
-            var data = {
-                tradeAccountId: self.parent.orderFactory.tradeAccount().TradeAccountID,
-                basketItemId: self.addingProductToBasket().basketItemId,
-                productId: self.addingProductToBasket().record.ProductID,
-                basketId: self.parent.orderFactory.basketId()
-            };
-
-            console.log('orderProductsDrilldown fetchBasketItemAllocationStock calling with', data);
-
-            var deferred = $.ajax({
-                url: '/api/componentapi/FetchBasketItemAllocationStock',
-                type: 'POST',
-                dataType: 'json',
-                data: data,
-                success: function (data) {
-
-                    console.log('orderProductsDrilldown fetchBasketItemAllocationStock returned', data);
-
-                    data.stockResults = Enumerable.From(data.stockResults).GroupBy(function (piece) {
-                        return {
-                            stockLocationId: piece.StockLocationID,
-                            stockLocationCode: piece.StockLocationCode,
-                            stockLocationName: piece.StockLocationName,
-                            sortOrder: piece.StockLocationSortOrder,
-                            stockLocationLabel: `${piece.StockLocationCode}~${piece.StockLocationName}`
-                        }
-                    },
-                        function (grouping) {
-                            return grouping
-                        },
-                        function (stockLocation, pieces) {
-                            return {
-                                stockLocation: $.extend(stockLocation, {
-                                    availableNowTotal: Enumerable.From(pieces).Select(function (x) {
-                                        return x.AvailableNowQuantity;
-                                    }).Sum(),
-                                    bulkTotal: Enumerable.From(pieces).Select(function (x) {
-                                        return x.BulkQuantity
-                                    }).Sum(),
-                                    onReserveTotal: Enumerable.From(pieces).Select(function (x) {
-                                        return x.OnReserveQuantity;
-                                    }).Sum(),
-                                    waitingTotal: Enumerable.From(pieces).Select(function (x) {
-                                        return x.WaitingToBePutAwayQuantity;
-                                    }).Sum(),
-                                    ringFencedTotal: Enumerable.From(pieces).Select(function (x) {
-                                        return x.OtherCustomerRingFencedQuantity;
-                                    }).Sum(),
-                                    dueInTotal: Enumerable.From(pieces).Select(function (x) {
-                                        return x.DueInQuantity;
-                                    }).Sum(),
-                                    units: self.addingProductToBasket().record.Units
-                                }),
-                                batches: Enumerable.From(pieces).GroupBy(function (batch) {
-                                    return {
-                                        batchNo: batch.Batch,
-                                        sortOrder: batch.SortOrder,
-                                        batchTotalQuantity: batch.BatchTotalQuantity
-                                    }
-                                },
-                                    function (piece) {
-                                        return piece
-                                    },
-                                    function (batch, pieces) {
-                                        return {
-                                            batch: batch,
-                                            pieces: Enumerable.From(pieces.source).Select(function (x) {
-                                                return $.extend(x, {
-                                                    AvailableNowDisplay: ko.pureComputed(function () {
-                                                        if (this.AvailableNowQuantity) {
-                                                            return formatNumber(this.AvailableNowQuantity, self.addingProductToBasket().productFilterOptions().QuantityPrecision, 'en-GB');
-                                                        }
-                                                    }, x),
-                                                    BulkDisplay: ko.pureComputed(function () {
-                                                        if (this.BulkQuantity) {
-                                                            return formatNumber(this.BulkQuantity, self.addingProductToBasket().productFilterOptions().QuantityPrecision, 'en-GB');
-                                                        }
-                                                    }, x),
-                                                    WaitingDisplay: ko.pureComputed(function () {
-                                                        if (this.WaitingToBePutAwayQuantity) {
-                                                            return formatNumber(this.WaitingToBePutAwayQuantity, self.addingProductToBasket().productFilterOptions().QuantityPrecision, 'en-GB');
-                                                        }
-                                                    }, x),
-                                                    OnReserveDisplay: ko.pureComputed(function () {
-                                                        if (this.OnReserveQuantity) {
-                                                            return formatNumber(this.OnReserveQuantity, self.addingProductToBasket().productFilterOptions().QuantityPrecision, 'en-GB');
-                                                        }
-                                                    }, x),
-                                                    RingFencedDisplay: ko.pureComputed(function () {
-                                                        if (this.OtherCustomerRingFencedQuantity) {
-                                                            return formatNumber(this.OtherCustomerRingFencedQuantity, self.addingProductToBasket().productFilterOptions().QuantityPrecision, 'en-GB');
-                                                        }
-                                                    }, x),
-                                                    TotalDisplay: ko.pureComputed(function () {
-                                                        if ((this.AvailableNowQuantity + this.OnReserveQuantity + this.ThisCustomerRingFencedQuantity + this.BulkQuantity) > 0) {
-                                                            return formatNumber(this.AvailableNowQuantity + this.OnReserveQuantity + this.ThisCustomerRingFencedQuantity + this.BulkQuantity, self.addingProductToBasket().productFilterOptions().QuantityPrecision, 'en-GB');
-                                                        }
-                                                    }, x),
-                                                    DueInDisplay: ko.pureComputed(function () {
-                                                        var result = '';
-                                                        if (this.DueInQuantity) {
-                                                            result = formatNumber(this.DueInQuantity, self.addingProductToBasket().productFilterOptions().QuantityPrecision, 'en-GB');
-                                                        }
-                                                        if (this.DueInMessage) {
-                                                            if (result == '')
-                                                                result = this.DueInMessage
-                                                            else
-                                                                result = result + ' ' + this.DueInMessage
-                                                        }
-                                                        if (this.DueInDate) {
-                                                            if (result == '')
-                                                                result = moment(this.DueInDate).format('DD/MM/YYYY');
-                                                            else
-                                                                result = result + ' due ' + moment(this.DueInDate).format('DD/MM/YYYY');
-                                                        }
-                                                        return result;
-                                                    }, x),
-                                                    POOnCallOff: x.POOnCallOff
-                                                });
-                                            }).OrderBy(function (x) {
-                                                return x.SortOrder;
-                                            }).ToArray()
-                                        }
-                                    }, function (batch) {
-                                        return batch.batchNo
-                                    }).OrderBy(function (batch) {
-                                        return batch.sortOrder
-                                    }).ToArray()
-                            }
-                        },
-                        function (stockLocation) {
-                            return stockLocation.stockLocationLabel
-                        }).OrderBy(function (grouping) {
-                            return grouping.stockLocation.sortOrder;
-                        }).ToArray();
-
-                    ko.utils.arrayForEach(data.stockResults, function (item) {
-
-                        item.stockLocation.totalQuantity = ko.pureComputed(function () {
-                            return (this.availableNowTotal + this.bulkTotal + this.onReserveTotal + this.waitingTotal);
-                        }, item.stockLocation);
-
-                        item.stockLocation.totalIncludingDue = ko.pureComputed(function () {
-                            return (this.availableNowTotal + this.bulkTotal + this.dueInTotal + this.onReserveTotal + this.waitingTotal);
-                        }, item.stockLocation);
-
-                        //item.stockLocation.totalQuantity = Enumerable.From(item.batches).Select(function (x) {
-                        //    return Enumerable.From(x.pieces).Select(function (y) {
-                        //        return y.AvailableNowQuantity + y.OnReserveQuantity + y.ThisCustomerRingFencedQuantity
-                        //    }).Sum()
-                        //}).Sum().toFixed(self.addingProductToBasket().productFilterOptions().QuantityPrecision);
-                        //item.stockLocation.totalIncludingDue = Enumerable.From(item.batches).Select(function (x) {
-                        //    return Enumerable.From(x.pieces).Select(function (y) {
-                        //        return y.AvailableNowQuantity + y.OnReserveQuantity + y.ThisCustomerRingFencedQuantity + y.DueInQuantity
-                        //    }).Sum()
-                        //}).Sum()
-
-                    });
-
-                    self.addingProductAllocationStockData(data.stockResults);
-
-                    if (data.availabilityMessages.length) {
-                        self.supplierAvailabilityMessage(data.availabilityMessages[0].Response);
-                    } else {
-                        self.supplierAvailabilityMessage(undefined);
-                    }
-
-                    if (data.stockCheckRequest) {
-                        self.showStockCheckRequester(true);
-                        self.stockCheckRequester.allowStockCheckRequest(data.stockCheckRequest.AllowStockCheckRequest)
-                        self.stockCheckRequester.message(data.stockCheckRequest.Response);
-                        self.stockCheckRequester.cssClass(data.stockCheckRequest.Class);
-                    } else {
-                        self.showStockCheckRequester(false);
-                        self.stockCheckRequester.allowStockCheckRequest(false)
-                        self.stockCheckRequester.message(undefined);
-                        self.stockCheckRequester.cssClass(undefined);
-                    }
-                      
-                    self.allocationStockRegionBusy(false);
-
-                    resolve();
+            self.stockCheckRequester.checkStock({
+                    tradeAccountId: self.parent.orderFactory.tradeAccount().TradeAccountID,
+                    basketItemId: self.addingProductToBasket().basketItemId,
+                    productId: self.addingProductToBasket().record.ProductID,
+                    basketId: self.parent.orderFactory.basketId()
                 },
-                error: function (xhr, s, a) {
-                    //$.showError(xhr, s, a);
+                    [self.addingProductToBasket()],
+                    () => {},
+                    () => {
+                        self.showAllocationStockRefreshButton(false);
+                        self.allocationStockRegionBusy(true);
+                    }, (data) => {
+                        self.allocationStockRegionBusy(false);
+                        self.addingProductAllocationStockData(data);
+                }, () => {
                     $.info('Sorry', 'There was a temporary problem retrieving stock information for this product. Please wait a moment and click the "Refresh Stock" button.');
                     self.showAllocationStockRefreshButton(true);
                     self.allocationStockRegionBusy(false);
-                    reject();
-                }
-            });
+                },
+                resolve,
+                reject)
+
+            //var data = {
+            //    tradeAccountId: self.parent.orderFactory.tradeAccount().TradeAccountID,
+            //    basketItemId: self.addingProductToBasket().basketItemId,
+            //    productId: self.addingProductToBasket().record.ProductID,
+            //    basketId: self.parent.orderFactory.basketId()
+            //};
+
+            //console.log('orderProductsDrilldown fetchBasketItemAllocationStock calling with', data);
+
+            //var deferred = $.ajax({
+            //    url: '/api/componentapi/FetchBasketItemAllocationStock',
+            //    type: 'POST',
+            //    dataType: 'json',
+            //    data: data,
+            //    success: function (data) {
+
+            //        console.log('orderProductsDrilldown fetchBasketItemAllocationStock returned', data);
+
+            //        data.stockResults = Enumerable.From(data.stockResults).GroupBy(function (piece) {
+            //            return {
+            //                stockLocationId: piece.StockLocationID,
+            //                stockLocationCode: piece.StockLocationCode,
+            //                stockLocationName: piece.StockLocationName,
+            //                sortOrder: piece.StockLocationSortOrder,
+            //                stockLocationLabel: `${piece.StockLocationCode}~${piece.StockLocationName}`
+            //            }
+            //        },
+            //            function (grouping) {
+            //                return grouping
+            //            },
+            //            function (stockLocation, pieces) {
+            //                return {
+            //                    stockLocation: $.extend(stockLocation, {
+            //                        availableNowTotal: Enumerable.From(pieces).Select(function (x) {
+            //                            return x.AvailableNowQuantity;
+            //                        }).Sum(),
+            //                        bulkTotal: Enumerable.From(pieces).Select(function (x) {
+            //                            return x.BulkQuantity
+            //                        }).Sum(),
+            //                        onReserveTotal: Enumerable.From(pieces).Select(function (x) {
+            //                            return x.OnReserveQuantity;
+            //                        }).Sum(),
+            //                        waitingTotal: Enumerable.From(pieces).Select(function (x) {
+            //                            return x.WaitingToBePutAwayQuantity;
+            //                        }).Sum(),
+            //                        ringFencedTotal: Enumerable.From(pieces).Select(function (x) {
+            //                            return x.OtherCustomerRingFencedQuantity;
+            //                        }).Sum(),
+            //                        dueInTotal: Enumerable.From(pieces).Select(function (x) {
+            //                            return x.DueInQuantity;
+            //                        }).Sum(),
+            //                        units: self.addingProductToBasket().record.Units
+            //                    }),
+            //                    batches: Enumerable.From(pieces).GroupBy(function (batch) {
+            //                        return {
+            //                            batchNo: batch.Batch,
+            //                            sortOrder: batch.SortOrder,
+            //                            batchTotalQuantity: batch.BatchTotalQuantity
+            //                        }
+            //                    },
+            //                        function (piece) {
+            //                            return piece
+            //                        },
+            //                        function (batch, pieces) {
+            //                            return {
+            //                                batch: batch,
+            //                                pieces: Enumerable.From(pieces.source).Select(function (x) {
+            //                                    return $.extend(x, {
+            //                                        AvailableNowDisplay: ko.pureComputed(function () {
+            //                                            if (this.AvailableNowQuantity) {
+            //                                                return formatNumber(this.AvailableNowQuantity, self.addingProductToBasket().productFilterOptions().QuantityPrecision, 'en-GB');
+            //                                            }
+            //                                        }, x),
+            //                                        BulkDisplay: ko.pureComputed(function () {
+            //                                            if (this.BulkQuantity) {
+            //                                                return formatNumber(this.BulkQuantity, self.addingProductToBasket().productFilterOptions().QuantityPrecision, 'en-GB');
+            //                                            }
+            //                                        }, x),
+            //                                        WaitingDisplay: ko.pureComputed(function () {
+            //                                            if (this.WaitingToBePutAwayQuantity) {
+            //                                                return formatNumber(this.WaitingToBePutAwayQuantity, self.addingProductToBasket().productFilterOptions().QuantityPrecision, 'en-GB');
+            //                                            }
+            //                                        }, x),
+            //                                        OnReserveDisplay: ko.pureComputed(function () {
+            //                                            if (this.OnReserveQuantity) {
+            //                                                return formatNumber(this.OnReserveQuantity, self.addingProductToBasket().productFilterOptions().QuantityPrecision, 'en-GB');
+            //                                            }
+            //                                        }, x),
+            //                                        RingFencedDisplay: ko.pureComputed(function () {
+            //                                            if (this.OtherCustomerRingFencedQuantity) {
+            //                                                return formatNumber(this.OtherCustomerRingFencedQuantity, self.addingProductToBasket().productFilterOptions().QuantityPrecision, 'en-GB');
+            //                                            }
+            //                                        }, x),
+            //                                        TotalDisplay: ko.pureComputed(function () {
+            //                                            if ((this.AvailableNowQuantity + this.OnReserveQuantity + this.ThisCustomerRingFencedQuantity + this.BulkQuantity) > 0) {
+            //                                                return formatNumber(this.AvailableNowQuantity + this.OnReserveQuantity + this.ThisCustomerRingFencedQuantity + this.BulkQuantity, self.addingProductToBasket().productFilterOptions().QuantityPrecision, 'en-GB');
+            //                                            }
+            //                                        }, x),
+            //                                        DueInDisplay: ko.pureComputed(function () {
+            //                                            var result = '';
+            //                                            if (this.DueInQuantity) {
+            //                                                result = formatNumber(this.DueInQuantity, self.addingProductToBasket().productFilterOptions().QuantityPrecision, 'en-GB');
+            //                                            }
+            //                                            if (this.DueInMessage) {
+            //                                                if (result == '')
+            //                                                    result = this.DueInMessage
+            //                                                else
+            //                                                    result = result + ' ' + this.DueInMessage
+            //                                            }
+            //                                            if (this.DueInDate) {
+            //                                                if (result == '')
+            //                                                    result = moment(this.DueInDate).format('DD/MM/YYYY');
+            //                                                else
+            //                                                    result = result + ' due ' + moment(this.DueInDate).format('DD/MM/YYYY');
+            //                                            }
+            //                                            return result;
+            //                                        }, x),
+            //                                        POOnCallOff: x.POOnCallOff
+            //                                    });
+            //                                }).OrderBy(function (x) {
+            //                                    return x.SortOrder;
+            //                                }).ToArray()
+            //                            }
+            //                        }, function (batch) {
+            //                            return batch.batchNo
+            //                        }).OrderBy(function (batch) {
+            //                            return batch.sortOrder
+            //                        }).ToArray()
+            //                }
+            //            },
+            //            function (stockLocation) {
+            //                return stockLocation.stockLocationLabel
+            //            }).OrderBy(function (grouping) {
+            //                return grouping.stockLocation.sortOrder;
+            //            }).ToArray();
+
+            //        ko.utils.arrayForEach(data.stockResults, function (item) {
+
+            //            item.stockLocation.totalQuantity = ko.pureComputed(function () {
+            //                return (this.availableNowTotal + this.bulkTotal + this.onReserveTotal + this.waitingTotal);
+            //            }, item.stockLocation);
+
+            //            item.stockLocation.totalIncludingDue = ko.pureComputed(function () {
+            //                return (this.availableNowTotal + this.bulkTotal + this.dueInTotal + this.onReserveTotal + this.waitingTotal);
+            //            }, item.stockLocation);
+
+            //            //item.stockLocation.totalQuantity = Enumerable.From(item.batches).Select(function (x) {
+            //            //    return Enumerable.From(x.pieces).Select(function (y) {
+            //            //        return y.AvailableNowQuantity + y.OnReserveQuantity + y.ThisCustomerRingFencedQuantity
+            //            //    }).Sum()
+            //            //}).Sum().toFixed(self.addingProductToBasket().productFilterOptions().QuantityPrecision);
+            //            //item.stockLocation.totalIncludingDue = Enumerable.From(item.batches).Select(function (x) {
+            //            //    return Enumerable.From(x.pieces).Select(function (y) {
+            //            //        return y.AvailableNowQuantity + y.OnReserveQuantity + y.ThisCustomerRingFencedQuantity + y.DueInQuantity
+            //            //    }).Sum()
+            //            //}).Sum()
+
+            //        });
+
+            //        self.addingProductAllocationStockData(data.stockResults);
+
+            //        if (data.availabilityMessages.length) {
+            //            self.supplierAvailabilityMessage(data.availabilityMessages[0].Response);
+            //        } else {
+            //            self.supplierAvailabilityMessage(undefined);
+            //        }
+
+            //        if (data.stockCheckRequest) {
+            //            self.showStockCheckRequester(true);
+            //            self.stockCheckRequester.allowStockCheckRequest(data.stockCheckRequest.AllowStockCheckRequest)
+            //            self.stockCheckRequester.message(data.stockCheckRequest.Response);
+            //            self.stockCheckRequester.cssClass(data.stockCheckRequest.Class);
+            //        } else {
+            //            self.showStockCheckRequester(false);
+            //            self.stockCheckRequester.allowStockCheckRequest(false)
+            //            self.stockCheckRequester.message(undefined);
+            //            self.stockCheckRequester.cssClass(undefined);
+            //        }
+                      
+            //        self.allocationStockRegionBusy(false);
+
+            //        resolve();
+            //    },
+            //    error: function (xhr, s, a) {
+            //        //$.showError(xhr, s, a);
+            //        $.info('Sorry', 'There was a temporary problem retrieving stock information for this product. Please wait a moment and click the "Refresh Stock" button.');
+            //        self.showAllocationStockRefreshButton(true);
+            //        self.allocationStockRegionBusy(false);
+            //        reject();
+            //    }
+            //});
         });
     }
 
@@ -3538,7 +3556,7 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
                             self.observable(undefined);
                             $(self.observable.DOMElement).focus();
                         },
-                        rows: item.ReadOnly ? item.LineMemoTypeID == 13 ? 20 : 6 : item.LineMemoTypeID == 13 ? 20 : 10,
+                        rows: item.LineMemoTypeID == 13 ? 20 : 10,
                         selectedDocumentTypes: ko.observableArray(Enumerable.From(data.DocumentTypeCodes).Where(function (x) {
                             return (x.BasketItemLineMemoID == item.BasketItemLineMemoID) &&
                                 (x.LineMemoTypeID == item.LineMemoTypeID)
@@ -4660,217 +4678,233 @@ continue to back order ${self.addingProductToBasket().quantity()}m but please pr
             });
 
             if (productIds.length) {
+
                 var data = {
                     basketId: self.parent.orderFactory.basketId(),
                     tradeAccountId: self.tradeAccount.TradeAccountID,
                     productIds: productIds,
                     enquiryType: enquiryType
                 }
-                console.log('orderProductsDrilldown GetPieceLevelStockInfo calling with', data);
-                $.ajax({
-                    url: '/api/componentapi/GetPieceLevelStockInfo',
-                    type: 'POST',
-                    dataType: 'json',
-                    data: data,
-                    success: function (data) {
-                        console.log('orderProductsDrilldown fetchStockInfo returned', data);
 
-                        ko.utils.arrayForEach(self.products(), function (item, index) {
-                            var items = Enumerable.From(data.stockResults).Where(function (x) {
-                                return x.ProductID == item.record.ProductID;
-                            }).ToArray();
+                self.stockCheckRequester.checkStock(
+                    data,
+                    self.products(),
+                    self.stockInfoBusy,
+                    null,
+                    null,
+                    null,
+                    resolve,
+                    reject
+                );
 
-                            var processed = Enumerable.From(items).GroupBy(function (piece) {
-                                return {
-                                    stockLocationCode: piece.StockLocationCode,
-                                    stockLocationName: piece.StockLocationName,
-                                    sortOrder: piece.StockLocationSortOrder
-                                }
-                            },
-                                function (grouping) {
-                                    return grouping
-                                },
-                                function (stockLocation, pieces) {
-                                    return {
-                                        stockLocation: $.extend(stockLocation, {
-                                            availableNowTotal: Enumerable.From(pieces).Select(function (x) {
-                                                return x.AvailableNowQuantity;
-                                            }).Sum(),
-                                            bulkTotal: Enumerable.From(pieces).Select(function (x) {
-                                                return x.BulkQuantity
-                                            }).Sum(),
-                                            onReserveTotal: Enumerable.From(pieces).Select(function (x) {
-                                                return x.OnReserveQuantity;
-                                            }).Sum(),
-                                            waitingTotal: Enumerable.From(pieces).Select(function (x) {
-                                                return x.WaitingToBePutAwayQuantity;
-                                            }).Sum(),
-                                            ringFencedTotal: Enumerable.From(pieces).Select(function (x) {
-                                                return x.OtherCustomerRingFencedQuantity;
-                                            }).Sum(),
-                                            dueInTotal: Enumerable.From(pieces).Select(function (x) {
-                                                return x.DueInQuantity;
-                                            }).Sum(),
-                                            units: item.record.Units
-                                        }),
-                                        batches: Enumerable.From(pieces).GroupBy(function (batch) {
-                                            return {
-                                                batchNo: batch.Batch,
-                                                sortOrder: batch.SortOrder,
-                                                batchTotalQuantity: batch.BatchTotalQuantity
-                                            }
-                                        },
-                                            function (piece) {
-                                                return piece
-                                            },
-                                            function (batch, pieces) {
-                                                return {
-                                                    batch: batch,
-                                                    pieces: Enumerable.From(pieces.source).Select(function (x) {
-                                                        var qp = self.products().length ? self.products()[0].productFilterOptions().QuantityPrecision : 0;
+                //$.ajax({
+                //    url: '/api/componentapi/GetPieceLevelStockInfo',
+                //    type: 'POST',
+                //    dataType: 'json',
+                //    data: data,
+                //    success: function (data) {
+                //        console.log('orderProductsDrilldown fetchStockInfo returned', data);
 
-                                                        return $.extend(x, {
-                                                            AvailableNowDisplay: ko.pureComputed(function () {
-                                                                if (this.AvailableNowQuantity) {
-                                                                    return formatNumber(this.AvailableNowQuantity, qp, 'en-GB');
-                                                                }
-                                                            }, x),
-                                                            BulkDisplay: ko.pureComputed(function () {
-                                                                if (this.BulkQuantity) {
-                                                                    return formatNumber(this.BulkQuantity, qp, 'en-GB');
-                                                                }
-                                                            }, x),
-                                                            WaitingDisplay: ko.pureComputed(function () {
-                                                                if (this.WaitingToBePutAwayQuantity) {
-                                                                    return formatNumber(this.WaitingToBePutAwayQuantity, qp, 'en-GB');
-                                                                }
-                                                            }, x),
-                                                            OnReserveDisplay: ko.pureComputed(function () {
-                                                                if (this.OnReserveQuantity) {
-                                                                    return formatNumber(this.OnReserveQuantity, qp, 'en-GB');
-                                                                }
-                                                            }, x),
-                                                            RingFencedDisplay: ko.pureComputed(function () {
-                                                                if (this.OtherCustomerRingFencedQuantity) {
-                                                                    return formatNumber(this.OtherCustomerRingFencedQuantity, qp, 'en-GB');
-                                                                }
-                                                            }, x),
-                                                            TotalDisplay: ko.pureComputed(function () {
-                                                                if (((this.AvailableNowQuantity + this.OnReserveQuantity + this.OtherCustomerRingFencedQuantity + this.BulkQuantity) > 0) && self.products().length) {
-                                                                    return formatNumber(this.AvailableNowQuantity + this.OnReserveQuantity + this.OtherCustomerRingFencedQuantity + this.BulkQuantity, qp, 'en-GB');
-                                                                }
-                                                            }, x),
-                                                            DueInDisplay: ko.pureComputed(function () {
-                                                                var result = '';
-                                                                if (this.DueInQuantity && self.products().length) {
-                                                                    result = formatNumber(this.DueInQuantity, qp, 'en-GB');
-                                                                }
-                                                                if (this.DueInMessage) {
-                                                                    if (result == '')
-                                                                        result = this.DueInMessage
-                                                                    else
-                                                                        result = result + ' - ' + this.DueInMessage
-                                                                }
-                                                                if (this.DueInDate) {
-                                                                    if (result == '')
-                                                                        result = moment(this.DueInDate).format('DD/MM/YYYY');
-                                                                    else
-                                                                        result = result + ' due ' + moment(this.DueInDate).format('DD/MM/YYYY');
-                                                                }
-                                                                return result;
-                                                            }, x),
-                                                            POOnCallOff: x.POOnCallOff
-                                                        });
-                                                    }).OrderBy(function (x) {
-                                                        return x.SortOrder;
-                                                    }).ToArray()
-                                                }
-                                            }, function (batch) {
-                                                return batch.batchNo
-                                            }).OrderBy(function (batch) {
-                                                return batch.sortOrder
-                                            }).ToArray()
-                                    }
-                                },
-                                function (stockLocation) {
-                                    return stockLocation.stockLocationCode
-                                }).OrderBy(function (grouping) {
-                                    return grouping.stockLocation.sortOrder;
-                                }).ToArray();
+                //        self.stockCheckRequester.processStockEnquiryResults(self.products(), data);
 
-                            ko.utils.arrayForEach(processed, function (item) {
-                                item.stockLocation.totalQuantity = ko.pureComputed(function () {
-                                    return (this.availableNowTotal + this.bulkTotal + this.onReserveTotal + this.waitingTotal);
-                                }, item.stockLocation);
+                //        //ko.utils.arrayForEach(self.products(), function (item, index) {
+                //        //    var items = Enumerable.From(data.stockResults).Where(function (x) {
+                //        //        return x.ProductID == item.record.ProductID;
+                //        //    }).ToArray();
 
-                                item.stockLocation.totalIncludingDue = ko.pureComputed(function () {
-                                    return (this.availableNowTotal + this.bulkTotal + this.dueInTotal + this.onReserveTotal + this.waitingTotal);
-                                }, item.stockLocation);
+                //        //    var processed = Enumerable.From(items).GroupBy(function (piece) {
+                //        //        return {
+                //        //            stockLocationCode: piece.StockLocationCode,
+                //        //            stockLocationName: piece.StockLocationName,
+                //        //            sortOrder: piece.StockLocationSortOrder
+                //        //        }
+                //        //    },
+                //        //        function (grouping) {
+                //        //            return grouping
+                //        //        },
+                //        //        function (stockLocation, pieces) {
+                //        //            return {
+                //        //                stockLocation: $.extend(stockLocation, {
+                //        //                    availableNowTotal: Enumerable.From(pieces).Select(function (x) {
+                //        //                        return x.AvailableNowQuantity;
+                //        //                    }).Sum(),
+                //        //                    bulkTotal: Enumerable.From(pieces).Select(function (x) {
+                //        //                        return x.BulkQuantity
+                //        //                    }).Sum(),
+                //        //                    onReserveTotal: Enumerable.From(pieces).Select(function (x) {
+                //        //                        return x.OnReserveQuantity;
+                //        //                    }).Sum(),
+                //        //                    waitingTotal: Enumerable.From(pieces).Select(function (x) {
+                //        //                        return x.WaitingToBePutAwayQuantity;
+                //        //                    }).Sum(),
+                //        //                    ringFencedTotal: Enumerable.From(pieces).Select(function (x) {
+                //        //                        return x.OtherCustomerRingFencedQuantity;
+                //        //                    }).Sum(),
+                //        //                    dueInTotal: Enumerable.From(pieces).Select(function (x) {
+                //        //                        return x.DueInQuantity;
+                //        //                    }).Sum(),
+                //        //                    units: item.record.Units
+                //        //                }),
+                //        //                batches: Enumerable.From(pieces).GroupBy(function (batch) {
+                //        //                    return {
+                //        //                        batchNo: batch.Batch,
+                //        //                        sortOrder: batch.SortOrder,
+                //        //                        batchTotalQuantity: batch.BatchTotalQuantity
+                //        //                    }
+                //        //                },
+                //        //                    function (piece) {
+                //        //                        return piece
+                //        //                    },
+                //        //                    function (batch, pieces) {
+                //        //                        return {
+                //        //                            batch: batch,
+                //        //                            pieces: Enumerable.From(pieces.source).Select(function (x) {
+                //        //                                var qp = self.products().length ? self.products()[0].productFilterOptions().QuantityPrecision : 0;
 
-                                //    Enumerable.From(item.batches).Select(function (x) {
-                                //    return Enumerable.From(x.pieces).Select(function (y) {
-                                //        return y.AvailableNowQuantity + y.OnReserveQuantity + y.ThisCustomerRingFencedQuantity
-                                //    }).Sum()
-                                //}).Sum().toFixed(self.products()[0].productFilterOptions().QuantityPrecision);
+                //        //                                return $.extend(x, {
+                //        //                                    AvailableNowDisplay: ko.pureComputed(function () {
+                //        //                                        if (this.AvailableNowQuantity) {
+                //        //                                            return formatNumber(this.AvailableNowQuantity, qp, 'en-GB');
+                //        //                                        }
+                //        //                                    }, x),
+                //        //                                    BulkDisplay: ko.pureComputed(function () {
+                //        //                                        if (this.BulkQuantity) {
+                //        //                                            return formatNumber(this.BulkQuantity, qp, 'en-GB');
+                //        //                                        }
+                //        //                                    }, x),
+                //        //                                    WaitingDisplay: ko.pureComputed(function () {
+                //        //                                        if (this.WaitingToBePutAwayQuantity) {
+                //        //                                            return formatNumber(this.WaitingToBePutAwayQuantity, qp, 'en-GB');
+                //        //                                        }
+                //        //                                    }, x),
+                //        //                                    OnReserveDisplay: ko.pureComputed(function () {
+                //        //                                        if (this.OnReserveQuantity) {
+                //        //                                            return formatNumber(this.OnReserveQuantity, qp, 'en-GB');
+                //        //                                        }
+                //        //                                    }, x),
+                //        //                                    RingFencedDisplay: ko.pureComputed(function () {
+                //        //                                        if (this.OtherCustomerRingFencedQuantity) {
+                //        //                                            return formatNumber(this.OtherCustomerRingFencedQuantity, qp, 'en-GB');
+                //        //                                        }
+                //        //                                    }, x),
+                //        //                                    TotalDisplay: ko.pureComputed(function () {
+                //        //                                        if (((this.AvailableNowQuantity + this.OnReserveQuantity + this.OtherCustomerRingFencedQuantity + this.BulkQuantity) > 0) && self.products().length) {
+                //        //                                            return formatNumber(this.AvailableNowQuantity + this.OnReserveQuantity + this.OtherCustomerRingFencedQuantity + this.BulkQuantity, qp, 'en-GB');
+                //        //                                        }
+                //        //                                    }, x),
+                //        //                                    DueInDisplay: ko.pureComputed(function () {
+                //        //                                        var result = '';
+                //        //                                        if (this.DueInQuantity && self.products().length) {
+                //        //                                            result = formatNumber(this.DueInQuantity, qp, 'en-GB');
+                //        //                                        }
+                //        //                                        if (this.DueInMessage) {
+                //        //                                            if (result == '')
+                //        //                                                result = this.DueInMessage
+                //        //                                            else
+                //        //                                                result = result + ' - ' + this.DueInMessage
+                //        //                                        }
+                //        //                                        if (this.DueInDate) {
+                //        //                                            if (result == '')
+                //        //                                                result = moment(this.DueInDate).format('DD/MM/YYYY');
+                //        //                                            else
+                //        //                                                result = result + ' due ' + moment(this.DueInDate).format('DD/MM/YYYY');
+                //        //                                        }
+                //        //                                        return result;
+                //        //                                    }, x),
+                //        //                                    POOnCallOff: x.POOnCallOff
+                //        //                                });
+                //        //                            }).OrderBy(function (x) {
+                //        //                                return x.SortOrder;
+                //        //                            }).ToArray()
+                //        //                        }
+                //        //                    }, function (batch) {
+                //        //                        return batch.batchNo
+                //        //                    }).OrderBy(function (batch) {
+                //        //                        return batch.sortOrder
+                //        //                    }).ToArray()
+                //        //            }
+                //        //        },
+                //        //        function (stockLocation) {
+                //        //            return stockLocation.stockLocationCode
+                //        //        }).OrderBy(function (grouping) {
+                //        //            return grouping.stockLocation.sortOrder;
+                //        //        }).ToArray();
 
-                                //item.stockLocation.totalIncludingDue = Enumerable.From(item.batches).Select(function (x) {
-                                //    return Enumerable.From(x.pieces).Select(function (y) {
-                                //        return y.AvailableNowQuantity + y.OnReserveQuantity + y.ThisCustomerRingFencedQuantity + y.DueInQuantity
-                                //    }).Sum()
-                                //}).Sum()
-                            });
+                //        //    ko.utils.arrayForEach(processed, function (item) {
+                //        //        item.stockLocation.totalQuantity = ko.pureComputed(function () {
+                //        //            return (this.availableNowTotal + this.bulkTotal + this.onReserveTotal + this.waitingTotal);
+                //        //        }, item.stockLocation);
 
-                            // The stock info routine can return extraneous products which did not previously
-                            // exist in the searchResult which was clicked to invoke the drilldown modal's products collection
-                            // anything which falls into that category has not been processed by our load method in here, so won't have
-                            // a supplierAvailabilityMessage observable attached
-                            let sam = data.availabilityMessages.find(a => a.ProductID == item.record.ProductID);
+                //        //        item.stockLocation.totalIncludingDue = ko.pureComputed(function () {
+                //        //            return (this.availableNowTotal + this.bulkTotal + this.dueInTotal + this.onReserveTotal + this.waitingTotal);
+                //        //        }, item.stockLocation);
 
-                            if (sam) {
-                                item.hasOwnProperty('supplierAvailabilityMessage') && item.supplierAvailabilityMessage(sam.SupplierAvailabilityMessage);
-                            }
+                //        //        //    Enumerable.From(item.batches).Select(function (x) {
+                //        //        //    return Enumerable.From(x.pieces).Select(function (y) {
+                //        //        //        return y.AvailableNowQuantity + y.OnReserveQuantity + y.ThisCustomerRingFencedQuantity
+                //        //        //    }).Sum()
+                //        //        //}).Sum().toFixed(self.products()[0].productFilterOptions().QuantityPrecision);
 
-                            let sar = data.stockCheckRequest; // this property being non-null indicates that the portal.StockCheckRequest_Select call was made
-                            // and thus we should display the stockCheckRequester.
+                //        //        //item.stockLocation.totalIncludingDue = Enumerable.From(item.batches).Select(function (x) {
+                //        //        //    return Enumerable.From(x.pieces).Select(function (y) {
+                //        //        //        return y.AvailableNowQuantity + y.OnReserveQuantity + y.ThisCustomerRingFencedQuantity + y.DueInQuantity
+                //        //        //    }).Sum()
+                //        //        //}).Sum()
+                //        //    });
 
-                            if (sar) {
-                                item.hasOwnProperty('showStockCheckRequester') && item.showStockCheckRequester(true);
-                            }
+                //        //    // The stock info routine can return extraneous products which did not previously
+                //        //    // exist in the searchResult which was clicked to invoke the drilldown modal's products collection
+                //        //    // anything which falls into that category has not been processed by our load method in here, so won't have
+                //        //    // a supplierAvailabilityMessage observable attached
+                //        //    let sam = data.availabilityMessages.find(a => a.ProductID == item.record.ProductID);
+
+                //        //    if (sam) {
+                //        //        item.hasOwnProperty('supplierAvailabilityMessage') && item.supplierAvailabilityMessage(sam.SupplierAvailabilityMessage);
+                //        //    }
+
+                //        //    let sar = data.stockCheckRequest; // this property being non-null indicates that the portal.StockCheckRequest_Select call was made
+                //        //    // and thus we should display the stockCheckRequester.
+
+                //        //    if (sar) {
+                //        //        item.hasOwnProperty('showStockCheckRequester') && item.showStockCheckRequester(true);
+                //        //    }
 
 
-                            if (item.hasOwnProperty('showStockCheckRequester')) {
-                                if (data.stockCheckRequest) {
-                                    self.showStockCheckRequester(true);
-                                    self.stockCheckRequester.allowStockCheckRequest(data.stockCheckRequest.AllowStockCheckRequest);
-                                    self.stockCheckRequester.message(data.stockCheckRequest.Response);
-                                    self.stockCheckRequester.cssClass(data.stockCheckRequest.Class);
-                                } else {
-                                    self.showStockCheckRequester(false);
-                                    self.stockCheckRequester.allowStockCheckRequest(false)
-                                    self.stockCheckRequester.message(undefined);
-                                    self.stockCheckRequester.cssClass(undefined);
-                                }
-                            }
+                //        //    if (item.hasOwnProperty('showStockCheckRequester')) {
+                //        //        if (data.stockCheckRequest) {
+                //        //            self.showStockCheckRequester(true);
+                //        //            self.stockCheckRequester.allowStockCheckRequest(data.stockCheckRequest.AllowStockCheckRequest);
+                //        //            self.stockCheckRequester.message(data.stockCheckRequest.Response);
+                //        //            self.stockCheckRequester.cssClass(data.stockCheckRequest.Class);
+                //        //        } else {
+                //        //            self.showStockCheckRequester(false);
+                //        //            self.stockCheckRequester.allowStockCheckRequest(false)
+                //        //            self.stockCheckRequester.message(undefined);
+                //        //            self.stockCheckRequester.cssClass(undefined);
+                //        //        }
+                //        //    }
 
-                            item.stockInfo(processed);
-                        });
+                //        //    item.stockInfo(processed);
+                //        //});
 
-                        //if (data.hasOwnProperty('Code')) {
-                        //    item.stockInfo(data);
-                        //} else {
-                        //    //kaput!
-                        //}
 
-                        self.stockInfoBusy(false);
 
-                        resolve();
-                    },
-                    error: function (xhr, s, a) {
-                        $.ajaxSettings.error(xhr, s, a);
-                        self.stockInfoBusy(false);
-                        reject(new Error(xhr.responseJSON));
-                    }
-                });
+                //        //if (data.hasOwnProperty('Code')) {
+                //        //    item.stockInfo(data);
+                //        //} else {
+                //        //    //kaput!
+                //        //}
+
+                //        self.stockInfoBusy(false);
+
+                //        resolve();
+                //    },
+                //    error: function (xhr, s, a) {
+                //        $.ajaxSettings.error(xhr, s, a);
+                //        self.stockInfoBusy(false);
+                //        reject(new Error(xhr.responseJSON));
+                //    }
+                //});
             } else {
                 self.stockInfoBusy(false);
                 resolve();

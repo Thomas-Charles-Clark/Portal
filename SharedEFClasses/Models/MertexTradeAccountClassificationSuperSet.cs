@@ -36,6 +36,8 @@ namespace SharedEFClasses.Models
 
         public byte? PaymentTermsID { get; set; }
 
+        public bool? CreditStopped { get; set; }
+
         public byte? PaymentTermsTypeID { get; set; }
 
         [ForeignKey("SalesMarketID")]

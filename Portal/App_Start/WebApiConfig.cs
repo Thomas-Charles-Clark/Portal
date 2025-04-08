@@ -324,6 +324,13 @@ namespace Portal
 
             productValueMapperFunction.Parameter<int?>("productId");
 
+            var orderBookProductValueMapperFunction = odataBuilder.EntityType<Product>()
+                .Collection
+                .Function("OrderBookProductValueMapper")
+                .ReturnsCollectionFromEntitySet<Product>("Products");
+
+            orderBookProductValueMapperFunction.Parameter<int?>("productId");
+
             var productOrderBookSummaryFilterFunction = odataBuilder.EntityType<Product>()
                 .Collection
                 .Function("GetProductsForOrderBookSummary")
@@ -600,6 +607,13 @@ namespace Portal
                 .ReturnsCollectionFromEntitySet<StockLocation>("StockLocations");
 
             stockLocationValueMapperFunction.Parameter<short?>("stockLocationId");
+
+
+            var allStockLocationsFunction = odataBuilder.EntityType<StockLocation>()
+                .Collection
+                .Function("AllStockLocations")
+                .ReturnsCollectionFromEntitySet<StockLocation>("StockLocations");
+
 
 
             var stockStatusValueMapperFunction = odataBuilder.EntityType<StockStatus>()

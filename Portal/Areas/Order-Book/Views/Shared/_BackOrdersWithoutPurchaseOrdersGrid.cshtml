@@ -119,7 +119,12 @@
                 <!-- ko if: (grouped || array) -->
                 <td class="popover-cell" data-bind="style: { '--prev-col-widths': `${$data.accumulatedColumnWidths}px` }">
                     <div class="relative">
+                        <!-- ko if: $parent[`${columnName}_PopoverDetails`] -->
                         <a href="javascript:;" data-bind="html: $parent[`${columnName}_Display`], actualBootstrapPopover: { context: $parent, details: $parent[`${columnName}_PopoverDetails`] }"></a>
+                        <!-- /ko -->
+                        <!-- ko if: $parent[`${columnName}_ModalDetails`] -->
+                        <a href="javascript:;" data-bind="click: $parent.showProductDetailModal, html: $parent[`${columnName}_Display`]"></a>
+                        <!-- /ko -->
                     </div>
                 </td>
                 <!-- /ko -->

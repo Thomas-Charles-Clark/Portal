@@ -1903,6 +1903,7 @@ ko.bindingHandlers.actualBootstrapPopover = {
     }
 }
 
+
 // Ryan, you beautiful person... thank you once more.
 // http://www.knockmeout.net/2011/05/creating-smart-dirty-flag-in-knockoutjs.html
 ko.dirtyFlag = function (root, isInitiallyDirty) {
@@ -2969,18 +2970,18 @@ ko.bindingHandlers.matrixLoader = {
 
             //U+26F7
             //Spring
-            //return [
-            //    String.fromCodePoint(0x1F490), // Bouquet of flowers
-            //    String.fromCodePoint(0x1F994), // Hedgehog
-            //    String.fromCodePoint(0x1F338), // Pink flower
-            //    String.fromCodePoint(0x1F407), // White rabbit
-            //    String.fromCodePoint(0x1F33C), // Daisy
-            //    String.fromCodePoint(0x1F343), // Leaf
-            //    String.fromCodePoint(0x1F331), // Sprouting seedling
-            //    String.fromCodePoint(0x1F337), // Tulip
-            //    String.fromCodePoint(0x1F423), // Chick hatching
-            //    String.fromCodePoint(0x1F340)  // Four-leaf clover
-            //]
+            return [
+                String.fromCodePoint(0x1F490), // Bouquet of flowers
+                String.fromCodePoint(0x1F994), // Hedgehog
+                String.fromCodePoint(0x1F338), // Pink flower
+                String.fromCodePoint(0x1F407), // White rabbit
+                String.fromCodePoint(0x1F33C), // Daisy
+                String.fromCodePoint(0x1F343), // Leaf
+                String.fromCodePoint(0x1F331), // Sprouting seedling
+                String.fromCodePoint(0x1F337), // Tulip
+                String.fromCodePoint(0x1F423), // Chick hatching
+                String.fromCodePoint(0x1F340)  // Four-leaf clover
+            ]
 
             //Winter
             //return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F343), String.fromCodePoint(0x2614), String.fromCodePoint(0x1F36C), String.fromCodePoint(0x26C4), String.fromCodePoint(0x1F3BF), String.fromCodePoint(0x1F3C2), String.fromCodePoint(0x2B50)]
@@ -3007,28 +3008,28 @@ ko.bindingHandlers.matrixLoader = {
             //]
 
             //Valentine's
-            return [
-                String.fromCodePoint(0x1F970), // smiling face with hearts
-                String.fromCodePoint(0x1F3F5), // yellow rosette
-                String.fromCodePoint(0x1F490), // bouquet
-                String.fromCodePoint(0x1F490), // bouquet
-                String.fromCodePoint(0x1F490), // bouquet
-                String.fromCodePoint(0x1F337), // tuplip
-                String.fromCodePoint(0x1F33C), // daisy
-                String.fromCodePoint(0x1F380), // ribbon
-                String.fromCodePoint(0x1F33A), // hibiscus
-                String.fromCodePoint(0x1F36D), // lollipop
-                String.fromCodePoint(0x2764), // red heart
-                String.fromCodePoint(0x1F9E1), // orange heart
-                String.fromCodePoint(0x1F49B), // yellow heart
-                String.fromCodePoint(0x1F49A), // green heart
-                String.fromCodePoint(0x1F499), // blue heart
-                String.fromCodePoint(0x1F49C),  // purple heart
-                String.fromCodePoint(0x1F49D), // heart with ribbon
-                String.fromCodePoint(0x1F498), // heart with arrow
-                String.fromCodePoint(0x1F49F), // heart decoration
-                String.fromCodePoint(0x1F49E), // revolving hearts
-            ]
+            //return [
+            //    String.fromCodePoint(0x1F970), // smiling face with hearts
+            //    String.fromCodePoint(0x1F3F5), // yellow rosette
+            //    String.fromCodePoint(0x1F490), // bouquet
+            //    String.fromCodePoint(0x1F490), // bouquet
+            //    String.fromCodePoint(0x1F490), // bouquet
+            //    String.fromCodePoint(0x1F337), // tuplip
+            //    String.fromCodePoint(0x1F33C), // daisy
+            //    String.fromCodePoint(0x1F380), // ribbon
+            //    String.fromCodePoint(0x1F33A), // hibiscus
+            //    String.fromCodePoint(0x1F36D), // lollipop
+            //    String.fromCodePoint(0x2764), // red heart
+            //    String.fromCodePoint(0x1F9E1), // orange heart
+            //    String.fromCodePoint(0x1F49B), // yellow heart
+            //    String.fromCodePoint(0x1F49A), // green heart
+            //    String.fromCodePoint(0x1F499), // blue heart
+            //    String.fromCodePoint(0x1F49C),  // purple heart
+            //    String.fromCodePoint(0x1F49D), // heart with ribbon
+            //    String.fromCodePoint(0x1F498), // heart with arrow
+            //    String.fromCodePoint(0x1F49F), // heart decoration
+            //    String.fromCodePoint(0x1F49E), // revolving hearts
+            //]
 
             /*
             Lianne's contribution:
@@ -3553,6 +3554,9 @@ ko.bindingHandlers.codeMirror = {
 
 ko.validation.rules['numeric'] = {
     validator: function (value, params) {
+        if (!params.required && typeof value == 'undefined') {
+            return true;
+        }
         if (params.required && value == null)
             return false;
 

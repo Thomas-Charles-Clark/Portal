@@ -39,7 +39,7 @@ $vertical-border: 1px solid $gray-400;
         transform: translate3d(0, 0, 0);
         $col-width: var(--default-column-width);
 
-        colgroup {
+        > colgroup {
             col {
                 width: $col-width;
             }
@@ -146,11 +146,34 @@ $vertical-border: 1px solid $gray-400;
 
                         .popover-body {
                             position: relative;
-                            min-width: 240px;
+                            min-width: 420px;
                             min-height: 120px; 
 
                             .blocker {
                                 border-radius: $popover-inner-border-radius;
+                            }
+
+                            .popover-title {
+                                margin: 0;
+                            }
+
+                            .info-container {
+                                padding: $l-gutter;
+                                font-size: $font-size-base;
+
+                                .info-card {
+                                    & + .info-card {
+                                        margin-top: $l-gutter;
+                                    }
+
+                                    p {
+                                        margin-bottom: 0;
+
+                                        & + p {
+                                            margin-top: $l-gutter;
+                                        }
+                                    }
+                                }
                             }
 
                             .table-container {

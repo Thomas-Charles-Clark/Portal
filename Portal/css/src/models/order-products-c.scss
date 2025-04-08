@@ -959,6 +959,10 @@ select.fulfilment-option {
 .allocation-stock-breakdown {
     flex: 1 1 auto;
     padding-left: 60px;
+
+    .stock-info {
+        width: 100%;
+    }
 }
 
 .allocation-stock-breakdown-inner {

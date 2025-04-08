@@ -740,259 +740,7 @@
                                 </div>
                             </div>
                             <div data-bind="foreach: products, fadeVisible: !$parentContext.$parent.orderProductsDrilldown.stockInfoBusy()">
-                                <div class="stock-info">
-                                    <div class="row">
-                                        <table class="drilldown-stock-table">
-                                            <colgroup>
-                                                <col style="width: 300px" />
-                                                <col />
-                                            </colgroup>
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <div id="product-name">
-                                                            <!-- ko if: record.ImageID != null -->
-                                                            <!-- ko if: $parentContext.$parentContext.$parent.hasOwnProperty('orderProductsDrilldown') -->
-                                                            <img class="thumb" data-bind="click: function(data) { $parentContext.$parentContext.$parent.orderProductsDrilldown.loadLargeImage(record, $parentContext.$parent.preferredEmail); }, attr: { src: 'https://www.designersguild.com/image/156/' + record.ImageID, title: record.Code }" />
-                                                            <!-- /ko -->
-                                                            <!-- /ko -->
-                                                            <div class="product-details">
-                                                                <span>
-                                                                    <span data-bind="text: record.OrderFormName + (record.Size ? ' - ' + record.Size : '')"></span>
-                                                                    <span data-bind="text: record.Code"></span>
-                                                                </span>
-                                                                <span data-bind="html: '(Unit of Stock: ' + record.Units + ')'"></span>
-                                                            </div>
-                                                            <div class="clearfix"></div>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <!-- ko if: record.WideWidthFabricDefaultPoleWidth != null -->
-                                                        <div class="alert alert-warning">
-                                                            <span>
-                                                                This is a wide width fabric,
-                                                                <!-- ko if: record.WideWidthFabricDefaultPoleWidth == 'W' -->
-                                                                stocked on a wide width pole.
-                                                                <!-- /ko -->
-                                                                <!-- ko if: record.WideWidthFabricDefaultPoleWidth == 'S' -->
-                                                                stocked on a standard width pole.
-                                                                <!-- /ko -->
-                                                            </span>
-                                                        </div>
-                                                        <!-- /ko -->
-                                                        <!-- ko if: supplierAvailabilityMessage() -->
-                                                        <div class="alert alert-warning">
-                                                            <div data-bind="html: supplierAvailabilityMessage"></div>
-                                                        </div>
-                                                        <!-- /ko -->
-                                                        <!-- ko if: showStockCheckRequester -->
-                                                        <!-- ko with: $root.orderProductsDrilldown.stockCheckRequester -->
-                                                        <div class="alert" data-bind="class: cssClass">
-                                                            <div data-bind="html: message"></div>
-                                                            <button class="btn btn-blue request-stock-check-btn" data-bind="enable: allowStockCheckRequest, click: parent.beginStockCheckRequest">
-                                                                Request Stock Check
-                                                            </button>
-                                                        </div>
-                                                        <!-- /ko -->
-                                                        <!-- /ko -->
-                                                        <!-- ko if: stockInfo() -->
-                                                        <table class="stock-allocation-table allocation-table table table-condensed" data-bind="with: stockInfo, visible: !backOrder()">
-                                                            <colgroup>
-                                                                <col style="width: 25%" />
-                                                                <col style="width: 105px" />
-                                                                <col style="width: 75px" />
-                                                                <col style="width: 75px" />
-                                                                <col style="width: 75px" />
-                                                                <col style="width: 75px" />
-                                                                <col style="width: 90px" />
-                                                                <col style="width: auto" />
-                                                            </colgroup>
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>
-                                                                        Batch
-                                                                    </th>
-                                                                    <th>
-                                                                        <sup class="font-normal">1</sup> Available Now
-                                                                    </th>
-                                                                    <th>
-                                                                        Bulk Stock
-                                                                    </th>
-                                                                    <th>
-                                                                        <sup class="font-normal">2</sup> Just Arrived
-                                                                    </th>
-                                                                    <th>
-                                                                        <sup class="font-normal">3</sup> Ring Fenced
-                                                                    </th>
-                                                                    <th>
-                                                                        On Reserve
-                                                                    </th>
-                                                                    <th>
-                                                                        Total
-                                                                    </th>
-                                                                    <th>
-                                                                        Due In
-                                                                    </th>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th>
-                                                                        Total all Locations
-                                                                    </th>
-                                                                    <th>
-                                                                        <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.availableNowTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
-                                                                    </th>
-                                                                    <th>
-                                                                        <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.bulkTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
-                                                                    </th>
-                                                                    <th>
-                                                                        <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.waitingTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
-                                                                    </th>
-                                                                    <th>
-                                                                        <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.ringFencedTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
-                                                                    </th>
-                                                                    <th>
-                                                                        <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.onReserveTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
-                                                                    </th>
-                                                                    <th>
-                                                                        <span data-bind="text: Enumerable.From($data).Select('+$.stockLocation.totalQuantity()').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
-                                                                    </th>
-                                                                    <th>
-                                                                        <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.dueInTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
-                                                                    </th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td colspan="8">
-                                                                        &nbsp;
-                                                                    </td>
-                                                                </tr>
-                                                                <!-- ko foreach: $data -->
-                                                                <!-- ko if: stockLocation.totalIncludingDue() == 0 -->
-                                                                <tr class="stock-location">
-                                                                    <th>
-                                                                        <span data-bind="text: `${stockLocation.stockLocationCode} - ${stockLocation.stockLocationName}`"></span>
-                                                                    </th>
-                                                                    <th colspan="7">
-                                                                        <span class="font-normal text-italic">
-                                                                            No stock available in this location
-                                                                        </span>
-                                                                    </th>
-                                                                </tr>
-                                                                <!-- /ko -->
-                                                                <!-- ko if: stockLocation.totalIncludingDue() > 0 -->
-                                                                <tr class="stock-location">
-                                                                    <th>
-                                                                        <span data-bind="text: `${stockLocation.stockLocationCode} - ${stockLocation.stockLocationName}`"></span>
-                                                                    </th>
-                                                                    <th>
-                                                                        <span data-bind="text: stockLocation.availableNowTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
-                                                                    </th>
-                                                                    <th>
-                                                                        <span data-bind="text: stockLocation.bulkTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
-                                                                    </th>
-                                                                    <th>
-                                                                        <span data-bind="text: stockLocation.waitingTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
-                                                                    </th>
-                                                                    <th>
-                                                                        <span data-bind="text: stockLocation.ringFencedTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
-                                                                    </th>
-                                                                    <th>
-                                                                        <span data-bind="text: stockLocation.onReserveTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
-                                                                    </th>
-                                                                    <th>
-                                                                        <span data-bind="text: (+stockLocation.totalQuantity()).toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
-                                                                    </th>
-                                                                    <th>
-                                                                        <span data-bind="text: stockLocation.dueInTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
-                                                                    </th>
-                                                                </tr>
-                                                                <!-- ko foreach: batches -->
-                                                                <tr data-bind="css: { 'location-end': $index() == ($parent.batches.length - 1) }">
-                                                                    <td>
-                                                                        <span data-bind="text: batch.batchNo"></span>
-                                                                    </td>
-                                                                    <td colspan="7" class="no-padding">
-                                                                        <table class="piece-table table table-condensed">
-                                                                            <colgroup>
-                                                                                <col style="width: 105px;" />
-                                                                                <col style="width: 75px;" />
-                                                                                <col style="width: 75px;" />
-                                                                                <col style="width: 75px;" />
-                                                                                <col style="width: 75px;" />
-                                                                                <col style="width: 90px;" />
-                                                                                <col style="width: auto" />
-                                                                            </colgroup>
-                                                                            <tbody>
-                                                                                <!-- ko foreach: pieces -->
-                                                                                <tr>
-                                                                                    <td>
-                                                                                        <span data-bind="text: AvailableNowDisplay"></span>
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        <span data-bind="text: BulkDisplay"></span>
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        <span data-bind="text: WaitingDisplay"></span>
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        <span data-bind="text: RingFencedDisplay"></span>
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        <span data-bind="text: OnReserveDisplay"></span>
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        <span data-bind="text: TotalDisplay"></span>
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        <span data-bind="text: DueInDisplay"></span>
-                                                                                        <!-- ko if: POOnCallOff -->
-                                                                                        <span>(call off)</span>
-                                                                                        <!-- /ko -->
-                                                                                        <!-- ko ifnot: POOnCallOff -->
-                                                                                        <!-- ko if: POConfirmed != null -->
-                                                                                        <span data-bind="text: POConfirmed ? '(confirmed)' : '(unconfirmed)'"></span>
-                                                                                        <!-- /ko -->
-                                                                                        <!-- /ko -->
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <!-- /ko -->
-                                                                            </tbody>
-                                                                        </table>
-                                                                    </td>
-                                                                </tr>
-                                                                <!-- /ko -->
-                                                                <!-- /ko -->
-                                                                <!-- ko if: $index() != ($parent.length - 1) -->
-                                                                <tr>
-                                                                    <td colspan="6">
-                                                                        &nbsp;
-                                                                    </td>
-                                                                </tr>
-                                                                <!-- /ko -->
-                                                                <!-- /ko -->
-                                                            </tbody>
-                                                        </table>
-                                                        <p>
-                                                            <sup class="font-normal">1</sup> "Available Now" = Free Stock + Stock Ring Fenced for this Customer
-                                                        </p>
-                                                        <p>
-                                                            <sup class="font-normal">2</sup> "Just Arrived" = Stock waiting to be put away
-                                                        </p>
-                                                        <p>
-                                                            <sup class="font-normal">3</sup> "Ring Fenced" = Stock Ring Fenced for other Customers
-                                                        </p>
-                                                        <!-- /ko -->
-                                                        <!-- ko if: stockInfo() ? stockInfo().length == 0 : true -->
-                                                        <label data-bind="text: stockStatus">
-                                                        </label>
-                                                        <!-- /ko -->
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
+                                <!-- ko template: { name: 'stock-info-template' } --><!-- /ko -->
                             </div>
                         </div>
                         <!-- /ko -->
@@ -2705,238 +2453,244 @@
                 <!-- /ko -->
             </div>
             <div class="allocation-stock-breakdown">
-                <div class="form-group">
-                    <h5 class="bold blue-heading">
-                        Stock Overview
-                        (<span data-bind="text: record.Units"></span>)
-                    </h5>
-                </div>
-                <div class="allocation-stock-breakdown-inner">
-                    <div class="blocker" data-bind="visible: ($parent.allocationStockRegionBusy() && !$parent.processingBusy())">
-                        <div class="loading-spinner"></div>
-                    </div>
-                    <!-- ko with: $parent.supplierAvailabilityMessage -->
-                    <div class="alert alert-warning">
-                        <div data-bind="html: $data"></div>
-                    </div>
-                    <!-- /ko -->
-                    <!-- ko if: record.WideWidthFabricDefaultPoleWidth != null -->
-                    <div class="alert alert-warning">
-                        <span>
-                            This is a wide width fabric,
-                            <!-- ko if: record.WideWidthFabricDefaultPoleWidth == 'W' -->
-                            stocked on a wide width pole.
-                            <!-- /ko -->
-                            <!-- ko if: record.WideWidthFabricDefaultPoleWidth == 'S' -->
-                            stocked on a standard width pole.
-                            <!-- /ko -->
-                        </span>
-                    </div>
-                    <!-- /ko -->
-                    <!-- ko if: $parent.showStockCheckRequester() -->
-                    <!-- ko with: $parent.stockCheckRequester -->
-                    <div class="alert" data-bind="class: cssClass">
-                        <div data-bind="html: message"></div>
-                        <button class="btn btn-blue request-stock-check-btn" data-bind="enable: allowStockCheckRequest, click: $parentContext.$parent.beginStockCheckRequest">
-                            Request Stock Check
-                        </button>
-                    </div>
-                    <!-- /ko -->
-                    <!-- /ko -->
-                    <!-- ko if: $parent.showAllocationStockRefreshButton() -->
-                    <button class="btn btn-secondary-blue" data-bind="click: function () { $parent.fetchBasketItemAllocationStock(); }">
-                        Refresh Stock
-                    </button>
-                    <!-- /ko -->
-                    <table class="stock-allocation-table allocation-table table table-condensed" data-bind="with: $parent.addingProductAllocationStockData">
-                        <colgroup>
-                            <col style="width: 25%" />
-                            <col style="width: 105px" />
-                            <col style="width: 75px" />
-                            <col style="width: 75px" />
-                            <col style="width: 75px" />
-                            <col style="width: 75px" />
-                            <col style="width: 91px" />
-                            <col style="width: auto" />
-                        </colgroup>
-                        <thead>
-                            <tr>
-                                <th>
-                                    Batch
-                                </th>
-                                <th>
-                                    <sup class="font-normal">1</sup> Available Now
-                                </th>
-                                <th>
-                                    Bulk Stock
-                                </th>
-                                <th>
-                                    <sup class="font-normal">2</sup> Just Arrived
-                                </th>
-                                <th>
-                                    <sup class="font-normal">3</sup> Ring Fenced
-                                </th>
-                                <th>
-                                    On Reserve
-                                </th>
-                                <th>
-                                    Total
-                                </th>
-                                <th>
-                                    Due In
-                                </th>
-                            </tr>
-                            <tr>
-                                <th>
-                                    Total all Locations
-                                </th>
-                                <th>
-                                    <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.availableNowTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
-                                </th>
-                                <th>
-                                    <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.bulkTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
-                                </th>
-                                <th>
-                                    <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.waitingTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
-                                </th>
-                                <th>
-                                    <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.ringFencedTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
-                                </th>
-                                <th>
-                                    <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.onReserveTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
-                                </th>
-                                <th>
-                                    <span data-bind="text: Enumerable.From($data).Select('+$.stockLocation.totalQuantity()').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
-                                </th>
-                                <th>
-                                    <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.dueInTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td colspan="8">
-                                    &nbsp;
-                                </td>
-                            </tr>
-                            <!-- ko foreach: $data -->
-                            <!-- ko if: stockLocation.totalIncludingDue() == 0 -->
-                            <tr class="stock-location">
-                                <th>
-                                    <span data-bind="text: `${stockLocation.stockLocationCode} - ${stockLocation.stockLocationName}`"></span>
-                                </th>
-                                <th colspan="7">
-                                    <span class="font-normal text-italic">
-                                        No stock available in this location
-                                    </span>
-                                </th>
-                            </tr>
-                            <!-- /ko -->
-                            <!-- ko if: stockLocation.totalIncludingDue() > 0 -->
-                            <tr class="stock-location">
-                                <th>
-                                    <span data-bind="text: `${stockLocation.stockLocationCode} - ${stockLocation.stockLocationName}`"></span>
-                                </th>
-                                <th>
-                                    <span data-bind="text: stockLocation.availableNowTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
-                                </th>
-                                <th>
-                                    <span data-bind="text: stockLocation.bulkTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
-                                </th>
-                                <th>
-                                    <span data-bind="text: stockLocation.waitingTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
-                                </th>
-                                <th>
-                                    <span data-bind="text: stockLocation.ringFencedTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
-                                </th>
-                                <th>
-                                    <span data-bind="text: stockLocation.onReserveTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
-                                </th>
-                                <th>
-                                    <span data-bind="text: (+stockLocation.totalQuantity()).toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
-                                </th>
-                                <th>
-                                    <span data-bind="text: stockLocation.dueInTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
-                                </th>
-                            </tr>
+                <!-- ko template: { name: 'stock-info-template', params: Object.assign($data, { showThumb: false }) } --><!-- /ko -->
+                @*
+                    <!-- 10/02/2025 hooray finally made stock checking more coherent, see stock-info-template! -->
 
-                            <!-- ko foreach: batches -->
-                            <tr data-bind="css: { 'location-end': $index() == ($parent.batches.length - 1) }">
-                                <td>
-                                    <span data-bind="text: batch.batchNo"></span>
-                                </td>
-                                <td colspan="7" class="no-padding">
-                                    <table class="piece-table table table-condensed">
-                                        <colgroup>
-                                            <col style="width: 105px;" />
-                                            <col style="width: 75px;" />
-                                            <col style="width: 75px;" />
-                                            <col style="width: 75px;" />
-                                            <col style="width: 75px;" />
-                                            <col style="width: 91px;" />
-                                            <col style="width: auto" />
-                                        </colgroup>
-                                        <tbody>
-                                            <!-- ko foreach: pieces -->
-                                            <tr>
-                                                <td>
-                                                    <span data-bind="text: AvailableNowDisplay"></span>
-                                                </td>
-                                                <td>
-                                                    <span data-bind="text: BulkDisplay"></span>
-                                                </td>
-                                                <td>
-                                                    <span data-bind="text: WaitingDisplay"></span>
-                                                </td>
-                                                <td>
-                                                    <span data-bind="text: RingFencedDisplay"></span>
-                                                </td>
-                                                <td>
-                                                    <span data-bind="text: OnReserveDisplay"></span>
-                                                </td>
-                                                <td>
-                                                    <span data-bind="text: TotalDisplay"></span>
-                                                </td>
-                                                <td>
-                                                    <span data-bind="text: DueInDisplay"></span>
-                                                    <!-- ko if: POOnCallOff -->
-                                                    <span>(call off)</span>
-                                                    <!-- /ko -->
-                                                    <!-- ko ifnot: POOnCallOff -->
-                                                    <!-- ko if: POConfirmed != null -->
-                                                    <span data-bind="text: POConfirmed ? '(confirmed)' : '(unconfirmed)'"></span>
-                                                    <!-- /ko -->
-                                                    <!-- /ko -->
-                                                </td>
-                                            </tr>
+                            <div class="form-group">
+            <h5 class="bold blue-heading">
+                Stock Overview
+                (<span data-bind="text: record.Units"></span>)
+            </h5>
+        </div>
+        <div class="allocation-stock-breakdown-inner">
+            <div class="blocker" data-bind="visible: ($parent.allocationStockRegionBusy() && !$parent.processingBusy())">
+                <div class="loading-spinner"></div>
+            </div>
+            <!-- ko with: $parent.supplierAvailabilityMessage -->
+            <div class="alert alert-warning">
+                <div data-bind="html: $data"></div>
+            </div>
+            <!-- /ko -->
+            <!-- ko if: record.WideWidthFabricDefaultPoleWidth != null -->
+            <div class="alert alert-warning">
+                <span>
+                    This is a wide width fabric,
+                    <!-- ko if: record.WideWidthFabricDefaultPoleWidth == 'W' -->
+                    stocked on a wide width pole.
+                    <!-- /ko -->
+                    <!-- ko if: record.WideWidthFabricDefaultPoleWidth == 'S' -->
+                    stocked on a standard width pole.
+                    <!-- /ko -->
+                </span>
+            </div>
+            <!-- /ko -->
+            <!-- ko if: $parent.showStockCheckRequester() -->
+            <!-- ko with: $parent.stockCheckRequester -->
+            <div class="alert" data-bind="class: cssClass">
+                <div data-bind="html: message"></div>
+                <button class="btn btn-blue request-stock-check-btn" data-bind="enable: allowStockCheckRequest, click: $parentContext.$parent.beginStockCheckRequest">
+                    Request Stock Check
+                </button>
+            </div>
+            <!-- /ko -->
+            <!-- /ko -->
+            <!-- ko if: $parent.showAllocationStockRefreshButton() -->
+            <button class="btn btn-secondary-blue" data-bind="click: function () { $parent.fetchBasketItemAllocationStock(); }">
+                Refresh Stock
+            </button>
+            <!-- /ko -->
+            <table class="stock-allocation-table allocation-table table table-condensed" data-bind="with: stockInfo">
+                <colgroup>
+                    <col style="width: 25%" />
+                    <col style="width: 105px" />
+                    <col style="width: 75px" />
+                    <col style="width: 75px" />
+                    <col style="width: 75px" />
+                    <col style="width: 75px" />
+                    <col style="width: 91px" />
+                    <col style="width: auto" />
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>
+                            Batch
+                        </th>
+                        <th>
+                            <sup class="font-normal">1</sup> Available Now
+                        </th>
+                        <th>
+                            Bulk Stock
+                        </th>
+                        <th>
+                            <sup class="font-normal">2</sup> Just Arrived
+                        </th>
+                        <th>
+                            <sup class="font-normal">3</sup> Ring Fenced
+                        </th>
+                        <th>
+                            On Reserve
+                        </th>
+                        <th>
+                            Total
+                        </th>
+                        <th>
+                            Due In
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>
+                            Total all Locations
+                        </th>
+                        <th>
+                            <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.availableNowTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
+                        </th>
+                        <th>
+                            <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.bulkTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
+                        </th>
+                        <th>
+                            <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.waitingTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
+                        </th>
+                        <th>
+                            <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.ringFencedTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
+                        </th>
+                        <th>
+                            <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.onReserveTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
+                        </th>
+                        <th>
+                            <span data-bind="text: Enumerable.From($data).Select('+$.stockLocation.totalQuantity()').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
+                        </th>
+                        <th>
+                            <span data-bind="text: Enumerable.From($data).Select('$.stockLocation.dueInTotal').Sum().toFixed($parent.productFilterOptions().QuantityPrecision)"></span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="8">
+                            &nbsp;
+                        </td>
+                    </tr>
+                    <!-- ko foreach: $data -->
+                    <!-- ko if: stockLocation.totalIncludingDue() == 0 -->
+                    <tr class="stock-location">
+                        <th>
+                            <span data-bind="text: `${stockLocation.stockLocationCode} - ${stockLocation.stockLocationName}`"></span>
+                        </th>
+                        <th colspan="7">
+                            <span class="font-normal text-italic">
+                                No stock available in this location
+                            </span>
+                        </th>
+                    </tr>
+                    <!-- /ko -->
+                    <!-- ko if: stockLocation.totalIncludingDue() > 0 -->
+                    <tr class="stock-location">
+                        <th>
+                            <span data-bind="text: `${stockLocation.stockLocationCode} - ${stockLocation.stockLocationName}`"></span>
+                        </th>
+                        <th>
+                            <span data-bind="text: stockLocation.availableNowTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
+                        </th>
+                        <th>
+                            <span data-bind="text: stockLocation.bulkTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
+                        </th>
+                        <th>
+                            <span data-bind="text: stockLocation.waitingTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
+                        </th>
+                        <th>
+                            <span data-bind="text: stockLocation.ringFencedTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
+                        </th>
+                        <th>
+                            <span data-bind="text: stockLocation.onReserveTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
+                        </th>
+                        <th>
+                            <span data-bind="text: (+stockLocation.totalQuantity()).toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
+                        </th>
+                        <th>
+                            <span data-bind="text: stockLocation.dueInTotal.toFixed($parentContext.$parent.productFilterOptions().QuantityPrecision)"></span>
+                        </th>
+                    </tr>
+
+                    <!-- ko foreach: batches -->
+                    <tr data-bind="css: { 'location-end': $index() == ($parent.batches.length - 1) }">
+                        <td>
+                            <span data-bind="text: batch.batchNo"></span>
+                        </td>
+                        <td colspan="7" class="no-padding">
+                            <table class="piece-table table table-condensed">
+                                <colgroup>
+                                    <col style="width: 105px;" />
+                                    <col style="width: 75px;" />
+                                    <col style="width: 75px;" />
+                                    <col style="width: 75px;" />
+                                    <col style="width: 75px;" />
+                                    <col style="width: 91px;" />
+                                    <col style="width: auto" />
+                                </colgroup>
+                                <tbody>
+                                    <!-- ko foreach: pieces -->
+                                    <tr>
+                                        <td>
+                                            <span data-bind="text: AvailableNowDisplay"></span>
+                                        </td>
+                                        <td>
+                                            <span data-bind="text: BulkDisplay"></span>
+                                        </td>
+                                        <td>
+                                            <span data-bind="text: WaitingDisplay"></span>
+                                        </td>
+                                        <td>
+                                            <span data-bind="text: RingFencedDisplay"></span>
+                                        </td>
+                                        <td>
+                                            <span data-bind="text: OnReserveDisplay"></span>
+                                        </td>
+                                        <td>
+                                            <span data-bind="text: TotalDisplay"></span>
+                                        </td>
+                                        <td>
+                                            <span data-bind="text: DueInDisplay"></span>
+                                            <!-- ko if: POOnCallOff -->
+                                            <span>(call off)</span>
                                             <!-- /ko -->
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                            <!-- /ko -->
-                            <!-- /ko -->
-                            <!-- ko if: $index() != ($parent.length - 1) -->
-                            <tr>
-                                <td colspan="6">
-                                    &nbsp;
-                                </td>
-                            </tr>
-                            <!-- /ko -->
-                            <!-- /ko -->
-                        </tbody>
-                    </table>
-                    <p>
-                        <sup class="font-normal">1</sup> "Available Now" = Free Stock + Stock Ring Fenced for this Customer
-                    </p>
-                    <p>
-                        <sup class="font-normal">2</sup> "Just Arrived" = Stock waiting to be put away
-                    </p>
-                    <p>
-                        <sup class="font-normal">3</sup> "Ring Fenced" = Stock Ring Fenced for other Customers
-                    </p>
-                </div>
-                </div>
+                                            <!-- ko ifnot: POOnCallOff -->
+                                            <!-- ko if: POConfirmed != null -->
+                                            <span data-bind="text: POConfirmed ? '(confirmed)' : '(unconfirmed)'"></span>
+                                            <!-- /ko -->
+                                            <!-- /ko -->
+                                        </td>
+                                    </tr>
+                                    <!-- /ko -->
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <!-- /ko -->
+                    <!-- /ko -->
+                    <!-- ko if: $index() != ($parent.length - 1) -->
+                    <tr>
+                        <td colspan="6">
+                            &nbsp;
+                        </td>
+                    </tr>
+                    <!-- /ko -->
+                    <!-- /ko -->
+                </tbody>
+            </table>
+            <p>
+                <sup class="font-normal">1</sup> "Available Now" = Free Stock + Stock Ring Fenced for this Customer
+            </p>
+            <p>
+                <sup class="font-normal">2</sup> "Just Arrived" = Stock waiting to be put away
+            </p>
+            <p>
+                <sup class="font-normal">3</sup> "Ring Fenced" = Stock Ring Fenced for other Customers
+            </p>
+        </div>
+
+                *@
+            </div>
         </div>
     </div>
     <div class="product-progression-stage" data-bind="fadeBetweenMany: {

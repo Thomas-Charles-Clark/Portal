@@ -1039,9 +1039,6 @@ const orderBookAdvancedFiltersViewModel = ({
 
         self.purchasingRecommendationId(EMPTY_STRING);
         self.purchasingRecommendation(undefined);
-
-        self.creditStoppedId(EMPTY_STRING);
-        self.creditStopped(undefined);
     }
 
     self.json = ko.computed(() => {

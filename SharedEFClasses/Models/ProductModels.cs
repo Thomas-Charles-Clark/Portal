@@ -1926,6 +1926,7 @@ namespace SharedEFClasses.Models.Products
         public byte? StockLocationOrderBookGroupID { get; set; }
         public string Name { get; set; }
         public string Code { get; set; }
+        public short SortOrder { get; set; }
 
         [JsonIgnore]
         public virtual ICollection<RingFencePreAllocation> RingFencePreAllocations { get; set; }
@@ -1939,7 +1940,7 @@ namespace SharedEFClasses.Models.Products
         public virtual ICollection<BranchStockLocation> WarehouseStockLocations { get; set; }
 
         [ForeignKey("StockLocationOrderBookGroupID")]
-        public virtual StockLocationGroup StockLocationGroup { get; set; }
+        public virtual StockLocationOrderBookGroup StockLocationOrderBookGroup { get; set; }
 
         [JsonIgnore]
         [InverseProperty("DestinationStockLocation")]
