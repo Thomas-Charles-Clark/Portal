@@ -7032,8 +7032,15 @@ var customerSearchSlicerModel = function (parent) {
     var repLocked = false;
     var areaLocked = false;
 
-    // Stina (28871) and Eva Ehlin (1583444) - 19/06/2024.
-    if ([28871, 1583702, 1583444].indexOf(userId) > -1) {
+    if ([28871].indexOf(userId) > -1) {
+        areaId = null;
+        areaLocked = false;
+        repLocked = false;
+        marketId = 18;
+    }
+
+    // Lena Eriksson and Eva Ehlin (1583444) - 19/06/2024.
+    if ([1583702, 1583444].indexOf(userId) > -1) {
         areaId = salesAreaStina;
         areaLocked = true;
     }

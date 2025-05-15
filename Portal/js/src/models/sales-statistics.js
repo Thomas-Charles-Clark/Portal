@@ -4033,7 +4033,8 @@ var salesStatisticsViewModel = function () {
     self.customerAnalysisRangeSelectorSettings = {
         elementId: 'customer-analysis-range',
         boundTo: self.customerAnalysisRangeSelector,
-        'default': 'last-12-months'
+        'default': 'last-12-months',
+        monthsBack: -120
     };
 
     self.getCustomerAnalysisGridRecord = function (uid) {

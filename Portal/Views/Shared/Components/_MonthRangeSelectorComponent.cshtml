@@ -92,6 +92,8 @@
         // so. we want our starting year.
         //
 
+        self.monthsBack = params.monthsBack ?? -60;
+
         self.yearsToRender = ko.observableArray([]);
 
         self.init = function () {
@@ -100,11 +102,11 @@
 
             var thisYear = parseInt(today.format("YYYY"));
 
-            var startYear = parseInt(today.add(-36, 'months').format("YYYY"));
+            var startYear = parseInt(today.add(self.monthsBack, 'months').format("YYYY"));
 
             var months = [];
 
-            for (var i = 0; i < 36; i++) {
+            for (var i = 0; i < Math.abs(self.monthsBack); i++) {
                 var thisMonth = moment().add(-i, 'months');
                 months.push({
                     monthId: thisMonth.format("YYYYMM"),
@@ -294,6 +296,22 @@
             var endMonthId = -1;
 
             switch (period) {
+                case 'L60':
+                    startMonthId = moment().add(-59, 'months').format('YYYYMM');
+                    endMonthId = moment().format('YYYYMM');
+                    break;
+                case 'L48':
+                    startMonthId = moment().add(-47, 'months').format('YYYYMM');
+                    endMonthId = moment().format('YYYYMM');
+                    break;
+                case 'L36':
+                    startMonthId = moment().add(-35, 'months').format('YYYYMM');
+                    endMonthId = moment().format('YYYYMM');
+                    break;
+                case 'L24':
+                    startMonthId = moment().add(-23, 'months').format('YYYYMM');
+                    endMonthId = moment().format('YYYYMM');
+                    break;
                 case 'L12':
                     startMonthId = moment().add(-11, 'months').format('YYYYMM');
                     endMonthId = moment().format('YYYYMM');

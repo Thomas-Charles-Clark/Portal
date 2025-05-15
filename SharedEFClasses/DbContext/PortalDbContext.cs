@@ -6,6 +6,7 @@ using SharedEFClasses.Models.Attributes;
 using SharedEFClasses.Models.DotDigital;
 using SharedEFClasses.Models.Fenwick;
 using SharedEFClasses.Models.General;
+using SharedEFClasses.Models.IncomingEmail;
 using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Maintenance;
 using SharedEFClasses.Models.Marketing;
@@ -592,6 +593,17 @@ namespace SharedEFClasses.Models
         public DbSet<Box> Boxes { get; set; }
 
         public DbSet<BoxedItem> BoxedItems { get; set; }
+
+        #endregion
+
+        #region IncomingEmail
+
+        public virtual DbSet<Attachment> Attachments { get; set; }
+        public virtual DbSet<AttachmentType> AttachmentTypes { get; set; }
+        public virtual DbSet<Domain_SupplierCode_Map> Domain_SupplierCode_Maps { get; set; }
+        public virtual DbSet<Email> Emails { get; set; }
+        public virtual DbSet<Mailbox> Mailboxes { get; set; }
+        public virtual DbSet<MailboxFunction> MailboxFunctions { get; set; }
 
         #endregion
 

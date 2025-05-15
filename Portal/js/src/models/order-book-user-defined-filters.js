@@ -2038,7 +2038,7 @@ const orderBookUserDefinedFiltersViewModel = ({
             } else {
                 if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "Design.Name")) {
                     let f = data.filter.filters.find(f => f.field === "Design.Name");
-                    filters.push(`(startwith(Design/Name, '${f.value}'))`);
+                    filters.push(`(startswith(Design/Name, '${f.value}'))`);
 
                     if (d.$filter) {
                         delete d.$filter;

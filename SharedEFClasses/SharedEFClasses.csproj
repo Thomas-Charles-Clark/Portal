@@ -415,6 +415,12 @@
     <Compile Include="Models\GiftVoucherType.cs" />
     <Compile Include="Models\GiftVoucher_SelectResult.cs" />
     <Compile Include="Models\ImageDownloadTask.cs" />
+    <Compile Include="Models\IncomingEmail\Attachment.cs" />
+    <Compile Include="Models\IncomingEmail\AttachmentType.cs" />
+    <Compile Include="Models\IncomingEmail\Domain_SupplierCode_Map.cs" />
+    <Compile Include="Models\IncomingEmail\Email.cs" />
+    <Compile Include="Models\IncomingEmail\Mailbox.cs" />
+    <Compile Include="Models\IncomingEmail\MailboxFunction.cs" />
     <Compile Include="Models\InvoiceModels.cs" />
     <Compile Include="Models\DocumentModels.cs" />
     <Compile Include="Models\FurnitureModels.cs" />
