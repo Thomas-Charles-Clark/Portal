@@ -12,23 +12,25 @@ namespace Portal.Areas.Invoices.ViewModels
 {
     public class InvoiceBookingViewModel : BaseViewModel
     {
+        public int MailboxID { get; set; }
 
-        public InvoiceBookingViewModel(RoleProperties properties, string applicationHeading, string applicationSubHeading)
+        public InvoiceBookingViewModel(int mailboxId, RoleProperties properties, string applicationHeading, string applicationSubHeading)
             : base(properties,
                    applicationHeading,
                    applicationSubHeading)
         {
-
+            MailboxID = mailboxId;
         }
 
         public static async Task<InvoiceBookingViewModel> CreateAsync(
+            int mailboxId,
             RoleProperties properties,
             string applicationHeading,
             string applicationSubHeading)
         {
             var portalDb = new PortalDbContext();
 
-            var result = new InvoiceBookingViewModel(properties, applicationHeading, applicationSubHeading);
+            var result = new InvoiceBookingViewModel(mailboxId, properties, applicationHeading, applicationSubHeading);
 
             return result;
         }

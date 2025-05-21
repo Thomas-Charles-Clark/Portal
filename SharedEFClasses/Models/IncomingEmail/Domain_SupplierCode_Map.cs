@@ -9,10 +9,12 @@ namespace SharedEFClasses.Models.IncomingEmail
     public partial class Domain_SupplierCode_Map
     {
         [Key]
+        [Column(Order = 1)]
         [StringLength(256)]
         public string Domain { get; set; }
 
         [Key]
+        [Column(Order = 2)]
         [StringLength(50)]
         public string SupplierCode { get; set; }
 

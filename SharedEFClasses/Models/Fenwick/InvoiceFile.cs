@@ -27,6 +27,6 @@ namespace SharedEFClasses.Models.Fenwick
         public bool? Deleted { get; set; }
 
         [InverseProperty("InvoiceFile")]
-        public virtual ICollection<Invoice> Invoices { get; set; }
+        public virtual ICollection<FenwickInvoice> Invoices { get; set; }
     }
 }

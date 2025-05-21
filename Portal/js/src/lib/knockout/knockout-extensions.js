@@ -3806,3 +3806,15 @@ ko.bindingHandlers.maxNewLines = {
         }
     }
 }
+
+ko.bindingHandlers.resizable = {
+    init: function (element, valueAccessor) {
+        if (Object.hasOwn(window, 'jQuery')) {
+            var options = ko.unwrap(valueAccessor());
+            window.jQuery(element).resizable(options);
+        }
+    },
+    update: function (element, valueAccessor, allBindingsAccessor) {
+
+    }
+}

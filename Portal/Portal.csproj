@@ -586,6 +586,8 @@
     <Compile Include="Areas\Fenwick\ViewModels\FenwickInvoicingViewModel.cs" />
     <Compile Include="Areas\Invoices\Controllers\InvoiceBookingApiController.cs" />
     <Compile Include="Areas\Invoices\Controllers\InvoiceBookingController.cs" />
+    <Compile Include="Areas\Invoices\Models\PassEmailMessageID.cs" />
+    <Compile Include="Areas\Invoices\Models\PassMailboxFolderParams.cs" />
     <Compile Include="Areas\Invoices\ViewModels\InvoiceBookingViewModel.cs" />
     <Compile Include="Areas\Marketing\Controllers\MarketingBudgetController.cs" />
     <Compile Include="Areas\Marketing\Controllers\MarketingBudgetAPIController.cs" />
@@ -650,9 +652,11 @@
     <Compile Include="Areas\Stock\Models\SalesHistoryDataSourceResult.cs" />
     <Compile Include="Areas\Stock\ViewModels\RangeManagementViewModel.cs" />
     <Compile Include="Areas\Stock\ViewModels\StockManagementViewModel.cs" />
+    <Compile Include="Controllers\IncomingEmailAttachmentController.cs" />
     <Compile Include="Controllers\ODataControllers\AttributesController.cs" />
     <Compile Include="Controllers\ODataControllers\AttributeGroupsController.cs" />
     <Compile Include="Controllers\ODataControllers\DeliveryTypesController.cs" />
+    <Compile Include="Controllers\ODataControllers\AttachmentTypesController.cs" />
     <Compile Include="Controllers\ODataControllers\MertexTradeAccountClassificationSuperSetController.cs" />
     <Compile Include="Controllers\ODataControllers\Mertex_OperatorsController.cs" />
     <Compile Include="Controllers\ODataControllers\GiftVouchersController.cs" />
@@ -1296,6 +1300,7 @@
     <Content Include="css\dist\lib\codemirror\codemirror.min.css" />
     <Content Include="css\dist\lib\intl-tel-input\intl-tel-input.css" />
     <Content Include="css\dist\lib\intl-tel-input\intl-tel-input.min.css" />
+    <Content Include="css\dist\lib\jquery-ui\images\ui-icons_444444_256x240.png" />
     <Content Include="css\dist\lib\jquery-ui\jquery-ui.css" />
     <Content Include="css\dist\lib\jquery-ui\jquery-ui.min.css" />
     <Content Include="css\dist\lib\kendo\custom\kendo-custom.css" />
@@ -1728,6 +1733,10 @@
     <Content Include="js\src\models\email-contacts.js" />
     <Content Include="js\src\models\emailer.js" />
     <Content Include="js\src\models\extensions.js" />
+    <Content Include="js\src\models\invoice-booking-email-attachment.js" />
+    <Content Include="js\src\models\invoice-booking-email-credit-note.js" />
+    <Content Include="js\src\models\invoice-booking-email-invoice.js" />
+    <Content Include="js\src\models\invoice-booking-email.js" />
     <Content Include="js\src\models\invoice-booking.js" />
     <Content Include="js\src\models\marylebone-boxing.js" />
     <Content Include="js\src\models\fenwick-invoicing.js" />
@@ -6494,6 +6503,7 @@
     <Folder Include="Views\BaseOData\" />
     <Folder Include="Views\ForceAuth\" />
     <Folder Include="Views\HeldOrderAPI\" />
+    <Folder Include="Views\IncomingEmailAttachment\" />
     <Folder Include="Views\Members\" />
     <Folder Include="Views\PaintMixing\" />
     <Folder Include="Views\PricingOData\" />

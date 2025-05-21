@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using Newtonsoft.Json;
+
 namespace SharedEFClasses.Models.IncomingEmail
 {
     [Table("Email", Schema = "IncomingEmail")]
@@ -11,38 +13,46 @@ namespace SharedEFClasses.Models.IncomingEmail
         [Key]
         public long EmailID { get; set; }
 
-        [StringLength(998)]
-        public string MessageUUID { get; set; }
+        [StringLength(200)]
+        public string EmailMessageID { get; set; }
 
         public int MailboxID { get; set; }
 
-        [StringLength(256)]
-        public string From { get; set; }
+        [StringLength(254)]
+        public string FromEmail { get; set; }
 
-        public string Header { get; set; }
+        [StringLength(100)]
+        public string FromName { get; set; }
 
-        public string Contents { get; set; }
+        [StringLength(200)]
+        public string Subject { get; set; }
 
-        public DateTime RecievedDT { get; set; }
+        public DateTime ReceivedDT { get; set; }
 
         public DateTime CreatedDT { get; set; }
 
-        public DateTime ModifiedDT { get; set; }
+        public DateTime? ModifiedDT { get; set; }
 
         public DateTime? DeletedDT { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public int Deleted { get; set; }
+        public bool Deleted { get; set; }
 
         public DateTime? ProcessedDT { get; set; }
 
-        public int Processed { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public bool Processed { get; set; }
 
         public int? ProcessedMemberID { get; set; }
 
         [StringLength(50)]
         public string SupplierCode { get; set; }
 
+        public int? InlineAttachmentCount { get; set; }
+
+        public int? RegularAttachmentCount { get; set; }
+
+        [JsonIgnore]
         [ForeignKey("MailboxID")]
         [InverseProperty("Emails")]
         public virtual Mailbox Mailbox { get; set; }

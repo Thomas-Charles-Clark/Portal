@@ -28,6 +28,7 @@ using DocumentFormat.OpenXml.EMMA;
 using SharedEFClasses.Models.Mertex;
 using SharedEFClasses.Models.Parcel;
 using SharedEFClasses.Models.Orders;
+using SharedEFClasses.Models.IncomingEmail;
 
 namespace Portal
 {
@@ -56,6 +57,7 @@ namespace Portal
 
             odataBuilder.EntitySet<Country>("Countries");
             odataBuilder.EntitySet<Application>("Applications");
+            odataBuilder.EntitySet<AttachmentType>("AttachmentTypes");
             odataBuilder.EntitySet<Attribute>("Attributes");
             odataBuilder.EntitySet<AttributeGroup>("AttributeGroups");
             odataBuilder.EntitySet<Language>("Languages");
@@ -155,6 +157,13 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(OrderBookGrouped)).AddProperty(typeof(OrderBookGrouped).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(OrderTaker)).AddProperty(typeof(OrderTaker).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_DeliveryType)).AddProperty(typeof(Mertex_DeliveryType).GetProperty("ShortLabel"));
+
+            var attachmentTypeValueMapperFunction = odataBuilder.EntityType<AttachmentType>()
+                .Collection
+                .Function("AttachmentTypeValueMapper")
+                .ReturnsCollectionFromEntitySet<AttachmentType>("AttachmentTypes");
+
+            attachmentTypeValueMapperFunction.Parameter<short?>("attachmentTypeId");
 
             var holdReasonValueMapperFunction = odataBuilder.EntityType<HoldReason>()
                 .Collection

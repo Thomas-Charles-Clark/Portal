@@ -311,24 +311,7 @@
                     My Leads
                 </a>
             </li>
-            @if (new List<int>() { 2, 8, 18,
-                                        28871,
-                                        566864,
-                                        236869,
-                                        43438,
-                                        34850,
-                                        1395354,
-                                        1400730,
-                                        504020, // Sophie Martin
-                                        1510502, // Becky Snow
-                                        1299294, // Frida Skoglund
-                                        566786,
-                                        69247,
-                                        1449447,
-                                        1400809,    // Alexandra Harvey
-                                        1583702,    // Lena Eriksson
-                                        1583444,    // Eva Ehlin
-                                        }.Contains(User.Identity.GetUserId<int>()))
+            @if (User.IsInRole("Leads - My Customers") || User.IsInRole("Super Admin"))
             {
                 <li role="presentation">
                     <a href="#my-customers" aria-controls="My Customers" role="tab" data-toggle="tab">

@@ -918,6 +918,10 @@ namespace Portal
             bundles.Add(new ScriptBundle("~/bundles/js/invoice-booking").Include(
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/invoice-booking-email{jsSuffix}",
+                        $"{jsPrefix}/models/invoice-booking-email-attachment{jsSuffix}",
+                        $"{jsPrefix}/models/invoice-booking-email-invoice{jsSuffix}",
+                        $"{jsPrefix}/models/invoice-booking-email-credit-note{jsSuffix}",
                         $"{jsPrefix}/models/invoice-booking{jsSuffix}"
                 ));
 

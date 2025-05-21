@@ -3,8 +3,12 @@ using Portal.Areas.Invoices.ViewModels;
 using Portal.Utilities.DynamicRoles;
 using SharedEFClasses;
 using SharedEFClasses.Models;
+using SimpleImpersonation;
+
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 
 namespace Portal.Areas.Invoices.Controllers
@@ -27,7 +31,9 @@ namespace Portal.Areas.Invoices.Controllers
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
-            var model = await InvoiceBookingViewModel.CreateAsync(user.GetActiveRoleProperties(), 
+            var model = await InvoiceBookingViewModel.CreateAsync(
+                1,
+                user.GetActiveRoleProperties(), 
                 application.Heading, 
                 application.SubHeading);
 

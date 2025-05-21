@@ -8,7 +8,7 @@ using SharedEFClasses.Models.TradeAccounts;
 namespace SharedEFClasses.Models.Fenwick
 {
     [Table("Invoice", Schema = "Fenwicks")]
-    public partial class Invoice
+    public partial class FenwickInvoice
     {
         [Key]
         public long InvoiceID { get; set; }

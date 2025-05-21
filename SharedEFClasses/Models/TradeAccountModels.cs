@@ -335,7 +335,7 @@ namespace SharedEFClasses.Models.TradeAccounts
 
         [JsonIgnore]
         [InverseProperty("TradeAccount")]
-        public virtual ICollection<Fenwick.Invoice> FenwickInvoices { get; set; }
+        public virtual ICollection<Fenwick.FenwickInvoice> FenwickInvoices { get; set; }
     }
     
     [Table("TradeAccountAddress_Tag", Schema = "dbo")]

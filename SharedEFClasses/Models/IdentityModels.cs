@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using SharedEFClasses.Models.Applications;
 using SharedEFClasses.Models.DotDigital;
 using SharedEFClasses.Models.General;
+using SharedEFClasses.Models.IncomingEmail;
 using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Products;
@@ -288,7 +289,15 @@ namespace SharedEFClasses.Models
         [JsonIgnore]
         [InverseProperty("RedeemedByMember")]
         public virtual ICollection<GiftVoucher> GiftVouchersRedeemed { get; set; }
-        
+
+        [JsonIgnore]
+        [InverseProperty("ParsedBy")]
+        public virtual ICollection<Attachment> IncomingEmailAttachmentsParsed { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("LastModifiedByMember")]
+        public virtual ICollection<EmailInvoice> IncomingEmailInvoicesModified { get; set; } 
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType

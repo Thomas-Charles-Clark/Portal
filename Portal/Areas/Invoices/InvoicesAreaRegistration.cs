@@ -19,9 +19,15 @@ namespace Portal.Areas.Documents
         public override void RegisterArea(AreaRegistrationContext context)
         {
             context.MapRoute(
+                "Invoices_Attachments",
+                "invoices/{controller}/{action}/{placement}/{emailId}/{fileName}",
+                new { action = "Index" }
+            );
+
+            context.MapRoute(
                 "Invoices_default",
-                "invoices/{controller}/{action}/{id}",
-                new { action = "Index", id = UrlParameter.Optional }
+                "invoices/{controller}/{action}",
+                new { action = "Index" }
             );
         }
     }

@@ -40,5 +40,8 @@ namespace SharedEFClasses.Models.IncomingEmail
 
         [InverseProperty("Mailbox")]
         public virtual ICollection<Email> Emails { get; set; }
+
+        [InverseProperty("Mailbox")]
+        public virtual ICollection<MailboxFolder> MailboxFolders { get; set; }
     }
 }

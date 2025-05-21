@@ -51,7 +51,7 @@ namespace SharedEFClasses.Models.Fenwick
 
         [JsonIgnore]
         [InverseProperty("Branch")]
-        public virtual ICollection<Invoice> Invoices { get; set; }
+        public virtual ICollection<FenwickInvoice> Invoices { get; set; }
 
         [JsonIgnore]
         [ForeignKey("ModifiedMemberID")]

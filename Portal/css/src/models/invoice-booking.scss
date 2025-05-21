@@ -1,2 +1,200 @@
 ﻿@import "./common.scss";
 
+#email-list {
+    margin-bottom: $l-gutter;
+
+    .email-stub {
+        cursor: pointer;
+
+        td {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        td:last-of-type {
+            border-right: 1px solid $gray-400;
+        }
+    }
+
+    tr:last-of-type {
+        td {
+            border-bottom: 0;
+        }
+    }
+
+    .k-grid-pager {
+        border-bottom-width: 0;
+    }
+}
+
+#email-viewer {
+    #email-frame {
+        img {
+            max-width: 100% !important;
+            height: auto !important;
+        }
+    }
+}
+
+.k-grid-header {
+    th {
+        &.k-header {
+            > .k-link {
+                line-height: 2;
+            }
+        }
+    }
+}
+
+#attachments-container {
+    .card-body {
+
+        #attachment-viewer {
+            display: flex;
+            gap: $l-gutter;
+
+            #attachment-iframe-wrapper {
+                --bs-aspect-ratio: 75%;
+                border: 1px solid $gray-300;
+            }
+
+            #attachment-frame {
+
+            }
+
+            #attachment-properties {
+                .attachment-property {
+                    width: 240px;
+                
+                    & + .attachment-property {
+                        margin-top: $l-gutter;
+                    }    
+                }
+            }
+        }
+
+        #attachments-list {
+            position: relative;
+            gap: $m-gutter;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            max-height: 128px;
+            margin-bottom: $l-gutter;
+
+            &.over {
+                box-shadow: $btn-focus-box-shadow;
+            }
+
+            .mdc-floating-label {
+                position: absolute;
+                left: 12px;
+                top: 12px;
+                color: $gray-300;
+            }
+
+            .attachment {
+                display: flex;
+                align-items: center;
+                gap: $vsm-gutter;
+                flex: 0;
+                align-self: flex-start;
+                padding: $xs-gutter;
+                padding-right: $m-gutter;
+                background-color: $white;
+                cursor: pointer;
+                border: 1px solid $gray-300;
+
+                &:nth-of-type(odd) {
+                    background-color: $gray-100;
+                }
+
+                &:hover {
+                    background-color: tint-color($blue-200, 75%);
+
+                    &:nth-of-type(odd) {
+                        background-color: tint-color($blue-200, 75%);
+                    }
+                }
+
+                &.selected {
+                    border-color: $blue-900;
+                    background-color: $blue-700;
+                    color: $white;
+
+                    &:hover {
+                        border-color: $blue-900;
+                        background-color: $blue-700;
+                        color: $white;
+
+                        &:nth-of-type(odd) {
+                            border-color: $blue-900;
+                            background-color: $blue-700;
+                            color: $white;
+                        }
+                    }
+                }
+
+
+                & + .attachment {
+                    border-top: 1px solid $gray-300
+                }
+
+                .k-icon {
+                    font-size: 3em;
+
+                    &::before {
+                        position: relative;
+                        top: 1px;
+                    }
+                }
+
+                .attachment-properties {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    flex: 1;
+                    overflow-x: hidden;
+
+                    label {
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                        overflow-x: hidden;
+                        display: inline-block;
+                    }
+
+                    > * {
+                        margin: 0;
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+.properties-title {
+
+}
+
+.dispute-checkbox {
+
+    .mdc-checkbox::before,
+    .mdc-checkbox::after,
+    .mdc-checkbox.mdc-checkbox--selected::before,
+    .mdc-checkbox.mdc-checkbox--selected::after {
+        background-color: $mdc-theme-error;
+    }
+
+    .mdc-checkbox {
+        .mdc-checkbox__native-control:checked ~ .mdc-checkbox__background::before {
+            border-color: shade-color($mdc-theme-error, 20%);
+            background-color: $mdc-theme-error;
+        }
+
+        .mdc-checkbox__native-control:enabled ~ .mdc-checkbox__background {
+            border-color: shade-color($mdc-theme-error, 20%);
+            background-color: $mdc-theme-error;
+        }
+    }
+}

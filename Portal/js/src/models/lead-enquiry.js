@@ -2782,49 +2782,12 @@ This customer wishes their deliveries to be consolidated. Please double check th
                     If you're absolutely sure you can click Yes to proceed. If not, please click No and make any changes you deem necessary.
                     </p>
                 `, () => {
-                    //if (self.salesMarket().Code == 'T') { // Italy
-                    //    if (getUserId() != 548350 && getUserId() != 8) { // not Conchita or myself
-                    //        $("#market-manager-modal").modal('show');
-                    //    } else {
-                    //        $('#credit-controller-modal').modal('show');
-                    //    }
-                    //}
-                    //else if (self.salesMarket().Code == 'P') { // Spain
-                    //    if (getUserId() != 5471 && getUserId() != 8) { // not Fatima or myself
-                    //        $("#market-manager-modal").modal('show');
-                    //    } else {
-                    //        $('#credit-controller-modal').modal('show');
-                    //    }
-                    //}
-                    //else {
-                        $('#credit-controller-modal').modal('show');
-                    //}
+                    $('#credit-controller-modal').modal('show');
                 }, null);
                 return;
             }
-            // now we need to do some magic to prevent Italy and Spain
-            // from going to Credit Control
-            // if the current user is NOT Fatima or Conchita, 
-            // we need to present with a different modal and inform the user
-            // that the lead has been assigned to the market manager for approval.
-
-            //if (self.salesMarket().Code == 'T') { // Italy
-            //    if (getUserId() != 548350 && getUserId() != 8) { // not Conchita or myself
-            //        $("#market-manager-modal").modal('show');
-            //    } else {
-            //        $('#credit-controller-modal').modal('show');
-            //    }
-            //}
-            //else if (self.salesMarket().Code == 'P') { // Spain
-            //    if (getUserId() != 5471 && getUserId() != 8) { // not Fatima or myself
-            //        $("#market-manager-modal").modal('show');
-            //    } else {
-            //        $('#credit-controller-modal').modal('show');
-            //    }
-            //}
-            //else {
-                $('#credit-controller-modal').modal('show');
-            //}
+                
+            $('#credit-controller-modal').modal('show');
         }
     }
 

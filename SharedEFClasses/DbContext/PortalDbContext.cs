@@ -569,7 +569,7 @@ namespace SharedEFClasses.Models
 
         public DbSet<SelfBillInvoice> FenwickSelfBillInvoices { get; set; }
 
-        public DbSet<Invoice> FenwickInvoices { get; set; }
+        public DbSet<Fenwick.FenwickInvoice> FenwickInvoices { get; set; }
 
         public DbSet<InvoiceFile> FenwickInvoiceFiles { get; set; }
 
@@ -601,9 +601,11 @@ namespace SharedEFClasses.Models
         public virtual DbSet<Attachment> Attachments { get; set; }
         public virtual DbSet<AttachmentType> AttachmentTypes { get; set; }
         public virtual DbSet<Domain_SupplierCode_Map> Domain_SupplierCode_Maps { get; set; }
-        public virtual DbSet<Email> Emails { get; set; }
+        public virtual DbSet<Email> EmailStubs { get; set; }
         public virtual DbSet<Mailbox> Mailboxes { get; set; }
+        public virtual DbSet<MailboxFolder> MailboxFolders { get; set; }
         public virtual DbSet<MailboxFunction> MailboxFunctions { get; set; }
+        public virtual DbSet<IncomingEmail.EmailInvoice> EmailInvoices { get; set; }
 
         #endregion
 

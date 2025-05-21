@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using Newtonsoft.Json;
+
 namespace SharedEFClasses.Models.IncomingEmail
 {
     [Table("AttachmentType", Schema = "IncomingEmail")]
@@ -16,9 +18,8 @@ namespace SharedEFClasses.Models.IncomingEmail
 
         public bool ParsingRequired { get; set; }
 
-        public string ParsingDataRequrements { get; set; }
-
-        [InverseProperty("AttachementType")]
+        [JsonIgnore]
+        [InverseProperty("AttachmentType")]
         public virtual ICollection<Attachment> Attachments { get; set; }
     }
 }

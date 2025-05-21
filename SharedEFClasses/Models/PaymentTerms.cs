@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using SharedEFClasses.Models.IncomingEmail;
 
 namespace SharedEFClasses.Models
 {
@@ -44,6 +45,10 @@ namespace SharedEFClasses.Models
         [JsonIgnore]
         [InverseProperty("PaymentTerms")]
         public virtual ICollection<MertexTradeAccountClassificationSuperSet> MertexTradeAccountClassificationSuperSetRecords { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("PaymentTerms")]
+        public virtual ICollection<EmailInvoice> IncomingEmailInvoices { get; set; }
 
         [NotMapped]
         public string Label

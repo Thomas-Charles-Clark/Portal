@@ -18,12 +18,56 @@
     @Scripts.Render("~/bundles/js/tempus-dominus")
 
     <script type="text/javascript">
+        window.getMailboxId = () => {
+            return @Html.Raw(Model.MailboxID);
+        }
+    </script>
 
+    <script type="text/html" id="email-stub-row-template">
+        <tr class="email-stub" data-bind="attr: { title: `Email ID: ${EmailID}` }">
+            <td>
+                <span data-bind="html: fromDisplay"></span>
+            </td>
+            <td>
+                <span data-bind="html: Subject"></span>
+            </td>
+            <td>
+                <span data-bind="html: moment(ReceivedDT).format('DD/MM/YYYY HH:mm')"
+            </td>
+            <td class="text-center">
+                <span data-bind="html: attachmentDisplay"></span>
+            </td>
+        </tr>
+    </script>
+
+    <script type="text/html" id="invoice-booking-invoice-template">
+        <h5 class="properties-title">
+            Properties
+        </h5>
+        <div class="attachment-property" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+        <div class="attachment-property" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: invoiceDateParams }"></div>
+        <div class="attachment-property" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsParams }"></div>
+        <div class="attachment-property" data-bind="component: { name: 'mdc-text-field-numeric-component', params: totalIncVATCurrencyParams }"></div>
+        <div class="attachment-property dispute-checkbox" data-bind="component: { name: 'mdc-checkbox-component', params: disputeParams }"></div>
+        <h5 class="my-3 hr fs-5">
+            (Not yet completed)
+        </h5>
+    </script>
+
+    <script type="text/html" id="invoice-booking-credit-note-template">
+        <h5>
+            Credit Note Properties
+        </h5>
+        <h5 class="mt-2">
+            Not yet implemented
+        </h5>
     </script>
 
     <script type="text/javascript">
 
-        var viewModel = giftVouchersViewModel();
+        var viewModel = invoiceBookingViewModel({
+            mailboxId: getMailboxId()
+        });
 
         var vm = viewModel;
 
@@ -39,7 +83,11 @@
 
         window.self = viewModel;
 
-        viewModel.init();
+        // let the engine cycle so bindings are evaluated before
+        window.setTimeout(() => {
+            viewModel.init();
+
+        }, 0);
 
     </script>
 }
@@ -69,5 +117,60 @@
                 </h4>
             }
         </div>
+    </div>
+</div>
+
+<div id="inbox-browser">
+    <div id="email-list" data-bind="kendoGrid: mailboxGridParams"></div>
+</div>
+
+<div style="display: none" data-bind="visible: loadedEmail, with: loadedEmail">
+    <div class="card mb-3">
+        <div class="card-body">
+            <h4 class="mb-4 d-flex justify-content-between align-items-center">
+                <span data-bind="html: Subject"></span>
+                <span data-bind="html: moment(ReceivedDT).format('DD/MM/YYYY HH:mm')"></span>
+            </h4>
+            <h5 class="mb-0 d-flex justify-content-between align-items-center">
+                <a data-bind="attr: { href: `mailto:${FromEmail}` }, text: (FromName == FromEmail ? FromName : `${FromName} - ${FromEmail}`)"></a>
+                <span class="text-white" data-bind="text: `EmailID: ${EmailID}`"></span>
+            </h5>
+        </div>
+    </div>
+    <div id="attachments-container" class="card mb-3">
+        <div class="card-body">
+            <ul id="attachments-list" class="list-unstyled mb-3" , data-bind="css: { 'mb-3': regularAttachments().length > 0, 'mb-2': regularAttachments().length == 0 }">
+                <!-- ko foreach: regularAttachments -->
+                <li class="attachment" data-bind="click: (data, event) => { $parent.selectedAttachment(data) }, css: { 'selected': $parent.selectedAttachment() == $data  }">
+                    <span class="k-icon" data-bind="class: $parent.kendoIconClass($data)"></span>
+                    <div class="attachment-properties">
+                        <label data-bind="html: FileName, attr: { title: FileName }"></label>
+                        <span data-bind="text: FileSizeDisplay"></span>
+                    </div>
+                </li>
+                <!-- /ko -->
+                <!-- ko if: regularAttachments().length == 0 -->
+                <li>
+                    <h4 class="mt-3">
+                        No Attachments
+                    </h4>
+                </li>
+                <!-- /ko -->
+            </ul>
+            <div id="attachment-viewer" style="display: none;" data-bind="visible: selectedAttachment, with: selectedAttachment">
+                <div id="attachment-iframe-wrapper" class="ratio">
+                    <iframe id="attachment-frame" data-bind="attr: { src: src }"></iframe>
+                </div>
+                <div id="attachment-properties">
+                    <div class="attachment-property" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: attachmentTypeParams }"></div>
+                    <!-- ko if: properties -->
+                    <div class="mt-3" data-bind="template: { name: propertiesTemplateName, data: properties }"></div>
+                    <!-- /ko -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="email-viewer" class="card">
+        <div id="email-frame" class="card-body" data-bind="html: Body"></div>
     </div>
 </div>
