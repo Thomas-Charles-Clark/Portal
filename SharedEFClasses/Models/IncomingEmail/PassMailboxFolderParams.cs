@@ -1,0 +1,22 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using Kendo.Mvc.UI;
+
+namespace SharedEFClasses.Models.IncomingEmail
+{
+    public class PassMailboxFolderParams
+    {
+        public int MailboxID { get; set; }
+        public string MailboxFolderID { get; set; }
+        public short? DepartmentID { get; set; }
+        public string BudgetHolderCode { get; set; }
+        public byte? DateRangeID { get; set; }
+        public DateTime? FromDT { get; set; }
+        public DateTime? ToDT { get; set; }
+        public bool? HasAttachments { get; set; }
+    }
+}

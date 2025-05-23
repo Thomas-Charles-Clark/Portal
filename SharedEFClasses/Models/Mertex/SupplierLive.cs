@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
 
+using SharedEFClasses.Models.IncomingEmail;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -68,5 +70,13 @@ namespace SharedEFClasses.Models.MertexLive
         [JsonIgnore]
         [InverseProperty("SupplierCodeNavigation")]
         public virtual ICollection<PurchasePrice> PurchasePrices { get; set; } = new List<PurchasePrice>();
+        
+        [JsonIgnore]
+        [InverseProperty("Supplier")]
+        public virtual ICollection<BudgetHolderSuperSet> BudgetHolderSuperSetRecords { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("Supplier")]
+        public virtual ICollection<Email> IncomingInvoiceEmails { get; set; }
     }
 }

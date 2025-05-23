@@ -5,6 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 using Newtonsoft.Json;
 
+using SharedEFClasses.Models.MertexLive;
+
 namespace SharedEFClasses.Models.IncomingEmail
 {
     [Table("Email", Schema = "IncomingEmail")]
@@ -52,6 +54,8 @@ namespace SharedEFClasses.Models.IncomingEmail
 
         public int? RegularAttachmentCount { get; set; }
 
+        public byte? EmailStatusID { get; set; }
+
         [JsonIgnore]
         [ForeignKey("MailboxID")]
         [InverseProperty("Emails")]
@@ -59,5 +63,11 @@ namespace SharedEFClasses.Models.IncomingEmail
 
         [InverseProperty("Email")]
         public virtual ICollection<Attachment> Attachments { get; set; }
+
+        [ForeignKey("EmailStatusID")]
+        public virtual EmailStatus EmailStatus { get; set; }
+
+        [ForeignKey("SupplierCode")]
+        public virtual SupplierLive Supplier { get; set; }
     }
 }

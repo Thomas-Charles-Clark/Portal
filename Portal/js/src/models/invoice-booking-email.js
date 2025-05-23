@@ -1,4 +1,5 @@
 ﻿const invoiceBookingEmailViewModel = ({
+    parent,
     rec,
     attachments
 } = {
@@ -6,7 +7,8 @@
 }) => {
 
     let self = Object.assign(rec, {
-
+        busy: parent.busy,
+        //dashboard: parent.dashboard
     });
 
     //#region Properties
@@ -16,6 +18,8 @@
     })));
 
     self.selectedAttachment = ko.observable(self.attachments().filter(a => a.IsInline == false).length ? self.attachments().filter(a => a.IsInline == false)[0] : undefined);
+
+    self.noAttachments = !self.HasNonInlineAttachments;
 
     //#endregion
 
@@ -86,6 +90,45 @@
             default:
                 return 'k-i-file';
         }
+    }
+
+    self.flag = (state) => {
+        window.showConfirm('Are you sure?', `This will mark this email as being ${state}.`, () => {
+            self.busy(true);
+
+            let data = {
+                emailId: self.EmailID,
+                state: state
+            }
+
+            fetch('/api/InvoiceBookingAPI/Flag', {
+                method: 'POST',
+                cache: 'no-cache',
+                credentials: 'same-origin',
+                headers: window.fetchHeaders,
+                body: JSON.stringify(data)
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    console.log('flagProcessed returned', data);
+                    self.busy(false);
+                    //self.dashboard.fetch();
+                    //self.mailboxGridParams.widget().dataSource.read();
+                })
+                .catch(err => {
+                    self.busy(false);
+                    window.catchFetchError(err);
+                })
+
+        }, null);
+    }
+
+    self.flagProcessed = () => {
+        self.flag('Processed');
+    }
+
+    self.flagJunk = () => {
+        self.flag('Junk');
     }
 
     //#endregion

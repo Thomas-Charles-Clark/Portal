@@ -8,6 +8,8 @@ using SharedEFClasses.Models.DotDigital;
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.IncomingEmail;
 using SharedEFClasses.Models.Leads;
+using SharedEFClasses.Models.Mertex;
+using SharedEFClasses.Models.MertexLive;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.Retail;
@@ -296,7 +298,11 @@ namespace SharedEFClasses.Models
 
         [JsonIgnore]
         [InverseProperty("LastModifiedByMember")]
-        public virtual ICollection<EmailInvoice> IncomingEmailInvoicesModified { get; set; } 
+        public virtual ICollection<EmailInvoice> IncomingEmailInvoicesModified { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("Member")]
+        public virtual ICollection<BudgetHolder> BudgetHolderRecords { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
         {

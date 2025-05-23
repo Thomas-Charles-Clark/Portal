@@ -27,10 +27,42 @@ const invoiceBookingViewModel = ({
 
     //#region Lifted Bits
 
+    self.getParameters = () => {
+        let data = {
+            mailboxId: self.mailboxId
+        }
+
+        data = Object.assign({
+            departmentId: self.filters.departmentId() ?? null,
+            emailStatusId: self.filters.emailStatusId() ?? null,
+            fromDate: typeof self.filters.fromDate() == 'object' ? self.filters.fromDate().toUTCString() : self.filters.fromDate(),
+            toDate: typeof self.filters.toDate() == 'object' ? self.filters.toDate().toUTCString() : self.filters.toDate(),
+            dateRangeId: self.filters.dateRangeId() ?? null
+        }, data);
+
+        if (self.filters.budgetHolderCode()) {
+            data.budgetHolderCode = self.filters.budgetHolderCode()
+        }
+
+        if (self.filters.supplierCode()) {
+            data.supplierCode = self.filters.supplierCode()
+        }
+
+        return data;
+    }
+
     //#endregion
 
 
     //#region Components
+
+    self.filters = invoiceBookingFiltersViewModel({
+        parent: self
+    });
+
+    self.dashboard = invoiceBookingDashboardViewModel({
+        parent: self
+    });
 
     self.mailboxFoldersTreeViewParams = {
         widget: ko.observable(),
@@ -52,7 +84,7 @@ const invoiceBookingViewModel = ({
                     }
 
                     fetch('/api/InvoiceBookingAPI/InvoiceMailboxFolders', {
-                        method: 'POST',
+                        method: 'GET',
                         cache: 'no-cache',
                         headers: window.fetchHeaders,
                         body: JSON.stringify(data)
@@ -96,7 +128,14 @@ const invoiceBookingViewModel = ({
         }, {
             field: 'ReceivedDT',
             title: 'Received',
-            width: 132 
+            width: 160
+        }, {
+            title: 'Supplier',
+            field: 'SupplierCode',
+            width: 300,
+            filterable: {
+                extra: false
+            }
         }, {
             field: 'RegularAttachmentCount',
             title: 'Attachments',
@@ -110,9 +149,7 @@ const invoiceBookingViewModel = ({
             transport: {
                 read: (options) => {
 
-                    let data = {
-                        mailboxId: self.mailboxId
-                    }
+                    let data = self.getParameters();
 
                     var webapi = new kendo.data.transports.webapi({ prefix: "" });
                     var params = webapi.parameterMap(options.data);
@@ -121,15 +158,21 @@ const invoiceBookingViewModel = ({
                         data[propertyName] = params[propertyName];
                     }
 
-                    fetch('/api/InvoiceBookingAPI/MailboxGrid', {
-                        method: 'POST',
+                    var params = new URLSearchParams();
+
+                    for (var propertyName in data) {
+                        params.append(propertyName, data[propertyName]);
+                    }
+
+                    fetch('/api/InvoiceBookingAPI/MailboxGrid?' + params, {
+                        method: 'GET',
                         cache: 'no-cache',
-                        headers: window.fetchHeaders,
-                        body: JSON.stringify(data)
+                        headers: window.fetchHeaders
                     })
                         .then(window.handleFetchResponse)
                         .then(data => {
                             data.Data = data.Data.map(d => invoiceBookingEmailViewModel({
+                                parent: self,
                                 rec: d
                             }));
                             options.success(data);
@@ -159,7 +202,15 @@ const invoiceBookingViewModel = ({
                         ProcessedDT: { type: 'datetime', editable: false },
                         Processed: { type: 'boolean', editable: false },
                         ProcessedMemberID: { type: 'number', editable: false },
-                        SupplierCode: { type: 'string', editable: false }
+                        SupplierCode: { type: 'string', editable: false },
+                        EmailStatusID: { type: 'number', editable: false },
+                        Supplier: {
+                            type: 'object',
+                            fields: {
+                                Code: { type: 'string', editable: false },
+                                Name: { type: 'number', editable: false }
+                            }
+                        }
                     }
                 }
             }),
@@ -212,10 +263,33 @@ const invoiceBookingViewModel = ({
 
     //#region Subscriptions
 
+    self.filters.hasAttachments.subscribe(nv => {
+        switch (nv) {
+            case true:
+                self.mailboxGridParams.widget().dataSource.filter({
+                    field: "RegularAttachmentCount",
+                    operator: "gt",
+                    value: 0
+                });
+                break;
+            case false:
+                self.mailboxGridParams.widget().dataSource.filter({
+                    field: "RegularAttachmentCount",
+                    operator: "eq",
+                    value: 0
+                });
+                break;
+            default:
+                self.mailboxGridParams.widget().dataSource.filter([]);
+                break;
+        }
+    });
+
     //#endregion
 
 
     //#region Methods
+
 
     self.loadEmail = (stub) => {
         self.busy(true);
@@ -233,6 +307,7 @@ const invoiceBookingViewModel = ({
             .then(window.handleFetchResponse)
             .then(data => {
                 self.loadedEmail(invoiceBookingEmailViewModel({
+                    parent: self,
                     rec: data.message,
                     attachments: data.attachments
                 }));

@@ -129,6 +129,11 @@ namespace Portal
             odataBuilder.EntitySet<PurchasingRecommendation>("PurchasingRecommendations");
             odataBuilder.EntitySet<HoldReason>("HoldReason");
             odataBuilder.EntitySet<ProductLifeCycle>("ProductLifeCycle");
+            odataBuilder.EntitySet<Department>("Departments");
+            odataBuilder.EntitySet<BudgetHolder>("BudgetHolders");
+            odataBuilder.EntitySet<EmailStatus>("EmailStatuses");
+
+            odataBuilder.EntitySet<BudgetHolderSuperSet>("BudgetHolderSuperSet");
 
             odataBuilder.EntitySet<MertexProductClassificationSuperSet>("MertexProductClassificationSuperSet");
 
@@ -202,6 +207,20 @@ namespace Portal
 
             priceListsValueMapperFunction.Parameter<byte>("priceListId");
 
+
+            var emailStatusValueMapperFunction = odataBuilder.EntityType<EmailStatus>()
+                .Collection
+                .Function("EmailStatusValueMapper")
+                .ReturnsCollectionFromEntitySet<EmailStatus>("EmailStatuses");
+
+            emailStatusValueMapperFunction.Parameter<byte>("emailStatusId");
+
+            var budgetHolderValueMapperFunction = odataBuilder.EntityType<BudgetHolder>()
+                .Collection
+                .Function("BudgetHolderValueMapper")
+                .ReturnsCollectionFromEntitySet<BudgetHolder>("BudgetHolders");
+
+            budgetHolderValueMapperFunction.Parameter<string>("code");
 
 
             var paymentTermsValueMapperFunction = odataBuilder.EntityType<PaymentTerms>()

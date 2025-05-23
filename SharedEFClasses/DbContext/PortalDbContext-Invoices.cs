@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+﻿using Dapper;
+
+using Microsoft.AspNet.Identity.EntityFramework;
 using SharedEFClasses.Models;
+using SharedEFClasses.Models.IncomingEmail;
 using SharedEFClasses.Utilities;
 using System;
 using System.Collections.Generic;
@@ -190,6 +193,13 @@ namespace SharedEFClasses.Models
             {
                 this.Database.Connection.Close();
             }
+
+            return result;
+        }
+
+        public async Task<IEnumerable<InvoiceBookingDashboard>> GetInvoiceBookingDashboard(PassInvoiceBookingDashboardParams dto)
+        {
+            var result = await this.Database.Connection.QueryAsync<InvoiceBookingDashboard>("[IncomingEmail].[Dashboard_Select]", dto, null, null, CommandType.StoredProcedure);
 
             return result;
         }

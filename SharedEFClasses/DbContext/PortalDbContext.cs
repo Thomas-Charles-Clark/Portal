@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 
+using SharedEFClasses.Models.ActiveDirectory;
 using SharedEFClasses.Models.Applications;
 using SharedEFClasses.Models.Attributes;
 using SharedEFClasses.Models.DotDigital;
@@ -430,6 +431,15 @@ namespace SharedEFClasses.Models
 
         public virtual DbSet<OrderBookRecord> OrderBooks { get; set; }
 
+        public virtual DbSet<MertexLive.BudgetHolder> BudgetHolders { get; set; }
+
+
+        #endregion
+
+        #region Active Directory
+
+        public virtual DbSet<ActiveDirectoryGroup> ActiveDirectoryGroups { get; set; }
+
         #endregion
 
 
@@ -596,7 +606,7 @@ namespace SharedEFClasses.Models
 
         #endregion
 
-        #region IncomingEmail
+        #region Incoming Email
 
         public virtual DbSet<Attachment> Attachments { get; set; }
         public virtual DbSet<AttachmentType> AttachmentTypes { get; set; }
@@ -605,7 +615,9 @@ namespace SharedEFClasses.Models
         public virtual DbSet<Mailbox> Mailboxes { get; set; }
         public virtual DbSet<MailboxFolder> MailboxFolders { get; set; }
         public virtual DbSet<MailboxFunction> MailboxFunctions { get; set; }
-        public virtual DbSet<IncomingEmail.EmailInvoice> EmailInvoices { get; set; }
+        public virtual DbSet<EmailInvoice> EmailInvoices { get; set; }
+        public virtual DbSet<BudgetHolderSuperSet> BudgetHolderSuperSet { get; set; }
+        public virtual DbSet<EmailStatus> EmailStatuses { get; set; }
 
         #endregion
 

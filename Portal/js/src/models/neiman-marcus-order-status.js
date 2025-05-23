@@ -54,8 +54,6 @@ const neimanMarcusOrderStatusViewModel = ({ } = {}) => {
 
     self.dateRangeId = ko.observable(6);
 
-    self.dateRangeType = ko.observable(1);
-
     self.dateRanges = dateRanges;
 
     self.fromDate.extend({

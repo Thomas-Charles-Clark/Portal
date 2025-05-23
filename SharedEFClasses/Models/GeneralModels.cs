@@ -44,46 +44,6 @@ namespace SharedEFClasses.Models.General
         public virtual Department Department { get; set; }
     }
 
-    public class Department
-    {
-        [Key]
-        public short DepartmentID { get; set; }
-
-        public byte LocationID { get; set; }
-
-        public string Name { get; set; }
-
-        public DateTime? DeletedDT { get; set; }
-
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public bool Deleted { get; set; }
-
-        [JsonIgnore]
-        [ForeignKey("LocationID")]
-        public virtual Location Location { get; set; }
-
-        //[JsonIgnore]
-        public virtual ICollection<Member_Department> Members { get; set; }
-
-        [NotMapped]
-        public string DropDownTreeLocationID
-        {
-            get
-            {
-                return $"Location-{LocationID}";
-            }
-        }
-
-        [NotMapped]
-        public string DropDownTreeDepartmentID
-        {
-            get
-            {
-                return $"Department-{DepartmentID}";
-            }
-        }
-    }
-
     [Table("Location", Schema = "portal")]
     public class Location
     {

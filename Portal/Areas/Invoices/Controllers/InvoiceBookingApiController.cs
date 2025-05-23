@@ -3,6 +3,7 @@ using Kendo.Mvc.UI;
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
 
+using Portal.Areas.Customers.Controllers;
 using Portal.Areas.Invoices.Models;
 using Portal.Models;
 using Portal.Utilities.Document;
@@ -10,6 +11,7 @@ using SharedEFClasses;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Components;
 using SharedEFClasses.Models.Documents;
+using SharedEFClasses.Models.IncomingEmail;
 using SharedEFClasses.Utilities;
 using System;
 using System.Collections.Generic;
@@ -38,13 +40,14 @@ namespace Portal.Areas.Invoices.Controllers
             this.PortalDb = portalDbContext;
         }
 
-        [HttpPost]
+        [HttpGet]
         public IHttpActionResult InvoiceMailboxFolders(
-            [DataSourceRequest] PassMailboxFolderParams request)
+            [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+            [DataSourceRequest] PassMailboxFolderParams dto)
         {
             var folders = PortalDb.MailboxFolders.Where(p => 
-                p.MailboxID == request.MailboxID && 
-                p.ParentMailboxFolderID == request.MailboxFolderID &&
+                p.MailboxID == dto.MailboxID && 
+                p.ParentMailboxFolderID == dto.MailboxFolderID &&
                 p.Deleted == false)
             .OrderBy(p => p.Name);
 
@@ -52,15 +55,26 @@ namespace Portal.Areas.Invoices.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult MailboxGrid(
-            [DataSourceRequest] PassMailboxFolderParams request)
+        public async Task<IHttpActionResult> Dashboard(
+            [FromBody] PassInvoiceBookingDashboardParams request)
+        {
+            var results = await PortalDb.GetInvoiceBookingDashboard(request);
+
+            return Ok(results);
+        }
+
+        [HttpGet]
+        public DataSourceResult MailboxGrid(
+            [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+            [FromUri] PassMailboxFolderParams dto)
         {
             var stubs = PortalDb.EmailStubs
+                .Include("Supplier")
                 .Where(p =>
-                    p.MailboxID == request.MailboxID &&
+                    p.MailboxID == dto.MailboxID &&
                     p.Deleted == false).AsQueryable();
 
-            return Ok(stubs.ToDataSourceResult(request));
+            return stubs.ToDataSourceResult(request);
         }
 
         [HttpPost]
@@ -95,6 +109,28 @@ namespace Portal.Areas.Invoices.Controllers
                 message,
                 attachments
             });
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> Flag(
+            [FromBody] PassInvoiceBookingFlagParams dto)
+        {
+            var email = PortalDb.EmailStubs.Single(e => e.EmailID == dto.EmailID);
+
+            switch (dto.State)
+            {
+                case "Processed":
+                    email.ProcessedDT = DateTime.Now;
+                    email.ProcessedMemberID = User.Identity.GetUserId<int>();
+                    break;
+                case "Junk":
+                    //email.EmailStatusID = 3;
+                    break;
+            }
+
+            PortalDb.SaveChanges();
+
+            return Ok(new { });
         }
     }
 }

@@ -375,6 +375,7 @@
     <Compile Include="DbContext\PortalDbContext-Product-Maintenance.cs" />
     <Compile Include="DbContext\PortalDbContext-OrderBook.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Models\ActiveDirectory\ActiveDirectoryGroup.cs" />
     <Compile Include="Models\ArchiveResponse.cs" />
     <Compile Include="Models\Attribute\Attribute.cs" />
     <Compile Include="Models\AttributeGroup\AttributeGroup.cs" />
@@ -394,6 +395,7 @@
     <Compile Include="Models\ContractPricing\ContractProductRestriction.cs" />
     <Compile Include="Models\CreditControlRegion.cs" />
     <Compile Include="Models\CreditControlRegion_SalesMarket.cs" />
+    <Compile Include="Models\Department.cs" />
     <Compile Include="Models\DotDigitalMemberControl.cs" />
     <Compile Include="Models\DotDigital\DotDigitalAccount.cs" />
     <Compile Include="Models\DotDigital\PassCreateContact.cs" />
@@ -417,15 +419,21 @@
     <Compile Include="Models\GiftVoucher_SelectResult.cs" />
     <Compile Include="Models\ImageDownloadTask.cs" />
     <Compile Include="Models\IncomingEmail\Attachment.cs" />
+    <Compile Include="Models\IncomingEmail\BudgetHolderSuperSet.cs" />
     <Compile Include="Models\IncomingEmail\EmailAttachment.cs" />
     <Compile Include="Models\IncomingEmail\AttachmentType.cs" />
     <Compile Include="Models\IncomingEmail\Domain_SupplierCode_Map.cs" />
     <Compile Include="Models\IncomingEmail\Email.cs" />
+    <Compile Include="Models\IncomingEmail\EmailStatus.cs" />
     <Compile Include="Models\IncomingEmail\FullEmail.cs" />
     <Compile Include="Models\IncomingEmail\EmailInvoice.cs" />
+    <Compile Include="Models\IncomingEmail\InvoiceBookingDashboard.cs" />
     <Compile Include="Models\IncomingEmail\Mailbox.cs" />
     <Compile Include="Models\IncomingEmail\MailboxFolder.cs" />
     <Compile Include="Models\IncomingEmail\MailboxFunction.cs" />
+    <Compile Include="Models\IncomingEmail\PassInvoiceBookingDashboardParams.cs" />
+    <Compile Include="Models\IncomingEmail\PassInvoiceBookingFlagParams.cs" />
+    <Compile Include="Models\IncomingEmail\PassMailboxFolderParams.cs" />
     <Compile Include="Models\InvoiceModels.cs" />
     <Compile Include="Models\DocumentModels.cs" />
     <Compile Include="Models\FurnitureModels.cs" />
@@ -460,6 +468,7 @@
     <Compile Include="Models\Mertexer\UniVerse\UniVerseSerializationBase.cs" />
     <Compile Include="Models\MertexTradeAccountClassificationSuperSet.cs" />
     <Compile Include="Models\MertexProductClassificationSuperSet.cs" />
+    <Compile Include="Models\Mertex\BudgetHolder.cs" />
     <Compile Include="Models\Mertex\Buyer.cs" />
     <Compile Include="Models\Mertex\Carriage.cs" />
     <Compile Include="Models\Mertex\ClaimHead.cs" />
