@@ -6,6 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Newtonsoft.Json;
+
+using SharedEFClasses.Models.ActiveDirectory;
+
 namespace SharedEFClasses.Models.MertexLive
 {
     [Table("BudgetHolder", Schema = "Mertex")]
@@ -24,8 +28,17 @@ namespace SharedEFClasses.Models.MertexLive
 
         public DateTime ModifiedDT { get; set; }
 
+        public int? UserID { get; set; }
+
         [ForeignKey("MemberID")]
         public virtual Member Member { get; set; }
+
+        [JsonIgnore]
+        public virtual ICollection<SupplierLive> Suppliers { get; set; }
+        
+        [ForeignKey("UserID")]
+        public virtual ActiveDirectoryUser User { get; set; }
+
         /*
          
          [Code] [nvarchar] (50) COLLATE Latin1_General_CI_AS NOT NULL,

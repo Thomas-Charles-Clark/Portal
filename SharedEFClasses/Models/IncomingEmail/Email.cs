@@ -20,6 +20,19 @@ namespace SharedEFClasses.Models.IncomingEmail
 
         public int MailboxID { get; set; }
 
+        [NotMapped]
+        public string Body
+        {
+            get
+            {
+                return "<p class=\"mb-0\">This email has either been archived or has been permanently deleted from the source inbox</p>";
+            }
+            set
+            {
+
+            }
+        }
+
         [StringLength(254)]
         public string FromEmail { get; set; }
 
@@ -45,7 +58,14 @@ namespace SharedEFClasses.Models.IncomingEmail
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool Processed { get; set; }
 
+        public DateTime? JunkDT { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public bool Junk { get; set; }
+
         public int? ProcessedMemberID { get; set; }
+
+        public int? JunkMemberID { get; set; }
 
         [StringLength(50)]
         public string SupplierCode { get; set; }
@@ -55,6 +75,8 @@ namespace SharedEFClasses.Models.IncomingEmail
         public int? RegularAttachmentCount { get; set; }
 
         public byte? EmailStatusID { get; set; }
+
+        public string ProcessedType { get; set; }
 
         [JsonIgnore]
         [ForeignKey("MailboxID")]

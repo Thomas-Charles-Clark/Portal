@@ -12,9 +12,9 @@ namespace SharedEFClasses.Models.IncomingEmail
     {
         public int MailboxID { get; set; }
         public string MailboxFolderID { get; set; }
-        public short? DepartmentID { get; set; }
+        public IEnumerable<short> ActiveDirectoryGroupIDs { get; set; }
         public string BudgetHolderCode { get; set; }
-        public byte? DateRangeID { get; set; }
+        public sbyte? DateRangeID { get; set; }
         public DateTime? FromDT { get; set; }
         public DateTime? ToDT { get; set; }
         public bool? HasAttachments { get; set; }

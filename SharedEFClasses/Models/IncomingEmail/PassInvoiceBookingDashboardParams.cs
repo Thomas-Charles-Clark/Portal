@@ -9,8 +9,10 @@ namespace SharedEFClasses.Models.IncomingEmail
     public class PassInvoiceBookingDashboardParams
     {
         public int? MailboxID { get; set; }
-        public int? GroupID { get; set; }
-        public int? MemberID { get; set; }
+        public IEnumerable<int> ActiveDirectoryGroupIDs { get; set; } = new List<int>();
+        public string BudgetHolderCode { get; set; }
+        public string SupplierCode { get; set; }
+        public sbyte? DateRangeID { get; set; }
         public DateTime? From { get; set; }
         public DateTime? To { get; set; }
     }

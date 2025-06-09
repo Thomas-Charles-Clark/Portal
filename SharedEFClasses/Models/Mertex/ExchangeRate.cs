@@ -26,7 +26,7 @@ namespace SharedEFClasses.Models.MertexLive
         public DateTime ModifiedDT { get; set; }
 
         [JsonIgnore]
-        [InverseProperty("MertexCurrencyCodeNavigation")]
+        [InverseProperty("ExchangeRate")]
         public virtual ICollection<SupplierLive> Suppliers { get; set; } = new List<SupplierLive>();
 
         [JsonIgnore]

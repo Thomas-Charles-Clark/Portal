@@ -30,8 +30,6 @@ namespace SharedEFClasses.Models.IncomingEmail
 
         public int Size { get; set; }
 
-        public int? InvoiceID { get; set; }
-
         public bool IsInline { get; set; }
 
         // This is the important one for inline attachments.
@@ -61,9 +59,6 @@ namespace SharedEFClasses.Models.IncomingEmail
         [ForeignKey("ParsedMemberID")]
         public virtual Member ParsedBy { get; set; }
 
-        [ForeignKey("InvoiceID")]
-        public virtual EmailInvoice Invoice { get; set; }
-
         [NotMapped]
         public string FileSizeDisplay
         {
@@ -72,5 +67,8 @@ namespace SharedEFClasses.Models.IncomingEmail
                 return $"{((decimal)Size / (decimal)1024 / (decimal)1024):0.00} MB";
             }
         }
+
+        [NotMapped]
+        public virtual IncomingEmail_Attachment_ParsedData_SelectResult SelectResult { get; set; }
     }
 }

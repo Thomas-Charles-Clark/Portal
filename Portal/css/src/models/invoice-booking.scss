@@ -1,8 +1,59 @@
 ﻿@import "./common.scss";
 
+body {
+    min-width: 1170px;
+    padding-bottom: 0;
+}
+
+.navbar.navbar-default.navbar-expand {
+    min-width: 1170px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    .container {
+        max-width: 1520px !important;
+        width: 100% !important;
+        padding-left: 1em;
+        padding-right: 1em;
+
+        .nav.navbar-nav.me-auto.mb-0 {
+            flex: 1;
+            align-items: center;
+
+            #alerting-display {
+                padding: 8px 15px;
+            }
+
+            .app-title {
+                margin: 0 auto;
+
+                h1, h2, h3, h4, h5, h6 {
+                    margin: 0;
+                }
+            }
+        }
+    }
+}
+
 .container {
     &.body-content {
+        max-width: 1520px;
         padding: $l-gutter;
+        padding-top: 20px;
+    }
+}
+
+@media (min-width: 1320px) {
+    .container {
+        width: unset !important;
+    }
+}
+
+#application-heading {
+    .page-heading-logo {
+        width: 44px;
+        height: 90px;
     }
 }
 
@@ -16,7 +67,7 @@
 }
 
 #email-list {
-    margin-bottom: $l-gutter;
+    margin-bottom: 0;
 
     .email-stub {
         cursor: pointer;
@@ -77,125 +128,75 @@
     }
 }
 
-#attachments-container {
-    .card-body {
+.mdc-validating-field {
+    .mdc-select,
+    .mdc-multiselect {
+        .k-widget {
+            background-color: $white;
+        }
+    }
 
-        #attachment-viewer {
-            display: flex;
-            gap: $l-gutter;
+    .mdc-numeric-field {
+        background-color: $white;
+    }
+}
 
-            #attachment-iframe-wrapper {
-                --bs-aspect-ratio: 75%;
-                border: 1px solid $gray-300;
+#department-prefilter {
+    .k-animation-container {
+        .k-list-container {
+            .k-item {
+                font-size: $font-size-base;
             }
+        }
+    }
 
-            #attachment-frame {
-
-            }
-
-            #attachment-properties {
-                .attachment-property {
-                    width: 240px;
-                
-                    & + .attachment-property {
-                        margin-top: $l-gutter;
-                    }    
+    .dropdown {
+        &.selected {
+            & ~ .mdc-notched-outline {
+                .mdc-floating-label {
+                    color: $body-color;
                 }
             }
         }
+    }
 
-        #attachments-list {
-            position: relative;
-            gap: $m-gutter;
-            overflow-y: auto;
-            display: flex;
-            flex-wrap: wrap;
-            max-height: 128px;
-            margin-bottom: $l-gutter;
+    .dropdown-menu {
+        overflow-y: unset;
+        max-height: unset;
+        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
+        border-radius: 0 0 $border-radius $border-radius;
 
-            &.over {
-                box-shadow: $btn-focus-box-shadow;
-            }
+        li {
+            &.form-check {
+                margin-bottom: 0;
 
-            .mdc-floating-label {
-                position: absolute;
-                left: 12px;
-                top: 12px;
-                color: $gray-300;
-            }
+                label {
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+                    gap: $vsm-gutter;
 
-            .attachment {
-                display: flex;
-                align-items: center;
-                gap: $vsm-gutter;
-                flex: 0;
-                align-self: flex-start;
-                padding: $xs-gutter;
-                padding-right: $m-gutter;
-                background-color: $white;
-                cursor: pointer;
-                border: 1px solid $gray-300;
-
-                &:nth-of-type(odd) {
-                    background-color: $gray-100;
-                }
-
-                &:hover {
-                    background-color: tint-color($blue-200, 75%);
-
-                    &:nth-of-type(odd) {
-                        background-color: tint-color($blue-200, 75%);
-                    }
-                }
-
-                &.selected {
-                    border-color: $blue-900;
-                    background-color: $blue-700;
-                    color: $white;
-
-                    &:hover {
-                        border-color: $blue-900;
-                        background-color: $blue-700;
-                        color: $white;
-
-                        &:nth-of-type(odd) {
-                            border-color: $blue-900;
-                            background-color: $blue-700;
-                            color: $white;
+                    &.dropdown-item {
+                        &:hover {
+                            background-color: unset;
                         }
                     }
-                }
 
-
-                & + .attachment {
-                    border-top: 1px solid $gray-300
-                }
-
-                .k-icon {
-                    font-size: 3em;
-
-                    &::before {
-                        position: relative;
-                        top: 1px;
+                    span {
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        display: block;
+                        overflow: hidden;
                     }
                 }
 
-                .attachment-properties {
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-between;
-                    flex: 1;
-                    overflow-x: hidden;
+                &:hover,
+                &:focus,
+                &:focus-within {
+                    background-color: unset;
 
                     label {
-                        white-space: nowrap;
-                        text-overflow: ellipsis;
-                        overflow-x: hidden;
-                        display: inline-block;
-                    }
-
-                    > * {
-                        margin: 0;
+                        background-color: unset;
                     }
                 }
             }
@@ -203,9 +204,66 @@
     }
 }
 
+#order-date-type-prefilter {
 
-.properties-title {
+    .k-dropdown-wrap {
+        > span.k-input {
+            padding: 0;
+            display: flex;
 
+            > span.date-range {
+                flex: 1;
+                display: inline-block;
+                padding: 8px 32px 8px 0;
+
+                &.date-danger {
+                    background-color: tint-color($red-200, 20%);
+                    color: $red-600;
+                    padding: 4px 32px 4px 0;
+                }
+            }
+        }
+    }
+
+    .k-list {
+        .k-item {
+            padding: 0;
+
+            &:hover,
+            &.k-state-focused,
+            &.k-state-selected,
+            &:focus,
+            &:focus-within {
+                > span {
+                    &.date-danger {
+                        background-color: tint-color($red-200, 20%);
+                        color: $red-600;
+                    }
+                }
+
+                &:has( > span.date-danger) {
+                    color: $red-600;
+                }
+            }
+
+            > span {
+                border-radius: 4px;
+                padding: 0 4px;
+                display: block;
+                width: 100%;
+                flex: 1;
+
+                &.date-danger {
+                    background-color: tint-color($red-200, 55%);
+                    color: $red-400;
+                }
+            }
+        }
+    }
+}
+
+.date-picker {
+    width: 100%;
 }
 
 .dispute-checkbox {
@@ -218,6 +276,13 @@
     }
 
     .mdc-checkbox {
+
+        &:enabled:checked ~ .mdc-checkbox__background,
+        &:enabled:indeterminate ~ .mdc-checkbox__background {
+            border-color: shade-color($mdc-theme-error, 20%);
+            background-color: $mdc-theme-error;
+        }
+
         .mdc-checkbox__native-control:checked ~ .mdc-checkbox__background::before {
             border-color: shade-color($mdc-theme-error, 20%);
             background-color: $mdc-theme-error;
@@ -227,19 +292,40 @@
             border-color: shade-color($mdc-theme-error, 20%);
             background-color: $mdc-theme-error;
         }
+
+        &.mdc-ripple-upgraded--background-focused {
+            &.mdc-checkbox--selected::before,
+            &.mdc-checkbox--selected::after {
+                background-color: tint-color($mdc-theme-error, 90%);
+            }
+        }
     }
 }
 
 #email-list-prefilters {
     display: flex;
     gap: $l-gutter;
-    margin: $l-gutter 0;
+    margin: 0;
+    padding: $l-gutter 0;
     justify-content: space-between;
     flex-wrap: wrap;
 
     .prefilter {
         flex: 1;
         position: relative;
+        display: flex;
+
+        > .mdc-validating-field {
+            flex: 1;
+        }
+
+        .bi-lock-fill {
+            flex: 0;
+        }
+    }
+
+    #order-date-prefilter {
+        display: block;
     }
 }
 
@@ -250,7 +336,7 @@
     align-items: center;
 
     .dashboard-pod {
-        flex: 0 1 25%;
+        flex: 1;
         text-align: center;
         align-self: stretch;
         cursor: pointer;
@@ -271,9 +357,9 @@
         }
 
         &.active {
-            background-color: $blue-700;
+            background-color: $tinted-battleship-blue;
             color: $white;
-            border-color: $blue-900;
+            border-color: tint-color($tinted-battleship-blue, 5%);
         }
 
 
@@ -291,6 +377,371 @@
             h5 {
                 text-decoration: none;
             }
+        }
+    }
+}
+
+.attachment-count-header-cell {
+    display: flex;
+
+    .k-grid-filter {
+        float: none;
+    }
+    .k-link {
+        display: none;
+    }
+}
+
+.attachment-count-cell {
+    padding: 0;
+
+    .icon-wrapper {
+        position: relative;
+
+        .bi {
+            position: absolute;
+            font-size: 22px;
+            top: -11px;
+            display: block;
+            left: -11px;
+        }
+    }
+}
+
+#email-modal {
+    .modal-dialog {
+        margin-top: 0;
+        margin-bottom: 0;
+        height: 100vh;
+
+        .modal-content {
+            border-radius: 0;
+            height: 100%;
+
+            .modal-header {
+                background-color: $blue-700;
+                border-radius: 0;
+                padding: $sm-gutter $l-gutter;
+                height: 68px;
+
+                .modal-title {
+                    color: $white;
+                }
+
+                nav {
+                    display: flex;
+                    gap: $l-gutter;
+                    align-items: center;
+
+                    .btn {
+                        &.disabled {
+                            border-color: $gray-500;
+                            background-color: $gray-400;
+                            color: $gray-600;
+                            cursor: not-allowed;
+                            pointer-events: all;
+                        }
+                    }
+                }
+            }
+
+            .modal-body {
+                height: 100%;
+                background-color: $warm-grey-background;
+
+                #attachments-form {
+                }
+
+                #attachments-list {
+                    position: relative;
+                    gap: $m-gutter;
+                    overflow-y: auto;
+                    display: flex;
+                    flex-wrap: wrap;
+                    max-height: 128px;
+                    margin-bottom: $l-gutter;
+
+                    &.over {
+                        box-shadow: $btn-focus-box-shadow;
+                    }
+
+                    .mdc-floating-label {
+                        position: absolute;
+                        left: 12px;
+                        top: 12px;
+                        color: $gray-300;
+                    }
+
+                    .attachment {
+                        display: flex;
+                        align-items: center;
+                        gap: $vsm-gutter;
+                        flex: 0;
+                        align-self: flex-start;
+                        padding: $xs-gutter;
+                        padding-right: $m-gutter;
+                        background-color: $white;
+                        cursor: pointer;
+                        border: 1px solid $gray-300;
+                        flex: 0 1 240px;
+                        position: relative;
+
+                        &.disabled {
+                            &:not(.selected) {
+                                cursor: not-allowed;
+                                background-color: $gray-200 !important;
+                                opacity: 0.85;
+
+                                &:hover {
+                                    background-color: $gray-200 !important;
+                                }
+                            }
+                        }
+
+                        .attachment-type {
+                            position: absolute;
+                            bottom: 0;
+                            right: 0;
+                            z-index: 1;
+                            border-radius: 4px 0 0 0;
+                            border: 1px solid $gray-600;
+                            background-color: $gray-800;
+                            color: $white;
+                            border-right: 0;
+                            border-bottom: 0;
+                            padding: 2px 4px 1px 4px;
+                            text-transform: uppercase;
+                            font-size: $font-size-sm;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+
+                            &.invoice {
+                                background-color: limegreen;
+                                content: 'invoice';
+                            }
+                        }
+
+                        &:nth-of-type(odd) {
+                            background-color: $gray-100;
+                        }
+
+                        &:hover {
+                            background-color: tint-color($blue-200, 75%);
+
+                            &:nth-of-type(odd) {
+                                background-color: tint-color($blue-200, 75%);
+                            }
+                        }
+
+                        &.selected {
+                            border-color: $blue-900;
+                            background-color: $blue-700;
+                            color: $white;
+
+                            &:hover {
+                                border-color: $blue-900;
+                                background-color: $blue-700;
+                                color: $white;
+
+                                &:nth-of-type(odd) {
+                                    border-color: $blue-900;
+                                    background-color: $blue-700;
+                                    color: $white;
+                                }
+                            }
+                        }
+
+                        .k-icon {
+                            font-size: 3em;
+
+                            &::before {
+                                position: relative;
+                                top: 1px;
+                            }
+                        }
+
+                        .bi {
+                            font-size: 2em;
+                            padding: 0 0.5rem;
+                        }
+
+                        .attachment-properties {
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: space-between;
+                            flex: 1;
+                            overflow-x: hidden;
+                            cursor: inherit;
+
+                            label {
+                                white-space: nowrap;
+                                text-overflow: ellipsis;
+                                overflow-x: hidden;
+                                display: inline-block;
+                                cursor: inherit;
+                            }
+
+                            > * {
+                                margin: 0;
+                            }
+                        }
+                    }
+
+                    #add-attachments-item {
+                        display: list-item;
+                        padding: 0;
+
+                        > label {
+                            display: flex;
+                            align-items: center;
+                            gap: $sm-gutter;
+                            flex: 0;
+                            align-self: flex-start;
+                            padding: $xs-gutter;
+                            padding-right: $m-gutter;
+                            background-color: $white;
+                            cursor: pointer;
+                            flex: 0 1 200px;
+                            user-select: none;
+
+                            &:hover {
+                                background-color: tint-color($blue-200, 75%);
+
+                                &:nth-of-type(odd) {
+                                    background-color: tint-color($blue-200, 75%);
+                                }
+                            }
+                        }
+
+                        &.disabled {
+
+                            > label {
+                                cursor: not-allowed;
+                                background-color: $gray-200;
+                                opacity: 0.85;
+
+                                &:hover {
+                                    background-color: $gray-200;
+                                }
+                            }
+                        }
+
+                        #add-attachments-form {
+                            display: none;
+                        }
+                    }
+                }
+
+                #attachment-viewer {
+                    display: flex;
+                    gap: $l-gutter;
+                    flex: 1 1 50%;
+
+                    #attachment-iframe-wrapper {
+                        --bs-aspect-ratio: 126%;
+                        border: 1px solid $gray-300;
+                        max-width: 55%;
+                    }
+
+                    #email-body {
+                        width: 100%;
+                        position: relative;
+                        border: 1px solid $gray-300;
+                        max-width: 55%;
+
+                        img {
+                            max-width: 100%;
+                            height: auto !important;
+                        }
+                    }
+                }
+
+                #data-pane {
+                    flex: 1 1 420px;
+
+                    .attachment-property {
+                        width: 100%;
+                        position: relative;
+
+                        & + .attachment-property {
+                            margin-top: $l-gutter;
+                        }
+                    }
+
+                    #attachment-fields {
+                        #attachment-supplier-wrapper {
+                            display: flex;
+                            align-items: center;
+
+                            #attachment-supplier {
+                                display: flex;
+                                align-items: center;
+
+                                .mdc-validating-field {
+                                    flex: 1;
+                                    width: 330px;
+                                }
+
+                                .bi {
+                                    display: none;
+                                }
+                            }
+
+                            > .btn {
+                                margin-left: $m-gutter;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+#email-body {
+    background-color: $white;
+    transform: translate3d(0,0,0); 
+
+    table {
+        tbody {
+            tr {
+                td {
+                    p:last-of-type {
+                        margin-bottom: 0;
+                    }
+                }
+            }
+        }
+    }
+}
+
+#invoice-properties,
+#general-ledger-entries,
+#vat-entries {
+    margin: $l-gutter 0;
+
+    h5 {
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: $l-gutter;
+    }
+
+    .list-group {
+        &.border-danger {
+            li {
+                border-color: $red-500;
+            }
+        }
+    }
+
+    .list-group-item {
+        padding: $l-gutter;
+
+        > .attachment-property {
+            padding-right: 34px;
         }
     }
 }

@@ -132,6 +132,10 @@ namespace Portal
             odataBuilder.EntitySet<Department>("Departments");
             odataBuilder.EntitySet<BudgetHolder>("BudgetHolders");
             odataBuilder.EntitySet<EmailStatus>("EmailStatuses");
+            odataBuilder.EntitySet<GeneralLedgerCode>("GeneralLedgerCodes");
+            odataBuilder.EntitySet<GeneralLedgerAnalysisGroupD>("GeneralLedgerAnalysisGroupDs");
+            odataBuilder.EntitySet<VATCode>("VATCodes");
+            odataBuilder.EntitySet<SupplierTypeLive>("SupplierTypesLive");
 
             odataBuilder.EntitySet<BudgetHolderSuperSet>("BudgetHolderSuperSet");
 
@@ -162,6 +166,14 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(OrderBookGrouped)).AddProperty(typeof(OrderBookGrouped).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(OrderTaker)).AddProperty(typeof(OrderTaker).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_DeliveryType)).AddProperty(typeof(Mertex_DeliveryType).GetProperty("ShortLabel"));
+
+
+            var supplierTypeLiveValueMapperFunction = odataBuilder.EntityType<SupplierTypeLive>()
+                .Collection
+                .Function("SupplierTypeLiveValueMapper")
+                .ReturnsCollectionFromEntitySet<SupplierTypeLive>("SupplierTypesLive");
+
+            supplierTypeLiveValueMapperFunction.Parameter<string>("code");
 
             var attachmentTypeValueMapperFunction = odataBuilder.EntityType<AttachmentType>()
                 .Collection
@@ -221,6 +233,20 @@ namespace Portal
                 .ReturnsCollectionFromEntitySet<BudgetHolder>("BudgetHolders");
 
             budgetHolderValueMapperFunction.Parameter<string>("code");
+
+            var generalLedgerCodeValueMapperFunction = odataBuilder.EntityType<GeneralLedgerCode>()
+                .Collection
+                .Function("GeneralLedgerCodeValueMapper")
+                .ReturnsCollectionFromEntitySet<GeneralLedgerCode>("GeneralLedgerCodes");
+
+            generalLedgerCodeValueMapperFunction.Parameter<string>("code");
+
+            var generalLedgerAnalysisGroupDValueMapperFunction = odataBuilder.EntityType<GeneralLedgerAnalysisGroupD>()
+                .Collection
+                .Function("GeneralLedgerAnalysisGroupDValueMapper")
+                .ReturnsCollectionFromEntitySet<GeneralLedgerAnalysisGroupD>("GeneralLedgerAnalysisGroupDs");
+
+            generalLedgerAnalysisGroupDValueMapperFunction.Parameter<string>("code");
 
 
             var paymentTermsValueMapperFunction = odataBuilder.EntityType<PaymentTerms>()
@@ -875,6 +901,14 @@ namespace Portal
                 .ReturnsCollectionFromEntitySet<ProductLifeCycle>("ProductLifeCycles");
 
             productLifecycleValueMapperFunction.Parameter<byte>("productLifeCycleId");
+
+
+            var vatCodeValueMapperFunction = odataBuilder.EntityType<VATCode>()
+                .Collection
+                .Function("VATCodeValueMapper")
+                .ReturnsCollectionFromEntitySet<VATCode>("VATCodes");
+
+            vatCodeValueMapperFunction.Parameter<string>("code");
 
 
             var odataBatchHandler = new DefaultODataBatchHandler(GlobalConfiguration.DefaultServer);

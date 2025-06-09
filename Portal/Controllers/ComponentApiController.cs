@@ -764,7 +764,6 @@ namespace Portal.Controllers
             return Ok(result);
         }
 
-
         [HttpPost]
         public async Task<IHttpActionResult> InsertStockCheckRequest([FromBody] PassInsertStockCheckRequest dto)
         {
@@ -783,7 +782,6 @@ namespace Portal.Controllers
             return Ok(result);
         }
 
-
         [HttpPost]
         public IHttpActionResult FetchAlsoLookAts([FromBody] PassStockViewerLoad objProduct)
         {
@@ -791,7 +789,6 @@ namespace Portal.Controllers
 
             return Ok(result);
         }
-
 
         [HttpPost]
         public IHttpActionResult FetchAlternateProducts([FromBody] PassStockViewerLoad objProduct)

@@ -2643,8 +2643,10 @@ ko.bindingHandlers.mdcMultiSelectCheckboxesComponent = {
         }
 
         element.querySelector('.dropdown-toggle').addEventListener('hide.bs.dropdown', () => {
-            if (params.controls.hasOwnProperty('applySelection')) {
-                params.controls.applySelection(false);
+            if (Object.hasOwn(params, 'controls') && params.controls) {
+                if (params.controls.hasOwnProperty('applySelection')) {
+                    params.controls.applySelection(false);
+                }
             }
         });
     }

@@ -58,6 +58,40 @@
         step: 1
     };
 
+    self.notes = ko.observable().extend({
+        maxLength: {
+            params: 500,
+            onlyIf: self.validateNow,
+            message: 'Please provide up to 500 characters'
+        }
+    });
+
+    self.notesParams = {
+        label: 'Notes',
+        originalValue: ko.observable(),
+        observable: self.notes,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        showClear: true,
+        rows: 10,
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            $(self.observable.DOMElement).focus();
+        },
+        permitRevert: false,
+        charsRemainingOptions: {
+            maxLength: 500
+        },
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        visible: ko.observable(true)
+    }
+
     self.quantityHasFocus = ko.observable(false);
 
     self.addingProductToBasket = ko.observable();
@@ -80,7 +114,8 @@
 
     self.errors = ko.validation.group([
         self.productId,
-        self.quantity
+        self.quantity,
+        self.notes
     ]);
 
     //#endregion
@@ -191,7 +226,8 @@
                     productId: self.parent.searchResult().record.ProductID,
                     quantity: self.quantity(),
                     tradeAccountId: self.parent.parent.orderFactory.tradeAccountId(),
-                    basketId: self.parent.parent.orderFactory.basketId()
+                    basketId: self.parent.parent.orderFactory.basketId(),
+                    notes: self.notes()
                 }
 
                 console.log("InsertStockCheckRequest calling with", params)

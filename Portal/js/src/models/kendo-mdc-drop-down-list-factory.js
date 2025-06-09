@@ -48,6 +48,8 @@
     aggregate,
     requestStart,
     requestEnd,
+    open,
+    close,
     skipCascade,
     ignoreCase,
     minLength,
@@ -101,6 +103,8 @@
         dataBound: (e) => { },
         requestStart: (e) => { },
         requestEnd: (e) => { },
+        open: (e) => { },
+        close: (e) => { },
         skipCascade: false,
         ignoreCase: true,
         minLength: null,
@@ -354,6 +358,20 @@
 
     if (enforceMinLength != null) {
         result.dropDownListSettings.enforceMinLength = enforceMinLength;
+    }
+
+    if (typeof open === 'function') {
+        result.dropDownListSettings.open = (e) => {
+            $(e.sender._widgetOptions.value.mdcSelect.root_).toggleClass('mdc-select--focused');
+            open(e);
+        }
+    }
+
+    if (typeof close === 'function') {
+        result.dropDownListSettings.close = (e) => {
+            $(e.sender._widgetOptions.value.mdcSelect.root_).toggleClass('mdc-select--focused');
+            close(e);
+        }
     }
 
     return result;

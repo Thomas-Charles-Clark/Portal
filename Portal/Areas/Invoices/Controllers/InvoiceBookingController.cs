@@ -5,6 +5,7 @@ using SharedEFClasses;
 using SharedEFClasses.Models;
 using SimpleImpersonation;
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -17,9 +18,9 @@ namespace Portal.Areas.Invoices.Controllers
     [RouteArea("invoices")]
     [RoutePrefix("booking")]
     [Route("{action=index}")]
-    public class InvoiceBookingController : BaseController
+    public class BookingController : BaseController
     {
-        public InvoiceBookingController(ApplicationUserManager userManager, PortalDbContext portalDbContext) : base (userManager, portalDbContext)
+        public BookingController(ApplicationUserManager userManager, PortalDbContext portalDbContext) : base (userManager, portalDbContext)
         {
 
         }
@@ -31,8 +32,29 @@ namespace Portal.Areas.Invoices.Controllers
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
+            IEnumerable<short> lockedToDepartmentGroupIds = new List<short>();
+
+            string lockedToBudgetHolderCode = null;
+
+            var adUser = PortalDb.ActiveDirectoryUsers.SingleOrDefault(f => f.Email == user.Email);
+
+            if (UserManager.IsInRole(user.Id, "Invoice Registration - Department Restricted") ||
+                UserManager.IsInRole(user.Id, "Invoice Registration - Single User"))
+            {
+                var superSetRecords = PortalDb.BudgetHolderSuperSet.Where(b => b.BudgetHolder.MemberID == user.Id);
+
+                lockedToDepartmentGroupIds = superSetRecords.Select(s => s.GroupID).ToList().Distinct().ToList();
+            }
+
+            if (UserManager.IsInRole(user.Id, "Invoice Registration - Single User"))
+            {
+                lockedToBudgetHolderCode = PortalDb.BudgetHolders.Single(b => b.MemberID == user.Id).Code;
+            }
+
             var model = await InvoiceBookingViewModel.CreateAsync(
                 1,
+                lockedToDepartmentGroupIds,
+                lockedToBudgetHolderCode,
                 user.GetActiveRoleProperties(), 
                 application.Heading, 
                 application.SubHeading);

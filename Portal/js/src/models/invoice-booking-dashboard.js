@@ -71,6 +71,7 @@
                 console.log('dashboard returned', data);
                 self.busy(false);
                 self.pods(data);
+                self.selectedPod(self.pods()[0]);
             })
             .catch(err => {
                 self.busy(false);
@@ -103,7 +104,7 @@
         }
 
         console.warn('probably warn about potential or actual unsaved changes');
-        self.parent.loadedEmail(undefined);
+        self.parent.selectedEmail(undefined);
     } 
 
     //#endregion

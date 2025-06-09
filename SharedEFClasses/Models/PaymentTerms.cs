@@ -11,6 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SharedEFClasses.Models.IncomingEmail;
+using SharedEFClasses.Models.MertexLive;
+using SharedEFClasses.Models.Maintenance;
 
 namespace SharedEFClasses.Models
 {
@@ -48,7 +50,11 @@ namespace SharedEFClasses.Models
 
         [JsonIgnore]
         [InverseProperty("PaymentTerms")]
-        public virtual ICollection<EmailInvoice> IncomingEmailInvoices { get; set; }
+        public virtual ICollection<SupplierLive> Suppliers { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("PaymentTerms")]
+        public virtual ICollection<MaintenanceSupplier> MaintenanceSuppliers { get; set; }
 
         [NotMapped]
         public string Label

@@ -32,5 +32,9 @@ namespace SharedEFClasses.Models.ActiveDirectory
         [JsonIgnore]
         [InverseProperty("Department")]
         public virtual ICollection<BudgetHolderSuperSet> BudgetHolderSuperSetRecords { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("Group")]
+        public virtual ICollection<ActiveDirectoryUser_ActiveDirectoryGroup> Users { get; set; }
     }
 }

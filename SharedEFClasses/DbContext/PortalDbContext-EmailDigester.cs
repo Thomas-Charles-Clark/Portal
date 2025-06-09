@@ -20,10 +20,15 @@ namespace SharedEFClasses.Models
         {
             try
             {
-                return await this.Database.Connection.QuerySingleAsync<FullEmail>("SELECT * FROM clr.fnc_EmailDigester_GetMessage(@UserID, @EmailMessageID)", new {
+                var result = await this.Database.Connection.QuerySingleAsync<FullEmail>("SELECT * FROM clr.fnc_EmailDigester_GetMessage(@UserID, @EmailMessageID)", new
+                {
                     UserID,
                     EmailMessageID
                 }, null, 30, System.Data.CommandType.Text);
+
+                result.EmailMessageID = EmailMessageID;
+
+                return result;
             }
             catch (Exception e)
             {

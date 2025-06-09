@@ -78,7 +78,7 @@
 
         > div {
             > .heading {
-                background-color: tint-color($battleship-blue, 15%);
+                background-color: $tinted-battleship-blue;
             }
         }
     }

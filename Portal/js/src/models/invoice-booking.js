@@ -20,7 +20,19 @@ const invoiceBookingViewModel = ({
 
     self.mailboxFolders = ko.observableArray([]);
 
-    self.loadedEmail = ko.observable();
+    self.selectedEmail = ko.observable();
+
+    self.modalElement = document.getElementById('email-modal');
+
+    self.modal = bootstrap.Modal.getOrCreateInstance(self.modalElement);
+
+    self.modalBusy = ko.observable(false);
+
+    self.modalBusyMessage = ko.observable('Please wait');
+
+    self.itemCount = ko.observable();
+
+    self.selectedEmailIndex = ko.observable();
 
     //#endregion
 
@@ -33,12 +45,15 @@ const invoiceBookingViewModel = ({
         }
 
         data = Object.assign({
-            departmentId: self.filters.departmentId() ?? null,
             emailStatusId: self.filters.emailStatusId() ?? null,
             fromDate: typeof self.filters.fromDate() == 'object' ? self.filters.fromDate().toUTCString() : self.filters.fromDate(),
             toDate: typeof self.filters.toDate() == 'object' ? self.filters.toDate().toUTCString() : self.filters.toDate(),
             dateRangeId: self.filters.dateRangeId() ?? null
         }, data);
+
+        if (self.filters.departmentIds().length) {
+            data.activeDirectoryGroupIds = self.filters.departmentIds();
+        }
 
         if (self.filters.budgetHolderCode()) {
             data.budgetHolderCode = self.filters.budgetHolderCode()
@@ -119,33 +134,44 @@ const invoiceBookingViewModel = ({
     self.mailboxGridParams = {
         widget: ko.observable(),
         columns: [{
-            field: '',
+            title: 'Supplier',
+            field: 'SupplierCode',
+            width: 200,
+            filterable: false
+        }, {
+            title: 'Supplier Type',
+            field: 'Supplier.SupplierType.SupplierTypeCode',
+            hidden: true
+        }, {
+            field: 'FromEmail',
             title: 'From',
-            width: 220
+            width: 300,
+            filterable: true
         }, {
             field: 'Subject',
             title: 'Subject'
         }, {
             field: 'ReceivedDT',
             title: 'Received',
-            width: 160
-        }, {
-            title: 'Supplier',
-            field: 'SupplierCode',
-            width: 300,
-            filterable: {
-                extra: false
-            }
+            width: 132
+        },{
+            field: 'BudgetHolderCode',
+            title: 'Budget Holder',
+            width: 240,
+            filterable: false
         }, {
             field: 'RegularAttachmentCount',
-            title: 'Attachments',
-            width: 132,
+            title: ' ',
+            width: 40,
+            headerAttributes: {
+                class: 'text-center attachment-count-header-cell'
+            },
             filterable: {
                 extra: false
             }
         }],
         data: new kendo.data.DataSource({
-            pageSize: 10,
+            pageSize: 20,
             transport: {
                 read: (options) => {
 
@@ -171,6 +197,8 @@ const invoiceBookingViewModel = ({
                     })
                         .then(window.handleFetchResponse)
                         .then(data => {
+                            console.log("MailboxGrid returned", data);
+                            self.itemCount(data.Total);
                             data.Data = data.Data.map(d => invoiceBookingEmailViewModel({
                                 parent: self,
                                 rec: d
@@ -204,11 +232,19 @@ const invoiceBookingViewModel = ({
                         ProcessedMemberID: { type: 'number', editable: false },
                         SupplierCode: { type: 'string', editable: false },
                         EmailStatusID: { type: 'number', editable: false },
+                        RegularAttachmentCount: { type: 'number', editable: false },
                         Supplier: {
                             type: 'object',
                             fields: {
                                 Code: { type: 'string', editable: false },
-                                Name: { type: 'number', editable: false }
+                                Name: { type: 'number', editable: false },
+                                SupplierType: {
+                                    type: 'object',
+                                    fields: {
+                                        Code: { type: 'string', editable: false },
+                                        Name: { type: 'string', editable: false }
+                                    }
+                                }
                             }
                         }
                     }
@@ -226,9 +262,9 @@ const invoiceBookingViewModel = ({
         }),
         useKOTemplates: true,
         rowTemplate: 'email-stub-row-template',
-        pageSize: 10,
+        pageSize: 20,
         pageable: {
-            pageSize: 10,
+            pageSize: 20,
             pageSizes: [10, 20, 50, 100, 200]
         },
         sortable: true,
@@ -239,6 +275,8 @@ const invoiceBookingViewModel = ({
             console.log('change', event, data);
 
             let stub = event.sender.dataItem(event.sender.select());
+
+            self.selectedEmailIndex(event.sender.dataSource.indexOf(stub));
 
             self.loadEmail(stub);
         },
@@ -253,8 +291,8 @@ const invoiceBookingViewModel = ({
     //#region Computeds
 
     self.selectedAttachment = ko.computed(() => {
-        if (self.loadedEmail()) {
-            return ko.unwrap(self.loadedEmail().selectedAttachment);
+        if (self.selectedEmail()) {
+            return ko.unwrap(self.selectedEmail().selectedAttachment);
         }
     }, self);
 
@@ -290,14 +328,25 @@ const invoiceBookingViewModel = ({
 
     //#region Methods
 
+    self.refresh = () => {
+        self.dashboard.fetch();
+        self.mailboxGridParams.widget().dataSource.read();
+    }
 
     self.loadEmail = (stub) => {
-        self.busy(true);
+
+        //self.selectedEmail(undefined);
+
+        self.modalBusy(true);
+
+        self.modal.show();
+
         let data = {
             mailboxId: self.mailboxId,
             emailMessageId: stub.EmailMessageID,
             emailId: stub.EmailID
         };
+
         fetch('/api/InvoiceBookingAPI/LoadEmailMessage', {
             method: 'POST',
             headers: window.fetchHeaders,
@@ -306,16 +355,31 @@ const invoiceBookingViewModel = ({
         })
             .then(window.handleFetchResponse)
             .then(data => {
-                self.loadedEmail(invoiceBookingEmailViewModel({
+                console.log('loadEmailMessage returned', data);
+                self.selectedEmail(invoiceBookingEmailViewModel({
                     parent: self,
                     rec: data.message,
-                    attachments: data.attachments
+                    attachments: [{
+                        AttachmentID: -1,
+                        EmailID: data.message.EmailID,
+                        AttachmentTypeID: null,
+                        FileExtension: "html",
+                        FileName: "View Email",
+                        IsInline: false,
+                        Body: data.message.Body,
+                        SupplierCode: data.message.SupplierCode,
+                        Supplier: data.message.Supplier,
+                        FileSizeDisplay: `${formatNumber((data.message.Body.length * 2) / 1024, 2, 'en-GB')} KB`
+                    }, ...data.attachments.map(a => {
+                        a.SupplierCode = a.SupplierCode ?? data.message.SupplierCode;
+                        a.Supplier = a.Supplier ?? data.message.Supplier;
+                        return a;
+                    })]
                 }));
-                console.log('loadEmailMessage returned', data);
-                self.busy(false);
+                self.modalBusy(false);
             })
             .catch(err => {
-                self.busy(false);
+                self.modalBusy(false);
                 window.catchFetchError(err);
             })
     }
@@ -329,11 +393,64 @@ const invoiceBookingViewModel = ({
         //})
     }
 
+    self.next = () => {
+        if (self.selectedEmailIndex() == self.mailboxGridParams.widget().dataSource.pageSize() - 1) {
+            // we must page forwards, wait for the paging to be successful, then select the zeroth row on the resultant page
+
+            self.modalBusy(true);
+
+            self.mailboxGridParams.widget().dataSource.one('requestEnd', (event) => {
+                self.mailboxGridParams.widget().select(`tr:eq(0)`);
+                self.mailboxGridParams.widget().trigger('change');
+            });
+
+            let currentPage = self.mailboxGridParams.widget().dataSource.page();
+
+            self.mailboxGridParams.widget().dataSource.page(currentPage + 1);
+
+        } else {
+            self.modalBusy(true);
+            self.mailboxGridParams.widget().select(`tr:eq(${self.selectedEmailIndex() + 1})`);
+            self.mailboxGridParams.widget().trigger('change');
+        }
+    }
+
+    self.previous = () => {
+        if (self.selectedEmailIndex() == 0) {
+            // we must page backwards, wait for the paging to be successful, then select the zeroth row on the resultant page
+
+            self.mailboxGridParams.widget().dataSource.one('requestEnd', (event) => {
+                self.mailboxGridParams.widget().select(`tr:eq(${self.mailboxGridParams.widget().dataSource.pageSize() - 1})`);
+                self.mailboxGridParams.widget().trigger('change');
+            });
+
+            let currentPage = self.mailboxGridParams.widget().dataSource.page();
+
+            self.mailboxGridParams.widget().dataSource.page(currentPage - 1);
+        } else {
+            self.modalBusy(true);
+            self.mailboxGridParams.widget().select(`tr:eq(${self.selectedEmailIndex() - 1})`);
+            self.mailboxGridParams.widget().trigger('change');
+        }
+    }
+
     //#endregion
 
 
     //#region Events
 
+    self.modalElement.addEventListener('shown.bs.modal', () => {
+        window.setTimeout(() => {
+            self.modalElement.querySelectorAll('.btn').forEach((e) => {
+                new bootstrap.Ripple(e);
+            });
+        }, 0);
+    });
+
+    self.modalElement.addEventListener('hide.bs.modal', () => {
+        self.selectedEmail(undefined);
+    });
+    
     //#endregion
 
 

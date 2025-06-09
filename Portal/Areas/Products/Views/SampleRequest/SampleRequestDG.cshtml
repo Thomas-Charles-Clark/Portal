@@ -1354,7 +1354,7 @@
     </script>
 }
 <div id="stock-check-request-modal" class="modal fade" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog" data-bind="with: stockCheckRequester" a="c">
+    <div class="modal-dialog" data-bind="with: stockCheckRequester">
         <div class="modal-content">
             <div class="blocker" data-bind="visible: busy">
                 <div class="loading-spinner"></div>
@@ -1380,6 +1380,7 @@
                     <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: quantityParams }"></div>
                 </div>
                 <span class="validation-message" data-bind="validationMessage: quantity"></span>
+                <div class="margin-top-15" data-bind="component: { name: 'mdc-text-area-component', params: notesParams }"></div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-red" data-bind="click: hideModal">

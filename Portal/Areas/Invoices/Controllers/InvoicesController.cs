@@ -42,7 +42,8 @@ namespace Portal.Areas.Invoices.Controllers
             var model = new TreatmentInvoiceApprovalViewModel(
                 PortalDb.TreatmentProviders.OrderBy(p => p.SortOrder).ToList(),
                 PortalDb.OrderStatuses.Where(p => p.OrderStatusID > 0 && p.Deleted == false).OrderBy(p => p.OrderStatusID).ToList(),
-                user.GetActiveRoleProperties(), 
+                
+                user.GetActiveRoleProperties(),
                 application.Heading, 
                 application.SubHeading);
 

@@ -2,6 +2,8 @@
 @import "../lib/bootstrap-5.3.1/scss/functions";
 @import "../lib/bootstrap-5.3.1/scss/variables";
 
+$warm-grey-background: #f3f1ed;
+
 $mdc-theme-primary: #888;
 $mdc-theme-secondary: #6ebe2c;
 $mdc-theme-background: #fff;
@@ -20,6 +22,8 @@ $letter-spacing-slight: 0.05rem;
 $page-heading-colour: #44546b;
 
 $battleship-blue: #31548B;
+
+$tinted-battleship-blue: tint-color($battleship-blue, 15%);
 
 :root {
     --vsm-gutter: #{$vsm-gutter};

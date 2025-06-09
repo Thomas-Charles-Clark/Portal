@@ -297,10 +297,6 @@ namespace SharedEFClasses.Models
         public virtual ICollection<Attachment> IncomingEmailAttachmentsParsed { get; set; }
 
         [JsonIgnore]
-        [InverseProperty("LastModifiedByMember")]
-        public virtual ICollection<EmailInvoice> IncomingEmailInvoicesModified { get; set; }
-
-        [JsonIgnore]
         [InverseProperty("Member")]
         public virtual ICollection<BudgetHolder> BudgetHolderRecords { get; set; }
 

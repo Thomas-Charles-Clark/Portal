@@ -8,18 +8,64 @@
 
     let self = Object.assign(rec, {
         busy: parent.busy,
-        //dashboard: parent.dashboard
+        parent: {
+            refresh: parent.refresh,
+            loadEmail: parent.loadEmail,
+            modal: parent.modal,
+            modalBusy: parent.modalBusy,
+            previous: parent.previous,
+            next: parent.next
+        },
+        itemCount: parent.itemCount,
+        selectedIndexOnPage: parent.selectedEmailIndex,
+        selectedEmailIndex: ko.computed(() => {
+            let page = parent.mailboxGridParams.widget().dataSource.page();
+            let pageSize = parent.mailboxGridParams.widget().dataSource.pageSize();
+
+            let inPageIndex = parent.selectedEmailIndex() + 1;
+
+            return ((page - 1) * pageSize) + inPageIndex;
+        }),
+        modalElement: parent.modalElement
     });
+
+    self.propagateSupplier = function (supplier) {
+        self.attachments().forEach(a => {
+            if (a != this) {
+                if (a.supplierCode() == '') {
+                    a.isPropagatingSupplier = true;
+                    a.supplierCode(supplier.Code);
+                    a.supplier(supplier);
+                }
+            }
+        })
+    }
 
     //#region Properties
 
     self.attachments = ko.observableArray((attachments || []).map(a => invoiceBookingEmailAttachmentViewModel({
-        rec: a
+        rec: a,
+        parent: self
     })));
 
     self.selectedAttachment = ko.observable(self.attachments().filter(a => a.IsInline == false).length ? self.attachments().filter(a => a.IsInline == false)[0] : undefined);
 
-    self.noAttachments = !self.HasNonInlineAttachments;
+    self.addingAttachments = ko.observable('');
+
+    self.addingAttachmentsBusy = ko.observable(false);
+    
+    self.addAttachmentParams = {
+        accept: "application/pdf, text/csv, image/*, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, text/html, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel",
+        observable: self.addingAttachments,
+        busy: self.addingAttachmentsBusy,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        enable: ko.observable(true),
+        disable: self.addingAttachmentsBusy,
+        clearable: ko.observable(false),
+        revertible: ko.observable(false)
+    }
 
     //#endregion
 
@@ -33,35 +79,125 @@
 
     //#region Computeds
 
+    self.navPreviousDisabled = ko.computed(() => {
+        return self.selectedEmailIndex() == 1;
+    }, self);
+
+    self.navNextDisabled = ko.computed(() => {
+        return self.selectedEmailIndex() - 1 == self.itemCount();
+    }, self);
+
     self.fromDisplay = ko.computed(() => {
         return `${self.FromName}`;
     }, self);
 
     self.attachmentDisplay = ko.computed(() => {
-        return `${(self.RegularAttachmentCount ?? 0)}`
+        if (self.RegularAttachmentCount) {
+            return `<i class="bi bi-paperclip" title="${self.RegularAttachmentCount} attachment${(self.RegularAttachmentCount > 1 ? 's' : '')}"></i>`
+        } else {
+            return '';
+        }
     });
 
     self.regularAttachments = ko.computed(() => {
         return self.attachments().filter(a => a.IsInline == false);
     }, self);
 
+    self.junkPermitted = ko.computed(() => {
+        return !!self.attachments().find(a => a.Submitted == true);
+    }, self);
+
+    self.attachmentsDisabled = ko.computed(() => {
+        return self.attachments().length && self.attachments()[0].supplier() == null;
+    });
+
     //#endregion
 
 
     //#region Subscriptions
 
+    self.addingAttachments.subscribe((nv) => {
 
+        if (nv) {
+
+            let formData = new FormData(document.getElementById('add-attachments-form'));
+
+            let params = {
+                obj: JSON.stringify({
+                    EmailID: self.EmailID
+                })
+            }
+
+            for (const key in params) {
+                formData.append(key, params[key]);
+            }
+
+            self.parent.modalBusy(true);
+
+            let headers = Object.assign({
+
+            }, window.fetchHeaders);
+
+            delete headers["content-type"];
+
+            fetch('/api/InvoiceBookingAPI/AttachmentUpsert', {
+                method: 'POST',
+                headers: headers,
+                body: formData
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    console.log('AttachmentUpsert returned', data);
+
+                    document.getElementById('file-input').value = '';
+
+                    self.addingAttachments('');
+
+                    self.parent.refresh();
+
+                    self.parent.loadEmail({
+                        EmailID: self.EmailID,
+                        EmailMessageID: self.EmailMessageID,
+                    });
+                })
+                .catch(err => {
+                    self.parent.modalBusy(false);
+
+                    self.addingAttachments('');
+
+                    document.getElementById('file-input').value = '';
+
+                    window.catchFetchError(err);
+                });
+        }
+
+    }, self);
+
+    self.selectedAttachment.subscribe(nv => {
+        if (nv) {
+            self.modalElement.querySelectorAll('.btn').forEach((e) => {
+                new bootstrap.Ripple(e);
+            });
+        }
+    })
 
     //#endregion
 
 
     //#region Methods
 
+    self.selectAttachment = (data, event) => {
+        // if this is not "disabled", then we can select
+        if (!self.attachmentsDisabled()) {
+            self.selectedAttachment(data);
+        }
+    }
+
     self.imageExtensions = [
         '.jpg', '.jpeg', '.png', '.tif', '.tiff', '.gif'
     ]
 
-    self.kendoIconClass = (data) => {
+    self.iconClass = (data) => {
 
         let extension = `.${data.FileExtension.toLowerCase()}`;
 
@@ -69,26 +205,28 @@
             return 'k-i-image';
 
         switch (extension) {
+            case '.html':
+                return 'bi bi-envelope-at';
             case '.txt':
-                return 'k-i-txt';
+                return 'k-icon k-i-txt';
             case '.csv':
-                return 'k-i-csv';
+                return 'k-icon k-i-csv';
             case '.xlsx':
             case '.xls':
             case '.xlsm':
-                return 'k-i-excel';
+                return 'k-icon k-i-excel';
             case '.docx':
             case '.doc':
             case '.docm':
-                return 'k-i-word';
+                return 'k-icon k-i-word';
             case '.ppt':
-                return 'k-i-ppt';
+                return 'k-icon k-i-ppt';
             case '.pdf':
-                return 'k-i-pdf';
+                return 'k-icon k-i-pdf';
             case '.psd':
-                return 'k-i-psd';
+                return 'k-icon k-i-psd';
             default:
-                return 'k-i-file';
+                return 'k-icon k-i-file';
         }
     }
 
@@ -111,9 +249,13 @@
                 .then(window.handleFetchResponse)
                 .then(data => {
                     console.log('flagProcessed returned', data);
-                    self.busy(false);
-                    //self.dashboard.fetch();
-                    //self.mailboxGridParams.widget().dataSource.read();
+
+                    self.parent.refresh();
+
+                    self.parent.loadEmail({
+                        EmailID: self.EmailID,
+                        EmailMessageID: self.EmailMessageID,
+                    });
                 })
                 .catch(err => {
                     self.busy(false);
@@ -127,8 +269,16 @@
         self.flag('Processed');
     }
 
+    self.flagUnprocessed = () => {
+        self.flag('Unprocessed');
+    }
+
     self.flagJunk = () => {
         self.flag('Junk');
+    }
+
+    self.flagUnjunk = () => {
+        self.flag('not junk');
     }
 
     //#endregion

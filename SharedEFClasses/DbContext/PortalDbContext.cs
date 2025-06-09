@@ -12,6 +12,7 @@ using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Maintenance;
 using SharedEFClasses.Models.Marketing;
 using SharedEFClasses.Models.Marylebone;
+using SharedEFClasses.Models.Mertex;
 using SharedEFClasses.Models.Mertexer;
 using SharedEFClasses.Models.OrderBook;
 using SharedEFClasses.Models.Orders;
@@ -104,6 +105,7 @@ namespace SharedEFClasses.Models
         public DbSet<Mertex.OrderTaker> OrderTakers { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<SupplierType> SupplierTypes { get; set; }
+        public DbSet<VATCode> VATCodes { get; set; }
 
         #endregion
 
@@ -417,6 +419,8 @@ namespace SharedEFClasses.Models
 
         public virtual DbSet<MertexLive.SupplierLive> Suppliers_Live { get; set; }
 
+        public virtual DbSet<MertexLive.SupplierTypeLive> SupplierTypes_Live { get; set; }
+
         public virtual DbSet<MertexLive.TradeAccountLive> TradeAccounts_Live { get; set; }
 
         public virtual DbSet<MertexLive.TradeAccountContactLive> TradeAccountContacts_Live { get; set; }
@@ -433,12 +437,17 @@ namespace SharedEFClasses.Models
 
         public virtual DbSet<MertexLive.BudgetHolder> BudgetHolders { get; set; }
 
+        public virtual DbSet<GeneralLedgerCode> GeneralLedgerCodes { get; set; }
+        public virtual DbSet<GeneralLedgerAnalysisGroupD> GeneralLedgerAnalysisGroupDs { get; set; }
+        public virtual DbSet<GeneralLedgerAccountType> GeneralLedgerAccountTypes { get; set; }
 
         #endregion
 
         #region Active Directory
 
         public virtual DbSet<ActiveDirectoryGroup> ActiveDirectoryGroups { get; set; }
+        public virtual DbSet<ActiveDirectoryUser> ActiveDirectoryUsers { get; set; }
+        public virtual DbSet<ActiveDirectoryUser_ActiveDirectoryGroup> ActiveDirectory_Users_Groups { get; set; }
 
         #endregion
 
@@ -615,7 +624,6 @@ namespace SharedEFClasses.Models
         public virtual DbSet<Mailbox> Mailboxes { get; set; }
         public virtual DbSet<MailboxFolder> MailboxFolders { get; set; }
         public virtual DbSet<MailboxFunction> MailboxFunctions { get; set; }
-        public virtual DbSet<EmailInvoice> EmailInvoices { get; set; }
         public virtual DbSet<BudgetHolderSuperSet> BudgetHolderSuperSet { get; set; }
         public virtual DbSet<EmailStatus> EmailStatuses { get; set; }
 

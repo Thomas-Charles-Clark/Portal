@@ -59,9 +59,17 @@ namespace SharedEFClasses.Models.MertexLive
         [StringLength(5)]
         public string MertexCurrencyCode { get; set; }
 
+        public string BudgetHolderCode { get; set; }
+
+        public byte? PaymentTermsID { get; set; }
+
+        public string SupplierTypeCode { get; set; }
+
+        public byte? CurrencyID { get; set; }
+
         [ForeignKey("MertexCurrencyCode")]
         [InverseProperty("Suppliers")]
-        public virtual ExchangeRate MertexCurrencyCodeNavigation { get; set; }
+        public virtual ExchangeRate ExchangeRate { get; set; }
 
         [JsonIgnore]
         [InverseProperty("DefaultSupplierCodeNavigation")]
@@ -78,5 +86,17 @@ namespace SharedEFClasses.Models.MertexLive
         [JsonIgnore]
         [InverseProperty("Supplier")]
         public virtual ICollection<Email> IncomingInvoiceEmails { get; set; }
+
+        [ForeignKey("BudgetHolderCode")]
+        public virtual BudgetHolder BudgetHolder { get; set; }
+
+        [ForeignKey("PaymentTermsID")]
+        public virtual PaymentTerms PaymentTerms { get; set; }
+
+        [ForeignKey("SupplierTypeCode")]
+        public virtual SupplierTypeLive SupplierType { get; set; }
+
+        [ForeignKey("CurrencyID")]
+        public virtual General.Currency Currency { get; set; }
     }
 }

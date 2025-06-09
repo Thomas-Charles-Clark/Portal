@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SharedEFClasses.Models.Leads;
+using SharedEFClasses.Models.MertexLive;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.Samples;
@@ -258,6 +259,10 @@ namespace SharedEFClasses.Models.General
         [JsonIgnore]
         [InverseProperty("Currency")]
         public virtual ICollection<TradeDeliveryContractPrice> TradeDeliveryContractPrices { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("Currency")]
+        public virtual ICollection<SupplierLive> MertexLiveSuppliers { get; set; }
     }
 
     public class Language

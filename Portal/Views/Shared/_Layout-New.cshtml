@@ -640,8 +640,7 @@
                            step: step
                         },
                         event: typeof events === 'undefined' ? null : events,
-                        disable: disable() || !enable()
-                        " />
+                        disable: disable() || !enable()" />
                     <div class="mdc-notched-outline">
                         <div class="mdc-notched-outline__leading"></div>
                         <!-- ko if: typeof label !== 'undefined' && label -->
@@ -1663,7 +1662,7 @@
                     'mdc-select--selected': multiSelectSettings.selectedState
                  }">
                 <select class="d-none mdc-select__native-control" data-bind="kendoDropDownList: multiSelectSettings"></select>
-                <div class="dropdown">
+                <div class="dropdown" data-bind="css: { 'selected': multiSelectSettings.observableArray().length }">
                     <button class="btn dropdown-toggle w-100"
                             type="button"
                             data-bind="

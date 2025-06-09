@@ -50,7 +50,12 @@ namespace SharedEFClasses.Models.Maintenance
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool Synced { get; set; }
 
+        public byte? PaymentTermsID { get; set; }
+
         [ForeignKey("ModifiedMemberID")]
         public virtual Member LastModifiedBy { get; set; }
+
+        [ForeignKey("PaymentTermsID")]
+        public virtual PaymentTerms PaymentTerms { get; set; }
     }
 }

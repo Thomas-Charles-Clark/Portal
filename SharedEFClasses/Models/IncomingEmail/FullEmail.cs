@@ -10,7 +10,7 @@ namespace SharedEFClasses.Models.IncomingEmail
         [Key]
         public long EmailID { get; set; }
 
-        public string MessageUUID { get; set; }
+        public string EmailMessageID { get; set; }
 
         public int MailboxID { get; set; }
 
@@ -88,6 +88,8 @@ namespace SharedEFClasses.Models.IncomingEmail
 
         [StringLength(50)]
         public string SupplierCode { get; set; }
+
+        public MertexLive.SupplierLive Supplier { get; set; }
 
         //public virtual ICollection<Attachment> Attachments
         //{

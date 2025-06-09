@@ -1,4 +1,6 @@
-﻿using Kendo.Mvc.Extensions;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+
+using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
@@ -11,20 +13,29 @@ using SharedEFClasses;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Components;
 using SharedEFClasses.Models.Documents;
+using SharedEFClasses.Models.Fenwick;
 using SharedEFClasses.Models.IncomingEmail;
 using SharedEFClasses.Utilities;
+using SimpleImpersonation;
+
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Management.Automation.Language;
 using System.Net;
 using System.Net.Http;
+using System.Net.Mail;
+using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
+
+using Attachment = SharedEFClasses.Models.IncomingEmail.Attachment;
 
 namespace Portal.Areas.Invoices.Controllers
 {
@@ -56,9 +67,65 @@ namespace Portal.Areas.Invoices.Controllers
 
         [HttpPost]
         public async Task<IHttpActionResult> Dashboard(
-            [FromBody] PassInvoiceBookingDashboardParams request)
+            [FromBody] PassInvoiceBookingDashboardParams dto)
         {
-            var results = await PortalDb.GetInvoiceBookingDashboard(request);
+            DateTime? toDt = DateTime.Now;
+
+            DateTime? fromDt = null;
+
+            switch (dto.DateRangeID)
+            {
+                case 12: /* Last 12 Months */
+                    fromDt = DateTime.Now.AddYears(-1);
+                    break;
+                case 6: /* Last 6 Months */
+                    fromDt = DateTime.Now.AddMonths(-6);
+                    break;
+                case 1: /* This Month */
+                    fromDt = DateTime.Now.AddDays(-DateTime.Now.Day).AddDays(1);
+                    break;
+                case 30: /* Last 30 Days */
+                    fromDt = DateTime.Now.AddDays(-30);
+                    break;
+                case -1: /* "Custom" */
+                    toDt = dto.To;
+                    fromDt = dto.From;
+                    break;
+                case -2: /* "All Time" noop */
+                    break;
+                case -3:
+                    switch (DateTime.Now.DayOfWeek)
+                    {
+                        case DayOfWeek.Monday:
+                            toDt = DateTime.Now.Date.AddDays(-4);
+                            break;
+                        case DayOfWeek.Tuesday:
+                            toDt = DateTime.Now.Date.AddDays(-4);
+                            break;
+                        case DayOfWeek.Wednesday:
+                            toDt = DateTime.Now.Date.AddDays(-4);
+                            break;
+                        case DayOfWeek.Thursday:
+                            toDt = DateTime.Now.Date.AddDays(-2);
+                            break;
+                        case DayOfWeek.Friday:
+                            toDt = DateTime.Now.Date.AddDays(-2);
+                            break;
+                        case DayOfWeek.Saturday:
+                            toDt = DateTime.Now.Date.AddDays(-2);
+                            break;
+                        case DayOfWeek.Sunday:
+                            toDt = DateTime.Now.Date.AddDays(-3);
+                            break;
+                    }
+                    break;
+            }
+
+            dto.To = toDt;
+
+            dto.From = fromDt;
+
+            var results = await PortalDb.GetInvoiceBookingDashboard(dto);
 
             return Ok(results);
         }
@@ -68,11 +135,108 @@ namespace Portal.Areas.Invoices.Controllers
             [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
             [FromUri] PassMailboxFolderParams dto)
         {
-            var stubs = PortalDb.EmailStubs
-                .Include("Supplier")
-                .Where(p =>
-                    p.MailboxID == dto.MailboxID &&
-                    p.Deleted == false).AsQueryable();
+            DateTime? toDt = DateTime.Now;
+
+            DateTime? fromDt = null;
+
+            switch (dto.DateRangeID)
+            {
+                case 12: /* Last 12 Months */
+                    fromDt = DateTime.Now.AddYears(-1);
+                    break;
+                case 6: /* Last 6 Months */
+                    fromDt = DateTime.Now.AddMonths(-6);
+                    break;
+                case 1: /* This Month */
+                    fromDt = DateTime.Now.AddDays(-DateTime.Now.Day).AddDays(1);
+                    break;
+                case 30: /* Last 30 Days */
+                    fromDt = DateTime.Now.AddDays(-30);
+                    break;
+                case -1: /* "Custom" */
+                    toDt = dto.ToDT;
+                    fromDt = dto.FromDT;
+                    break;
+                case -2: /* "All Time" noop */
+                    break;
+                case -3:
+                    switch (DateTime.Now.DayOfWeek)
+                    {
+                        case DayOfWeek.Monday:
+                            toDt = DateTime.Now.Date.AddDays(-4);
+                            break;
+                        case DayOfWeek.Tuesday:
+                            toDt = DateTime.Now.Date.AddDays(-4);
+                            break;
+                        case DayOfWeek.Wednesday:
+                            toDt = DateTime.Now.Date.AddDays(-4);
+                            break;
+                        case DayOfWeek.Thursday:
+                            toDt = DateTime.Now.Date.AddDays(-2);
+                            break;
+                        case DayOfWeek.Friday:
+                            toDt = DateTime.Now.Date.AddDays(-2);
+                            break;
+                        case DayOfWeek.Saturday:
+                            toDt = DateTime.Now.Date.AddDays(-2);
+                            break;
+                        case DayOfWeek.Sunday:
+                            toDt = DateTime.Now.Date.AddDays(-3);
+                            break;
+                    }
+                    break;
+            }
+
+            dto.ToDT = toDt;
+
+            dto.FromDT = fromDt;
+
+            var budgetHolderEmails = PortalDb.BudgetHolders.Select(bh => bh.Email).ToList();
+            
+            var adUserIds = PortalDb.ActiveDirectoryUsers.Where(u => budgetHolderEmails.Contains(u.Email)).Select(u => u.UserID).ToList();
+
+            var adUserGroups = PortalDb.ActiveDirectory_Users_Groups.Where(ug => adUserIds.Contains(ug.UserID)).ToList();
+
+            IQueryable<SharedEFClasses.Models.IncomingEmail.Email> stubs = null;
+
+            if (dto.ActiveDirectoryGroupIDs?.Any() == true)
+            {
+                adUserGroups = adUserGroups.Where(adug => dto.ActiveDirectoryGroupIDs.Contains(adug.GroupID)).ToList();
+
+                var userIds =  adUserGroups.Select(g => g.UserID).ToList();
+
+                stubs = PortalDb.EmailStubs
+                    .Include("Supplier")
+                    .Where(p =>
+                        userIds.Contains((int)p.Supplier.BudgetHolder.UserID) &&
+                        p.MailboxID == dto.MailboxID && 
+                        p.Deleted == false
+                    ).AsQueryable();
+            }
+            else
+            {
+                stubs = PortalDb.EmailStubs
+                    .Include("Supplier")
+                    .Where(p =>
+                        p.MailboxID == dto.MailboxID &&
+                        p.Deleted == false
+                ).AsQueryable();
+            }
+            //var groups = PortalDb.ActiveDirectoryGroups.Where(g => ){
+            //    var adUser = PortalDb.ActiveDirectoryUsers.SingleOrDefault(ad => ad.Email == bh.Email);
+            //    var groups = PortalDb.ActiveDirectory_Users_Groups.Where(ug => ug.UserID == adUser.UserID);
+            //    return groups;
+            //});
+
+            if (fromDt.HasValue)
+            {
+                request.Filters.Add(new Kendo.Mvc.FilterDescriptor("ReceivedDT", Kendo.Mvc.FilterOperator.IsGreaterThanOrEqualTo, fromDt.Value));
+            }
+
+            if (toDt.HasValue)
+            {
+                request.Filters.Add(new Kendo.Mvc.FilterDescriptor("ReceivedDT", Kendo.Mvc.FilterOperator.IsLessThanOrEqualTo, toDt.Value));
+            }
 
             return stubs.ToDataSourceResult(request);
         }
@@ -81,34 +245,64 @@ namespace Portal.Areas.Invoices.Controllers
         public async Task<IHttpActionResult> LoadEmailMessage(
             [FromBody] PassEmailMessageID dto)
         {
+            PortalDb.Configuration.ProxyCreationEnabled = false;
+
             var userId = PortalDb.Mailboxes.Single(m => m.MailboxID == dto.MailboxID).UserID;
 
-            var message = await PortalDb.EmailDigester_GetMessage(userId, dto.EmailMessageID);
+            var email = PortalDb.EmailStubs.Single(m => m.EmailID == dto.EmailID);
 
-            message.EmailID = dto.EmailID;
+            var supplier = PortalDb.Suppliers_Live.Include("Currency").Where(s => s.Code == email.SupplierCode).SingleOrDefault();
 
-            var attachments = PortalDb.Attachments.Where(a => a.EmailID == dto.EmailID).ToList();
+            var attachments = PortalDb.Attachments.Where(a => a.EmailID == dto.EmailID && a.Deleted == false).ToList();
 
-            message.Body = InlineImageSourceReplacer.Replace(message.Body, m => 
+            for (var i = 0; i < attachments.Count; i++)
             {
-                var f = m.Groups[2].Value;
-
-                var a = attachments.FirstOrDefault(al => System.IO.Path.GetFileName(al.ContentID) == f);
-
-                if (a != null)
+                attachments[i].SelectResult = await PortalDb.IncomingEmail_Attachment_ParsedData_Select(new PassAttachmentDetail()
                 {
-                    return $"src=\"/incomingemail/attachments/{(a.IsInline ? "inline" : "regular")}/{dto.EmailID}/{a.FileName}.{a.FileExtension}\"";
-                }
-                else
-                {
-                    return m.Value;
-                }
-            });
+                    AttachmentID = attachments[i].AttachmentID
+                });
+            }
 
-            return Ok(new { 
-                message,
-                attachments
-            });
+            try
+            {
+                var message = await PortalDb.EmailDigester_GetMessage(userId, dto.EmailMessageID);
+
+                message.EmailID = dto.EmailID;
+
+                message.SupplierCode = email.SupplierCode;
+
+                message.Supplier = supplier;
+
+                message.Body = InlineImageSourceReplacer.Replace(message.Body, m =>
+                {
+                    var f = m.Groups[2].Value;
+
+                    var a = attachments.FirstOrDefault(al => al.ContentID == f);
+
+                    if (a != null)
+                    {
+                        return $"src=\"/incomingemail/attachments/{(a.IsInline ? "inline" : "regular")}/{dto.EmailID}/{a.EmailAttachmentID}\"";
+                    }
+                    else
+                    {
+                        return m.Value;
+                    }
+                });
+
+                return Ok(new
+                {
+                    message,
+                    attachments
+                });
+            }
+            catch (SqlException)
+            {
+                return Ok(new
+                {
+                    message = email,
+                    attachments
+                });
+            } 
         }
 
         [HttpPost]
@@ -117,18 +311,177 @@ namespace Portal.Areas.Invoices.Controllers
         {
             var email = PortalDb.EmailStubs.Single(e => e.EmailID == dto.EmailID);
 
+            var now = DateTime.Now;
+
             switch (dto.State)
             {
                 case "Processed":
-                    email.ProcessedDT = DateTime.Now;
+                    email.ProcessedDT = now;
                     email.ProcessedMemberID = User.Identity.GetUserId<int>();
                     break;
+                case "Unprocessed":
+                    email.ProcessedDT = null;
+                    email.ProcessedMemberID = null;
+                    break;
                 case "Junk":
-                    //email.EmailStatusID = 3;
+                    email.JunkDT = now;
+                    email.JunkMemberID = User.Identity.GetUserId<int>();
+
+                    foreach(var a in email.Attachments)
+                    {
+                        a.AttachmentTypeID = 999;
+                    }
+
+                    break;
+                case "not junk":
+                    email.JunkDT = null;
+                    email.JunkMemberID = null;
+
+                    foreach (var a in email.Attachments)
+                    {
+                        a.AttachmentTypeID = 1;
+                    }
+
                     break;
             }
 
+            email.ProcessedType = "M";
+
             PortalDb.SaveChanges();
+
+            return Ok(new { });
+        }
+
+        [HttpPost]
+        public async Task<object> AttachmentUpsert()
+        {
+            // Check if the request contains multipart/form-data.
+            if (!Request.Content.IsMimeMultipartContent())
+            {
+                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+            }
+
+            try
+            {
+
+                var now = DateTime.Now;
+
+                var credentials = new UserCredentials("DESIGNERSGUILD\\SQLAgentFileAccess", "34949C02-4677-4711-999C-8E038E26B10F");
+
+                var token = credentials.LogonUser(LogonType.Interactive);
+
+                var baseFolder = $"\\\\files\\AppDataStore\\IncomingEmail\\RegularAttachments\\";
+
+                var root = HttpContext.Current.Server.MapPath("~/Uploads");
+
+                var provider = new MultipartFormDataStreamProvider(root);
+
+                var result = await Request.Content.ReadAsMultipartAsync(provider);
+
+                var files = new List<InvoiceAttachmentNugget>();
+
+                PassEmailMessageID dto = null;
+
+                // Show all the key-value pairs.
+                foreach (var key in provider.FormData.AllKeys)
+                {
+                    if (key == "obj")
+                    {
+                        dto = JsonConvert.DeserializeObject<PassEmailMessageID>(provider.FormData.GetValues(key)[0]);
+                    }
+                }
+
+                foreach (var f in provider.FileData)
+                {
+                    var bytes = File.ReadAllBytes(f.LocalFileName);
+
+                    files.Add(new InvoiceAttachmentNugget(f.LocalFileName, f.Headers.ContentDisposition.FileName.Replace("\"", ""), bytes, -1L));
+                }
+
+                for (var i = 0; i < files.Count(); i++)
+                {
+                    var f = files[i];
+
+                    var size = f.Contents.Count();
+
+                    if (size > 20971520) // 20mb max per file
+                    {
+                        return Request.CreateResponse(HttpStatusCode.ExpectationFailed, "File too large");
+                    }
+
+                    var identifier = $"Uploaded-{Guid.NewGuid().ToString()}";
+
+                    var a = new Attachment()
+                    {
+                        EmailID = dto.EmailID,
+                        EmailAttachmentID = identifier,
+                        AttachmentTypeID = 1,
+                        FileName = f.FileName,
+                        FileExtension = System.IO.Path.GetExtension(f.FileName).Replace(".", ""),
+                        ParsedMemberID = null,
+                        Size = size,
+                        IsInline = false,
+                        ContentID = identifier,
+                        CreatedDT = now,
+                        ModifiedDT = now,
+                        DeletedDT = null,
+                        ParsedDT = null
+                    };
+
+                    PortalDb.Attachments.Add(a);
+
+                    await PortalDb.SaveChangesAsync();
+
+                    f.AttachmentID = a.AttachmentID;
+                }
+
+                WindowsIdentity.RunImpersonated(token, () =>
+                {
+                    foreach (var f in files)
+                    {
+                        var destination = $"{baseFolder}\\{f.AttachmentID}{f.FileExtension}";
+
+                        var bytes = System.IO.File.ReadAllBytes(f.LocalFileName);
+
+                        System.IO.File.WriteAllBytes(destination, bytes);
+                    }
+                });
+
+                foreach (var f in files)
+                {
+                    System.IO.File.Delete(f.LocalFileName);
+                }
+
+                var email = PortalDb.EmailStubs.Single(e => e.EmailID == dto.EmailID);
+
+                email.RegularAttachmentCount = PortalDb.Attachments.Where(a => a.EmailID == dto.EmailID && a.Deleted == false).Count();
+
+                PortalDb.SaveChanges();
+
+                return Ok(new { });
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.ToString());
+            }
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> SaveSupplierDetail([FromBody] PassSupplierDetail dto)
+        {
+            dto.MemberID = User.Identity.GetUserId<int>();
+
+            var result = await PortalDb.IncomingEmail_Supplier_Save(dto);
+
+            return Ok(new { });
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> SaveAttachmentDetail([FromBody] PassAttachmentDetail dto)
+        {
+            dto.MemberID = User.Identity.GetUserId<int>();
+
+            var result = await PortalDb.IncomingEmail_Attachment_ParsedData_Save(dto);
 
             return Ok(new { });
         }

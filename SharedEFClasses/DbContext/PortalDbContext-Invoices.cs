@@ -199,7 +199,77 @@ namespace SharedEFClasses.Models
 
         public async Task<IEnumerable<InvoiceBookingDashboard>> GetInvoiceBookingDashboard(PassInvoiceBookingDashboardParams dto)
         {
-            var result = await this.Database.Connection.QueryAsync<InvoiceBookingDashboard>("[IncomingEmail].[Dashboard_Select]", dto, null, null, CommandType.StoredProcedure);
+            /*
+             
+                var productPageIds = new DataTable();
+
+                productPageIds.Columns.Add("ProductPageID", typeof(int));
+
+                foreach (var p in dto.ProductPageIDs.Distinct())
+                {
+                    productPageIds.Rows.Add(p);
+                }
+
+                var results = await this.Database.Connection.QueryAsync<string>("[ads].[ProductPageFeed_Download_Excel_Product]", new
+                {
+                    dto.CountryID,
+                    dto.LanguageID,
+                    dto.DisplayPrices,
+                    dto.UserID,
+                    dto.DisplayClearance,
+                    dto.TradeAccountCode,
+                    productPageIds
+                }, null, null, CommandType.StoredProcedure);
+
+             */
+
+            var groupIds = new DataTable();
+
+            groupIds.Columns.Add("I");
+
+            foreach (var g in dto.ActiveDirectoryGroupIDs)
+            {
+                groupIds.Rows.Add(g);
+            }
+
+            var result = await this.Database.Connection.QueryAsync<InvoiceBookingDashboard>("[IncomingEmail].[Dashboard_Select]", new { 
+                GroupIDs = groupIds,
+                dto.MailboxID,
+                dto.BudgetHolderCode,
+                dto.SupplierCode,
+                dto.From,
+                dto.To
+            }, null, null, CommandType.StoredProcedure);
+
+            return result;
+        }
+
+        public async Task<IncomingEmail_Attachment_ParsedData_SelectResult> IncomingEmail_Attachment_ParsedData_Select(PassAttachmentDetail dto)
+        {
+            var result = await this.Database.Connection.QuerySingleOrDefaultAsync<IncomingEmail_Attachment_ParsedData_SelectResult>("[IncomingEmail].[Attachment_ParsedData_Select]", new { 
+                AttachmentID = dto.AttachmentID
+            }, null, null, CommandType.StoredProcedure);
+
+            return result;
+        }
+
+        public async Task<int?> IncomingEmail_Attachment_ParsedData_Save(PassAttachmentDetail dto)
+        {
+            var result = await this.Database.Connection.QuerySingleOrDefaultAsync<int?>("[IncomingEmail].[Attachment_ParsedData_Save]", dto, null, null, CommandType.StoredProcedure);
+
+            return result;
+        }
+
+        public async Task<int?> IncomingEmail_Supplier_Save(PassSupplierDetail dto)
+        {
+            var result = await this.Database.Connection.QuerySingleOrDefaultAsync<int?>("[IncomingEmail].[Email_Supplier_Update]", dto, null, null, CommandType.StoredProcedure);
+
+            return result;
+        }
+
+        public async Task<int?> IncomingEmail_Attachment_Submit(PassAttachmentSubmit dto)
+        {
+            var result = await this.Database.Connection.QuerySingleOrDefaultAsync<int?>("[IncomingEmail].[Invoice_Submit]", dto, null, null, CommandType.StoredProcedure);
 
             return result;
         }

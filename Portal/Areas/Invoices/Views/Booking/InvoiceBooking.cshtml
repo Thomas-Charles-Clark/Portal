@@ -1,0 +1,393 @@
+﻿@model Portal.Areas.Invoices.ViewModels.InvoiceBookingViewModel
+@{
+    ViewBag.Title = "Invoice Booking";
+    Layout = "~/Views/Shared/_Layout-New.cshtml";
+}
+@section styles {
+    @*@Styles.Render("~/bundles/css/full-width-app")*@
+    @Styles.Render("~/bundles/css/kendo-custom")
+    @Styles.Render("~/bundles/css/generic-forms")
+    @Styles.Render("~/bundles/css/invoice-booking")
+    @Styles.Render("~/bundles/css/tempus-dominus")
+    @Styles.Render("~/bundles/css/mdc-custom")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/datetime-picker")
+    @Scripts.Render("~/bundles/js/generic-forms")
+    @Scripts.Render("~/bundles/js/invoice-booking")
+    @Scripts.Render("~/bundles/js/tempus-dominus")
+
+    <script type="text/javascript">
+        window.getMailboxId = () => {
+            return @Html.Raw(Model.MailboxID);
+        }
+        window.getDepartmentRestrictions = () => {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.LockedToDepartmentGroupIDs));
+        }
+        window.getBudgetHolderRestriction = () => {
+            return '@Html.Raw(Model.LockedToBudgetHolderCode)';
+        }
+    </script>
+
+    <script type="text/html" id="email-stub-row-template">
+        <tr class="email-stub">
+            <td data-bind="attr: { title: Supplier == null ? '' : `${SupplierCode} - ${Supplier?.Name}` }">
+                <span data-bind="html: Supplier == null ? '' : `${SupplierCode} - ${Supplier?.Name}`"></span>
+            </td>
+            <td data-bind="attr: { title: fromDisplay }">
+                <span data-bind="html: fromDisplay"></span>
+            </td>
+            <td data-bind="attr: { title: Subject }">
+                <span data-bind="html: Subject"></span>
+            </td>
+            <td data-bind="attr: { title: moment(ReceivedDT).format('dddd Do MMM YYYY HH:mm') }">
+                <span data-bind="html: moment(ReceivedDT).format('DD/MM/YYYY HH:mm')"></span>
+            </td>
+            <td>
+                <span data-bind="html: (Supplier == null ? 'n/a' : Supplier.BudgetHolder == null ? 'n/a' : Supplier.BudgetHolder.Name)"></span>
+            </td>
+            <td class="text-center attachment-count-cell">
+                <span class="icon-wrapper" data-bind="html: attachmentDisplay"></span>
+            </td>
+        </tr>
+    </script>
+
+    <script type="text/html" id="invoice-booking-invoice-template">
+        <div id="invoice-properties" class="card">
+            <div class="card-body">
+                <h5>
+                    Please enter the invoice details
+                </h5>
+                <div id="invoice-reference" class="attachment-property" data-bind="component: { name: 'mdc-text-field-component', params: invoiceReferenceParams }"></div>
+                <div id="invoice-date" class="attachment-property" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: invoiceDateParams }"></div>
+                <div id="invoice-terms" class="attachment-property" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsParams }"></div>
+                <div id="invoice-total-inc-vat-currency" class="attachment-property" data-bind="component: { name: 'mdc-text-field-numeric-component', params: invoiceTotalIncVATCurrencyParams }"></div>
+                <div id="total-vat-currency" class="attachment-property" data-bind="component: { name: 'mdc-text-field-numeric-component', params: vatTotalCurrencyParams }"></div>
+                <div class="attachment-property dispute-checkbox" data-bind="component: { name: 'mdc-checkbox-component', params: disputeParams }"></div>
+            </div>
+        </div>
+
+        <div id="general-ledger-entries" class="card">
+            <div class="card-body">
+                <h5>
+                    <span>
+                        General Ledger Breakdown
+                    </span>
+                    <button type="button" class="btn btn-dark add-entry-btn" data-bind="click: addGeneralLedgerEntry">
+                        <i class="bi bi-plus-lg"></i>
+                    </button>
+                </h5>
+                <ul class="list-group" data-bind="validationElement: generalLedgerSumEqualsTotalMinusVAT, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
+                    <!-- ko if: generalLedgerEntries().length == 0 -->
+                    <li class="list-group-item">
+                        [No Entries]
+                    </li>
+                    <!-- /ko -->
+                    <!-- ko foreach: generalLedgerEntries -->
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+                            <div class="attachment-property" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: generalLedgerCodeParams }"></div>
+                            <!-- ko if: $index() > 0 -->
+                            <button type="button" class="btn btn-close" data-bind="click: $parent.removeGeneralLedgerEntry"></button>
+                            <!-- /ko -->
+                        </div>
+                        <div class="attachment-property" data-bind="css: { 'px-0': $index() == 0 }, component: { name: 'mdc-text-field-numeric-component', params: amountExVATParams }"></div>
+                    </li>
+                    <!-- /ko -->
+                </ul>
+            </div>
+        </div>
+
+        <div id="vat-entries" class="card">
+            <div class="card-body">
+                <h5>
+                    <span>
+                        VAT Breakdown
+                    </span>
+                    <button type="button" class="btn btn-dark add-entry-btn" data-bind="click: addVATEntry">
+                        <i class="bi bi-plus-lg"></i>
+                    </button>
+                </h5>
+                <ul class="list-group" data-bind="validationElement: vatSumEqualsTotalVAT, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
+                    <!-- ko if: vatEntries().length == 0 -->
+                    <li class="list-group-item">
+                        [No Entries]
+                    </li>
+                    <!-- /ko -->
+                    <!-- ko foreach: vatEntries -->
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+                            <div class="attachment-property" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: vatCodeParams }"></div>
+                            <!-- ko if: $index() > 0 -->
+                            <button type="button" class="btn btn-close" data-bind="click: $parent.removeVATEntry"></button>
+                            <!-- /ko -->
+                        </div>
+                        <div class="attachment-property" data-bind="css: { 'px-0': $index() == 0 }, component: { name: 'mdc-text-field-numeric-component', params: vatParams }"></div>
+                    </li>
+                    <!-- /ko -->
+                </ul>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/html" id="invoice-booking-credit-note-template">
+        <h5>
+            Credit Note Properties
+        </h5>
+        <h5 class="mt-2">
+            Not yet implemented
+        </h5>
+    </script>
+
+    <script type="text/javascript">
+
+        var viewModel = invoiceBookingViewModel({
+            mailboxId: getMailboxId()
+        });
+
+        var vm = viewModel;
+
+        ko.options.deferUpdates = true;
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        ko.applyBindings(viewModel, document.body);
+
+        window.self = viewModel;
+
+        // let the engine cycle so bindings are evaluated before
+        window.setTimeout(() => {
+            viewModel.init();
+
+        }, 0);
+
+    </script>
+}
+
+<div class="blocker" data-bind="flexFadeVisible: busy">
+    <div class="loading-spinner"></div>
+    <h4 class="mt-3" data-bind="text: busyMessage"></h4>
+</div>
+
+<div id="application-heading" class="form-group row mb-3">
+    <div class="col-xs-12">
+        <div class="page-heading-logo">
+            <div></div>
+        </div>
+        <div class="page-heading text-right">
+            @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+            {
+                <h1 class="main-heading">
+                    @(Model.ApplicationHeading)
+                </h1>
+            }
+            @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+            {
+                <h4 class="sub-heading">
+                    <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+                </h4>
+            }
+        </div>
+    </div>
+</div>
+
+<div id="invoice-registration" class="card">
+    <div class="card-body">
+        <div id="dashboard" style="display: none" data-bind="visible: true, with: dashboard">
+            <!-- ko foreach: sortedPods -->
+            <div class="dashboard-pod card" data-bind="click: $parent.select, css: { 'active': $parent.selectedPod() == $data }">
+                <div class="card-body">
+                    <h4>
+                        <span data-bind="html: Label"></span>
+                    </h4>
+                    <h5>
+                        <span data-bind="html: RecordCount"></span>
+                    </h5>
+                </div>
+            </div>
+            <!-- /ko -->
+        </div>
+        <div class="d-flex gap-3">
+            <div id="inbox-browser">
+                <div id="email-list-prefilters" data-bind="with: filters">
+                    <div id="department-prefilter" class="prefilter" data-bind="component: { name: 'mdc-bootstrap-multiselect-component', params: departmentParams }"></div>
+                    <div id="budget-holder-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: budgetHolderParams }"></div>
+                    <div id="supplier-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierTypeParams }"></div>
+                    <div id="supplier-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+                    @*<div id="email-status-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: emailStatusParams }"></div>*@
+                    <div id="order-date-prefilter" class="prefilter">
+                        <div id="order-date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: dateRangeParams }"></div>
+                    </div>
+                    <div class="prefilter" style="display: none" data-bind="visible: dateRangeId() == -1">
+                        <div id="from-date" class="date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: fromDateParams }"></div>
+                    </div>
+                    <div class="prefilter" style="display: none" data-bind="visible: dateRangeId() == -1">
+                        <div id="to-date" class="date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: toDateParams }"></div>
+                        <span class="validation-message text-danger" data-bind="validationMessage: fromDate"></span>
+                        <span class="validation-message text-danger" data-bind="validationMessage: toDate"></span>
+                        <span class="validation-message text-danger" data-bind="validationMessage: fromPreceedsTo"></span>
+                    </div>
+                </div>
+                <div id="email-list" data-bind="kendoGrid: mailboxGridParams"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="email-modal">
+    <div class="modal-dialog modal-xl modal-xxl modal-xxxl modal-xxxxl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="blocker" data-bind="flexFadeVisible: modalBusy">
+                <div class="loading-spinner"></div>
+                <h4 class="mt-3" data-bind="text: modalBusyMessage"></h4>
+            </div>
+            <div class="modal-header">
+                <h5 class="modal-title d-flex justify-content-between align-items-center w-100 pe-2" data-bind="with: selectedEmail">
+                    <span>
+                        <span class="d-inline-flex gap-3">
+                            <span>
+                                From:
+                                <a class="text-white" data-bind="attr: { href: `mailto:${FromEmail}` }, text: (FromName == FromEmail ? FromName : `${FromName} - ${FromEmail}`)"></a>
+                            </span>
+                            <span data-bind="html: `Received: ${moment(ReceivedDT).format('DD/MM/YYYY HH:mm')}`, attr: { title: moment(ReceivedDT).format('dddd Do MMM YYYY HH:mm') }"></span>
+                            <span class="text-transparent" data-bind="text: `Email ID: ${EmailID}`"></span>
+                        </span>
+                        <span class="d-block" data-bind="html: `Subject: ${Subject}`"></span>
+                    </span>
+                    <div class="d-inline-flex gap-3">
+                        <nav class="nav">
+                            <button class="btn btn-light" type="button" data-bind="css: { 'disabled': navPreviousDisabled }, click: parent.previous">
+                                <i class="bi bi-chevron-left"></i>
+                                <span>
+                                    Previous
+                                </span>
+                            </button>
+                            <label>
+                                <span>
+                                    You're viewing item
+                                </span>
+                                <span data-bind="text: selectedEmailIndex"></span>
+                                <span>
+                                    of
+                                </span>
+                                <span data-bind="text: itemCount"></span>
+                            </label>
+                            <button class="btn btn-light" type="button" data-bind="css: { 'disabled': navNextDisabled }, click: parent.next">
+                                <span>
+                                    Next
+                                </span>
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+                        </nav>
+                    </div>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" data-bind="with: selectedEmail">
+                <ul id="attachments-list" class="list-unstyled mb-3" data-bind="css: { 'disabled': regularAttachments()[0].supplierCode() != '', 'mb-3': regularAttachments().length > 0, 'mb-2': regularAttachments().length == 0 }">
+                    <!-- ko foreach: regularAttachments -->
+                    <li class="attachment" data-bind="click: $parent.selectAttachment, css: { 'disabled': $parent.attachmentsDisabled, 'selected': $parent.selectedAttachment() == $data  }, attr: { title: $parent.attachmentsDisabled() ? 'Please specify a Supplier' : '' }">
+                        <span data-bind="class: $parent.iconClass($data)"></span>
+                        <div class="attachment-properties">
+                            <label data-bind="html: FileName, attr: { title: FileName }"></label>
+                            <span data-bind="text: FileSizeDisplay"></span>
+                        </div>
+                        <!-- ko if: attachmentType -->
+                        <div class="attachment-type" data-bind="with: attachmentType">
+                            <span data-bind="text: Name"></span>
+                        </div>
+                        <!-- /ko -->
+                    </li>
+                    <!-- /ko -->
+                    <!-- ko if: regularAttachments().length == 0 -->
+                    <li>
+                        <h4 class="mt-3">
+                            No Attachments
+                        </h4>
+                    </li>
+                    <!-- /ko -->
+                    <li id="add-attachments-item" class="attachment gap-3" data-bind="css: { 'disabled': attachmentsDisabled }, attr: { title: attachmentsDisabled() ? 'Please specify a Supplier' : '' }">
+                        <label for="file-input">
+                            <span class="k-icon k-i-file-add"></span>
+                            <span class="attachment-properties">
+                                <span>
+                                    Add Attachment(s)
+                                </span>
+                                <span>
+                                    (20 MB max per file)
+                                </span>
+                            </span>
+                            <form id="add-attachments-form" onsubmit="return false;">
+                                <input id="file-input" name="file-input" type="file" multiple
+                                       data-bind="forceNullOnEmpty: addAttachmentParams.observable, value: addAttachmentParams.observable, attr: { accept: addAttachmentParams.accept, disabled: attachmentsDisabled }" />
+                            </form>
+                        </label>
+                    </li>
+                </ul>
+                <div id="attachment-viewer" data-bind="with: selectedAttachment">
+                    <!-- ko if: isEmailBody -->
+                    <div id="email-body" class="p-2 d-flex flex-column" data-bind="html: Body"></div>
+                    <!-- /ko -->
+                    <!-- ko ifnot: isEmailBody -->
+                    <div id="attachment-iframe-wrapper" class="ratio">
+                        <iframe id="attachment-frame" data-bind="attr: { src: src }"></iframe>
+                    </div>
+                    <!-- /ko -->
+                    <div id="data-pane">
+                        <div style="display: none" class="mb-4" data-bind="visible: $data == $parent.attachments()[0]">
+                            <h5>
+                                Please <span data-bind="text:  $parent.regularAttachments()[0].supplierCode() != '' ? 'select an attachment' : 'specify a supplier'"></span>
+                            </h5>
+                        </div>
+                        <div id="attachment-fields">
+                            <div data-bind="css: { 'mb-3': !isEmailBody }">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <!-- ko if: $parent.regularAttachments().length == 1 && $parent.Processed == true -->
+                                    <button class="btn btn-secondary" data-bind="click: $parent.flagUnprocessed">
+                                        Flag as Unprocessed
+                                    </button>
+                                    <!-- /ko -->
+                                    <!-- ko if: $parent.regularAttachments().length == 1 && $parent.Processed == false -->
+                                    <button class="btn btn-success" data-bind="click: $parent.flagProcessed">
+                                        Flag as Processed
+                                    </button>
+                                    <!-- /ko -->
+                                    <div id="attachment-supplier-wrapper">
+                                        <div id="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+                                        <button type="button" class="btn btn-dark" data-bind="visible: supplierParams.locked, click: () => { supplierParams.locked(!supplierParams.locked()) }">
+                                            Change
+                                        </button>
+                                    </div>
+                                    <!-- ko if: $parent.Junk -->
+                                    <button class="btn btn-danger" type="button" data-bind="click: $parent.flagUnjunk">
+                                        Flag as not Junk
+                                    </button>
+                                    <!-- /ko -->
+                                    <!-- ko ifnot: $parent.Junk -->
+                                    <button class="btn btn-danger" type="button" data-bind="click: $parent.flagJunk">
+                                        Flag as Junk
+                                    </button>
+                                    <!-- /ko -->
+                                </div>
+                            </div>
+                            <!-- ko ifnot: isEmailBody -->
+                            <div class="attachment-property" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: attachmentTypeParams }"></div>
+                            <!-- ko if: properties -->
+                            <div class="mt-3" data-bind="template: { name: propertiesTemplateName, data: properties }"></div>
+                            <!-- /ko -->
+                            <!-- /ko -->
+                        </div>
+                        <button class="btn btn-success mt-3" type="button" data-bind="click: save">
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

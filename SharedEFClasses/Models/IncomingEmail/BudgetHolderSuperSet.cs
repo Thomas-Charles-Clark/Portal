@@ -26,6 +26,10 @@ namespace SharedEFClasses.Models.IncomingEmail
         [Column(Order = 3)]
         public string SupplierCode { get; set; }
 
+        [Key]
+        [Column(Order = 4)]
+        public string SupplierTypeCode { get; set; }
+
         [ForeignKey("GroupID")]
         public virtual ActiveDirectoryGroup Department { get; set; }
 
@@ -34,5 +38,8 @@ namespace SharedEFClasses.Models.IncomingEmail
 
         [ForeignKey("SupplierCode")]
         public virtual SupplierLive Supplier { get; set; }
+
+        [ForeignKey("SupplierTypeCode")]
+        public virtual SupplierTypeLive SupplierType { get; set; }
     }
 }

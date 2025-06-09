@@ -13,5 +13,6 @@ namespace SharedEFClasses.Models.OrderEntry
         public int TradeAccountID { get; set; }
         public long BasketID { get; set; }
         public decimal Quantity { get; set; }
+        public string Notes { get; set; }
     }
 }

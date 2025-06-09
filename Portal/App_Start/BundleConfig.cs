@@ -479,7 +479,7 @@ namespace Portal
                     $"{jsPrefix}/models/product-search{jsSuffix}",
                     $"{jsPrefix}/models/order-search{jsSuffix}",
                     $"{jsPrefix}/models/order-products-basket-splitter{jsSuffix}",
-                    $"{jsPrefix}/models/order-products-stock-check-request{jsSuffix}",
+                    $"{jsPrefix}/models/stock-check-request{jsSuffix}",
                     $"{jsPrefix}/models/order-products{jsSuffix}",
                     $"{jsPrefix}/models/order-products-drilldown{jsSuffix}",
                     $"{jsPrefix}/models/order-products-member-basket-fetcher{jsSuffix}",
@@ -593,7 +593,7 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/sample-request-dg").Include(
-                        $"{jsPrefix}/models/order-products-stock-check-request{jsSuffix}",
+                        $"{jsPrefix}/models/stock-check-request{jsSuffix}",
                         $"{jsPrefix}/models/sample-request-dg{jsSuffix}"
                 ));
 
@@ -920,8 +920,10 @@ namespace Portal
                         $"{jsPrefix}/models/emailer{jsSuffix}",
                         $"{jsPrefix}/models/invoice-booking-email{jsSuffix}",
                         $"{jsPrefix}/models/invoice-booking-email-attachment{jsSuffix}",
-                        $"{jsPrefix}/models/invoice-booking-email-invoice{jsSuffix}",
-                        $"{jsPrefix}/models/invoice-booking-email-credit-note{jsSuffix}",
+                        $"{jsPrefix}/models/invoice-booking-email-attachment-invoice{jsSuffix}",
+                        $"{jsPrefix}/models/invoice-booking-email-attachment-credit-note{jsSuffix}",
+                        $"{jsPrefix}/models/invoice-booking-email-attachment-invoice-VAT{jsSuffix}",
+                        $"{jsPrefix}/models/invoice-booking-email-attachment-invoice-GL{jsSuffix}",
                         $"{jsPrefix}/models/invoice-booking-filters{jsSuffix}",
                         $"{jsPrefix}/models/invoice-booking-dashboard{jsSuffix}",
                         $"{jsPrefix}/models/invoice-booking{jsSuffix}"
