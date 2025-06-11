@@ -4,14 +4,27 @@
 } = {
 
     }) => {
-    let self = Object.assign(rec, {
-        supplierCurrency: parent.supplierCurrency,
+    let self = Object.assign({
         validateNow: parent.validateNow
-    });
+    }, rec);
 
     //#region Properties
 
     self.busy = ko.observable(false);
+
+    self.supplierCode = ko.observable(self.SupplierCode ?? '').extend({
+        notEqual: {
+            params: '',
+            onlyIf: self.validateNow,
+            message: 'Please specify a Supplier'
+        }
+    });
+
+    self.supplier = ko.observable(self.Supplier);
+
+    self.supplierCurrency = ko.computed(() => {
+        return self.supplier() && self.supplier().Currency;
+    }, self);
 
     self.supplierInvoiceReference = ko.observable(rec.SupplierInvoiceCode).extend({
         required: {
@@ -84,7 +97,7 @@
         }
     });
 
-    self.vatTotalCurrency = ko.observable(+rec?.VATValues?.reduce((a, i) => a += i, 0)).extend({
+    self.vatTotalCurrency = ko.observable(rec?.VATValues?.reduce((a, i) => a += i, 0)).extend({
         required: {
             params: true,
             onlyIf: self.validateNow,
@@ -132,6 +145,78 @@
 
     //#region Components
 
+    self.supplierParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Supplier',
+        odata: true,
+        endPoint: '/odata/MertexLiveSuppliers?$expand=Currency,ExchangeRate,PaymentTerms',
+        textField: 'Name',
+        valueField: 'Code',
+        template: (e) => {
+            return `${e.Code} - ${e.Name}`;
+        },
+        idObservable: self.supplierCode,
+        objObservable: self.supplier,
+        originalValue: self.supplierCode(),
+        virtual: true,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/MertexLiveSuppliers/Default.MertexLiveSupplierValueMapper(supplierCode='${options.value}')?$expand=Currency,ExchangeRate,PaymentTerms`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                            self.supplier(data.value[0]);
+                            if (self.paymentTermsCode() == null) {
+                                self.paymentTermsCode(data.value[0].PaymentTerms?.Code);
+                            }
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        locked: ko.observable(self.readOnly == false && self.supplierCode() != ''),
+        enable: ko.observable(true),
+        disable: ko.observable(self.readOnly),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'Name'
+        },
+        select: function (e) {
+            console.log('supplierParams select', e);
+        },
+        clearFunction: () => {
+            self.supplierParams.dropDownListSettings.widget().value('');
+            self.supplierParams.dropDownListSettings.widget().trigger('change');
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            return d;
+        },
+        popupSettings: {
+            appendTo: document.querySelector('#email-modal .modal-body')
+        }
+    });
+
     self.invoiceTotalIncVATCurrencyParams = {
         label: 'Invoice Total (Inc. VAT) in Currency',
         buttons: false,
@@ -141,7 +226,8 @@
         decorateInputElement: false,
         insertValidationMessages: false,
         enable: ko.observable(true),
-        disable: ko.observable(false),
+        disable: ko.observable(self.readOnly),
+        locked: ko.observable(self.readOnly),
         clearable: ko.observable(true),
         revertible: ko.observable(true),
         busy: ko.observable(false),
@@ -166,7 +252,8 @@
         decorateInputElement: false,
         insertValidationMessages: false,
         enable: ko.observable(true),
-        disable: ko.observable(false),
+        disable: ko.observable(self.readOnly),
+        locked: ko.observable(self.readOnly),
         clearable: ko.observable(true),
         revertible: ko.observable(true),
         busy: ko.observable(false),
@@ -223,6 +310,8 @@
             },
             viewDate: self.invoiceDate() ? new Date(self.invoiceDate()) : new Date()
         },
+        disabled: ko.observable(self.readOnly),
+        locked: ko.observable(self.readOnly),
         clearable: ko.observable(false),
         clearFunction: () => {
             self.invoiceDate(undefined);
@@ -247,7 +336,8 @@
         idObservable: self.paymentTermsCode,
         objObservable: self.paymentTerms,
         enable: ko.observable(true),
-        disable: ko.observable(false),
+        disable: ko.observable(self.readOnly),
+        locked: ko.observable(self.readOnly),
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         readOnly: false,
@@ -296,7 +386,9 @@
         revertible: ko.observable(false),
         useNativeValidation: false,
         insertValidationMessages: false,
-        decorateInputElement: true
+        decorateInputElement: true,
+        disable: ko.observable(self.readOnly),
+        locked: ko.observable(self.readOnly)
     };
 
     self.disputeParams = {
@@ -305,7 +397,7 @@
         observable: self.dispute,
         useNativeValidation: false,
         enable: ko.observable(true),
-        disable: ko.observable(false),
+        disable: ko.observable(self.readOnly),
         busy: ko.observable(false)
     }
 

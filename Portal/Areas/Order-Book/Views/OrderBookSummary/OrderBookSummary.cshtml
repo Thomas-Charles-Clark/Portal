@@ -14,7 +14,7 @@
     @Scripts.Render("~/bundles/js/tempus-dominus")
     @Scripts.Render("~/bundles/js/order-book")
 
-<script type="text/javascript">
+    <script type="text/javascript">
 
         window.getMainResult = () => {
             return @Html.Raw(JsonConvert.SerializeObject(Model.MainResult));
@@ -43,7 +43,7 @@
 
         window.self = viewModel;
 
-</script>
+    </script>
 }
 @section modals {
     @Html.Partial("Modals/_ImageModalNew")
@@ -183,6 +183,49 @@
     </ul>
 </script>
 
+<script type="text/html" id="orders-values-dropdown-container">
+    <ul class="dropdown-menu display-mode-list">
+        <li class="dropdown-menu-controls d-flex gap-2" data-bind="click: () => { }, clickBubble: false">
+            <button class="btn btn-secondary btn-sm" data-bind="click: () => { displayModes([...$root.availableDisplayModesOrders().flatMap(adm => [...adm.children.map(c => c.value)].concat([adm.value]))]); }, clickBubble: false">
+                Select All
+            </button>
+            <button class="btn btn-secondary btn-sm" data-bind="click: () => { displayModes([]); }, clickBubble: false">
+                Deselect All
+            </button>
+            <button class="btn btn-secondary btn-sm ms-auto" data-bind="click: (data, event) => { bootstrap.Dropdown.getOrCreateInstance(event.currentTarget.closest('.dropdown').querySelector('.dropdown-toggle')).hide(); }, clickBubble: false">
+                Close
+            </button>
+        </li>
+        <!-- ko foreach: $root.availableDisplayModesOrders -->
+        <li data-bind="css: { 'disabled': $parent.displayModes().length == 1 && $parent.displayModes()[0] == value }">
+            <label class="form-check" data-bind="attr: { 'for': `order-group-${$parent.orderGroupId}-display-mode-${value}` }, click: function() { return true }, clickBubble: false">
+                <input class="form-check-input" type="checkbox" data-bind="checked: $parent.displayModes,
+                        checkedValue: value,
+                        attr: {
+                            id: `order-group-${$parent.orderGroupId}-display-mode-${value}`,
+                            disabled: $parent.displayModes().length == 1 && $parent.displayModes()[0] == value
+                        }" />
+                <span data-bind="text: label"></span>
+            </label>
+        </li>
+        <!-- ko foreach: children -->
+        <li data-bind="visible: $parentContext.$parent.displayModes().indexOf($parent.value) > -1" style="padding-left: 2rem;">
+            <label class="form-check" data-bind="attr: { 'for': `order-group-${$parentContext.$parent.orderGroupId}-display-mode-${value}` }, click: function() { return true }, clickBubble: false">
+                <input class="form-check-input" type="checkbox" data-bind="checked: $parentContext.$parent.displayModes,
+                checkedValue: value,
+                attr: {
+                    id: `order-group-${$parentContext.$parent.orderGroupId}-display-mode-${value}`,
+                    disabled: $parentContext.$parent.displayModes().length == 1 && $parentContext.$parent.displayModes()[0] == value
+                }" />
+                <span data-bind="text: label"></span>
+            </label>
+        </li>
+        <!-- /ko -->
+        <!-- /ko -->
+    </ul>
+</script>
+
+
 <script type="text/html" id="management-prompt-tabs-values-dropdown-container">
     <ul class="dropdown-menu display-mode-list">
         <li class="dropdown-menu-controls d-flex gap-2" data-bind="click: () => { }, clickBubble: false">
@@ -254,6 +297,29 @@
                 </div>
             </div>
             <div class="accordion-item">
+                <h5 class="accordion-header" id="header-accordion-five-header">
+                    <button class="accordion-button" type="button" aria-expanded="true" aria-controls="header-accordion-five" data-bind="with: ordersFilters, click: toggleOrders, css: { collapsed: ordersCollapse }">
+                        <span>
+                            Orders
+                        </span>
+                        @*<a class="btn display-control-btn btn-sm btn-export no-ripple" href="#" data-bind="click: (data, event) => { exportOrders(data, JSON.parse(parent.userDefinedFilters.json())) }, clickBubble: false">
+                                <i class="bi bi-filetype-xlsx"></i>
+                            </a>*@
+                        <div class="dropdown">
+                            <a class="btn display-control-btn btn-sm dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
+                                <i class="bi bi-list-check"></i>
+                            </a>
+                            <!-- ko template: { name: 'orders-values-dropdown-container' } --><!-- /ko -->
+                        </div>
+                    </button>
+                </h5>
+                <div id="header-accordion-five" class="accordion-collapse collapse" aria-labelledby="header-accordion-five" data-bind="css: { show: !ordersCollapse() }">
+                    <div class="accordion-body">
+                        @Html.Partial("_OrdersInfo")
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
                 <h5 class="accordion-header" id="header-accordion-two-header">
                     <button class="accordion-button" type="button" aria-expanded="true" aria-controls="header-accordion-two" data-bind="with: preDefinedFilters, click: togglePrompts, css: { collapsed: podsCollapse }">
                         <span>
@@ -271,6 +337,9 @@
                             </a>
                             <!-- ko template: { name: 'values-dropdown-container' } --><!-- /ko -->
                         </div>
+                        <a class="btn no-ripple" style="text-decoration: underline" href="#" type="button" data-bind="click: $root.showSummaryModal, clickBubble: false">
+                            Summary
+                        </a>
                     </button>
                 </h5>
                 <div id="header-accordion-two" class="accordion-collapse collapse show" aria-labelledby="header-accordion-two" data-bind="css: { show: !podsCollapse() }">

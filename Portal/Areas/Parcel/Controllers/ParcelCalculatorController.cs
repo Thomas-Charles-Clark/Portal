@@ -30,7 +30,7 @@ namespace Portal.Areas.Products.Controllers
 
         public async Task<ActionResult> Index()
         {
-            var application = PortalDb.Applications.Where(p => p.ControllerName == "calculator" && p.AreaName == "parcel" && p.ActionName == "index").Single();
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "parcelcalculator" && p.AreaName == "parcel" && p.ActionName == "index").Single();
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 

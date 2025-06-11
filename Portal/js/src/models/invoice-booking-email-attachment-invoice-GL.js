@@ -5,7 +5,8 @@
 
     }) => {
     let self = Object.assign(rec, {
-        validateNow: parent.validateNow
+        validateNow: parent.validateNow,
+        readOnly: parent.readOnly
     });
 
     //#region Properties
@@ -87,7 +88,11 @@
             return `${e.Code} - ${e.AnalysisCodeDescription}`
         },
         valueTemplate: (e) => {
-            return `${e.Code} - ${e.AnalysisCodeDescription}`
+            if (e.Code != null && e.Code != '' && e.AnalysisCodeDescription != null && e.AnalysisCodeDescription != '') {
+                return `${e.Code} - ${e.AnalysisCodeDescription}`;
+            } else {
+                return '';
+            }
         },
         //grouping: [{
         //    field: 'Type.Code',
@@ -100,14 +105,14 @@
         idObservable: self.generalLedgerCode,
         objObservable: self.generalLedger,
         enable: ko.observable(true),
-        disable: ko.observable(false),
+        disable: ko.observable(self.readOnly),
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         readOnly: false,
         filter: 'contains',
         height: 340,
         parameterMap: (data) => {
-            //Generate parameters in odata v4 format
+            //Generate parame.Code && e.Nameeters in odata v4 format
             let d = kendo.data.transports['odata-v4'].parameterMap(data);
 
             /// thanks, https://stackoverflow.com/questions/28995757/a-binary-operator-with-incompatible-types-was-detected-found-operand-types-edm/48919770
@@ -142,7 +147,7 @@
         decorateInputElement: false,
         insertValidationMessages: false,
         enable: ko.observable(true),
-        disable: ko.observable(false),
+        disable: ko.observable(self.readOnly),
         clearable: ko.observable(true),
         revertible: ko.observable(true),
         busy: ko.observable(false),

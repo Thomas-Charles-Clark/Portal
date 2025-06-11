@@ -56,9 +56,15 @@
     <script type="text/html" id="invoice-booking-invoice-template">
         <div id="invoice-properties" class="card">
             <div class="card-body">
-                <h5>
+                <h5 class="data-heading">
                     Please enter the invoice details
                 </h5>
+                <div class="attachment-property attachment-supplier-wrapper"> @* $parent here navigates you back up to the "attachment" level from the "invoice" level. *@
+                    <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+                    <button type="button" class="btn btn-dark" data-bind="visible: supplierParams.locked, click: () => { supplierParams.locked(!supplierParams.locked()) }">
+                        Change
+                    </button>
+                </div>
                 <div id="invoice-reference" class="attachment-property" data-bind="component: { name: 'mdc-text-field-component', params: invoiceReferenceParams }"></div>
                 <div id="invoice-date" class="attachment-property" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: invoiceDateParams }"></div>
                 <div id="invoice-terms" class="attachment-property" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsParams }"></div>
@@ -74,7 +80,7 @@
                     <span>
                         General Ledger Breakdown
                     </span>
-                    <button type="button" class="btn btn-dark add-entry-btn" data-bind="click: addGeneralLedgerEntry">
+                    <button type="button" class="btn btn-dark add-entry-btn" data-bind="click: addGeneralLedgerEntry, disable: readOnly">
                         <i class="bi bi-plus-lg"></i>
                     </button>
                 </h5>
@@ -105,7 +111,7 @@
                     <span>
                         VAT Breakdown
                     </span>
-                    <button type="button" class="btn btn-dark add-entry-btn" data-bind="click: addVATEntry">
+                    <button type="button" class="btn btn-dark add-entry-btn" data-bind="click: addVATEntry, disable: readOnly">
                         <i class="bi bi-plus-lg"></i>
                     </button>
                 </h5>
@@ -289,7 +295,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" data-bind="with: selectedEmail">
-                <ul id="attachments-list" class="list-unstyled mb-3" data-bind="css: { 'disabled': regularAttachments()[0].supplierCode() != '', 'mb-3': regularAttachments().length > 0, 'mb-2': regularAttachments().length == 0 }">
+                <ul id="attachments-list" class="list-unstyled mb-3" data-bind="css: { 'mb-3': regularAttachments().length > 0, 'mb-2': regularAttachments().length == 0 }">
                     <!-- ko foreach: regularAttachments -->
                     <li class="attachment" data-bind="click: $parent.selectAttachment, css: { 'disabled': $parent.attachmentsDisabled, 'selected': $parent.selectedAttachment() == $data  }, attr: { title: $parent.attachmentsDisabled() ? 'Please specify a Supplier' : '' }">
                         <span data-bind="class: $parent.iconClass($data)"></span>
@@ -339,13 +345,12 @@
                     </div>
                     <!-- /ko -->
                     <div id="data-pane">
-                        <div style="display: none" class="mb-4" data-bind="visible: $data == $parent.attachments()[0]">
-                            <h5>
-                                Please <span data-bind="text:  $parent.regularAttachments()[0].supplierCode() != '' ? 'select an attachment' : 'specify a supplier'"></span>
-                            </h5>
-                        </div>
-                        <div id="attachment-fields">
-                            <div data-bind="css: { 'mb-3': !isEmailBody }">
+                        <!-- ko if: isEmailBody || $parent.supplier() == null -->
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="data-heading">
+                                    Email Details
+                                </h5>
                                 <div class="d-flex align-items-center justify-content-between">
                                     <!-- ko if: $parent.regularAttachments().length == 1 && $parent.Processed == true -->
                                     <button class="btn btn-secondary" data-bind="click: $parent.flagUnprocessed">
@@ -357,9 +362,9 @@
                                         Flag as Processed
                                     </button>
                                     <!-- /ko -->
-                                    <div id="attachment-supplier-wrapper">
-                                        <div id="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
-                                        <button type="button" class="btn btn-dark" data-bind="visible: supplierParams.locked, click: () => { supplierParams.locked(!supplierParams.locked()) }">
+                                    <div class="attachment-supplier-wrapper">
+                                        <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: $parent.supplierParams }"></div>
+                                        <button type="button" class="btn btn-dark" data-bind="visible: $parent.supplierParams.locked, click: () => { $parent.supplierParams.locked(!$parent.supplierParams.locked()) }">
                                             Change
                                         </button>
                                     </div>
@@ -375,16 +380,36 @@
                                     <!-- /ko -->
                                 </div>
                             </div>
-                            <!-- ko ifnot: isEmailBody -->
-                            <div class="attachment-property" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: attachmentTypeParams }"></div>
-                            <!-- ko if: properties -->
-                            <div class="mt-3" data-bind="template: { name: propertiesTemplateName, data: properties }"></div>
-                            <!-- /ko -->
-                            <!-- /ko -->
                         </div>
-                        <button class="btn btn-success mt-3" type="button" data-bind="click: save">
+                        <!-- /ko -->
+                        <!-- ko if: isEmailBody == false && $parent.supplier() != null  -->
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="data-heading">
+                                    Attachment Details
+                                    <span class="text-transparent" data-bind="text: `Attachment ID: ${AttachmentID}`"></span>
+                                    @if (User.IsInRole("Super Admin"))
+                                    {
+                                        <div class="form-check form-switch" style="display: none" data-bind="visible: Parsed">
+                                            <label class="form-check-label" for="display-toggle">
+                                                <span data-bind="text: `Displaying ${($parent.displayMostRecent() ? 'most recent' : 'original')} data`"></span>
+                                            </label>
+                                            <input class="form-check-input" type="checkbox" id="display-toggle" switch data-bind="checked: $parent.displayMostRecent">
+                                        </div>
+                                    }
+                                </h5>
+                                <div class="attachment-property" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: attachmentTypeParams }"></div>
+                            </div>
+                        </div>
+                        <!-- ko if: attachmentTypeId() != 1 -->
+                        <!-- ko if: properties -->
+                        <div data-bind="template: { name: propertiesTemplateName, data: properties }"></div>
+                        <!-- /ko -->
+                        <button class="btn btn-success w-100 save-btn" type="button" data-bind="click: save, disable: readOnly">
                             Save
                         </button>
+                        <!-- /ko -->
+                        <!-- /ko -->
                     </div>
                 </div>
             </div>

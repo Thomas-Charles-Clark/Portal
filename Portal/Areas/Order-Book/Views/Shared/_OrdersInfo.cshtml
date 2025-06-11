@@ -1,0 +1,173 @@
+﻿@model SharedEFClasses.BaseViewModel
+<div id="orders-filters-tab-container" data-bind="style: { '--first-column-count': ordersFilters.groups().slice(1).findIndex(g => g.Label == ''), '--second-column-count': ordersFilters.groups().length - ordersFilters.groups().slice(1).findIndex(g => g.Label == '') - 2 }">
+    <div class="blocker-wrapper" style="display: flex; opacity: 1" data-bind="flexFadeVisible: ordersFilters.busy">
+        <div class="blocker-message-wrapper loading-wrapper">
+            <div class="loading-spinner"></div>
+            <h4 class="mt-1 mb-0">
+                Please wait...
+            </h4>
+        </div>
+    </div>
+    <div data-bind="with: ordersFilters">
+        <div class="orders-section" data-bind="visible: displayModes().indexOf(DISPLAY_MODE_ORDER_TOTAL) > -1">
+            <div class="orders-header">
+                <h5 class="orders-group-title">
+                    Value of Orders
+                </h5>
+                <!-- ko foreach: groups -->
+                <!-- ko if: $index() > 0 -->
+                <span data-bind="text: Label, class: `orders-cell-${CellType.toLowerCase()}`"></span>
+                <!-- /ko -->
+                <!-- /ko -->
+            </div>
+            <div>
+                <!-- ko foreach: groups -->
+                <span class="downloadable" data-bind="text: OrderTotal_Row1, class: `orders-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportOrders({ label: `Orders_Total_${$parent.fetchLabel($index(), 'OrderTotal_Row1')}_${Label}`, startDt: data.OrderTotal_Row1_StartDT, endDt: data.OrderTotal_Row1_EndDT }) }, clickBubble: false"></span>
+                <!-- /ko -->
+            </div>
+            <div>
+                <!-- ko foreach: groups -->
+                <span class="downloadable" data-bind="text: OrderTotal_Row2, class: `orders-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportOrders({ label: `Orders_Total_${$parent.fetchLabel($index(), 'OrderTotal_Row2')}_${Label}`, startDt: data.OrderTotal_Row2_StartDT, endDt: data.OrderTotal_Row2_EndDT }) }, clickBubble: false"></span>
+                <!-- /ko -->
+            </div>
+            <div>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: OrderTotal_Row3, class: `orders-cell-${CellType.toLowerCase()}`, css: { 'red': CellType != 'L' && OrderTotal_Row3?.indexOf('-') == 0 }"></span>
+                <!-- /ko -->
+            </div>
+            <div>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: OrderTotal_Row4, class: `orders-cell-${CellType.toLowerCase()}`, css: { 'red': CellType != 'L' && OrderTotal_Row4?.indexOf('-') == 0 }"></span>
+                <!-- /ko -->
+            </div>
+        </div>
+        <div class="orders-section" data-bind="visible: displayModes().indexOf(DISPLAY_MODE_CANCELLED_TOTAL) > -1">
+            <div class="orders-header">
+                <h5 class="orders-group-title">
+                    Value of Cancelled Orders
+                </h5>
+                <!-- ko foreach: groups -->
+                <!-- ko if: $index() > 0 -->
+                <span data-bind="text: Label, class: `orders-cell-${CellType.toLowerCase()}`"></span>
+                <!-- /ko -->
+                <!-- /ko -->
+            </div>
+            <div>
+                <!-- ko foreach: groups -->
+                <span class="downloadable" data-bind="text: CancelledTotal_Row1, class: `orders-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportOrders({ label: `Cancelled_Totals_${$parent.fetchLabel($index(), 'CancelledTotal_Row1')}_${Label}`, startDt: data.CancelledTotal_Row1_StartDT, endDt: data.CancelledTotal_Row1_EndDT, enquiryType: 'C' }) }, clickBubble: false"></span>
+                <!-- /ko -->
+            </div>
+            <div>
+                <!-- ko foreach: groups -->
+                <span class="downloadable" data-bind="text: CancelledTotal_Row2, class: `orders-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportOrders({ label: `Cancelled_Totals_${$parent.fetchLabel($index(), 'CancelledTotal_Row2')}_${Label}`, startDt: data.CancelledTotal_Row2_StartDT, endDt: data.CancelledTotal_Row2_EndDT, enquiryType: 'C' }) }, clickBubble: false"></span>
+                <!-- /ko -->
+            </div>
+            <div>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: CancelledTotal_Row3, class: `orders-cell-${CellType.toLowerCase()}`, css: { 'red': CellType != 'L' && CancelledTotal_Row3?.indexOf('-') == -1 }"></span>
+                <!-- /ko -->
+            </div>
+            <div>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: CancelledTotal_Row4, class: `orders-cell-${CellType.toLowerCase()}`, css: { 'red': CellType != 'L' && CancelledTotal_Row4?.indexOf('-') == -1 }"></span>
+                <!-- /ko -->
+            </div>
+        </div>
+        <div class="orders-section" data-bind="visible: displayModes().indexOf(DISPLAY_MODE_ORDER_COUNT) > -1">
+            <div class="orders-header">
+                <h5 class="orders-group-title">
+                    Number of Orders
+                </h5>
+                <!-- ko foreach: groups -->
+                <!-- ko if: $index() > 0 -->
+                <span data-bind="text: Label, class: `orders-cell-${CellType.toLowerCase()}`"></span>
+                <!-- /ko -->
+                <!-- /ko -->
+            </div>
+            <div>
+                <!-- ko foreach: groups -->
+                <span class="downloadable" data-bind="text: OrderCount_Row1, class: `orders-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportOrders({ label: `Orders_Count_${$parent.fetchLabel($index(), 'OrderCount_Row1')}_${Label}`, startDt: data.OrderCount_Row1_StartDT, endDt: data.OrderCount_Row1_EndDT }) }, clickBubble: false"></span>
+                <!-- /ko -->
+            </div>
+            <div>
+                <!-- ko foreach: groups -->
+                <span class="downloadable" data-bind="text: OrderCount_Row2, class: `orders-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportOrders({ label: `Orders_Count_${$parent.fetchLabel($index(), 'OrderCount_Row2')}_${Label}`, startDt: data.OrderCount_Row2_StartDT, endDt: data.OrderCount_Row2_EndDT }) }, clickBubble: false"></span>
+                <!-- /ko -->
+            </div>
+            <div>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: OrderCount_Row3, class: `orders-cell-${CellType.toLowerCase()}`, css: { 'red': CellType != 'L' && OrderCount_Row3?.indexOf('-') == 0 }"></span>
+                <!-- /ko -->
+            </div>
+            <div>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: OrderCount_Row4, class: `orders-cell-${CellType.toLowerCase()}`, css: { 'red': CellType != 'L' && OrderCount_Row4?.indexOf('-') == 0 }"></span>
+                <!-- /ko -->
+            </div>
+        </div>
+        <div class="orders-section" data-bind="visible: displayModes().indexOf(DISPLAY_MODE_LINE_COUNT) > -1">
+            <div class="orders-header">
+                <h5 class="orders-group-title">
+                    No. of Order Lines
+                </h5>
+                <!-- ko foreach: groups -->
+                <!-- ko if: $index() > 0 -->
+                <span data-bind="text: Label, class: `orders-cell-${CellType.toLowerCase()}`"></span>
+                <!-- /ko -->
+                <!-- /ko -->
+            </div>
+            <div>
+                <!-- ko foreach: groups -->
+                <span class="downloadable" data-bind="text: OrderLineCount_Row1, class: `orders-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportOrders({ label: `Orders_Count_${$parent.fetchLabel($index(), 'OrderLineCount_Row1')}_${Label}`, startDt: data.OrderLineCount_Row1_StartDT, endDt: data.OrderLineCount_Row1_EndDT }) }, clickBubble: false"></span>
+                <!-- /ko -->
+            </div>
+            <div>
+                <!-- ko foreach: groups -->
+                <span class="downloadable" data-bind="text: OrderLineCount_Row2, class: `orders-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportOrders({ label: `Orders_Count_${$parent.fetchLabel($index(), 'OrderLineCount_Row2')}_${Label}`, startDt: data.OrderLineCount_Row2_StartDT, endDt: data.OrderLineCount_Row2_EndDT }) }, clickBubble: false"></span>
+                <!-- /ko -->
+            </div>
+            <div>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: OrderLineCount_Row3, class: `orders-cell-${CellType.toLowerCase()}`, css: { 'red': CellType == 'L' && OrderLineCount_Row3?.indexOf('-') == 0 }"></span>
+                <!-- /ko -->
+            </div>
+            <div>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: OrderLineCount_Row4, class: `orders-cell-${CellType.toLowerCase()}`, css: { 'red': CellType == 'L' && OrderLineCount_Row4?.indexOf('-') == 0 }"></span>
+                <!-- /ko -->
+            </div>
+        </div>
+        <div class="orders-section" data-bind="visible: displayModes().indexOf(DISPLAY_MODE_CANCELLED_LINE_COUNT) > -1">
+            <div class="orders-header">
+                <h5 class="orders-group-title">
+                    No. of Cancelled Lines
+                </h5>
+                <!-- ko foreach: groups -->
+                <!-- ko if: $index() > 0 -->
+                <span data-bind="text: Label, class: `orders-cell-${CellType.toLowerCase()}`"></span>
+                <!-- /ko -->
+                <!-- /ko -->
+            </div>
+            <div>
+                <!-- ko foreach: groups -->
+                <span class="downloadable" data-bind="text: CancelledLineCount_Row1, class: `orders-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportOrders({ label: `Cancelled_Line_Count_${$parent.fetchLabel($index(), 'CancelledLineCount_Row1')}_${Label}`, startDt: data.CancelledLineCount_Row1_StartDT, endDt: data.CancelledLineCount_Row1_EndDT, enquiryType: 'C' }) }, clickBubble: false"></span>
+                <!-- /ko -->
+            </div>
+            <div>
+                <!-- ko foreach: groups -->
+                <span class="downloadable" data-bind="text: CancelledLineCount_Row2, class: `orders-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportOrders({ label: `Cancelled_Line_Count_${$parent.fetchLabel($index(), 'CancelledLineCount_Row2')}_${Label}`, startDt: data.CancelledLineCount_Row2_StartDT, endDt: data.CancelledLineCount_Row2_EndDT, enquiryType: 'C' }) }, clickBubble: false"></span>
+                <!-- /ko -->
+            </div>
+            <div>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: CancelledLineCount_Row3, class: `orders-cell-${CellType.toLowerCase()}`, css: { 'red': CellType != 'L' && CancelledLineCount_Row3?.indexOf('-') == -1 }"></span>
+                <!-- /ko -->
+            </div>
+            <div>
+                <!-- ko foreach: groups -->
+                <span data-bind="text: CancelledLineCount_Row4, class: `orders-cell-${CellType.toLowerCase()}`, css: { 'red': CellType != 'L' && CancelledLineCount_Row4?.indexOf('-') == -1 }"></span>
+                <!-- /ko -->
+            </div>
+        </div>
+    </div>
+</div>

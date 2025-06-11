@@ -328,6 +328,9 @@ body {
 #email-modal .modal-dialog .modal-content .modal-header .modal-title {
   color: #fff;
 }
+#email-modal .modal-dialog .modal-content .modal-header .form-check-label {
+  font-size: 1.15rem;
+}
 #email-modal .modal-dialog .modal-content .modal-header nav {
   display: flex;
   gap: 1rem;
@@ -406,13 +409,7 @@ body {
   background-color: limegreen;
   content: "invoice";
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:nth-of-type(odd) {
-  background-color: #f8f9fa;
-}
 #email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:hover {
-  background-color: #e7f1ff;
-}
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:hover:nth-of-type(odd) {
   background-color: #e7f1ff;
 }
 #email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment.selected {
@@ -421,11 +418,6 @@ body {
   color: #fff;
 }
 #email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment.selected:hover {
-  border-color: #031633;
-  background-color: #084298;
-  color: #fff;
-}
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment.selected:hover:nth-of-type(odd) {
   border-color: #031633;
   background-color: #084298;
   color: #fff;
@@ -516,29 +508,68 @@ body {
 #email-modal .modal-dialog .modal-content .modal-body #data-pane {
   flex: 1 1 420px;
 }
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .data-heading {
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .data-heading .form-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0;
+  cursor: pointer;
+  margin-left: auto;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .data-heading .form-switch .form-check-label {
+  float: none;
+  cursor: pointer;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .data-heading .form-switch .form-check-input {
+  float: none;
+  margin: 0;
+  cursor: pointer;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .add-entry-btn:disabled {
+  cursor: not-allowed;
+  pointer-events: all;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .save-btn:disabled {
+  background-color: #6c757d;
+  border-color: #adb5bd;
+  box-shadow: none;
+  cursor: not-allowed;
+}
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property {
   width: 100%;
   position: relative;
+  display: flex;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property .mdc-validating-field {
+  flex: 1;
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property + .attachment-property {
   margin-top: 1rem;
 }
-#email-modal .modal-dialog .modal-content .modal-body #data-pane #attachment-fields #attachment-supplier-wrapper {
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper {
   display: flex;
   align-items: center;
 }
-#email-modal .modal-dialog .modal-content .modal-body #data-pane #attachment-fields #attachment-supplier-wrapper #attachment-supplier {
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper .attachment-supplier {
   display: flex;
   align-items: center;
 }
-#email-modal .modal-dialog .modal-content .modal-body #data-pane #attachment-fields #attachment-supplier-wrapper #attachment-supplier .mdc-validating-field {
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper .attachment-supplier .mdc-validating-field {
   flex: 1;
   width: 330px;
 }
-#email-modal .modal-dialog .modal-content .modal-body #data-pane #attachment-fields #attachment-supplier-wrapper #attachment-supplier .bi {
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper .attachment-supplier .bi {
   display: none;
 }
-#email-modal .modal-dialog .modal-content .modal-body #data-pane #attachment-fields #attachment-supplier-wrapper > .btn {
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper > .btn {
   margin-left: 0.75rem;
 }
 

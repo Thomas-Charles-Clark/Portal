@@ -4,16 +4,27 @@
 } = {
 
     }) => {
-    let self = Object.assign(rec, {
+    let self = Object.assign({
         propagateSupplier: parent.propagateSupplier
-    });
+    }, rec);
 
     let toLoad = rec.SelectResult?.MostRecent ?? rec.SelectResult?.Original;
 
+    self.original = rec.SelectResult?.Original;
+
+    self.mostRecent = rec.SelectResult?.MostRecent;
+
     if (toLoad) {
-        self.toLoad = toLoad;
+        self.toLoad = Object.assign(toLoad, {
+            readOnly: true
+        });
+        self.readOnly = true;
     } else {
-        self.toLoad = {};
+        self.toLoad = {
+            SupplierCode: self.SupplierCode,
+            readOnly: false
+        };
+        self.readOnly = false;
     }
 
     //#region Properties
@@ -36,26 +47,6 @@
     self.propertiesTemplateName = ko.observable();
 
     self.isEmailBody = Object.hasOwn(self, 'Body');
-
-    self.supplierCode = ko.observable(self.SupplierCode ?? '').extend({
-        notEqual: {
-            params: '',
-            onlyIf: self.validateNow,
-            message: 'Please specify a Supplier'
-        }
-    });
-
-    self.supplier = ko.observable(self.Supplier);
-
-    //#region Lifted Bits
-
-    self.supplierCurrency = ko.computed(() => {
-        if (self.supplier()) {
-            return self.supplier().Currency;
-        }
-    }, self);
-
-    //#endregion
 
     self.dispute = ko.observable(rec.Dispute ?? false);
 
@@ -81,9 +72,10 @@
         objObservable: self.attachmentType,
         originalValue: self.attachmentTypeId(),
         enable: ko.observable(true),
-        disable: ko.observable(false),
+        disable: ko.observable(self.toLoad.readOnly),
         clearable: ko.observable(true),
         revertible: ko.observable(false),
+        locked: ko.observable(self.toLoad.readOnly),
         readOnly: false,
         filter: false,
         autoBind: true,
@@ -101,84 +93,15 @@
         }
     })
 
-    self.supplierParams = kendoMDCDropDownList({
-        skipCascade: true,
-        label: 'Supplier',
-        odata: true,
-        endPoint: '/odata/MertexLiveSuppliers?$expand=Currency,ExchangeRate',
-        textField: 'Name',
-        valueField: 'Code',
-        template: (e) => {
-            return `${e.Code} - ${e.Name}`;
-        },
-        idObservable: self.supplierCode,
-        objObservable: self.supplier,
-        originalValue: self.supplierCode(),
-        virtual: true,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                if (options.value) {
-                    $.ajax({
-                        url: `/odata/MertexLiveSuppliers/Default.MertexLiveSupplierValueMapper(supplierCode='${options.value}')`,
-                        type: 'GET',
-                        success: function (data) {
-                            options.success(data.value);
-                        }
-                    });
-                } else {
-                    options.success();
-                }
-            }
-        },
-        locked: ko.observable(self.supplierCode() != ''),
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertible: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        autoBind: true,
-        height: 340,
-        sort: {
-            dir: 'asc',
-            field: 'Name'
-        },
-        select: function (e) {
-            console.log('supplierParams select', e);
-            self.propagateSupplier(e.dataItem);
-        },
-        clearFunction: () => {
-            self.supplierParams.dropDownListSettings.widget().value('');
-            self.supplierParams.dropDownListSettings.widget().trigger('change');
-        },
-        parameterMap: (data) => {
-            //Generate parameters in odata v4 format
-            let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-            delete d.$inlinecount; // <-- remove inlinecount
-            delete d.$format; // <-- remove format
-            delete d.$callback; // <-- remove callback
-
-            d.$count = true;
-
-            return d;
-        },
-        popupSettings: {
-            appendTo: document.querySelector('#email-modal .modal-body')
-        }
-    });
-
     self.disputeParams = {
         checkboxId: 'dispute',
         label: 'Dispute',
         observable: self.dispute,
         useNativeValidation: false,
         enable: ko.observable(true),
-        disable: ko.observable(false),
+        disable: ko.observable(self.toLoad.readOnly),
         busy: ko.observable(false),
-        originalValue: self.dispute(),
+        originalValue: self.dispute()
     }
 
     //#endregion
@@ -207,8 +130,7 @@
 
     self.errors = ko.validation.group([
         self.attachmentTypeId,
-        self.properties,
-        self.supplierCode
+        self.properties
     ], {
         deep: true,
         live: true
@@ -222,38 +144,6 @@
     self.attachmentTypeId.subscribe(nv => {
         self.devisePropertiesTemplate()
     });
-
-    self.supplier.subscribe(nv => {
-
-        if (!self.isPropagatingSupplier) {
-
-            let data = {
-                emailId: self.EmailID,
-                supplierCode: nv.Code
-            };
-
-            console.log('saveSupplierDetail calling with', data);
-
-            fetch('/api/InvoiceBookingAPI/SaveSupplierDetail', {
-                method: 'POST',
-                headers: window.fetchHeaders,
-                body: JSON.stringify(data)
-            })
-                .then(window.handleFetchResponse)
-                .then(data => console.log('saveSupplierDetail returned', data))
-                .catch(window.catchFetchError);
-
-        } else {
-            self.isPropagatingSupplier = false;
-        }
-
-    })
-
-    //self.supplierCode.subscribe(nv => {
-    //    if (nv != '') {
-    //        self.supplierParams.locked(true);
-    //    }
-    //})
 
     //#endregion
 
@@ -316,7 +206,6 @@
         if (properties != null) {
             self.errors = ko.validation.group([
                 self.attachmentTypeId,
-                self.supplierCode,
                 ...ko.unwrap(self.properties).errorables
             ], {
                 deep: true,
@@ -384,11 +273,11 @@
                         attachmentTypeId: self.attachmentTypeId(),
                         formDataJson: JSON.stringify({
                             InvoiceDate: props.invoiceDate(),
-                            SupplierCode: self.supplierCode(),
+                            SupplierCode: props.supplierCode(),
                             SupplierInvoiceCode: props.supplierInvoiceReference(),
                             PaymentTermsCode: props.paymentTermsCode(),
                             InvoiceTotalInCurrencyIncVAT: props.invoiceTotalIncVATCurrency(),
-                            ExchangeRate: self.supplier().ExchangeRate?.SterlingExchangeRate,
+                            ExchangeRate: props.supplier().ExchangeRate?.SterlingExchangeRate,
                             GeneralLedgerCodes: props.generalLedgerEntries().map(gl => gl.generalLedgerCode()),
                             GeneralLedgerAmountsExVAT: props.generalLedgerEntries().map(gl => gl.amountExVAT()),
                             VATCodes: props.vatEntries().map(v => v.vatCode()),
@@ -417,18 +306,23 @@
         }, 0);
     }
 
+    self.switchDataSet = (mostRecent) => {
+        if (mostRecent) {
+            self.toLoad = Object.assign({
+                readOnly: true
+            }, self.mostRecent);
+        } else {
+            self.toLoad = Object.assign({
+                readOnly: true
+            }, self.original);
+        }
+        self.devisePropertiesTemplate();
+    }
+
     //#endregion
 
 
     //#region Events
-
-    self.attributePropertiesResizeStart = (event, ui) => {
-        document.querySelector('#attachment-iframe-wrapper').classList.add('blocked');
-    }
-
-    self.attributePropertiesResizeStop = (event, ui) => {
-        document.querySelector('#attachment-iframe-wrapper').classList.remove('blocked');
-    }
 
     self.devisePropertiesTemplate();
         

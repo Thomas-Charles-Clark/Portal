@@ -32,10 +32,13 @@
     self.propagateSupplier = function (supplier) {
         self.attachments().forEach(a => {
             if (a != this) {
-                if (a.supplierCode() == '') {
-                    a.isPropagatingSupplier = true;
-                    a.supplierCode(supplier.Code);
-                    a.supplier(supplier);
+                let props = ko.unwrap(a.properties);
+                if (props) {
+                    if (props.supplierCode() == '') {
+                        self.isPropagatingSupplier = true;
+                        props.supplierCode(supplier.Code);
+                        props.supplier(supplier);
+                    }
                 }
             }
         })
@@ -67,12 +70,92 @@
         revertible: ko.observable(false)
     }
 
+    self.supplierCode = ko.observable(self.SupplierCode ?? '').extend({
+        notEqual: {
+            params: '',
+            onlyIf: self.validateNow,
+            message: 'Please specify a Supplier'
+        }
+    });
+
+    self.supplier = ko.observable(self.Supplier);
+
+    self.displayMostRecent = ko.observable(true);
+
     //#endregion
 
 
     //#region Components
 
+    self.supplierParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Supplier',
+        odata: true,
+        endPoint: '/odata/MertexLiveSuppliers?$expand=Currency,ExchangeRate,PaymentTerms',
+        textField: 'Name',
+        valueField: 'Code',
+        template: (e) => {
+            return `${e.Code} - ${e.Name}`;
+        },
+        idObservable: self.supplierCode,
+        objObservable: self.supplier,
+        originalValue: self.supplierCode(),
+        virtual: true,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/MertexLiveSuppliers/Default.MertexLiveSupplierValueMapper(supplierCode='${options.value}')?$expand=Currency,ExchangeRate,PaymentTerms`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                            self.supplier(data.value[0]);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        locked: ko.observable(self.supplierCode() != ''),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'Name'
+        },
+        select: function (e) {
+            console.log('supplierParams select', e);
+            self.propagateSupplier(e.dataItem);
+        },
+        clearFunction: () => {
+            self.supplierParams.dropDownListSettings.widget().value('');
+            self.supplierParams.dropDownListSettings.widget().trigger('change');
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
 
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            return d;
+        },
+        popupSettings: {
+            appendTo: document.querySelector('#email-modal .modal-body')
+        }
+    });
 
     //#endregion
 
@@ -108,13 +191,45 @@
     }, self);
 
     self.attachmentsDisabled = ko.computed(() => {
-        return self.attachments().length && self.attachments()[0].supplier() == null;
+        return false;// self.attachments().length && self.attachments()[0].supplier() == null;
     });
 
     //#endregion
 
 
     //#region Subscriptions
+
+    self.displayMostRecent.subscribe(nv => {
+        console.log('displayMostRecent', nv);
+        self.attachments().forEach(a => {
+            a.switchDataSet(nv);
+        });
+    });
+
+    self.supplier.subscribe(nv => {
+
+        if (!self.isPropagatingSupplier) {
+
+            let data = {
+                emailId: self.EmailID,
+                supplierCode: nv.Code
+            };
+
+            console.log('saveSupplierDetail calling with', data);
+
+            fetch('/api/InvoiceBookingAPI/SaveSupplierDetail', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                body: JSON.stringify(data)
+            })
+                .then(window.handleFetchResponse)
+                .then(data => console.log('saveSupplierDetail returned', data))
+                .catch(window.catchFetchError);
+
+        } else {
+            self.isPropagatingSupplier = false;
+        }
+    });
 
     self.addingAttachments.subscribe((nv) => {
 

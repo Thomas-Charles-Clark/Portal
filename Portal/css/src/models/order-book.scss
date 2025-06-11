@@ -936,7 +936,8 @@ $multiselect-group-color: $white;
             }
         }
 
-        #order-book-sales-summary-table {
+        #order-book-sales-summary-table,
+        #order-book-orders-summary-table {
             margin-bottom: 0;
 
             thead {

@@ -185,7 +185,87 @@ namespace SharedEFClasses.Models
                 BlockerResult = await reader.ReadSingleAsync<OrderBook_SalesSummary_BlockerResult>()
             };
         }
-        
+
+        public async Task<OrderBook_OrdersSummary_Result> FetchOrderBookOrderSummaries(PassOrderBookBaseParams dto)
+        {
+            var MarketIDs = new DataTable();
+
+            MarketIDs.Columns.Add("ID", typeof(byte));
+
+            dto.MarketIDs?.ForEach(mid => MarketIDs.Rows.Add(mid));
+
+            var OrderLineDetailedStatusGroupIDs = new DataTable();
+
+            OrderLineDetailedStatusGroupIDs.Columns.Add("ID", typeof(byte));
+
+            dto.OrderLineDetailedStatusGroupIDs?.ForEach(mid => OrderLineDetailedStatusGroupIDs.Rows.Add(mid));
+
+            var db = new PortalDbContext();
+
+            var parameters =
+                new
+                {
+                    // Hmmm.
+                    dto.DataSource,
+                    OrderLineDetailedStatusGroupIDs,
+
+                    // Trade Account Filters
+                    dto.MarketID,
+                    MarketIDs,
+                    dto.SalesRepresentativeID,
+                    dto.SalesAgentID,
+                    dto.SalesAreaID,
+                    dto.CountryID,
+                    dto.TradeAccountTypeID,
+                    dto.TradeAccountGroupID,
+                    dto.PaymentTermsID,
+                    dto.PaymentTermsTypeID,
+                    dto.TradeAccountID,
+
+                    // Order Filters
+                    dto.OrderID,
+                    dto.OrderTakerCode,
+                    dto.StartDate,
+                    dto.EndDate,
+                    dto.HaulierCode,
+                    dto.Allocated,
+                    dto.TransactionTypeID,
+                    dto.DeliveryType,
+
+                    // Product Filters
+                    dto.ProductGroupID,
+                    dto.ItemTypeID,
+                    dto.BrandID,
+                    dto.CollectionID,
+                    dto.LaunchID,
+                    dto.QualityID,
+                    dto.DesignID,
+                    dto.SupplierCode,
+                    dto.SupplierTypeID,
+                    dto.ProductLifeCycleID,
+                    dto.BuyerCode,
+                    dto.ProductID,
+                    dto.ProductStatus,
+                };
+
+            var reader = await db.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_OrderSummary_Select]", parameters, null, 30, CommandType.StoredProcedure);
+
+            var allStrings = await reader.ReadAsync<string>();
+
+            var sb = new StringBuilder();
+
+            foreach (var item in allStrings)
+            {
+                sb.Append(item);
+            }
+
+            return new OrderBook_OrdersSummary_Result()
+            {
+                OrdersResult = JArray.Parse(sb.ToString()),
+               // BlockerResult = await reader.ReadSingleAsync<OrderBook_OrdersSummary_BlockerResult>()
+            };
+        }
+
         public async Task<string> FetchOrderBookPreDefinedSummaries(PassOrderBookBaseParams dto)
         {
             var MarketIDs = new DataTable();
@@ -673,6 +753,86 @@ namespace SharedEFClasses.Models
             };
         }
 
+        public async Task<OrderBook_OrdersSummary_Result> FetchOrderBookOrdersExport(PassOrderExportParams dto)
+        {
+            var MarketIDs = new DataTable();
+
+            MarketIDs.Columns.Add("ID", typeof(byte));
+
+            dto.MarketIDs?.ForEach(mid => MarketIDs.Rows.Add(mid));
+
+            var OrderLineDetailedStatusGroupIDs = new DataTable();
+
+            OrderLineDetailedStatusGroupIDs.Columns.Add("ID", typeof(byte));
+
+            dto.OrderLineDetailedStatusGroupIDs?.ForEach(mid => OrderLineDetailedStatusGroupIDs.Rows.Add(mid));
+
+            var db = new PortalDbContext();
+
+            var reader = await db.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_DetailView_OrderHistory_Export]",
+                new
+                {
+                    // Hmmm.
+                    dto.DataSource,
+                    OrderLineDetailedStatusGroupIDs,
+
+                    // Trade Account Filters
+                    dto.MarketID,
+                    MarketIDs,
+                    dto.SalesRepresentativeID,
+                    dto.SalesAgentID,
+                    dto.SalesAreaID,
+                    dto.CountryID,
+                    dto.TradeAccountTypeID,
+                    dto.TradeAccountGroupID,
+                    dto.PaymentTermsID,
+                    dto.PaymentTermsTypeID,
+                    dto.TradeAccountID,
+
+                    // Order Filters
+                    dto.OrderID,
+                    dto.OrderTakerCode,
+                    dto.StartDate,
+                    dto.EndDate,
+                    dto.HaulierCode,
+                    dto.Allocated,
+                    dto.TransactionTypeID,
+                    dto.DeliveryType,
+
+                    // Product Filters
+                    dto.ProductGroupID,
+                    dto.ItemTypeID,
+                    dto.BrandID,
+                    dto.CollectionID,
+                    dto.LaunchID,
+                    dto.QualityID,
+                    dto.DesignID,
+                    dto.SupplierCode,
+                    dto.SupplierTypeID,
+                    dto.ProductLifeCycleID,
+                    dto.BuyerCode,
+                    dto.ProductID,
+                    dto.ProductStatus,
+
+                    dto.EnquiryType    
+                }, null, 30, CommandType.StoredProcedure);
+
+            var allStrings = await reader.ReadAsync<string>();
+
+            var sb = new StringBuilder();
+
+            foreach (var item in allStrings)
+            {
+                sb.Append(item);
+            }
+
+            return new OrderBook_OrdersSummary_Result()
+            {
+                OrdersResult = JArray.Parse(sb.ToString()),
+                BlockerResult = null
+            };
+        }
+
         public async Task<OrderBook_DetailView_SalesBudget_Result> FetchOrderBookDetailViewSalesBudget(PassOrderBookDetailViewSalesBudget dto)
         {
             var MarketIDs = new DataTable();
@@ -696,6 +856,32 @@ namespace SharedEFClasses.Models
             return new OrderBook_DetailView_SalesBudget_Result()
             {
                 Results = await reader.ReadAsync<OrderBook_DetailView_SalesBudget_Record>()
+            };
+        }
+
+        public async Task<OrderBook_DetailView_OrdersBudget_Result> FetchOrderBookDetailViewOrdersBudget(PassOrderBookDetailViewSalesBudget dto)
+        {
+            var MarketIDs = new DataTable();
+
+            MarketIDs.Columns.Add("ID", typeof(byte));
+
+            dto.MarketIDs?.ForEach(mid => MarketIDs.Rows.Add(mid));
+
+            var db = new PortalDbContext();
+
+            var reader = await db.Database.Connection.QueryMultipleAsync("[portal].[OrderBook_DetailView_OrdersBudget]",
+                new
+                {
+                    MarketIDs,
+                    dto.TradeAccountTypeID,
+                    dto.TradeAccountGroupID,
+                    dto.StartDate,
+                    dto.EndDate,
+                }, null, 30, CommandType.StoredProcedure);
+
+            return new OrderBook_DetailView_OrdersBudget_Result()
+            {
+                Results = await reader.ReadAsync<OrderBook_DetailView_OrdersBudget_Record>()
             };
         }
     }

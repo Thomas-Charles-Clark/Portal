@@ -546,7 +546,9 @@
     <Compile Include="Models\OrderBook\OrderBook_BudgetSummary_Result.cs" />
     <Compile Include="Models\OrderBook\OrderBook_DetailView_ButtonRow.cs" />
     <Compile Include="Models\OrderBook\OrderBook_DetailView_DataRow.cs" />
+    <Compile Include="Models\OrderBook\OrderBook_DetailView_OrdersBudget_Record.cs" />
     <Compile Include="Models\OrderBook\OrderBook_DetailView_SalesBudget_Record.cs" />
+    <Compile Include="Models\OrderBook\OrderBook_DetailView_OrdersBudget_Result.cs" />
     <Compile Include="Models\OrderBook\OrderBook_DetailView_SalesBudget_Result.cs" />
     <Compile Include="Models\OrderBook\OrderBook_MainSummary_DataRow.cs" />
     <Compile Include="Models\OrderBook\OrderBook_MainSummary_Defaults.cs" />
@@ -557,8 +559,11 @@
     <Compile Include="Models\OrderBook\OrderBook_PreDefinedSummary_SelectResult.cs" />
     <Compile Include="Models\OrderBook\OrderBook_ProductInspect_OrderLine.cs" />
     <Compile Include="Models\OrderBook\OrderBook_ProductInspect_StockInfo.cs" />
+    <Compile Include="Models\OrderBook\OrderBook_OrdersSummary_BlockerResult.cs" />
     <Compile Include="Models\OrderBook\OrderBook_SalesSummary_BlockerResult.cs" />
+    <Compile Include="Models\OrderBook\OrderBook_OrdersSummary_Result.cs" />
     <Compile Include="Models\OrderBook\OrderBook_SalesSummary_Result.cs" />
+    <Compile Include="Models\OrderBook\OrderBook_OrdersSummary_SelectResult.cs" />
     <Compile Include="Models\OrderBook\OrderBook_SalesSummary_SelectResult.cs" />
     <Compile Include="Models\OrderBook\OrderLineDetailedStatusGroup_SelectResult.cs" />
     <Compile Include="Models\OrderBook\OrderBook_ProductInspect_ProductInfo.cs" />
@@ -569,6 +574,7 @@
     <Compile Include="Models\OrderBook\PassOrderBookRingFencePopoverFetch.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookOrderLinePopoverFetch.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookTotalPopoverFetch.cs" />
+    <Compile Include="Models\OrderBook\PassOrderExportParams.cs" />
     <Compile Include="Models\OrderEntry\PassInsertStockCheckRequest.cs" />
     <Compile Include="Models\OrderEntry\PassStockCheckRequest.cs" />
     <Compile Include="Models\OrderEntry\StockCheckRequestResult.cs" />

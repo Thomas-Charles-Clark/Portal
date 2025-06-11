@@ -720,26 +720,36 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
   color: #fff;
 }
 #order-book-summary-modal .modal-body #order-book-sales-summary-table,
-#order-book-sales-summary-modal .modal-body #order-book-sales-summary-table {
+#order-book-summary-modal .modal-body #order-book-orders-summary-table,
+#order-book-sales-summary-modal .modal-body #order-book-sales-summary-table,
+#order-book-sales-summary-modal .modal-body #order-book-orders-summary-table {
   margin-bottom: 0;
 }
 #order-book-summary-modal .modal-body #order-book-sales-summary-table thead tr th:not(:first-of-type),
-#order-book-sales-summary-modal .modal-body #order-book-sales-summary-table thead tr th:not(:first-of-type) {
+#order-book-summary-modal .modal-body #order-book-orders-summary-table thead tr th:not(:first-of-type),
+#order-book-sales-summary-modal .modal-body #order-book-sales-summary-table thead tr th:not(:first-of-type),
+#order-book-sales-summary-modal .modal-body #order-book-orders-summary-table thead tr th:not(:first-of-type) {
   text-align: center;
 }
 #order-book-summary-modal .modal-body #order-book-sales-summary-table tbody .summary-total-row,
-#order-book-sales-summary-modal .modal-body #order-book-sales-summary-table tbody .summary-total-row {
+#order-book-summary-modal .modal-body #order-book-orders-summary-table tbody .summary-total-row,
+#order-book-sales-summary-modal .modal-body #order-book-sales-summary-table tbody .summary-total-row,
+#order-book-sales-summary-modal .modal-body #order-book-orders-summary-table tbody .summary-total-row {
   background-color: #f5f9ff;
   font-weight: bold;
 }
 #order-book-summary-modal .modal-body #order-book-sales-summary-table tbody + tbody::before,
-#order-book-sales-summary-modal .modal-body #order-book-sales-summary-table tbody + tbody::before {
+#order-book-summary-modal .modal-body #order-book-orders-summary-table tbody + tbody::before,
+#order-book-sales-summary-modal .modal-body #order-book-sales-summary-table tbody + tbody::before,
+#order-book-sales-summary-modal .modal-body #order-book-orders-summary-table tbody + tbody::before {
   content: "";
   display: table-row;
   height: 2rem;
 }
 #order-book-summary-modal .modal-body #order-book-sales-summary-table tbody tr td:not(:first-of-type),
-#order-book-sales-summary-modal .modal-body #order-book-sales-summary-table tbody tr td:not(:first-of-type) {
+#order-book-summary-modal .modal-body #order-book-orders-summary-table tbody tr td:not(:first-of-type),
+#order-book-sales-summary-modal .modal-body #order-book-sales-summary-table tbody tr td:not(:first-of-type),
+#order-book-sales-summary-modal .modal-body #order-book-orders-summary-table tbody tr td:not(:first-of-type) {
   text-align: center;
 }
 

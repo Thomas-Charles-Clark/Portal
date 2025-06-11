@@ -5,7 +5,8 @@
 
     }) => {
     let self = Object.assign(rec, {
-        validateNow: parent.validateNow
+        validateNow: parent.validateNow,
+        readOnly: parent.readOnly
     });
 
     //#region Properties
@@ -25,7 +26,7 @@
         }
     });
 
-    self.vatCode = ko.observable(rec.VATCode).extend({
+    self.vatCode = ko.observable(rec.VATCode ?? '').extend({
         required: {
             params: true,
             onlyIf: self.validateNow,
@@ -74,7 +75,7 @@
         decorateInputElement: false,
         insertValidationMessages: false,
         enable: ko.observable(true),
-        disable: ko.observable(false),
+        disable: ko.observable(self.readOnly),
         clearable: ko.observable(true),
         revertible: ko.observable(true),
         busy: ko.observable(false),
@@ -102,12 +103,16 @@
             return `${e.Code} - ${e.Name}`;
         },
         valueTemplate: (e) => {
-            return `${e.Code} - ${e.Name}`;
+            if (e.Code != null && e.Code != '' && e.Name != null && e.Name != '') {
+                return `${e.Code} - ${e.Name}`;
+            } else {
+                return '';
+            }
         },
         idObservable: self.vatCode,
         objObservable: self.vatObj,
         enable: ko.observable(true),
-        disable: ko.observable(false),
+        disable: ko.observable(self.readOnly),
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         readOnly: false,

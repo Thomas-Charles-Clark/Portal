@@ -27,7 +27,7 @@
             </div>
             <div>
                 <!-- ko foreach: groups -->
-                <span class="downloadable" data-bind="text: Budget_Row1, class: `sales-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportSales({ startDt: data.Budget_Row1_StartDT, endDt: data.Budget_Row1_EndDT }) }, clickBubble: false"></span>
+                <span class="downloadable" data-bind="text: Budget_Row1, class: `sales-cell-${CellType.toLowerCase()}`, click: (data) => { $parent.exportSales({ label: `Budget_${$parent.fetchLabel($index(), 'Budget_Row1')}_${Label}`, startDt: data.Budget_Row1_StartDT, endDt: data.Budget_Row1_EndDT }) }, clickBubble: false"></span>
                 <!-- /ko -->
             </div>
             <div>
@@ -133,7 +133,7 @@
             </div>
             <div>
                 <!-- ko foreach: groups -->
-                <span data-bind="text: CreditTotal_Row3, class: `sales-cell-${CellType.toLowerCase()}`, css: { 'red': CellType != 'L' && CreditTotal_Row3?.indexOf('-') == -1 }"></span>
+                <span data-bind="text: CreditTotal_Row3, class: `sales-cell-${CellType.toLowerCase()}`, css: { 'red': CellType != 'L' && CreditTotal_Row3?.indexOf('-') == 0 }"></span>
                 <!-- /ko -->
             </div>
             <div>

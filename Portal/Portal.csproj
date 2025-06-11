@@ -1773,6 +1773,7 @@
     <Content Include="js\src\models\marketing-messages.js" />
     <Content Include="js\src\models\member-search.js" />
     <Content Include="js\src\models\order-book-back-orders-without-purchase-orders.js" />
+    <Content Include="js\src\models\order-book-orders-filters.js" />
     <Content Include="js\src\models\stock-check-request.js" />
     <Content Include="js\src\models\_example-view-model.js" />
     <Content Include="js\src\models\neiman-marcus-order-status.js" />
@@ -2596,6 +2597,7 @@
     <Content Include="Areas\Orders\Views\NeimanMarcus\NeimanMarcusOrderStatus.cshtml" />
     <Content Include="Areas\Order-Book\Views\OrderBookDetail\BackOrdersWithoutPurchaseOrders.cshtml" />
     <Content Include="Areas\Order-Book\Views\Shared\_BackOrdersWithoutPurchaseOrdersGrid.cshtml" />
+    <Content Include="Areas\Order-Book\Views\Shared\_OrdersInfo.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
     <Content Include="Areas\Stock\Views\RangeManagement\RangeManagement.cshtml" />
     <None Include="compilerconfig.json" />
@@ -3002,6 +3004,7 @@
     <Content Include="css\src\models\neiman-marcus-order-status.scss" />
     <Content Include="css\src\models\order-book-back-orders-without-purchase-orders.scss" />
     <Content Include="css\src\models\invoice-booking.scss" />
+    <Content Include="css\src\models\order-book-orders.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -6,7 +6,10 @@
     DISPLAY_MODE_PERCENTAGE_FILTER = 6,
     DISPLAY_MODE_BUDGET = 7,
     DISPLAY_MODE_CREDIT_SUM = 8,
-    DISPLAY_MODE_COMBINED = 9
+    DISPLAY_MODE_COMBINED = 9,
+    DISPLAY_MODE_CANCELLED_LINE_COUNT = 10,
+    DISPLAY_MODE_CANCELLED_TOTAL = 11,
+    DISPLAY_MODE_ORDER_TOTAL = 12
 
 const DISPLAY_MODES = [{
     label: 'Order Value £',
@@ -58,6 +61,28 @@ const DISPLAY_MODES_SALES = [{
     children: []
 }]
 
+const DISPLAY_MODES_ORDERS = [{
+    label: 'Value of Orders',
+    value: DISPLAY_MODE_ORDER_TOTAL,
+    children: []
+}, {
+    label: 'Number of Orders',
+    value: DISPLAY_MODE_ORDER_COUNT,
+    children: []
+}, {
+    label: 'No. of Order Lines',
+    value: DISPLAY_MODE_LINE_COUNT,
+    children: []
+}, {
+    label: 'Value of Cancelled Orders',
+    value: DISPLAY_MODE_CANCELLED_TOTAL,
+    children: []
+}, {
+    label: 'No. of Cancelled Lines',
+    value: DISPLAY_MODE_CANCELLED_LINE_COUNT,
+    children: []
+}]
+
 const orderBookViewModel = (() => {
 
     //#region Properties
@@ -83,6 +108,8 @@ const orderBookViewModel = (() => {
         predefinedFiltersTabsSelectedGroupId: 1,
         sales: [DISPLAY_MODE_BUDGET, DISPLAY_MODE_COMBINED],
         salesCollapse: false,
+        orders: [DISPLAY_MODE_ORDER_TOTAL, DISPLAY_MODE_ORDER_COUNT],
+        ordersCollapse: false,
         gridCollapse: false,
         orderGroups: [],
         columnHeadings: [],
@@ -116,6 +143,10 @@ const orderBookViewModel = (() => {
     self.salesDisplayModes = ko.observableArray(self.displayConfig.sales);
     self.salesCollapse = ko.observable(self.displayConfig.salesCollapse);
     self.salesFilters = orderBookSalesFiltersViewModel(self);
+
+    self.ordersDisplayModes = ko.observableArray(self.displayConfig.orders);
+    self.ordersCollapse = ko.observable(self.displayConfig.ordersCollapse);
+    self.ordersFilters = orderBookOrdersFiltersViewModel(self);
 
 
     self.gridCollapse = ko.observable(self.displayConfig.gridCollapse);
@@ -160,6 +191,8 @@ const orderBookViewModel = (() => {
     self.availableDisplayModes = ko.observableArray(DISPLAY_MODES);
 
     self.availableDisplayModesSales = ko.observableArray(DISPLAY_MODES_SALES);
+
+    self.availableDisplayModesOrders = ko.observableArray(DISPLAY_MODES_ORDERS);
 
     self.orderBookSummaryModalElement = document.querySelector("#order-book-summary-modal");
 
@@ -283,6 +316,8 @@ const orderBookViewModel = (() => {
         let predefinedFiltersTabsSelectedGroupId = self.predefinedFiltersTabsSelectedGroupId();
         let sales = self.salesDisplayModes();
         let salesCollapse = self.salesCollapse();
+        let orders = self.ordersDisplayModes();
+        let ordersCollapse = self.ordersCollapse();
 
         let gridCollapse = self.gridCollapse();
 
@@ -303,6 +338,8 @@ const orderBookViewModel = (() => {
                 predefinedFiltersTabsSelectedGroupId: predefinedFiltersTabsSelectedGroupId,
                 sales: sales,
                 salesCollapse: salesCollapse,
+                orders: orders,
+                ordersCollapse: ordersCollapse,
                 gridCollapse: gridCollapse,
                 orderGroups: orderGroups.map(h => {
                     return {
@@ -433,6 +470,14 @@ const orderBookViewModel = (() => {
         self.salesCollapse(event.currentTarget.classList.contains('collapsed'));
     }
 
+    self.toggleOrders = (data, event) => {
+        event.currentTarget.classList.toggle('collapsed');
+
+        bootstrap.Collapse.getOrCreateInstance('#header-accordion-five').toggle();
+
+        self.ordersCollapse(event.currentTarget.classList.contains('collapsed'));
+    }
+
     self.toggleGrid = (data, event) => {
         event.currentTarget.classList.toggle('collapsed');
 
@@ -531,7 +576,7 @@ const orderBookViewModel = (() => {
         });
     }
 
-    self.parse = (result, fetchSalesFilters) => {
+    self.parse = (result, fetchOtherFilters) => {
 
         //let rowHeadingsStartMs = +new Date();
 
@@ -710,8 +755,9 @@ const orderBookViewModel = (() => {
 
         //console.log(`fetchMain primary parse: columnHeadings fill took ${columnHeadingsFillEndMs - columnHeadingsFillStartMs}ms`);
 
-        if (fetchSalesFilters) {
+        if (fetchOtherFilters) {
             self.salesFilters.fetch(JSON.parse(self.userDefinedFilters.json()));
+            self.ordersFilters.fetch(JSON.parse(self.userDefinedFilters.json()));
         }
 
         //}
@@ -721,11 +767,13 @@ const orderBookViewModel = (() => {
 
         self.busy(true);
 
-        let fetchSalesFiltersAfterParse = true;
+        let fetchOtherFiltersAfterParse = true;
 
         if (self.columnHeadings().length > 0) {
-            self.salesFilters.fetch(JSON.parse(params));
-            fetchSalesFiltersAfterParse = false;
+            let p = JSON.parse(params);
+            self.salesFilters.fetch(p);
+            self.ordersFilters.fetch(p);
+            fetchOtherFiltersAfterParse = false;
         }
 
         let body = JSON.parse(params);
@@ -753,7 +801,7 @@ const orderBookViewModel = (() => {
 
                 let startMs = +new Date();
 
-                self.parse(data.mainResult, fetchSalesFiltersAfterParse);
+                self.parse(data.mainResult, fetchOtherFiltersAfterParse);
 
                 let endMs = +new Date();
                 

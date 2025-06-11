@@ -428,6 +428,10 @@ body {
                     color: $white;
                 }
 
+                .form-check-label {
+                    font-size: $font-size-md;
+                }
+
                 nav {
                     display: flex;
                     gap: $l-gutter;
@@ -522,16 +526,8 @@ body {
                             }
                         }
 
-                        &:nth-of-type(odd) {
-                            background-color: $gray-100;
-                        }
-
                         &:hover {
                             background-color: tint-color($blue-200, 75%);
-
-                            &:nth-of-type(odd) {
-                                background-color: tint-color($blue-200, 75%);
-                            }
                         }
 
                         &.selected {
@@ -543,12 +539,6 @@ body {
                                 border-color: $blue-900;
                                 background-color: $blue-700;
                                 color: $white;
-
-                                &:nth-of-type(odd) {
-                                    border-color: $blue-900;
-                                    background-color: $blue-700;
-                                    color: $white;
-                                }
                             }
                         }
 
@@ -660,37 +650,85 @@ body {
                 #data-pane {
                     flex: 1 1 420px;
 
+                    .data-heading {
+                        padding-bottom: $l-gutter;
+                        margin-bottom: $l-gutter;
+                        border-bottom: 1px solid $gray-300;
+                        display: flex;
+                        gap: $l-gutter;
+                        align-items: center;
+
+                        .form-switch {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: $l-gutter;
+                            padding: 0;
+                            cursor: pointer;
+                            margin-left: auto;
+
+                            .form-check-label {
+                                float: none;
+                                cursor: pointer;
+                            }
+
+                            .form-check-input {
+                                float: none;
+                                margin: 0;
+                                cursor: pointer;
+                            }
+                        }
+                    }
+
+                    .add-entry-btn {
+                        &:disabled {
+                            cursor: not-allowed;
+                            pointer-events: all;
+                        }
+                    }
+
+                    .save-btn {
+                        &:disabled {
+                            background-color: $gray-600;
+                            border-color: $gray-500;
+                            box-shadow: none;
+                            cursor: not-allowed;
+                        }
+                    }
+
                     .attachment-property {
                         width: 100%;
                         position: relative;
+                        display: flex;
+
+                        .mdc-validating-field {
+                            flex: 1;
+                        }
 
                         & + .attachment-property {
                             margin-top: $l-gutter;
                         }
                     }
 
-                    #attachment-fields {
-                        #attachment-supplier-wrapper {
+                    .attachment-supplier-wrapper {
+                        display: flex;
+                        align-items: center;
+
+                        .attachment-supplier {
                             display: flex;
                             align-items: center;
 
-                            #attachment-supplier {
-                                display: flex;
-                                align-items: center;
-
-                                .mdc-validating-field {
-                                    flex: 1;
-                                    width: 330px;
-                                }
-
-                                .bi {
-                                    display: none;
-                                }
+                            .mdc-validating-field {
+                                flex: 1;
+                                width: 330px;
                             }
 
-                            > .btn {
-                                margin-left: $m-gutter;
+                            .bi {
+                                display: none;
                             }
+                        }
+
+                        > .btn {
+                            margin-left: $m-gutter;
                         }
                     }
                 }
