@@ -568,16 +568,74 @@ createBinding({
     events: {
 
         cascade: function (options, e) {
-            if (options.skipCascade == null) {
-                //prefer writing to dataItem; I have noted that sometimes when cascade hits
-                //e.sender.value is still dirty; e.sender.selectedIndex is not
-                //it would seem that letting dataItem be written and not forcing value to be written
-                //permits the inner workings of Kendo to sort out what the value() should be after
-                //this function has been called... 
-                //seriously, don't mess with this one if you can help it.
-                if (ko.isWriteableObservable(options.dataItem)) {
-                    var list = e.sender;
-                    if (e.sender.value() || e.sender.value() === 0 || e.sender.value() === false) {
+
+            window.setTimeout(() => {
+
+                if (options.skipCascade == null) {
+                    //prefer writing to dataItem; I have noted that sometimes when cascade hits
+                    //e.sender.value is still dirty; e.sender.selectedIndex is not
+                    //it would seem that letting dataItem be written and not forcing value to be written
+                    //permits the inner workings of Kendo to sort out what the value() should be after
+                    //this function has been called... 
+                    //seriously, don't mess with this one if you can help it.
+                    if (ko.isWriteableObservable(options.dataItem)) {
+                        var list = e.sender;
+                        if (e.sender.value() || e.sender.value() === 0 || e.sender.value() === false) {
+                            if (typeof options.virtual === 'undefined' || options.virtual === false) {
+                                options.dataItem(list.dataItem(list.selectedIndex));
+                            } else {
+                                if (list.dataItem(list.selectedIndex)) {
+                                    options.dataItem(list.dataItem(list.selectedIndex));
+                                } else {
+                                    // See where I wrote "don't mess with this one if you can help it" up there?
+                                    // Well, I had to mess with it a bit more because virtualised dropdownlists needs to OBEY ME.
+
+                                    if (list.dataItem() && list.dataItem()[options.dataValueField] === e.sender.value()) {
+                                        options.dataItem(list.dataItem());
+                                    } else {
+                                        options.virtual.valueMapper({
+                                            value: e.sender.value(),
+                                            mapValueTo: options.virtual.mapValueTo,
+                                            success: function (response) {
+                                                if (options.virtual.mapValueTo === 'index') {
+                                                    e.sender.listView.mapValueToIndex(response)
+                                                } else if (options.virtual.mapValueTo === 'dataItem') {
+                                                    let item = Array.isArray(response) && response.length == 1 ? response[0] : response;
+                                                    e.sender.listView.mapValueToDataItem(item);
+                                                    options.dataItem(item);
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                        else
+                            options.dataItem(undefined);
+                    }
+                    if (ko.isWriteableObservable(options.value)) {
+                        var list = e.sender;
+                        if (e.sender.value() || e.sender.value() === 0 || e.sender.value() === false) {
+                            options.value(e.sender.value());
+                        }
+                    }
+                }
+            }, 0);
+
+        },
+        change: function (options, e) {
+
+            window.setTimeout(() => {
+
+                if (ko.isObservable(options.value))
+                    options.value(e.sender.value());
+
+                if (options.skipCascade == true) {
+                    console.log('kendoDropDownList change event', options, e);
+
+                    if (ko.isObservable(options.dataItem)) {
+                        var list = e.sender;
+
                         if (typeof options.virtual === 'undefined' || options.virtual === false) {
                             options.dataItem(list.dataItem(list.selectedIndex));
                         } else {
@@ -607,58 +665,9 @@ createBinding({
                             }
                         }
                     }
-                    else
-                        options.dataItem(undefined);
                 }
-                if (ko.isWriteableObservable(options.value)) {
-                    var list = e.sender;
-                    if (e.sender.value() || e.sender.value() === 0 || e.sender.value() === false) {
-                        options.value(e.sender.value());
-                    }
-                }
-            }
-        },
-        change: function (options, e) {
+            }, 100);
 
-            if (ko.isObservable(options.value))
-                options.value(e.sender.value());
-
-            if (options.skipCascade == true) {
-                console.log('kendoDropDownList change event', options, e);
-
-                if (ko.isObservable(options.dataItem)) {
-                    var list = e.sender;
-
-                    if (typeof options.virtual === 'undefined' || options.virtual === false) {
-                        options.dataItem(list.dataItem(list.selectedIndex));
-                    } else {
-                        if (list.dataItem(list.selectedIndex)) {
-                            options.dataItem(list.dataItem(list.selectedIndex));
-                        } else {
-                            // See where I wrote "don't mess with this one if you can help it" up there?
-                            // Well, I had to mess with it a bit more because virtualised dropdownlists needs to OBEY ME.
-
-                            if (list.dataItem() && list.dataItem()[options.dataValueField] === e.sender.value()) {
-                                options.dataItem(list.dataItem());
-                            } else {
-                                options.virtual.valueMapper({
-                                    value: e.sender.value(),
-                                    mapValueTo: options.virtual.mapValueTo,
-                                    success: function (response) {
-                                        if (options.virtual.mapValueTo === 'index') {
-                                            e.sender.listView.mapValueToIndex(response)
-                                        } else if (options.virtual.mapValueTo === 'dataItem') {
-                                            let item = Array.isArray(response) && response.length == 1 ? response[0] : response;
-                                            e.sender.listView.mapValueToDataItem(item);
-                                            options.dataItem(item);
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    }
-                }
-            }
         },
         open: {
             writeTo: ISOPEN,
@@ -672,7 +681,8 @@ createBinding({
     watch: {
         enabled: ENABLE,
         isOpen: [OPEN, CLOSE],
-        data: function(value) {
+        data: function (value) {
+
             ko.kendo.setDataSource(this, value);
 
             //if nothing is selected and there is an optionLabel, select it

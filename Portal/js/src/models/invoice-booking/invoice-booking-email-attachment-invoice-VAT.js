@@ -67,7 +67,7 @@
     //}
 
     self.vatParams = {
-        label: 'VAT',
+        label: 'VAT Amount in Sterling',
         buttons: false,
         observable: self.vat,
         originalValue: self.vat(),
@@ -100,11 +100,14 @@
         valueField: 'Code',
         virtual: false,
         template: (e) => {
-            return `${e.Code} - ${e.Name}`;
+            if (e.Code != null && e.Code != '' && e.Name != null && e.Name != '')
+                return `${e.Code} - ${e.Name} (${e.VATRate})`;
+            else
+                return '';
         },
         valueTemplate: (e) => {
             if (e.Code != null && e.Code != '' && e.Name != null && e.Name != '') {
-                return `${e.Code} - ${e.Name}`;
+                return `${e.Code} - ${e.Name} (${e.VATRate})`;
             } else {
                 return '';
             }
@@ -140,6 +143,10 @@
 
             return d;
         },
+        sort: [{
+            field: 'SortOrder',
+            dir: 'asc'
+        }],
         popupSettings: {
             appendTo: '#vat-entries'
         }

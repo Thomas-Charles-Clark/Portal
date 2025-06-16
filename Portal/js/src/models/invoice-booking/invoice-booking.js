@@ -34,6 +34,8 @@ const invoiceBookingViewModel = ({
 
     self.selectedEmailIndex = ko.observable();
 
+    self.gridGroupCount = ko.observable(1);
+
     //#endregion
 
 
@@ -71,11 +73,11 @@ const invoiceBookingViewModel = ({
 
     //#region Components
 
-    self.filters = invoiceBookingFiltersViewModel({
+    self.dashboard = invoiceBookingDashboardViewModel({
         parent: self
     });
 
-    self.dashboard = invoiceBookingDashboardViewModel({
+    self.filters = invoiceBookingFiltersViewModel({
         parent: self
     });
 
@@ -137,28 +139,64 @@ const invoiceBookingViewModel = ({
             title: 'Supplier',
             field: 'SupplierCode',
             width: 200,
-            filterable: false
+            filterable: false,
+            template: (e) => {
+                if (e.Supplier)
+                    return `${e.SupplierCode} - ${e.Supplier.Name}`;
+                else
+                    return '';
+            },
+            groupHeaderTemplate: (e) => {
+                if (e.SupplierCode) {
+                    return `Supplier: ${e.SupplierCode} - ${e.Supplier.Name}`;
+                } else {
+                    return `Supplier: Not Identified`
+                }
+            }
         }, {
             title: 'Supplier Type',
-            field: 'Supplier.SupplierType.SupplierTypeCode',
-            hidden: true
+            field: 'Supplier.SupplierType.Code',
+            hidden: true,
+            template: ''
         }, {
             field: 'FromEmail',
             title: 'From',
             width: 300,
-            filterable: true
+            filterable: true,
+            template: (e) => {
+                return e.FromEmail;
+            }
         }, {
             field: 'Subject',
-            title: 'Subject'
+            title: 'Subject',
+            template: (e) => {
+                if (e.Subject)
+                    return e.Subject;
+                else
+                    return '';
+            }
         }, {
             field: 'ReceivedDT',
             title: 'Received',
-            width: 132
+            width: 132,
+            template: `#:moment(ReceivedDT).format('DD/MM/YYYY HH:mm')#`,
+            attributes: {
+                title: `#:moment(ReceivedDT).format('dddd Do MMM YYYY HH:mm')#`
+            }
         },{
             field: 'BudgetHolderCode',
             title: 'Budget Holder',
             width: 240,
-            filterable: false
+            filterable: false,
+            template: (e) => {
+                if (e.Supplier)
+                    if (e.Supplier.BudgetHolder == null)
+                        return 'n/a';
+                    else
+                        return e.Supplier.BudgetHolder.Name;
+                else
+                    return '';
+            }
         }, {
             field: 'RegularAttachmentCount',
             title: ' ',
@@ -168,6 +206,13 @@ const invoiceBookingViewModel = ({
             },
             filterable: {
                 extra: false
+            },
+            template: (e) => {
+                if (e.RegularAttachmentCount) {
+                    return `<i class="bi bi-paperclip" title="${e.RegularAttachmentCount} attachment${(e.RegularAttachmentCount > 1 ? 's' : '')}"></i>`;
+                } else {
+                    return '';
+                }
             }
         }],
         data: new kendo.data.DataSource({
@@ -175,7 +220,11 @@ const invoiceBookingViewModel = ({
             transport: {
                 read: (options) => {
 
-                    let data = self.getParameters();
+                    let data = {};
+
+                    ko.ignoreDependencies(() => {
+                        data = self.getParameters();
+                    });
 
                     var webapi = new kendo.data.transports.webapi({ prefix: "" });
                     var params = webapi.parameterMap(options.data);
@@ -190,6 +239,8 @@ const invoiceBookingViewModel = ({
                         params.append(propertyName, data[propertyName]);
                     }
 
+                    console.log('MailboxGrid calling with', data);
+
                     fetch('/api/InvoiceBookingAPI/MailboxGrid?' + params, {
                         method: 'GET',
                         cache: 'no-cache',
@@ -199,11 +250,25 @@ const invoiceBookingViewModel = ({
                         .then(data => {
                             console.log("MailboxGrid returned", data);
                             self.itemCount(data.Total);
-                            data.Data = data.Data.map(d => invoiceBookingEmailViewModel({
-                                parent: self,
-                                rec: d
-                            }));
-                            options.success(data);
+
+                            if (self.mailboxGridParams.widget().dataSource.group().length) {
+                                data.Data = data.Data.map(dat => {
+                                    dat.Items = dat.Items.map(d => invoiceBookingEmailViewModel({
+                                        parent: self,
+                                        rec: d
+                                    }));
+                                    return dat;
+                                })
+                            } else {
+                                data.Data = data.Data.map(d => invoiceBookingEmailViewModel({
+                                    parent: self,
+                                    rec: d
+                                }));
+                            }
+
+                            ko.ignoreDependencies(() => {
+                                options.success(data);
+                            })
                         })
                         .catch(err => {
                             window.catchFetchError(err);
@@ -250,10 +315,17 @@ const invoiceBookingViewModel = ({
                     }
                 }
             }),
-            sort: {
+            sort: [{
+                field: 'SupplierCode',
+                dir: 'asc'
+            }, {
                 field: 'ReceivedDT',
                 dir: 'desc'
-            },
+            }],
+            //group: {
+            //    field: 'SupplierCode',
+            //    dir: 'asc'
+            //},
             serverFiltering: true,
             serverGrouping: true,
             serverPaging: true,
@@ -282,8 +354,98 @@ const invoiceBookingViewModel = ({
         },
         select: (event) => {
             console.log('select', event)
+        },
+        databound: (event) => {
+            self.gridGroupCount(event.sender.dataSource.group().length);
         }
     }
+
+    // For Testing
+    self.generalLedgerCode = ko.observable('');
+    self.generalLedger = ko.observable();
+    self.generalLedgerCodeParams = kendoMDCDropDownList({
+        autoBind: true,
+        label: 'General Ledger Code',
+        odata: true,
+        endPoint: '/odata/GeneralLedgerCodes',
+        textField: 'AnalysisCodeDescription',
+        valueField: 'Code',
+        virtual: false,
+        //pageSize: 40,
+        //virtualOptions: {
+        //    itemHeight: 34,
+        //    mapValueTo: 'dataItem',
+        //    valueMapper: function (options) {
+        //        if (options.value && options.value != '') {
+        //            $.ajax({
+        //                url: `/odata/GeneralLedgerCodes/Default.GeneralLedgerCodeValueMapper(code='${options.value}')?$expand=Type`,
+        //                type: 'GET',
+        //                success: function (data) {
+        //                    options.success(data.value);
+        //                    if (data.value.length == 1) {
+        //                        self.generalLedger(data.value[0]);
+        //                    }
+        //                }
+        //            });
+        //        } else {
+        //            options.success();
+        //        }
+        //    }
+        //},
+        //schema: $.extend({}, kendo.data.schemas['odata-v4']),
+        //groupTemplate: (data) => `Group: ${encode(data)}`,
+        template: (e) => {
+            return `${e.Code} - ${e.AnalysisCodeDescription}`
+        },
+        valueTemplate: (e) => {
+            if (e.Code != null && e.Code != '' && e.AnalysisCodeDescription != null && e.AnalysisCodeDescription != '') {
+                return `${e.Code} - ${e.AnalysisCodeDescription}`;
+            } else {
+                return '';
+            }
+        },
+        groupTemplate: ``,
+        grouping: [{
+            field: 'AccountType',
+            dir: 'asc'
+        }],
+        sort: [{
+            field: 'Type.SortOrder',
+            dir: 'desc'
+        }],
+        idObservable: self.generalLedgerCode,
+        objObservable: self.generalLedger,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        height: 340,
+        parameterMap: (data) => {
+            //Generate parame.Code && e.Nameeters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            /// thanks, https://stackoverflow.com/questions/28995757/a-binary-operator-with-incompatible-types-was-detected-found-operand-types-edm/48919770
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            //if (data.filter &&
+            //    data.filter.filters.length &&
+            //    data.filter.filters[0].value != '') {
+
+            //    let filterValue = data.filter.filters[0].value;
+
+            //    d.$filter = `Contains(ToLower(AnalysisCodeDescription), '${filterValue}') OR StartsWith(ToLower(Code), '${filterValue}')`;
+            //}
+
+            return d;
+        }
+    });
+    // GROUP YOU FECKING FECK
 
     //#endregion
 
@@ -449,6 +611,7 @@ const invoiceBookingViewModel = ({
 
     self.modalElement.addEventListener('hide.bs.modal', () => {
         self.selectedEmail(undefined);
+        self.refresh();
     });
     
     //#endregion

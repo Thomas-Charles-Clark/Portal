@@ -5,7 +5,10 @@
 
     }) => {
     let self = Object.assign({
-        propagateSupplier: parent.propagateSupplier
+        parentEmailSupplier: parent.supplier,
+        parentLoadEmail: parent.loadEmail,
+        emailId: parent.EmailID,
+        emailMessageId: parent.EmailMessageID
     }, rec);
 
     let toLoad = rec.SelectResult?.MostRecent ?? rec.SelectResult?.Original;
@@ -211,6 +214,13 @@
                 deep: true,
                 live: true
             });
+
+            window.setTimeout(() => {
+                if (properties.supplierCode && properties.supplierCode() == '' && self.parentEmailSupplier()) {
+                    properties.supplierCode(self.parentEmailSupplier().Code);
+                    properties.supplierParams.dropDownListSettings.widget().trigger('change');
+                }
+            }, 0);
         }
     }
 
@@ -273,6 +283,8 @@
                         attachmentTypeId: self.attachmentTypeId(),
                         formDataJson: JSON.stringify({
                             InvoiceDate: props.invoiceDate(),
+                            InvoiceDueDT: props.dueDate(),
+                            SettlementDT: props.settlementDate(),
                             SupplierCode: props.supplierCode(),
                             SupplierInvoiceCode: props.supplierInvoiceReference(),
                             PaymentTermsCode: props.paymentTermsCode(),
@@ -282,7 +294,11 @@
                             GeneralLedgerAmountsExVAT: props.generalLedgerEntries().map(gl => gl.amountExVAT()),
                             VATCodes: props.vatEntries().map(v => v.vatCode()),
                             VATValues: props.vatEntries().map(v => v.vat()),
-                            Dispute: props.dispute()
+                            Dispute: props.dispute(),
+                            SavedCurrency: props.supplierCurrency(),
+                            SavedExchangeRate: props.supplier().ExchangeRate?.SterlingExchangeRate,
+                            SavedInvoiceTotalIncVATInSterling: props.totalIncVATConvertedToSterling(),
+                            SavedVATTotalInSterling: props.totalVATConvertedToSterling(),
                         })
                     }
 
@@ -296,6 +312,10 @@
                             console.log('SaveAttachment returned', data);
                             self.busy(false);
                             window.showInfo('Success', 'Attachment detail saved successfully');
+                            self.parent.loadEmail({
+                                EmailMessageID: self.parent.EmailMessageID,
+                                EmailID: self.parent.EmailID
+                            })
                         })
                         .catch(err => {
                             self.busy(false);

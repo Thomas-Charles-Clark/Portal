@@ -849,62 +849,62 @@ namespace Portal
             bundles.Add(new ScriptBundle("~/bundles/js/order-book").Include(
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/emailer{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-summary-filter{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-user-defined-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-date-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-pre-defined-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-sales-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-orders-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-main-cell{jsSuffix}",
-                        $"{jsPrefix}/models/order-book{jsSuffix}"
+                        $"{jsPrefix}/models/order-book/order-book-summary-filter{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-user-defined-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-date-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-pre-defined-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-sales-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-orders-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-main-cell{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-book-detail").Include(
                         $"{jsPrefix}/models/virtual-scrolling-deferred-data{jsSuffix}",
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/emailer{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-advanced-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-summary-filter{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-user-defined-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-date-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-pre-defined-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-sales-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-orders-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-advanced-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-main-cell{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-detail{jsSuffix}"
+                        $"{jsPrefix}/models/order-book/order-book-advanced-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-summary-filter{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-user-defined-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-date-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-pre-defined-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-sales-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-orders-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-advanced-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-main-cell{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-detail{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-book-reallocate-stock").Include(
                         $"{jsPrefix}/models/virtual-scrolling-deferred-data{jsSuffix}",
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/emailer{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-advanced-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-summary-filter{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-user-defined-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-date-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-pre-defined-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-sales-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-orders-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-advanced-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-main-cell{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-reallocate-stock{jsSuffix}"
+                        $"{jsPrefix}/models/order-book/order-book-advanced-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-summary-filter{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-user-defined-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-date-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-pre-defined-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-sales-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-orders-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-advanced-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-main-cell{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-reallocate-stock{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-book-back-orders-without-purchase-orders").Include(
                         $"{jsPrefix}/models/virtual-scrolling-deferred-data{jsSuffix}",
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/emailer{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-advanced-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-summary-filter{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-user-defined-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-date-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-pre-defined-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-sales-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-orders-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-advanced-filters{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-main-cell{jsSuffix}",
-                        $"{jsPrefix}/models/order-book-back-orders-without-purchase-orders{jsSuffix}"
+                        $"{jsPrefix}/models/order-book/order-book-advanced-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-summary-filter{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-user-defined-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-date-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-pre-defined-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-sales-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-orders-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-advanced-filters{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-main-cell{jsSuffix}",
+                        $"{jsPrefix}/models/order-book/order-book-back-orders-without-purchase-orders{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/parcel-calculator").Include(
@@ -926,15 +926,15 @@ namespace Portal
             bundles.Add(new ScriptBundle("~/bundles/js/invoice-booking").Include(
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/emailer{jsSuffix}",
-                        $"{jsPrefix}/models/invoice-booking-email{jsSuffix}",
-                        $"{jsPrefix}/models/invoice-booking-email-attachment{jsSuffix}",
-                        $"{jsPrefix}/models/invoice-booking-email-attachment-invoice{jsSuffix}",
-                        $"{jsPrefix}/models/invoice-booking-email-attachment-credit-note{jsSuffix}",
-                        $"{jsPrefix}/models/invoice-booking-email-attachment-invoice-VAT{jsSuffix}",
-                        $"{jsPrefix}/models/invoice-booking-email-attachment-invoice-GL{jsSuffix}",
-                        $"{jsPrefix}/models/invoice-booking-filters{jsSuffix}",
-                        $"{jsPrefix}/models/invoice-booking-dashboard{jsSuffix}",
-                        $"{jsPrefix}/models/invoice-booking{jsSuffix}"
+                        $"{jsPrefix}/models/invoice-booking/invoice-booking-email{jsSuffix}",
+                        $"{jsPrefix}/models/invoice-booking/invoice-booking-email-attachment{jsSuffix}",
+                        $"{jsPrefix}/models/invoice-booking/invoice-booking-email-attachment-invoice{jsSuffix}",
+                        $"{jsPrefix}/models/invoice-booking/invoice-booking-email-attachment-credit-note{jsSuffix}",
+                        $"{jsPrefix}/models/invoice-booking/invoice-booking-email-attachment-invoice-VAT{jsSuffix}",
+                        $"{jsPrefix}/models/invoice-booking/invoice-booking-email-attachment-invoice-GL{jsSuffix}",
+                        $"{jsPrefix}/models/invoice-booking/invoice-booking-filters{jsSuffix}",
+                        $"{jsPrefix}/models/invoice-booking/invoice-booking-dashboard{jsSuffix}",
+                        $"{jsPrefix}/models/invoice-booking/invoice-booking{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/email-contacts").Include(

@@ -17,5 +17,7 @@ namespace SharedEFClasses.Models.Mertex
         public decimal VATRate { get; set; }
 
         public string Name { get; set; }
+
+        public int? SortOrder { get; set; }
     }
 }

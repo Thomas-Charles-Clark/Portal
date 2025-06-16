@@ -29,22 +29,32 @@
         modalElement: parent.modalElement
     });
 
-    self.propagateSupplier = function (supplier) {
-        self.attachments().forEach(a => {
-            if (a != this) {
-                let props = ko.unwrap(a.properties);
-                if (props) {
-                    if (props.supplierCode() == '') {
-                        self.isPropagatingSupplier = true;
-                        props.supplierCode(supplier.Code);
-                        props.supplier(supplier);
-                    }
-                }
-            }
-        })
-    }
+    //self.propagateSupplier = function (supplier) {
+    //    self.attachments().forEach(a => {
+    //        if (a != this) {
+    //            let props = ko.unwrap(a.properties);
+    //            if (props) {
+    //                if (props.supplierCode() == '') {
+    //                    self.isPropagatingSupplier = true;
+    //                    props.supplierCode(supplier.Code);
+    //                    props.supplier(supplier);
+    //                }
+    //            }
+    //        }
+    //    })
+    //}
 
     //#region Properties
+
+    self.supplierCode = ko.observable(self.SupplierCode ?? '').extend({
+        notEqual: {
+            params: '',
+            onlyIf: self.validateNow,
+            message: 'Please specify a Supplier'
+        }
+    });
+
+    self.supplier = ko.observable(self.Supplier);
 
     self.attachments = ko.observableArray((attachments || []).map(a => invoiceBookingEmailAttachmentViewModel({
         rec: a,
@@ -69,16 +79,6 @@
         clearable: ko.observable(false),
         revertible: ko.observable(false)
     }
-
-    self.supplierCode = ko.observable(self.SupplierCode ?? '').extend({
-        notEqual: {
-            params: '',
-            onlyIf: self.validateNow,
-            message: 'Please specify a Supplier'
-        }
-    });
-
-    self.supplier = ko.observable(self.Supplier);
 
     self.displayMostRecent = ko.observable(true);
 
@@ -134,7 +134,8 @@
         },
         select: function (e) {
             console.log('supplierParams select', e);
-            self.propagateSupplier(e.dataItem);
+            self.supplierParams.locked(true);
+            //self.propagateSupplier(e.dataItem);
         },
         clearFunction: () => {
             self.supplierParams.dropDownListSettings.widget().value('');

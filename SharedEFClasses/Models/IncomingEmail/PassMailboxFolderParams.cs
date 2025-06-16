@@ -18,5 +18,7 @@ namespace SharedEFClasses.Models.IncomingEmail
         public DateTime? FromDT { get; set; }
         public DateTime? ToDT { get; set; }
         public bool? HasAttachments { get; set; }
+        public byte EmailStatusID { get; set; }
+        public bool? SupplierIdentified { get; set; }
     }
 }

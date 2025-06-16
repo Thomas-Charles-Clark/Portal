@@ -210,6 +210,7 @@ namespace Portal.Areas.Invoices.Controllers
                     .Where(p =>
                         userIds.Contains((int)p.Supplier.BudgetHolder.UserID) &&
                         p.MailboxID == dto.MailboxID && 
+                        p.EmailStatusID == dto.EmailStatusID &&
                         p.Deleted == false
                     ).AsQueryable();
             }
@@ -219,6 +220,7 @@ namespace Portal.Areas.Invoices.Controllers
                     .Include("Supplier")
                     .Where(p =>
                         p.MailboxID == dto.MailboxID &&
+                        p.EmailStatusID == dto.EmailStatusID &&
                         p.Deleted == false
                 ).AsQueryable();
             }
@@ -485,5 +487,16 @@ namespace Portal.Areas.Invoices.Controllers
 
             return Ok(new { });
         }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> FetchInvoiceDates([FromBody] PassInvoiceDateParams dto)
+        {
+            var result = await PortalDb.IncomingEmail_InvoiceDates_Select(dto);
+
+            return Ok(result);
+        }
+
+
+        
     }
 }

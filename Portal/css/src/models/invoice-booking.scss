@@ -203,7 +203,6 @@ body {
         }
     }
 }
-
 #order-date-type-prefilter {
 
     .k-dropdown-wrap {
@@ -214,12 +213,12 @@ body {
             > span.date-range {
                 flex: 1;
                 display: inline-block;
-                padding: 8px 32px 8px 0;
+                padding: 8px 32px 10px 0;
 
                 &.date-danger {
                     background-color: tint-color($red-200, 20%);
                     color: $red-600;
-                    padding: 4px 32px 4px 0;
+                    /*padding: 4px 32px 4px 0;*/
                 }
             }
         }
@@ -317,11 +316,40 @@ body {
 
         > .mdc-validating-field {
             flex: 1;
+
+            > .mdc-select--selected {
+                .k-dropdown-wrap {
+                    > span.k-input {
+                        background-color: $blue-100;
+                    }
+                }
+            }
+
+            .dropdown {
+                &.selected {
+                    .btn {
+                        background-color: $blue-100;
+                    }
+                }
+            }
         }
 
         .bi-lock-fill {
             flex: 0;
         }
+
+        /*.k-dropdown-wrap {
+            > span.k-input {
+                padding: 0;
+                display: flex;
+
+                > span {
+                    flex: 1;
+                    display: inline-block;
+                    padding: 4px 32px 4px 0;
+                }
+            }
+        }*/
     }
 
     #order-date-prefilter {
@@ -702,11 +730,60 @@ body {
 
                         .mdc-validating-field {
                             flex: 1;
+
+                            .mdc-text-field__numeric {
+                                text-align: left !important;
+                            }
                         }
 
                         & + .attachment-property {
                             margin-top: $l-gutter;
                         }
+
+                        &.loaded-property {
+                            gap: $l-gutter;
+
+                            label {
+                                flex: 0 1 240px;
+                                text-align: right;
+                                font-weight: $font-weight-bold;
+                            }
+                        }
+                    }
+
+                    #general-ledger-info {
+
+                        .attachment-property {
+                            display: flex;
+                            justify-content: center;
+                            gap: $l-gutter;
+
+
+                            &.conversion-property {
+                                > div {
+                                    flex: 0 1 50%;
+
+                                    > span {
+                                        display: block;
+                                    }
+
+                                    &:first-of-type {
+                                        text-align: right;
+                                    }
+                                }
+                            }
+
+                            > label,
+                            > span {
+                                flex: 1 !important;
+                            }
+                        }
+                    }
+
+                    hr {
+                        color: $gray-300;
+                        opacity: 1.0;
+                        margin-bottom: $xl-gutter;
                     }
 
                     .attachment-supplier-wrapper {
@@ -756,6 +833,7 @@ body {
 
 #invoice-properties,
 #general-ledger-entries,
+#general-ledger-info,
 #vat-entries {
     margin: $l-gutter 0;
 

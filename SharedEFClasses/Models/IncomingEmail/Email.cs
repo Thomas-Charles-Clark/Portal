@@ -78,6 +78,9 @@ namespace SharedEFClasses.Models.IncomingEmail
 
         public string ProcessedType { get; set; }
 
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public bool SupplierIdentified { get; set; }
+
         [JsonIgnore]
         [ForeignKey("MailboxID")]
         [InverseProperty("Emails")]

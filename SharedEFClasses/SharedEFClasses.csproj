@@ -430,12 +430,14 @@
     <Compile Include="Models\IncomingEmail\FullEmail.cs" />
     <Compile Include="Models\IncomingEmail\IncomingEmail_Attachment_ParsedData_SelectResult.cs" />
     <Compile Include="Models\IncomingEmail\InvoiceBookingDashboard.cs" />
+    <Compile Include="Models\IncomingEmail\InvoiceDueDateResult.cs" />
     <Compile Include="Models\IncomingEmail\InvoiceGeneralLedger.cs" />
     <Compile Include="Models\IncomingEmail\InvoiceVAT.cs" />
     <Compile Include="Models\IncomingEmail\Mailbox.cs" />
     <Compile Include="Models\IncomingEmail\MailboxFolder.cs" />
     <Compile Include="Models\IncomingEmail\MailboxFunction.cs" />
     <Compile Include="Models\IncomingEmail\PassAttachmentSubmit.cs" />
+    <Compile Include="Models\IncomingEmail\PassInvoiceDateParams.cs" />
     <Compile Include="Models\IncomingEmail\PassSupplierDetail.cs" />
     <Compile Include="Models\IncomingEmail\PassAttachmentDetail.cs" />
     <Compile Include="Models\IncomingEmail\PassInvoiceAttachmentGL.cs" />

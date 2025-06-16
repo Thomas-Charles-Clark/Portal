@@ -54,7 +54,7 @@ const invoiceBookingFiltersViewModel = ({
     self.supplierCode = ko.observable('');
     self.supplier = ko.observable();
 
-    self.emailStatusId = ko.observable('1');
+    self.emailStatusId = ko.observable(self.parent.dashboard.selectedPod().EmailStatusID);
     self.emailStatus = ko.observable();
 
     self.computer = ko.observable(true).extend({
@@ -165,7 +165,7 @@ const invoiceBookingFiltersViewModel = ({
             }
 
             if (defaultOp.indexOf('SupplierType') == -1 && supplierTypeCode != '') {
-                filters.push(`SupplierTypeCode eq '${supplierTypeCode}'`);
+                filters.push(`Supplier/SupplierType/Code eq '${supplierTypeCode}'`);
             }
 
             if (defaultOp.indexOf('Supplier/') > -1) {
@@ -393,7 +393,7 @@ const invoiceBookingFiltersViewModel = ({
             console.log('budgetHolderParams select', e);
         },
         open: (e) => { 
-            console.log('budgetHolderParams open', e);
+            console.trace('budgetHolderParams open');
         },
         clearFunction: () => {
             self.budgetHolderCode('');
@@ -807,21 +807,21 @@ const invoiceBookingFiltersViewModel = ({
         self.parent.mailboxGridParams.widget().dataSource.page(1);
     });
 
-    self.emailStatusId.subscribe(nv => {
-        if (nv == null) {
-            let filters = self.parent.mailboxGridParams.widget().dataSource.filter();
+    //self.emailStatusId.subscribe(nv => {
+    //    if (nv == null) {
+    //        let filters = self.parent.mailboxGridParams.widget().dataSource.filter();
 
-            filters.filters = filters.filters.filter(f => f.field != 'EmailStatusID');
+    //        filters.filters = filters.filters.filter(f => f.field != 'EmailStatusID');
 
-            self.parent.mailboxGridParams.widget().dataSource.filter(filters);
-        } else {
-            self.parent.mailboxGridParams.widget().dataSource.filter({
-                field: 'EmailStatusID',
-                operator: 'eq',
-                value: nv
-            });
-        }
-    })
+    //        self.parent.mailboxGridParams.widget().dataSource.filter(filters);
+    //    } else {
+    //        self.parent.mailboxGridParams.widget().dataSource.filter({
+    //            field: 'EmailStatusID',
+    //            operator: 'eq',
+    //            value: nv
+    //        });
+    //    }
+    //})
 
     self.supplierCode.subscribe(nv => {
         if (nv == null || nv == '') {
@@ -848,7 +848,7 @@ const invoiceBookingFiltersViewModel = ({
             self.parent.mailboxGridParams.widget().dataSource.filter(filters);
         } else {
             self.parent.mailboxGridParams.widget().dataSource.filter({
-                field: 'SupplierTypeCode',
+                field: 'Supplier.SupplierType.Code',
                 operator: 'eq',
                 value: nv
             });

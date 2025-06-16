@@ -273,5 +273,12 @@ namespace SharedEFClasses.Models
 
             return result;
         }
+
+        public async Task<InvoiceDueDateResult> IncomingEmail_InvoiceDates_Select(PassInvoiceDateParams dto)
+        {
+            var result = await this.Database.Connection.QuerySingleOrDefaultAsync<InvoiceDueDateResult>("[portal].[InvoiceDates_Select]", dto, null, null, CommandType.StoredProcedure);
+
+            return result;
+        }
     }
 }

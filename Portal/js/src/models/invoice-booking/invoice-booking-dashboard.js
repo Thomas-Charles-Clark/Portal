@@ -11,9 +11,17 @@
 
     self.busy = ko.observable(false);
 
-    self.pods = ko.observableArray([]);
+    self.pods = ko.observableArray(window.getDashboardPods());
 
-    self.selectedPod = ko.observable();
+    let emailStatusIdtoLoad = window.getEmailStatusIdToLoad();
+
+    self.selectedPod = ko.observable(emailStatusIdtoLoad ?
+        self.pods().find(p => p.EmailStatusID == emailStatusIdtoLoad) 
+        : self.pods().sort((a, b) => {
+            return a.SortOrder === b.SortOrder ? 0
+                : a.SortOrder < b.SortOrder ? -1
+                    : 1;
+    })[0]);
 
     //#endregion
 
@@ -84,26 +92,40 @@
 
         self.selectedPod(data);
 
+        self.parent.filters.emailStatusId(data.EmailStatusID);
+
+        console.warn('probably warn about potential or actual unsaved changes');
+
         switch (data.Label) {
-            case 'New / Unprocessed':
-                self.parent.filters.emailStatusId(1);
-                self.parent.filters.hasAttachments(undefined);
+            case 'Unidentified Supplier':
+                self.parent.mailboxGridParams.widget().dataSource.sort([{
+                    field: 'FromEmail',
+                    dir: 'asc'
+                }, {
+                    field: 'ReceivedDT',
+                    dir: 'desc'
+                }]);
                 break;
-            case 'New / Unprocessed with Attachments':
-                self.parent.filters.emailStatusId(1);
-                self.parent.filters.hasAttachments(true);
+            case 'Unprocessed':
+                self.parent.mailboxGridParams.widget().dataSource.sort([{
+                    field: 'SupplierCode',
+                    dir: 'asc'
+                }, {
+                    field: 'ReceivedDT',
+                    dir: 'desc'
+                }]);
                 break;
             case 'Processed':
-                self.parent.filters.emailStatusId(2);
-                break;
             case 'Junk':
-                self.parent.filters.emailStatusId(3);
+                self.parent.mailboxGridParams.widget().dataSource.sort([{
+                    field: 'ReceivedDT',
+                    dir: 'desc'
+                }]);
                 break;
             default:
                 break;
         }
 
-        console.warn('probably warn about potential or actual unsaved changes');
         self.parent.selectedEmail(undefined);
     } 
 
@@ -112,7 +134,7 @@
 
     //#region Events
 
-    self.fetch();
+
 
     //#endregion
 

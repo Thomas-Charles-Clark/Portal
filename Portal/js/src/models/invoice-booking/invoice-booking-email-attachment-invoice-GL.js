@@ -139,7 +139,7 @@
     });
 
     self.amountExVATParams = {
-        label: 'Amount (ex. VAT)',
+        label: 'Amount ex. VAT in Sterling',
         buttons: false,
         observable: self.amountExVAT,
         originalValue: self.amountExVAT(),

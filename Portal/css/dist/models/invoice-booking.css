@@ -169,12 +169,12 @@ body {
 #order-date-type-prefilter .k-dropdown-wrap > span.k-input > span.date-range {
   flex: 1;
   display: inline-block;
-  padding: 8px 32px 8px 0;
+  padding: 8px 32px 10px 0;
 }
 #order-date-type-prefilter .k-dropdown-wrap > span.k-input > span.date-range.date-danger {
   background-color: #f4bec4;
   color: #b02a37;
-  padding: 4px 32px 4px 0;
+  /*padding: 4px 32px 4px 0;*/
 }
 #order-date-type-prefilter .k-list .k-item {
   padding: 0;
@@ -236,9 +236,27 @@ body {
   flex: 1;
   position: relative;
   display: flex;
+  /*.k-dropdown-wrap {
+      > span.k-input {
+          padding: 0;
+          display: flex;
+
+          > span {
+              flex: 1;
+              display: inline-block;
+              padding: 4px 32px 4px 0;
+          }
+      }
+  }*/
 }
 #email-list-prefilters .prefilter > .mdc-validating-field {
   flex: 1;
+}
+#email-list-prefilters .prefilter > .mdc-validating-field > .mdc-select--selected .k-dropdown-wrap > span.k-input {
+  background-color: #cfe2ff;
+}
+#email-list-prefilters .prefilter > .mdc-validating-field .dropdown.selected .btn {
+  background-color: #cfe2ff;
 }
 #email-list-prefilters .prefilter .bi-lock-fill {
   flex: 0;
@@ -551,8 +569,42 @@ body {
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property .mdc-validating-field {
   flex: 1;
 }
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property .mdc-validating-field .mdc-text-field__numeric {
+  text-align: left !important;
+}
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property + .attachment-property {
   margin-top: 1rem;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property.loaded-property {
+  gap: 1rem;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property.loaded-property label {
+  flex: 0 1 240px;
+  text-align: right;
+  font-weight: 700;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info .attachment-property {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info .attachment-property.conversion-property > div {
+  flex: 0 1 50%;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info .attachment-property.conversion-property > div > span {
+  display: block;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info .attachment-property.conversion-property > div:first-of-type {
+  text-align: right;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info .attachment-property > label,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info .attachment-property > span {
+  flex: 1 !important;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane hr {
+  color: #dee2e6;
+  opacity: 1;
+  margin-bottom: 2rem;
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper {
   display: flex;
@@ -583,11 +635,13 @@ body {
 
 #invoice-properties,
 #general-ledger-entries,
+#general-ledger-info,
 #vat-entries {
   margin: 1rem 0;
 }
 #invoice-properties h5,
 #general-ledger-entries h5,
+#general-ledger-info h5,
 #vat-entries h5 {
   height: 34px;
   display: flex;
@@ -597,16 +651,19 @@ body {
 }
 #invoice-properties .list-group.border-danger li,
 #general-ledger-entries .list-group.border-danger li,
+#general-ledger-info .list-group.border-danger li,
 #vat-entries .list-group.border-danger li {
   border-color: #dc3545;
 }
 #invoice-properties .list-group-item,
 #general-ledger-entries .list-group-item,
+#general-ledger-info .list-group-item,
 #vat-entries .list-group-item {
   padding: 1rem;
 }
 #invoice-properties .list-group-item > .attachment-property,
 #general-ledger-entries .list-group-item > .attachment-property,
+#general-ledger-info .list-group-item > .attachment-property,
 #vat-entries .list-group-item > .attachment-property {
   padding-right: 34px;
 }

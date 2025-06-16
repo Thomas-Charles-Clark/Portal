@@ -11,5 +11,6 @@ namespace SharedEFClasses.Models.IncomingEmail
         public string Label { get; set; }
         public int RecordCount { get; set; }
         public byte SortOrder { get; set; }
+        public byte EmailStatusID { get; set; }
     }
 }

@@ -22,8 +22,32 @@
 
     self.supplier = ko.observable(self.Supplier);
 
+    self.loadedCurrency = self.SavedCurrency;
+
+    self.loadedExchangeRate = self.SavedExchangeRate;
+
+    self.loadedInvoiceTotalIncVATInSterling = self.SavedInvoiceTotalIncVATInSterling;
+
+    self.loadedTotalVATInSterling = self.SavedVATTotalInSterling;
+
     self.supplierCurrency = ko.computed(() => {
-        return self.supplier() && self.supplier().Currency;
+        if (self.loadedCurrency)
+            return self.loadedCurrency;
+        else
+            return self.supplier() && self.supplier().Currency;
+    }, self);
+
+    console.warn('TODO: store and load the values displayed in the GL info panel to JSON. We can\'t have an exchange rate change and then be displaying the lies in that panel. It must be a true reflection of what was submitted to Mertex at the point of submission.');
+    self.supplierCurrencyDisplay = ko.computed(() => {
+        return self.supplierCurrency() && `${self.supplierCurrency().ISO_4217} - ${self.supplierCurrency().Name}`
+    }, self);
+
+    self.supplierExchangeRateDisplay = ko.computed(() => {
+        if (self.loadedCurrency && self.loadedExchangeRate) {
+            return `${self.loadedCurrency.Code}: ${formatNumber(self.loadedExchangeRate, 2, 'en-GB', 'GBP')}`;
+        } else {
+            return self.supplier() && `${self.supplier().Currency.Code}: ${formatNumber(self.supplier().ExchangeRate.SterlingExchangeRate, 2, 'en-GB', 'GBP')}`;
+        }
     }, self);
 
     self.supplierInvoiceReference = ko.observable(rec.SupplierInvoiceCode).extend({
@@ -42,6 +66,22 @@
             params: true,
             onlyIf: self.validateNow,
             message: 'You must provide an Invoice Date'
+        }
+    });
+
+    self.dueDate = ko.observable(rec.InvoiceDueDT).extend({
+        required: {
+            params: true,
+            onlyIf: self.validateNow,
+            message: 'You must provide an Invoice Due Date'
+        }
+    });
+
+    self.settlementDate = ko.observable(rec.SettlementDT).extend({
+        required: {
+            params: true,
+            onlyIf: self.validateNow,
+            message: 'You must provide a Settlement Date'
         }
     });
 
@@ -325,6 +365,118 @@
         decorateInputElement: true
     };
 
+    self.dueDateParams = {
+        label: "Invoice Due",
+        observable: self.dueDate,
+        originalValue: self.dueDate(),
+        displayObservable: ko.observable(),
+        dateTimePickerOptions: {
+            localization: {
+                locale: 'en-GB',
+                format: 'dd/MM/yyyy'
+            },
+            display: {
+                sideBySide: false,
+                components: {
+                    clock: false,
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: false,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false
+                },
+                viewMode: 'months',
+                cellSize: '3rem'
+            },
+            restrictions: {
+                disabledDates: []
+            },
+            allowInputToggle: true,
+            useCurrent: false,
+            keepInvalid: true,
+            debug: false,
+            eventHandlers: {
+                onChange: (e) => {
+
+                }
+            },
+            viewDate: self.dueDate() ? new Date(self.dueDate()) : new Date()
+        },
+        disabled: ko.observable(self.readOnly),
+        locked: ko.observable(self.readOnly),
+        clearable: ko.observable(false),
+        clearFunction: () => {
+            self.invoiceDate(undefined);
+        },
+        revertible: ko.observable(true),
+        revertFunction: () => {
+            self.dueDateParams.observable(self.dueDateParams.originalValue);
+        },
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true
+    };
+
+    self.settlementDateParams = {
+        label: "Settlement Date",
+        observable: self.settlementDate,
+        originalValue: self.settlementDate(),
+        displayObservable: ko.observable(),
+        dateTimePickerOptions: {
+            localization: {
+                locale: 'en-GB',
+                format: 'dd/MM/yyyy'
+            },
+            display: {
+                sideBySide: false,
+                components: {
+                    clock: false,
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: false,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false
+                },
+                viewMode: 'months',
+                cellSize: '3rem'
+            },
+            restrictions: {
+                disabledDates: []
+            },
+            allowInputToggle: true,
+            useCurrent: false,
+            keepInvalid: true,
+            debug: false,
+            eventHandlers: {
+                onChange: (e) => {
+
+                }
+            },
+            viewDate: self.settlementDate() ? new Date(self.settlementDate()) : new Date()
+        },
+        disabled: ko.observable(self.readOnly),
+        locked: ko.observable(self.readOnly),
+        clearable: ko.observable(false),
+        clearFunction: () => {
+            self.invoiceDate(undefined);
+        },
+        revertible: ko.observable(true),
+        revertFunction: () => {
+            self.settlementDateParams.observable(self.settlementDateParams.originalValue);
+        },
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true
+    };
+
     self.paymentTermsParams = kendoMDCDropDownList({
         autoBind: true,
         label: 'Payment Terms',
@@ -404,6 +556,8 @@
     self.errorables = [
         self.supplierInvoiceReference,
         self.invoiceDate,
+        self.dueDate,
+        self.settlementDate,
         self.paymentTermsId,
         self.generalLedgerEntries,
         self.vatEntries,
@@ -418,14 +572,49 @@
 
     //#region Computeds
 
+    self.totalIncVATConvertedToSterling = ko.computed(() => {
+        if (self.readOnly)
+            return self.loadedInvoiceTotalIncVATInSterling;
+        else 
+            if (self.supplier() && self.invoiceTotalIncVATCurrency())
+                return Math.round(self.invoiceTotalIncVATCurrency() * self.supplier().ExchangeRate.SterlingExchangeRate * 100) / 100;
+            else
+                return null;
+        
+    }, self);
+
+    self.totalIncVATConvertedToSterlingFormatted = ko.computed(() => {
+        if (self.totalIncVATConvertedToSterling())
+            return formatCurrency(self.invoiceTotalIncVATCurrency() * (self.loadedExchangeRate ? +self.loadedExchangeRate : self.supplier().ExchangeRate.SterlingExchangeRate), 2, 'en-GB', 'GBP');
+        else
+            return 'Please provide an invoice total'
+    }, self);
+
+    self.totalVATConvertedToSterling = ko.computed(() => {
+        if (self.readOnly) 
+            return self.loadedTotalVATInSterling;
+        else
+            if (self.supplier() && self.vatTotalCurrency())
+                return Math.round(self.vatTotalCurrency() * (self.loadedExchangeRate ? +self.loadedExchangeRate : self.supplier().ExchangeRate.SterlingExchangeRate) * 100) / 100;
+            else
+                return null;
+    }, self);
+
+    self.totalVATConvertedToSterlingFormatted = ko.computed(() => {
+        if (self.totalVATConvertedToSterling())
+            return formatCurrency(self.vatTotalCurrency() * (self.loadedExchangeRate ? +self.loadedExchangeRate : self.supplier().ExchangeRate.SterlingExchangeRate), 2, 'en-GB', 'GBP');
+        else
+            return 'Please provide a VAT total'
+    }, self);
+
     self.generalLedgerBreakdownSum = ko.computed(() => {
         return self.generalLedgerEntries().reduce((a, i) => a += +(ko.unwrap(i.amountExVAT) ?? 0), 0);
     });
 
     self.generalLedgerSumComputer = ko.computed(() => {
         let breakdown = +self.generalLedgerBreakdownSum();
-        let total = +self.invoiceTotalIncVATCurrency();
-        let vat = +self.vatTotalCurrency();
+        let total = +self.totalIncVATConvertedToSterling();
+        let vat = +self.totalVATConvertedToSterling();
 
         ko.ignoreDependencies(() => {
             if (breakdown == (total - vat)) {
@@ -442,7 +631,7 @@
 
     self.vatSumComputer = ko.computed(() => {
         let breakdown = +self.vatBreakdownSum();
-        let total = +self.vatTotalCurrency();
+        let total = +self.totalVATConvertedToSterling();
 
         ko.ignoreDependencies(() => {
             if (breakdown == total) {
@@ -453,12 +642,66 @@
         });
     });
 
+    self.invoiceTotalComputer = ko.computed(() => {
+        if (self.totalIncVATConvertedToSterling() &&
+            self.totalVATConvertedToSterling()) {
+
+            // we want to distribute the remaining unallotted total EX and VAT values among the entries
+
+            let accountedForTotalExVATSterling = self.generalLedgerEntries().reduce((a, i) => a += i.amountExVAT() ?? 0, 0)
+
+            let accountedForVAT = self.vatEntries().reduce((a, i) => a += i.vat() ?? 0, 0)
+
+            let remainderTotalExVAT = (self.totalIncVATConvertedToSterling() - self.totalVATConvertedToSterling()) - accountedForTotalExVATSterling;
+
+            let remainderVAT = self.totalVATConvertedToSterling() - accountedForVAT;
+
+            ko.ignoreDependencies(() => {
+
+                if (remainderTotalExVAT) {
+                    self.generalLedgerEntries().find(gl => gl.amountExVAT() == null)?.amountExVAT(remainderTotalExVAT);
+                }
+
+                if (remainderVAT) {
+                    self.vatEntries().find(v => v.vat() == null)?.vat(remainderVAT);
+                }
+
+            });
+        }
+    })
+
     //#endregion
 
 
     //#region Subscriptions
 
+    self.invoiceDate.subscribe(nv => {
+        if (nv && self.paymentTermsCode()) {
 
+            let params = {
+                invoiceDate: nv,
+                supplierPaymentTermsCode: self.paymentTermsCode()
+            }
+
+            console.log('FetchInvoiceDates calling with', params);
+
+            fetch('/api/InvoiceBookingAPI/FetchInvoiceDates', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                credentials: 'same-origin',
+                cache: 'no-cache',
+                body: JSON.stringify(params)
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+
+                    console.log('FetchInvoiceDates returned', data);
+                    self.dueDate(new Date(data.InvoiceDueDate));
+                    self.settlementDate(new Date(data.InvoiceSettlementDate));
+                })
+                .catch(window.catchFetchError);
+        }
+    })
 
     //#endregion
 
