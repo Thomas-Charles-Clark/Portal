@@ -12,7 +12,7 @@
 
     ko.bindingHandlers['tempusDominus'] = {
         init: (element, valueAccessor, allBindingsAccessor) => {
-            let td = new tempusDominus.TempusDominus(element, allBindingsAccessor().dateTimePickerOptions);
+            let td = new tempusDominus.TempusDominus(allBindingsAccessor().dateTimePickerOptions.bindToParentNode ? element.parentNode : element, allBindingsAccessor().dateTimePickerOptions);
             let dateValue = ko.unwrap(valueAccessor());
             if (dateValue && typeof valueAccessor().isValid === 'function' && valueAccessor().isValid()) {
                 //let parsedDate = td.dates.parseInput();
@@ -33,6 +33,10 @@
                     }
                 }
             });
+
+            td.subscribe(tempusDominus.Namespace.events.error, (event) => {
+                console.log('default date error thrown')
+            })
 
             valueAccessor().tempusDominus = td;
 

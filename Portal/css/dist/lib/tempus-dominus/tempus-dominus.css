@@ -2,6 +2,27 @@
   --td-cell-size: 2.5rem;
 }
 
+:root {
+  --vsm-gutter: 0.25rem;
+  --sm-gutter: 0.5rem;
+  --m-gutter: 0.75rem;
+  --l-gutter: 1rem;
+  --mxl-gutter: 1.5rem;
+  --xl-gutter: 2rem;
+  --xxl-gutter: 3rem;
+  --disco-color: #e51f7c;
+  --letter-spacing-slight: 0.05rem;
+  --page-heading-colour: #44546b;
+}
+
+.input-group-lg .btn {
+  font-size: 1rem;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
 .visually-hidden, .tempus-dominus-widget [data-action]::after {
   position: absolute !important;
   width: 1px !important;
@@ -523,5 +544,26 @@
   color: #fff;
   background-color: #4db2ff;
   border-color: #4db2ff;
+}
+
+.mdc-validating-field .mdc-text-field .tempus-dominus-calendar-btn {
+  border-color: #ced4da;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  background-color: inherit;
+  color: #212529;
+  transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
+  cursor: pointer;
+}
+.mdc-validating-field .mdc-text-field:not(.mdc-text-field--disabled) .tempus-dominus-calendar-btn:hover, .mdc-validating-field .mdc-text-field:not(.mdc-text-field--disabled) .tempus-dominus-calendar-btn:focus, .mdc-validating-field .mdc-text-field:not(.mdc-text-field--disabled) .tempus-dominus-calendar-btn:focus-within {
+  background-color: #e7f1ff;
+}
+.mdc-validating-field .mdc-text-field.mdc-text-field--disabled .tempus-dominus-calendar-btn {
+  border-left: 1px solid #6ebe2c;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  background-color: transparent;
+  color: #212529;
+  transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
 }
 /*# sourceMappingURL=tempus-dominus.css.map */

@@ -18,6 +18,8 @@ namespace SharedEFClasses.Models.IncomingEmail
 
         public bool ParsingRequired { get; set; }
 
+        public short SortOrder { get; set; }
+
         [JsonIgnore]
         [InverseProperty("AttachmentType")]
         public virtual ICollection<Attachment> Attachments { get; set; }

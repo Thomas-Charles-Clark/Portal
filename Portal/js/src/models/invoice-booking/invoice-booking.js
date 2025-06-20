@@ -360,95 +360,6 @@ const invoiceBookingViewModel = ({
         }
     }
 
-    // For Testing
-    self.generalLedgerCode = ko.observable('');
-    self.generalLedger = ko.observable();
-    self.generalLedgerCodeParams = kendoMDCDropDownList({
-        autoBind: true,
-        label: 'General Ledger Code',
-        odata: true,
-        endPoint: '/odata/GeneralLedgerCodes',
-        textField: 'AnalysisCodeDescription',
-        valueField: 'Code',
-        virtual: false,
-        //pageSize: 40,
-        //virtualOptions: {
-        //    itemHeight: 34,
-        //    mapValueTo: 'dataItem',
-        //    valueMapper: function (options) {
-        //        if (options.value && options.value != '') {
-        //            $.ajax({
-        //                url: `/odata/GeneralLedgerCodes/Default.GeneralLedgerCodeValueMapper(code='${options.value}')?$expand=Type`,
-        //                type: 'GET',
-        //                success: function (data) {
-        //                    options.success(data.value);
-        //                    if (data.value.length == 1) {
-        //                        self.generalLedger(data.value[0]);
-        //                    }
-        //                }
-        //            });
-        //        } else {
-        //            options.success();
-        //        }
-        //    }
-        //},
-        //schema: $.extend({}, kendo.data.schemas['odata-v4']),
-        //groupTemplate: (data) => `Group: ${encode(data)}`,
-        template: (e) => {
-            return `${e.Code} - ${e.AnalysisCodeDescription}`
-        },
-        valueTemplate: (e) => {
-            if (e.Code != null && e.Code != '' && e.AnalysisCodeDescription != null && e.AnalysisCodeDescription != '') {
-                return `${e.Code} - ${e.AnalysisCodeDescription}`;
-            } else {
-                return '';
-            }
-        },
-        groupTemplate: ``,
-        grouping: [{
-            field: 'AccountType',
-            dir: 'asc'
-        }],
-        sort: [{
-            field: 'Type.SortOrder',
-            dir: 'desc'
-        }],
-        idObservable: self.generalLedgerCode,
-        objObservable: self.generalLedger,
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertible: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        height: 340,
-        parameterMap: (data) => {
-            //Generate parame.Code && e.Nameeters in odata v4 format
-            let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-            /// thanks, https://stackoverflow.com/questions/28995757/a-binary-operator-with-incompatible-types-was-detected-found-operand-types-edm/48919770
-            delete d.$inlinecount; // <-- remove inlinecount
-            delete d.$format; // <-- remove format
-            delete d.$callback; // <-- remove callback
-
-            d.$count = true;
-
-            //if (data.filter &&
-            //    data.filter.filters.length &&
-            //    data.filter.filters[0].value != '') {
-
-            //    let filterValue = data.filter.filters[0].value;
-
-            //    d.$filter = `Contains(ToLower(AnalysisCodeDescription), '${filterValue}') OR StartsWith(ToLower(Code), '${filterValue}')`;
-            //}
-
-            return d;
-        }
-    });
-    // GROUP YOU FECKING FECK
-
-    //#endregion
-
 
     //#region Computeds
 
@@ -495,55 +406,65 @@ const invoiceBookingViewModel = ({
         self.mailboxGridParams.widget().dataSource.read();
     }
 
+    self.reset = () => {
+        self.selectedEmail(undefined);
+        self.refresh();
+    }
+
     self.loadEmail = (stub) => {
 
-        //self.selectedEmail(undefined);
+        return new Promise((resolve, reject) => {
 
-        self.modalBusy(true);
+            //self.selectedEmail(undefined);
 
-        self.modal.show();
+            self.modalBusy(true);
 
-        let data = {
-            mailboxId: self.mailboxId,
-            emailMessageId: stub.EmailMessageID,
-            emailId: stub.EmailID
-        };
+            self.modal.show();
 
-        fetch('/api/InvoiceBookingAPI/LoadEmailMessage', {
-            method: 'POST',
-            headers: window.fetchHeaders,
-            cache: 'no-cache',
-            body: JSON.stringify(data)
+            let data = {
+                mailboxId: self.mailboxId,
+                emailMessageId: stub.EmailMessageID,
+                emailId: stub.EmailID
+            };
+
+            fetch('/api/InvoiceBookingAPI/LoadEmailMessage', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                cache: 'no-cache',
+                body: JSON.stringify(data)
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    console.log('loadEmailMessage returned', data);
+                    self.selectedEmail(invoiceBookingEmailViewModel({
+                        parent: self,
+                        rec: data.message,
+                        attachments: [{
+                            AttachmentID: -1,
+                            EmailID: data.message.EmailID,
+                            AttachmentTypeID: null,
+                            FileExtension: "html",
+                            FileName: "View Email",
+                            IsInline: false,
+                            Body: data.message.Body,
+                            SupplierCode: data.message.SupplierCode,
+                            Supplier: data.message.Supplier,
+                            FileSizeDisplay: `${formatNumber((data.message.Body.length * 2) / 1024, 2, 'en-GB')} KB`
+                        }, ...data.attachments.map(a => {
+                            a.SupplierCode = a.SupplierCode ?? data.message.SupplierCode;
+                            a.Supplier = a.Supplier ?? data.message.Supplier;
+                            return a;
+                        })]
+                    }));
+                    self.modalBusy(false);
+                    resolve();
+                })
+                .catch(err => {
+                    self.modalBusy(false);
+                    window.catchFetchError(err);
+                    reject();
+                })
         })
-            .then(window.handleFetchResponse)
-            .then(data => {
-                console.log('loadEmailMessage returned', data);
-                self.selectedEmail(invoiceBookingEmailViewModel({
-                    parent: self,
-                    rec: data.message,
-                    attachments: [{
-                        AttachmentID: -1,
-                        EmailID: data.message.EmailID,
-                        AttachmentTypeID: null,
-                        FileExtension: "html",
-                        FileName: "View Email",
-                        IsInline: false,
-                        Body: data.message.Body,
-                        SupplierCode: data.message.SupplierCode,
-                        Supplier: data.message.Supplier,
-                        FileSizeDisplay: `${formatNumber((data.message.Body.length * 2) / 1024, 2, 'en-GB')} KB`
-                    }, ...data.attachments.map(a => {
-                        a.SupplierCode = a.SupplierCode ?? data.message.SupplierCode;
-                        a.Supplier = a.Supplier ?? data.message.Supplier;
-                        return a;
-                    })]
-                }));
-                self.modalBusy(false);
-            })
-            .catch(err => {
-                self.modalBusy(false);
-                window.catchFetchError(err);
-            })
     }
 
     self.init = () => {
@@ -610,8 +531,7 @@ const invoiceBookingViewModel = ({
     });
 
     self.modalElement.addEventListener('hide.bs.modal', () => {
-        self.selectedEmail(undefined);
-        self.refresh();
+        self.reset();
     });
     
     //#endregion

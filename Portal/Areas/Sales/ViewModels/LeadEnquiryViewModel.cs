@@ -4,7 +4,7 @@ using SharedEFClasses.Models;
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Mertexer;
-using SharedEFClasses.Models.MertexLive;
+using SharedEFClasses.Models.Mertex;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Samples;
 using SharedEFClasses.Models.TradeAccounts;

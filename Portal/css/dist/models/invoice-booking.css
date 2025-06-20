@@ -202,6 +202,9 @@ body {
   width: 100%;
 }
 
+.dispute-checkbox {
+  margin-top: 1rem;
+}
 .dispute-checkbox .mdc-checkbox::before,
 .dispute-checkbox .mdc-checkbox::after,
 .dispute-checkbox .mdc-checkbox.mdc-checkbox--selected::before,
@@ -561,19 +564,59 @@ body {
   box-shadow: none;
   cursor: not-allowed;
 }
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property-wrap {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property-wrap > div {
+  flex: 0 1 50%;
+  margin-top: 0;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property-wrap > div + .attachment-property {
+  margin-top: 0;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property-wrap + .attachment-property {
+  margin-top: 1rem;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property-wrap + .validation-message {
+  margin-top: 6px;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property-wrap .sterling-conversion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+}
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property {
   width: 100%;
   position: relative;
   display: flex;
 }
-#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property .mdc-validating-field {
-  flex: 1;
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property .mdc-validating-field .mdc-text-field--invalid.mdc-text-field--disabled .mdc-notched-outline > * {
+  border-color: inherit;
 }
-#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property .mdc-validating-field .mdc-text-field__numeric {
-  text-align: left !important;
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property .mdc-validating-field .mdc-text-field--invalid.mdc-text-field--disabled .mdc-floating-label {
+  color: inherit;
 }
-#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property + .attachment-property {
-  margin-top: 1rem;
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property .mdc-validating-field .mdc-text-field--invalid.mdc-text-field--disabled .controls .close {
+  color: inherit;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property.border-danger .input-group > div:first-of-type * {
+  border-color: #dc3545 !important;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property.border-danger .input-group > div:first-of-type * input {
+  color: #db0028;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property.border-danger .input-group .mdc-floating-label {
+  color: #db0028;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property.alert-info .mdc-validating-field .mdc-numeric-field:not(.mdc-text-field--invalid),
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property.alert-info .mdc-validating-field .mdc-text-field:not(.mdc-text-field--invalid) {
+  background-color: #f3f8ff;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property.alert-info .mdc-validating-field .mdc-select:not(.mdc-select--invalid) .k-dropdown-wrap {
+  background-color: #f3f8ff;
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property.loaded-property {
   gap: 1rem;
@@ -582,6 +625,102 @@ body {
   flex: 0 1 240px;
   text-align: right;
   font-weight: 700;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .mdc-validating-field {
+  flex: 1;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .mdc-validating-field .mdc-numeric-field input.text-end {
+  text-align: left !important;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #invoice-properties,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-entries,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #vat-entries {
+  margin: 1rem 0;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #invoice-properties h5,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-entries h5,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info h5,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #vat-entries h5 {
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #invoice-properties .list-group.border-danger li,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-entries .list-group.border-danger li,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info .list-group.border-danger li,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #vat-entries .list-group.border-danger li {
+  border-color: #dc3545;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #invoice-properties .list-group-item,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-entries .list-group-item,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info .list-group-item,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #vat-entries .list-group-item {
+  padding: 1rem;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #invoice-properties .list-group-item > div > .attachment-property,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-entries .list-group-item > div > .attachment-property,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info .list-group-item > div > .attachment-property,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #vat-entries .list-group-item > div > .attachment-property {
+  margin-top: 0;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #invoice-properties .list-group-item > .code-params,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-entries .list-group-item > .code-params,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info .list-group-item > .code-params,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #vat-entries .list-group-item > .code-params {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding-right: 34px;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .converting-component-wrapper {
+  margin-top: 1rem;
+  flex: 1;
+  gap: 0;
+  justify-content: space-evenly;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .converting-component-wrapper .converting-component > div {
+  flex: 1;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .converting-component-wrapper .converting-component > div:first-of-type .mdc-validating-field .mdc-notched-outline .mdc-notched-outline__trailing {
+  border-radius: 0;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .converting-component-wrapper .converting-component > div:nth-of-type(2) {
+  flex: 0 1 140px;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .converting-component-wrapper .converting-component > div:nth-of-type(2) .mdc-validating-field .mdc-notched-outline .mdc-notched-outline__leading {
+  border-radius: 0;
+  border-right: 0;
+  border-left: 0;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .converting-component-wrapper .converting-component > div:nth-of-type(2) .mdc-validating-field .mdc-notched-outline .mdc-notched-outline__trailing {
+  border-radius: 0;
+  border-right: 0;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .converting-component-wrapper .converting-component > div:nth-of-type(3) .mdc-validating-field .mdc-notched-outline .mdc-notched-outline__leading {
+  border-radius: 0;
+  border-left: 1px solid #ced4da;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .converting-component-wrapper .converting-component .alert-info .mdc-numeric-field:not(.mdc-text-field--disabled),
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .converting-component-wrapper .converting-component .alert-info .mdc-text-field:not(.mdc-text-field--disabled) {
+  background-color: #f3f8ff;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .converting-component-wrapper .converting-component .alert-info .mdc-text-field__numeric {
+  text-align: left !important;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .converting-component-wrapper .mdc-validating-field {
+  width: 100%;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .converting-component {
+  display: flex;
+  gap: 0;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .converting-component > div:first-of-type {
+  flex: 0 1 calc(50% - 0.5rem);
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info .attachment-property {
   display: flex;
@@ -593,9 +732,6 @@ body {
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info .attachment-property.conversion-property > div > span {
   display: block;
-}
-#email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info .attachment-property.conversion-property > div:first-of-type {
-  text-align: right;
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info .attachment-property > label,
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info .attachment-property > span {
@@ -609,10 +745,12 @@ body {
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper {
   display: flex;
   align-items: center;
+  margin-bottom: 1rem;
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper .attachment-supplier {
   display: flex;
   align-items: center;
+  flex: 1;
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper .attachment-supplier .mdc-validating-field {
   flex: 1;
@@ -631,40 +769,5 @@ body {
 }
 #email-body table tbody tr td p:last-of-type {
   margin-bottom: 0;
-}
-
-#invoice-properties,
-#general-ledger-entries,
-#general-ledger-info,
-#vat-entries {
-  margin: 1rem 0;
-}
-#invoice-properties h5,
-#general-ledger-entries h5,
-#general-ledger-info h5,
-#vat-entries h5 {
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-}
-#invoice-properties .list-group.border-danger li,
-#general-ledger-entries .list-group.border-danger li,
-#general-ledger-info .list-group.border-danger li,
-#vat-entries .list-group.border-danger li {
-  border-color: #dc3545;
-}
-#invoice-properties .list-group-item,
-#general-ledger-entries .list-group-item,
-#general-ledger-info .list-group-item,
-#vat-entries .list-group-item {
-  padding: 1rem;
-}
-#invoice-properties .list-group-item > .attachment-property,
-#general-ledger-entries .list-group-item > .attachment-property,
-#general-ledger-info .list-group-item > .attachment-property,
-#vat-entries .list-group-item > .attachment-property {
-  padding-right: 34px;
 }
 /*# sourceMappingURL=invoice-booking.css.map */

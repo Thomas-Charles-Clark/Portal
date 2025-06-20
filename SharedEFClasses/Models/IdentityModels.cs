@@ -9,7 +9,7 @@ using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.IncomingEmail;
 using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Mertex;
-using SharedEFClasses.Models.MertexLive;
+using SharedEFClasses.Models.Mertex;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.Retail;

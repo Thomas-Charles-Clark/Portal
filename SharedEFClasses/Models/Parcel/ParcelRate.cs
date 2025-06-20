@@ -1,4 +1,4 @@
-﻿using SharedEFClasses.Models.MertexLive;
+﻿using SharedEFClasses.Models.Mertex;
 
 using System;
 using System.Collections.Generic;

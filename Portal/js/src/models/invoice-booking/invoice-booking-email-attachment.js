@@ -6,12 +6,17 @@
     }) => {
     let self = Object.assign({
         parentEmailSupplier: parent.supplier,
-        parentLoadEmail: parent.loadEmail,
+        parentLoadEmail: async () => parent.parent.loadEmail,
         emailId: parent.EmailID,
-        emailMessageId: parent.EmailMessageID
+        emailMessageId: parent.EmailMessageID,
+        modal: parent.parent.modal,
+        modalBusy: parent.modalBusy,
+        modalBusyMessage: parent.modalBusyMessage,
+        reset: parent.reset
     }, rec);
 
-    let toLoad = rec.SelectResult?.MostRecent ?? rec.SelectResult?.Original;
+    //let toLoad = rec.SelectResult?.MostRecent ?? rec.SelectResult?.Original;
+    let toLoad = rec.SelectResult?.Original;
 
     self.original = rec.SelectResult?.Original;
 
@@ -65,9 +70,6 @@
         textField: 'Name',
         valueField: 'AttachmentTypeID',
         virtual: false,
-        textField: 'Name',
-        valueField: 'AttachmentTypeID',
-        virtual: false,
         useNativeValidation: false,
         decorateInputElement: false,
         insertValidationMessages: false,
@@ -82,6 +84,10 @@
         readOnly: false,
         filter: false,
         autoBind: true,
+        sort: {
+            field: 'SortOrder',
+            dir: 'asc'
+        },
         parameterMap: (data) => {
             //Generate parameters in odata v4 format
             let d = kendo.data.transports['odata-v4'].parameterMap(data);
@@ -145,7 +151,7 @@
     //#region Subscriptions
 
     self.attachmentTypeId.subscribe(nv => {
-        self.devisePropertiesTemplate()
+        self.determinePropertiesTemplate(true);
     });
 
     //#endregion
@@ -153,74 +159,88 @@
 
     //#region Methods
 
-    self.devisePropertiesTemplate = () => {
+    self.determinePropertiesTemplate = (force) => {
 
-        let properties = null;
-        let propertiesViewModelFn = null;
-        let propertiesTemplateName = null;
+        console.log(`determinePropertiesTemplate called, force was: ${force}`);
 
-        switch (+self.attachmentTypeId()) {
-            /* 
-    
-            AttachmentTypeID	Name	        ParsingRequired
-                        1	    Unknown	        0
-                        2	    Invoice	        1
-                        3	    Credit Note	    1
-                        4	    Statement	    0
-                        5	    Packing List	0
-                        6	    Delivery Note	0
-                        999	    Junk	        0
-    
-            */
+        if (self.properties() == null || force) {
+            let properties = null;
+            let propertiesViewModelFn = null;
+            let propertiesTemplateName = null;
 
-            case 1:
-                break;
-            case 2:
-                propertiesViewModelFn = invoiceBookingEmailAttachmentInvoiceViewModel;
-                propertiesTemplateName = 'invoice-booking-invoice-template';
-                break;
-            case 3:
-                propertiesViewModelFn = invoiceBookingEmailCreditNoteViewModel;
-                propertiesTemplateName = 'invoice-booking-credit-note-template';
-                break;
-            case 4:
-                break;
-            case 5:
-                break;
-            case 6:
-                break;
-            case 999:
-                break;
-            default:
-                break;
-        }
+            switch (+self.attachmentTypeId()) {
+                /* 
+        
+                AttachmentTypeID	Name	        ParsingRequired
+                            1	    Unknown	        0
+                            2	    Invoice	        1
+                            3	    Credit Note	    1
+                            4	    Statement	    0
+                            5	    Packing List	0
+                            6	    Delivery Note	0
+                            999	    Junk	        0
+        
+                */
 
-        if (typeof propertiesViewModelFn == 'function') {
-            properties = propertiesViewModelFn({
-                rec: self.toLoad,
-                parent: self
-            });
-        }
+                case 1:
+                    break;
+                case 2:
+                    propertiesViewModelFn = invoiceBookingEmailAttachmentInvoiceViewModel;
+                    propertiesTemplateName = 'invoice-booking-invoice-template';
+                    break;
+                case 3:
+                    propertiesViewModelFn = invoiceBookingEmailCreditNoteViewModel;
+                    propertiesTemplateName = 'invoice-booking-credit-note-template';
+                    break;
+                case 4:
+                    break;
+                case 5:
+                    break;
+                case 6:
+                    break;
+                case 999:
+                    break;
+                default:
+                    break;
+            }
 
-        self.properties(properties);
+            if (typeof propertiesViewModelFn == 'function') {
+                properties = propertiesViewModelFn({
+                    rec: self.toLoad,
+                    parent: self
+                });
+            }
 
-        self.propertiesTemplateName(propertiesTemplateName);
+            self.properties(properties);
 
-        if (properties != null) {
-            self.errors = ko.validation.group([
-                self.attachmentTypeId,
-                ...ko.unwrap(self.properties).errorables
-            ], {
-                deep: true,
-                live: true
-            });
+            self.propertiesTemplateName(propertiesTemplateName);
 
-            window.setTimeout(() => {
-                if (properties.supplierCode && properties.supplierCode() == '' && self.parentEmailSupplier()) {
-                    properties.supplierCode(self.parentEmailSupplier().Code);
-                    properties.supplierParams.dropDownListSettings.widget().trigger('change');
-                }
-            }, 0);
+            if (properties != null) {
+                self.errors = ko.validation.group([
+                    self.attachmentTypeId,
+                    ...ko.unwrap(self.properties).errorables
+                ], {
+                    deep: true,
+                    live: true
+                });
+
+                window.setTimeout(() => {
+                    if (properties.supplierCode && properties.supplierCode() == '' && self.parentEmailSupplier()) {
+                        properties.supplierCode(self.parentEmailSupplier().Code);
+                        if (!properties.supplierParams.dropDownListSettings.widget()) {
+                            let s = properties.supplierParams.dropDownListSettings.widget.subscribe(nv => {
+                                nv.trigger('change');
+                                s.dispose();
+                            })
+                        } else {
+                            properties.supplierParams.dropDownListSettings.widget().trigger('change');
+                        }
+                    }
+                }, 0);
+            }
+        } else {
+
+            console.log(`determinePropertiesTemplate was skipped`);
         }
     }
 
@@ -256,11 +276,11 @@
 
     self.save = () => {
 
-        self.errors.showAllMessages(false);
+        //self.errors.showAllMessages(false);
 
-        self.validateNow(false);
+        //self.validateNow(false);
 
-        window.setTimeout(() => {
+        //window.setTimeout(() => {
 
             self.validateNow(true);
 
@@ -282,23 +302,42 @@
                         attachmentId: self.AttachmentID,
                         attachmentTypeId: self.attachmentTypeId(),
                         formDataJson: JSON.stringify({
-                            InvoiceDate: props.invoiceDate(),
-                            InvoiceDueDT: props.dueDate(),
-                            SettlementDT: props.settlementDate(),
-                            SupplierCode: props.supplierCode(),
-                            SupplierInvoiceCode: props.supplierInvoiceReference(),
-                            PaymentTermsCode: props.paymentTermsCode(),
-                            InvoiceTotalInCurrencyIncVAT: props.invoiceTotalIncVATCurrency(),
-                            ExchangeRate: props.supplier().ExchangeRate?.SterlingExchangeRate,
-                            GeneralLedgerCodes: props.generalLedgerEntries().map(gl => gl.generalLedgerCode()),
-                            GeneralLedgerAmountsExVAT: props.generalLedgerEntries().map(gl => gl.amountExVAT()),
-                            VATCodes: props.vatEntries().map(v => v.vatCode()),
-                            VATValues: props.vatEntries().map(v => v.vat()),
-                            Dispute: props.dispute(),
-                            SavedCurrency: props.supplierCurrency(),
-                            SavedExchangeRate: props.supplier().ExchangeRate?.SterlingExchangeRate,
-                            SavedInvoiceTotalIncVATInSterling: props.totalIncVATConvertedToSterling(),
-                            SavedVATTotalInSterling: props.totalVATConvertedToSterling(),
+                            supplierCode: props.supplierCode(),
+                            supplier: props.supplier(),
+                            supplierCurrency: props.supplierCurrency(),
+                            exchangeRate: props.exchangeRate(),
+                            supplierInvoiceReference: props.supplierInvoiceReference(),
+                            invoiceDate: props.invoiceDate(),
+                            invoiceDueDT: props.dueDate(),
+                            settlementDT: props.settlementDate(),
+                            paymentTermsCode: props.paymentTermsCode(),
+                            invoiceTotalIncVATInCurrency: props.invoiceTotalIncVATCurrency(),
+                            invoiceTotalIncVATInSterling: props.invoiceTotalIncVATInSterling(),
+                            invoiceTotalExVATInSterling: props.invoiceTotalExVatInSterling(),
+                            vatTotalCurrency: props.vatTotalCurrency(),
+                            vatTotalInSterling: props.vatTotalInSterling(),
+                            netTotalCurrency: props.netTotalCurrency(),
+                            netTotalInSterling: props.netTotalInSterling(),
+                            dispute: props.dispute() ? true : false,
+                            generalLedgerEntries: props.generalLedgerEntries().map(gl => {
+                                return {
+                                    generalLedgerCode: gl.generalLedgerCode(),
+                                    amountExVATInCurrency: gl.amountExVATInCurrency(),
+                                    amountExVATInSterling: gl.amountExVATInSterling()
+                                }
+                            }),
+                            vatEntries: props.vatEntries().map(v => {
+                                return {
+                                    vatableAmountCurrency: v.vatableAmountCurrency(),
+                                    vatableAmountSterling: v.vatableAmountSterling(),
+                                    vatCode: v.vatCode(),
+                                    vatRate: v.vatRate(),
+                                    vatAmountCurrency: v.vatInCurrency(),
+                                    vatAmountSterling: v.vatAmountSterling(),
+                                    supplierCurrency: v.supplierCurrency(),
+                                    exchangeRate: v.exchangeRate()
+                                }
+                            }),
                         })
                     }
 
@@ -312,9 +351,15 @@
                             console.log('SaveAttachment returned', data);
                             self.busy(false);
                             window.showInfo('Success', 'Attachment detail saved successfully');
-                            self.parent.loadEmail({
-                                EmailMessageID: self.parent.EmailMessageID,
-                                EmailID: self.parent.EmailID
+
+                            //////
+                            self.parentLoadEmail({
+                                EmailMessageID: self.emailMessageId,
+                                EmailID: self.emailId
+                            }).then(() => {
+                                viewModel.selectedEmail().selectAttachment({
+                                    AttachmentID: self.AttachmentID
+                                })
                             })
                         })
                         .catch(err => {
@@ -323,28 +368,28 @@
                         })
                 }
             }, 0);
-        }, 0);
+        //}, 0);
     }
 
-    self.switchDataSet = (mostRecent) => {
-        if (mostRecent) {
-            self.toLoad = Object.assign({
-                readOnly: true
-            }, self.mostRecent);
-        } else {
-            self.toLoad = Object.assign({
-                readOnly: true
-            }, self.original);
-        }
-        self.devisePropertiesTemplate();
-    }
+    //self.switchDataSet = (mostRecent) => {
+    //    if (mostRecent) {
+    //        self.toLoad = Object.assign({
+    //            readOnly: true
+    //        }, self.mostRecent);
+    //    } else {
+    //        self.toLoad = Object.assign({
+    //            readOnly: true
+    //        }, self.original);
+    //    }
+    //    self.determinePropertiesTemplate();
+    //}
 
     //#endregion
 
 
     //#region Events
 
-    self.devisePropertiesTemplate();
+    //self.determinePropertiesTemplate();
         
     //#endregion
 

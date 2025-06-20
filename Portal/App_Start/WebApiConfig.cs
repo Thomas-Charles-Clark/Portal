@@ -20,7 +20,7 @@ using Microsoft.AspNet.OData.Batch;
 using SharedEFClasses.Models.StockManagement;
 using SharedEFClasses.Models.Attributes;
 using Attribute = SharedEFClasses.Models.Attributes.Attribute;
-using SharedEFClasses.Models.MertexLive;
+using SharedEFClasses.Models.Mertex;
 using SharedEFClasses.Models.Fenwick;
 using SharedEFClasses.Models.Maintenance;
 using SharedEFClasses.Models.OrderBook;
@@ -136,14 +136,11 @@ namespace Portal
             odataBuilder.EntitySet<GeneralLedgerAnalysisGroupD>("GeneralLedgerAnalysisGroupDs");
             odataBuilder.EntitySet<VATCode>("VATCodes");
             odataBuilder.EntitySet<SupplierTypeLive>("SupplierTypesLive");
-
             odataBuilder.EntitySet<BudgetHolderSuperSet>("BudgetHolderSuperSet");
-
             odataBuilder.EntitySet<MertexProductClassificationSuperSet>("MertexProductClassificationSuperSet");
-
             odataBuilder.EntitySet<MertexTradeAccountClassificationSuperSet>("MertexTradeAccountClassificationSuperSet");
-
-            odataBuilder.EntitySet<SharedEFClasses.Models.MertexLive.SupplierLive>("MertexLiveSuppliers");
+            odataBuilder.EntitySet<SupplierLive>("MertexLiveSuppliers");
+            odataBuilder.EntitySet<SupplierPaymentTerms>("SupplierPaymentTerms");
 
             // This because it's not mapped to SQL and has the [NotMapped] attribute
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_ProductType)).AddProperty(typeof(Mertex_ProductType).GetProperty("Label"));
@@ -167,6 +164,13 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(OrderTaker)).AddProperty(typeof(OrderTaker).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_DeliveryType)).AddProperty(typeof(Mertex_DeliveryType).GetProperty("ShortLabel"));
 
+
+            var supplierPaymentTermsValueMapperFunction = odataBuilder.EntityType<SupplierPaymentTerms>()
+                .Collection
+                .Function("SupplierPaymentTermsValueMapper")
+                .ReturnsCollectionFromEntitySet<SupplierPaymentTerms>("SupplierPaymentTerms");
+
+            supplierPaymentTermsValueMapperFunction.Parameter<string>("code");
 
             var supplierTypeLiveValueMapperFunction = odataBuilder.EntityType<SupplierTypeLive>()
                 .Collection
@@ -275,10 +279,10 @@ namespace Portal
 
 
 
-            var mertexLiveSupplierValueMapperFunction = odataBuilder.EntityType<SharedEFClasses.Models.MertexLive.SupplierLive>()
+            var mertexLiveSupplierValueMapperFunction = odataBuilder.EntityType<SupplierLive>()
                 .Collection
                 .Function("MertexLiveSupplierValueMapper")
-                .ReturnsCollectionFromEntitySet<SharedEFClasses.Models.MertexLive.SupplierLive>("MertexLiveSuppliers");
+                .ReturnsCollectionFromEntitySet<SupplierLive>("MertexLiveSuppliers");
 
             mertexLiveSupplierValueMapperFunction.Parameter<string>("supplierCode");
 

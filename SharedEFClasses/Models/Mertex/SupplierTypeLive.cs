@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 using Newtonsoft.Json;
 
-namespace SharedEFClasses.Models.MertexLive
+namespace SharedEFClasses.Models.Mertex
 {
     [Table("SupplierType", Schema = "Mertex")]
     public class SupplierTypeLive

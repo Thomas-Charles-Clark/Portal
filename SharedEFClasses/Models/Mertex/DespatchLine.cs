@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
-namespace SharedEFClasses.Models.MertexLive
+namespace SharedEFClasses.Models.Mertex
 {
     [Table("DespatchLine", Schema = "Mertex")]
     public partial class DespatchLine

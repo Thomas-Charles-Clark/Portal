@@ -359,87 +359,89 @@ namespace SharedEFClasses.Models
 
 
 
-        public virtual DbSet<MertexLive.Carriage> Carriages { get; set; }
+        public virtual DbSet<Carriage> Carriages { get; set; }
 
-        public virtual DbSet<MertexLive.ClaimHead> ClaimHeads { get; set; }
+        public virtual DbSet<ClaimHead> ClaimHeads { get; set; }
 
-        public virtual DbSet<MertexLive.ClaimLine> ClaimLines { get; set; }
+        public virtual DbSet<ClaimLine> ClaimLines { get; set; }
 
-        public virtual DbSet<MertexLive.CommodityCode> CommodityCodes { get; set; }
+        public virtual DbSet<CommodityCode> CommodityCodes { get; set; }
 
-        public virtual DbSet<MertexLive.CommodityGroupCode> CommodityGroupCodes { get; set; }
+        public virtual DbSet<CommodityGroupCode> CommodityGroupCodes { get; set; }
 
-        public virtual DbSet<MertexLive.Composition> Compositions { get; set; }
+        public virtual DbSet<Composition> Compositions { get; set; }
 
-        public virtual DbSet<MertexLive.CurrencyLive> Currencies_Live { get; set; }
+        public virtual DbSet<CurrencyLive> Currencies_Live { get; set; }
 
-        public virtual DbSet<MertexLive.DespatchHead> DespatchHeads { get; set; }
+        public virtual DbSet<DespatchHead> DespatchHeads { get; set; }
 
-        public virtual DbSet<MertexLive.DespatchLine> DespatchLines { get; set; }
+        public virtual DbSet<DespatchLine> DespatchLines { get; set; }
 
-        public virtual DbSet<MertexLive.ExchangeRate> ExchangeRates { get; set; }
+        public virtual DbSet<ExchangeRate> ExchangeRates { get; set; }
 
-        public virtual DbSet<MertexLive.FlamCode> FlamCodes { get; set; }
+        public virtual DbSet<FlamCode> FlamCodes { get; set; }
 
-        public virtual DbSet<MertexLive.Haulier> Hauliers { get; set; }
+        public virtual DbSet<Haulier> Hauliers { get; set; }
 
-        public virtual DbSet<MertexLive.HeldForSalesReason> HeldForSalesReasons { get; set; }
+        public virtual DbSet<HeldForSalesReason> HeldForSalesReasons { get; set; }
 
-        public virtual DbSet<MertexLive.InvoiceHead> InvoiceHeads { get; set; }
+        public virtual DbSet<InvoiceHead> InvoiceHeads { get; set; }
 
-        public virtual DbSet<MertexLive.InvoiceLine> InvoiceLines { get; set; }
+        public virtual DbSet<InvoiceLine> InvoiceLines { get; set; }
 
-        public virtual DbSet<MertexLive.OrderHeadLive> OrderHeads_Live { get; set; }
+        public virtual DbSet<OrderHeadLive> OrderHeads_Live { get; set; }
 
-        public virtual DbSet<MertexLive.OrderLineLive> OrderLines_Live { get; set; }
+        public virtual DbSet<OrderLineLive> OrderLines_Live { get; set; }
 
-        public virtual DbSet<MertexLive.OrderSyncReport> OrderSyncReports { get; set; }
+        public virtual DbSet<OrderSyncReport> OrderSyncReports { get; set; }
 
-        public virtual DbSet<MertexLive.ParcelHead> ParcelHeads { get; set; }
+        public virtual DbSet<ParcelHead> ParcelHeads { get; set; }
 
-        public virtual DbSet<MertexLive.ParcelLine> ParcelLines { get; set; }
+        public virtual DbSet<ParcelLine> ParcelLines { get; set; }
 
-        public virtual DbSet<MertexLive.PriceListMap> PriceListMaps { get; set; }
+        public virtual DbSet<PriceListMap> PriceListMaps { get; set; }
 
-        public virtual DbSet<MertexLive.ProductLive> Products_Live { get; set; }
+        public virtual DbSet<ProductLive> Products_Live { get; set; }
 
-        public virtual DbSet<MertexLive.ProductAftercare> ProductAftercares_Live { get; set; }
+        public virtual DbSet<ProductAftercare> ProductAftercares_Live { get; set; }
 
-        public virtual DbSet<MertexLive.PurchaseOrderHead> PurchaseOrderHeads { get; set; }
+        public virtual DbSet<PurchaseOrderHead> PurchaseOrderHeads { get; set; }
 
-        public virtual DbSet<MertexLive.PurchaseOrderLine> PurchaseOrderLines { get; set; }
+        public virtual DbSet<PurchaseOrderLine> PurchaseOrderLines { get; set; }
 
-        public virtual DbSet<MertexLive.PurchaseOrderStatus> PurchaseOrderStatuses { get; set; }
+        public virtual DbSet<PurchaseOrderStatus> PurchaseOrderStatuses { get; set; }
 
-        public virtual DbSet<MertexLive.PurchasePrice> PurchasePrices { get; set; }
+        public virtual DbSet<PurchasePrice> PurchasePrices { get; set; }
 
-        public virtual DbSet<MertexLive.QualityLive> Qualities_Live { get; set; }
+        public virtual DbSet<QualityLive> Qualities_Live { get; set; }
 
-        public virtual DbSet<MertexLive.Sundry> Sundries { get; set; }
+        public virtual DbSet<Sundry> Sundries { get; set; }
 
-        public virtual DbSet<MertexLive.SupplierLive> Suppliers_Live { get; set; }
+        public virtual DbSet<SupplierLive> Suppliers_Live { get; set; }
 
-        public virtual DbSet<MertexLive.SupplierTypeLive> SupplierTypes_Live { get; set; }
+        public virtual DbSet<SupplierTypeLive> SupplierTypes_Live { get; set; }
 
-        public virtual DbSet<MertexLive.TradeAccountLive> TradeAccounts_Live { get; set; }
+        public virtual DbSet<TradeAccountLive> TradeAccounts_Live { get; set; }
 
-        public virtual DbSet<MertexLive.TradeAccountContactLive> TradeAccountContacts_Live { get; set; }
+        public virtual DbSet<TradeAccountContactLive> TradeAccountContacts_Live { get; set; }
 
-        public virtual DbSet<MertexLive.TradeAccountContactType> TradeAccountContactTypes { get; set; }
+        public virtual DbSet<Mertex.TradeAccountContactType> TradeAccountContactTypes { get; set; }
 
-        public virtual DbSet<MertexLive.TradeAccountInvoiceAccount> TradeAccountInvoiceAccounts { get; set; }
+        public virtual DbSet<TradeAccountInvoiceAccount> TradeAccountInvoiceAccounts { get; set; }
 
-        public virtual DbSet<MertexLive.ProductColour> ProductColours { get; set; }
+        public virtual DbSet<ProductColour> ProductColours { get; set; }
 
-        public virtual DbSet<MertexLive.CollectionLive> Collections_Live { get; set; }
+        public virtual DbSet<CollectionLive> Collections_Live { get; set; }
 
         public virtual DbSet<OrderBookRecord> OrderBooks { get; set; }
 
-        public virtual DbSet<MertexLive.BudgetHolder> BudgetHolders { get; set; }
+        public virtual DbSet<BudgetHolder> BudgetHolders { get; set; }
 
         public virtual DbSet<GeneralLedgerCode> GeneralLedgerCodes { get; set; }
         public virtual DbSet<GeneralLedgerAnalysisGroupD> GeneralLedgerAnalysisGroupDs { get; set; }
         public virtual DbSet<GeneralLedgerAccountType> GeneralLedgerAccountTypes { get; set; }
+
+        public virtual DbSet<SupplierPaymentTerms> SupplierPaymentTerms { get; set; }
 
         #endregion
 

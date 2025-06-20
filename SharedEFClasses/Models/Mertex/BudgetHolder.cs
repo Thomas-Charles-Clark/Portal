@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 using SharedEFClasses.Models.ActiveDirectory;
 
-namespace SharedEFClasses.Models.MertexLive
+namespace SharedEFClasses.Models.Mertex
 {
     [Table("BudgetHolder", Schema = "Mertex")]
     public class BudgetHolder

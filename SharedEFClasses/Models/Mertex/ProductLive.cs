@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
-namespace SharedEFClasses.Models.MertexLive
+namespace SharedEFClasses.Models.Mertex
 {
     [Table("Product", Schema = "Mertex")]
     public partial class ProductLive

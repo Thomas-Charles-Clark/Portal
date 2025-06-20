@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using SharedEFClasses.Models.ActiveDirectory;
-using SharedEFClasses.Models.MertexLive;
+using SharedEFClasses.Models.Mertex;
 
 namespace SharedEFClasses.Models.IncomingEmail
 {

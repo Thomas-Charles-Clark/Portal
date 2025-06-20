@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SharedEFClasses.Models.MertexLive
+namespace SharedEFClasses.Models.Mertex
 {
     [Table("FlamCode", Schema = "Mertex")]
     public partial class FlamCode

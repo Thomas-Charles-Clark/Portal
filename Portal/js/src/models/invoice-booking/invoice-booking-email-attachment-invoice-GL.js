@@ -6,12 +6,18 @@
     }) => {
     let self = Object.assign(rec, {
         validateNow: parent.validateNow,
-        readOnly: parent.readOnly
+        readOnly: parent.readOnly,
+        supplier: parent.supplier,
+        supplierCurrency: parent.supplierCurrency,
+        forexParams: parent.forexParams,
+        loadedCurrency: parent.loadedCurrency,
+        loadedExchangeRate: parent.loadedExchangeRate,
+        disabled: ko.computed(() => { return parent.preambleSatisfied() == false; })
     });
 
     //#region Properties
 
-    self.generalLedgerCode = ko.observable(rec.Code ?? '').extend({
+    self.generalLedgerCode = ko.observable(rec.generalLedgerCode ?? '').extend({
         required: {
             params: true,
             onlyIf: self.validateNow,
@@ -26,7 +32,7 @@
 
     self.generalLedger = ko.observable();
 
-    self.amountExVAT = ko.observable(rec.AmountExVAT).extend({
+    self.amountExVATInCurrency = ko.observable(rec.amountExVATInCurrency).extend({
         required: {
             params: true,
             onlyIf: self.validateNow,
@@ -56,8 +62,7 @@
     self.generalLedgerCodeParams = kendoMDCDropDownList({
         autoBind: true,
         label: 'General Ledger Code',
-        odata: true,
-        endPoint: '/odata/GeneralLedgerCodes?$expand=Type',
+        endPoint: '/api/InvoiceBookingAPI/GetGeneralLedgerCodes',
         textField: 'AnalysisCodeDescription',
         valueField: 'Code',
         virtual: true,
@@ -68,13 +73,10 @@
             valueMapper: function (options) {
                 if (options.value && options.value != '') {
                     $.ajax({
-                        url: `/odata/GeneralLedgerCodes/Default.GeneralLedgerCodeValueMapper(code='${options.value}')?$expand=Type`,
+                        url: `/api/InvoiceBookingAPI/GetGeneralLedgerCodeValueMapper(code='${options.value}')`,
                         type: 'GET',
                         success: function (data) {
-                            options.success(data.value);
-                            if (data.value.length == 1) {
-                                self.generalLedger(data.value[0]);
-                            }
+                            options.success(data);
                         }
                     });
                 } else {
@@ -82,8 +84,7 @@
                 }
             }
         },
-        //schema: $.extend({}, kendo.data.schemas['odata-v4']),
-        //groupTemplate: (data) => `Group: ${encode(data)}`,
+        schema: $.extend({}, kendo.data.schemas['odata-v4']),
         template: (e) => {
             return `${e.Code} - ${e.AnalysisCodeDescription}`
         },
@@ -94,78 +95,148 @@
                 return '';
             }
         },
-        //grouping: [{
-        //    field: 'Type.Code',
-        //    dir: 'asc'
-        //}],
-        //sort: [{
-        //    field: 'Type.SortOrder',
-        //    dir: 'desc'
-        //}],
+        fixedGroupTemplate: (e) => {
+            return `Account Type: ${e}`
+        },
+        grouping: {
+            field: 'Type.Name',
+            dir: 'asc'
+        },
+        groupHeaderTemplate: (e) => {
+            return `${e.Type.Name}`
+        },
+        groupTemplate: (e) => {
+            return `${e.Type.Name}`
+        },
         idObservable: self.generalLedgerCode,
         objObservable: self.generalLedger,
         enable: ko.observable(true),
-        disable: ko.observable(self.readOnly),
+        disable: ko.observable(false),
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         readOnly: false,
         filter: 'contains',
         height: 340,
-        parameterMap: (data) => {
-            //Generate parame.Code && e.Nameeters in odata v4 format
-            let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-            /// thanks, https://stackoverflow.com/questions/28995757/a-binary-operator-with-incompatible-types-was-detected-found-operand-types-edm/48919770
-            delete d.$inlinecount; // <-- remove inlinecount
-            //delete d.$format; // <-- remove format
-            //delete d.$callback; // <-- remove callback
-
-            d.$count = true;
-
-            if (data.filter &&
-                data.filter.filters.length &&
-                data.filter.filters[0].value != '') {
-
-                let filterValue = data.filter.filters[0].value;
-
-                d.$filter = `Contains(ToLower(AnalysisCodeDescription), '${filterValue}') OR StartsWith(ToLower(Code), '${filterValue}')`;
-            }
-
-            return d;
-        },
         popupSettings: {
-            appendTo: '#email-modal .modal-body'
+            appendTo: '.attachment-property'
         }
     });
 
-    self.amountExVATParams = {
-        label: 'Amount ex. VAT in Sterling',
+    self.amountExVATInCurrencyParams = {
+        label: 'Amount ex. VAT in Currency',
         buttons: false,
-        observable: self.amountExVAT,
-        originalValue: self.amountExVAT(),
+        observable: self.amountExVATInCurrency,
+        originalValue: self.amountExVATInCurrency(),
         useNativeValidation: false,
         decorateInputElement: false,
         insertValidationMessages: false,
         enable: ko.observable(true),
-        disable: ko.observable(self.readOnly),
+        disable: self.readOnly ? ko.observable(true) : self.disabled,
         clearable: ko.observable(true),
-        revertible: ko.observable(true),
+        revertible: ko.observable(false),
         busy: ko.observable(false),
         inputType: 'text',
         minValue: 0,
         maxValue: null,
         step: null,
         clearFunction: () => {
-            self.amountExVAT(undefined);
+            self.amountExVATInCurrency(undefined);
         },
         revertFunction: () => {
-            self.amountExVAT(self.amountExVATParams.originalValue);
+            self.amountExVATInCurrency(self.amountExVATInCurrencyParams.originalValue);
+        }
+    }
+
+    self.forexParams = () => {
+        return {
+            buttons: false,
+            label: ko.computed(() => {
+                if (self.supplierCurrency())
+                    return `FX Rate ${(self.supplierCurrency() && self.supplierCurrency().Code)} to GBP`;
+                else
+                    return '';
+            }, self),
+            observable: ko.computed(() => {
+                if (self.loadedCurrency && self.loadedExchangeRate) {
+                    return formatNumber(self.loadedExchangeRate, 4, 'en-GB', 'GBP');
+                } else {
+                    return self.supplier() && formatNumber(self.supplier().ExchangeRate.SterlingExchangeRate, 4, 'en-GB', 'GBP');
+                }
+            }, self),
+            useNativeValidation: false,
+            decorateInputElement: false,
+            insertValidationMessages: false,
+            enable: ko.observable(true),
+            disable: ko.observable(true),
+            locked: ko.observable(true),
+            clearable: ko.observable(false),
+            revertible: ko.observable(false),
+            busy: ko.observable(false),
+            inputType: 'text',
+            minValue: 0.01,
+            maxValue: null,
+            step: 1
+        };
+    };
+
+    self.amountExVATInSterling = rec.amountExVATInSterling ? ko.observable(rec.amountExVATInSterling) : ko.computed(() => {
+
+        let amountExVAT = +self.amountExVATInCurrency();
+
+        if (amountExVAT && self.supplier()) {
+
+            let result = Math.round(amountExVAT / (self.supplier().ExchangeRate.SterlingExchangeRate) * 100) / 100;
+
+            return result;
+        }
+
+    }, self).extend({
+        numberFormatted: {
+            digits: 2,
+            currency: {
+                FormattingCulture: 'en-GB'
+            },
+            minValue: 0
+        }
+    });
+
+    self.amountExVATInSterlingFormatted = ko.computed(() => {
+        let result = self.amountExVATInSterling();
+
+        if (result != null) {
+            return formatCurrency(result, 2, 'en-GB', 'GBP');
+        } else {
+            return formatCurrency(0, 2, 'en-GB', 'GBP');
+        }
+    });
+
+    self.amountExParams = {
+        highlightOnNull: ko.observable('potato'),
+        inputParams: self.amountExVATInCurrencyParams,
+        forexParams: self.forexParams(),
+        convertedParams: {
+            label: 'Amount ex. VAT in Sterling',
+            buttons: false,
+            observable: self.amountExVATInSterlingFormatted,
+            useNativeValidation: false,
+            decorateInputElement: false,
+            insertValidationMessages: false,
+            enable: ko.observable(false),
+            disable: ko.observable(true),
+            locked: ko.observable(true),
+            clearable: ko.observable(false),
+            revertible: ko.observable(false),
+            busy: ko.observable(false),
+            inputType: 'text',
+            minValue: 0.01,
+            maxValue: null,
+            step: 1
         }
     }
 
     self.errors = new ko.validation.group([
         self.generalLedgerCode,
-        self.amountExVAT
+        self.amountExVATInCurrency
     ]);
 
     //#endregion

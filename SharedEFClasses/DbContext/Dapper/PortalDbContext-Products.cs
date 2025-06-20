@@ -5,7 +5,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Newtonsoft.Json;
 
 using SharedEFClasses.Models.Mertexer;
-using SharedEFClasses.Models.MertexLive;
+using SharedEFClasses.Models.Mertex;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.TradeAccounts;

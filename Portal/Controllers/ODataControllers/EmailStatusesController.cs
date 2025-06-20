@@ -13,7 +13,7 @@ using Microsoft.AspNet.OData;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses;
 using Microsoft.AspNet.OData.Query;
-using SharedEFClasses.Models.MertexLive;
+using SharedEFClasses.Models.Mertex;
 using SharedEFClasses.Models.ActiveDirectory;
 using SharedEFClasses.Models.IncomingEmail;
 

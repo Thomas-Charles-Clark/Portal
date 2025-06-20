@@ -1208,7 +1208,8 @@
         container: undefined,
         eventHandlers: {
             onChange: {},
-        }
+        },
+        bindToParentNode: false
     };
 
     /**

@@ -29,6 +29,7 @@
     virtualOptions,
     valueMapper,
     optionLabelTemplate,
+    fixedGroupTemplate,
     sort,
     schema,
     dataBound,
@@ -83,6 +84,7 @@
         virtualOptions: null,
         valueMapper: null,
         optionLabelTemplate: null,
+        fixedGroupTemplate: null,
         sort: [],
         schema: {},
         permitRevert: false,
@@ -245,6 +247,7 @@
             height: height,
             noDataTemplate: noDataTemplate,
             groupTemplate: groupTemplate,
+            fixedGroupTemplate: fixedGroupTemplate,
             open: function (e) {
                 $(e.sender._widgetOptions.value.mdcSelect.root_).toggleClass('mdc-select--focused');
             },

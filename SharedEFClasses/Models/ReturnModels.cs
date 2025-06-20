@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+
+using SharedEFClasses.Models.Mertex;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.TradeAccounts;
 using System;
@@ -67,7 +69,7 @@ namespace SharedEFClasses.ReturnModels
         public virtual TradeAccount TradeAccount { get; set; }
 
         [ForeignKey("ClaimID")]
-        public virtual Models.MertexLive.ClaimHead Claim { get; set; }
+        public virtual ClaimHead Claim { get; set; }
 
         [ForeignKey("CollectionCountryID")]
         public virtual Models.General.Country CollectionCountry { get; set; }
@@ -101,7 +103,7 @@ namespace SharedEFClasses.ReturnModels
         public virtual Return Return { get; set; }
 
         [ForeignKey("HaulierCode")]
-        public virtual Models.MertexLive.Haulier Haulier { get; set; }
+        public virtual Haulier Haulier { get; set; }
 
         [InverseProperty("ReturnParcel")]
         public virtual ICollection<ReturnParcel_Product> Products { get; set; }
@@ -130,7 +132,7 @@ namespace SharedEFClasses.ReturnModels
         public virtual ReturnParcel ReturnParcel { get; set; }
 
         [ForeignKey("ClaimLineID")]
-        public virtual Models.MertexLive.ClaimLine ClaimLine { get; set; }
+        public virtual ClaimLine ClaimLine { get; set; }
 
         [ForeignKey("ProductID")]
         public virtual Product Product { get; set; }
@@ -159,7 +161,7 @@ namespace SharedEFClasses.ReturnModels
         public virtual Return Return { get; set; }
 
         [ForeignKey("HaulierCode")]
-        public virtual Models.MertexLive.Haulier Haulier { get; set; }
+        public virtual Haulier Haulier { get; set; }
 
         [InverseProperty("ReturnCollection")]
         public virtual ICollection<ReturnCollection_ReturnParcel> ReturnParcels { get; set; }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 
-using SharedEFClasses.Models.MertexLive;
+using SharedEFClasses.Models.Mertex;
 
 namespace SharedEFClasses.Models.ActiveDirectory
 {

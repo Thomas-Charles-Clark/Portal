@@ -11,7 +11,7 @@ using SharedEFClasses.Models.TradeAccounts;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.General;
 using Microsoft.AspNet.OData;
-using SharedEFClasses.Models.MertexLive;
+using SharedEFClasses.Models.Mertex;
 using SharedEFClasses;
 using SharedEFClasses.Models.Products;
 using Microsoft.AspNet.OData.Extensions;

@@ -10,12 +10,20 @@
         busy: parent.busy,
         parent: {
             refresh: parent.refresh,
-            loadEmail: parent.loadEmail,
+            loadEmail: (stub, afterLoad) => {
+                parent.loadEmail(stub)
+                    .then(() => {
+                        if (typeof afterLoad == 'function') {
+                            afterLoad.apply(self);
+                        }
+                    })
+            },
             modal: parent.modal,
-            modalBusy: parent.modalBusy,
             previous: parent.previous,
             next: parent.next
         },
+        modalBusy: parent.modalBusy,
+        modalBusyMessage: parent.modalBusyMessage,
         itemCount: parent.itemCount,
         selectedIndexOnPage: parent.selectedEmailIndex,
         selectedEmailIndex: ko.computed(() => {
@@ -26,7 +34,8 @@
 
             return ((page - 1) * pageSize) + inPageIndex;
         }),
-        modalElement: parent.modalElement
+        modalElement: parent.modalElement,
+        reset: parent.reset
     });
 
     //self.propagateSupplier = function (supplier) {
@@ -95,6 +104,9 @@
         textField: 'Name',
         valueField: 'Code',
         template: (e) => {
+            return `${e.Code} - ${e.Name}`;
+        },
+        valueTemplate: (e) => {
             return `${e.Code} - ${e.Name}`;
         },
         idObservable: self.supplierCode,
@@ -248,7 +260,7 @@
                 formData.append(key, params[key]);
             }
 
-            self.parent.modalBusy(true);
+            self.modalBusy(true);
 
             let headers = Object.assign({
 
@@ -274,10 +286,10 @@
                     self.parent.loadEmail({
                         EmailID: self.EmailID,
                         EmailMessageID: self.EmailMessageID,
-                    });
+                    }, null);
                 })
                 .catch(err => {
-                    self.parent.modalBusy(false);
+                    self.modalBusy(false);
 
                     self.addingAttachments('');
 
@@ -305,7 +317,37 @@
     self.selectAttachment = (data, event) => {
         // if this is not "disabled", then we can select
         if (!self.attachmentsDisabled()) {
-            self.selectedAttachment(data);
+
+            self.modalBusy(true);
+
+            let params = {
+                attachmentId: data.AttachmentID
+            }
+
+            if (params.attachmentId == -1) {
+                self.selectedAttachment(self.regularAttachments()[0]);
+                self.modalBusy(false);
+            } else {
+                fetch('/api/InvoiceBookingAPI/LoadAttachment', {
+                    method: 'POST',
+                    headers: window.fetchHeaders,
+                    cache: 'no-cache',
+                    credentials: 'same-origin',
+                    body: JSON.stringify(params)
+                })
+                    .then(window.handleFetchResponse)
+                    .then(data => {
+                        self.selectedAttachment(invoiceBookingEmailAttachmentViewModel({
+                            rec: data,
+                            parent: self
+                        }));
+                        self.modalBusy(false);
+                    })
+                    .catch(err => {
+                        self.modalBusy(false);
+                        window.catchFetchError(err);
+                    })
+            }
         }
     }
 
@@ -395,6 +437,12 @@
 
     self.flagUnjunk = () => {
         self.flag('not junk');
+    }
+
+    self.loadAttachmentById = (attachmentId) => {
+        self.selectAttachment({
+            AttachmentID: attachmentId
+        });
     }
 
     //#endregion

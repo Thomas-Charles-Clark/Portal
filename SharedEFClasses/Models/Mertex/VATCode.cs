@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Newtonsoft.Json;
+
 namespace SharedEFClasses.Models.Mertex
 {
     [Table("Mertex_VAT", Schema = "adm")]
@@ -19,5 +21,9 @@ namespace SharedEFClasses.Models.Mertex
         public string Name { get; set; }
 
         public int? SortOrder { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("VATCode")]
+        public virtual ICollection<SupplierLive> Suppliers { get; set; }
     }
 }

@@ -3373,6 +3373,17 @@ ko.validation.rules['mustNotExistIn'] = {
 };
 ko.validation.addExtender('mustNotExistIn');
 
+ko.validation.rules['validTempusDominusDate'] = {
+    validator: function (val) {
+
+        let value = ko.unwrap(val);
+
+        return moment.isDate(value);
+    },
+    message: 'Invalid Date'
+};
+ko.validation.addExtender('validTempusDominusDate');
+
 ko.bindingHandlers.remove = {
     init: function (element) {
         element.remove();

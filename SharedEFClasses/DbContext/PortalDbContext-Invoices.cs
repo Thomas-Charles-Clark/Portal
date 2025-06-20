@@ -253,6 +253,16 @@ namespace SharedEFClasses.Models
             return result;
         }
 
+        public async Task<Attachment_DuplicateCheck_Result> IncomingEmail_Invoice_DuplicateCheck(PassAttachmentDetail dto)
+        {
+            var reader = await this.Database.Connection.QueryMultipleAsync("[IncomingEmail].[Invoice_Duplicate_Check]", dto, null, null, CommandType.StoredProcedure);
+
+            return new Attachment_DuplicateCheck_Result()
+            {
+                Duplicates = await reader.ReadAsync<Attachment_DuplicateCheck_SelectResult>()
+            };
+        }
+
         public async Task<int?> IncomingEmail_Attachment_ParsedData_Save(PassAttachmentDetail dto)
         {
             var result = await this.Database.Connection.QuerySingleOrDefaultAsync<int?>("[IncomingEmail].[Attachment_ParsedData_Save]", dto, null, null, CommandType.StoredProcedure);

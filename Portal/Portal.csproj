@@ -654,6 +654,7 @@
     <Compile Include="Areas\Stock\ViewModels\StockManagementViewModel.cs" />
     <Compile Include="Controllers\IncomingEmailAttachmentController.cs" />
     <Compile Include="Controllers\ODataControllers\GeneralLedgerAnalysisGroupDsController.cs" />
+    <Compile Include="Controllers\ODataControllers\SupplierPaymentTermsController.cs" />
     <Compile Include="Controllers\ODataControllers\SupplierTypesController.cs" />
     <Compile Include="Controllers\ODataControllers\VATCodesController.cs" />
     <Compile Include="Controllers\ODataControllers\GeneralLedgerCodesController.cs" />

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using SharedEFClasses.Models.Mertex;
+
 namespace SharedEFClasses.Models.IncomingEmail
 {
     public class FullEmail
@@ -89,7 +91,7 @@ namespace SharedEFClasses.Models.IncomingEmail
         [StringLength(50)]
         public string SupplierCode { get; set; }
 
-        public MertexLive.SupplierLive Supplier { get; set; }
+        public SupplierLive Supplier { get; set; }
 
         //public virtual ICollection<Attachment> Attachments
         //{

@@ -266,6 +266,7 @@ body {
 }
 
 .dispute-checkbox {
+    margin-top: $l-gutter;
 
     .mdc-checkbox::before,
     .mdc-checkbox::after,
@@ -723,22 +724,97 @@ body {
                         }
                     }
 
-                    .attachment-property {
-                        width: 100%;
-                        position: relative;
+                    .attachment-property-wrap {
                         display: flex;
+                        gap: $l-gutter;
+                        margin-top: $l-gutter;
 
-                        .mdc-validating-field {
-                            flex: 1;
+                        > div {
+                            flex: 0 1 50%;
+                            margin-top: 0;
 
-                            .mdc-text-field__numeric {
-                                text-align: left !important;
+                            & + .attachment-property {
+                                margin-top: 0;
                             }
                         }
 
                         & + .attachment-property {
                             margin-top: $l-gutter;
                         }
+
+                        & + .validation-message {
+                            margin-top: 6px;
+                        }
+
+                        .sterling-conversion {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            flex: 1;
+                        }
+                    }
+
+                    .attachment-property {
+                        width: 100%;
+                        position: relative;
+                        display: flex;
+
+                        .mdc-validating-field {
+                            .mdc-text-field--invalid {
+                                &.mdc-text-field--disabled {
+
+                                    .mdc-notched-outline {
+                                        > * {
+                                            border-color: inherit;
+                                        }
+                                    }
+
+                                    .mdc-floating-label {
+                                        color: inherit;
+                                    }
+
+                                    .controls {
+                                        .close {
+                                            color: inherit;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        &.border-danger {
+                            .input-group {
+                                > div:first-of-type {
+                                    * {
+                                        border-color: $red-500 !important;
+
+                                        input {
+                                            color: $mdc-error-color;
+                                        }
+                                    }
+                                }
+
+                                .mdc-floating-label {
+                                    color: $mdc-error-color;
+                                }
+                            }
+                        }
+
+                        &.alert-info {
+                            .mdc-validating-field {
+                                .mdc-numeric-field:not(.mdc-text-field--invalid),
+                                .mdc-text-field:not(.mdc-text-field--invalid) {
+                                    background-color: tint-color($blue-100, 75%);
+                                }
+
+                                .mdc-select:not(.mdc-select--invalid) {
+                                    .k-dropdown-wrap {
+                                        background-color: tint-color($blue-100, 75%);
+                                    }
+                                }
+                            }
+                        }
+
 
                         &.loaded-property {
                             gap: $l-gutter;
@@ -748,6 +824,145 @@ body {
                                 text-align: right;
                                 font-weight: $font-weight-bold;
                             }
+                        }
+                    }
+
+
+                    .mdc-validating-field {
+                        flex: 1;
+
+                        .mdc-numeric-field {
+                            input {
+                                &.text-end {
+                                    text-align: left !important;
+                                }
+                            }
+                        }
+                    }
+
+                    #invoice-properties,
+                    #general-ledger-entries,
+                    #general-ledger-info,
+                    #vat-entries {
+                        margin: $l-gutter 0;
+
+                        h5 {
+                            height: 34px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            margin-bottom: $l-gutter;
+                        }
+
+                        .list-group {
+                            &.border-danger {
+                                li {
+                                    border-color: $red-500;
+                                }
+                            }
+                        }
+
+                        .list-group-item {
+                            padding: $l-gutter;
+
+                            > div {
+                                > .attachment-property {
+                                    margin-top: 0;
+                                }
+                            }
+
+                            > .code-params {
+                                position: relative;
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                gap: $l-gutter;
+                                padding-right: 34px;
+                            }
+                        }
+                    }
+
+                    .d-flex {
+                        > .attachment-property {
+                        }
+                    }
+
+                    .converting-component-wrapper {
+                        margin-top: $l-gutter;
+                        flex: 1;
+                        gap: 0;
+                        justify-content: space-evenly;
+
+                        .converting-component {
+
+                            > div {
+                                flex: 1;
+
+                                &:first-of-type {
+                                    .mdc-validating-field {
+                                        .mdc-notched-outline {
+                                            .mdc-notched-outline__trailing {
+                                                border-radius: 0;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                &:nth-of-type(2) {
+                                    flex: 0 1 140px;
+
+                                    .mdc-validating-field {
+
+                                        .mdc-notched-outline {
+                                            .mdc-notched-outline__leading {
+                                                border-radius: 0;
+                                                border-right: 0;
+                                                border-left: 0;
+                                            }
+
+                                            .mdc-notched-outline__trailing {
+                                                border-radius: 0;
+                                                border-right: 0;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                &:nth-of-type(3) {
+                                    .mdc-validating-field {
+                                        .mdc-notched-outline {
+                                            .mdc-notched-outline__leading {
+                                                border-radius: 0;
+                                                border-left: 1px solid $gray-400;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            .alert-info {
+                                .mdc-numeric-field:not(.mdc-text-field--disabled),
+                                .mdc-text-field:not(.mdc-text-field--disabled) {
+                                    background-color: tint-color($blue-100, 75%);
+                                }
+
+                                .mdc-text-field__numeric {
+                                    text-align: left !important;
+                                }
+                            }
+                        }
+
+                        .mdc-validating-field {
+                            width: 100%;
+                        }
+                    }
+
+                    .converting-component {
+                        display: flex;
+                        gap: 0;
+
+                        > div:first-of-type {
+                            flex: 0 1 calc(50% - $sm-gutter);
                         }
                     }
 
@@ -765,10 +980,6 @@ body {
 
                                     > span {
                                         display: block;
-                                    }
-
-                                    &:first-of-type {
-                                        text-align: right;
                                     }
                                 }
                             }
@@ -789,10 +1000,12 @@ body {
                     .attachment-supplier-wrapper {
                         display: flex;
                         align-items: center;
+                        margin-bottom: $l-gutter;
 
                         .attachment-supplier {
                             display: flex;
                             align-items: center;
+                            flex: 1;
 
                             .mdc-validating-field {
                                 flex: 1;
@@ -827,37 +1040,6 @@ body {
                     }
                 }
             }
-        }
-    }
-}
-
-#invoice-properties,
-#general-ledger-entries,
-#general-ledger-info,
-#vat-entries {
-    margin: $l-gutter 0;
-
-    h5 {
-        height: 34px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: $l-gutter;
-    }
-
-    .list-group {
-        &.border-danger {
-            li {
-                border-color: $red-500;
-            }
-        }
-    }
-
-    .list-group-item {
-        padding: $l-gutter;
-
-        > .attachment-property {
-            padding-right: 34px;
         }
     }
 }

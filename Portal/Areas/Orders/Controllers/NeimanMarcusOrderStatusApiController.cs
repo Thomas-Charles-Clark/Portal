@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Portal.Utilities;
 using SharedEFClasses;
 using SharedEFClasses.Models;
-using SharedEFClasses.Models.MertexLive;
+using SharedEFClasses.Models.Mertex;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.ReturnModels;
 using System;

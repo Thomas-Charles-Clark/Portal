@@ -257,13 +257,6 @@ namespace Portal.Areas.Invoices.Controllers
 
             var attachments = PortalDb.Attachments.Where(a => a.EmailID == dto.EmailID && a.Deleted == false).ToList();
 
-            for (var i = 0; i < attachments.Count; i++)
-            {
-                attachments[i].SelectResult = await PortalDb.IncomingEmail_Attachment_ParsedData_Select(new PassAttachmentDetail()
-                {
-                    AttachmentID = attachments[i].AttachmentID
-                });
-            }
 
             try
             {
@@ -352,6 +345,19 @@ namespace Portal.Areas.Invoices.Controllers
             PortalDb.SaveChanges();
 
             return Ok(new { });
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> LoadAttachment([FromBody] PassAttachmentDetail dto)
+        {
+            var attachment = PortalDb.Attachments.Single(a => a.AttachmentID == dto.AttachmentID);
+
+            attachment.SelectResult = await PortalDb.IncomingEmail_Attachment_ParsedData_Select(new PassAttachmentDetail()
+            {
+                AttachmentID = dto.AttachmentID
+            });
+
+            return Ok(attachment);
         }
 
         [HttpPost]
@@ -478,6 +484,15 @@ namespace Portal.Areas.Invoices.Controllers
             return Ok(new { });
         }
 
+
+        [HttpPost]
+        public async Task<IHttpActionResult> InvoiceDuplicateCheck([FromBody] PassAttachmentDetail dto)
+        {
+            var result = await PortalDb.IncomingEmail_Invoice_DuplicateCheck(dto);
+
+            return Ok(result);
+        }
+
         [HttpPost]
         public async Task<IHttpActionResult> SaveAttachmentDetail([FromBody] PassAttachmentDetail dto)
         {
@@ -496,7 +511,20 @@ namespace Portal.Areas.Invoices.Controllers
             return Ok(result);
         }
 
+        [HttpGet]
+        public DataSourceResult GetGeneralLedgerCodes([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
+        {
+            var results = PortalDb.GeneralLedgerCodes.Include("Type").Where(glc => glc.Deleted == false).AsQueryable();
 
-        
+            return results.ToDataSourceResult(request);
+        }
+
+        [HttpGet]
+        public DataSourceResult GetGeneralLedgerCodeValueMapper([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request, string code)
+        {
+            var results = PortalDb.GeneralLedgerCodes.Include("Type").Where(glc => glc.Deleted == false && glc.Code == code).AsQueryable();
+
+            return results.ToDataSourceResult(request);
+        }
     }
 }

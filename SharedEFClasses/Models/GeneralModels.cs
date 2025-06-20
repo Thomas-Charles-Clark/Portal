@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SharedEFClasses.Models.Leads;
-using SharedEFClasses.Models.MertexLive;
+using SharedEFClasses.Models.Mertex;
+using SharedEFClasses.Models.Mertex;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.Samples;

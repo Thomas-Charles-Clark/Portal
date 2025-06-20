@@ -12,7 +12,7 @@ using SharedEFClasses.Models;
 using SharedEFClasses.Models.General;
 using Microsoft.AspNet.OData;
 using SharedEFClasses.Models.Products;
-using SharedEFClasses.Models.MertexLive;
+using SharedEFClasses.Models.Mertex;
 using SharedEFClasses;
 
 namespace Portal.Controllers

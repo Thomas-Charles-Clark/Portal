@@ -7,7 +7,7 @@ using SharedEFClasses;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Components;
 using SharedEFClasses.Models.General;
-using SharedEFClasses.Models.MertexLive;
+using SharedEFClasses.Models.Mertex;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.TradeAccounts;
 using SharedEFClasses.Utilities;

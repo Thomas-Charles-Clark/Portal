@@ -14,7 +14,7 @@ using U2.Data.Client;
 using LabelNS = Portal.LabelRecovery;
 using ShipNS = Portal.Ship;
 using VoidNS = Portal.Void;
-using SharedEFClasses.Models.MertexLive;
+using SharedEFClasses.Models.Mertex;
 using SharedEFClasses.ReturnModels;
 using Portal.Utilities;
 using Portal.UPSShipping;

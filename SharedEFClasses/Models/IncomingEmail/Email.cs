@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 using Newtonsoft.Json;
 
-using SharedEFClasses.Models.MertexLive;
+using SharedEFClasses.Models.Mertex;
 
 namespace SharedEFClasses.Models.IncomingEmail
 {

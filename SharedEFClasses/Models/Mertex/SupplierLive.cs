@@ -1,13 +1,14 @@
 ﻿using Newtonsoft.Json;
 
 using SharedEFClasses.Models.IncomingEmail;
+using SharedEFClasses.Models.Mertex;
 
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SharedEFClasses.Models.MertexLive
+namespace SharedEFClasses.Models.Mertex
 {
     [Table("Supplier", Schema = "Mertex")]
     public partial class SupplierLive
@@ -61,9 +62,11 @@ namespace SharedEFClasses.Models.MertexLive
 
         public string BudgetHolderCode { get; set; }
 
-        public byte? PaymentTermsID { get; set; }
-
         public string SupplierTypeCode { get; set; }
+
+        public string PaymentTermsCode { get; set; }
+
+        public string DefaultVATCode { get; set; }
 
         public byte? CurrencyID { get; set; }
 
@@ -90,13 +93,16 @@ namespace SharedEFClasses.Models.MertexLive
         [ForeignKey("BudgetHolderCode")]
         public virtual BudgetHolder BudgetHolder { get; set; }
 
-        [ForeignKey("PaymentTermsID")]
-        public virtual PaymentTerms PaymentTerms { get; set; }
+        [ForeignKey("PaymentTermsCode")]
+        public virtual SupplierPaymentTerms PaymentTerms { get; set; }
 
         [ForeignKey("SupplierTypeCode")]
         public virtual SupplierTypeLive SupplierType { get; set; }
 
         [ForeignKey("CurrencyID")]
         public virtual General.Currency Currency { get; set; }
+
+        [ForeignKey("DefaultVATCode")]
+        public virtual VATCode VATCode { get; set; }
     }
 }

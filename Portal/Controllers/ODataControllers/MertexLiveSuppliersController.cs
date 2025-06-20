@@ -14,7 +14,7 @@ using Microsoft.AspNet.OData;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.Maintenance;
 using SharedEFClasses;
-using SharedEFClasses.Models.MertexLive;
+using SharedEFClasses.Models.Mertex;
 
 namespace Portal.Controllers
 {
@@ -38,14 +38,14 @@ namespace Portal.Controllers
 
         // GET: odata/Suppliers
         [EnableQuery]
-        public IQueryable<SharedEFClasses.Models.MertexLive.SupplierLive> GetMertexLiveSuppliers()
+        public IQueryable<SupplierLive> GetMertexLiveSuppliers()
         {
             return PortalDb.Suppliers_Live.Where(p => p.Deleted == false).AsQueryable();
         }
 
         [EnableQuery(MaxNodeCount = 200)]
         [HttpGet]
-        public IQueryable<SharedEFClasses.Models.MertexLive.SupplierLive> MertexLiveSupplierValueMapper(string supplierCode)
+        public IQueryable<SupplierLive> MertexLiveSupplierValueMapper(string supplierCode)
         {
             return PortalDb.Suppliers_Live.Where(p => p.Code == supplierCode).AsQueryable();
         }
