@@ -559,11 +559,12 @@
   background-color: #e7f1ff;
 }
 .mdc-validating-field .mdc-text-field.mdc-text-field--disabled .tempus-dominus-calendar-btn {
-  border-left: 1px solid #6ebe2c;
+  border-left: 1px solid #ced4da;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   background-color: transparent;
   color: #212529;
   transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
+  cursor: not-allowed;
 }
 /*# sourceMappingURL=tempus-dominus.css.map */

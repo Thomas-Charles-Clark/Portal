@@ -1,6 +1,8 @@
 ﻿const invoiceBookingEmailViewModel = ({
     parent,
     rec,
+    emailStatus,
+    additionalInfo,
     attachments
 } = {
 
@@ -8,6 +10,8 @@
 
     let self = Object.assign(rec, {
         busy: parent.busy,
+        emailStatus,
+        additionalInfo,
         parent: {
             refresh: parent.refresh,
             loadEmail: (stub, afterLoad) => {
@@ -54,6 +58,8 @@
     //}
 
     //#region Properties
+
+    self.additionalInfo = ko.observable(self.additionalInfo);
 
     self.supplierCode = ko.observable(self.SupplierCode ?? '').extend({
         notEqual: {
@@ -204,8 +210,34 @@
     }, self);
 
     self.attachmentsDisabled = ko.computed(() => {
-        return false;// self.attachments().length && self.attachments()[0].supplier() == null;
+        return self.Processed;
     });
+
+    self.mayFlagAsJunk = ko.computed(() => {
+        let junkableAttachmentTypeIds = [1, 1000];
+
+        let selectedAttachmentTypeId = null;
+
+        let selectedAttachment = self.selectedAttachment();
+
+        if (selectedAttachment && selectedAttachment.isEmailBody == false) {
+            selectedAttachmentTypeId = +selectedAttachment.attachmentTypeId();
+        }
+
+        let nonJunkableAttachments = self.regularAttachments().filter(ra => {
+            if (ra.isEmailBody == true)
+                return;
+            else
+                if (junkableAttachmentTypeIds.indexOf(+ra.attachmentTypeId()) == -1) {
+                    return ra;
+                }
+        });
+
+        if (selectedAttachmentTypeId && junkableAttachmentTypeIds.indexOf(selectedAttachmentTypeId) == -1)
+            nonJunkableAttachments.push(selectedAttachmentTypeId);
+
+        return self.Junk == false && self.Processed == false && nonJunkableAttachments.length == 0;
+    }, self);
 
     //#endregion
 
@@ -219,13 +251,13 @@
         });
     });
 
-    self.supplier.subscribe(nv => {
+    self.supplierCode.subscribe(nv => {
 
         if (!self.isPropagatingSupplier) {
 
             let data = {
                 emailId: self.EmailID,
-                supplierCode: nv.Code
+                supplierCode: nv
             };
 
             console.log('saveSupplierDetail calling with', data);
@@ -315,40 +347,56 @@
     //#region Methods
 
     self.selectAttachment = (data, event) => {
+
         // if this is not "disabled", then we can select
-        if (!self.attachmentsDisabled()) {
+        //if (!self.attachmentsDisabled()) {
 
-            self.modalBusy(true);
+            self.selectedAttachment()
+                .unsavedChanges()
+                .then(() => {
 
-            let params = {
-                attachmentId: data.AttachmentID
-            }
+                    self.modalBusy(true);
 
-            if (params.attachmentId == -1) {
-                self.selectedAttachment(self.regularAttachments()[0]);
-                self.modalBusy(false);
-            } else {
-                fetch('/api/InvoiceBookingAPI/LoadAttachment', {
-                    method: 'POST',
-                    headers: window.fetchHeaders,
-                    cache: 'no-cache',
-                    credentials: 'same-origin',
-                    body: JSON.stringify(params)
+                    let params = {
+                        attachmentId: data.AttachmentID
+                    }
+
+                    if (params.attachmentId == -1) {
+                        self.selectedAttachment(self.regularAttachments()[0]);
+                        self.modalBusy(false);
+                    } else {
+                        fetch('/api/InvoiceBookingAPI/LoadAttachment', {
+                            method: 'POST',
+                            headers: window.fetchHeaders,
+                            cache: 'no-cache',
+                            credentials: 'same-origin',
+                            body: JSON.stringify(params)
+                        })
+                            .then(window.handleFetchResponse)
+                            .then(data => {
+                                console.log('LoadAttachment returned', data);
+
+                                self.selectedAttachment(invoiceBookingEmailAttachmentViewModel({
+                                    rec: data,
+                                    parent: self
+                                }));
+
+                                let original = self.attachments().find(a => a.AttachmentID == data.AttachmentID);
+
+                                self.attachments.replace(original, self.selectedAttachment());
+
+                                self.modalBusy(false);
+                            })
+                            .catch(err => {
+                                self.modalBusy(false);
+                                window.catchFetchError(err);
+                            })
+                    }
                 })
-                    .then(window.handleFetchResponse)
-                    .then(data => {
-                        self.selectedAttachment(invoiceBookingEmailAttachmentViewModel({
-                            rec: data,
-                            parent: self
-                        }));
-                        self.modalBusy(false);
-                    })
-                    .catch(err => {
-                        self.modalBusy(false);
-                        window.catchFetchError(err);
-                    })
-            }
-        }
+                .catch(err => {
+
+                })
+        //}
     }
 
     self.imageExtensions = [

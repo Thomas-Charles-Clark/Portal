@@ -197,7 +197,7 @@ namespace SharedEFClasses.Models
             return result;
         }
 
-        public async Task<IEnumerable<InvoiceBookingDashboard>> GetInvoiceBookingDashboard(PassInvoiceBookingDashboardParams dto)
+        public async Task<InvoiceBookingDashboard> GetInvoiceBookingDashboard(PassInvoiceBookingDashboardParams dto)
         {
             /*
              
@@ -232,21 +232,38 @@ namespace SharedEFClasses.Models
                 groupIds.Rows.Add(g);
             }
 
-            var result = await this.Database.Connection.QueryAsync<InvoiceBookingDashboard>("[IncomingEmail].[Dashboard_Select]", new { 
+            // expect additional "Mertex SNAFU" result set
+
+            var reader = await this.Database.Connection.QueryMultipleAsync("[IncomingEmail].[Dashboard_Select]", new
+            {
                 GroupIDs = groupIds,
                 dto.MailboxID,
                 dto.BudgetHolderCode,
                 dto.SupplierCode,
+                dto.SupplierTypeCode,
                 dto.From,
                 dto.To
             }, null, null, CommandType.StoredProcedure);
 
+
+            return new InvoiceBookingDashboard()
+            {
+                DashboardPods = reader.Read<InvoiceBookingDashboard_SelectResult>(),
+                MertexWarning = reader.ReadSingleOrDefault<string>()
+            };
+        }
+
+        public async Task<IEnumerable<Email_SelectResult>> Email_Select(PassEmailMessageID dto)
+        {
+            var result = await this.Database.Connection.QueryAsync<Email_SelectResult>("[IncomingEmail].[Email_Select]", new { dto.EmailID }, null, null, CommandType.StoredProcedure);
+
             return result;
         }
 
-        public async Task<IncomingEmail_Attachment_ParsedData_SelectResult> IncomingEmail_Attachment_ParsedData_Select(PassAttachmentDetail dto)
+
+        public async Task<IncomingEmail_Attachment_SelectResult> IncomingEmail_Attachment_ParsedData_Select(PassAttachmentDetail dto)
         {
-            var result = await this.Database.Connection.QuerySingleOrDefaultAsync<IncomingEmail_Attachment_ParsedData_SelectResult>("[IncomingEmail].[Attachment_ParsedData_Select]", new { 
+            var result = await this.Database.Connection.QuerySingleOrDefaultAsync<IncomingEmail_Attachment_SelectResult>("[IncomingEmail].[Attachment_Select]", new { 
                 AttachmentID = dto.AttachmentID
             }, null, null, CommandType.StoredProcedure);
 
@@ -263,9 +280,9 @@ namespace SharedEFClasses.Models
             };
         }
 
-        public async Task<int?> IncomingEmail_Attachment_ParsedData_Save(PassAttachmentDetail dto)
+        public async Task<int?> IncomingEmail_Attachment_Save(PassAttachmentDetail dto)
         {
-            var result = await this.Database.Connection.QuerySingleOrDefaultAsync<int?>("[IncomingEmail].[Attachment_ParsedData_Save]", dto, null, null, CommandType.StoredProcedure);
+            var result = await this.Database.Connection.QuerySingleOrDefaultAsync<int?>("[IncomingEmail].[Attachment_Save]", dto, null, null, CommandType.StoredProcedure);
 
             return result;
         }

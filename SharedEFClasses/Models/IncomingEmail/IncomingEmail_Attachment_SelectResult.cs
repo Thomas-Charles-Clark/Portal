@@ -9,11 +9,10 @@ using Newtonsoft.Json.Linq;
 
 namespace SharedEFClasses.Models.IncomingEmail
 {
-    public class IncomingEmail_Attachment_ParsedData_SelectResult
+    public class IncomingEmail_Attachment_SelectResult
     {
         public string OriginalSubmittedFormDataJSON { get; set; }
         public string MostRecentMertexFormDataJSON { get; set; }
-        public DateTime? ParsedDT { get; set; }
         public DateTime? ProcessedDT { get; set; }
 
         [NotMapped]

@@ -136,6 +136,8 @@ body {
   max-height: unset;
   box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
   border-radius: 0 0 0.375rem 0.375rem;
+  width: auto;
+  padding: 0.1rem 0.5rem;
 }
 #department-prefilter .dropdown-menu li.form-check {
   margin-bottom: 0;
@@ -264,6 +266,9 @@ body {
 #email-list-prefilters .prefilter .bi-lock-fill {
   flex: 0;
 }
+#email-list-prefilters .prefilter .k-list .k-item {
+  white-space: nowrap;
+}
 #email-list-prefilters #order-date-prefilter {
   display: block;
 }
@@ -288,10 +293,21 @@ body {
 #dashboard .dashboard-pod:hover .card-body h4, #dashboard .dashboard-pod:hover .card-body h5, #dashboard .dashboard-pod:focus .card-body h4, #dashboard .dashboard-pod:focus .card-body h5, #dashboard .dashboard-pod:focus-within .card-body h4, #dashboard .dashboard-pod:focus-within .card-body h5 {
   text-decoration: underline;
 }
+#dashboard .dashboard-pod.warning {
+  background-color: #b02a37;
+  color: #fff;
+  border-color: #b43541;
+}
 #dashboard .dashboard-pod.active {
+  /*text-decoration: underline;*/
+}
+#dashboard .dashboard-pod.active.warning {
+  background-color: #a72834;
+  color: #fff;
+}
+#dashboard .dashboard-pod.active:not(.warning) {
   background-color: #506e9c;
   color: #fff;
-  border-color: #5975a1;
 }
 #dashboard .dashboard-pod .card-body {
   display: flex;
@@ -300,11 +316,24 @@ body {
   justify-content: center;
 }
 #dashboard .dashboard-pod .card-body h4 {
-  font-size: 1.25rem;
+  font-weight: bold;
+  font-size: 1.55rem;
+  margin-bottom: 0.75rem;
+}
+#dashboard .dashboard-pod .card-body h5 {
+  font-size: 1.15rem;
 }
 #dashboard .dashboard-pod .card-body h4,
 #dashboard .dashboard-pod .card-body h5 {
   text-decoration: none;
+}
+
+#mertex-warning {
+  margin-top: 1rem;
+  background-color: #b02a37;
+  color: #fff;
+  border-color: #b43541;
+  font-size: 1.25rem;
 }
 
 .attachment-count-header-cell {
@@ -345,6 +374,29 @@ body {
   border-radius: 0;
   padding: 0.5rem 1rem;
   height: 68px;
+  border-bottom: 0;
+}
+#email-modal .modal-dialog .modal-content .modal-header.secondary-header {
+  height: 55px;
+  border-bottom: 1px solid #ced4da;
+}
+#email-modal .modal-dialog .modal-content .modal-header.secondary-header h5 {
+  margin: 0;
+}
+#email-modal .modal-dialog .modal-content .modal-header.header-unidentified {
+  background-color: #d13242;
+  color: #fff;
+}
+#email-modal .modal-dialog .modal-content .modal-header.header-unprocessed {
+  background-color: #e9ecef;
+}
+#email-modal .modal-dialog .modal-content .modal-header.header-processed {
+  background-color: #309365;
+  color: #fff;
+}
+#email-modal .modal-dialog .modal-content .modal-header.header-junk {
+  background-color: #e47112;
+  color: #fff;
 }
 #email-modal .modal-dialog .modal-content .modal-header .modal-title {
   color: #fff;
@@ -371,10 +423,8 @@ body {
 #email-modal .modal-dialog .modal-content .modal-body #attachments-list {
   position: relative;
   gap: 0.75rem;
-  overflow-y: auto;
   display: flex;
   flex-wrap: wrap;
-  max-height: 128px;
   margin-bottom: 1rem;
 }
 #email-modal .modal-dialog .modal-content .modal-body #attachments-list.over {
@@ -408,10 +458,20 @@ body {
 #email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment.disabled:not(.selected):hover {
   background-color: #e9ecef !important;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment .attachment-type {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:not(.disabled):has(.attachment-type-invoice, .attachment-type-proforma-invoice, .attachment-type-credit-note, .attachment-type-statement, .attachment-type-delivery-note, .attachment-type-packing-note) {
+  background-color: #309365;
+  color: #fff;
+  border-color: #75b798;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:not(.disabled):has(.attachment-type-junk) {
+  background-color: #e47112;
+  color: #fff;
+  border-color: #fd9843;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:not(.disabled) .attachment-type {
   position: absolute;
-  bottom: 0;
-  right: 0;
+  bottom: -1px;
+  right: -1px;
   z-index: 1;
   border-radius: 4px 0 0 0;
   border: 1px solid #6c757d;
@@ -419,29 +479,47 @@ body {
   color: #fff;
   border-right: 0;
   border-bottom: 0;
-  padding: 2px 4px 1px 4px;
+  padding: 4px 6px 4px 6px;
   text-transform: uppercase;
   font-size: 0.875rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment .attachment-type.invoice {
-  background-color: limegreen;
-  content: "invoice";
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:not(.disabled) .attachment-type span {
+  line-height: 1;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:hover {
-  background-color: #e7f1ff;
-}
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment.selected {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:not(.disabled):hover {
   border-color: #031633;
   background-color: #084298;
   color: #fff;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment.selected:hover {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:not(.disabled).selected {
+  outline: 4px solid #343a40;
   border-color: #031633;
-  background-color: #084298;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:not(.disabled).selected:hover {
+  border-color: #031633;
+  background-color: #0a58ca;
   color: #fff;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:not(.disabled).selected:has(.attachment-type-invoice) {
+  border-color: #031633;
+  color: #fff;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:not(.disabled).selected:has(.attachment-type-junk) {
+  border-color: #031633;
+  color: #fff;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment.submitted {
+  box-shadow: 0 4px 0 limegreen;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment.submitted.selected {
+  box-shadow: 0 8px 0 limegreen;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment.submitted .attachment-type {
+  bottom: 0 !important;
+  right: 0 !important;
 }
 #email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment .k-icon {
   font-size: 3em;
@@ -516,11 +594,27 @@ body {
   border: 1px solid #dee2e6;
   max-width: 55%;
 }
+#email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #attachment-iframe-wrapper pre {
+  padding: 0.25rem 0.5rem;
+  background-color: #fff;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #attachment-iframe-wrapper pre.prettyprint {
+  font-size: 1.2rem;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #attachment-iframe-wrapper pre.prettyprint * {
+  font-family: "Cascadia Code", "courier new", monospaced;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #attachment-iframe-wrapper pre.prettyprint .linenums li {
+  list-style-type: decimal;
+}
 #email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #email-body {
   width: 100%;
   position: relative;
   border: 1px solid #dee2e6;
   max-width: 55%;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #email-body mailto {
+  display: block;
 }
 #email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #email-body img {
   max-width: 100%;
@@ -529,6 +623,9 @@ body {
 #email-modal .modal-dialog .modal-content .modal-body #data-pane {
   flex: 1 1 420px;
 }
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .additional-info {
+  margin-top: 1rem;
+}
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .data-heading {
   padding-bottom: 1rem;
   margin-bottom: 1rem;
@@ -536,6 +633,14 @@ body {
   display: flex;
   gap: 1rem;
   align-items: center;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .data-heading.email-details-heading {
+  display: flex;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .data-heading.email-details-heading .btn-orange {
+  background-color: #fd7e14;
+  border-color: #ca6510;
+  color: #fff;
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .data-heading .form-switch {
   display: inline-flex;
@@ -611,8 +716,10 @@ body {
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property.border-danger .input-group .mdc-floating-label {
   color: #db0028;
 }
-#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property.alert-info .mdc-validating-field .mdc-numeric-field:not(.mdc-text-field--invalid),
-#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property.alert-info .mdc-validating-field .mdc-text-field:not(.mdc-text-field--invalid) {
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property.alert-info .mdc-validating-field .mdc-numeric-field:not(.mdc-text-field--disabled, .mdc-text-field--invalid) {
+  background-color: #f3f8ff;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property.alert-info .mdc-validating-field .mdc-text-field:not(.mdc-text-field--invalid, .mdc-text-field--disabled) {
   background-color: #f3f8ff;
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property.alert-info .mdc-validating-field .mdc-select:not(.mdc-select--invalid) .k-dropdown-wrap {
@@ -633,12 +740,14 @@ body {
   text-align: left !important;
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #invoice-properties,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #proforma-properties,
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-entries,
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info,
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #vat-entries {
   margin: 1rem 0;
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #invoice-properties h5,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #proforma-properties h5,
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-entries h5,
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info h5,
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #vat-entries h5 {
@@ -649,24 +758,28 @@ body {
   margin-bottom: 1rem;
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #invoice-properties .list-group.border-danger li,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #proforma-properties .list-group.border-danger li,
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-entries .list-group.border-danger li,
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info .list-group.border-danger li,
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #vat-entries .list-group.border-danger li {
   border-color: #dc3545;
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #invoice-properties .list-group-item,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #proforma-properties .list-group-item,
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-entries .list-group-item,
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info .list-group-item,
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #vat-entries .list-group-item {
   padding: 1rem;
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #invoice-properties .list-group-item > div > .attachment-property,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #proforma-properties .list-group-item > div > .attachment-property,
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-entries .list-group-item > div > .attachment-property,
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info .list-group-item > div > .attachment-property,
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #vat-entries .list-group-item > div > .attachment-property {
   margin-top: 0;
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #invoice-properties .list-group-item > .code-params,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #proforma-properties .list-group-item > .code-params,
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-entries .list-group-item > .code-params,
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-info .list-group-item > .code-params,
 #email-modal .modal-dialog .modal-content .modal-body #data-pane #vat-entries .list-group-item > .code-params {
@@ -676,6 +789,22 @@ body {
   align-items: center;
   gap: 1rem;
   padding-right: 34px;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #general-ledger-entries,
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #proforma-properties {
+  margin-bottom: 0;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #duplicate-warnings .card-body {
+  background-color: #dc3545;
+  color: #fff;
+  border-radius: calc(0.375rem - 2px);
+  border-color: #b02a37;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #duplicate-warnings .card-body a {
+  color: #fff;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #duplicate-warnings .card-body a:visited {
+  color: #fff;
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .converting-component-wrapper {
   margin-top: 1rem;
@@ -746,6 +875,7 @@ body {
   display: flex;
   align-items: center;
   margin-bottom: 1rem;
+  flex: 1;
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper .attachment-supplier {
   display: flex;
@@ -754,13 +884,30 @@ body {
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper .attachment-supplier .mdc-validating-field {
   flex: 1;
-  width: 330px;
+  width: 100%;
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper .attachment-supplier .bi {
   display: none;
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper > .btn {
   margin-left: 0.75rem;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #original-data-tab-content {
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-top: 0;
+  border-radius: 0 0 4px 4px;
+  margin-bottom: 1rem;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #original-data-tab-content .tab-pane {
+  padding: 1rem;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #original-data-tab-content .k-group-header {
+  text-align: left;
+  background-color: #084298;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane #original-data-tab-content #mertex-data-tab-pane .loaded-property + .loaded-property {
+  margin-top: 0.75rem;
 }
 
 #email-body {
@@ -769,5 +916,15 @@ body {
 }
 #email-body table tbody tr td p:last-of-type {
   margin-bottom: 0;
+}
+
+.duplicate-property {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: flex-start;
+}
+.duplicate-property label {
+  flex: 0 1 160px;
 }
 /*# sourceMappingURL=invoice-booking.css.map */

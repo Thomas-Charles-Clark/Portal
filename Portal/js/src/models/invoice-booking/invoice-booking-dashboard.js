@@ -11,7 +11,9 @@
 
     self.busy = ko.observable(false);
 
-    self.pods = ko.observableArray(window.getDashboardPods());
+    self.pods = ko.observableArray(window.getDashboard().DashboardPods);
+
+    self.mertexWarning = ko.observable(window.getDashboard().MertexWarning);
 
     let emailStatusIdtoLoad = window.getEmailStatusIdToLoad();
 
@@ -67,6 +69,10 @@
 
         let data = self.parent.getParameters();
 
+        if (window.getDepartmentRestrictions().length && self.parent.filters.departmentIds().length == 0) {
+            data.activeDirectoryGroupIds = window.getDepartmentRestrictions();
+        }
+
         fetch('/api/InvoiceBookingAPI/Dashboard', {
             method: 'POST',
             cache: 'no-cache',
@@ -77,9 +83,13 @@
             .then(window.handleFetchResponse)
             .then(data => {
                 console.log('dashboard returned', data);
+
+                let previouslySelectedEmailStatusId = self.selectedPod().EmailStatusID;
+
                 self.busy(false);
-                self.pods(data);
-                self.selectedPod(self.pods()[0]);
+                self.pods(data.DashboardPods);
+                self.mertexWarning(data.MertexWarning);
+                self.selectedPod(self.pods().find(p => p.EmailStatusID == previouslySelectedEmailStatusId));
             })
             .catch(err => {
                 self.busy(false);
@@ -98,29 +108,44 @@
 
         switch (data.Label) {
             case 'Unidentified Supplier':
-                self.parent.mailboxGridParams.widget().dataSource.sort([{
-                    field: 'FromEmail',
-                    dir: 'asc'
-                }, {
-                    field: 'ReceivedDT',
-                    dir: 'desc'
-                }]);
+                self.parent.mailboxGridParams.widget().dataSource.query({
+                    page: 1,
+                    pageSize: self.parent.mailboxGridParams.widget().dataSource.pageSize(),
+                    group: self.parent.mailboxGridParams.widget().dataSource.group(),
+                    sort: [{
+                        field: 'FromEmail',
+                        dir: 'asc'
+                    }, {
+                        field: 'ReceivedDT',
+                        dir: 'desc'
+                    }]
+                });
                 break;
             case 'Unprocessed':
-                self.parent.mailboxGridParams.widget().dataSource.sort([{
-                    field: 'SupplierCode',
-                    dir: 'asc'
-                }, {
-                    field: 'ReceivedDT',
-                    dir: 'desc'
-                }]);
+                self.parent.mailboxGridParams.widget().dataSource.query({
+                    page: 1,
+                    pageSize: self.parent.mailboxGridParams.widget().dataSource.pageSize(),
+                    group: self.parent.mailboxGridParams.widget().dataSource.group(),
+                    sort: [{
+                        field: 'SupplierCode',
+                        dir: 'asc'
+                    }, {
+                        field: 'ReceivedDT',
+                        dir: 'desc'
+                    }]
+                });
                 break;
             case 'Processed':
             case 'Junk':
-                self.parent.mailboxGridParams.widget().dataSource.sort([{
-                    field: 'ReceivedDT',
-                    dir: 'desc'
-                }]);
+                self.parent.mailboxGridParams.widget().dataSource.query({
+                    page: 1,
+                    pageSize: self.parent.mailboxGridParams.widget().dataSource.pageSize(),
+                    group: self.parent.mailboxGridParams.widget().dataSource.group(), 
+                    sort: [{
+                        field: 'ReceivedDT',
+                        dir: 'desc'
+                    }]
+                });
                 break;
             default:
                 break;

@@ -165,6 +165,8 @@ body {
         max-height: unset;
         box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
         border-radius: 0 0 $border-radius $border-radius;
+        width: auto;
+        padding: $xs-gutter $sm-gutter;
 
         li {
             &.form-check {
@@ -339,6 +341,12 @@ body {
             flex: 0;
         }
 
+        .k-list {
+            .k-item {
+                white-space: nowrap;
+            }
+        }
+
         /*.k-dropdown-wrap {
             > span.k-input {
                 padding: 0;
@@ -385,16 +393,38 @@ body {
             }
         }
 
-        &.active {
-            background-color: $tinted-battleship-blue;
+        &.warning {
+            background-color: $red-600;
             color: $white;
-            border-color: tint-color($tinted-battleship-blue, 5%);
+            border-color: tint-color($red-600, 5%);
+        }
+
+        &.active {
+            /*text-decoration: underline;*/
+
+            &.warning {
+                background-color: shade-color($red-600, 5%);
+                color: $white;
+            }
+
+            &:not(.warning) {
+                background-color: $tinted-battleship-blue;
+                color: $white;
+            }
         }
 
 
         .card-body {
+
+
             h4 {
-                font-size: $font-size-lg;
+                font-weight: bold;
+                font-size: 1.55rem;
+                margin-bottom: $m-gutter;
+            }
+
+            h5 {
+                font-size: 1.15rem;
             }
 
             display: flex;
@@ -408,6 +438,13 @@ body {
             }
         }
     }
+}
+#mertex-warning {
+    margin-top: $l-gutter;
+    background-color: $red-600;
+    color: $white;
+    border-color: tint-color($red-600, 5%);
+    font-size: $font-size-lg;
 }
 
 .attachment-count-header-cell {
@@ -452,6 +489,35 @@ body {
                 border-radius: 0;
                 padding: $sm-gutter $l-gutter;
                 height: 68px;
+                border-bottom: 0;
+
+                &.secondary-header {
+                    height: 55px;
+                    border-bottom: 1px solid $gray-400;
+
+                    h5 {
+                        margin: 0;
+                    }
+                }
+
+                &.header-unidentified {
+                    background-color: shade-color($red-500, 5%);
+                    color: $white;
+                }
+
+                &.header-unprocessed {
+                    background-color: $gray-200;
+                }
+
+                &.header-processed {
+                    background-color: tint-color($green-500, 10%);
+                    color: $white;
+                }
+
+                &.header-junk {
+                    background-color: shade-color($orange-500, 10%);
+                    color: $white;
+                }
 
                 .modal-title {
                     color: $white;
@@ -488,10 +554,8 @@ body {
                 #attachments-list {
                     position: relative;
                     gap: $m-gutter;
-                    overflow-y: auto;
                     display: flex;
                     flex-wrap: wrap;
-                    max-height: 128px;
                     margin-bottom: $l-gutter;
 
                     &.over {
@@ -531,43 +595,81 @@ body {
                             }
                         }
 
-                        .attachment-type {
-                            position: absolute;
-                            bottom: 0;
-                            right: 0;
-                            z-index: 1;
-                            border-radius: 4px 0 0 0;
-                            border: 1px solid $gray-600;
-                            background-color: $gray-800;
-                            color: $white;
-                            border-right: 0;
-                            border-bottom: 0;
-                            padding: 2px 4px 1px 4px;
-                            text-transform: uppercase;
-                            font-size: $font-size-sm;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
+                        &:not(.disabled) {
 
-                            &.invoice {
-                                background-color: limegreen;
-                                content: 'invoice';
+                            &:has(.attachment-type-invoice, .attachment-type-proforma-invoice, .attachment-type-credit-note, .attachment-type-statement, .attachment-type-delivery-note, .attachment-type-packing-note) {
+                                background-color: tint-color($green-500, 10%);
+                                color: $white;
+                                border-color: $green-300;
                             }
-                        }
 
-                        &:hover {
-                            background-color: tint-color($blue-200, 75%);
-                        }
+                            &:has(.attachment-type-junk) {
+                                background-color: shade-color($orange-500, 10%);
+                                color: $white;
+                                border-color: $orange-400;
+                            }
 
-                        &.selected {
-                            border-color: $blue-900;
-                            background-color: $blue-700;
-                            color: $white;
+                            .attachment-type {
+                                position: absolute;
+                                bottom: -1px;
+                                right: -1px;
+                                z-index: 1;
+                                border-radius: 4px 0 0 0;
+                                border: 1px solid $gray-600;
+                                background-color: $gray-800;
+                                color: $white;
+                                border-right: 0;
+                                border-bottom: 0;
+                                padding: 4px 6px 4px 6px;
+                                text-transform: uppercase;
+                                font-size: $font-size-sm;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+
+                                span {
+                                    line-height: 1;
+                                }
+                            }
 
                             &:hover {
                                 border-color: $blue-900;
                                 background-color: $blue-700;
                                 color: $white;
+                            }
+
+                            &.selected {
+                                outline: 4px solid $gray-800;
+                                border-color: $blue-900;
+
+                                &:hover {
+                                    border-color: $blue-900;
+                                    background-color: $blue-600;
+                                    color: $white;
+                                }
+
+                                &:has(.attachment-type-invoice) {
+                                    border-color: $blue-900;
+                                    color: $white;
+                                }
+
+                                &:has(.attachment-type-junk) {
+                                    border-color: $blue-900;
+                                    color: $white;
+                                }
+                            }
+                        }
+
+                        &.submitted {
+                            box-shadow: 0 4px 0 limegreen;
+
+                            &.selected {
+                                box-shadow: 0 8px 0 limegreen;
+                            }
+
+                            .attachment-type {
+                                bottom: 0 !important;
+                                right: 0 !important;
                             }
                         }
 
@@ -661,6 +763,23 @@ body {
                         --bs-aspect-ratio: 126%;
                         border: 1px solid $gray-300;
                         max-width: 55%;
+
+                        pre {
+                            padding: $vsm-gutter $sm-gutter;
+                            background-color: $white;
+
+                            &.prettyprint {
+                                font-size: 1.2rem;
+
+                                * {
+                                    font-family: 'Cascadia Code', 'courier new', monospaced
+                                }
+
+                                .linenums li {
+                                    list-style-type: decimal;
+                                }
+                            }
+                        }
                     }
 
                     #email-body {
@@ -668,6 +787,10 @@ body {
                         position: relative;
                         border: 1px solid $gray-300;
                         max-width: 55%;
+
+                        mailto {
+                            display: block;
+                        }
 
                         img {
                             max-width: 100%;
@@ -678,6 +801,10 @@ body {
 
                 #data-pane {
                     flex: 1 1 420px;
+                    
+                    .additional-info {
+                        margin-top: $l-gutter;
+                    }
 
                     .data-heading {
                         padding-bottom: $l-gutter;
@@ -686,6 +813,16 @@ body {
                         display: flex;
                         gap: $l-gutter;
                         align-items: center;
+
+                        &.email-details-heading {
+                            display: flex;
+
+                            .btn-orange {
+                                background-color: $orange-500;
+                                border-color: $orange-600;
+                                color: $white;
+                            }
+                        }
 
                         .form-switch {
                             display: inline-flex;
@@ -802,9 +939,17 @@ body {
 
                         &.alert-info {
                             .mdc-validating-field {
-                                .mdc-numeric-field:not(.mdc-text-field--invalid),
-                                .mdc-text-field:not(.mdc-text-field--invalid) {
-                                    background-color: tint-color($blue-100, 75%);
+
+                                .mdc-numeric-field {
+                                    &:not(.mdc-text-field--disabled, .mdc-text-field--invalid) {
+                                        background-color: tint-color($blue-100, 75%);
+                                    }
+                                }
+
+                                .mdc-text-field {
+                                    &:not(.mdc-text-field--invalid, .mdc-text-field--disabled) {
+                                        background-color: tint-color($blue-100, 75%);
+                                    }
                                 }
 
                                 .mdc-select:not(.mdc-select--invalid) {
@@ -841,6 +986,7 @@ body {
                     }
 
                     #invoice-properties,
+                    #proforma-properties,
                     #general-ledger-entries,
                     #general-ledger-info,
                     #vat-entries {
@@ -878,6 +1024,28 @@ body {
                                 align-items: center;
                                 gap: $l-gutter;
                                 padding-right: 34px;
+                            }
+                        }
+                    }
+
+                    #general-ledger-entries,
+                    #proforma-properties {
+                        margin-bottom: 0;
+                    }
+
+                    #duplicate-warnings {
+                        .card-body {
+                            background-color: $red-500;
+                            color: $white;
+                            border-radius: calc($border-radius - 2px);
+                            border-color: $red-600;
+
+                            a {
+                                color: $white;
+
+                                &:visited {
+                                    color: $white;
+                                }
                             }
                         }
                     }
@@ -1001,6 +1169,7 @@ body {
                         display: flex;
                         align-items: center;
                         margin-bottom: $l-gutter;
+                        flex: 1;
 
                         .attachment-supplier {
                             display: flex;
@@ -1009,7 +1178,7 @@ body {
 
                             .mdc-validating-field {
                                 flex: 1;
-                                width: 330px;
+                                width: 100%;
                             }
 
                             .bi {
@@ -1019,6 +1188,34 @@ body {
 
                         > .btn {
                             margin-left: $m-gutter;
+                        }
+                    }
+
+                    #data-tabs {
+                    }
+
+                    #original-data-tab-content {
+                        background-color: $white;
+                        border: 1px solid $gray-300;
+                        border-top: 0;
+                        border-radius: 0 0 4px 4px;
+                        margin-bottom: $l-gutter;
+
+                        .tab-pane {
+                            padding: $l-gutter;
+                        }
+
+                        .k-group-header {
+                            text-align: left;
+                            background-color: $blue-700;
+                        }
+
+                        #mertex-data-tab-pane {
+                            .loaded-property {
+                                & + .loaded-property {
+                                    margin-top: $m-gutter;
+                                }
+                            }
                         }
                     }
                 }
@@ -1041,5 +1238,15 @@ body {
                 }
             }
         }
+    }
+}
+
+.duplicate-property {
+    display: flex;
+    gap: $l-gutter;
+    align-items: center;
+    justify-content: flex-start;
+    label {
+        flex: 0 1 160px;
     }
 }

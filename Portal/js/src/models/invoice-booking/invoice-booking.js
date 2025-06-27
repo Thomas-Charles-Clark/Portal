@@ -65,6 +65,10 @@ const invoiceBookingViewModel = ({
             data.supplierCode = self.filters.supplierCode()
         }
 
+        if (self.filters.supplierTypeCode()) {
+            data.supplierTypeCode = self.filters.supplierTypeCode()
+        }
+
         return data;
     }
 
@@ -80,58 +84,6 @@ const invoiceBookingViewModel = ({
     self.filters = invoiceBookingFiltersViewModel({
         parent: self
     });
-
-    self.mailboxFoldersTreeViewParams = {
-        widget: ko.observable(),
-        dataTextField: "Name",
-        dataSource: new kendo.data.HierarchicalDataSource({
-            virtual: true,
-            transport: {
-                read: (options) => {
-
-                    let data = {
-                        mailboxId: self.mailboxId
-                    }
-
-                    var webapi = new kendo.data.transports.webapi({ prefix: "" });
-                    var params = webapi.parameterMap(options.data);
-
-                    for (let propertyName in params) {
-                        data[propertyName] = params[propertyName];
-                    }
-
-                    fetch('/api/InvoiceBookingAPI/InvoiceMailboxFolders', {
-                        method: 'GET',
-                        cache: 'no-cache',
-                        headers: window.fetchHeaders,
-                        body: JSON.stringify(data)
-                    })
-                        .then(window.handleFetchResponse)
-                        .then(result => {
-                            options.success(result)
-                        })
-                        .catch(window.catchFetchErrors)
-                }
-            },
-            schema: $.extend({}, kendo.data.schemas.webapi, {
-                data: "Data",
-                total: "Total",
-                errors: "Errors",
-                aggregates: "AggregateResults",
-                model: {
-                    id: "MailboxFolderID",
-                    hasChildren: "HasChildren",
-                    fields: {
-                        Name: { type: 'string', editable: false }
-                    }
-                }
-            }),
-            sort: {
-                field: 'Name',
-                dir: 'asc'
-            }
-        })
-    }
 
     self.mailboxGridParams = {
         widget: ko.observable(),
@@ -220,6 +172,8 @@ const invoiceBookingViewModel = ({
             transport: {
                 read: (options) => {
 
+                    self.busy(true);
+
                     let data = {};
 
                     ko.ignoreDependencies(() => {
@@ -236,7 +190,13 @@ const invoiceBookingViewModel = ({
                     var params = new URLSearchParams();
 
                     for (var propertyName in data) {
-                        params.append(propertyName, data[propertyName]);
+                        if (Array.isArray(data[propertyName])) {
+                            data[propertyName].forEach(v => {
+                                params.append(propertyName, v);
+                            })
+                        } else {
+                            params.append(propertyName, data[propertyName]);
+                        }
                     }
 
                     console.log('MailboxGrid calling with', data);
@@ -268,9 +228,12 @@ const invoiceBookingViewModel = ({
 
                             ko.ignoreDependencies(() => {
                                 options.success(data);
+
+                                self.busy(false);
                             })
                         })
                         .catch(err => {
+                            self.busy(false);
                             window.catchFetchError(err);
                             options.error();
                         })
@@ -289,6 +252,14 @@ const invoiceBookingViewModel = ({
                         EmailID: { type: 'number', editable: false },
                         EmailMessageID: { type: 'string', editable: false },
                         FromEmail: { type: 'string', editable: false },
+                        EmailStatusID: { type: 'number', editable: false },
+                        EmailStatus: {
+                            type: 'object',
+                            fields: {
+                                EmailStatusID: { type: 'string', editable: false },
+                                Name: { type: 'string', editable: false }
+                            }
+                        },
                         FromName: { type: 'string', editable: false },
                         Subject: { type: 'string', editable: false },
                         BodyPreview: { type: 'string', editable: false },
@@ -438,6 +409,8 @@ const invoiceBookingViewModel = ({
                     console.log('loadEmailMessage returned', data);
                     self.selectedEmail(invoiceBookingEmailViewModel({
                         parent: self,
+                        emailStatus: data.emailStatus,
+                        additionalInfo: data.additionalInfo,
                         rec: data.message,
                         attachments: [{
                             AttachmentID: -1,
@@ -469,52 +442,65 @@ const invoiceBookingViewModel = ({
 
     self.init = () => {
         self.busy(false);
-
-        //self.mailboxFoldersTreeViewParams.widget().one('dataBound', (e) => {
-        //    let inboxFolder = self.mailboxFoldersTreeViewParams.widget().findByText('Inbox');
-        //    e.sender.select(inboxFolder);
-        //})
     }
 
     self.next = () => {
-        if (self.selectedEmailIndex() == self.mailboxGridParams.widget().dataSource.pageSize() - 1) {
-            // we must page forwards, wait for the paging to be successful, then select the zeroth row on the resultant page
 
-            self.modalBusy(true);
+        self.selectedEmail()
+            .selectedAttachment()
+            .unsavedChanges()
+            .then(() => {
+                if (self.selectedEmailIndex() == self.mailboxGridParams.widget().dataSource.pageSize() - 1) {
+                    // we must page forwards, wait for the paging to be successful, then select the zeroth row on the resultant page
 
-            self.mailboxGridParams.widget().dataSource.one('requestEnd', (event) => {
-                self.mailboxGridParams.widget().select(`tr:eq(0)`);
-                self.mailboxGridParams.widget().trigger('change');
-            });
+                    self.modalBusy(true);
 
-            let currentPage = self.mailboxGridParams.widget().dataSource.page();
+                    self.mailboxGridParams.widget().dataSource.one('requestEnd', (event) => {
+                        self.mailboxGridParams.widget().select(`tr:eq(0)`);
+                        self.mailboxGridParams.widget().trigger('change');
+                    });
 
-            self.mailboxGridParams.widget().dataSource.page(currentPage + 1);
+                    let currentPage = self.mailboxGridParams.widget().dataSource.page();
 
-        } else {
-            self.modalBusy(true);
-            self.mailboxGridParams.widget().select(`tr:eq(${self.selectedEmailIndex() + 1})`);
-            self.mailboxGridParams.widget().trigger('change');
-        }
+                    self.mailboxGridParams.widget().dataSource.page(currentPage + 1);
+
+                } else {
+                    self.modalBusy(true);
+                    self.mailboxGridParams.widget().select(`tr:eq(${self.selectedEmailIndex() + 1})`);
+                    self.mailboxGridParams.widget().trigger('change');
+                }
+            })
+            .catch(err => {
+
+            })
     }
 
     self.previous = () => {
-        if (self.selectedEmailIndex() == 0) {
-            // we must page backwards, wait for the paging to be successful, then select the zeroth row on the resultant page
 
-            self.mailboxGridParams.widget().dataSource.one('requestEnd', (event) => {
-                self.mailboxGridParams.widget().select(`tr:eq(${self.mailboxGridParams.widget().dataSource.pageSize() - 1})`);
-                self.mailboxGridParams.widget().trigger('change');
-            });
+        self.selectedEmail()
+            .selectedAttachment()
+            .unsavedChanges()
+            .then(() => {
+                if (self.selectedEmailIndex() == 0) {
+                    // we must page backwards, wait for the paging to be successful, then select the zeroth row on the resultant page
 
-            let currentPage = self.mailboxGridParams.widget().dataSource.page();
+                    self.mailboxGridParams.widget().dataSource.one('requestEnd', (event) => {
+                        self.mailboxGridParams.widget().select(`tr:eq(${self.mailboxGridParams.widget().dataSource.pageSize() - 1})`);
+                        self.mailboxGridParams.widget().trigger('change');
+                    });
 
-            self.mailboxGridParams.widget().dataSource.page(currentPage - 1);
-        } else {
-            self.modalBusy(true);
-            self.mailboxGridParams.widget().select(`tr:eq(${self.selectedEmailIndex() - 1})`);
-            self.mailboxGridParams.widget().trigger('change');
-        }
+                    let currentPage = self.mailboxGridParams.widget().dataSource.page();
+
+                    self.mailboxGridParams.widget().dataSource.page(currentPage - 1);
+                } else {
+                    self.modalBusy(true);
+                    self.mailboxGridParams.widget().select(`tr:eq(${self.selectedEmailIndex() - 1})`);
+                    self.mailboxGridParams.widget().trigger('change');
+                }
+            })
+            .catch(err => {
+
+            })
     }
 
     //#endregion

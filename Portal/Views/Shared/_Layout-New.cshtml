@@ -1586,7 +1586,7 @@
                         clickBubble: false" />
                     <!-- ko if: Object.hasOwn($data, 'showCalendarButton') -->
                     <button type="button" class="btn tempus-dominus-calendar-btn" 
-                            data-bind="disabled: typeof disabled === 'undefined' ? false : disabled, click: (data, event) => { observable.tempusDominus.toggle(); return false; }, clickBubble: false">
+                            data-bind="disabled: typeof disabled === 'undefined' ? false : disabled, click: (data, event) => { if (ko.unwrap(disabled) == true) { return false; } else { observable.tempusDominus.toggle(); return false; } }, clickBubble: false">
                         <i class="bi bi-calendar3"></i>
                     </button>
                     <!-- /ko -->

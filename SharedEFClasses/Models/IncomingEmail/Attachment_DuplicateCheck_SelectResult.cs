@@ -14,11 +14,10 @@ namespace SharedEFClasses.Models.IncomingEmail
 
         public string SupplierCode { get; set; }
 
-        [JsonProperty("SupplierInvoiceCode")]
         public string SupplierInvoiceReference { get; set; }
 
         public DateTime InvoiceDate { get; set; }
 
-        public decimal InvoiceTotalInCurrencyIncVAT { get; set; }
+        public string InvoiceTotalInCurrencyIncVAT { get; set; }
     }
 }

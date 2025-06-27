@@ -84,7 +84,7 @@ namespace SharedEFClasses.Models.IncomingEmail
 
         public DateTime? ProcessedDT { get; set; }
 
-        public int Processed { get; set; }
+        public bool Processed { get; set; }
 
         public int? ProcessedMemberID { get; set; }
 
@@ -92,6 +92,8 @@ namespace SharedEFClasses.Models.IncomingEmail
         public string SupplierCode { get; set; }
 
         public SupplierLive Supplier { get; set; }
+
+        public bool Junk { get; set; }
 
         //public virtual ICollection<Attachment> Attachments
         //{

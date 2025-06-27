@@ -429,9 +429,11 @@
     <Compile Include="Models\IncomingEmail\Domain_SupplierCode_Map.cs" />
     <Compile Include="Models\IncomingEmail\Email.cs" />
     <Compile Include="Models\IncomingEmail\EmailStatus.cs" />
+    <Compile Include="Models\IncomingEmail\Email_SelectResult.cs" />
     <Compile Include="Models\IncomingEmail\FullEmail.cs" />
-    <Compile Include="Models\IncomingEmail\IncomingEmail_Attachment_ParsedData_SelectResult.cs" />
+    <Compile Include="Models\IncomingEmail\IncomingEmail_Attachment_SelectResult.cs" />
     <Compile Include="Models\IncomingEmail\InvoiceBookingDashboard.cs" />
+    <Compile Include="Models\IncomingEmail\InvoiceBookingDashboard_SelectResult.cs" />
     <Compile Include="Models\IncomingEmail\InvoiceDueDateResult.cs" />
     <Compile Include="Models\IncomingEmail\InvoiceGeneralLedger.cs" />
     <Compile Include="Models\IncomingEmail\InvoiceVAT.cs" />
@@ -439,6 +441,7 @@
     <Compile Include="Models\IncomingEmail\MailboxFolder.cs" />
     <Compile Include="Models\IncomingEmail\MailboxFunction.cs" />
     <Compile Include="Models\IncomingEmail\PassAttachmentSubmit.cs" />
+    <Compile Include="Models\IncomingEmail\PassEmailMessageID.cs" />
     <Compile Include="Models\IncomingEmail\PassInvoiceDateParams.cs" />
     <Compile Include="Models\IncomingEmail\PassSupplierDetail.cs" />
     <Compile Include="Models\IncomingEmail\PassAttachmentDetail.cs" />

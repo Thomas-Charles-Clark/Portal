@@ -63,7 +63,7 @@
         autoBind: true,
         label: 'General Ledger Code',
         endPoint: '/api/InvoiceBookingAPI/GetGeneralLedgerCodes',
-        textField: 'AnalysisCodeDescription',
+        textField: 'DisplayLabel',
         valueField: 'Code',
         virtual: true,
         pageSize: 40,
@@ -72,11 +72,16 @@
             mapValueTo: 'dataItem',
             valueMapper: function (options) {
                 if (options.value && options.value != '') {
+
+                    let qs = new URLSearchParams();
+
+                    qs.append("code", options.value);
+
                     $.ajax({
-                        url: `/api/InvoiceBookingAPI/GetGeneralLedgerCodeValueMapper(code='${options.value}')`,
+                        url: `/api/InvoiceBookingAPI/GetGeneralLedgerCodeValueMapper?${qs}`,
                         type: 'GET',
                         success: function (data) {
-                            options.success(data);
+                            options.success(data.Data[0]);
                         }
                     });
                 } else {
@@ -84,38 +89,45 @@
                 }
             }
         },
-        schema: $.extend({}, kendo.data.schemas['odata-v4']),
+        schema: $.extend({}, kendo.data.schemas.webapi),
         template: (e) => {
-            return `${e.Code} - ${e.AnalysisCodeDescription}`
+            if (e.DisplayLabel)
+                return e.DisplayLabel;
+            else
+                return 'Loading...';
         },
         valueTemplate: (e) => {
             if (e.Code != null && e.Code != '' && e.AnalysisCodeDescription != null && e.AnalysisCodeDescription != '') {
-                return `${e.Code} - ${e.AnalysisCodeDescription}`;
+                return e.DisplayLabel;
             } else {
                 return '';
             }
         },
         fixedGroupTemplate: (e) => {
-            return `Account Type: ${e}`
+            console.log('fixedGroupTemplate', e);
+            return `Analysis Group: ${e}`
         },
         grouping: {
-            field: 'Type.Name',
+            field: 'GroupD.Name',
             dir: 'asc'
         },
         groupHeaderTemplate: (e) => {
             return `${e.Type.Name}`
         },
-        groupTemplate: (e) => {
-            return `${e.Type.Name}`
-        },
         idObservable: self.generalLedgerCode,
         objObservable: self.generalLedger,
         enable: ko.observable(true),
-        disable: ko.observable(false),
+        disable: ko.observable(self.readOnly),
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         readOnly: false,
         filter: 'contains',
+        filtering: function (e) {
+            if (e.filter.value == '' || e.filter.value?.trimEnd() == '') {
+                e.preventDefault();
+                e.sender.dataSource.filter({});
+            }
+        },
         height: 340,
         popupSettings: {
             appendTo: '.attachment-property'
@@ -185,7 +197,7 @@
 
         if (amountExVAT && self.supplier()) {
 
-            let result = Math.round(amountExVAT / (self.supplier().ExchangeRate.SterlingExchangeRate) * 100) / 100;
+            let result = Math.round(amountExVAT / (self.supplier().ExchangeRate.SterlingExchangeRate) * 10000) / 10000;
 
             return result;
         }

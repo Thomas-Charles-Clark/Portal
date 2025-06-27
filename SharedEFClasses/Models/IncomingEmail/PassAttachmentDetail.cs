@@ -10,7 +10,7 @@ namespace SharedEFClasses.Models.IncomingEmail
     {
         public long AttachmentID { get; set; }
 
-        public byte AttachmentTypeID { get; set; }
+        public short AttachmentTypeID { get; set; }
 
         public int MemberID { get; set; }
 

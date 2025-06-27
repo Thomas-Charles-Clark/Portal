@@ -155,7 +155,7 @@
 
         // this is only available if we're loading from a save
         if (self.vatableAmountSterling() != null) {
-            return formatCurrency(self.vatableAmountSterling(), 2, 'en-GB', 'GBP');
+            return self.vatableAmountSterling();
         }
         
         let vatableAmount = +self.vatableAmountCurrency();
@@ -164,20 +164,24 @@
 
         if (vatableAmount && self.supplier()) {
 
-            let result = Math.round((vatableAmount * exchangeRate) * 100) / 100;
+            let result = Math.round((vatableAmount / exchangeRate) * 10000) / 10000;
 
-            return formatCurrency(result, 2, 'en-GB', 'GBP');
+            return result;
         } else {
-            return formatCurrency(0, 2, 'en-GB', 'GBP');
+            return 0;
         }
         
     }, self).extend({
         numberFormatted: {
-            digits: 2,
+            digits: 4,
             currency: self.supplierCurrency,
             minValue: 0
         }
     });
+
+    self.vatableAmountToSterlingComputerFormatted = ko.computed(() => {
+        return formatCurrency(self.vatableAmountToSterlingComputer(), 2, 'en-GB', 'GBP');
+    }, self);
 
     self.vatableAmountConverter = {
         highlightOnNull: ko.observable('potato'),
@@ -186,7 +190,7 @@
         convertedParams: {
             label: 'VATable Amount in Sterling',
             buttons: false,
-            observable: self.vatableAmountToSterlingComputer,
+            observable: self.vatableAmountToSterlingComputerFormatted,
             useNativeValidation: false,
             decorateInputElement: false,
             insertValidationMessages: false,
@@ -286,30 +290,34 @@
     self.vatToSterlingComputer = ko.computed(() => {
 
         if (self.vatAmountSterling()) { 
-            return formatCurrency(self.vatAmountSterling(), 2, 'en-GB', 'GBP'); 
+            return self.vatAmountSterling(); 
         }
 
-        let vatableAmountCurrency = +self.vatableAmountCurrency();
+        let vatInCurrency = +self.vatInCurrency();
 
-        let vatRate = self.vatRate() ?? (self.vatObj() ? self.vatObj().VATRate : null);
+        let exchangeRate = self.exchangeRate() ?? (self.supplier() ? self.supplier().ExchangeRate.SterlingExchangeRate : null);
 
-        if (vatableAmountCurrency && vatRate) {
+        if (vatInCurrency && exchangeRate) {
 
-            let result = vatableAmountCurrency - Math.round((vatableAmountCurrency * vatRate) * 100) / 100;
+            let result = Math.round((vatInCurrency * exchangeRate) * 10000) / 10000;
 
-            return formatCurrency(result, 2, 'en-GB', 'GBP');
+            return result;
         } else {
-            return formatCurrency(0, 2, 'en-GB', 'GBP');
+            return 0;
         }
 
     }, self).extend({
         numberFormatted: {
-            digits: 2,
+            digits: 4,
             currency: {
                 FormattingCulture: 'en-GB', Code: 'GBP'
             },
             minValue: 0
         }
+    });
+
+    self.vatToSterlingComputerFormatted = ko.computed(() => {
+        return formatCurrency(self.vatToSterlingComputer(), 2, 'en-GB', 'GBP');
     });
 
     self.vatConverter = {
@@ -319,7 +327,7 @@
         convertedParams: {
             label: 'VAT in Sterling',
             buttons: false,
-            observable: self.vatToSterlingComputer,
+            observable: self.vatToSterlingComputerFormatted,
             useNativeValidation: false,
             decorateInputElement: false,
             insertValidationMessages: false,

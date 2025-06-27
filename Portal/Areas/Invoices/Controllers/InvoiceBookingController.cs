@@ -52,6 +52,13 @@ namespace Portal.Areas.Invoices.Controllers
                 lockedToBudgetHolderCode = PortalDb.BudgetHolders.Single(b => b.MemberID == user.Id).Code;
             }
 
+            if (UserManager.IsInRole(user.Id, "Super Admin") ||
+                UserManager.IsInRole(user.Id, "Invoice Registration - Full Access"))
+            {
+                lockedToDepartmentGroupIds = new List<short>();
+                lockedToBudgetHolderCode = null;
+            }
+
             var loadingEmailStatusId = (int?)null;
 
             if (!String.IsNullOrEmpty(pod))

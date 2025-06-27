@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Newtonsoft.Json;
+
 namespace SharedEFClasses.Models.Mertex
 {
     [Table("GeneralLedgerAnalysisGroupD", Schema = "Mertex")]
@@ -24,5 +26,9 @@ namespace SharedEFClasses.Models.Mertex
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool Deleted { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("GroupD")]
+        public virtual ICollection<GeneralLedgerCode> GeneralLedgerCodes { get; set; }
     }
 }

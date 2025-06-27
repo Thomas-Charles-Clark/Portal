@@ -51,6 +51,7 @@ const invoiceBookingFiltersViewModel = ({
     self.supplierTypeCode = ko.observable('');
     self.supplierType = ko.observable();
 
+    //self.supplierCode = ko.observable('B0245'); // locked to Bru!
     self.supplierCode = ko.observable('');
     self.supplier = ko.observable();
 
@@ -225,8 +226,6 @@ const invoiceBookingFiltersViewModel = ({
     }
 
     self.departmentParams = {
-        observable: self.departmentIds,
-        validate: self.departmentIds,
         showClear: true,
         width: 'auto',
         label: 'Department',
@@ -234,13 +233,14 @@ const invoiceBookingFiltersViewModel = ({
         useNativeValidation: false,
         decorateInputElement: false,
         insertValidationMessages: false,
-        locked: ko.computed(() => self.availableDepartments().length == 1, self),
+        locked: ko.computed(() => window.getDepartmentRestrictions().length == 1, self),
         enable: ko.observable(true),
-        disable: ko.computed(() => self.availableDepartments().length == 1, self),
+        disable: ko.computed(() => window.getDepartmentRestrictions().length == 1, self),
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         controlClass: 'form-control',
         multiSelectSettings: {
+            autoWidth: true,
             value: ko.observableArray([]),
             dataItems: self.departments,
             observableArray: self.departmentIds,
@@ -385,6 +385,7 @@ const invoiceBookingFiltersViewModel = ({
         filter: 'contains',
         autoBind: true,
         height: 340,
+        autoWidth: true,
         sort: {
             dir: 'asc',
             field: 'BudgetHolder.Name'
@@ -444,6 +445,7 @@ const invoiceBookingFiltersViewModel = ({
         readOnly: false,
         filter: 'contains',
         autoBind: true,
+        autoWidth: true,
         height: 340,
         sort: {
             dir: 'asc',
@@ -504,6 +506,7 @@ const invoiceBookingFiltersViewModel = ({
         readOnly: false,
         filter: 'contains',
         autoBind: true,
+        autoWidth: true,
         height: 340,
         sort: {
             dir: 'asc',
@@ -541,6 +544,7 @@ const invoiceBookingFiltersViewModel = ({
         readOnly: false,
         filter: 'contains',
         autoBind: true,
+        autoWidth: true,
         height: 340,
         sort: {
             dir: 'asc',
@@ -586,6 +590,7 @@ const invoiceBookingFiltersViewModel = ({
         revertible: ko.observable(false),
         readOnly: false,
         autoBind: true,
+        autoWidth: true,
         clearFunction: () => {
             self.dateRangeId('');
         },
@@ -739,17 +744,17 @@ const invoiceBookingFiltersViewModel = ({
 
     //#region Subscriptions
 
-    self.availableDepartments.subscribe(nv => {
-        if (nv.length == 1) {
-            self.departmentIds([nv[0].value]);
-        }
-        //self.budgetHolderParams.dropDownListSettings.widget().dataSource.read();
+    self.departmentIds.subscribe(nv => {
+        self.refreshParent();
+    });
+
+    self.budgetHolderCode.subscribe((nv) => {
+        self.refreshParent();
     });
 
     self.dateRangeId.subscribe(nv => {
         if (nv != -1) {
-            self.parent.dashboard.fetch();
-            self.parent.mailboxGridParams.widget().dataSource.page(1);
+            self.refreshParent();
         }
     });
 
@@ -775,7 +780,7 @@ const invoiceBookingFiltersViewModel = ({
                 }
             });
         }
-        self.parent.mailboxGridParams.widget().dataSource.page(1);
+        self.refreshParent();
     });
 
     self.toDate.subscribe(nv => {
@@ -799,60 +804,19 @@ const invoiceBookingFiltersViewModel = ({
                 }
             });
         }
-        self.parent.mailboxGridParams.widget().dataSource.page(1);
+        self.refreshParent();
     });
 
     self.departmentIds.subscribe(nv => {
-        self.parent.dashboard.fetch();
-        self.parent.mailboxGridParams.widget().dataSource.page(1);
+        self.refreshParent();
     });
 
-    //self.emailStatusId.subscribe(nv => {
-    //    if (nv == null) {
-    //        let filters = self.parent.mailboxGridParams.widget().dataSource.filter();
-
-    //        filters.filters = filters.filters.filter(f => f.field != 'EmailStatusID');
-
-    //        self.parent.mailboxGridParams.widget().dataSource.filter(filters);
-    //    } else {
-    //        self.parent.mailboxGridParams.widget().dataSource.filter({
-    //            field: 'EmailStatusID',
-    //            operator: 'eq',
-    //            value: nv
-    //        });
-    //    }
-    //})
-
     self.supplierCode.subscribe(nv => {
-        if (nv == null || nv == '') {
-            let filters = self.parent.mailboxGridParams.widget().dataSource.filter();
-            
-            filters.filters = filters.filters.filter(f => f.field != 'SupplierCode');
-
-            self.parent.mailboxGridParams.widget().dataSource.filter(filters);
-        } else {
-            self.parent.mailboxGridParams.widget().dataSource.filter({
-                field: 'SupplierCode',
-                operator: 'eq',
-                value: nv
-            });
-        }
+        self.refreshParent();
     })
 
     self.supplierTypeCode.subscribe(nv => {
-        if (nv == null || nv == '') {
-            let filters = self.parent.mailboxGridParams.widget().dataSource.filter();
-
-            filters.filters = filters.filters.filter(f => f.field != 'SupplierTypeCode');
-
-            self.parent.mailboxGridParams.widget().dataSource.filter(filters);
-        } else {
-            self.parent.mailboxGridParams.widget().dataSource.filter({
-                field: 'Supplier.SupplierType.Code',
-                operator: 'eq',
-                value: nv
-            });
-        }
+        self.refreshParent();
     })
 
     // No, boo, this causes headaches and acrimony
@@ -878,6 +842,10 @@ const invoiceBookingFiltersViewModel = ({
 
     //#region Methods
 
+    self.refreshParent = () => {
+        self.parent.dashboard.fetch();
+        self.parent.mailboxGridParams.widget().dataSource.page(1);
+    }
 
     //#endregion
 

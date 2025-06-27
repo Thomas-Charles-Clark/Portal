@@ -24,6 +24,9 @@ namespace SharedEFClasses.Models.Mertex
 
         public string AnalysisCodeDescription { get; set; }
 
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public string DisplayLabel { get; set; }
+
         public DateTime CreatedDT { get; set; }
 
         public DateTime? ModifiedDT { get; set; }
@@ -35,5 +38,8 @@ namespace SharedEFClasses.Models.Mertex
 
         [ForeignKey("AccountType")]
         public virtual GeneralLedgerAccountType Type { get; set; }
+
+        [ForeignKey("AnalysisCodeD")]
+        public virtual GeneralLedgerAnalysisGroupD GroupD { get; set; }
     }
 }

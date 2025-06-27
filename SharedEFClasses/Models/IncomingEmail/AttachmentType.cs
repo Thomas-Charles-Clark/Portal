@@ -16,7 +16,7 @@ namespace SharedEFClasses.Models.IncomingEmail
         [StringLength(50)]
         public string Name { get; set; }
 
-        public bool ParsingRequired { get; set; }
+        public bool ProcessingRequired { get; set; }
 
         public short SortOrder { get; set; }
 

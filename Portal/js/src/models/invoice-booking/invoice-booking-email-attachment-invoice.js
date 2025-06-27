@@ -10,6 +10,8 @@
         modalBusyMessage: parent.modalBusyMessage,
         attachmentTypeId: parent.attachmentTypeId,
         attachmentId: parent.AttachmentID,
+        save: parent.save,
+        skipValidation: parent.skipValidation,
         reset: parent.reset,
         modal: parent.modal
     }, rec);
@@ -58,6 +60,10 @@
         },
         charsRemainingOptions: {
             maxLength: 100
+        },
+        rateLimit: {
+            timeout: 300,
+            method: 'notifyWhenChangesStop'
         }
     });
 
@@ -195,7 +201,7 @@
             onlyIf: () => {
                 return self.validatePreambleSumNow() || self.validateNow()
             },
-            message: 'You must provide a NET total'
+            message: 'You must provide a Net total'
         },
         numberFormatted: {
             digits: 2,
@@ -207,7 +213,7 @@
         minValue: {
             params: 0,
             onlyIf: self.validateNow,
-            message: 'NET Total must be zero or +ve'
+            message: 'Net Total must be zero or +ve'
         }
     });
 
@@ -262,7 +268,7 @@
         equal: {
             params: true,
             onlyIf: self.validateNow,
-            message: 'Sum of General Ledger Breakdown must equal NET Total'
+            message: 'Sum of General Ledger Breakdown must equal Net Total'
         }
     });
 
@@ -270,7 +276,7 @@
         equal: {
             params: true,
             onlyIf: self.validateNow,
-            message: 'Sum of VATable Breakdown must equal NET Total'
+            message: 'Sum of VATable Breakdown must equal Net Total'
         }
     });
 
@@ -278,48 +284,15 @@
         equal: {
             params: true,
             onlyIf: self.validatePreambleSumNow,
-            message: 'Gross Invoice Total must equal NET Total plus VAT Total'
+            message: 'Gross total must equal Net total plus VAT total'
         }
     });
 
-    //self.invoiceTotalIncVATCurrency.extend({
-    //    validation: {
-    //        validator: function (val) {
-    //            if (self.validatePreambleSumNow() && self.invoiceTotalIncVATCurrency() && self.netTotalCurrency() && self.vatTotalCurrency()) {
-    //                return self.netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT()
-    //            } else {
-    //                return true;
-    //            }
-    //        },
-    //        message: 'A'
-    //    }
-    //});
+    self.duplicateResults = ko.observableArray(rec.duplicateResults ?? []);
 
-    //self.netTotalCurrency.extend({
-    //    validation: {
-    //        validator: function (val) {
-    //            if (self.validatePreambleSumNow() && self.invoiceTotalIncVATCurrency() && self.netTotalCurrency() && self.vatTotalCurrency()) {
-    //                return self.netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT()
-    //            } else {
-    //                return true;
-    //            }
-    //        },
-    //        message: 'B'
-    //    }
-    //});
+    self.isFlaggedAsDuplicate = ko.observable(rec.isFlaggedAsDuplicate);
 
-    //self.vatTotalCurrency.extend({
-    //    validation: {
-    //        validator: function (val) {
-    //            if (self.validatePreambleSumNow() && self.invoiceTotalIncVATCurrency() && self.netTotalCurrency() && self.vatTotalCurrency()) {
-    //                return self.netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT()
-    //            } else {
-    //                return true;
-    //            }
-    //        },
-    //        message: 'C'
-    //    }
-    //});
+    self.undoingDuplicate = ko.observable(false);
 
     //#endregion
 
@@ -337,9 +310,9 @@
     self.invoiceTotalIncVATInSterling = rec.invoiceTotalIncVATInSterling ? ko.observable(rec.invoiceTotalIncVATInSterling) : ko.computed(() => {
         
         if (self.supplier() && self.invoiceTotalIncVATCurrency())
-            return Math.round(self.invoiceTotalIncVATCurrency() / (self.supplier().ExchangeRate.SterlingExchangeRate) * 100) / 100;
+            return Math.round(self.invoiceTotalIncVATCurrency() / (self.supplier().ExchangeRate.SterlingExchangeRate) * 10000) / 10000;
         else
-            return null;
+            return 0;
 
     }, self);
 
@@ -357,9 +330,9 @@
 
     self.vatTotalInSterling = rec.vatTotalInSterling ? ko.observable(rec.vatTotalInSterling) : ko.computed(() => {
         if (self.supplier() && self.vatTotalCurrency())
-            return Math.round(self.vatTotalCurrency() / ((self.loadedExchangeRate ? +self.loadedExchangeRate : self.supplier().ExchangeRate.SterlingExchangeRate)) * 100) / 100;
+            return Math.round(self.vatTotalCurrency() / ((self.loadedExchangeRate ? +self.loadedExchangeRate : self.supplier().ExchangeRate.SterlingExchangeRate)) * 10000) / 10000;
         else
-            return null;
+            return 0;
     }, self);
 
     self.vatTotalInSterlingFormatted = ko.computed({
@@ -376,9 +349,9 @@
 
     self.netTotalInSterling = rec.netTotalInSterling ? ko.observable(rec.netTotalInSterling) : ko.computed(() => {
         if (self.supplier() && self.netTotalCurrency())
-            return Math.round(self.netTotalCurrency() / ((self.loadedExchangeRate ? +self.loadedExchangeRate : self.supplier().ExchangeRate.SterlingExchangeRate)) * 100) / 100;
+            return Math.round(self.netTotalCurrency() / ((self.loadedExchangeRate ? +self.loadedExchangeRate : self.supplier().ExchangeRate.SterlingExchangeRate)) * 10000) / 10000;
         else
-            return null;
+            return 0;
     }, self);
 
     self.netTotalInSterlingFormatted = ko.computed({
@@ -468,19 +441,19 @@
 
         if ((!self.readOnly) &&
             self.supplierCode() &&
-            self.attachmentTypeId() &&
+            self.attachmentTypeId() == 2 && // invoice only
             (self.invoiceDate() || self.supplierInvoiceReference() || self.invoiceTotalIncVATCurrency())) {
 
             let params = {
-                attachmentId: self.AttachmentID,
+                attachmentId: self.attachmentId,
                 attachmentTypeId: self.attachmentTypeId(),
                 formDataJson: JSON.stringify({
-                    AttachmentID: self.AttachmentID,
-                    AttachmentTypeID: self.attachmentTypeId(),
-                    InvoiceDate: self.invoiceDate(),
-                    SupplierCode: self.supplierCode(),
-                    SupplierInvoiceCode: self.supplierInvoiceReference(),
-                    InvoiceTotalInCurrencyIncVAT: self.invoiceTotalIncVATCurrency(),
+                    attachmentId: self.AttachmentID,
+                    attachmentTypeId: self.attachmentTypeId(),
+                    invoiceDate: self.invoiceDate(),
+                    supplierCode: self.supplierCode(),
+                    supplierInvoiceReference: self.supplierInvoiceReference(),
+                    invoiceTotalInCurrencyIncVAT: self.invoiceTotalIncVATCurrency(),
                 })
             }
 
@@ -513,28 +486,46 @@
 
                         self.modalBusyMessage(previousMessage);
 
-                        if (data.Duplicates.length) {
-                            window.showConfirm('Are you sure you want to proceed?', `<p>The following potential duplicates were found. Please review them carefully and consider whether or not the item you're processing is a duplicate.</p><ul class="list-group mb-0">
-                            ${(data.Duplicates.map(d => `<li class="list-group-item">${d.SupplierInvoiceCode} - ${moment(d.InvoiceDate).format('Do ddd MMMM YYYY (DD/MM/YYYY)')} - ${formatCurrency(d.InvoiceTotalInCurrencyIncVAT, 2, d.SupplierCurrencyFormattingCulture, d.SupplierCurrencyCode)}</li>`))}
-                        </ul>`, () => {
+                        self.duplicateResults(data.Duplicates);
 
-                            }, () => {
-                                // this needs clearly defining 
-
-                                //self.modal.hide();
-                                //self.reset();
-                            })
-                        }
                     })
                 })
                 .catch(err => {
-                    self.busy(false);
+                    //self.modalBusy(false);
                     window.catchFetchError(err);
                 })
 
         }
 
     }, self);
+
+    self.acknowledgeDuplicate = () => {
+
+        window.showConfirm('Are you sure?', `<p class="mb-0">
+            Are you sure you wish to mark this attachment as being a duplicate?
+        </p>`, () => {
+            self.skipValidation(true);
+            self.isFlaggedAsDuplicate(true);
+            self.save(() => {
+                self.skipValidation(false);
+            })
+        }, null);
+
+    }
+
+    self.undoDuplicate = () => {
+
+        window.showConfirm('Are you sure?', `<p class="mb-0">
+            Are you sure this item is not a duplicate?
+        </p>`, () => {
+            self.skipValidation(true);
+            self.undoingDuplicate(true);
+            self.save(() => {
+                self.skipValidation(false);
+            })
+        }, null);
+
+    }
 
     //#endregion
 
@@ -678,7 +669,7 @@
     }
 
     self.netTotalCurrencyParams = {
-        label: 'NET Invoice Total (Ex. VAT) in Currency',
+        label: 'Net Invoice Total (Ex. VAT) in Currency',
         buttons: false,
         observable: self.netTotalCurrency,
         originalValue: self.netTotalCurrency(),
@@ -1044,7 +1035,7 @@
         inputParams: self.netTotalCurrencyParams,
         forexParams: self.forexParams(),
         convertedParams: {
-            label: 'NET Total in Sterling',
+            label: 'Net Total in Sterling',
             buttons: false,
             observable: self.netTotalInSterlingFormatted,
             useNativeValidation: false,

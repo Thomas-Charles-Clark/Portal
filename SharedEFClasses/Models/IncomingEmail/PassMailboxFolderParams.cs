@@ -20,5 +20,8 @@ namespace SharedEFClasses.Models.IncomingEmail
         public bool? HasAttachments { get; set; }
         public byte EmailStatusID { get; set; }
         public bool? SupplierIdentified { get; set; }
+        public string SupplierTypeCode { get; set; }
+        public string SupplierCode { get; set; }
+
     }
 }

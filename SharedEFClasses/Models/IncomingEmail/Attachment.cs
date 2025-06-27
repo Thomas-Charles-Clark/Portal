@@ -26,7 +26,7 @@ namespace SharedEFClasses.Models.IncomingEmail
 
         public string FileExtension { get; set; }
 
-        public int? ParsedMemberID { get; set; }
+        public int? ProcessedByMemberID { get; set; }
 
         public int Size { get; set; }
 
@@ -44,10 +44,15 @@ namespace SharedEFClasses.Models.IncomingEmail
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool Deleted { get; set; }
 
-        public DateTime? ParsedDT { get; set; }
+        public DateTime? ProcessedDT { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public bool Parsed { get; set; }
+        public bool Processed { get; set; }
+
+        public DateTime? SubmittedToMertexDT { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public bool SubmittedToMertex { get; set; }
 
         [JsonIgnore]
         [ForeignKey("EmailID")]
@@ -56,8 +61,8 @@ namespace SharedEFClasses.Models.IncomingEmail
         [ForeignKey("AttachmentTypeID")]
         public virtual AttachmentType AttachmentType { get; set; }
 
-        [ForeignKey("ParsedMemberID")]
-        public virtual Member ParsedBy { get; set; }
+        [ForeignKey("ProcessedByMemberID")]
+        public virtual Member ProcessedBy { get; set; }
 
         [NotMapped]
         public string FileSizeDisplay
@@ -69,6 +74,6 @@ namespace SharedEFClasses.Models.IncomingEmail
         }
 
         [NotMapped]
-        public virtual IncomingEmail_Attachment_ParsedData_SelectResult SelectResult { get; set; }
+        public virtual IncomingEmail_Attachment_SelectResult SelectResult { get; set; }
     }
 }

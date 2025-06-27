@@ -493,12 +493,13 @@
 
         &.mdc-text-field--disabled {
             .tempus-dominus-calendar-btn {
-                border-left: 1px solid $mdc-theme-secondary;
+                border-left: 1px solid $gray-400;
                 border-top-left-radius: 0;
                 border-bottom-left-radius: 0;
                 background-color: transparent;
                 color: $body-color;
                 transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
+                cursor: not-allowed;
             }
         }
     }

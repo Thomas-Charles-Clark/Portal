@@ -293,8 +293,8 @@ namespace SharedEFClasses.Models
         public virtual ICollection<GiftVoucher> GiftVouchersRedeemed { get; set; }
 
         [JsonIgnore]
-        [InverseProperty("ParsedBy")]
-        public virtual ICollection<Attachment> IncomingEmailAttachmentsParsed { get; set; }
+        [InverseProperty("ProcessedBy")]
+        public virtual ICollection<Attachment> IncomingEmailAttachmentsProcessed { get; set; }
 
         [JsonIgnore]
         [InverseProperty("Member")]

@@ -8,9 +8,7 @@ namespace SharedEFClasses.Models.IncomingEmail
 {
     public class InvoiceBookingDashboard
     {
-        public string Label { get; set; }
-        public int RecordCount { get; set; }
-        public byte SortOrder { get; set; }
-        public byte EmailStatusID { get; set; }
+        public IEnumerable<InvoiceBookingDashboard_SelectResult> DashboardPods { get; set; }
+        public string MertexWarning { get; set; }
     }
 }

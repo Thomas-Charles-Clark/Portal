@@ -208,10 +208,13 @@ namespace Portal.Areas.Invoices.Controllers
                 stubs = PortalDb.EmailStubs
                     .Include("Supplier")
                     .Where(p =>
+                        p.Deleted == false &&
                         userIds.Contains((int)p.Supplier.BudgetHolder.UserID) &&
                         p.MailboxID == dto.MailboxID && 
                         p.EmailStatusID == dto.EmailStatusID &&
-                        p.Deleted == false
+                        (String.IsNullOrEmpty(dto.BudgetHolderCode) || p.Supplier != null && p.Supplier.BudgetHolderCode == dto.BudgetHolderCode) &&
+                        (String.IsNullOrEmpty(dto.SupplierTypeCode) || p.Supplier != null && p.Supplier.SupplierTypeCode == dto.SupplierTypeCode) &&
+                        (String.IsNullOrEmpty(dto.SupplierCode) || p.SupplierCode == dto.SupplierCode)
                     ).AsQueryable();
             }
             else
@@ -219,9 +222,12 @@ namespace Portal.Areas.Invoices.Controllers
                 stubs = PortalDb.EmailStubs
                     .Include("Supplier")
                     .Where(p =>
+                        p.Deleted == false &&
                         p.MailboxID == dto.MailboxID &&
                         p.EmailStatusID == dto.EmailStatusID &&
-                        p.Deleted == false
+                        (String.IsNullOrEmpty(dto.BudgetHolderCode) || p.Supplier != null && p.Supplier.BudgetHolderCode == dto.BudgetHolderCode) &&
+                        (String.IsNullOrEmpty(dto.SupplierTypeCode) || p.Supplier != null && p.Supplier.SupplierTypeCode == dto.SupplierTypeCode) &&
+                        (String.IsNullOrEmpty(dto.SupplierCode) || p.SupplierCode == dto.SupplierCode)
                 ).AsQueryable();
             }
             //var groups = PortalDb.ActiveDirectoryGroups.Where(g => ){
@@ -251,12 +257,13 @@ namespace Portal.Areas.Invoices.Controllers
 
             var userId = PortalDb.Mailboxes.Single(m => m.MailboxID == dto.MailboxID).UserID;
 
-            var email = PortalDb.EmailStubs.Single(m => m.EmailID == dto.EmailID);
+            var email = PortalDb.EmailStubs.Include("EmailStatus").Single(m => m.EmailID == dto.EmailID);
 
             var supplier = PortalDb.Suppliers_Live.Include("Currency").Where(s => s.Code == email.SupplierCode).SingleOrDefault();
 
-            var attachments = PortalDb.Attachments.Where(a => a.EmailID == dto.EmailID && a.Deleted == false).ToList();
+            var attachments = PortalDb.Attachments.Include("AttachmentType").Where(a => a.EmailID == dto.EmailID && a.Deleted == false).ToList();
 
+            var additionalInfo = await PortalDb.Email_Select(dto);
 
             try
             {
@@ -267,6 +274,12 @@ namespace Portal.Areas.Invoices.Controllers
                 message.SupplierCode = email.SupplierCode;
 
                 message.Supplier = supplier;
+
+                message.Junk = email.Junk;
+
+                message.Processed = email.Processed;
+
+                message.ProcessedDT = email.ProcessedDT;
 
                 message.Body = InlineImageSourceReplacer.Replace(message.Body, m =>
                 {
@@ -287,7 +300,9 @@ namespace Portal.Areas.Invoices.Controllers
                 return Ok(new
                 {
                     message,
-                    attachments
+                    emailStatus = email.EmailStatus,
+                    attachments,
+                    additionalInfo
                 });
             }
             catch (SqlException)
@@ -295,7 +310,9 @@ namespace Portal.Areas.Invoices.Controllers
                 return Ok(new
                 {
                     message = email,
-                    attachments
+                    emailStatus = email.EmailStatus,
+                    attachments,
+                    additionalInfo
                 });
             } 
         }
@@ -324,7 +341,7 @@ namespace Portal.Areas.Invoices.Controllers
 
                     foreach(var a in email.Attachments)
                     {
-                        a.AttachmentTypeID = 999;
+                        a.AttachmentTypeID = 1000;
                     }
 
                     break;
@@ -426,14 +443,13 @@ namespace Portal.Areas.Invoices.Controllers
                         AttachmentTypeID = 1,
                         FileName = f.FileName,
                         FileExtension = System.IO.Path.GetExtension(f.FileName).Replace(".", ""),
-                        ParsedMemberID = null,
+                        ProcessedByMemberID = null,
                         Size = size,
                         IsInline = false,
                         ContentID = identifier,
                         CreatedDT = now,
                         ModifiedDT = now,
-                        DeletedDT = null,
-                        ParsedDT = null
+                        DeletedDT = null
                     };
 
                     PortalDb.Attachments.Add(a);
@@ -488,6 +504,8 @@ namespace Portal.Areas.Invoices.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> InvoiceDuplicateCheck([FromBody] PassAttachmentDetail dto)
         {
+            dto.MemberID = User.Identity.GetUserId<int>();
+
             var result = await PortalDb.IncomingEmail_Invoice_DuplicateCheck(dto);
 
             return Ok(result);
@@ -498,7 +516,7 @@ namespace Portal.Areas.Invoices.Controllers
         {
             dto.MemberID = User.Identity.GetUserId<int>();
 
-            var result = await PortalDb.IncomingEmail_Attachment_ParsedData_Save(dto);
+            var result = await PortalDb.IncomingEmail_Attachment_Save(dto);
 
             return Ok(new { });
         }
@@ -514,15 +532,15 @@ namespace Portal.Areas.Invoices.Controllers
         [HttpGet]
         public DataSourceResult GetGeneralLedgerCodes([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
         {
-            var results = PortalDb.GeneralLedgerCodes.Include("Type").Where(glc => glc.Deleted == false).AsQueryable();
+            var results = PortalDb.GeneralLedgerCodes.Include("Type").Where(glc => glc.Deleted == false && ((glc.AccountType == "P" || glc.AccountType == "A" || glc.AccountType == "S" || glc.AccountType == "C") || glc.Code == "9999999999")) .AsQueryable();
 
             return results.ToDataSourceResult(request);
         }
 
         [HttpGet]
-        public DataSourceResult GetGeneralLedgerCodeValueMapper([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request, string code)
+        public DataSourceResult GetGeneralLedgerCodeValueMapper([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request, [FromUri] string code)
         {
-            var results = PortalDb.GeneralLedgerCodes.Include("Type").Where(glc => glc.Deleted == false && glc.Code == code).AsQueryable();
+            var results = PortalDb.GeneralLedgerCodes.Include("Type").Where(glc => glc.Deleted == false && ((glc.AccountType == "P" || glc.AccountType == "A" || glc.AccountType == "S" || glc.AccountType == "C") || glc.Code == "9999999999") && glc.Code == code).AsQueryable();
 
             return results.ToDataSourceResult(request);
         }

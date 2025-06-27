@@ -20,7 +20,7 @@
 
     self.original = rec.SelectResult?.Original;
 
-    self.mostRecent = rec.SelectResult?.MostRecent;
+    self.mertexData = rec.SelectResult?.MostRecent;
 
     if (toLoad) {
         self.toLoad = Object.assign(toLoad, {
@@ -41,6 +41,8 @@
 
     self.validateNow = ko.observable(false);
 
+    self.skipValidation = ko.observable(false);
+
     self.attachmentTypeId = ko.observable(`${self.AttachmentTypeID}`).extend({
         notEqual: {
             params: '0',
@@ -49,7 +51,7 @@
         }
     });
 
-    self.attachmentType = ko.observable(self.AttachmentType);
+    self.attachmentType = ko.observable(rec.AttachmentType);
 
     self.properties = ko.observable();
     self.propertiesTemplateName = ko.observable();
@@ -57,6 +59,8 @@
     self.isEmailBody = Object.hasOwn(self, 'Body');
 
     self.dispute = ko.observable(rec.Dispute ?? false);
+
+    self.prettyPrintedResponse = ko.observable();
 
     //#endregion
 
@@ -125,10 +129,20 @@
             case 'doc':
             case 'xlsx':
             case 'xls':
-            case 'csv':
             case 'ppt':
-            case 'txt':
                 result = `https://view.officeapps.live.com/op/embed.aspx?src=https://portal.designersguild.com${result}`;
+                break;
+            case 'txt':
+            case 'csv':
+                fetch(`${result}`, {
+                    method: 'GET',
+                    headers: window.fetchHeaders,
+                    cache: 'no-cache'
+                }).then(response => response.text())
+                    .then(csvText => {
+                        self.prettyPrintedResponse(PR.prettyPrintOne(csvText, self.FileExtension.toLowerCase(), true));
+                    })
+                    .catch(window.catchFetchError)
                 break;
             default:
                 break;
@@ -171,7 +185,7 @@
             switch (+self.attachmentTypeId()) {
                 /* 
         
-                AttachmentTypeID	Name	        ParsingRequired
+                AttachmentTypeID	Name	        ProcessingRequired
                             1	    Unknown	        0
                             2	    Invoice	        1
                             3	    Credit Note	    1
@@ -189,8 +203,8 @@
                     propertiesTemplateName = 'invoice-booking-invoice-template';
                     break;
                 case 3:
-                    propertiesViewModelFn = invoiceBookingEmailCreditNoteViewModel;
-                    propertiesTemplateName = 'invoice-booking-credit-note-template';
+                    propertiesViewModelFn = invoiceBookingEmailAttachmentProformaViewModel;
+                    propertiesTemplateName = 'invoice-booking-proforma-template';
                     break;
                 case 4:
                     break;
@@ -237,6 +251,8 @@
                         }
                     }
                 }, 0);
+            } else {
+                self.errors = ko.validation.group([]);
             }
         } else {
 
@@ -247,20 +263,11 @@
     self.unsavedChanges = () => {
         return new Promise((resolve, reject) => {
 
-            //let array = self.determineUnsavedChanges();
+            if (self.isEmailBody) {
+                resolve();
+            }
 
-            //Object.keys(self).forEach(k => {
-            //    let prop = self[k];
-            //    if (Object.hasOwn('originalValue', prop)) {
-            //        let originalValue = ko.unwrap(self[k].originalValue);
-            //        let currentValue = ko.unwrap(self[j].value);
-            //        if (originalValue !== currentValue) {
-            //            array.push(k);
-            //        }
-            //    }
-            //});
-
-            let unsaved = false;// array.length;
+            let unsaved = self.AttachmentTypeID.toString() != self.attachmentTypeId();
 
             if (unsaved) {
                 window.showConfirm('Unsaved changes', 'You have unsaved changes. If you proceed your changes will be lost. Proceed?', () => {
@@ -274,101 +281,159 @@
         });
     }
 
-    self.save = () => {
+    self.save = (afterSave) => {
 
-        //self.errors.showAllMessages(false);
+        let skipValidation = self.skipValidation();
 
-        //self.validateNow(false);
-
-        //window.setTimeout(() => {
+        if (skipValidation == false) {
 
             self.validateNow(true);
 
             window.setTimeout(() => {
 
                 if (self.errors().length) {
+
                     self.errors.showAllMessages(true);
 
                     self.errors.filter(x => {
                         x.isValid.notifySubscribers(x.isValid());
                     });
+
                 } else {
-
-                    self.busy(true);
-
-                    let props = ko.unwrap(self.properties);
-
-                    let data = {
-                        attachmentId: self.AttachmentID,
-                        attachmentTypeId: self.attachmentTypeId(),
-                        formDataJson: JSON.stringify({
-                            supplierCode: props.supplierCode(),
-                            supplier: props.supplier(),
-                            supplierCurrency: props.supplierCurrency(),
-                            exchangeRate: props.exchangeRate(),
-                            supplierInvoiceReference: props.supplierInvoiceReference(),
-                            invoiceDate: props.invoiceDate(),
-                            invoiceDueDT: props.dueDate(),
-                            settlementDT: props.settlementDate(),
-                            paymentTermsCode: props.paymentTermsCode(),
-                            invoiceTotalIncVATInCurrency: props.invoiceTotalIncVATCurrency(),
-                            invoiceTotalIncVATInSterling: props.invoiceTotalIncVATInSterling(),
-                            invoiceTotalExVATInSterling: props.invoiceTotalExVatInSterling(),
-                            vatTotalCurrency: props.vatTotalCurrency(),
-                            vatTotalInSterling: props.vatTotalInSterling(),
-                            netTotalCurrency: props.netTotalCurrency(),
-                            netTotalInSterling: props.netTotalInSterling(),
-                            dispute: props.dispute() ? true : false,
-                            generalLedgerEntries: props.generalLedgerEntries().map(gl => {
-                                return {
-                                    generalLedgerCode: gl.generalLedgerCode(),
-                                    amountExVATInCurrency: gl.amountExVATInCurrency(),
-                                    amountExVATInSterling: gl.amountExVATInSterling()
-                                }
-                            }),
-                            vatEntries: props.vatEntries().map(v => {
-                                return {
-                                    vatableAmountCurrency: v.vatableAmountCurrency(),
-                                    vatableAmountSterling: v.vatableAmountSterling(),
-                                    vatCode: v.vatCode(),
-                                    vatRate: v.vatRate(),
-                                    vatAmountCurrency: v.vatInCurrency(),
-                                    vatAmountSterling: v.vatAmountSterling(),
-                                    supplierCurrency: v.supplierCurrency(),
-                                    exchangeRate: v.exchangeRate()
-                                }
-                            }),
-                        })
-                    }
-
-                    fetch('/api/InvoiceBookingAPI/SaveAttachmentDetail', {
-                        method: 'POST',
-                        headers: window.fetchHeaders,
-                        body: JSON.stringify(data)
-                    })
-                        .then(window.handleFetchResponse)
-                        .then(data => {
-                            console.log('SaveAttachment returned', data);
-                            self.busy(false);
-                            window.showInfo('Success', 'Attachment detail saved successfully');
-
-                            //////
-                            self.parentLoadEmail({
-                                EmailMessageID: self.emailMessageId,
-                                EmailID: self.emailId
-                            }).then(() => {
-                                viewModel.selectedEmail().selectAttachment({
-                                    AttachmentID: self.AttachmentID
-                                })
-                            })
-                        })
-                        .catch(err => {
-                            self.busy(false);
-                            window.catchFetchError(err);
-                        })
+                    self.actuallySave(afterSave);
                 }
             }, 0);
-        //}, 0);
+        } else {
+            self.actuallySave(afterSave);
+        }
+    }
+
+    self.actuallySave = (afterSave) => {
+
+        self.busy(true);
+
+        let props = ko.unwrap(self.properties);
+
+        let data = {
+            attachmentId: self.AttachmentID,
+            attachmentTypeId: self.attachmentTypeId()
+        }
+
+        if (props) {
+
+            switch (self.attachmentTypeId()) {
+                case 2:
+
+                    data.formDataJson = JSON.stringify({
+                        code: null,
+                        invoiceProcessedDate: null,
+                        invoiceReceivedDate: null,
+                        passedTo: null,
+                        passedToDT: null,
+                        supplierCode: props.supplierCode() ?? null,
+                        supplier: props.supplier() ?? null,
+                        supplierCurrency: props.supplierCurrency() ?? null,
+                        exchangeRate: props.exchangeRate() ?? null,
+                        supplierInvoiceReference: props.supplierInvoiceReference() ?? null,
+                        invoiceDate: props.invoiceDate() ?? null,
+                        invoiceDueDT: props.dueDate() ?? null,
+                        settlementDT: props.settlementDate() ?? null,
+                        paymentTermsCode: props.paymentTermsCode() ?? null,
+                        invoiceTotalIncVATInCurrency: props.invoiceTotalIncVATCurrency() ?? null,
+                        invoiceTotalIncVATInSterling: Math.round((props.invoiceTotalIncVATInSterling() ?? 0) * 10000) / 10000,
+                        invoiceTotalExVATInSterling: Math.round((props.invoiceTotalExVatInSterling() ?? 0) * 10000) / 10000,
+                        vatTotalCurrency: props.vatTotalCurrency() ?? null,
+                        vatTotalInSterling: Math.round((props.vatTotalInSterling() ?? 0) * 10000) / 10000,
+                        netTotalCurrency: props.netTotalCurrency() ?? null,
+                        netTotalInSterling: Math.round((props.netTotalInSterling() ?? 0) * 10000) / 10000,
+                        dispute: props.dispute() ? true : false,
+                        generalLedgerEntries: props.generalLedgerEntries().map(gl => {
+                            return {
+                                generalLedgerCode: gl.generalLedgerCode(),
+                                amountExVATInCurrency: Math.round((gl.amountExVATInCurrency() ?? 0) * 10000) / 10000,
+                                amountExVATInSterling: Math.round((gl.amountExVATInSterling() ?? 0) * 10000) / 10000
+                            }
+                        }),
+                        vatEntries: props.vatEntries().map(v => {
+                            return {
+                                vatableAmountCurrency: Math.round((v.vatableAmountCurrency() ?? 0) * 10000) / 10000,
+                                vatableAmountSterling: Math.round((v.vatableAmountToSterlingComputer() ?? 0) * 10000) / 10000,
+                                vatCode: v.vatCode(),
+                                vatRate: Math.round((v.vatRate() ?? 0) * 10000) / 10000,
+                                vatAmountCurrency: Math.round((v.vatInCurrency() ?? 0) * 10000) / 10000,
+                                vatAmountSterling: Math.round((v.vatToSterlingComputer() ?? 0) * 10000) / 10000,
+                                supplierCurrency: v.supplierCurrency(),
+                                exchangeRate: Math.round((v.exchangeRate() ?? 0) * 10000) / 10000
+                            }
+                        }),
+                        duplicateResults: props.duplicateResults(),
+                        isFlaggedAsDuplicate: props.isFlaggedAsDuplicate()
+                    });
+                    break;
+                case 3:
+                    data.formDataJson = JSON.stringify({
+                        code: null,
+                        invoiceProcessedDate: null,
+                        invoiceReceivedDate: null,
+                        passedTo: null,
+                        passedToDT: null,
+                        supplierCode: props.supplierCode() ?? null,
+                        supplier: props.supplier() ?? null,
+                        supplierCurrency: props.supplierCurrency() ?? null,
+                        exchangeRate: props.exchangeRate() ?? null,
+                        supplierInvoiceReference: props.supplierInvoiceReference() ?? null,
+                        invoiceDate: props.invoiceDate() ?? null,
+                        invoiceDueDT: props.dueDate() ?? null,
+                        settlementDT: props.settlementDate() ?? null,
+                        paymentTermsCode: props.paymentTermsCode() ?? null,
+                        invoiceTotalIncVATInCurrency: props.invoiceTotalIncVATCurrency() ?? null,
+                        invoiceTotalIncVATInSterling: Math.round((props.invoiceTotalIncVATInSterling() ?? 0) * 10000) / 10000,
+                        invoiceTotalExVATInSterling: Math.round((props.invoiceTotalExVatInSterling() ?? 0) * 10000) / 10000,
+                        vatTotalCurrency: props.vatTotalCurrency() ?? null,
+                        vatTotalInSterling: Math.round((props.vatTotalInSterling() ?? 0) * 10000) / 10000,
+                        netTotalCurrency: props.netTotalCurrency() ?? null,
+                        netTotalInSterling: Math.round((props.netTotalInSterling() ?? 0) * 10000) / 10000,
+                        dispute: props.dispute() ? true : false,
+                        duplicateResults: props.duplicateResults(),
+                        isFlaggedAsDuplicate: props.isFlaggedAsDuplicate()
+                    });
+                    break;
+                default: break;
+            }
+        }
+
+        fetch('/api/InvoiceBookingAPI/SaveAttachmentDetail', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            body: JSON.stringify(data)
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                console.log('SaveAttachment returned', data);
+                self.busy(false);
+                window.showInfo('Success', 'Attachment detail saved successfully');
+
+                // this dirty little trick to get around the call to unsavedChanges on the upcoming call to selectAttachment...
+                self.AttachmentTypeID = self.attachmentTypeId();
+
+                //////
+                self.parentLoadEmail({
+                    EmailMessageID: self.emailMessageId,
+                    EmailID: self.emailId
+                }).then(() => {
+                    viewModel.selectedEmail().selectAttachment({
+                        AttachmentID: self.AttachmentID
+                    })
+                })
+
+                if (typeof afterSave === 'function') {
+                    afterSave();
+                }
+            })
+            .catch(err => {
+                self.busy(false);
+                window.catchFetchError(err);
+            })
     }
 
     //self.switchDataSet = (mostRecent) => {

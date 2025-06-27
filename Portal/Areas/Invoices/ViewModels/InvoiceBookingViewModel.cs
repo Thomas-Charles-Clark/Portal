@@ -19,7 +19,7 @@ namespace Portal.Areas.Invoices.ViewModels
 
         public string LockedToBudgetHolderCode { get; set; }
 
-        public IEnumerable<InvoiceBookingDashboard> DashboardPods { get; set; }
+        public InvoiceBookingDashboard Dashboard { get; set; }
 
         public int? LoadingEmailStatusID { get; set; }
 
@@ -39,6 +39,7 @@ namespace Portal.Areas.Invoices.ViewModels
             LockedToDepartmentGroupIDs = lockedToDepartmentGroupIds;
             LockedToBudgetHolderCode = lockedToBudgetHolderCode;
             LoadingEmailStatusID = loadingEmailStatusId;
+
         }
 
         public static async Task<InvoiceBookingViewModel> CreateAsync(
@@ -50,6 +51,7 @@ namespace Portal.Areas.Invoices.ViewModels
             string applicationHeading,
             string applicationSubHeading)
         {
+
             var portalDb = new PortalDbContext();
 
             var result = new InvoiceBookingViewModel(
@@ -61,9 +63,11 @@ namespace Portal.Areas.Invoices.ViewModels
                 applicationHeading, 
                 applicationSubHeading);
 
-            result.DashboardPods = await portalDb.GetInvoiceBookingDashboard(new PassInvoiceBookingDashboardParams()
+            result.Dashboard = await portalDb.GetInvoiceBookingDashboard(new PassInvoiceBookingDashboardParams()
             {
-                MailboxID = 1
+                MailboxID = 1,
+                BudgetHolderCode = lockedToBudgetHolderCode,
+                ActiveDirectoryGroupIDs = lockedToDepartmentGroupIds
             });
 
             return result;
