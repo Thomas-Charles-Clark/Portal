@@ -19,6 +19,9 @@ namespace Portal.Utilities.Document
 {
     public static class GenericDocumentPDFWriter
     {
+        private static System.Text.RegularExpressions.Regex AnchorTagsTextExtractor = new System.Text.RegularExpressions.Regex(@"<a href=\""[^\""]*\"">([^\""]*)<\/a>", System.Text.RegularExpressions.RegexOptions.Singleline | RegexOptions.Compiled);
+        private static System.Text.RegularExpressions.Regex AnchorTagsURIExtractor = new System.Text.RegularExpressions.Regex(@"<a href=\""([^\""]*)\"">", System.Text.RegularExpressions.RegexOptions.Singleline | RegexOptions.Compiled);
+        
         public static string GetResource(List<ResourceSelect> resources, string name)
         {
             return resources.Where(p => p.Name == name).Select(p => p.Value).SingleOrDefault();
@@ -42,6 +45,7 @@ namespace Portal.Utilities.Document
             System.Globalization.NumberFormatInfo nfi = new System.Globalization.CultureInfo("en-GB").NumberFormat;
 
             var normalFont = new Font(gillSansMt, 10, Font.NORMAL, BaseColor.BLACK);
+            var hyperlinkFont = new Font(gillSansMt, 10, Font.UNDERLINE, BaseColor.BLUE);
             var italicFont = new Font(gillSansMt, 10, Font.ITALIC, BaseColor.BLACK);
             var boldFont = FontFactory.GetFont("Arial", 10, Font.BOLD, BaseColor.BLACK);
             var underlined = new Font(gillSansMt, 10, Font.UNDERLINE, BaseColor.BLACK);
@@ -943,6 +947,54 @@ namespace Portal.Utilities.Document
                     orderFooterParagraph.Add(orderFooterPhrase4);
                 }
 
+                var orderFooterAnchorPhrase = new Phrase();
+
+                var addOrderFooterAnchorNewLine = false;
+
+                if (orderFooter.OrderFooterAnchorTag != null)
+                {
+
+                    // Fix for CS1002: ; expected  
+                    // The issue occurs because the statement `var uri = PdfAction.CreateURI` is incomplete and missing a semicolon or method call.  
+                    // Since `PdfAction` does not have a `CreateURI` method (as per the provided type signatures), this line needs to be corrected or removed.  
+
+                    // Correcting the code by removing the incomplete line and replacing it with a valid statement.  
+                    // If you intended to use a different method, please provide clarification.  
+
+                    if (orderFooter.OrderFooterAnchorTag != null)
+                    {
+                        var anchorText = AnchorTagsTextExtractor.Replace(orderFooter.OrderFooterAnchorTag, (m) => {
+                            return m.Groups[1].Value;
+                        });
+
+                        var uri = (string)null;
+                        
+                        AnchorTagsURIExtractor.Replace(orderFooter.OrderFooterAnchorTag, (m) => {
+
+                            uri = m.Groups[1].Value;
+
+                            return "";
+                        });
+
+                        var orderFooterAnchorTextChunk = new Chunk(anchorText, hyperlinkFont)
+                            .SetAnchor(uri);
+
+                        //orderFooterAnchorTextChunk.SetAnchor(orderFooter.OrderFooterAnchorTag);
+
+                        addOrderFooterAnchorNewLine = true;
+
+                        orderFooterAnchorPhrase = new Phrase(orderFooterAnchorTextChunk);
+
+                        orderFooterParagraph.Add(orderFooterAnchorPhrase);
+                    }
+                }
+
+                if (addOrderFooterAnchorNewLine)
+                {
+                    orderFooterAnchorPhrase.Add(new Chunk($"\n", normalFont));
+                    orderFooterParagraph.Add(orderFooterPhrase4);
+                }
+
                 var addOrderFooterParagraphs = false;
 
                 List<Paragraph> orderFooterParagraphCollection = new List<Paragraph>();
@@ -961,6 +1013,7 @@ namespace Portal.Utilities.Document
                     addOrderFooterPhrase2Newline ||
                     addOrderFooterPhrase3Newline ||
                     addOrderFooterPhrase4Newline ||
+                    addOrderFooterAnchorNewLine ||
                     addOrderFooterParagraphs)
                 {
                     var orderFooterCell = new PdfPCell();

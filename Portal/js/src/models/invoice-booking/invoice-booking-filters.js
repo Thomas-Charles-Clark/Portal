@@ -98,6 +98,17 @@ const invoiceBookingFiltersViewModel = ({
 
     self.hasAttachments = ko.observable();
 
+    self.freeTextSearch = ko.observable();
+
+    self.freeTextSearchActual = ko.observable().extend({
+        rateLimit: {
+            timeout: 300,
+            method: 'notifyWhenChangesStop'
+        }
+    });
+
+    self.pauseFreeTextSearchUpdate = false;
+
     //#endregion
 
 
@@ -155,9 +166,9 @@ const invoiceBookingFiltersViewModel = ({
                 supplierCode = self.supplierCode.peek();
             }
 
-            if (defaultOp.indexOf('Supplier/') == -1 && supplierCode != '') {
-                filters.push(`SupplierCode eq '${supplierCode}'`);
-            }
+            //if (defaultOp.indexOf('Supplier/') == -1 && supplierCode != '') {
+            //    filters.push(`SupplierCode eq '${supplierCode}'`);
+            //}
 
             if (defaultOp.indexOf("SupplierType") == -1) {
                 supplierTypeCode = self.supplierTypeCode();
@@ -172,7 +183,7 @@ const invoiceBookingFiltersViewModel = ({
             if (defaultOp.indexOf('Supplier/') > -1) {
                 if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "Supplier.Name")) {
                     let f = data.filter.filters.find(f => f.field === "Supplier.Name");
-                    filters.push(`(contains(Supplier/Name, '${f.value}') or startswith(tolower(Supplier/Code), '${f.value}'))`);
+                    filters.push(`(contains(Supplier/Name, '${f.value}') or contains(Supplier/SortName, '${f.value}') or startswith(tolower(Supplier/Code), '${f.value}'))`);
 
                     if (d.$filter) {
                         delete d.$filter;
@@ -468,7 +479,7 @@ const invoiceBookingFiltersViewModel = ({
         }
     });
 
-    self.supplierGroupBy = `groupby((Supplier/Code,Supplier/Name))/filter((Supplier/Code ne null))`;
+    self.supplierGroupBy = `groupby((Supplier/Code,Supplier/Name,Supplier/SortName))/filter((Supplier/Code ne null))`;
 
     self.supplierTemplate = (e) => {
         if (e.Supplier && e.Supplier.Code && e.Supplier.Name) {
@@ -720,6 +731,33 @@ const invoiceBookingFiltersViewModel = ({
         decorateInputElement: true
     };
 
+    self.freeTextSearchParams = {
+        label: 'Search',
+        originalValue: self.freeTextSearch,
+        observable: self.freeTextSearch,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        showClear: true,
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            $(self.observable.DOMElement).focus();
+            self.pauseFreeTextSearchUpdate = true;
+            self.refreshParent();
+        },
+        permitRevert: false,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        enterKey: () => {
+            self.pauseFreeTextSearchUpdate = true;
+            self.refreshParent();
+        }
+    }
+
     //#endregion
 
 
@@ -819,23 +857,17 @@ const invoiceBookingFiltersViewModel = ({
         self.refreshParent();
     })
 
-    // No, boo, this causes headaches and acrimony
-    //self.emailStatusId.subscribe(nv => {
-    //    switch (nv) {
-    //        case 1:
-    //            self.parent.dashboard.selectedPod(self.parent.dashboard.pods().find(f => f.Label == 'New / Unprocessed'))
-    //            break;
-    //        case 2:
-    //            self.parent.dashboard.selectedPod(self.parent.dashboard.pods().find(f => f.Label == 'Processed'))
-    //            break;
-    //        case 3:
-    //            self.parent.dashboard.selectedPod(self.parent.dashboard.pods().find(f => f.Label == 'Junk'))
-    //            break;
-    //        default:
-    //            self.parent.dashboard.selectedPod(undefined);
-    //            break;
-    //    }
-    //})
+    self.freeTextSearch.subscribe(nv => {
+        self.freeTextSearchActual(nv);
+    })
+
+    self.freeTextSearchActual.subscribe(nv => {
+        if (self.pauseFreeTextSearchUpdate == true) {
+            self.pauseFreeTextSearchUpdate = false;
+        } else {
+            self.refreshParent();
+        }
+    });
 
     //#endregion
 

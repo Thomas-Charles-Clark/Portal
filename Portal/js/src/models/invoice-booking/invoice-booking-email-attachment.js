@@ -267,10 +267,14 @@
                 resolve();
             }
 
+            // this seems strange but it IS sufficient: you cannot enter an attachment of unknown type, then change the type, then successfully save without validation
+            // therefore you cannot save without specifying a type
+            // therefore we only need test the one variable to determine if there are ANY unsaved changes whatever
             let unsaved = self.AttachmentTypeID.toString() != self.attachmentTypeId();
 
             if (unsaved) {
                 window.showConfirm('Unsaved changes', 'You have unsaved changes. If you proceed your changes will be lost. Proceed?', () => {
+                    self.attachmentTypeId(1);
                     resolve();
                 }, () => {
                     reject();
@@ -308,9 +312,25 @@
         }
     }
 
+    self.formatDateString = (date) => {
+        if (date)
+            return `${date.getFullYear().toString().padStart(4, 0)}-${(date.getMonth() + 1).toString().padStart(2, 0)}-${date.getDate().toString().padStart(2, 0)}`;
+        else
+            return null;
+    }
+
+    self.formatDateStringForHumans = (date) => {
+        if (date)
+            return `${date.getDate().toString().padStart(2, 0)}/${(date.getMonth() + 1).toString().padStart(2, 0)}/${date.getFullYear().toString().padStart(4, 0)}`;
+        else
+            return null;
+    }
+
     self.actuallySave = (afterSave) => {
 
-        self.busy(true);
+        self.modalBusy(true);
+
+        self.modalBusyMessage('<span>Saving...</span>');
 
         let props = ko.unwrap(self.properties);
 
@@ -335,9 +355,9 @@
                         supplierCurrency: props.supplierCurrency() ?? null,
                         exchangeRate: props.exchangeRate() ?? null,
                         supplierInvoiceReference: props.supplierInvoiceReference() ?? null,
-                        invoiceDate: props.invoiceDate() ?? null,
-                        invoiceDueDT: props.dueDate() ?? null,
-                        settlementDT: props.settlementDate() ?? null,
+                        invoiceDate: self.formatDateString(props.invoiceDate()),
+                        invoiceDueDT: self.formatDateString(props.dueDate()),
+                        settlementDT: self.formatDateString(props.settlementDate()),
                         paymentTermsCode: props.paymentTermsCode() ?? null,
                         invoiceTotalIncVATInCurrency: props.invoiceTotalIncVATCurrency() ?? null,
                         invoiceTotalIncVATInSterling: Math.round((props.invoiceTotalIncVATInSterling() ?? 0) * 10000) / 10000,
@@ -346,7 +366,7 @@
                         vatTotalInSterling: Math.round((props.vatTotalInSterling() ?? 0) * 10000) / 10000,
                         netTotalCurrency: props.netTotalCurrency() ?? null,
                         netTotalInSterling: Math.round((props.netTotalInSterling() ?? 0) * 10000) / 10000,
-                        dispute: props.dispute() ? true : false,
+                        dispute: props.dispute() ? 'D' : null,
                         generalLedgerEntries: props.generalLedgerEntries().map(gl => {
                             return {
                                 generalLedgerCode: gl.generalLedgerCode(),
@@ -382,9 +402,9 @@
                         supplierCurrency: props.supplierCurrency() ?? null,
                         exchangeRate: props.exchangeRate() ?? null,
                         supplierInvoiceReference: props.supplierInvoiceReference() ?? null,
-                        invoiceDate: props.invoiceDate() ?? null,
-                        invoiceDueDT: props.dueDate() ?? null,
-                        settlementDT: props.settlementDate() ?? null,
+                        invoiceDate: self.formatDateString(props.invoiceDate()),
+                        invoiceDueDT: self.formatDateString(props.dueDate()),
+                        settlementDT: self.formatDateString(props.settlementDate()),
                         paymentTermsCode: props.paymentTermsCode() ?? null,
                         invoiceTotalIncVATInCurrency: props.invoiceTotalIncVATCurrency() ?? null,
                         invoiceTotalIncVATInSterling: Math.round((props.invoiceTotalIncVATInSterling() ?? 0) * 10000) / 10000,
@@ -393,7 +413,7 @@
                         vatTotalInSterling: Math.round((props.vatTotalInSterling() ?? 0) * 10000) / 10000,
                         netTotalCurrency: props.netTotalCurrency() ?? null,
                         netTotalInSterling: Math.round((props.netTotalInSterling() ?? 0) * 10000) / 10000,
-                        dispute: props.dispute() ? true : false,
+                        dispute: props.dispute() ? 'D' : null,
                         duplicateResults: props.duplicateResults(),
                         isFlaggedAsDuplicate: props.isFlaggedAsDuplicate()
                     });
@@ -401,6 +421,8 @@
                 default: break;
             }
         }
+        
+        console.log('saveAttachmentDetail calling with', data);
 
         fetch('/api/InvoiceBookingAPI/SaveAttachmentDetail', {
             method: 'POST',
@@ -410,20 +432,37 @@
             .then(window.handleFetchResponse)
             .then(data => {
                 console.log('SaveAttachment returned', data);
-                self.busy(false);
-                window.showInfo('Success', 'Attachment detail saved successfully');
 
-                // this dirty little trick to get around the call to unsavedChanges on the upcoming call to selectAttachment...
+
+
+                self.modal._element.querySelector('.blocker').classList.add('success');
+
+                self.modalBusyMessage('<span>Success</span><span class="ms-3">✔</span>')
+
+                // window.showInfo('Success', 'Attachment detail saved successfully');
+
+                // this little trick to get around the call to unsavedChanges on the upcoming call to selectAttachment following the reload
+                // or something
                 self.AttachmentTypeID = self.attachmentTypeId();
 
-                //////
                 self.parentLoadEmail({
                     EmailMessageID: self.emailMessageId,
                     EmailID: self.emailId
                 }).then(() => {
+
                     viewModel.selectedEmail().selectAttachment({
                         AttachmentID: self.AttachmentID
-                    })
+                    }, () => {
+
+                        self.modalBusy(false);
+
+                        window.setTimeout(() => {
+                            self.modal._element.querySelector('.blocker').classList.remove('success');
+                            self.modalBusyMessage('Please Wait')
+                        }, 300); // modal is fully faded out by 150ms, but just to be sure
+
+                    });
+
                 })
 
                 if (typeof afterSave === 'function') {

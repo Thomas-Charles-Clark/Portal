@@ -424,6 +424,7 @@
     <Compile Include="Models\IncomingEmail\Attachment_DuplicateCheck_Result.cs" />
     <Compile Include="Models\IncomingEmail\BudgetHolderSuperSet.cs" />
     <Compile Include="Models\IncomingEmail\Attachment_DuplicateCheck_SelectResult.cs" />
+    <Compile Include="Models\IncomingEmail\Dashboard_NoticeResult.cs" />
     <Compile Include="Models\IncomingEmail\EmailAttachment.cs" />
     <Compile Include="Models\IncomingEmail\AttachmentType.cs" />
     <Compile Include="Models\IncomingEmail\Domain_SupplierCode_Map.cs" />

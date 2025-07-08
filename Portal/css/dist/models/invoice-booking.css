@@ -24,6 +24,10 @@ body {
   padding-bottom: 0;
 }
 
+.blocker.success {
+  background-color: rgba(17, 127, 56, 0.8);
+}
+
 .navbar.navbar-default.navbar-expand {
   min-width: 1170px;
   position: sticky;
@@ -328,12 +332,8 @@ body {
   text-decoration: none;
 }
 
-#mertex-warning {
+.dashboard-notice {
   margin-top: 1rem;
-  background-color: #b02a37;
-  color: #fff;
-  border-color: #b43541;
-  font-size: 1.25rem;
 }
 
 .attachment-count-header-cell {
@@ -458,11 +458,6 @@ body {
 #email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment.disabled:not(.selected):hover {
   background-color: #e9ecef !important;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:not(.disabled):has(.attachment-type-invoice, .attachment-type-proforma-invoice, .attachment-type-credit-note, .attachment-type-statement, .attachment-type-delivery-note, .attachment-type-packing-note) {
-  background-color: #309365;
-  color: #fff;
-  border-color: #75b798;
-}
 #email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:not(.disabled):has(.attachment-type-junk) {
   background-color: #e47112;
   color: #fff;
@@ -501,14 +496,6 @@ body {
 #email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:not(.disabled).selected:hover {
   border-color: #031633;
   background-color: #0a58ca;
-  color: #fff;
-}
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:not(.disabled).selected:has(.attachment-type-invoice) {
-  border-color: #031633;
-  color: #fff;
-}
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:not(.disabled).selected:has(.attachment-type-junk) {
-  border-color: #031633;
   color: #fff;
 }
 #email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment.submitted {
@@ -551,6 +538,7 @@ body {
   margin: 0;
 }
 #email-modal .modal-dialog .modal-content .modal-body #attachments-list #add-attachments-item {
+  margin-left: auto;
   display: list-item;
   padding: 0;
 }
@@ -568,10 +556,8 @@ body {
   user-select: none;
 }
 #email-modal .modal-dialog .modal-content .modal-body #attachments-list #add-attachments-item > label:hover {
-  background-color: #e7f1ff;
-}
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list #add-attachments-item > label:hover:nth-of-type(odd) {
-  background-color: #e7f1ff;
+  border-color: #052c65;
+  background-color: #084298;
 }
 #email-modal .modal-dialog .modal-content .modal-body #attachments-list #add-attachments-item.disabled > label {
   cursor: not-allowed;

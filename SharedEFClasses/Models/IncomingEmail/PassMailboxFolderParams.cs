@@ -22,6 +22,7 @@ namespace SharedEFClasses.Models.IncomingEmail
         public bool? SupplierIdentified { get; set; }
         public string SupplierTypeCode { get; set; }
         public string SupplierCode { get; set; }
+        public string FreeTextSearch { get; set; }
 
     }
 }

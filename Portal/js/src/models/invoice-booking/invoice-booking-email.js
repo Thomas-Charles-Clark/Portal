@@ -110,10 +110,14 @@
         textField: 'Name',
         valueField: 'Code',
         template: (e) => {
-            return `${e.Code} - ${e.Name}`;
+            return `${e.Code} - ${(e.Name ?? "[UNNAMED]")}`;
         },
         valueTemplate: (e) => {
-            return `${e.Code} - ${e.Name}`;
+            if (e.Code) {
+                return `${e.Code} - ${(e.Name ?? "[UNNAMED]")}`;
+            } else {
+                return '';
+            }
         },
         idObservable: self.supplierCode,
         objObservable: self.supplier,
@@ -156,7 +160,7 @@
             //self.propagateSupplier(e.dataItem);
         },
         clearFunction: () => {
-            self.supplierParams.dropDownListSettings.widget().value('');
+            self.supplierParams.dropDownListSettings.widget().select(-1);
             self.supplierParams.dropDownListSettings.widget().trigger('change');
         },
         parameterMap: (data) => {
@@ -257,7 +261,7 @@
 
             let data = {
                 emailId: self.EmailID,
-                supplierCode: nv
+                supplierCode: nv == '' ? null : nv
             };
 
             console.log('saveSupplierDetail calling with', data);
@@ -346,7 +350,7 @@
 
     //#region Methods
 
-    self.selectAttachment = (data, event) => {
+    self.selectAttachment = (data, callback) => {
 
         // if this is not "disabled", then we can select
         //if (!self.attachmentsDisabled()) {
@@ -385,7 +389,11 @@
 
                                 self.attachments.replace(original, self.selectedAttachment());
 
-                                self.modalBusy(false);
+                                if (typeof callback == 'function') {
+                                    callback();
+                                } else {
+                                    self.modalBusy(false);
+                                }
                             })
                             .catch(err => {
                                 self.modalBusy(false);

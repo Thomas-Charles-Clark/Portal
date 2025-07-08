@@ -42,6 +42,7 @@ namespace Portal.Areas.Invoices.Controllers
     public class InvoiceBookingAPIController : ApiController
     {
         private System.Text.RegularExpressions.Regex InlineImageSourceReplacer = new System.Text.RegularExpressions.Regex("src=\"(cid:([^\"]+))\"", System.Text.RegularExpressions.RegexOptions.Compiled);
+        private System.Text.RegularExpressions.Regex StyleTagsReplacer = new System.Text.RegularExpressions.Regex(@"<style(.*?)<\/\s*style>", System.Text.RegularExpressions.RegexOptions.Singleline | RegexOptions.Compiled);
         private PortalDbContext PortalDb { get; set; }
         private readonly ApplicationUserManager UserManager;
 
@@ -214,7 +215,8 @@ namespace Portal.Areas.Invoices.Controllers
                         p.EmailStatusID == dto.EmailStatusID &&
                         (String.IsNullOrEmpty(dto.BudgetHolderCode) || p.Supplier != null && p.Supplier.BudgetHolderCode == dto.BudgetHolderCode) &&
                         (String.IsNullOrEmpty(dto.SupplierTypeCode) || p.Supplier != null && p.Supplier.SupplierTypeCode == dto.SupplierTypeCode) &&
-                        (String.IsNullOrEmpty(dto.SupplierCode) || p.SupplierCode == dto.SupplierCode)
+                        (String.IsNullOrEmpty(dto.SupplierCode) || p.SupplierCode == dto.SupplierCode) &&
+                        (String.IsNullOrEmpty(dto.FreeTextSearch) || ((p.SearchKeywords != null) && (p.SearchKeywords.Contains(dto.FreeTextSearch))) == true)
                     ).AsQueryable();
             }
             else
@@ -227,7 +229,8 @@ namespace Portal.Areas.Invoices.Controllers
                         p.EmailStatusID == dto.EmailStatusID &&
                         (String.IsNullOrEmpty(dto.BudgetHolderCode) || p.Supplier != null && p.Supplier.BudgetHolderCode == dto.BudgetHolderCode) &&
                         (String.IsNullOrEmpty(dto.SupplierTypeCode) || p.Supplier != null && p.Supplier.SupplierTypeCode == dto.SupplierTypeCode) &&
-                        (String.IsNullOrEmpty(dto.SupplierCode) || p.SupplierCode == dto.SupplierCode)
+                        (String.IsNullOrEmpty(dto.SupplierCode) || p.SupplierCode == dto.SupplierCode) &&
+                        (String.IsNullOrEmpty(dto.FreeTextSearch) || ((p.SearchKeywords != null) && (p.SearchKeywords.Contains(dto.FreeTextSearch))) == true)
                 ).AsQueryable();
             }
             //var groups = PortalDb.ActiveDirectoryGroups.Where(g => ){
@@ -296,6 +299,8 @@ namespace Portal.Areas.Invoices.Controllers
                         return m.Value;
                     }
                 });
+
+                message.Body = StyleTagsReplacer.Replace(message.Body, "");
 
                 return Ok(new
                 {

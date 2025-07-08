@@ -23,6 +23,8 @@ namespace Portal.Areas.Invoices.ViewModels
 
         public int? LoadingEmailStatusID { get; set; }
 
+        public IEnumerable<AttachmentType> AttachmentTypes { get; set; }
+
         public InvoiceBookingViewModel(
             int mailboxId, 
             IEnumerable<short> lockedToDepartmentGroupIds,
@@ -69,6 +71,8 @@ namespace Portal.Areas.Invoices.ViewModels
                 BudgetHolderCode = lockedToBudgetHolderCode,
                 ActiveDirectoryGroupIDs = lockedToDepartmentGroupIds
             });
+
+            result.AttachmentTypes = portalDb.AttachmentTypes.ToList();
 
             return result;
         }

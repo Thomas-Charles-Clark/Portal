@@ -58,7 +58,8 @@ body > nav.navbar > .container .navbar-collapse.collapse ul.nav li {
 
 .blocker {
   opacity: 0;
-  transition: opacity 150ms ease-in-out;
+  will-change: opacity, background-color;
+  transition: opacity 150ms ease-in-out, background-color 300ms ease-in-out;
 }
 
 input {

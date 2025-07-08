@@ -13,7 +13,7 @@
 
     self.pods = ko.observableArray(window.getDashboard().DashboardPods);
 
-    self.mertexWarning = ko.observable(window.getDashboard().MertexWarning);
+    self.notices = ko.observableArray(window.getDashboard().Notices);
 
     let emailStatusIdtoLoad = window.getEmailStatusIdToLoad();
 
@@ -88,7 +88,7 @@
 
                 self.busy(false);
                 self.pods(data.DashboardPods);
-                self.mertexWarning(data.MertexWarning);
+                self.notices(data.Notices);
                 self.selectedPod(self.pods().find(p => p.EmailStatusID == previouslySelectedEmailStatusId));
             })
             .catch(err => {

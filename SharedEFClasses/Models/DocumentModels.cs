@@ -194,6 +194,8 @@ namespace SharedEFClasses.Models.Documents
         public string OrderFooterLabel4 { get; set; }
         public string OrderFooterValue4 { get; set; }
         public string OrderFooterParagraphsJSON { get; set; }
+        public string OrderFooterAnchorTag { get; set; }
+
         public ICollection<JsonParagraph> OrderFooterParagraphs
         {
             set
@@ -317,6 +319,7 @@ namespace SharedEFClasses.Models.Documents
         public string replyTo { get; set; }
         public string subject { get; set; }
         public string body { get; set; }
+        public int? memberId { get; set; }
     }
 
     public class DocumentColumnHeading

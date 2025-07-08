@@ -35,6 +35,9 @@ namespace SharedEFClasses.Models.Mertex
         [StringLength(20)]
         public string Postcode { get; set; }
 
+        [StringLength(100)]
+        public string SortName { get; set; }
+
         [StringLength(3)]
         public string CountryCode { get; set; }
 

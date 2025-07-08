@@ -36,6 +36,14 @@
         }
     </script>
 
+    <style type="text/css">
+        #email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:not(.disabled):has(@(String.Join(" ", (Model.AttachmentTypes.Select(at => (at.AttachmentTypeID != 1 && at.AttachmentTypeID != 1000) ? $".attachment-type-{at.Name.ToLowerInvariant().Replace(" ", "-")}," : ""))).TrimEnd(new[] { ',', ' ' }))) {
+            background-color: #309365;
+            color: #fff;
+            border-color: #75b798;
+        }
+    </style>
+
     <script type="text/html" id="invoice-value-conversion-control">
         <div class="converting-component">
             <div data-bind="highlightNullField: highlightOnNull, component: { name: 'mdc-text-field-numeric-component', params: inputParams }"></div>
@@ -426,7 +434,7 @@
 
 <div class="blocker" data-bind="flexFadeVisible: busy">
     <div class="loading-spinner"></div>
-    <h4 class="mt-3" data-bind="text: busyMessage"></h4>
+    <h4 class="mt-3" data-bind="html: busyMessage"></h4>
 </div>
 
 <div id="application-heading" class="form-group row mb-3">
@@ -473,6 +481,13 @@
             </div>
             <!-- /ko -->
         </div>
+        <!-- ko foreach: dashboard.notices -->
+        <div class="dashboard-notice">
+            <div class="card p-0" data-bind="class: CSSClasses">
+                <div class="card-body" data-bind="html: HTMLContents"></div>
+            </div>
+        </div>
+        <!-- /ko -->
         <div id="mertex-warning" class="card" style="display: none" data-bind="visible: dashboard.mertexWarning">
             <div class="card-body" data-bind="html: dashboard.mertexWarning"></div>
         </div>
@@ -495,6 +510,7 @@
                         <span class="validation-message text-danger" data-bind="validationMessage: toDate"></span>
                         <span class="validation-message text-danger" data-bind="validationMessage: fromPreceedsTo"></span>
                     </div>
+                    <div id="free-text-prefiler" class="prefilter" data-bind="component: { name: 'mdc-text-field-component', params: freeTextSearchParams }"></div>
                 </div>
                 <div id="email-list" data-bind="kendoGrid: mailboxGridParams"></div>
             </div>
@@ -507,7 +523,7 @@
         <div class="modal-content">
             <div class="blocker" data-bind="flexFadeVisible: modalBusy">
                 <div class="loading-spinner"></div>
-                <h4 class="mt-3" data-bind="text: modalBusyMessage"></h4>
+                <h4 class="mt-3" data-bind="html: modalBusyMessage"></h4>
             </div>
             <div class="modal-header">
                 <h5 class="modal-title d-flex justify-content-between align-items-center w-100 pe-2" data-bind="with: selectedEmail">
@@ -557,7 +573,7 @@
             <div class="modal-body" data-bind="with: selectedEmail">
                 <ul id="attachments-list" class="list-unstyled mb-3" data-bind="css: { 'mb-3': regularAttachments().length > 0, 'mb-2': regularAttachments().length == 0 }">
                     <!-- ko foreach: regularAttachments -->
-                    <li class="attachment" data-bind="click: $parent.selectAttachment, css: { 'selected': $parent.selectedAttachment().AttachmentID == $data.AttachmentID, 'submitted': $data.SubmittedToMertex }">
+                    <li class="attachment" data-bind="click: $parent.selectAttachment, css: { 'selected': $parent.selectedAttachment().AttachmentID == $data.AttachmentID, 'submitted': $data.SubmittedToMertex }, class: (attachmentType() ? `attachment-type-${attachmentType().Name.toLowerCase().replace(' ', '')}` : '')">
                         <span data-bind="class: $parent.iconClass($data)"></span>
                         <div class="attachment-properties">
                             <label data-bind="html: FileName, attr: { title: FileName }"></label>
@@ -621,12 +637,12 @@
                                         <!-- ko ifnot: $parent.Junk -->
                                         <!-- ko if: $parent.regularAttachments().length == 1 && $parent.Processed == true -->
                                         <button class="btn btn-secondary" data-bind="click: $parent.flagUnprocessed">
-                                            Flag as Unprocessed
+                                            Flag as Unread
                                         </button>
                                         <!-- /ko -->
                                         <!-- ko if: $parent.regularAttachments().length == 1 && $parent.Processed == false -->
                                         <button class="btn btn-success" data-bind="click: $parent.flagProcessed">
-                                            Flag as Processed
+                                            Flag as Read
                                         </button>
                                         <!-- /ko -->
                                         <!-- /ko -->

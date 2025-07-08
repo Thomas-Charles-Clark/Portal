@@ -13,12 +13,15 @@
         save: parent.save,
         skipValidation: parent.skipValidation,
         reset: parent.reset,
-        modal: parent.modal
+        modal: parent.modal,
+        formatDateString: parent.formatDateStringForHumans
     }, rec);
 
     console.log('invoiceBookingEmailAttachmentInvoiceViewModel instantiated with', rec);
 
     //#region Properties
+
+    self.today = new Date();
 
     self.busy = ko.observable(false);
 
@@ -641,7 +644,7 @@
     }
 
     self.invoiceDateParams = {
-        label: "Invoice Date",
+        label: `Invoice Date (e.g. ${self.formatDateString(self.today)})`,
         id: "invoice-date",
         observable: self.invoiceDate,
         originalValue: self.invoiceDate(),
@@ -1038,8 +1041,10 @@
 
     self.fetchInvoiceDates = () => {
 
+        let id = self.invoiceDate();
+
         let params = {
-            invoiceDate: self.invoiceDate(),
+            invoiceDate: new Date(id.getFullYear(), id.getMonth(), id.getDate(), 12, 0, 0, 0),
             supplierPaymentTermsCode: self.paymentTermsCode()
         }
 

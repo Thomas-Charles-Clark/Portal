@@ -13,12 +13,15 @@
         save: parent.save,
         skipValidation: parent.skipValidation,
         reset: parent.reset,
-        modal: parent.modal
+        modal: parent.modal,
+        formatDateString: parent.formatDateStringForHumans
     }, rec);
 
     console.log('invoiceBookingEmailAttachmentInvoiceViewModel instantiated with', rec);
 
     //#region Properties
+
+    self.today = new Date();
 
     self.busy = ko.observable(false);
 
@@ -248,7 +251,9 @@
         rec: gl,
         parent: self
     })) ?? [invoiceBookingEmailInvoiceGLViewModel({
-        rec: {},
+        rec: {
+            generalLedgerCode: '9999999999'
+        },
         parent: self
     })]);
 
@@ -695,7 +700,7 @@
     }
 
     self.invoiceDateParams = {
-        label: "Invoice Date",
+        label: `Invoice Date (e.g. ${self.formatDateString(self.today)})`,
         id: "invoice-date",
         observable: self.invoiceDate,
         originalValue: self.invoiceDate(),
@@ -727,11 +732,16 @@
             restrictions: {
                 disabledDates: []
             },
+            eventHandlers: {
+                onChange: (ev) => {
+                    console.error('tempusDominus early change event', ev);
+                }
+            },
             allowInputToggle: false,
             useCurrent: false,
             keepInvalid: true,
             debug: false,
-            viewDate: self.invoiceDate() ? new Date(self.invoiceDate()) : new Date()
+            viewDate: self.readOnly ? new Date(Date.parse(self.invoiceDate())) : self.invoiceDate() ? new Date(self.invoiceDate().getFullYear(), self.invoiceDate().getMonth(), self.invoiceDate().getDate(), 12, 0, 0, 0) : new Date()
         },
         disabled: ko.observable(self.readOnly),
         locked: ko.observable(self.readOnly),
@@ -789,7 +799,7 @@
 
                 }
             },
-            viewDate: self.dueDate() ? new Date(self.dueDate()) : new Date()
+            viewDate: self.readOnly ? new Date(Date.parse(self.dueDate())) : self.dueDate() ? new Date(self.dueDate().getFullYear(), self.dueDate().getMonth(), self.dueDate().getDate(), 12, 0, 0, 0) : new Date()
         },
         disabled: ko.observable(self.readOnly),
         locked: ko.observable(self.readOnly),
@@ -847,7 +857,7 @@
 
                 }
             },
-            viewDate: self.settlementDate() ? new Date(self.settlementDate()) : new Date()
+            viewDate: self.readOnly ? new Date(Date.parse(self.settlementDate())) : self.settlementDate() ? new Date(self.settlementDate().getFullYear(), self.settlementDate().getMonth(), self.settlementDate().getDate(), 12, 0, 0, 0) : new Date()
         },
         disabled: ko.observable(self.readOnly),
         locked: ko.observable(self.readOnly),
@@ -1136,8 +1146,10 @@
 
     self.fetchInvoiceDates = () => {
 
+        let id = self.invoiceDate();
+
         let params = {
-            invoiceDate: self.invoiceDate(),
+            invoiceDate: new Date(id.getFullYear(), id.getMonth(), id.getDate(), 12, 0, 0, 0),
             supplierPaymentTermsCode: self.paymentTermsCode()
         }
 
@@ -1154,8 +1166,11 @@
             .then(data => {
 
                 console.log('FetchInvoiceDates returned', data);
-                self.dueDate(new Date(data.InvoiceDueDate));
-                self.settlementDate(new Date(data.InvoiceSettlementDate));
+
+                self.dueDate(new Date(data.InvoiceDueDate.replace('00:00:00', '12:00:00')));
+
+                self.settlementDate(new Date(data.InvoiceSettlementDate.replace('00:00:00', '12:00:00')));
+
             })
             .catch(window.catchFetchError);
 
@@ -1163,7 +1178,9 @@
 
     self.addGeneralLedgerEntry = () => {
         self.generalLedgerEntries.push(invoiceBookingEmailInvoiceGLViewModel({
-            rec: {},
+            rec: {
+                generalLedgerCode: '9999999999'
+            },
             parent: self
         }));
     }

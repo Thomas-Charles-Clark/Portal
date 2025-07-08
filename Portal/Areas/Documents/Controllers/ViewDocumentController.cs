@@ -39,6 +39,8 @@ namespace Portal.Areas.Orders.Controllers
 
             var objDoc = JsonConvert.DeserializeObject<PassDocumentIdentifier>(jsonBack);
 
+            objDoc.memberId = user.MemberID;
+
             var result = PortalDb.SelectDocument(objDoc);
 
             var stream = GenericDocumentPDFWriter.GenerateDocument(System.Web.Hosting.HostingEnvironment.MapPath("~"),

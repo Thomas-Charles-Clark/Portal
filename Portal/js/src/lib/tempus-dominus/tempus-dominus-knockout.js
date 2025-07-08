@@ -23,7 +23,7 @@
             }
             td.subscribe('change.td', (ev) => {
                 if (!ev.isClear)
-                    valueAccessor()(new Date(ev.date));
+                    valueAccessor()(new Date(ev.date.year, ev.date.month, ev.date.date, 12, 0, 0, 0));
                 else
                     valueAccessor()(undefined);
 
@@ -31,6 +31,13 @@
                     if (typeof allBindingsAccessor().dateTimePickerOptions.eventHandlers.onChange === 'function') {
                         allBindingsAccessor().dateTimePickerOptions.eventHandlers.onChange(ev);
                     }
+                }
+            });
+
+            td.subscribe(tempusDominus.Namespace.events.error, (ev) => {
+                console.log(ev);
+                if (ev.reason.indexOf('Unable to parse provided input') > -1) {
+
                 }
             });
 

@@ -69,6 +69,10 @@ const invoiceBookingViewModel = ({
             data.supplierTypeCode = self.filters.supplierTypeCode()
         }
 
+        if (self.filters.freeTextSearch()) {
+            data.freeTextSearch = self.filters.freeTextSearch();
+        }
+
         return data;
     }
 
@@ -166,6 +170,11 @@ const invoiceBookingViewModel = ({
                     return '';
                 }
             }
+        }, {
+            title: 'SearchKeywords',
+            field: 'SearchKeywords',
+            hidden: true,
+            template: ''
         }],
         data: new kendo.data.DataSource({
             pageSize: 20,
@@ -282,7 +291,8 @@ const invoiceBookingViewModel = ({
                                     }
                                 }
                             }
-                        }
+                        },
+                        SearchKeywords: { type: 'string', editable: false }
                     }
                 }
             }),
@@ -516,9 +526,34 @@ const invoiceBookingViewModel = ({
         }, 0);
     });
 
-    self.modalElement.addEventListener('hide.bs.modal', () => {
-        self.reset();
+    self.suppressHide = true;
+
+    self.modalElement.addEventListener('hide.bs.modal', (ev) => {
+
+        if (self.suppressHide) {
+            ev.preventDefault();
+        }
+
+        if (self.selectedEmail() && self.selectedEmail().selectedAttachment()) {
+            self.selectedEmail()
+                .selectedAttachment()
+                .unsavedChanges()
+                .then(() => {
+                    self.suppressHide = false;
+                    self.modal.hide();
+                    self.reset();
+                })
+                .catch(() => {
+
+                })
+        } else {
+            self.reset();
+        }
     });
+
+    self.modalElement.addEventListener('hidden.bs.modal', (ev) => {
+        self.suppressHide = true;
+    })
     
     //#endregion
 

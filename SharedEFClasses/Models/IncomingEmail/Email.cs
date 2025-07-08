@@ -81,6 +81,8 @@ namespace SharedEFClasses.Models.IncomingEmail
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool SupplierIdentified { get; set; }
 
+        public string SearchKeywords { get; set; }
+
         [JsonIgnore]
         [ForeignKey("MailboxID")]
         [InverseProperty("Emails")]

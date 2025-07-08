@@ -41,7 +41,11 @@ namespace Portal.Areas.Documents.Controllers
 
             string jsonBack = Encoding.UTF8.GetString(byteArray);
 
+            var memberId = User.Identity.GetUserId<int>();
+
             var objDoc = JsonConvert.DeserializeObject<PassDocumentIdentifier>(jsonBack);
+
+            objDoc.memberId = memberId;
 
             var result = PortalDb.SelectDocument(objDoc);
 
@@ -65,7 +69,11 @@ namespace Portal.Areas.Documents.Controllers
 
             string jsonBack = Encoding.Unicode.GetString(byteArray);
 
+            var memberId = User.Identity.GetUserId<int>();
+
             var objDoc = JsonConvert.DeserializeObject<PassDocumentIdentifier>(jsonBack);
+
+            objDoc.memberId = memberId;
 
             var result = PortalDb.SelectDocument(objDoc);
 
@@ -136,8 +144,6 @@ namespace Portal.Areas.Documents.Controllers
             attachmentStream.Position = 0;
 
             attachments.Add($"Designers Guild {documentTypeHeader}.pdf", attachmentStream);
-
-            var memberId = User.Identity.GetUserId<int>();
 
             PortalDb.SaveDocumentSend(new PassDocumentSend()
             {

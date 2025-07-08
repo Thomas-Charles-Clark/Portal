@@ -42,7 +42,11 @@ namespace Portal.Areas.Orders.Controllers
 
                 string jsonBack = Encoding.UTF8.GetString(byteArray);
 
+                var memberId = User.Identity.GetUserId<int>();
+
                 var objDoc = JsonConvert.DeserializeObject<PassDocumentIdentifier>(jsonBack);
+
+                objDoc.memberId = memberId;
 
                 var result = PortalDb.SelectDocument(objDoc);
 

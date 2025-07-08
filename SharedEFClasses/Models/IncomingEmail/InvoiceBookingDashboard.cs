@@ -9,6 +9,6 @@ namespace SharedEFClasses.Models.IncomingEmail
     public class InvoiceBookingDashboard
     {
         public IEnumerable<InvoiceBookingDashboard_SelectResult> DashboardPods { get; set; }
-        public string MertexWarning { get; set; }
+        public IEnumerable<Dashboard_NoticeResult> Notices { get; set; }
     }
 }

@@ -249,7 +249,7 @@ namespace SharedEFClasses.Models
             return new InvoiceBookingDashboard()
             {
                 DashboardPods = reader.Read<InvoiceBookingDashboard_SelectResult>(),
-                MertexWarning = reader.ReadSingleOrDefault<string>()
+                Notices = reader.Read<Dashboard_NoticeResult>()
             };
         }
 
@@ -303,7 +303,10 @@ namespace SharedEFClasses.Models
 
         public async Task<InvoiceDueDateResult> IncomingEmail_InvoiceDates_Select(PassInvoiceDateParams dto)
         {
-            var result = await this.Database.Connection.QuerySingleOrDefaultAsync<InvoiceDueDateResult>("[portal].[InvoiceDates_Select]", dto, null, null, CommandType.StoredProcedure);
+            var result = await this.Database.Connection.QuerySingleOrDefaultAsync<InvoiceDueDateResult>("[portal].[InvoiceDates_Select]", new { 
+                InvoiceDate = dto.InvoiceDate.Date,
+                SupplierPaymentTermsCode = dto.SupplierPaymentTermsCode
+            }, null, null, CommandType.StoredProcedure);
 
             return result;
         }
