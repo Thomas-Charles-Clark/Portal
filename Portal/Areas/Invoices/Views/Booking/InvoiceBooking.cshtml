@@ -395,12 +395,188 @@
     </script>
 
     <script type="text/html" id="invoice-booking-credit-note-template">
-        <h5>
-            Credit Note Properties
-        </h5>
-        <h5 class="mt-2">
-            Not yet implemented
-        </h5>
+        <div id="invoice-properties" class="card">
+            <div class="card-body">
+                <h5 class="data-heading">
+                    <!-- ko ifnot: $parent.Processed -->
+                    Please Enter the Credit Note Details
+                    <!-- /ko -->
+                    <!-- ko if: $parent.Processed -->
+                    Credit Note
+                    <!-- /ko -->
+                </h5>
+                <div class="attachment-property attachment-supplier-wrapper">
+                    <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+                    <button type="button" class="btn btn-dark" style="display: none;" data-bind="visible: readOnly == false && supplierParams.locked, click: () => { supplierParams.locked(!supplierParams.locked()) }">
+                        Change
+                    </button>
+                </div>
+                <div id="invoice-reference" class="attachment-property" data-bind="highlightNullField: supplierInvoiceReference, component: { name: 'mdc-text-field-component', params: invoiceReferenceParams }"></div>
+                <span class="validation-message" data-bind="validationMessage: supplierInvoiceReference"></span>
+                <div class="attachment-property-wrap">
+                    <div id="invoice-date" class="attachment-property pe-2" data-bind="highlightNullField: invoiceDate, component: { name: 'tempus-dominus-date-picker-component', params: invoiceDateParams }"></div>
+                    <div id="invoice-terms" class="attachment-property d-none" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsParams }"></div>
+                </div>
+                <span class="validation-message" data-bind="validationMessage: invoiceDate"></span>
+
+                <div class="attachment-property" data-bind="validationElement: netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
+                    <div class="converting-component-wrapper" data-bind="component: { name: 'invoice-conversion-control', params: netTotal }"></div>
+                </div>
+                <span class="validation-message" data-bind="validationMessage: netTotalCurrency"></span>
+
+                <div class="attachment-property" data-bind="validationElement: netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
+                    <div class="converting-component-wrapper" data-bind="component: { name: 'invoice-conversion-control', params: vatTotal }"></div>
+                </div>
+                <span class="validation-message" data-bind="validationMessage: vatTotalCurrency"></span>
+
+                <div class="attachment-property" data-bind="validationElement: netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
+                    <div class="converting-component-wrapper" data-bind="component: { name: 'invoice-conversion-control', params: invoiceTotal }"></div>
+                </div>
+                <span class="validation-message" data-bind="validationMessage: invoiceTotalIncVATCurrency"></span>
+
+                <span class="validation-message" data-bind="validationMessage: netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT"></span>
+                @*<div class="attachment-property dispute-checkbox" data-bind="component: { name: 'mdc-checkbox-component', params: disputeParams }"></div>*@
+            </div>
+        </div>
+
+        <div id="duplicate-warnings" class="card" style="display: none" data-bind="visible: duplicateResults().length > 0">
+            <div class="card-body">
+                <!-- ko ifnot: isFlaggedAsDuplicate -->
+                <p class="bold">
+                    The following potential duplicates were found.
+                </p>
+                <p class="bold">
+                    Please review them carefully and consider whether or not the item you're processing is a duplicate.
+                </p>
+                <!-- /ko -->
+                <!-- ko if: isFlaggedAsDuplicate -->
+                <p class="bold">
+                    This item has already been flagged as duplicate. If you believe that to be a mistake, please contact <a href="#" data-bind="attr: { href: `mailto:itsupport@designersguild.com?subject=Credit Note Registration Email ID ${$parent.emailId} Attachment ID ${attachmentId} is NOT a duplicate!&body=Credit Note Registration Email ID ${$parent.emailId} Attachment ID ${attachmentId} is NOT a duplicate. Please unflag it as such. Thank you.` }">itsupport@designersguild.com</a></a>.
+                </p>
+                <!-- /ko -->
+                <ul class="list-group">
+                    <!-- ko foreach: duplicateResults -->
+                    <li class="list-group-item">
+                        <div class="duplicate-property">
+                            <label class="bold">
+                                Mertex ID:
+                            </label>
+                            <span data-bind="text: MertexCode"></span>
+                        </div>
+                        <div class="duplicate-property">
+                            <label class="bold">
+                                Supplier Code:
+                            </label>
+                            <span data-bind="text: SupplierCode"></span>
+                        </div>
+                        <div class="duplicate-property">
+                            <label class="bold">
+                                Supplier Reference:
+                            </label>
+                            <span data-bind="text: SupplierInvoiceReference"></span>
+                        </div>
+                        <div class="duplicate-property">
+                            <label class="bold">
+                                Credit Note Date:
+                            </label>
+                            <span data-bind="text: moment(InvoiceDate).format('Do ddd MMMM YYYY (DD/MM/YYYY)')"></span>
+                        </div>
+                        <div class="duplicate-property">
+                            <label class="bold">
+                                Credit Note Total Inc. VAT:
+                            </label>
+                            <span data-bind="text: InvoiceTotalInCurrencyIncVAT"></span>
+                        </div>
+                    </li>
+                    <!-- /ko -->
+                </ul>
+                <!-- ko ifnot: isFlaggedAsDuplicate -->
+                <button type="button" class="btn btn-danger w-100 bg-red-600 bold mt-3" data-bind="click: acknowledgeDuplicate">
+                    This item is a duplicate
+                </button>
+                <!-- /ko -->
+            </div>
+        </div>
+
+        <div id="vat-entries" class="card">
+            <div class="card-body">
+                <h5>
+                    <span>
+                        VAT Breakdown
+                    </span>
+                    <button type="button" class="btn btn-dark add-entry-btn" data-bind="click: addVATEntry, disable: readOnly">
+                        <i class="bi bi-plus-lg"></i>
+                    </button>
+                </h5>
+                <p>
+                    It might be imperative that you provide a full VAT breakdown to allow us to reclaim the VAT on this credit note. Might not. I'm not sure.
+                </p>
+                <ul class="list-group" data-bind="validationElement: vatableSumEqualsTotalNET, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
+                    <!-- ko if: vatEntries().length == 0 -->
+                    <li class="list-group-item">
+                        [No Entries]
+                    </li>
+                    <!-- /ko -->
+                    <!-- ko foreach: vatEntries -->
+                    <li class="list-group-item">
+                        <div class="code-params" data-bind="css: { 'px-0': $index() == 0 }">
+                            <div class="attachment-property" data-bind="highlightNullField: vatCode, component: { name: 'mdc-kendo-dropdown-component', params: vatCodeParams }"></div>
+                            <!-- ko if: $index() > 0 -->
+                            <button type="button" class="btn btn-close" data-bind="click: $parent.removeVATEntry"></button>
+                            <!-- /ko -->
+                        </div>
+                        <span class="validation-message" data-bind="validationMessage: vatCode"></span>
+                        <div class="attachment-property">
+                            <div class="converting-component-wrapper" data-bind="component: { name: 'invoice-conversion-control', params: vatableAmountConverter }"></div>
+                        </div>
+                        <div class="attachment-property">
+                            <div class="converting-component-wrapper" data-bind="component: { name: 'invoice-conversion-control', params: vatConverter }"></div>
+                        </div>
+                        <span class="validation-message" data-bind="validationMessage: vatableAmountCurrency"></span>
+                    </li>
+                    <!-- /ko -->
+                </ul>
+                <span class="validation-message" data-bind="validationMessage: vatableSumEqualsTotalNET"></span>
+            </div>
+        </div>
+        <div id="general-ledger-entries" class="card">
+            <div class="card-body">
+                <h5>
+                    <span>
+                        General Ledger Breakdown
+                    </span>
+                    <button type="button" class="btn btn-dark add-entry-btn" data-bind="click: addGeneralLedgerEntry, disable: readOnly">
+                        <i class="bi bi-plus-lg"></i>
+                    </button>
+                </h5>
+                <p>
+                    Where would you like to code this credit to in your budget?
+                </p>
+                <ul class="list-group" data-bind="validationElement: generalLedgerSumEqualsTotalMinusVAT, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
+                    <!-- ko if: generalLedgerEntries().length == 0 -->
+                    <li class="list-group-item">
+                        [No Entries]
+                    </li>
+                    <!-- /ko -->
+                    <!-- ko foreach: generalLedgerEntries -->
+                    <li class="list-group-item">
+                        <div class="code-params" data-bind="css: { 'px-0': $index() == 0 }">
+                            <div class="attachment-property" data-bind="highlightNullField: generalLedgerCode, component: { name: 'mdc-kendo-dropdown-component', params: generalLedgerCodeParams }"></div>
+                            <!-- ko if: $index() > 0 -->
+                            <button type="button" class="btn btn-close" data-bind="click: $parent.removeGeneralLedgerEntry"></button>
+                            <!-- /ko -->
+                        </div>
+                        <span class="validation-message" data-bind="validationMessage: generalLedgerCode"></span>
+                        <div class="converting-component-wrapper">
+                            <div data-bind="component: { name: 'invoice-conversion-control', params: amountExParams }"></div>
+                        </div>
+                        <span class="validation-message" data-bind="validationMessage: amountExVATInCurrency"></span>
+                    </li>
+                    <!-- /ko -->
+                </ul>
+                <span class="validation-message" data-bind="validationMessage: generalLedgerSumEqualsTotalMinusVAT"></span>
+            </div>
+        </div>
     </script>
 
     <script type="text/javascript">
@@ -670,7 +846,7 @@
                         </div>
                         <div class="additional-info" style="display: none" data-bind="visible: $parent.additionalInfo, foreach: $parent.additionalInfo">
                             <div class="card p-0" data-bind="class: CSSClasses">
-                                <div class="card-body"data-bind="html: HTMLContents"></div>
+                                <div class="card-body" data-bind="html: HTMLContents"></div>
                             </div>
                         </div>
                         <!-- /ko -->

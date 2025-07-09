@@ -245,6 +245,7 @@
     self.preambleSatisfied = ko.computed(() => {
         return self.preambleComputer() && self.preambleErrorGroup().length == 0;
     }, self)
+
     /* End of Lifted Preamble Properties  */
 
     self.generalLedgerEntries = ko.observableArray(rec?.generalLedgerEntries?.map((gl, i) => invoiceBookingEmailInvoiceGLViewModel({
@@ -734,7 +735,7 @@
             },
             eventHandlers: {
                 onChange: (ev) => {
-                    console.error('tempusDominus early change event', ev);
+
                 }
             },
             allowInputToggle: false,

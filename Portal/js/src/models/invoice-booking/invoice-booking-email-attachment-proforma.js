@@ -17,7 +17,7 @@
         formatDateString: parent.formatDateStringForHumans
     }, rec);
 
-    console.log('invoiceBookingEmailAttachmentInvoiceViewModel instantiated with', rec);
+    console.log('invoiceBookingEmailAttachmentProformaViewModel instantiated with', rec);
 
     //#region Properties
 

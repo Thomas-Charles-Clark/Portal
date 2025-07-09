@@ -746,6 +746,7 @@ const invoiceBookingFiltersViewModel = ({
             self.pauseFreeTextSearchUpdate = true;
             self.refreshParent();
         },
+        refreshParent: self.refreshParent,
         permitRevert: false,
         enable: ko.observable(true),
         disable: ko.observable(false),

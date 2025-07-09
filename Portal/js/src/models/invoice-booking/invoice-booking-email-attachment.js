@@ -207,6 +207,8 @@
                     propertiesTemplateName = 'invoice-booking-proforma-template';
                     break;
                 case 4:
+                    propertiesViewModelFn = invoiceBookingEmailAttachmentCreditNoteViewModel;
+                    propertiesTemplateName = 'invoice-booking-credit-note-template';
                     break;
                 case 5:
                     break;
@@ -418,10 +420,56 @@
                         isFlaggedAsDuplicate: props.isFlaggedAsDuplicate()
                     });
                     break;
+                case 4:
+                    data.formDataJson = JSON.stringify({
+                        code: null,
+                        creditProcessedDate: null,
+                        creditReceivedDate: null,
+                        passedTo: null,
+                        passedToDT: null,
+                        supplierCode: props.supplierCode() ?? null,
+                        supplier: props.supplier() ?? null,
+                        supplierCurrency: props.supplierCurrency() ?? null,
+                        exchangeRate: props.exchangeRate() ?? null,
+                        supplierCreditNoteCode: props.supplierInvoiceReference() ?? null,
+                        creditDate: self.formatDateString(props.invoiceDate()),
+                        creditDueDT: null,
+                        settlementDT: null,
+                        paymentTermsCode: props.paymentTermsCode() ?? null,
+                        creditTotalIncVATInCurrency: props.invoiceTotalIncVATCurrency() ?? null,
+                        creditTotalIncVATInSterling: Math.round((props.invoiceTotalIncVATInSterling() ?? 0) * 10000) / 10000,
+                        creditTotalExVATInSterling: Math.round((props.invoiceTotalExVatInSterling() ?? 0) * 10000) / 10000,
+                        vatTotalCurrency: props.vatTotalCurrency() ?? null,
+                        vatTotalInSterling: Math.round((props.vatTotalInSterling() ?? 0) * 10000) / 10000,
+                        netTotalCurrency: props.netTotalCurrency() ?? null,
+                        netTotalInSterling: Math.round((props.netTotalInSterling() ?? 0) * 10000) / 10000,
+                        generalLedgerEntries: props.generalLedgerEntries().map(gl => {
+                            return {
+                                generalLedgerCode: gl.generalLedgerCode(),
+                                amountExVATInCurrency: Math.round((gl.amountExVATInCurrency() ?? 0) * 10000) / 10000,
+                                amountExVATInSterling: Math.round((gl.amountExVATInSterling() ?? 0) * 10000) / 10000
+                            }
+                        }),
+                        vatEntries: props.vatEntries().map(v => {
+                            return {
+                                vatableAmountCurrency: Math.round((v.vatableAmountCurrency() ?? 0) * 10000) / 10000,
+                                vatableAmountSterling: Math.round((v.vatableAmountToSterlingComputer() ?? 0) * 10000) / 10000,
+                                vatCode: v.vatCode(),
+                                vatRate: Math.round((v.vatRate() ?? 0) * 10000) / 10000,
+                                vatAmountCurrency: Math.round((v.vatInCurrency() ?? 0) * 10000) / 10000,
+                                vatAmountSterling: Math.round((v.vatToSterlingComputer() ?? 0) * 10000) / 10000,
+                                supplierCurrency: v.supplierCurrency(),
+                                exchangeRate: Math.round((v.exchangeRate() ?? 0) * 10000) / 10000
+                            }
+                        }),
+                        duplicateResults: props.duplicateResults(),
+                        isFlaggedAsDuplicate: props.isFlaggedAsDuplicate()
+                    });
+                    break;
                 default: break;
             }
         }
-        
+
         console.log('saveAttachmentDetail calling with', data);
 
         fetch('/api/InvoiceBookingAPI/SaveAttachmentDetail', {
@@ -432,8 +480,6 @@
             .then(window.handleFetchResponse)
             .then(data => {
                 console.log('SaveAttachment returned', data);
-
-
 
                 self.modal._element.querySelector('.blocker').classList.add('success');
 

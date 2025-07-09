@@ -104,8 +104,6 @@
 
         self.parent.filters.emailStatusId(data.EmailStatusID);
 
-        console.warn('probably warn about potential or actual unsaved changes');
-
         switch (data.Label) {
             case 'Unidentified Supplier':
                 self.parent.mailboxGridParams.widget().dataSource.query({
