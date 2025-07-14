@@ -279,7 +279,7 @@
 
                 '<span class="code">' + qty + '</span>' +
                 '<span class="clearfix"></span>' +
-                '<a class="break-all tracking-url" target="_blank" href="javascript:;">Delivery Tracking</a>' +
+                '<a class="break-all tracking-url" target="_blank" href="/orders/tracking?orderId='+ rec.OrderHeadID +'" target="_blank">Delivery Tracking</a>' +
 
                 '<span class="status" data-bind="text: $data.OrderStatus">' + line.OrderStatus + '</span>' +
 

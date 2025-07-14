@@ -56,6 +56,7 @@ namespace Portal.Areas.Sales.ViewModels
         public List<DeliveryTerm> DeliveryTerms { get; set; }
         public List<ExchangeRate> ExchangeRates { get; set; }
         public List<MertexLanguage> MertexLanguages { get; set; }
+        public List<CreditControllerAssignment> CreditControllerAssignments { get; set; }
 
         public LeadEnquiryViewModel(
             long? leadId,
@@ -88,7 +89,8 @@ namespace Portal.Areas.Sales.ViewModels
             short preselectedLaunchId,
             List<TradeAccountClass> tradeAccountClasses,
             List<SharedEFClasses.Models.Mertexer.CreditController> creditControllers,
-            List<SharedEFClasses.Models.Mertexer.CreditController_SalesMarket> creditControllerSalesMarketMap,
+            List<CreditController_SalesMarket> creditControllerSalesMarketLanguageMap,
+            List<CreditControllerAssignment> creditControllerAssignments,
             List<Bank> banks,
             List<Bank_SalesMarket> bankSalesMarketMap,
             List<TradeAccountGroup> tradeAccountGroups,
@@ -137,7 +139,7 @@ namespace Portal.Areas.Sales.ViewModels
             RetailAppointmentTypes = retailAppointmentTypes;
             TradeAccountClasses = tradeAccountClasses;
             CreditControllers = creditControllers;
-            CreditControllerSalesMarketMap = creditControllerSalesMarketMap;
+            CreditControllerSalesMarketMap = creditControllerSalesMarketLanguageMap;
             Banks = banks;
             BankSalesMarketMap = bankSalesMarketMap;
             TradeAccountGroups = tradeAccountGroups;

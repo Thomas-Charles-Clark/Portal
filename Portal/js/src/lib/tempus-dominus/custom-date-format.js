@@ -310,6 +310,34 @@
         };
         // noinspection JSUnusedGlobalSymbols
         tdClasses.Dates.prototype.parseInput = function (input) {
+
+            if (input) {
+
+                let matches = input.matchAll(/(\d+)[\/-](\d+)[\/-](\d+)/g);
+
+                let output = null;
+
+                matches.forEach(match => {
+                    console.log('match', match);
+
+                    let inputDay = match[1];
+                    let inputMonth = match[2];
+                    let inputYear = match[3];
+
+                    let outputDay = inputDay.padStart(2, '0');
+                    let outputMonth = inputMonth.padStart(2, '0');
+                    let outputYear = inputYear;
+
+                    if (outputYear.length == 2) {
+                        outputYear = `20${outputYear}`;
+                    }
+
+                    output = `${outputDay}/${outputMonth}/${outputYear}`
+
+                    input = output;
+                });
+            }
+
             customDateFormat.localization = this.optionsStore.options.localization;
             return customDateFormat.parseFormattedInput(input);
         };

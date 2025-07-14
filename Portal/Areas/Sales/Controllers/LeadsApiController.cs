@@ -681,9 +681,9 @@ namespace Portal.Areas.Sales.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult CreditControllerSelectList(PassNullableCountryID objCountry)
+        public IHttpActionResult CreditControllerSelectList(PassCreditControllerDefaultInfo dto)
         {
-            var results = portalDb.CreditController_SelectList(objCountry);
+            var results = portalDb.CreditController_SelectList(dto);
 
             return Ok(results.CreditControllers);
         }

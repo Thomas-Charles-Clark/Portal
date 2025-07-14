@@ -455,6 +455,8 @@
     <Compile Include="Models\DocumentModels.cs" />
     <Compile Include="Models\FurnitureModels.cs" />
     <Compile Include="Models\LawfulBasis.cs" />
+    <Compile Include="Models\Leads\CreditControllerAssignment.cs" />
+    <Compile Include="Models\Leads\PassCreditControllerDefaultInfo.cs" />
     <Compile Include="Models\Lead_TradeAccountCreationEmailAttachment.cs" />
     <Compile Include="Models\Maintenance\MaintenanceBuyer.cs" />
     <Compile Include="Models\Maintenance\MaintenanceSupplier.cs" />

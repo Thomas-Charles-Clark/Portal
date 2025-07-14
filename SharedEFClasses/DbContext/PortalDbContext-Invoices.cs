@@ -242,7 +242,8 @@ namespace SharedEFClasses.Models
                 dto.SupplierCode,
                 dto.SupplierTypeCode,
                 dto.From,
-                dto.To
+                dto.To,
+                SearchTerm = dto.FreeTextSearch
             }, null, null, CommandType.StoredProcedure);
 
 
@@ -272,7 +273,7 @@ namespace SharedEFClasses.Models
 
         public async Task<Attachment_DuplicateCheck_Result> IncomingEmail_Invoice_DuplicateCheck(PassAttachmentDetail dto)
         {
-            var reader = await this.Database.Connection.QueryMultipleAsync("[IncomingEmail].[Invoice_Duplicate_Check]", dto, null, null, CommandType.StoredProcedure);
+            var reader = await this.Database.Connection.QueryMultipleAsync("[IncomingEmail].[Attachment_Duplicate_Check]", dto, null, null, CommandType.StoredProcedure);
 
             return new Attachment_DuplicateCheck_Result()
             {

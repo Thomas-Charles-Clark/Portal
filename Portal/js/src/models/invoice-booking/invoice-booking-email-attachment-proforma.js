@@ -79,10 +79,13 @@
         validation: {
             validator: function (val) {
                 if (self.validateNow()) {
-                    if (val == null || val == 'Invalid Date')
+                    val = self.invoiceDateParams.displayObservable();
+
+                    if (val == null || val == 'Invalid Date' || new Date(val.split('/').reverse().join('/')) == 'Invalid Date')
                         return false
                     else
-                        return moment.isDate(val);
+                        return moment.isDate(new Date(val));
+
                 } else {
                     return true;
                 }
@@ -109,10 +112,13 @@
         validation: {
             validator: function (val) {
                 if (self.validateNow()) {
-                    if (val == null || val == 'Invalid Date')
+                    val = self.dueDateParams.displayObservable();
+
+                    if (val == null || val == 'Invalid Date' || new Date(val.split('/').reverse().join('/')) == 'Invalid Date')
                         return false
                     else
-                        return moment.isDate(val);
+                        return moment.isDate(new Date(val));
+
                 } else {
                     return true;
                 }
@@ -130,10 +136,13 @@
         validation: {
             validator: function (val) {
                 if (self.validateNow()) {
-                    if (val == null || val == 'Invalid Date')
+                    val = self.settlementDateParams.displayObservable();
+
+                    if (val == null || val == 'Invalid Date' || new Date(val.split('/').reverse().join('/')) == 'Invalid Date')
                         return false
                     else
-                        return moment.isDate(val);
+                        return moment.isDate(new Date(val));
+
                 } else {
                     return true;
                 }
@@ -440,7 +449,7 @@
                     })
                 })
                 .catch(err => {
-                    //self.modalBusy(false);
+                    self.modalBusy(false);
                     window.catchFetchError(err);
                 })
 
@@ -548,6 +557,22 @@
             delete d.$format; // <-- remove format
             delete d.$callback; // <-- remove callback
 
+            let filters = [];
+
+            if (data.filter && data.filter.filters.length) {
+                let f = data.filter.filters.find(f => f.field === "Name");
+                filters.push(`(contains(Name, '${f.value}') or contains(SortName, '${f.value}') or startswith(tolower(Code), '${f.value}'))`);
+
+                if (d.$filter) {
+                    delete d.$filter;
+                }
+            }
+
+            if (filters.length) {
+                let filterString = filters.join(' and ');
+                d.$apply = `filter(${filterString})`;
+            }
+
             d.$count = true;
 
             return d;
@@ -648,7 +673,17 @@
         id: "invoice-date",
         observable: self.invoiceDate,
         originalValue: self.invoiceDate(),
-        displayObservable: ko.observable(),
+        displayObservable: ko.observable().extend({
+            validation: {
+                validator: function (val) {
+                    if (val == null || val == 'Invalid Date' || new Date(val.split('/').reverse().join('/')) == 'Invalid Date')
+                        return false
+                    else
+                        return true;
+                },
+                message: 'You must provide a valid Invoice Date'
+            }
+        }),
         showCalendarButton: true,
         dateTimePickerOptions: {
             bindToParentNode: true,
@@ -698,10 +733,20 @@
     };
 
     self.dueDateParams = {
-        label: "Invoice Due",
+        label: "Invoice Due Date",
         observable: self.dueDate,
         originalValue: self.dueDate(),
-        displayObservable: ko.observable(),
+        displayObservable: ko.observable().extend({
+            validation: {
+                validator: function (val) {
+                    if (val == null || val == 'Invalid Date' || new Date(val.split('/').reverse().join('/')) == 'Invalid Date')
+                        return false
+                    else
+                        return true;
+                },
+                message: 'You must provide a valid Invoice Due Date'
+            }
+        }),
         showCalendarButton: true,
         dateTimePickerOptions: {
             bindToParentNode: true,
@@ -733,11 +778,6 @@
             useCurrent: false,
             keepInvalid: true,
             debug: false,
-            eventHandlers: {
-                onChange: (e) => {
-
-                }
-            },
             viewDate: self.dueDate() ? new Date(self.dueDate()) : new Date()
         },
         disabled: ko.observable(self.readOnly),
@@ -759,7 +799,17 @@
         label: "Settlement Date",
         observable: self.settlementDate,
         originalValue: self.settlementDate(),
-        displayObservable: ko.observable(),
+        displayObservable: ko.observable().extend({
+            validation: {
+                validator: function (val) {
+                    if (val == null || val == 'Invalid Date' || new Date(val.split('/').reverse().join('/')) == 'Invalid Date')
+                        return false
+                    else
+                        return true;
+                },
+                message: 'You must provide a valid Settlement Date'
+            }
+        }),
         showCalendarButton: true,
         dateTimePickerOptions: {
             bindToParentNode: true,
@@ -791,11 +841,6 @@
             useCurrent: false,
             keepInvalid: true,
             debug: false,
-            eventHandlers: {
-                onChange: (e) => {
-
-                }
-            },
             viewDate: self.settlementDate() ? new Date(self.settlementDate()) : new Date()
         },
         disabled: ko.observable(self.readOnly),

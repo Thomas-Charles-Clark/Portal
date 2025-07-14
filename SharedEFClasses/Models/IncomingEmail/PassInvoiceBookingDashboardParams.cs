@@ -16,5 +16,6 @@ namespace SharedEFClasses.Models.IncomingEmail
         public DateTime? From { get; set; }
         public DateTime? To { get; set; }
         public string SupplierTypeCode { get; set; }
+        public string FreeTextSearch { get; set; }
     }
 }

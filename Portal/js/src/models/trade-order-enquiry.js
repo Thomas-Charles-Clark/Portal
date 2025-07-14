@@ -12,7 +12,7 @@
             self.orderSearch().clearResults();
         }
 
-        self.orderSearch().selectedTradeAccountId(newValue);
+        self.orderSearch().selectedTradeAccountId(newValue.TradeAccountID);
     });
 
     if (self.tradeAccountSelector().selected()) {

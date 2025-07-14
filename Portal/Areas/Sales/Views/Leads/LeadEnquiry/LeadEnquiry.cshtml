@@ -1331,6 +1331,9 @@
     function getCreditControllerSalesMarketMap() {
         return @Html.Raw(JsonConvert.SerializeObject(Model.CreditControllerSalesMarketMap))
     }
+    function getCreditControllerAssignments() {
+        return @Html.Raw(JsonConvert.SerializeObject(Model.CreditControllerAssignments))
+    }
     function getAvailableBanks() {
         return @Html.Raw(JsonConvert.SerializeObject(Model.Banks))
     }

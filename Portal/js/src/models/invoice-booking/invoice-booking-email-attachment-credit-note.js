@@ -79,10 +79,13 @@
         validation: {
             validator: function (val) {
                 if (self.validateNow()) {
-                    if (val == null || val == 'Invalid Date')
+                    val = self.invoiceDateParams.displayObservable();
+
+                    if (val == null || val == 'Invalid Date' || new Date(val.split('/').reverse().join('/')) == 'Invalid Date')
                         return false
                     else
-                        return moment.isDate(val);
+                        return moment.isDate(new Date(val));
+
                 } else {
                     return true;
                 }
@@ -487,7 +490,7 @@
                     })
                 })
                 .catch(err => {
-                    //self.modalBusy(false);
+                    self.modalBusy(false);
                     window.catchFetchError(err);
                 })
 
@@ -595,6 +598,22 @@
             delete d.$format; // <-- remove format
             delete d.$callback; // <-- remove callback
 
+            let filters = [];
+
+            if (data.filter && data.filter.filters.length) {
+                let f = data.filter.filters.find(f => f.field === "Name");
+                filters.push(`(contains(Name, '${f.value}') or contains(SortName, '${f.value}') or startswith(tolower(Code), '${f.value}'))`);
+
+                if (d.$filter) {
+                    delete d.$filter;
+                }
+            }
+
+            if (filters.length) {
+                let filterString = filters.join(' and ');
+                d.$apply = `filter(${filterString})`;
+            }
+
             d.$count = true;
 
             return d;
@@ -695,7 +714,17 @@
         id: "invoice-date",
         observable: self.invoiceDate,
         originalValue: self.invoiceDate(),
-        displayObservable: ko.observable(),
+        displayObservable: ko.observable().extend({
+            validation: {
+                validator: function (val) {
+                    if (val == null || val == 'Invalid Date' || new Date(val.split('/').reverse().join('/')) == 'Invalid Date')
+                        return false
+                    else
+                        return true;
+                },
+                message: 'You must provide a valid Invoice Date'
+            }
+        }),
         showCalendarButton: true,
         dateTimePickerOptions: {
             bindToParentNode: true,
@@ -723,11 +752,6 @@
             restrictions: {
                 disabledDates: []
             },
-            eventHandlers: {
-                onChange: (ev) => {
-
-                }
-            },
             allowInputToggle: false,
             useCurrent: false,
             keepInvalid: true,
@@ -748,122 +772,6 @@
         insertValidationMessages: false,
         decorateInputElement: true
     };
-
-    //self.dueDateParams = {
-    //    label: "Invoice Due",
-    //    observable: self.dueDate,
-    //    originalValue: self.dueDate(),
-    //    displayObservable: ko.observable(),
-    //    showCalendarButton: true,
-    //    dateTimePickerOptions: {
-    //        bindToParentNode: true,
-    //        localization: {
-    //            locale: 'en-GB',
-    //            format: 'dd/MM/yyyy'
-    //        },
-    //        display: {
-    //            sideBySide: false,
-    //            components: {
-    //                clock: false,
-    //                calendar: true,
-    //                date: true,
-    //                month: true,
-    //                year: true,
-    //                decades: false,
-    //                clock: false,
-    //                hours: false,
-    //                minutes: false,
-    //                seconds: false
-    //            },
-    //            viewMode: 'calendar',
-    //            cellSize: '3rem'
-    //        },
-    //        restrictions: {
-    //            disabledDates: []
-    //        },
-    //        allowInputToggle: false,
-    //        useCurrent: false,
-    //        keepInvalid: true,
-    //        debug: false,
-    //        eventHandlers: {
-    //            onChange: (e) => {
-
-    //            }
-    //        },
-    //        viewDate: self.readOnly ? new Date(Date.parse(self.dueDate())) : self.dueDate() ? new Date(self.dueDate().getFullYear(), self.dueDate().getMonth(), self.dueDate().getDate(), 12, 0, 0, 0) : new Date()
-    //    },
-    //    disabled: ko.observable(self.readOnly),
-    //    locked: ko.observable(self.readOnly),
-    //    clearable: ko.observable(false),
-    //    clearFunction: () => {
-    //        self.invoiceDate(undefined);
-    //    },
-    //    revertible: ko.observable(false),
-    //    revertFunction: () => {
-    //        self.dueDateParams.observable(self.dueDateParams.originalValue);
-    //    },
-    //    useNativeValidation: false,
-    //    insertValidationMessages: false,
-    //    decorateInputElement: true
-    //};
-
-    //self.settlementDateParams = {
-    //    label: "Settlement Date",
-    //    observable: self.settlementDate,
-    //    originalValue: self.settlementDate(),
-    //    displayObservable: ko.observable(),
-    //    showCalendarButton: true,
-    //    dateTimePickerOptions: {
-    //        bindToParentNode: true,
-    //        localization: {
-    //            locale: 'en-GB',
-    //            format: 'dd/MM/yyyy'
-    //        },
-    //        display: {
-    //            sideBySide: false,
-    //            components: {
-    //                clock: false,
-    //                calendar: true,
-    //                date: true,
-    //                month: true,
-    //                year: true,
-    //                decades: false,
-    //                clock: false,
-    //                hours: false,
-    //                minutes: false,
-    //                seconds: false
-    //            },
-    //            viewMode: 'calendar',
-    //            cellSize: '3rem'
-    //        },
-    //        restrictions: {
-    //            disabledDates: []
-    //        },
-    //        allowInputToggle: false,
-    //        useCurrent: false,
-    //        keepInvalid: true,
-    //        debug: false,
-    //        eventHandlers: {
-    //            onChange: (e) => {
-
-    //            }
-    //        },
-    //        viewDate: self.readOnly ? new Date(Date.parse(self.settlementDate())) : self.settlementDate() ? new Date(self.settlementDate().getFullYear(), self.settlementDate().getMonth(), self.settlementDate().getDate(), 12, 0, 0, 0) : new Date()
-    //    },
-    //    disabled: ko.observable(self.readOnly),
-    //    locked: ko.observable(self.readOnly),
-    //    clearable: ko.observable(false),
-    //    clearFunction: () => {
-    //        self.invoiceDate(undefined);
-    //    },
-    //    revertible: ko.observable(false),
-    //    revertFunction: () => {
-    //        self.settlementDateParams.observable(self.settlementDateParams.originalValue);
-    //    },
-    //    useNativeValidation: false,
-    //    insertValidationMessages: false,
-    //    decorateInputElement: true
-    //};
 
     self.paymentTermsParams = kendoMDCDropDownList({
         autoBind: true,

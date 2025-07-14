@@ -171,6 +171,22 @@
             delete d.$format; // <-- remove format
             delete d.$callback; // <-- remove callback
 
+            let filters = [];
+
+            if (data.filter && data.filter.filters.length) {
+                let f = data.filter.filters.find(f => f.field === "Name");
+                filters.push(`(contains(Name, '${f.value}') or contains(SortName, '${f.value}') or startswith(tolower(Code), '${f.value}'))`);
+
+                if (d.$filter) {
+                    delete d.$filter;
+                }
+            }
+
+            if (filters.length) {
+                let filterString = filters.join(' and ');
+                d.$apply = `filter(${filterString})`;
+            }
+
             d.$count = true;
 
             return d;
@@ -408,7 +424,7 @@
     }
 
     self.imageExtensions = [
-        '.jpg', '.jpeg', '.png', '.tif', '.tiff', '.gif'
+        '.jpg', '.jpeg', '.png', '.tif', '.tiff', '.gif', '.bmp', '.webp'
     ]
 
     self.iconClass = (data) => {
@@ -416,7 +432,7 @@
         let extension = `.${data.FileExtension.toLowerCase()}`;
 
         if (self.imageExtensions.indexOf(extension) > -1)
-            return 'k-i-image';
+            return 'k-icon k-i-image';
 
         switch (extension) {
             case '.html':

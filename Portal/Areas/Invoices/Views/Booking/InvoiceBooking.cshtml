@@ -12,6 +12,7 @@
     @Styles.Render("~/bundles/css/mdc-custom")
 }
 @section scripts {
+
     @Scripts.Render("~/bundles/js/jqueryui")
     @Scripts.Render("~/bundles/js/datetime-picker")
     @Scripts.Render("~/bundles/js/generic-forms")
@@ -104,13 +105,13 @@
                 <span class="validation-message" data-bind="validationMessage: supplierInvoiceReference"></span>
                 <div class="attachment-property-wrap">
                     <div id="invoice-date" class="attachment-property" data-bind="highlightNullField: invoiceDate, component: { name: 'tempus-dominus-date-picker-component', params: invoiceDateParams }"></div>
-                    <div id="invoice-terms" class="attachment-property" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsParams }"></div>
+                    <div id="invoice-date" class="attachment-property" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: dueDateParams }"></div>
+                    <span class="validation-message" data-bind="validationMessage: dueDate"></span>
                 </div>
                 <span class="validation-message" data-bind="validationMessage: invoiceDate"></span>
                 <div class="attachment-property-wrap">
                     <div>
-                        <div id="invoice-date" class="attachment-property" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: dueDateParams }"></div>
-                        <span class="validation-message" data-bind="validationMessage: dueDate"></span>
+                        <div id="invoice-terms" class="attachment-property" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsParams }"></div>
                     </div>
                     <div>
                         <div id="invoice-date" class="attachment-property" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: settlementDateParams }"></div>
@@ -509,7 +510,7 @@
                     </button>
                 </h5>
                 <p>
-                    It might be imperative that you provide a full VAT breakdown to allow us to reclaim the VAT on this credit note. Might not. I'm not sure.
+                    It is imperative that you provide a full VAT breakdown to allow us to repay the VAT on this credit note.
                 </p>
                 <ul class="list-group" data-bind="validationElement: vatableSumEqualsTotalNET, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
                     <!-- ko if: vatEntries().length == 0 -->
@@ -579,6 +580,29 @@
         </div>
     </script>
 
+    <script type="text/html" id="supplier-only-template">
+        <div id="proforma-properties" class="card">
+            <div class="card-body">
+                <h5 class="data-heading">
+                    <!-- ko ifnot: $parent.Processed -->
+                    Please Enter the Supplier Details
+                    <!-- /ko -->
+                    <!-- ko if: $parent.Processed -->
+                    Supplier Details
+                    <!-- /ko -->
+                </h5>
+                <div class="attachment-property attachment-supplier-wrapper">
+                    @* $parent here navigates you back up to the "attachment" level from the "invoice" level. *@
+                    <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+                    <button type="button" class="btn btn-dark" style="display: none;" data-bind="visible: readOnly == false && supplierParams.locked, click: () => { supplierParams.locked(!supplierParams.locked()) }">
+                        Change
+                    </button>
+                </div>
+            </div>
+        </div>
+    </script>
+
+
     <script type="text/javascript">
 
         var viewModel = invoiceBookingViewModel({
@@ -634,6 +658,11 @@
         </div>
     </div>
 </div>
+
+@*<div class="my-5 d-flex gap-3 w-50">
+        <input class="form-control fs-3 py-2 px-3" type="text" data-bind="value: testDateInput" placeholder="Input" />
+        <input class="form-control fs-3 py-2 px-3" type="text" data-bind="value: testDateOutput" placeholder="Result" />
+    </div>*@
 
 <div id="invoice-registration" class="card">
     <div class="card-body">
@@ -710,12 +739,12 @@
                                 <a class="text-white" data-bind="attr: { href: `mailto:${FromEmail}` }, text: (FromName == FromEmail ? FromName : `${FromName} - ${FromEmail}`)"></a>
                             </span>
                             <span data-bind="html: `Received: ${moment(ReceivedDT).format('DD/MM/YYYY HH:mm')}`, attr: { title: moment(ReceivedDT).format('dddd Do MMM YYYY HH:mm') }"></span>
-                            <span class="text-transparent" data-bind="text: `Email ID: ${EmailID}`"></span>
                         </span>
                         <span class="d-block" data-bind="html: `Subject: ${Subject}`"></span>
                     </span>
                     <div class="d-inline-flex gap-3">
                         <nav class="nav">
+                            <span class="me-3" data-bind="text: `Email ID: ${EmailID}`"></span>
                             <button class="btn btn-light" type="button" data-bind="css: { 'disabled': navPreviousDisabled }, click: parent.previous">
                                 <i class="bi bi-chevron-left"></i>
                                 <span>
@@ -794,10 +823,13 @@
                     <!-- ko ifnot: isEmailBody -->
                     <div id="attachment-iframe-wrapper" class="ratio">
                         <!-- ko if: ['csv','txt'].indexOf(FileExtension.toLowerCase()) == -1 -->
-                        <iframe id="attachment-frame" data-bind="attr: { src: src }"></iframe>
+                        <iframe id="attachment-frame" data-bind="attr: { src: actualSrc }"></iframe>
                         <!-- /ko -->
                         <!-- ko if: ['csv','txt'].indexOf(FileExtension.toLowerCase()) > -1 -->
                         <pre class="prettyprint linenums" data-bind="html: prettyPrintedResponse"></pre>
+                        <!-- /ko -->
+                        <!-- ko if: ['png','jpg','jpeg','tif','tiff','gif','bmp','webp'].indexOf(FileExtension.toLowerCase()) > -1 -->
+                        <img id="attachment-frame" data-bind="attr: { src: actualSrc }"/>
                         <!-- /ko -->
                     </div>
                     <!-- /ko -->

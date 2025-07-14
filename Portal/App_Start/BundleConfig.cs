@@ -928,6 +928,7 @@ namespace Portal
                         $"{jsPrefix}/models/emailer{jsSuffix}",
                         $"{jsPrefix}/models/invoice-booking/invoice-booking-email{jsSuffix}",
                         $"{jsPrefix}/models/invoice-booking/invoice-booking-email-attachment{jsSuffix}",
+                        $"{jsPrefix}/models/invoice-booking/invoice-booking-email-attachment-supplier-only{jsSuffix}",
                         $"{jsPrefix}/models/invoice-booking/invoice-booking-email-attachment-invoice{jsSuffix}",
                         $"{jsPrefix}/models/invoice-booking/invoice-booking-email-attachment-proforma{jsSuffix}",
                         $"{jsPrefix}/models/invoice-booking/invoice-booking-email-attachment-credit-note{jsSuffix}",

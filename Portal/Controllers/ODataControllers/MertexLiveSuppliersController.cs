@@ -40,14 +40,14 @@ namespace Portal.Controllers
         [EnableQuery]
         public IQueryable<SupplierLive> GetMertexLiveSuppliers()
         {
-            return PortalDb.Suppliers_Live.Where(p => p.Deleted == false).AsQueryable();
+            return PortalDb.Suppliers_Live.Where(p => p.Deleted == false && p.AccountClosed == false).AsQueryable();
         }
 
         [EnableQuery(MaxNodeCount = 200)]
         [HttpGet]
         public IQueryable<SupplierLive> MertexLiveSupplierValueMapper(string supplierCode)
         {
-            return PortalDb.Suppliers_Live.Where(p => p.Code == supplierCode).AsQueryable();
+            return PortalDb.Suppliers_Live.Where(p => p.AccountClosed == false && p.Code == supplierCode).AsQueryable();
         }
     }
 }

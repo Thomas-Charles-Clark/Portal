@@ -103,7 +103,8 @@
             d.$count = true;
 
             return d;
-        }
+        },
+        height: 'auto'
     })
 
     self.disputeParams = {
@@ -122,15 +123,29 @@
 
     //#region Computeds
 
+    self.actualSrc = ko.observable();
+
+    self.canPreviewAttachment = ko.observable(false);
+
     self.src = ko.computed(() => {
         let result = `/incomingemail/attachments/${self.IsInline ? 'inline' : 'regular'}/null/${self.EmailAttachmentID}`;
         switch (self.FileExtension.toLowerCase()) {
+            case 'pdf':
+                ko.ignoreDependencies(() => {
+                    self.canPreviewAttachment(true);
+                    self.actualSrc(result);
+                });
+                break;
             case 'docx':
             case 'doc':
             case 'xlsx':
             case 'xls':
             case 'ppt':
                 result = `https://view.officeapps.live.com/op/embed.aspx?src=https://portal.designersguild.com${result}`;
+                ko.ignoreDependencies(() => {
+                    self.canPreviewAttachment(true);
+                    self.actualSrc(result);
+                });
                 break;
             case 'txt':
             case 'csv':
@@ -140,15 +155,28 @@
                     cache: 'no-cache'
                 }).then(response => response.text())
                     .then(csvText => {
+                        self.canPreviewAttachment(true);
                         self.prettyPrintedResponse(PR.prettyPrintOne(csvText, self.FileExtension.toLowerCase(), true));
                     })
                     .catch(window.catchFetchError)
                 break;
+            case 'png':
+            case 'jpg':
+            case 'jpeg':
+            case 'tif':
+            case 'tiff':
+            case 'gif':
+            case 'bmp':
+            case 'webp':
+                ko.ignoreDependencies(() => {
+                    self.canPreviewAttachment(true);
+                    self.actualSrc(result);
+                });
             default:
+                self.canPreviewAttachment(false);
                 break;
         }
-        console.log(result);
-        return result;
+
     }, self);
 
     self.errors = ko.validation.group([
@@ -175,6 +203,21 @@
 
     self.determinePropertiesTemplate = (force) => {
 
+        if (self.canPreviewAttachment() == false) {
+            window.showConfirm(`${self.FileName}.${self.FileExtension}`,
+                `This file type can't be previewed in your browser. Would you like to download it to your computer to attempt to open it there?`, () => {
+
+                    let result = `/incomingemail/attachments/${self.IsInline ? 'inline' : 'regular'}/null/${self.EmailAttachmentID}`
+
+                    ko.ignoreDependencies(() => {
+                        self.actualSrc(result);
+                    });
+
+                }, () => {
+
+                });
+        }
+
         console.log(`determinePropertiesTemplate called, force was: ${force}`);
 
         if (self.properties() == null || force) {
@@ -196,8 +239,8 @@
         
                 */
 
-                case 1:
-                    break;
+                //case 1:
+                //    break;
                 case 2:
                     propertiesViewModelFn = invoiceBookingEmailAttachmentInvoiceViewModel;
                     propertiesTemplateName = 'invoice-booking-invoice-template';
@@ -210,13 +253,15 @@
                     propertiesViewModelFn = invoiceBookingEmailAttachmentCreditNoteViewModel;
                     propertiesTemplateName = 'invoice-booking-credit-note-template';
                     break;
-                case 5:
-                    break;
-                case 6:
-                    break;
-                case 999:
-                    break;
+                //case 5:
+                //    break;
+                //case 6:
+                //    break;
+                //case 999:
+                //    break;
                 default:
+                    propertiesViewModelFn = invoiceBookingEmailAttachmentSupplierOnlyViewModel;
+                    propertiesTemplateName = 'supplier-only-template';
                     break;
             }
 
@@ -466,7 +511,13 @@
                         isFlaggedAsDuplicate: props.isFlaggedAsDuplicate()
                     });
                     break;
-                default: break;
+                default:
+                    data.formDataJson = JSON.stringify({
+                        supplierCode: props.supplierCode() ?? null,
+                        supplier: props.supplier() ?? null,
+                        supplierCurrency: props.supplierCurrency() ?? null,
+                    });
+                    break;
             }
         }
 
@@ -491,29 +542,79 @@
                 // or something
                 self.AttachmentTypeID = self.attachmentTypeId();
 
-                self.parentLoadEmail({
-                    EmailMessageID: self.emailMessageId,
-                    EmailID: self.emailId
-                }).then(() => {
+                self.reloadWithoutReloadingAttachment();
 
-                    viewModel.selectedEmail().selectAttachment({
-                        AttachmentID: self.AttachmentID
-                    }, () => {
+                //self.parentLoadEmail({
+                //    EmailMessageID: self.emailMessageId,
+                //    EmailID: self.emailId
+                //}).then(() => {
 
-                        self.modalBusy(false);
+                //    viewModel.selectedEmail().selectAttachment({
+                //        AttachmentID: self.AttachmentID
+                //    }, () => {
 
-                        window.setTimeout(() => {
-                            self.modal._element.querySelector('.blocker').classList.remove('success');
-                            self.modalBusyMessage('Please Wait')
-                        }, 300); // modal is fully faded out by 150ms, but just to be sure
+                //        self.modalBusy(false);
 
-                    });
+                //        window.setTimeout(() => {
+                //            self.modal._element.querySelector('.blocker').classList.remove('success');
+                //            self.modalBusyMessage('Please Wait')
+                //        }, 300); // modal is fully faded out by 150ms, but just to be sure
 
-                })
+                //    });
+
+                //})
 
                 if (typeof afterSave === 'function') {
                     afterSave();
                 }
+            })
+            .catch(err => {
+                self.busy(false);
+                window.catchFetchError(err);
+            })
+    }
+
+    self.reloadWithoutReloadingAttachment = () => {
+
+        var data = {
+            attachmentId: self.AttachmentID
+        }
+
+        console.log('ReloadAttachmentWithoutReloadingAttachment calling with', data);
+
+
+        fetch('/api/InvoiceBookingAPI/LoadAttachment', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            body: JSON.stringify(data)
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+
+                console.log('ReloadAttachmentWithoutReloadingAttachment returned', data);
+
+                self.toLoad = data.SelectResult;
+
+                Object.assign(self.toLoad, {
+                    readOnly: true
+                });
+
+                self.readOnly = true;
+
+                self.attachmentTypeParams.disable(true);
+                self.attachmentTypeParams.locked(true);
+
+                self.disputeParams.disable(true);
+
+                self.determinePropertiesTemplate(true);
+
+                self.modalBusy(false);
+
+                window.setTimeout(() => {
+                    self.modal._element.querySelector('.blocker').classList.remove('success');
+                    self.modalBusyMessage('Please Wait')
+                }, 300);
+
             })
             .catch(err => {
                 self.busy(false);

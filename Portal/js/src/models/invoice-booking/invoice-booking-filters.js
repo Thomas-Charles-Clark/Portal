@@ -646,12 +646,7 @@ const invoiceBookingFiltersViewModel = ({
             allowInputToggle: true,
             useCurrent: false,
             keepInvalid: true,
-            debug: false,
-            eventHandlers: {
-                onChange: (e) => {
-
-                }
-            }
+            debug: false
         },
         clearable: ko.observable(true),
         clearFunction: () => {
@@ -705,12 +700,7 @@ const invoiceBookingFiltersViewModel = ({
             allowInputToggle: true,
             useCurrent: false,
             keepInvalid: true,
-            debug: false,
-            eventHandlers: {
-                onChange: (e) => {
-
-                }
-            }
+            debug: false
         },
         clearable: ko.observable(true),
         clearFunction: () => {

@@ -1238,20 +1238,22 @@ namespace SharedEFClasses.Models
             return result;
         }
 
-        public CreditController_SelectResult CreditController_SelectList(PassNullableCountryID objCountry)
+        public CreditController_SelectResult CreditController_SelectList(PassCreditControllerDefaultInfo dto)
         {
             var result = new CreditController_SelectResult();
 
-            SqlParameter countryId = new SqlParameter("@CountryID", objCountry.CountryID ?? (object)DBNull.Value);
+            SqlParameter languageId = new SqlParameter("@LanguageID", dto.LanguageID ?? (object)DBNull.Value);
+            SqlParameter salesMarketId = new SqlParameter("@SalesMarketID", dto.SalesMarketID ?? (object)DBNull.Value);
 
             var cmd = this.Database.Connection.CreateCommand();
 
             cmd.CommandType = CommandType.StoredProcedure;
 
-            cmd.CommandText = "[portal].[CreditController_SelectList]";
+            cmd.CommandText = "[portal].[CreditControllerAssignment_SelectList]";
 
-            cmd.Parameters.Add(countryId);
-            
+            cmd.Parameters.Add(languageId);
+            cmd.Parameters.Add(salesMarketId);
+
             try
             {
                 this.Database.Connection.Open();

@@ -66,9 +66,13 @@ var leadEnquiryViewModel = function () {
 
     self.availablePurchaseOrderRequiredOptions = getYesNoDontKnowOptions();
 
+    // defunct
     self.availableCreditControllers = getAvailableCreditControllers();
 
+    // defunct
     self.creditControllerSalesMarketMap = getCreditControllerSalesMarketMap();
+
+    self.creditControllerAssignments = getCreditControllerAssignments();
 
     self.availableBanks = getAvailableBanks();
 
@@ -2834,13 +2838,17 @@ This customer wishes their deliveries to be consolidated. Please double check th
     }
 
     self.fetchAvailableCreditControllers = function () {
+        let data = {
+            LanguageID: self.languageId(),
+            SalesMarketID: self.salesMarket() ? self.salesMarket().SalesMarketID : null
+        }
+
+        console.log('fetchAvailableCreditControllers calling with', data)
         $.ajax({
             url: '/api/leadsapi/CreditControllerSelectList',
             type: 'POST',
             dataType: 'json',
-            data: {
-                CountryID: self.countryId()
-            },
+            data: data,
             success: function (data) {
                 //console.log('fetchAvailableCreditControllers returned', data);
 

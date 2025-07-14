@@ -55,6 +55,7 @@ namespace Portal.Areas.Sales.Controllers
             var tradeAccountClasses = PortalDb.TradeAccountClasses.ToList();
             var creditControllers = PortalDb.CreditControllers.Where(cc => cc.Deleted == false).ToList();
             var creditControllerSalesMarketMap = PortalDb.CreditControllerSalesMarketMap.ToList();
+            var creditControllerAssignments = PortalDb.CreditControllerAssignments.Where(ca => ca.Deleted == false).ToList();
             var banks = PortalDb.Banks.Where(b => b.CreditControlVisible == true).OrderBy(b => b.BankCode).ToList();
             var bankSalesMarketMap = PortalDb.BankSalesMarketMap.Include("SalesMarket.Currency").ToList();
             var tradeAccountGroups = PortalDb.TradeAccountGroups.ToList();
@@ -105,6 +106,7 @@ namespace Portal.Areas.Sales.Controllers
                 tradeAccountClasses,
                 creditControllers,
                 creditControllerSalesMarketMap,
+                creditControllerAssignments,
                 banks,
                 bankSalesMarketMap,
                 tradeAccountGroups,
