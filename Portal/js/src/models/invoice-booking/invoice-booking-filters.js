@@ -109,6 +109,11 @@ const invoiceBookingFiltersViewModel = ({
 
     self.pauseFreeTextSearchUpdate = false;
 
+    self.refreshParent = () => {
+        self.parent.dashboard.fetch();
+        self.parent.mailboxGridParams.widget().dataSource.page(1);
+    }
+
     //#endregion
 
 
@@ -523,6 +528,7 @@ const invoiceBookingFiltersViewModel = ({
             dir: 'asc',
             field: 'Supplier.Name'
         },
+        changeBtnVisible: true,
         select: function (e) {
             console.log('supplierParams select', e);
         },
@@ -865,10 +871,7 @@ const invoiceBookingFiltersViewModel = ({
 
     //#region Methods
 
-    self.refreshParent = () => {
-        self.parent.dashboard.fetch();
-        self.parent.mailboxGridParams.widget().dataSource.page(1);
-    }
+
 
     //#endregion
 

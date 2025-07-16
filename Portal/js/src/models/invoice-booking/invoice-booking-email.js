@@ -97,6 +97,20 @@
 
     self.displayMostRecent = ko.observable(true);
 
+    self.downloadAttachmentsModalElement = document.querySelector('#download-attachments-modal');
+
+    self.downloadAttachmentsModal = bootstrap.Modal.getOrCreateInstance(self.downloadAttachmentsModalElement);
+
+    self.downloadAttachmentsModalBusy = ko.observable(false);
+
+    self.downloadAttachmentsDownloadsBusy = ko.observable(false);
+
+    self.downloadAttachmentsModalBusyMessage = ko.observable('Please Wait');
+
+    self.downloadAttachmentsProgressPercentage = ko.observable(0);
+
+    self.downloadAttachmentsIndividualPortionPercentage = ko.observable(Math.round((100 / self.attachments().filter(a => a.isEmailBody == false && a.IsInline == false).length) * 100) / 100);
+
     //#endregion
 
 
@@ -141,6 +155,7 @@
                 }
             }
         },
+        changeBtnVisible: ko.observable(self.supplierCode() != ''),
         locked: ko.observable(self.supplierCode() != ''),
         enable: ko.observable(true),
         disable: ko.observable(false),
@@ -196,17 +211,30 @@
         }
     });
 
+    self.downloadAttachmentsProgressBarParams = {
+        widget: ko.observable(),
+        type: 'percent',
+        value: self.downloadAttachmentsProgressPercentage,
+        showStatus: true,
+        animation: {
+            duration: 100
+        },
+        change: function (e) {
+
+        }
+    }
+
     //#endregion
 
 
     //#region Computeds
 
     self.navPreviousDisabled = ko.computed(() => {
-        return self.selectedEmailIndex() == 1;
+        return self.itemCount() == 1 || self.selectedEmailIndex() == 1;
     }, self);
 
     self.navNextDisabled = ko.computed(() => {
-        return self.selectedEmailIndex() - 1 == self.itemCount();
+        return self.itemCount() == 1 || (self.selectedEmailIndex() - 1 == self.itemCount());
     }, self);
 
     self.fromDisplay = ko.computed(() => {
@@ -257,6 +285,10 @@
             nonJunkableAttachments.push(selectedAttachmentTypeId);
 
         return self.Junk == false && self.Processed == false && nonJunkableAttachments.length == 0;
+    }, self);
+
+    self.attachmentsSelectedForDownload = ko.computed(() => {
+        return self.regularAttachments().filter(f => !f.isEmailBody && f.selectedForDownload());
     }, self);
 
     //#endregion
@@ -359,7 +391,12 @@
                 new bootstrap.Ripple(e);
             });
         }
-    })
+    });
+
+    self.attachmentsSelectedForDownload.subscribe(nv => {
+        self.downloadAttachmentsProgressPercentage(0);
+        self.downloadAttachmentsIndividualPortionPercentage(Math.round((100 / nv.length) * 100) / 100)
+    });
 
     //#endregion
 
@@ -514,6 +551,63 @@
     self.loadAttachmentById = (attachmentId) => {
         self.selectAttachment({
             AttachmentID: attachmentId
+        });
+    }
+
+    self.showDownloadAttachmentsModal = () => {
+        self.downloadAttachmentsProgressPercentage(0);
+        self.downloadAttachmentsModal.show();
+    }
+
+    self.selectAllAttachmentsForDownload = () => {
+        for (var i = 1; i < self.regularAttachments().length; i++) {
+            self.regularAttachments()[i].selectedForDownload(true);
+        }
+    }
+
+    self.deselectAllAttachmentsForDownload = () => {
+        for (var i = 1; i < self.regularAttachments().length; i++) {
+            self.regularAttachments()[i].selectedForDownload(false);
+        }
+    }
+
+    self.downloadSelectedAttachments = (data) => {
+        self.downloadAttachmentsDownloadsBusy(true);
+        self.downloadAttachmentsProgressPercentage(0);
+
+        let promises = [];
+
+        self.attachmentsSelectedForDownload().forEach(a => {
+            promises.push(self.downloadAttachment(a.src(), `${a.FileName}.${a.FileExtension}`));
+        });
+
+        Promise.allSettled(promises)
+            .then(results => {
+                console.log(results);
+                self.downloadAttachmentsProgressPercentage(`Complete`);
+                self.downloadAttachmentsDownloadsBusy(false);
+            })
+    }
+
+    self.downloadAttachment = (src, fileName) => {
+        return new Promise((resolve, reject) => {
+            fetch(src, {
+                method: 'GET',
+                headers: window.fetchHeaders
+            })
+                .then(b => b.blob())
+                .then(b => {
+                    var a = document.createElement("a");
+                    a.href = URL.createObjectURL(b);
+                    a.setAttribute("download", fileName);
+                    a.click();
+                    self.downloadAttachmentsProgressPercentage(`${Math.round((self.downloadAttachmentsProgressPercentage() + self.downloadAttachmentsIndividualPortionPercentage()) * 100) / 100}%`);
+                    resolve();
+                })
+                .catch(err => {
+                    console.error(err);
+                    reject();
+                })
         });
     }
 

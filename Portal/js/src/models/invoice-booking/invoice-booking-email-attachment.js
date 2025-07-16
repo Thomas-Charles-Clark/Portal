@@ -23,16 +23,16 @@
     self.mertexData = rec.SelectResult?.MostRecent;
 
     if (toLoad) {
+        self.readOnly = ko.observable(true);
         self.toLoad = Object.assign(toLoad, {
-            readOnly: true
+            readOnly: self.readOnly
         });
-        self.readOnly = true;
     } else {
+        self.readOnly = ko.observable(false);
         self.toLoad = {
             SupplierCode: self.SupplierCode,
-            readOnly: false
+            readOnly: self.readOnly
         };
-        self.readOnly = false;
     }
 
     //#region Properties
@@ -62,6 +62,8 @@
 
     self.prettyPrintedResponse = ko.observable();
 
+    self.selectedForDownload = ko.observable(true);
+
     //#endregion
 
     //#region Components
@@ -80,12 +82,15 @@
         idObservable: self.attachmentTypeId,
         objObservable: self.attachmentType,
         originalValue: self.attachmentTypeId(),
-        enable: ko.observable(true),
-        disable: ko.observable(self.toLoad.readOnly),
+        enable: ko.computed(() => {
+            return !self.toLoad.readOnly()
+        }, self),
+        disable: self.readOnly,
+        disable: self.toLoad.readOnly,
         clearable: ko.observable(true),
         revertible: ko.observable(false),
-        locked: ko.observable(self.toLoad.readOnly),
-        readOnly: false,
+        locked: self.toLoad.readOnly,
+        readOnly: self.toLoad.readOnly, //????
         filter: false,
         autoBind: true,
         sort: {
@@ -112,8 +117,10 @@
         label: 'Dispute',
         observable: self.dispute,
         useNativeValidation: false,
-        enable: ko.observable(true),
-        disable: ko.observable(self.toLoad.readOnly),
+        enable: ko.computed(() => {
+            return !self.toLoad.readOnly()
+        }, self),
+        disable: self.toLoad.readOnly,
         busy: ko.observable(false),
         originalValue: self.dispute()
     }
@@ -176,7 +183,7 @@
                 self.canPreviewAttachment(false);
                 break;
         }
-
+        return result;
     }, self);
 
     self.errors = ko.validation.group([
@@ -536,33 +543,17 @@
 
                 self.modalBusyMessage('<span>Success</span><span class="ms-3">✔</span>')
 
-                // window.showInfo('Success', 'Attachment detail saved successfully');
-
-                // this little trick to get around the call to unsavedChanges on the upcoming call to selectAttachment following the reload
-                // or something
                 self.AttachmentTypeID = self.attachmentTypeId();
 
-                self.reloadWithoutReloadingAttachment();
+                self.readOnly(true);
 
-                //self.parentLoadEmail({
-                //    EmailMessageID: self.emailMessageId,
-                //    EmailID: self.emailId
-                //}).then(() => {
+                window.setTimeout(() => {
+                    self.modalBusy(false);
+                    self.modal._element.querySelector('.blocker').classList.remove('success');
 
-                //    viewModel.selectedEmail().selectAttachment({
-                //        AttachmentID: self.AttachmentID
-                //    }, () => {
+                    self.modalBusyMessage('Please Wait')
 
-                //        self.modalBusy(false);
-
-                //        window.setTimeout(() => {
-                //            self.modal._element.querySelector('.blocker').classList.remove('success');
-                //            self.modalBusyMessage('Please Wait')
-                //        }, 300); // modal is fully faded out by 150ms, but just to be sure
-
-                //    });
-
-                //})
+                }, 500);
 
                 if (typeof afterSave === 'function') {
                     afterSave();
@@ -574,53 +565,57 @@
             })
     }
 
-    self.reloadWithoutReloadingAttachment = () => {
-
-        var data = {
-            attachmentId: self.AttachmentID
-        }
-
-        console.log('ReloadAttachmentWithoutReloadingAttachment calling with', data);
-
-
-        fetch('/api/InvoiceBookingAPI/LoadAttachment', {
-            method: 'POST',
-            headers: window.fetchHeaders,
-            body: JSON.stringify(data)
-        })
-            .then(window.handleFetchResponse)
-            .then(data => {
-
-                console.log('ReloadAttachmentWithoutReloadingAttachment returned', data);
-
-                self.toLoad = data.SelectResult;
-
-                Object.assign(self.toLoad, {
-                    readOnly: true
-                });
-
-                self.readOnly = true;
-
-                self.attachmentTypeParams.disable(true);
-                self.attachmentTypeParams.locked(true);
-
-                self.disputeParams.disable(true);
-
-                self.determinePropertiesTemplate(true);
-
-                self.modalBusy(false);
-
-                window.setTimeout(() => {
-                    self.modal._element.querySelector('.blocker').classList.remove('success');
-                    self.modalBusyMessage('Please Wait')
-                }, 300);
-
-            })
-            .catch(err => {
-                self.busy(false);
-                window.catchFetchError(err);
-            })
+    self.toggleSelectedForDownload = () => {
+        self.selectedForDownload(!self.selectedForDownload());
     }
+
+    //self.reloadWithoutReloadingAttachment = () => {
+
+    //    var data = {
+    //        attachmentId: self.AttachmentID
+    //    }
+
+    //    console.log('ReloadAttachmentWithoutReloadingAttachment calling with', data);
+
+
+    //    fetch('/api/InvoiceBookingAPI/LoadAttachment', {
+    //        method: 'POST',
+    //        headers: window.fetchHeaders,
+    //        body: JSON.stringify(data)
+    //    })
+    //        .then(window.handleFetchResponse)
+    //        .then(data => {
+
+    //            console.log('ReloadAttachmentWithoutReloadingAttachment returned', data);
+
+    //            self.toLoad = data.SelectResult;
+
+    //            Object.assign(self.toLoad, {
+    //                readOnly: true
+    //            });
+
+    //            self.readOnly = true;
+
+    //            self.attachmentTypeParams.disable(true);
+    //            self.attachmentTypeParams.locked(true);
+
+    //            self.disputeParams.disable(true);
+
+    //            self.determinePropertiesTemplate(true);
+
+    //            self.modalBusy(false);
+
+    //            window.setTimeout(() => {
+    //                self.modal._element.querySelector('.blocker').classList.remove('success');
+    //                self.modalBusyMessage('Please Wait')
+    //            }, 300);
+
+    //        })
+    //        .catch(err => {
+    //            self.busy(false);
+    //            window.catchFetchError(err);
+    //        })
+    //}
 
     //self.switchDataSet = (mostRecent) => {
     //    if (mostRecent) {

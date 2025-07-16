@@ -56,7 +56,8 @@
     minLength,
     enforceMinLength,
     busy,
-    locked
+    locked,
+    changeBtnVisible
 } = {
         widget: ko.observable(),
         endPoint: null,
@@ -112,7 +113,8 @@
         minLength: null,
         enforceMinLength: false,
         busy: ko.observable(false),
-        locked: ko.observable(false)
+        locked: ko.observable(false),
+        changeBtnVisible: ko.observable(false)
     }) {
 
     if (endPoint == null && data == null) {
@@ -234,6 +236,7 @@
         readOnly: readOnly,
         busy: busy,
         locked: locked,
+        changeBtnVisible: changeBtnVisible,
         dropDownListSettings: {
             isKendoMDCDropDownList: true,
             enable: !disabled,

@@ -134,8 +134,12 @@
         useNativeValidation: false,
         decorateInputElement: false,
         insertValidationMessages: false,
-        enable: ko.observable(true),
-        disable: self.readOnly ? ko.observable(true) : self.disabled,
+        enable: ko.computed(() => {
+            return !self.readOnly()
+        }, self),
+        disable: ko.computed(() => {
+            return self.readOnly() ? true : self.disabled()
+        }, self),
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         busy: ko.observable(false),
@@ -249,8 +253,12 @@
         },
         idObservable: self.vatCode,
         objObservable: self.vatObj,
-        enable: ko.observable(true),
-        disable: self.readOnly ? ko.observable(true) : self.disabled,
+        enable: ko.computed(() => {
+            return !self.readOnly()
+        }, self),
+        disable: ko.computed(() => {
+            return self.readOnly() ? true : self.disabled()
+        }, self),
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         readOnly: false,
@@ -365,13 +373,13 @@
     //#region Subscriptions
 
     self.vatObj.subscribe(nv => {
-        if (nv && self.vatRate() == null) {
+        if (nv) {
             self.vatRate(nv.VATRate);
         }
     });
 
     self.supplier.subscribe(nv => {
-        if (nv && self.exchangeRate() == null) {
+        if (nv) {
             self.exchangeRate(nv.ExchangeRate.SterlingExchangeRate);
         }
     })

@@ -22,7 +22,7 @@ namespace SharedEFClasses.Models
             var reply = await this.Database.Connection.QueryMultipleAsync("[Fenwicks].[Invoice_Select]", new
             {
                 SelfBillInvoiceID = selfBillInvoiceId
-            }, null, 300, CommandType.StoredProcedure);
+            }, null, 600, CommandType.StoredProcedure);
 
             return new FenwickSelfbillInvoiceResponse()
             {
@@ -37,7 +37,7 @@ namespace SharedEFClasses.Models
             var reply = await this.Database.Connection.QueryAsync<SelfBillInvoiceSelectResult>("[Fenwicks].[SelfBillInvoice_SelectList]", new
             {
 
-            }, null, 300, CommandType.StoredProcedure);
+            }, null, 600, CommandType.StoredProcedure);
 
             return reply;
         }
@@ -47,7 +47,7 @@ namespace SharedEFClasses.Models
             var reply = await this.Database.Connection.QueryAsync("[Fenwicks].[Invoice_Process]", new
             {
 
-            }, null, 300, CommandType.StoredProcedure);
+            }, null, 600, CommandType.StoredProcedure);
         }
 
         public async System.Threading.Tasks.Task DeleteACLSales()
@@ -55,7 +55,7 @@ namespace SharedEFClasses.Models
             var reply = await this.Database.Connection.QueryAsync("[Fenwicks].[Invoice_Delete_ACL_Sales]", new
             {
 
-            }, null, 300, CommandType.StoredProcedure);
+            }, null, 600, CommandType.StoredProcedure);
         }
     }
 }

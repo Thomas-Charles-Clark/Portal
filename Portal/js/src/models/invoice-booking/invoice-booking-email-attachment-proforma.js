@@ -397,7 +397,7 @@
 
     self.duplicateCheck = ko.computed(() => {
 
-        if ((!self.readOnly) &&
+        if ((!self.readOnly()) &&
             self.supplierCode() &&
             self.attachmentTypeId() == 2 && // invoice only
             (self.invoiceDate() || self.supplierInvoiceReference() || self.invoiceTotalIncVATCurrency())) {
@@ -528,8 +528,10 @@
             }
         },
         locked: ko.observable(self.supplierCode() != ''),
-        enable: ko.observable(true),
-        disable: ko.observable(self.supplierCode() != '' || self.readOnly),
+        enable: ko.computed(() => {
+            return !self.readOnly()
+        }, self),
+        disable: ko.observable(self.supplierCode() != '' || self.readOnly()),
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         readOnly: false,
@@ -540,6 +542,9 @@
             dir: 'asc',
             field: 'Name'
         },
+        changeBtnVisible: ko.computed(() => {
+            return self.readOnly() == false && self.supplierCode() != '';
+        }, self),
         select: function (e) {
             console.log('supplierParams select', e);
             self.supplierParams.locked(true);
@@ -598,9 +603,11 @@
         useNativeValidation: false,
         decorateInputElement: false,
         insertValidationMessages: false,
-        enable: ko.observable(true),
-        disable: ko.observable(self.readOnly),
-        locked: ko.observable(self.readOnly),
+        enable: ko.computed(() => {
+            return !self.readOnly()
+        }, self),
+        disable: self.readOnly,
+        locked: self.readOnly,
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         busy: ko.observable(false),
@@ -624,9 +631,11 @@
         useNativeValidation: false,
         decorateInputElement: false,
         insertValidationMessages: false,
-        enable: ko.observable(true),
-        disable: ko.observable(self.readOnly),
-        locked: ko.observable(self.readOnly),
+        enable: ko.computed(() => {
+            return !self.readOnly()
+        }, self),
+        disable: self.readOnly,
+        locked: self.readOnly,
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         busy: ko.observable(false),
@@ -650,9 +659,11 @@
         useNativeValidation: false,
         decorateInputElement: false,
         insertValidationMessages: false,
-        enable: ko.observable(true),
-        disable: ko.observable(self.readOnly),
-        locked: ko.observable(self.readOnly),
+        enable: ko.computed(() => {
+            return !self.readOnly()
+        }, self),
+        disable: self.readOnly,
+        locked: self.readOnly,
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         busy: ko.observable(false),
@@ -715,10 +726,10 @@
             useCurrent: false,
             keepInvalid: true,
             debug: false,
-            viewDate: self.invoiceDate() ? new Date(self.invoiceDate()) : new Date()
+            viewDate: self.readOnly() ? new Date(Date.parse(self.invoiceDate())) : self.invoiceDate() ? new Date(self.invoiceDate().getFullYear(), self.invoiceDate().getMonth(), self.invoiceDate().getDate(), 12, 0, 0, 0) : new Date()
         },
-        disabled: ko.observable(self.readOnly),
-        locked: ko.observable(self.readOnly),
+        disabled: self.readOnly,
+        locked: self.readOnly,
         clearable: ko.observable(false),
         clearFunction: () => {
             self.invoiceDate(undefined);
@@ -780,8 +791,8 @@
             debug: false,
             viewDate: self.dueDate() ? new Date(self.dueDate()) : new Date()
         },
-        disabled: ko.observable(self.readOnly),
-        locked: ko.observable(self.readOnly),
+        disabled: ko.observable(true),
+        locked: ko.observable(true),
         clearable: ko.observable(false),
         clearFunction: () => {
             self.invoiceDate(undefined);
@@ -843,8 +854,8 @@
             debug: false,
             viewDate: self.settlementDate() ? new Date(self.settlementDate()) : new Date()
         },
-        disabled: ko.observable(self.readOnly),
-        locked: ko.observable(self.readOnly),
+        disabled: ko.observable(true),
+        locked: ko.observable(true),
         clearable: ko.observable(false),
         clearFunction: () => {
             self.invoiceDate(undefined);
@@ -874,9 +885,11 @@
         valueTemplate: (e) => {
             return `${e.Name} (${e.Code})`;
         },
-        enable: ko.observable(true),
-        disable: ko.observable(self.readOnly),
-        locked: ko.observable(self.readOnly),
+        enable: ko.computed(() => {
+            return !self.readOnly()
+        }, self),
+        disable: self.readOnly,
+        locked: self.readOnly,
         clearable: ko.observable(false),
         revertible: ko.observable(false),
         readOnly: false,
@@ -920,8 +933,10 @@
             maxLength: 100
         },
         busy: ko.observable(false),
-        enable: ko.observable(true),
-        disable: ko.observable(false),
+        enable: ko.computed(() => {
+            return !self.readOnly()
+        }, self),
+        disable: self.readOnly,
         clearable: ko.observable(true),
         clearFunction: () => {
             self.supplierInvoiceReference(undefined);
@@ -930,8 +945,8 @@
         useNativeValidation: false,
         insertValidationMessages: false,
         decorateInputElement: true,
-        disable: ko.observable(self.readOnly),
-        locked: ko.observable(self.readOnly)
+        disable: self.readOnly,
+        locked: self.readOnly
     };
 
     self.disputeParams = {
@@ -939,8 +954,10 @@
         label: 'Dispute this Invoice with the Supplier?',
         observable: self.dispute,
         useNativeValidation: false,
-        enable: ko.observable(true),
-        disable: ko.observable(self.readOnly),
+        enable: ko.computed(() => {
+            return !self.readOnly()
+        }, self),
+        disable: self.readOnly,
         busy: ko.observable(false)
     }
 

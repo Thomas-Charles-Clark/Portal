@@ -25,7 +25,7 @@ body {
 }
 
 .blocker.success {
-  background-color: rgba(17, 127, 56, 0.8);
+  background-color: rgba(18, 99, 47, 0.8);
 }
 
 .navbar.navbar-default.navbar-expand {
@@ -420,23 +420,34 @@ body {
   height: 100%;
   background-color: #f3f1ed;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container {
+  display: flex;
+  gap: 1rem;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list {
+  flex: 1 1 calc(100% - 240px);
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons {
   position: relative;
   gap: 0.75rem;
   display: flex;
   flex-wrap: wrap;
   margin-bottom: 1rem;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list.over {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list.over,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons.over {
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .mdc-floating-label {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list .mdc-floating-label,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons .mdc-floating-label {
   position: absolute;
   left: 12px;
   top: 12px;
   color: #dee2e6;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list .attachment,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons .attachment {
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -450,20 +461,24 @@ body {
   flex: 0 1 240px;
   position: relative;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment.disabled:not(.selected) {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list .attachment.disabled:not(.selected),
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons .attachment.disabled:not(.selected) {
   cursor: not-allowed;
   background-color: #e9ecef !important;
   opacity: 0.85;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment.disabled:not(.selected):hover {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list .attachment.disabled:not(.selected):hover,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons .attachment.disabled:not(.selected):hover {
   background-color: #e9ecef !important;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:not(.disabled):has(.attachment-type-junk) {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list .attachment:not(.disabled):has(.attachment-type-junk),
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons .attachment:not(.disabled):has(.attachment-type-junk) {
   background-color: #e47112;
   color: #fff;
   border-color: #fd9843;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:not(.disabled) .attachment-type {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list .attachment:not(.disabled) .attachment-type,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons .attachment:not(.disabled) .attachment-type {
   position: absolute;
   bottom: -1px;
   right: -1px;
@@ -481,45 +496,39 @@ body {
   align-items: center;
   justify-content: center;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:not(.disabled) .attachment-type span {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list .attachment:not(.disabled) .attachment-type span,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons .attachment:not(.disabled) .attachment-type span {
   line-height: 1;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:not(.disabled):hover {
-  border-color: #031633;
-  background-color: #084298;
-  color: #fff;
-}
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:not(.disabled).selected {
-  outline: 4px solid #343a40;
-  border-color: #031633;
-}
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment:not(.disabled).selected:hover {
-  border-color: #031633;
-  background-color: #0a58ca;
-  color: #fff;
-}
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment.submitted {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list .attachment.submitted,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons .attachment.submitted {
   box-shadow: 0 4px 0 limegreen;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment.submitted.selected {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list .attachment.submitted.selected,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons .attachment.submitted.selected {
   box-shadow: 0 8px 0 limegreen;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment.submitted .attachment-type {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list .attachment.submitted .attachment-type,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons .attachment.submitted .attachment-type {
   bottom: 0 !important;
   right: 0 !important;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment .k-icon {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list .attachment .k-icon,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons .attachment .k-icon {
   font-size: 3em;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment .k-icon::before {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list .attachment .k-icon::before,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons .attachment .k-icon::before {
   position: relative;
   top: 1px;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment .bi {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list .attachment .bi,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons .attachment .bi {
   font-size: 2em;
   padding: 0 0.5rem;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment .attachment-properties {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list .attachment .attachment-properties,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons .attachment .attachment-properties {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -527,22 +536,46 @@ body {
   overflow-x: hidden;
   cursor: inherit;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment .attachment-properties label {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list .attachment .attachment-properties label,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons .attachment .attachment-properties label {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow-x: hidden;
   display: inline-block;
   cursor: inherit;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list .attachment .attachment-properties > * {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list .attachment .attachment-properties > *,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons .attachment .attachment-properties > * {
   margin: 0;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list #add-attachments-item {
-  margin-left: auto;
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list .attachment:hover,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons .attachment:hover {
+  border-color: #031633;
+  background-color: #084298;
+  color: #fff;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list .attachment.selected,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons .attachment.selected {
+  outline: 4px solid #343a40;
+  border-color: #031633;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list .attachment.selected:hover,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons .attachment.selected:hover {
+  border-color: #031633;
+  background-color: #0a58ca;
+  color: #fff;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons {
+  align-self: flex-start;
+  flex: 0 0 240px;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons #add-attachments-item,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons #download-attachments-item {
   display: list-item;
   padding: 0;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list #add-attachments-item > label {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons #add-attachments-item > label,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons #download-attachments-item > label {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -555,20 +588,27 @@ body {
   flex: 0 1 200px;
   user-select: none;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list #add-attachments-item > label:hover {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons #add-attachments-item > label:hover,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons #download-attachments-item > label:hover {
   border-color: #052c65;
   background-color: #084298;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list #add-attachments-item.disabled > label {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons #add-attachments-item.disabled > label,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons #download-attachments-item.disabled > label {
   cursor: not-allowed;
   background-color: #e9ecef;
   opacity: 0.85;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list #add-attachments-item.disabled > label:hover {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons #add-attachments-item.disabled > label:hover,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons #download-attachments-item.disabled > label:hover {
   background-color: #e9ecef;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachments-list #add-attachments-item #add-attachments-form {
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons #add-attachments-item #add-attachments-form,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons #download-attachments-item #add-attachments-form {
   display: none;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons #download-attachments-item label .k-icon::before {
+  font-size: 2.5rem;
 }
 #email-modal .modal-dialog .modal-content .modal-body #attachment-viewer {
   display: flex;
@@ -912,5 +952,106 @@ body {
 }
 .duplicate-property label {
   flex: 0 1 160px;
+}
+
+#attachments-list-container .mdc-form-field {
+  font-size: 1rem;
+}
+#attachments-list-container .attachment {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 0;
+  align-self: flex-start;
+  padding: 0.1rem;
+  padding-right: 0.75rem;
+  background-color: #fff;
+  cursor: pointer;
+  border: 1px solid #dee2e6;
+  flex: 0 1 240px;
+  position: relative;
+  flex: 1;
+}
+#attachments-list-container .attachment.disabled:not(.selected) {
+  cursor: not-allowed;
+  background-color: #e9ecef !important;
+  opacity: 0.85;
+}
+#attachments-list-container .attachment.disabled:not(.selected):hover {
+  background-color: #e9ecef !important;
+}
+#attachments-list-container .attachment:not(.disabled):has(.attachment-type-junk) {
+  background-color: #e47112;
+  color: #fff;
+  border-color: #fd9843;
+}
+#attachments-list-container .attachment:not(.disabled) .attachment-type {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  z-index: 1;
+  border-radius: 4px 0 0 0;
+  border: 1px solid #6c757d;
+  background-color: #343a40;
+  color: #fff;
+  border-right: 0;
+  border-bottom: 0;
+  padding: 4px 6px 4px 6px;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#attachments-list-container .attachment:not(.disabled) .attachment-type span {
+  line-height: 1;
+}
+#attachments-list-container .attachment.submitted {
+  box-shadow: 0 4px 0 limegreen;
+}
+#attachments-list-container .attachment.submitted.selected {
+  box-shadow: 0 8px 0 limegreen;
+}
+#attachments-list-container .attachment.submitted .attachment-type {
+  bottom: 0 !important;
+  right: 0 !important;
+}
+#attachments-list-container .attachment .k-icon {
+  font-size: 3em;
+}
+#attachments-list-container .attachment .k-icon::before {
+  position: relative;
+  top: 1px;
+}
+#attachments-list-container .attachment .bi {
+  font-size: 2em;
+  padding: 0 0.5rem;
+}
+#attachments-list-container .attachment .attachment-properties {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  overflow-x: hidden;
+  cursor: inherit;
+}
+#attachments-list-container .attachment .attachment-properties label {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+  display: inline-block;
+  cursor: inherit;
+}
+#attachments-list-container .attachment .attachment-properties > * {
+  margin: 0;
+}
+
+#download-attachments-progress {
+  width: 100%;
+}
+#download-attachments-progress .k-progress-status-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 /*# sourceMappingURL=invoice-booking.css.map */

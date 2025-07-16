@@ -7,7 +7,114 @@ body {
 
 .blocker {
     &.success {
-        background-color: rgb(17 127 56 / 80%);
+        background-color: rgb(18 99 47 / 80%);
+    }
+}
+
+@mixin attachment-styling {
+    display: flex;
+    align-items: center;
+    gap: $vsm-gutter;
+    flex: 0;
+    align-self: flex-start;
+    padding: $xs-gutter;
+    padding-right: $m-gutter;
+    background-color: $white;
+    cursor: pointer;
+    border: 1px solid $gray-300;
+    flex: 0 1 240px;
+    position: relative;
+
+    &.disabled {
+        &:not(.selected) {
+            cursor: not-allowed;
+            background-color: $gray-200 !important;
+            opacity: 0.85;
+
+            &:hover {
+                background-color: $gray-200 !important;
+            }
+        }
+    }
+
+    &:not(.disabled) {
+
+        &:has(.attachment-type-junk) {
+            background-color: shade-color($orange-500, 10%);
+            color: $white;
+            border-color: $orange-400;
+        }
+
+        .attachment-type {
+            position: absolute;
+            bottom: -1px;
+            right: -1px;
+            z-index: 1;
+            border-radius: 4px 0 0 0;
+            border: 1px solid $gray-600;
+            background-color: $gray-800;
+            color: $white;
+            border-right: 0;
+            border-bottom: 0;
+            padding: 4px 6px 4px 6px;
+            text-transform: uppercase;
+            font-size: $font-size-sm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            span {
+                line-height: 1;
+            }
+        }
+    }
+
+    &.submitted {
+        box-shadow: 0 4px 0 limegreen;
+
+        &.selected {
+            box-shadow: 0 8px 0 limegreen;
+        }
+
+        .attachment-type {
+            bottom: 0 !important;
+            right: 0 !important;
+        }
+    }
+
+    .k-icon {
+        font-size: 3em;
+
+        &::before {
+            position: relative;
+            top: 1px;
+        }
+    }
+
+    .bi {
+        font-size: 2em;
+        padding: 0 0.5rem;
+    }
+
+    .attachment-properties {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        flex: 1;
+        overflow-x: hidden;
+        cursor: inherit;
+
+        label {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow-x: hidden;
+            display: inline-block;
+            cursor: inherit;
+        }
+
+        > * {
+            margin: 0;
+        }
     }
 }
 
@@ -554,80 +661,36 @@ body {
                 #attachments-form {
                 }
 
-                #attachments-list {
-                    position: relative;
-                    gap: $m-gutter;
+                #attachments-list-container {
                     display: flex;
-                    flex-wrap: wrap;
-                    margin-bottom: $l-gutter;
+                    gap: $l-gutter;
 
-                    &.over {
-                        box-shadow: $btn-focus-box-shadow;
+                    #attachments-list {
+                        flex: 1 1 calc(100% - 240px);
                     }
 
-                    .mdc-floating-label {
-                        position: absolute;
-                        left: 12px;
-                        top: 12px;
-                        color: $gray-300;
-                    }
-
-                    .attachment {
-                        display: flex;
-                        align-items: center;
-                        gap: $vsm-gutter;
-                        flex: 0;
-                        align-self: flex-start;
-                        padding: $xs-gutter;
-                        padding-right: $m-gutter;
-                        background-color: $white;
-                        cursor: pointer;
-                        border: 1px solid $gray-300;
-                        flex: 0 1 240px;
+                    #attachments-list,
+                    #attachments-list-control-buttons {
                         position: relative;
+                        gap: $m-gutter;
+                        display: flex;
+                        flex-wrap: wrap;
+                        margin-bottom: $l-gutter;
 
-                        &.disabled {
-                            &:not(.selected) {
-                                cursor: not-allowed;
-                                background-color: $gray-200 !important;
-                                opacity: 0.85;
-
-                                &:hover {
-                                    background-color: $gray-200 !important;
-                                }
-                            }
+                        &.over {
+                            box-shadow: $btn-focus-box-shadow;
                         }
 
-                        &:not(.disabled) {
+                        .mdc-floating-label {
+                            position: absolute;
+                            left: 12px;
+                            top: 12px;
+                            color: $gray-300;
+                        }
 
-                            &:has(.attachment-type-junk) {
-                                background-color: shade-color($orange-500, 10%);
-                                color: $white;
-                                border-color: $orange-400;
-                            }
+                        .attachment {
+                            @include attachment-styling;
 
-                            .attachment-type {
-                                position: absolute;
-                                bottom: -1px;
-                                right: -1px;
-                                z-index: 1;
-                                border-radius: 4px 0 0 0;
-                                border: 1px solid $gray-600;
-                                background-color: $gray-800;
-                                color: $white;
-                                border-right: 0;
-                                border-bottom: 0;
-                                padding: 4px 6px 4px 6px;
-                                text-transform: uppercase;
-                                font-size: $font-size-sm;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-
-                                span {
-                                    line-height: 1;
-                                }
-                            }
 
                             &:hover {
                                 border-color: $blue-900;
@@ -646,95 +709,62 @@ body {
                                 }
                             }
                         }
-
-                        &.submitted {
-                            box-shadow: 0 4px 0 limegreen;
-
-                            &.selected {
-                                box-shadow: 0 8px 0 limegreen;
-                            }
-
-                            .attachment-type {
-                                bottom: 0 !important;
-                                right: 0 !important;
-                            }
-                        }
-
-                        .k-icon {
-                            font-size: 3em;
-
-                            &::before {
-                                position: relative;
-                                top: 1px;
-                            }
-                        }
-
-                        .bi {
-                            font-size: 2em;
-                            padding: 0 0.5rem;
-                        }
-
-                        .attachment-properties {
-                            display: flex;
-                            flex-direction: column;
-                            justify-content: space-between;
-                            flex: 1;
-                            overflow-x: hidden;
-                            cursor: inherit;
-
-                            label {
-                                white-space: nowrap;
-                                text-overflow: ellipsis;
-                                overflow-x: hidden;
-                                display: inline-block;
-                                cursor: inherit;
-                            }
-
-                            > * {
-                                margin: 0;
-                            }
-                        }
                     }
 
-                    #add-attachments-item {
-                        margin-left: auto;
-                        display: list-item;
-                        padding: 0;
+                    #attachments-list-control-buttons {
+                        align-self: flex-start;
+                        flex: 0 0 240px;
 
-                        > label {
-                            display: flex;
-                            align-items: center;
-                            gap: $sm-gutter;
-                            flex: 0;
-                            align-self: flex-start;
-                            padding: $xs-gutter;
-                            padding-right: $m-gutter;
-                            background-color: $white;
-                            cursor: pointer;
-                            flex: 0 1 200px;
-                            user-select: none;
-
-                            &:hover {
-                                border-color: $blue-800; // purple, yellow, teal, cyan?
-                                background-color: $blue-700;
-                            }
-                        }
-
-                        &.disabled {
+                        #add-attachments-item,
+                        #download-attachments-item {
+                            display: list-item;
+                            padding: 0;
 
                             > label {
-                                cursor: not-allowed;
-                                background-color: $gray-200;
-                                opacity: 0.85;
+                                display: flex;
+                                align-items: center;
+                                gap: $sm-gutter;
+                                flex: 0;
+                                align-self: flex-start;
+                                padding: $xs-gutter;
+                                padding-right: $m-gutter;
+                                background-color: $white;
+                                cursor: pointer;
+                                flex: 0 1 200px;
+                                user-select: none;
 
                                 &:hover {
-                                    background-color: $gray-200;
+                                    border-color: $blue-800; // purple, yellow, teal, cyan?
+                                    background-color: $blue-700;
                                 }
+                            }
+
+                            &.disabled {
+
+                                > label {
+                                    cursor: not-allowed;
+                                    background-color: $gray-200;
+                                    opacity: 0.85;
+
+                                    &:hover {
+                                        background-color: $gray-200;
+                                    }
+                                }
+                            }
+
+                            #add-attachments-form {
+                                display: none;
                             }
                         }
 
-                        #add-attachments-form {
-                            display: none;
+                        #download-attachments-item {
+                            label {
+                                .k-icon {
+                                    &::before {
+                                        font-size: 2.5rem;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -1233,5 +1263,29 @@ body {
     justify-content: flex-start;
     label {
         flex: 0 1 160px;
+    }
+}
+
+#attachments-list-container {
+    .mdc-form-field {
+        font-size: $font-size-base;
+    }
+
+    .attachment {
+        @include attachment-styling;
+        flex: 1;
+    }
+}
+
+#download-attachments-progress {
+    width: 100%;
+
+    .k-progress-status-wrap {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .k-progress-status {
+
+        }
     }
 }

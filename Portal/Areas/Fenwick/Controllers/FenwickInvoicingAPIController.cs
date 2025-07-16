@@ -213,6 +213,8 @@ namespace Portal.Areas.Fenwick.Controllers
         [HttpPost]
         public IHttpActionResult SaveSelfBillInvoice([FromBody]PassFenwickSelfBillInvoiceSaveDto objSave)
         {
+            HttpContext.Current.Server.ScriptTimeout = 600;
+
             var sbi = PortalDb.FenwickSelfBillInvoices.Single(p => p.SelfBillInvoiceID == objSave.SelfBillInvoiceID);
 
             sbi.TotalGrossSales = objSave.GrossSales;
@@ -238,7 +240,7 @@ namespace Portal.Areas.Fenwick.Controllers
         [System.Web.Mvc.AsyncTimeout(300000)]
         public async Task<IHttpActionResult> SubmitSignedOffInvoices()
         {
-            HttpContext.Current.Server.ScriptTimeout = 300;
+            HttpContext.Current.Server.ScriptTimeout = 600;
 
             await PortalDb.FenwickInvoiceProcess();
 
@@ -248,6 +250,8 @@ namespace Portal.Areas.Fenwick.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> DeleteACLSales()
         {
+            HttpContext.Current.Server.ScriptTimeout = 600;
+
             await PortalDb.DeleteACLSales();
 
             return Ok(new { });

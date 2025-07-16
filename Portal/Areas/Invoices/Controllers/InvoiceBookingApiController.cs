@@ -43,6 +43,7 @@ namespace Portal.Areas.Invoices.Controllers
     {
         private System.Text.RegularExpressions.Regex InlineImageSourceReplacer = new System.Text.RegularExpressions.Regex("src=\"(cid:([^\"]+))\"", System.Text.RegularExpressions.RegexOptions.Compiled);
         private System.Text.RegularExpressions.Regex StyleTagsReplacer = new System.Text.RegularExpressions.Regex(@"<style(.*?)<\/\s*style>", System.Text.RegularExpressions.RegexOptions.Singleline | RegexOptions.Compiled);
+        private System.Text.RegularExpressions.Regex BaseTagsReplacer = new System.Text.RegularExpressions.Regex(@"<base(.*?)>", System.Text.RegularExpressions.RegexOptions.Singleline | RegexOptions.Compiled);
         private PortalDbContext PortalDb { get; set; }
         private readonly ApplicationUserManager UserManager;
 
@@ -301,6 +302,7 @@ namespace Portal.Areas.Invoices.Controllers
                 });
 
                 message.Body = StyleTagsReplacer.Replace(message.Body, "");
+                message.Body = BaseTagsReplacer.Replace(message.Body, "");
 
                 return Ok(new
                 {

@@ -125,8 +125,9 @@
                     window.showError(error.message);
                     window.logClientSideError(error);
                 });
-
             }
+
+            window.showError(error.message);
         }
 
         window.onerror = function (message, source, lineno, colno, error) {
@@ -1167,7 +1168,7 @@
                        'disabled': disable() || !enable()
                     },
                     css: {
-                        'busy': busy
+                        'busy': typeof busy == 'undefined' ? false : busy
                     }" />
                 <div class="mdc-checkbox__background">
                     <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">

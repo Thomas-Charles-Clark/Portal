@@ -95,9 +95,11 @@
                 }
             }
         },
-        locked: ko.observable(self.supplierCode() != ''),
-        enable: ko.observable(true),
-        disable: ko.observable(self.supplierCode() != '' || self.readOnly),
+        locked: ko.observable(self.supplierCode() != '' || self.readOnly()),
+        enable: ko.computed(() => {
+            return !self.readOnly()
+        }, self),
+        disable: ko.observable(self.supplierCode() != '' || self.readOnly()),
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         readOnly: false,
@@ -108,6 +110,9 @@
             dir: 'asc',
             field: 'Name'
         },
+        changeBtnVisible: ko.computed(() => {
+            return self.readOnly() == false && self.supplierCode() != '';
+        }, self),
         select: function (e) {
             console.log('supplierParams select', e);
             self.supplierParams.locked(true);

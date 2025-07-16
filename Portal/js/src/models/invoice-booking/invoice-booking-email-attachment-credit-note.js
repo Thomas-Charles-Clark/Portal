@@ -279,6 +279,14 @@
         }
     });
 
+    self.vatInCurrencyBreakdownEqualsTotalVATInCurrency = ko.observable(true).extend({
+        equal: {
+            params: true,
+            onlyIf: self.validateNow,
+            message: 'The sum of the "VATable Amount in Currency" must equal the "Net Invoice Total in Currency" above.'
+        }
+    });
+
     self.netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT = ko.observable(true).extend({
         equal: {
             params: true,
@@ -292,6 +300,18 @@
     self.isFlaggedAsDuplicate = ko.observable(rec.isFlaggedAsDuplicate);
 
     self.undoingDuplicate = ko.observable(false);
+
+    self.vatInCurrencyEpsilon = 1.0; // ± 1%
+
+    self.vatInCurrencyBreakdownWithinEpsilonOfTotal = ko.observable(false);
+
+    self.vatEpsilonWarningAcceptance = ko.observable(false).extend({
+        params: true,
+        onlyIf: () => {
+            return self.vatInCurrencyBreakdownWithinEpsilonOfTotal() && self.validateNow();
+        },
+        message: 'If you are happy that this is a small rounding variance (due to the recalculation of the VAT), tick this box to accept the variance and continue.'
+    });
 
     //#endregion
 
@@ -419,12 +439,12 @@
         });
     });
 
-    self.vatBreakdownSum = ko.computed(() => {
+    self.vatableAmountBreakdownSum = ko.computed(() => {
         return self.vatEntries().reduce((a, i) => a += +(ko.unwrap(i.vatableAmountCurrency) ?? 0), 0);
     });
 
-    self.vatSumComputer = ko.computed(() => {
-        let breakdown = +self.vatBreakdownSum();
+    self.vatableAmountSumComputer = ko.computed(() => {
+        let breakdown = +self.vatableAmountBreakdownSum();
         let total = +self.netTotalCurrency();
 
         ko.ignoreDependencies(() => {
@@ -436,9 +456,44 @@
         });
     });
 
+    self.vatInCurrencyBreakdownSum = ko.computed(() => {
+        return self.vatEntries().reduce((a, i) => a += +(ko.unwrap(i.vatInCurrency) ?? 0), 0);
+    });
+
+    self.vatInCurrencySumComputer = ko.computed(() => {
+        let breakdown = +self.vatInCurrencyBreakdownSum();
+        let total = +self.vatTotalCurrency();
+
+        ko.ignoreDependencies(() => {
+            if (breakdown == total) {
+                self.vatInCurrencyBreakdownEqualsTotalVATInCurrency(true);
+            } else {
+                self.vatInCurrencyBreakdownEqualsTotalVATInCurrency(false);
+            }
+        });
+    });
+
+    self.vatInCurrencyEpsilonComputer = ko.computed(() => {
+
+        let breakdown = +self.vatInCurrencyBreakdownSum();
+        let total = +self.vatTotalCurrency();
+
+        ko.ignoreDependencies(() => {
+
+            let variance = Math.abs(breakdown - total);
+
+            if (((variance / total) * 100) < self.vatInCurrencyEpsilon) {
+                self.vatInCurrencyBreakdownWithinEpsilonOfTotal(true);
+            } else {
+                self.vatInCurrencyBreakdownWithinEpsilonOfTotal(false);
+            }
+        });
+
+    }, self);
+
     self.duplicateCheck = ko.computed(() => {
 
-        if ((!self.readOnly) &&
+        if ((!self.readOnly()) &&
             self.supplierCode() &&
             self.attachmentTypeId() == 2 && // invoice only
             (self.invoiceDate() || self.supplierInvoiceReference() || self.invoiceTotalIncVATCurrency())) {
@@ -526,6 +581,10 @@
 
     }
 
+    self.vatInCurrencyBreakdownBeyondEpsilonOfTotal = ko.computed(() => {
+        return self.validateNow() && !self.vatInCurrencyBreakdownWithinEpsilonOfTotal();
+    }, self);
+
     //#endregion
 
     //#region Components
@@ -569,11 +628,13 @@
             }
         },
         locked: ko.observable(self.supplierCode() != ''),
-        enable: ko.observable(true),
-        disable: ko.observable(self.supplierCode() != '' || self.readOnly),
+        enable: ko.computed(() => {
+            return !self.readOnly()
+        }, self),
+        disable: ko.observable(self.supplierCode() != '' || self.readOnly()),
         clearable: ko.observable(true),
         revertible: ko.observable(false),
-        readOnly: false,
+        readOnly: self.readOnly,
         filter: 'contains',
         autoBind: true,
         height: 340,
@@ -581,6 +642,9 @@
             dir: 'asc',
             field: 'Name'
         },
+        changeBtnVisible: ko.computed(() => {
+            return self.readOnly() == false && self.supplierCode() != '';
+        }, self),
         select: function (e) {
             console.log('supplierParams select', e);
             self.supplierParams.locked(true);
@@ -639,9 +703,11 @@
         useNativeValidation: false,
         decorateInputElement: false,
         insertValidationMessages: false,
-        enable: ko.observable(true),
-        disable: ko.observable(self.readOnly),
-        locked: ko.observable(self.readOnly),
+        enable: ko.computed(() => {
+            return !self.readOnly()
+        }, self),
+        disable: self.readOnly,
+        locked: self.readOnly,
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         busy: ko.observable(false),
@@ -665,9 +731,11 @@
         useNativeValidation: false,
         decorateInputElement: false,
         insertValidationMessages: false,
-        enable: ko.observable(true),
-        disable: ko.observable(self.readOnly),
-        locked: ko.observable(self.readOnly),
+        enable: ko.computed(() => {
+            return !self.readOnly()
+        }, self),
+        disable: self.readOnly,
+        locked: self.readOnly,
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         busy: ko.observable(false),
@@ -691,9 +759,11 @@
         useNativeValidation: false,
         decorateInputElement: false,
         insertValidationMessages: false,
-        enable: ko.observable(true),
-        disable: ko.observable(self.readOnly),
-        locked: ko.observable(self.readOnly),
+        enable: ko.computed(() => {
+            return !self.readOnly()
+        }, self),
+        disable: self.readOnly,
+        locked: self.readOnly,
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         busy: ko.observable(false),
@@ -756,10 +826,10 @@
             useCurrent: false,
             keepInvalid: true,
             debug: false,
-            viewDate: self.readOnly ? new Date(Date.parse(self.invoiceDate())) : self.invoiceDate() ? new Date(self.invoiceDate().getFullYear(), self.invoiceDate().getMonth(), self.invoiceDate().getDate(), 12, 0, 0, 0) : new Date()
+            viewDate: self.readOnly() ? new Date(Date.parse(self.invoiceDate())) : self.invoiceDate() ? new Date(self.invoiceDate().getFullYear(), self.invoiceDate().getMonth(), self.invoiceDate().getDate(), 12, 0, 0, 0) : new Date()
         },
-        disabled: ko.observable(self.readOnly),
-        locked: ko.observable(self.readOnly),
+        disabled: self.readOnly,
+        locked: self.readOnly,
         clearable: ko.observable(false),
         clearFunction: () => {
             self.invoiceDate(undefined);
@@ -790,8 +860,8 @@
             return `${e.Name} (${e.Code})`;
         },
         enable: ko.observable(true),
-        disable: ko.observable(self.readOnly),
-        locked: ko.observable(self.readOnly),
+        disable: self.readOnly,
+        locked: self.readOnly,
         clearable: ko.observable(false),
         revertible: ko.observable(false),
         readOnly: false,
@@ -845,8 +915,8 @@
         useNativeValidation: false,
         insertValidationMessages: false,
         decorateInputElement: true,
-        disable: ko.observable(self.readOnly),
-        locked: ko.observable(self.readOnly)
+        disable: self.readOnly,
+        locked: self.readOnly
     };
 
     self.disputeParams = {
@@ -855,7 +925,7 @@
         observable: self.dispute,
         useNativeValidation: false,
         enable: ko.observable(true),
-        disable: ko.observable(self.readOnly),
+        disable: self.readOnly,
         busy: ko.observable(false)
     }
 
@@ -963,6 +1033,34 @@
         }
     }
 
+    self.vatEpsilonWarningAcceptanceParams = {
+        observable: self.vatEpsilonWarningAcceptance,
+        checkboxId: 'vat-epsilon-warning',
+        disable: ko.observable(false),
+        enable: ko.observable(true)
+    }
+
+    self.vatErrors = ko.observable(false).extend({
+        equal: {
+            params: false,
+            onlyIf: self.validateNow
+        }
+    });
+
+    self.vatErrorsComputer = ko.computed(() => {
+        if (
+            (self.vatableSumEqualsTotalNET())// && self.vatInCurrencyBreakdownEqualsTotalVATInCurrency())
+            &&
+            (
+                (self.vatInCurrencyBreakdownWithinEpsilonOfTotal() == true) ||
+                (self.vatInCurrencyBreakdownWithinEpsilonOfTotal() == false && self.vatEpsilonWarningAcceptance() == true)
+            )) {
+            self.vatErrors(false);
+        } else {
+            self.vatErrors(true);
+        }
+    }, self);
+
     self.errorables = [
         self.supplierInvoiceReference,
         self.invoiceDate,
@@ -976,7 +1074,7 @@
         self.netTotalCurrency,
         self.netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT,
         self.generalLedgerSumEqualsTotalMinusVAT,
-        self.vatableSumEqualsTotalNET
+        self.vatErrors
     ];
 
     //#endregion
@@ -1014,7 +1112,7 @@
 
     self.preambleSatisfied.subscribe(nv => {
         if (nv) {
-            let vatRemainder = self.netTotalCurrency() - self.vatBreakdownSum();
+            let vatRemainder = self.netTotalCurrency() - self.vatableAmountBreakdownSum();
 
             if (vatRemainder) {
                 self.vatEntries().forEach(v => {
@@ -1033,8 +1131,8 @@
                 })
             }
         } else {
-            self.vatEntries().forEach(v => v.vatableAmountCurrency(undefined));
-            self.generalLedgerEntries().forEach(v => v.amountExVATInCurrency(undefined));
+            //self.vatEntries().forEach(v => v.vatableAmountCurrency(undefined));
+            //self.generalLedgerEntries().forEach(v => v.amountExVATInCurrency(undefined));
         }
     });
 

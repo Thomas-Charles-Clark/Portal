@@ -342,7 +342,7 @@ const invoiceBookingViewModel = ({
                 dir: 'asc'
             }, {
                 field: 'ReceivedDT',
-                dir: 'desc'
+                dir: 'asc'
             }],
             //group: {
             //    field: 'SupplierCode',
