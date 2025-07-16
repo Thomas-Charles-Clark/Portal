@@ -242,7 +242,7 @@
                     <!-- /ko -->
                 </ul>
                 <span class="validation-message" data-bind="validationMessage: vatableSumEqualsTotalNET"></span>
-                <div class="gap-3 align-items-center mt-3 d-none" data-bind="flexVisible: vatInCurrencyBreakdownBeyondEpsilonOfTotal, validationOptions: { insertMessages: false }">
+                <div class="gap-3 align-items-center mt-3" style="display: none" data-bind="flexVisible: vatInCurrencyBreakdownBeyondEpsilonOfTotal, validationOptions: { insertMessages: false }">
                     <div data-bind="component: { name: 'mdc-checkbox-component', params: vatEpsilonWarningAcceptanceParams }"></div>
                     <span class="validation-message mt-0">
                         If you are happy that this is a small rounding variance (due to the recalculation of the VAT), tick this box to accept the variance and continue.
@@ -552,7 +552,7 @@
                     <!-- /ko -->
                 </ul>
                 <span class="validation-message" data-bind="validationMessage: vatableSumEqualsTotalNET"></span>
-                <div class="gap-3 align-items-center mt-3 d-none" data-bind="flexVisible: vatInCurrencyBreakdownBeyondEpsilonOfTotal, validationOptions: { insertMessages: false }">
+                <div class="gap-3 align-items-center mt-3" style="display: none" data-bind="flexVisible: vatInCurrencyBreakdownBeyondEpsilonOfTotal, validationOptions: { insertMessages: false }">
                     <div data-bind="component: { name: 'mdc-checkbox-component', params: vatEpsilonWarningAcceptanceParams }"></div>
                     <span class="validation-message mt-0">
                         If you are happy that this is a small rounding variance (due to the recalculation of the VAT), tick this box to accept the variance and continue.

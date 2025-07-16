@@ -301,7 +301,7 @@
 
     self.undoingDuplicate = ko.observable(false);
 
-    self.vatInCurrencyEpsilon = 1.0; // ± 1%
+    self.vatInCurrencyEpsilon = ko.observable(1.0); // ± 1%
 
     self.vatInCurrencyBreakdownWithinEpsilonOfTotal = ko.observable(false);
 
@@ -477,12 +477,17 @@
 
         let breakdown = +self.vatInCurrencyBreakdownSum();
         let total = +self.vatTotalCurrency();
+        let epsilon = self.vatInCurrencyEpsilon();
 
         ko.ignoreDependencies(() => {
 
             let variance = Math.abs(breakdown - total);
 
-            if (((variance / total) * 100) < self.vatInCurrencyEpsilon) {
+            let varianceAsPercentage = ((variance / total) * 100);
+
+            console.log(`vatInCurrencyEpsilonComputer variance: ${variance}; ${variancePercentage}%`);
+
+            if (varianceAsPercentage < epsilon) {
                 self.vatInCurrencyBreakdownWithinEpsilonOfTotal(true);
             } else {
                 self.vatInCurrencyBreakdownWithinEpsilonOfTotal(false);
@@ -582,8 +587,8 @@
     }
 
     self.vatInCurrencyBreakdownBeyondEpsilonOfTotal = ko.computed(() => {
-        return self.validateNow() && !self.vatInCurrencyBreakdownWithinEpsilonOfTotal();
-    }, self);
+        return self.validateNow() && (self.vatInCurrencyBreakdownWithinEpsilonOfTotal() == false);
+    }, self); 
 
     //#endregion
 
