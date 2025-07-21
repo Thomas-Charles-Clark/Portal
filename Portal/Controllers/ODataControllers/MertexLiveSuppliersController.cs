@@ -47,7 +47,7 @@ namespace Portal.Controllers
         [HttpGet]
         public IQueryable<SupplierLive> MertexLiveSupplierValueMapper(string supplierCode)
         {
-            return PortalDb.Suppliers_Live.Where(p => p.AccountClosed == false && p.Code == supplierCode).AsQueryable();
+            return PortalDb.Suppliers_Live.Where(p => p.Code == supplierCode).AsQueryable();
         }
     }
 }

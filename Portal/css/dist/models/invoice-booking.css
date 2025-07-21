@@ -899,20 +899,23 @@ body {
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 1rem;
   flex: 1;
 }
-#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper .attachment-supplier {
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper .attachment-supplier-container {
+  flex: 1;
+}
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper .attachment-supplier-container .attachment-supplier {
   display: flex;
   align-items: center;
   flex: 1;
 }
-#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper .attachment-supplier .mdc-validating-field {
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper .attachment-supplier-container .attachment-supplier .mdc-validating-field {
   flex: 1;
   width: 100%;
 }
-#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper .attachment-supplier .bi {
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper .attachment-supplier-container .attachment-supplier .bi {
   display: none;
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-supplier-wrapper > .btn {
@@ -1046,6 +1049,11 @@ body {
   margin: 0;
 }
 
+#download-attachments-modal .modal-dialog .modal-header {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
 #download-attachments-progress {
   width: 100%;
 }
@@ -1053,5 +1061,23 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.duplicate-checkbox-wrapper {
+  border: 0;
+  box-shadow: none;
+}
+.duplicate-checkbox-wrapper .card-body {
+  padding: 1rem 0;
+}
+.duplicate-checkbox-wrapper .card-body .mdc-checkbox--label {
+  color: #fff;
+  font-weight: bold;
+}
+
+.supplier-address-display p {
+  color: #343a40;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 /*# sourceMappingURL=invoice-booking.css.map */

@@ -301,16 +301,45 @@
 
     self.undoingDuplicate = ko.observable(false);
 
+    self.duplicateWarningAccepted = ko.observable(false);
+
     self.vatInCurrencyEpsilon = ko.observable(1.0); // ± 1%
 
-    self.vatInCurrencyBreakdownWithinEpsilonOfTotal = ko.observable(false);
+    self.vatInCurrencyBreakdownPercentageVariance = ko.observable(0);
+
+    self.vatInCurrencyBreakdownWithinEpsilon = ko.observable(false);
+
+    self.vatInCurrencyBreakdownMatchesTotal = ko.observable(false);
+
+    self.vatInCurrencyBreakdownBeyondEpsilon = ko.observable(false).extend({
+        equal: {
+            params: false,
+            onlyIf: self.validateNow,
+            message: function () {
+                let currency = self.supplierCurrency();
+                if (currency) {
+                    return `Please ensure the VAT breakdown total aligns with the stated VAT total on the invoice.<br/><br/>
+                      The VAT breakdown total is: ${formatCurrency(ko.unwrap(self.vatableAmountSumComputer), 2, currency.FormattingCulture, currency.Code)}.<br/>The permissible tolerance is ±${formatNumber(ko.unwrap(self.vatInCurrencyEpsilon), 2, 'en-GB')}%, and the current variance is ${formatNumber(ko.unwrap(self.vatInCurrencyBreakdownPercentageVariance), 2, 'en-GB')}%.`
+                }
+            }
+        }
+    });
 
     self.vatEpsilonWarningAcceptance = ko.observable(false).extend({
-        params: true,
-        onlyIf: () => {
-            return self.vatInCurrencyBreakdownWithinEpsilonOfTotal() && self.validateNow();
-        },
-        message: 'If you are happy that this is a small rounding variance (due to the recalculation of the VAT), tick this box to accept the variance and continue.'
+        equal: {
+            params: true,
+            onlyIf: () => {
+                return self.vatInCurrencyBreakdownWithinEpsilon() && self.validateNow();
+            },
+            message: function () {
+                let currency = self.supplierCurrency();
+                if (currency) {
+                    return `The VAT breakdown total is: ${formatCurrency(ko.unwrap(self.vatableAmountSumComputer), 2, currency.FormattingCulture, currency.Code)}.<br/>
+                    The permissible tolerance is ±${formatNumber(ko.unwrap(self.vatInCurrencyEpsilon), 2, 'en-GB')}% and the current variance is ${formatNumber(ko.unwrap(self.vatInCurrencyBreakdownPercentageVariance), 2, 'en-GB')}%<br/><br/>
+                    If you are happy that this is a small rounding variance (due to the recalculation of the VAT), tick this box to accept the variance and continue.`
+                }
+            }
+        }
     });
 
     //#endregion
@@ -454,10 +483,12 @@
                 self.vatableSumEqualsTotalNET(false);
             }
         });
+
+        return breakdown;
     });
 
     self.vatInCurrencyBreakdownSum = ko.computed(() => {
-        return self.vatEntries().reduce((a, i) => a += +(ko.unwrap(i.vatInCurrency) ?? 0), 0);
+        return Math.round(self.vatEntries().reduce((a, i) => a += +(ko.unwrap(i.vatInCurrency) ?? 0), 0) * 100) / 100;
     });
 
     self.vatInCurrencySumComputer = ko.computed(() => {
@@ -475,22 +506,43 @@
 
     self.vatInCurrencyEpsilonComputer = ko.computed(() => {
 
-        let breakdown = +self.vatInCurrencyBreakdownSum();
-        let total = +self.vatTotalCurrency();
+        let breakdown = self.vatInCurrencyBreakdownSum() ?? 0;
+        let total = self.vatTotalCurrency() ?? 0;
         let epsilon = self.vatInCurrencyEpsilon();
+
+        let vatRate = self.vatEntries()[0].vatRate();
+
+        let vatRatePlusOne = vatRate + 1;
+
+        let variance = Math.round(Math.abs(breakdown - total) * 100) / 100;
+
+        let variancePercentage = variance == 0 && total == 0 ? 0 : ((variance / total) * 100);
+
+        let roundedVariancePercentage = Math.round(variancePercentage * 100) / 100;
+
+        if (roundedVariancePercentage == 0) {
+            self.vatInCurrencyBreakdownMatchesTotal(true);
+        } else {
+            self.vatInCurrencyBreakdownMatchesTotal(false);
+        }
 
         ko.ignoreDependencies(() => {
 
-            let variance = Math.abs(breakdown - total);
+            console.log(`vatInCurrencyEpsilonComputer variance: ${variance}; ${roundedVariancePercentage}%`);
 
-            let varianceAsPercentage = ((variance / total) * 100);
+            self.vatInCurrencyBreakdownPercentageVariance(breakdown - total > 0 ? 1 * roundedVariancePercentage : -1 * roundedVariancePercentage);
 
-            console.log(`vatInCurrencyEpsilonComputer variance: ${variance}; ${variancePercentage}%`);
-
-            if (varianceAsPercentage < epsilon) {
-                self.vatInCurrencyBreakdownWithinEpsilonOfTotal(true);
+            if (roundedVariancePercentage == 0) {
+                self.vatInCurrencyBreakdownWithinEpsilon(false);
+                self.vatInCurrencyBreakdownBeyondEpsilon(false);
             } else {
-                self.vatInCurrencyBreakdownWithinEpsilonOfTotal(false);
+                if (roundedVariancePercentage < epsilon) {
+                    self.vatInCurrencyBreakdownWithinEpsilon(true);
+                    self.vatInCurrencyBreakdownBeyondEpsilon(false);
+                } else {
+                    self.vatInCurrencyBreakdownWithinEpsilon(false);
+                    self.vatInCurrencyBreakdownBeyondEpsilon(true);
+                }
             }
         });
 
@@ -586,10 +638,6 @@
 
     }
 
-    self.vatInCurrencyBreakdownBeyondEpsilonOfTotal = ko.computed(() => {
-        return self.validateNow() && (self.vatInCurrencyBreakdownWithinEpsilonOfTotal() == false);
-    }, self); 
-
     //#endregion
 
     //#region Components
@@ -671,7 +719,7 @@
 
             if (data.filter && data.filter.filters.length) {
                 let f = data.filter.filters.find(f => f.field === "Name");
-                filters.push(`(contains(Name, '${f.value}') or contains(SortName, '${f.value}') or startswith(tolower(Code), '${f.value}'))`);
+                filters.push(`(contains(Name, '${f.value}') or contains(SortName, '${f.value}') or startswith(tolower(Code), '${f.value}') or startswith(tolower(Postcode), '${f.value}'))`);
 
                 if (d.$filter) {
                     delete d.$filter;
@@ -1048,23 +1096,51 @@
     self.vatErrors = ko.observable(false).extend({
         equal: {
             params: false,
-            onlyIf: self.validateNow
+            onlyIf: self.validateNow,
+            message: 'There\'s some sort of VAT related error!'
         }
     });
 
     self.vatErrorsComputer = ko.computed(() => {
-        if (
-            (self.vatableSumEqualsTotalNET())// && self.vatInCurrencyBreakdownEqualsTotalVATInCurrency())
-            &&
-            (
-                (self.vatInCurrencyBreakdownWithinEpsilonOfTotal() == true) ||
-                (self.vatInCurrencyBreakdownWithinEpsilonOfTotal() == false && self.vatEpsilonWarningAcceptance() == true)
-            )) {
-            self.vatErrors(false);
-        } else {
+
+        let validateNow = self.validateNow();
+
+        validateNow += 1;
+
+        if (self.vatableSumEqualsTotalNET.isValid() == false) {
             self.vatErrors(true);
         }
+
+        if (self.vatInCurrencyBreakdownMatchesTotal() == true) {
+            self.vatErrors(false);
+        } else {
+            if (self.vatInCurrencyBreakdownBeyondEpsilon()) {
+                self.vatErrors(true);
+            } else {
+                if (
+                    (self.vatableSumEqualsTotalNET())// && self.vatInCurrencyBreakdownEqualsTotalVATInCurrency())
+                    &&
+                    (
+                        (self.vatInCurrencyBreakdownWithinEpsilon() == true && self.vatEpsilonWarningAcceptance() == true)
+                    )) {
+                    self.vatErrors(false);
+                } else {
+                    self.vatErrors(true);
+                }
+            }
+        }
+
     }, self);
+
+    self.duplicateWarningAcceptedParams = {
+        checkboxId: 'duplicate-warning',
+        label: 'I have double checked, this is not a duplicate and I want to register this invoice.',
+        observable: self.duplicateWarningAccepted,
+        useNativeValidation: false,
+        enable: ko.observable(true),
+        disable: self.readOnly,
+        busy: ko.observable(false)
+    }
 
     self.errorables = [
         self.supplierInvoiceReference,

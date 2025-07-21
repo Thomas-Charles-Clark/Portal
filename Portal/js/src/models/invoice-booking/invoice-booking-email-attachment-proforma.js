@@ -287,6 +287,8 @@
 
     self.undoingDuplicate = ko.observable(false);
 
+    self.duplicateWarningAccepted = ko.observable(false);
+
     //#endregion
 
 
@@ -566,7 +568,7 @@
 
             if (data.filter && data.filter.filters.length) {
                 let f = data.filter.filters.find(f => f.field === "Name");
-                filters.push(`(contains(Name, '${f.value}') or contains(SortName, '${f.value}') or startswith(tolower(Code), '${f.value}'))`);
+                filters.push(`(contains(Name, '${f.value}') or contains(SortName, '${f.value}') or startswith(tolower(Code), '${f.value}') or startswith(tolower(Postcode), '${f.value}'))`);
 
                 if (d.$filter) {
                     delete d.$filter;
@@ -1063,6 +1065,16 @@
             maxValue: null,
             step: 1
         }
+    }
+
+    self.duplicateWarningAcceptedParams = {
+        checkboxId: 'duplicate-warning',
+        label: 'I have double checked, this is not a duplicate and I want to register this invoice.',
+        observable: self.duplicateWarningAccepted,
+        useNativeValidation: false,
+        enable: ko.observable(true),
+        disable: self.readOnly,
+        busy: ko.observable(false)
     }
 
     self.errorables = [

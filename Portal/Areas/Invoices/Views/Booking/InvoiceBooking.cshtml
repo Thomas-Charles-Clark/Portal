@@ -35,10 +35,16 @@
         window.getEmailStatusIdToLoad = () => {
             return @Html.Raw(Model.LoadingEmailStatusID);
         }
+        window.getFreeTextSearchDefault = () => {
+            return '@Html.Raw(Model.DefaultFreeTextSearchString)';
+        }
+        window.setDuplicateTest = () => {
+            viewModel.selectedEmail().selectedAttachment().properties().duplicateResults([{ MertexCode: 'Potato', SupplierCode: 'Waffles', SupplierInvoiceReference: 'PAYME!', InvoiceDate: new Date(), InvoiceTotalInCurrencyIncVAT: 180000 }]);
+        }
     </script>
 
     <style type="text/css">
-        .attachment:not(.disabled):has( @(String.Join(" ", (Model.AttachmentTypes.Select(at => (at.AttachmentTypeID != 1 && at.AttachmentTypeID != 1000) ? $".attachment-type-{at.Name.ToLowerInvariant().Replace(" ", "-")}," : ""))).TrimEnd(new[] { ',', ' ' })) ) {
+        .attachment:not(.disabled):has(@(String.Join(" ", (Model.AttachmentTypes.Select(at => (at.AttachmentTypeID != 1 && at.AttachmentTypeID != 1000) ? $".attachment-type-{at.Name.ToLowerInvariant().Replace(" ", "-").Replace("(", "").Replace(")", "")}," : ""))).TrimEnd(new[] { ',', ' ' })) ) {
             background-color: #309365 !important;
             color: #fff !important;
             border-color: #75b798 !important;
@@ -96,7 +102,12 @@
                 </h5>
                 <div class="attachment-property attachment-supplier-wrapper">
                     @* $parent here navigates you back up to the "attachment" level from the "invoice" level. *@
-                    <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+                    <div class="attachment-supplier-container">
+                        <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+                        <div class="supplier-address-display" style="display: none" data-bind="visible: supplierParams.locked, with: supplier">
+                            <p class="mb-0" data-bind="text: AddressDisplaySingleLine"></p>
+                        </div>
+                    </div>
                     <button type="button" class="btn btn-dark" style="display: none;" data-bind="visible: supplierParams.changeBtnVisible, click: () => { supplierParams.locked(!supplierParams.locked()) }">
                         Change
                     </button>
@@ -190,16 +201,16 @@
                             <label class="bold">
                                 Invoice Total Inc. VAT:
                             </label>
-                            <span data-bind="text: InvoiceTotalInCurrencyIncVAT"></span>
+                            <span data-bind="text: $parent.supplierCurrency() ? formatCurrency(InvoiceTotalInCurrencyIncVAT, 2, $parent.supplierCurrency().FormattingCulture, $parent.supplierCurrency().Code) : InvoiceTotalInCurrencyIncVAT"></span>
                         </div>
                     </li>
                     <!-- /ko -->
                 </ul>
-                <!-- ko ifnot: isFlaggedAsDuplicate -->
-                <button type="button" class="btn btn-danger w-100 bg-red-600 bold mt-3" data-bind="click: acknowledgeDuplicate">
-                    This item is a duplicate
-                </button>
-                <!-- /ko -->
+                <div class="duplicate-checkbox-wrapper card" style="display: none" data-bind="visible: !isFlaggedAsDuplicate()">
+                    <div class="card-body">
+                        <div data-bind="component: { name: 'mdc-checkbox-component', params: duplicateWarningAcceptedParams }"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -242,10 +253,20 @@
                     <!-- /ko -->
                 </ul>
                 <span class="validation-message" data-bind="validationMessage: vatableSumEqualsTotalNET"></span>
-                <div class="gap-3 align-items-center mt-3" style="display: none" data-bind="flexVisible: vatInCurrencyBreakdownBeyondEpsilonOfTotal, validationOptions: { insertMessages: false }">
+                <span class="validation-message" data-bind="validationMessage: vatInCurrencyBreakdownBeyondEpsilon"></span>
+                <div class="gap-3 align-items-center mt-3" style="display: none" data-bind="flexVisible: vatInCurrencyBreakdownWithinEpsilon() == true && vatInCurrencyBreakdownMatchesTotal() == false, validationOptions: { insertMessages: false }">
                     <div data-bind="component: { name: 'mdc-checkbox-component', params: vatEpsilonWarningAcceptanceParams }"></div>
                     <span class="validation-message mt-0">
+                        @* This is rendered directly because if the acceptance is made the validation passes and the message is eradicated *@
+                        Please ensure the VAT breakdown total aligns with the stated VAT total on the invoice.
+                        <br />
+                        <br />
                         If you are happy that this is a small rounding variance (due to the recalculation of the VAT), tick this box to accept the variance and continue.
+                        <br />
+                        <br />
+                        The VAT breakdown total is: <span data-bind="text: formatCurrency(ko.unwrap(vatInCurrencyBreakdownSum), 2, ko.unwrap(supplierCurrency)?.FormattingCulture ?? 'en-GB', ko.unwrap(supplierCurrency)?.Code ?? 'GBP')"></span>.
+                        <br />
+                        The permissible tolerance is <span data-bind="text: `±${formatNumber(ko.unwrap(vatInCurrencyEpsilon), 2, 'en-GB')}% and the current variance is ${formatNumber(ko.unwrap(vatInCurrencyBreakdownPercentageVariance), 2, 'en-GB')}%`"></span>.
                     </span>
                 </div>
             </div>
@@ -303,7 +324,12 @@
                 </h5>
                 <div class="attachment-property attachment-supplier-wrapper">
                     @* $parent here navigates you back up to the "attachment" level from the "invoice" level. *@
-                    <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+                    <div class="attachment-supplier-container">
+                        <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+                        <div class="supplier-address-display" style="display: none" data-bind="visible: supplierParams.locked, with: supplier">
+                            <p class="mb-0" data-bind="text: AddressDisplaySingleLine"></p>
+                        </div>
+                    </div>
                     <button type="button" class="btn btn-dark" style="display: none;" data-bind="visible: supplierParams.changeBtnVisible, click: () => { supplierParams.locked(!supplierParams.locked()) }">
                         Change
                     </button>
@@ -401,11 +427,11 @@
                     </li>
                     <!-- /ko -->
                 </ul>
-                <!-- ko ifnot: isFlaggedAsDuplicate -->
-                <button type="button" class="btn btn-danger w-100 bg-red-600 bold mt-3" data-bind="click: acknowledgeDuplicate">
-                    This item is a duplicate
-                </button>
-                <!-- /ko -->
+                <div class="duplicate-checkbox-wrapper card" style="display: none" data-bind="visible: !isFlaggedAsDuplicate()">
+                    <div class="card-body">
+                        <div data-bind="component: { name: 'mdc-checkbox-component', params: duplicateWarningAcceptedParams }"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </script>
@@ -422,7 +448,12 @@
                     <!-- /ko -->
                 </h5>
                 <div class="attachment-property attachment-supplier-wrapper">
-                    <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+                    <div class="attachment-supplier-container">
+                        <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+                        <div class="supplier-address-display" style="display: none" data-bind="visible: supplierParams.locked, with: supplier">
+                            <p class="mb-0" data-bind="text: AddressDisplaySingleLine"></p>
+                        </div>
+                    </div>
                     <button type="button" class="btn btn-dark" style="display: none;" data-bind="visible: supplierParams.changeBtnVisible, click: () => { supplierParams.locked(!supplierParams.locked()) }">
                         Change
                     </button>
@@ -505,11 +536,11 @@
                     </li>
                     <!-- /ko -->
                 </ul>
-                <!-- ko ifnot: isFlaggedAsDuplicate -->
-                <button type="button" class="btn btn-danger w-100 bg-red-600 bold mt-3" data-bind="click: acknowledgeDuplicate">
-                    This item is a duplicate
-                </button>
-                <!-- /ko -->
+                <div class="duplicate-checkbox-wrapper card" style="display: none" data-bind="visible: !isFlaggedAsDuplicate()">
+                    <div class="card-body">
+                        <div data-bind="component: { name: 'mdc-checkbox-component', params: duplicateWarningAcceptedParams }"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -552,10 +583,20 @@
                     <!-- /ko -->
                 </ul>
                 <span class="validation-message" data-bind="validationMessage: vatableSumEqualsTotalNET"></span>
-                <div class="gap-3 align-items-center mt-3" style="display: none" data-bind="flexVisible: vatInCurrencyBreakdownBeyondEpsilonOfTotal, validationOptions: { insertMessages: false }">
+                <span class="validation-message" data-bind="validationMessage: vatInCurrencyBreakdownBeyondEpsilon"></span>
+                <div class="gap-3 align-items-center mt-3" style="display: none" data-bind="flexVisible: vatInCurrencyBreakdownWithinEpsilon() == true && vatInCurrencyBreakdownMatchesTotal() == false, validationOptions: { insertMessages: false }">
                     <div data-bind="component: { name: 'mdc-checkbox-component', params: vatEpsilonWarningAcceptanceParams }"></div>
                     <span class="validation-message mt-0">
+                        @* This is rendered directly because if the acceptance is made the validation passes and the message is eradicated *@
+                        Please ensure the VAT breakdown total aligns with the stated VAT total on the invoice.
+                        <br />
+                        <br />
                         If you are happy that this is a small rounding variance (due to the recalculation of the VAT), tick this box to accept the variance and continue.
+                        <br />
+                        <br />
+                        The VAT breakdown total is: <span data-bind="text: formatCurrency(ko.unwrap(vatInCurrencyBreakdownSum), 2, ko.unwrap(supplierCurrency)?.FormattingCulture ?? 'en-GB', ko.unwrap(supplierCurrency)?.Code ?? 'GBP')"></span>.
+                        <br />
+                        The permissible tolerance is <span data-bind="text: `±${formatNumber(ko.unwrap(vatInCurrencyEpsilon), 2, 'en-GB')}% and the current variance is ${formatNumber(ko.unwrap(vatInCurrencyBreakdownPercentageVariance), 2, 'en-GB')}%`"></span>.
                     </span>
                 </div>
             </div>
@@ -613,7 +654,12 @@
                 </h5>
                 <div class="attachment-property attachment-supplier-wrapper">
                     @* $parent here navigates you back up to the "attachment" level from the "invoice" level. *@
-                    <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+                    <div class="attachment-supplier-container">
+                        <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+                        <div class="supplier-address-display" style="display: none" data-bind="visible: supplierParams.locked, with: supplier">
+                            <p class="mb-0" data-bind="text: AddressDisplaySingleLine"></p>
+                        </div>
+                    </div>
                     <button type="button" class="btn btn-dark" style="display: none;" data-bind="visible: supplierParams.changeBtnVisible, click: () => { supplierParams.locked(!supplierParams.locked()) }">
                         Change
                     </button>
@@ -636,7 +682,8 @@
         ko.validation.init({
             decorateInputElement: true,
             errorElementClass: 'alert-danger',
-            errorMessageClass: 'validation-message text-danger'
+            errorMessageClass: 'validation-message text-danger',
+            allowHtmlMessages: true
         });
 
         ko.applyBindings(viewModel, document.body);
@@ -799,14 +846,14 @@
                 <div id="attachments-list-container" class="mb-3">
                     <ul id="attachments-list" class="list-unstyled" data-bind="css: { 'mb-3': regularAttachments().length > 0, 'mb-2': regularAttachments().length == 0 }">
                         <!-- ko foreach: regularAttachments -->
-                        <li class="attachment" data-bind="click: $parent.selectAttachment, css: { 'selected': $parent.selectedAttachment().AttachmentID == $data.AttachmentID, 'submitted': $data.SubmittedToMertex }, class: (attachmentType() ? `attachment-type-${attachmentType().Name.toLowerCase().replace(' ', '')}` : '')">
+                        <li class="attachment" data-bind="click: $parent.selectAttachment, css: { 'selected': $parent.selectedAttachment().AttachmentID == $data.AttachmentID, 'submitted': $data.SubmittedToMertex }">
                             <span data-bind="class: $parent.iconClass($data)"></span>
                             <div class="attachment-properties">
                                 <label data-bind="html: FileName, attr: { title: FileName }"></label>
                                 <span data-bind="text: FileSizeDisplay"></span>
                             </div>
                             <!-- ko if: attachmentType -->
-                            <div class="attachment-type" data-bind="with: attachmentType, class: attachmentType() ? `attachment-type-${attachmentType().Name.toLowerCase().replace(' ', '-')}` : ''">
+                            <div class="attachment-type" data-bind="with: attachmentType, class: attachmentType() ? `attachment-type-${attachmentType().Name.toLowerCase().replace(' ', '-').toLowerCase().replace('(', '').replace(')', '')}` : ''">
                                 <span data-bind="text: Name"></span>
                             </div>
                             <!-- /ko -->
@@ -902,7 +949,12 @@
                                 </h5>
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="attachment-supplier-wrapper mb-0">
-                                        <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: $parent.supplierParams }"></div>
+                                        <div class="attachment-supplier-container">
+                                            <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: $parent.supplierParams }"></div>
+                                            <div class="supplier-address-display" style="display: none" data-bind="visible: $parent.supplierParams.locked, with: $parent.supplier">
+                                                <p class="mb-0" data-bind="text: AddressDisplaySingleLine"></p>
+                                            </div>
+                                        </div>
                                         <button type="button" class="btn btn-dark" data-bind="visible: $parent.Processed == false && ($parent.readOnly == true ? false : $parent.supplierParams.locked), click: () => { $parent.supplierParams.locked(!$parent.supplierParams.locked()) }">
                                             Change
                                         </button>
@@ -941,14 +993,25 @@
                             <div class="tab-pane fade show active" id="original-data-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
                                 <div class="attachment-property" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: attachmentTypeParams }"></div>
 
-                                <!-- ko if: attachmentTypeId() != 1 -->
+                                <!-- ko if: attachmentTypeId() !== 1 -->
                                 <!-- ko if: properties -->
                                 <div data-bind="template: { name: propertiesTemplateName, data: properties }"></div>
                                 <!-- /ko -->
                                 <!-- ko ifnot: readOnly -->
-                                <button class="btn btn-success w-100 save-btn mt-3" type="button" data-bind="click: save">
+                                <!-- ko if: ko.unwrap(properties) -->
+                                <!-- ko if: (ko.unwrap(properties).duplicateResults().length != 0) && (ko.unwrap(properties).duplicateWarningAccepted() == false) -->
+                                <button type="button" class="btn btn-danger btn-lg w-100 bold mt-3" data-bind="click: () => { ko.unwrap(properties).acknowledgeDuplicate() }">
+                                    Click here to agree that this document is a duplicate.
+                                    <br />
+                                    It will be flagged as such and will not be submitted to Mertex.
+                                </button>
+                                <!-- /ko -->
+                                <!-- ko if: (ko.unwrap(properties).duplicateResults().length == 0) || ((ko.unwrap(properties).duplicateResults().length != 0) && (ko.unwrap(properties).duplicateWarningAccepted() == true)) -->
+                                <button class="btn btn-success w-100 btn-lg save-btn mt-3" type="button" data-bind="click: save">
                                     Save
                                 </button>
+                                <!-- /ko -->
+                                <!-- /ko -->
                                 <!-- /ko -->
                                 <!-- /ko -->
 
@@ -1165,14 +1228,14 @@
                     <li class="list-group-item">
                         <div class="d-flex gap-3 align-items-center">
                             <div data-bind="component: { name: 'mdc-checkbox-collection-component', params: { observable: selectedForDownload, checkboxName: `download-attachment-${$index()}` } }"></div>
-                            <div class="attachment" data-bind="css: { 'submitted': $data.SubmittedToMertex }, class: (attachmentType() ? `attachment-type-${attachmentType().Name.toLowerCase().replace(' ', '')}` : ''), click: toggleSelectedForDownload">
+                            <div class="attachment" data-bind="css: { 'submitted': $data.SubmittedToMertex }, click: toggleSelectedForDownload">
                                 <span data-bind="class: $parent.iconClass($data)"></span>
                                 <div class="attachment-properties">
                                     <label data-bind="html: FileName, attr: { title: FileName }"></label>
                                     <span data-bind="text: FileSizeDisplay"></span>
                                 </div>
                                 <!-- ko if: attachmentType -->
-                                <div class="attachment-type" data-bind="with: attachmentType, class: attachmentType() ? `attachment-type-${attachmentType().Name.toLowerCase().replace(' ', '-')}` : ''">
+                                <div class="attachment-type" data-bind="with: attachmentType, class: attachmentType() ? `attachment-type-${attachmentType().Name.toLowerCase().replace(' ', '-').replace('(', '').replace(')', '')}` : ''">
                                     <span data-bind="text: Name"></span>
                                 </div>
                                 <!-- /ko -->

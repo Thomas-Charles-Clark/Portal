@@ -1182,22 +1182,26 @@ body {
 
                     .attachment-supplier-wrapper {
                         display: flex;
-                        align-items: center;
+                        align-items: flex-start;
                         margin-bottom: $l-gutter;
                         flex: 1;
 
-                        .attachment-supplier {
-                            display: flex;
-                            align-items: center;
+                        .attachment-supplier-container {
                             flex: 1;
 
-                            .mdc-validating-field {
+                            .attachment-supplier {
+                                display: flex;
+                                align-items: center;
                                 flex: 1;
-                                width: 100%;
-                            }
 
-                            .bi {
-                                display: none;
+                                .mdc-validating-field {
+                                    flex: 1;
+                                    width: 100%;
+                                }
+
+                                .bi {
+                                    display: none;
+                                }
                             }
                         }
 
@@ -1277,6 +1281,15 @@ body {
     }
 }
 
+#download-attachments-modal {
+    .modal-dialog {
+        .modal-header {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+    }
+}
+
 #download-attachments-progress {
     width: 100%;
 
@@ -1287,5 +1300,28 @@ body {
         .k-progress-status {
 
         }
+    }
+}
+
+.duplicate-checkbox-wrapper {
+    border: 0;
+    box-shadow: none;
+
+    .card-body {
+        padding: $l-gutter 0;
+
+        .mdc-checkbox--label {
+            color: $white;
+            font-weight: bold;
+        }
+    }
+}
+
+.supplier-address-display {
+    p {
+        color: $gray-800;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
 }

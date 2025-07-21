@@ -30,7 +30,7 @@
     } else {
         self.readOnly = ko.observable(false);
         self.toLoad = {
-            SupplierCode: self.SupplierCode,
+            supplierCode: self.SupplierCode,
             readOnly: self.readOnly
         };
     }
@@ -227,6 +227,8 @@
 
         console.log(`determinePropertiesTemplate called, force was: ${force}`);
 
+        self.validateNow(false);
+
         if (self.properties() == null || force) {
             let properties = null;
             let propertiesViewModelFn = null;
@@ -272,6 +274,13 @@
                     break;
             }
 
+            if (self.parentEmailSupplier() && self.toLoad.SupplierCode == null) {
+                self.toLoad.supplierCode = self.parentEmailSupplier().Code;
+                self.toLoad.supplier = self.parentEmailSupplier();
+                self.toLoad.supplierCurrency = self.parentEmailSupplier().Currency;
+                self.toLoad.paymentTermsCode = self.parentEmailSupplier().PaymentTermsCode;
+            }
+
             if (typeof propertiesViewModelFn == 'function') {
                 properties = propertiesViewModelFn({
                     rec: self.toLoad,
@@ -292,19 +301,24 @@
                     live: true
                 });
 
-                window.setTimeout(() => {
-                    if (properties.supplierCode && properties.supplierCode() == '' && self.parentEmailSupplier()) {
-                        properties.supplierCode(self.parentEmailSupplier().Code);
-                        if (!properties.supplierParams.dropDownListSettings.widget()) {
-                            let s = properties.supplierParams.dropDownListSettings.widget.subscribe(nv => {
-                                nv.trigger('change');
-                                s.dispose();
-                            })
-                        } else {
-                            properties.supplierParams.dropDownListSettings.widget().trigger('change');
-                        }
-                    }
-                }, 0);
+                //window.setTimeout(() => {
+                //    if (properties.supplierCode && properties.supplierCode() == '' && self.parentEmailSupplier()) {
+                //        if (!properties.supplierParams.dropDownListSettings.widget()) {
+                //            let s = properties.supplierParams.dropDownListSettings.widget.subscribe(nv => {
+                //                nv.value(self.parentEmailSupplier().Code);
+                //                window.setTimeout(() => {
+                //                    nv.trigger('change');
+                //                    s.dispose();
+                //                }, 0);
+                //            })
+                //        } else {
+                //            properties.supplierParams.dropDownListSettings.widget().value(self.parentEmailSupplier().Code);
+                //            window.setTimeout(() => {
+                //                properties.supplierParams.dropDownListSettings.widget().trigger('change');
+                //            }, 0);
+                //        }
+                //    }
+                //}, 0);
             } else {
                 self.errors = ko.validation.group([]);
             }
@@ -528,7 +542,14 @@
             }
         }
 
-        console.log('saveAttachmentDetail calling with', data);
+        if (window.getFreeTextSearchDefault() == 'Potato') {
+            console.log('saveAttachmentDetail NOT calling with', data);
+            self.modalBusy(false);
+            return;
+        } else {
+            console.log('saveAttachmentDetail calling with', data);
+        }
+
 
         fetch('/api/InvoiceBookingAPI/SaveAttachmentDetail', {
             method: 'POST',

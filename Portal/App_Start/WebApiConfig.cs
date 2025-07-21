@@ -163,6 +163,7 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(OrderBookGrouped)).AddProperty(typeof(OrderBookGrouped).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(OrderTaker)).AddProperty(typeof(OrderTaker).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_DeliveryType)).AddProperty(typeof(Mertex_DeliveryType).GetProperty("ShortLabel"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SupplierLive)).AddProperty(typeof(SupplierLive).GetProperty("AddressDisplaySingleLine"));
 
 
             var supplierPaymentTermsValueMapperFunction = odataBuilder.EntityType<SupplierPaymentTerms>()

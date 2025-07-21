@@ -42,6 +42,9 @@
             return self.supplier() && self.supplier().Currency;
     }, self);
 
+    // Necessary, leave it.
+    self.duplicateResults = ko.observableArray([]);
+
     //#endregion
 
 
@@ -134,7 +137,7 @@
 
             if (data.filter && data.filter.filters.length) {
                 let f = data.filter.filters.find(f => f.field === "Name");
-                filters.push(`(contains(Name, '${f.value}') or contains(SortName, '${f.value}') or startswith(tolower(Code), '${f.value}'))`);
+                filters.push(`(contains(Name, '${f.value}') or contains(SortName, '${f.value}') or startswith(tolower(Code), '${f.value}') or startswith(tolower(Postcode), '${f.value}'))`);
 
                 if (d.$filter) {
                     delete d.$filter;

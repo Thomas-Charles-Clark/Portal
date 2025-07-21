@@ -25,6 +25,8 @@ namespace Portal.Areas.Invoices.ViewModels
 
         public IEnumerable<AttachmentType> AttachmentTypes { get; set; }
 
+        public string DefaultFreeTextSearchString { get; set; }
+
         public InvoiceBookingViewModel(
             int mailboxId, 
             IEnumerable<short> lockedToDepartmentGroupIds,
@@ -42,6 +44,11 @@ namespace Portal.Areas.Invoices.ViewModels
             LockedToBudgetHolderCode = lockedToBudgetHolderCode;
             LoadingEmailStatusID = loadingEmailStatusId;
 
+#if DEBUG
+            DefaultFreeTextSearchString = null;//"Various";
+#else
+            DefaultFreeTextSearchString = null;
+#endif
         }
 
         public static async Task<InvoiceBookingViewModel> CreateAsync(

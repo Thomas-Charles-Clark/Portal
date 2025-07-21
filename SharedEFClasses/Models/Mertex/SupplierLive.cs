@@ -112,5 +112,31 @@ namespace SharedEFClasses.Models.Mertex
 
         [ForeignKey("DefaultVATCode")]
         public virtual VATCode VATCode { get; set; }
+
+        [NotMapped]
+        public string AddressDisplaySingleLine
+        {
+            get
+            {
+                var parts = new List<string>();
+
+                if (!String.IsNullOrEmpty(AddressLine1))
+                    parts.Add(AddressLine1);
+
+                if (!String.IsNullOrEmpty(AddressLine2))
+                    parts.Add(AddressLine2);
+
+                if (!String.IsNullOrEmpty(Town))
+                    parts.Add(Town);
+
+                if (!String.IsNullOrEmpty(County))
+                    parts.Add(County);
+
+                if (!String.IsNullOrEmpty(CountryCode))
+                    parts.Add(CountryCode);
+
+                return String.Join(", ", parts);
+            }
+        }
     }
 }
