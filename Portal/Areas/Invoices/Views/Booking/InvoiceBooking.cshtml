@@ -151,7 +151,12 @@
                 <span class="validation-message" data-bind="validationMessage: invoiceTotalIncVATCurrency"></span>
 
                 <span class="validation-message" data-bind="validationMessage: netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT"></span>
+
                 <div class="attachment-property dispute-checkbox" data-bind="component: { name: 'mdc-checkbox-component', params: disputeParams }"></div>
+
+                <div class="gross-threshold-warning-wrapper mt-3" style="display: none" data-bind="visible: invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningThreshold">
+                    <div data-bind="component: { name: 'mdc-checkbox-component', params: invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningParams }"></div>
+                </div>
             </div>
         </div>
 
@@ -372,7 +377,12 @@
                 <span class="validation-message" data-bind="validationMessage: invoiceTotalIncVATCurrency"></span>
 
                 <span class="validation-message" data-bind="validationMessage: netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT"></span>
+
                 <div class="attachment-property dispute-checkbox" data-bind="component: { name: 'mdc-checkbox-component', params: disputeParams }"></div>
+
+                <div class="gross-threshold-warning-wrapper mt-3" style="display: none" data-bind="visible: invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningThreshold">
+                    <div data-bind="component: { name: 'mdc-checkbox-component', params: invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningParams }"></div>
+                </div>
             </div>
         </div>
 
@@ -482,6 +492,10 @@
 
                 <span class="validation-message" data-bind="validationMessage: netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT"></span>
                 @*<div class="attachment-property dispute-checkbox" data-bind="component: { name: 'mdc-checkbox-component', params: disputeParams }"></div>*@
+
+                <div class="gross-threshold-warning-wrapper mt-3" style="display: none" data-bind="visible: invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningThreshold">
+                    <div data-bind="component: { name: 'mdc-checkbox-component', params: invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningParams }"></div>
+                </div>
             </div>
         </div>
 
@@ -735,7 +749,7 @@
     <div class="card-body">
         <div id="dashboard" style="display: none" data-bind="visible: true, with: dashboard">
             <!-- ko foreach: sortedPods -->
-            <div class="dashboard-pod card" data-bind="click: $parent.select, css: { 'active': $parent.selectedPod() == $data, 'warning': ($data.EmailStatusID == 1) && (RecordCount > 0) }">
+            <div class="dashboard-pod card" data-bind="click: $parent.select, css: { 'active': $parent.selectedPod() == $data, 'warning': ([1,5].indexOf($data.EmailStatusID) > -1) && (RecordCount > 0) }">
                 <div class="card-body">
                     <h4>
                         <span data-bind="html: Label"></span>
@@ -839,7 +853,7 @@
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-header secondary-header" data-bind="class: (selectedEmail() && selectedEmail().emailStatus ? `header-${selectedEmail().emailStatus.Name.toLowerCase()}` : '')">
+            <div class="modal-header secondary-header" data-bind="class: (selectedEmail() && selectedEmail().emailStatus ? `header-${selectedEmail().emailStatus.Name.toLowerCase().replace(/\s/g, '-')}` : '')">
                 <h5 data-bind="html: selectedEmail() && selectedEmail().emailStatus && selectedEmail().emailStatus.Name"></h5>
             </div>
             <div class="modal-body" data-bind="with: selectedEmail">
@@ -853,7 +867,7 @@
                                 <span data-bind="text: FileSizeDisplay"></span>
                             </div>
                             <!-- ko if: attachmentType -->
-                            <div class="attachment-type" data-bind="with: attachmentType, class: attachmentType() ? `attachment-type-${attachmentType().Name.toLowerCase().replace(' ', '-').toLowerCase().replace('(', '').replace(')', '')}` : ''">
+                            <div class="attachment-type" data-bind="with: attachmentType, class: attachmentType() ? `attachment-type-${attachmentType().Name.toLowerCase().replace(/\s/g, '-').toLowerCase().replace(/\(/g, '').replace(/\)/g, '')}` : ''">
                                 <span data-bind="text: Name"></span>
                             </div>
                             <!-- /ko -->
@@ -885,7 +899,7 @@
                                 </form>
                             </label>
                         </li>
-                        <li id="download-attachments-item" class="attachment gap-3 pointer" data-bind="css: { 'disabled': attachmentsDisabled }, click: showDownloadAttachmentsModal">
+                        <li id="download-attachments-item" class="attachment gap-3 pointer" data-bind="click: showDownloadAttachmentsModal">
                             <label for="download-attachments-item">
                                 <span class="k-icon k-i-download"></span>
                                 <span class="attachment-properties">
@@ -899,18 +913,30 @@
                 </div>
                 <div id="attachment-viewer" data-bind="with: selectedAttachment">
                     <!-- ko if: isEmailBody -->
-                    <div id="email-body" class="p-2 d-flex flex-column" data-bind="html: Body"></div>
+                    <div id="email-body">
+                        <button id="download-email-to-pdf" class="btn" data-bind="click: $parent.downloadEmailAsPDF">
+                            <span class="k-icon k-i-pdf"></span>
+                            Download Email as PDF
+                            <span class="k-icon k-i-download"></span>
+                        </button>
+                        <div class="p-2 d-flex flex-column" data-bind="html: Body"></div>
+                    </div>
                     <!-- /ko -->
                     <!-- ko ifnot: isEmailBody -->
                     <div id="attachment-iframe-wrapper" class="ratio">
-                        <!-- ko if: ['csv','txt'].indexOf(FileExtension.toLowerCase()) == -1 -->
+                        <!-- ko if: ['csv','txt','png','jpg','jpeg','gif','bmp','webp','tif','tiff'].indexOf(FileExtension.toLowerCase()) == -1 -->
                         <iframe id="attachment-frame" data-bind="attr: { src: actualSrc }"></iframe>
                         <!-- /ko -->
                         <!-- ko if: ['csv','txt'].indexOf(FileExtension.toLowerCase()) > -1 -->
                         <pre class="prettyprint linenums" data-bind="html: prettyPrintedResponse"></pre>
                         <!-- /ko -->
-                        <!-- ko if: ['png','jpg','jpeg','tif','tiff','gif','bmp','webp'].indexOf(FileExtension.toLowerCase()) > -1 -->
+                        <!-- ko if: ['png','jpg','jpeg','gif','bmp','webp'].indexOf(FileExtension.toLowerCase()) > -1 -->
                         <img id="attachment-frame" data-bind="attr: { src: actualSrc }" />
+                        <!-- /ko -->
+                        <!-- ko if: ['tif', 'tiff'].indexOf(FileExtension.toLowerCase()) > -1 -->
+                        <div id="tif-canvas-container">
+
+                        </div>
                         <!-- /ko -->
                     </div>
                     <!-- /ko -->
@@ -1235,7 +1261,7 @@
                                     <span data-bind="text: FileSizeDisplay"></span>
                                 </div>
                                 <!-- ko if: attachmentType -->
-                                <div class="attachment-type" data-bind="with: attachmentType, class: attachmentType() ? `attachment-type-${attachmentType().Name.toLowerCase().replace(' ', '-').replace('(', '').replace(')', '')}` : ''">
+                                <div class="attachment-type" data-bind="with: attachmentType, class: attachmentType() ? `attachment-type-${attachmentType().Name.toLowerCase().replace(/\s/g, '-').replace(/\(/g, '').replace(/\)/g, '')}` : ''">
                                     <span data-bind="text: Name"></span>
                                 </div>
                                 <!-- /ko -->

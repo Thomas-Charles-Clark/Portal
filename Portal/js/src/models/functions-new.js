@@ -67,6 +67,21 @@ function formatNumber(value, digits, culture) {
     return formatter.format(value);
 }
 
+function formatNumberBounded(value, digits, min, max, culture) {
+
+    // argh, need a parseable number so that I can bounds it before culturing it
+
+
+    var formatter = new Intl.NumberFormat(
+        culture, {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits,
+
+    });
+
+    return formatter.format(value);
+}
+
 function formatCurrency(value, digits, culture, currency) {
     if (value == null)
         return value;

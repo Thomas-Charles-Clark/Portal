@@ -387,7 +387,7 @@ body {
   background-color: #d13242;
   color: #fff;
 }
-#email-modal .modal-dialog .modal-content .modal-header.header-unprocessed {
+#email-modal .modal-dialog .modal-content .modal-header.header-unprocessed #email-modal .modal-dialog .modal-content .modal-header.header-new-supplier-account-required {
   background-color: #e9ecef;
 }
 #email-modal .modal-dialog .modal-content .modal-header.header-processed {
@@ -603,6 +603,10 @@ body {
 #email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons #download-attachments-item.disabled > label:hover {
   background-color: #e9ecef;
 }
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons #add-attachments-item.disabled:hover,
+#email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons #download-attachments-item.disabled:hover {
+  color: #212529;
+}
 #email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons #add-attachments-item #add-attachments-form,
 #email-modal .modal-dialog .modal-content .modal-body #attachments-list-container #attachments-list-control-buttons #download-attachments-item #add-attachments-form {
   display: none;
@@ -633,6 +637,10 @@ body {
 #email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #attachment-iframe-wrapper pre.prettyprint .linenums li {
   list-style-type: decimal;
 }
+#email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #attachment-iframe-wrapper:has(#tif-canvas-container) {
+  background-color: #fff;
+  --bs-aspect-ratio: unset;
+}
 #email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #email-body {
   width: 100%;
   position: relative;
@@ -645,6 +653,36 @@ body {
 #email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #email-body img {
   max-width: 100%;
   height: auto !important;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #email-body #download-email-to-pdf {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: absolute;
+  background-color: #f8f9fa;
+  color: #212529;
+  border: 1px solid #ced4da;
+  border-top-width: 0;
+  border-right-width: 0;
+  border-radius: 0;
+  border-bottom-left-radius: 0.375rem;
+  right: 0;
+  top: 0;
+  transition: none;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #email-body #download-email-to-pdf .k-icon {
+  font-size: 1.5rem;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #email-body #download-email-to-pdf .k-i-download {
+  position: relative;
+  top: 3px;
+}
+#email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #email-body #download-email-to-pdf:hover, #email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #email-body #download-email-to-pdf:focus, #email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #email-body #download-email-to-pdf:focus-within {
+  border: 1px solid #052c65;
+  border-top-width: 0;
+  border-right-width: 0;
+  background-color: #084298;
+  color: #fff;
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane {
   flex: 1 1 420px;
@@ -1075,9 +1113,21 @@ body {
 }
 
 .supplier-address-display p {
-  color: #343a40;
+  color: #adb5bd;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  max-width: 660px;
+}
+
+.gross-threshold-warning-wrapper .mdc-checkbox--label {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+#tif-canvas-container {
+  display: flex;
+  justify-content: flex-start;
+  position: static !important;
 }
 /*# sourceMappingURL=invoice-booking.css.map */

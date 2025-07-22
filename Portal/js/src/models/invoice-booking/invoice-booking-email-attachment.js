@@ -170,8 +170,6 @@
             case 'png':
             case 'jpg':
             case 'jpeg':
-            case 'tif':
-            case 'tiff':
             case 'gif':
             case 'bmp':
             case 'webp':
@@ -179,6 +177,26 @@
                     self.canPreviewAttachment(true);
                     self.actualSrc(result);
                 });
+                break;
+            case 'tif':
+            case 'tiff':
+                ko.ignoreDependencies(() => {
+                    self.canPreviewAttachment(true);
+                });
+                fetch(`${result}`, {
+                    method: 'GET',
+                    headers: window.fetchHeaders,
+                    cache: 'no-cache'
+                }).then(response => response.arrayBuffer())
+                    .then(buffer => {
+                        let t = new Tiff({ buffer });
+                        let canvas = t.toCanvas();
+                        canvas.classList.add('tif-canvas');
+                        document.querySelector('#tif-canvas-container').innerHTML = '';
+                        document.querySelector('#tif-canvas-container').appendChild(canvas);
+                    })
+                    .catch(window.catchFetchError)
+                break;
             default:
                 self.canPreviewAttachment(false);
                 break;
@@ -557,28 +575,38 @@
             body: JSON.stringify(data)
         })
             .then(window.handleFetchResponse)
-            .then(data => {
-                console.log('SaveAttachment returned', data);
+            .then(result => {
+                console.log('SaveAttachment returned', result);
 
-                self.modal._element.querySelector('.blocker').classList.add('success');
+                if (result.PassedValidation === true) {
+                    if (result.Saved === true) {
 
-                self.modalBusyMessage('<span>Success</span><span class="ms-3">✔</span>')
+                        self.modal._element.querySelector('.blocker').classList.add('success');
 
-                self.AttachmentTypeID = self.attachmentTypeId();
+                        self.modalBusyMessage('<span>Success</span><span class="ms-3">✔</span>')
 
-                self.readOnly(true);
+                        self.AttachmentTypeID = self.attachmentTypeId();
+
+                        self.readOnly(true);
+
+                        if (typeof afterSave === 'function') {
+                            afterSave();
+                        }
+
+                    } else {
+                        window.showError(`Sorry<br/><br/>There was an error while saving this attachment\'s form data. Please click here <a href="mailto:itsupport@designersguild.com?subject=IncomingEmail.Attachment_Save%20Error:%20Attachment%20ID%20=%20${data.attachmentId}&body=${encodeURIComponent(JSON.stringify(result))}">itsupport@designersguild.com</a> to begin a templated email providing IT with useful information about this event.`)
+                    }
+                } else {
+                    window.showError(`Validation Failure: Error Number ${result.ValidationErrorNumber}<br/><br/>${result.ValidationErrorMessage}<br/><br/>
+                    Please click here <a href="mailto:itsupport@designersguild.com?subject=IncomingEmail.Attachment_Save%20Error:%20Attachment%20ID%20=%20${data.attachmentId}&body=${encodeURIComponent(JSON.stringify(result, null, '\t'))}">itsupport@designersguild.com</a> to begin a templated email providing IT with useful information about this event.`)
+                }
 
                 window.setTimeout(() => {
                     self.modalBusy(false);
                     self.modal._element.querySelector('.blocker').classList.remove('success');
-
-                    self.modalBusyMessage('Please Wait')
-
+                    self.modalBusyMessage('Please Wait');
                 }, 500);
 
-                if (typeof afterSave === 'function') {
-                    afterSave();
-                }
             })
             .catch(err => {
                 self.busy(false);

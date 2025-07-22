@@ -211,7 +211,7 @@ ko.bindingHandlers.horizontalSlideVisible = {
 
 // Thanks to http://stackoverflow.com/questions/17048468/make-an-input-only-numeric-type-on-knockout
 ko.bindingHandlers.numeric = {
-    init: function (element, valueAccessor) {
+    init: function (element, valueAccessor, allBindingsAccessor) {
         $(element).on("keydown", function (event) {
 
             // Allow: backspace, delete, tab, escape, and enter
@@ -231,6 +231,7 @@ ko.bindingHandlers.numeric = {
                 // Allow: home, end, left, right, up, down
                 (event.keyCode >= 35 && event.keyCode <= 40)) {
                 // let the keypress occur
+
                 return;
             }
             else {
@@ -724,6 +725,12 @@ ko.extenders.numberUnformatted = function (target, options) {
 
 function formatToNumberHelper(str, decimals, maxValue, minValue) {
     var roundingMultiplier = Math.pow(10, decimals);
+
+    if (str.lastIndexOf(',') > str.lastIndexOf('.')) {
+        str = str.substring(0, str.lastIndexOf(',')) + '@' + str.substring(str.lastIndexOf(',') + 1);
+        str = str.replace(/\./g, ',');
+        str = str.replace('@', '.');
+    }
 
     //Strip out everything except numbers and decimals (also strip out '%' and 'R')
     var newValueAsNum = new String(str).replace(/[^0-9\.-]/g, '');

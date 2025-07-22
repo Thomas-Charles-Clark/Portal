@@ -104,8 +104,9 @@
 
         self.parent.filters.emailStatusId(data.EmailStatusID);
 
-        switch (data.Label) {
-            case 'Unidentified Supplier':
+        switch (data.EmailStatusID) {
+            case 1:
+            case 5:
                 self.parent.mailboxGridParams.widget().dataSource.query({
                     page: 1,
                     pageSize: self.parent.mailboxGridParams.widget().dataSource.pageSize(),
@@ -119,7 +120,7 @@
                     }]
                 });
                 break;
-            case 'Unprocessed':
+            case 2:
                 self.parent.mailboxGridParams.widget().dataSource.query({
                     page: 1,
                     pageSize: self.parent.mailboxGridParams.widget().dataSource.pageSize(),
@@ -133,12 +134,12 @@
                     }]
                 });
                 break;
-            case 'Processed':
-            case 'Junk':
+            case 3:
+            case 4:
                 self.parent.mailboxGridParams.widget().dataSource.query({
                     page: 1,
                     pageSize: self.parent.mailboxGridParams.widget().dataSource.pageSize(),
-                    group: self.parent.mailboxGridParams.widget().dataSource.group(), 
+                    group: self.parent.mailboxGridParams.widget().dataSource.group(),
                     sort: [{
                         field: 'ReceivedDT',
                         dir: 'desc'
@@ -150,6 +151,7 @@
         }
 
         self.parent.selectedEmail(undefined);
+        
     } 
 
     //#endregion

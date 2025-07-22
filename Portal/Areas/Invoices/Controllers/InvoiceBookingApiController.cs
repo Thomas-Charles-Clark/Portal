@@ -1,5 +1,10 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
 
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using iTextSharp.text.html.simpleparser;
+using iTextSharp.tool.xml;
+
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using Microsoft.AspNet.Identity;
@@ -27,6 +32,8 @@ using System.Management.Automation.Language;
 using System.Net;
 using System.Net.Http;
 using System.Net.Mail;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -36,6 +43,8 @@ using System.Web.Http;
 using System.Web.Http.ModelBinding;
 
 using Attachment = SharedEFClasses.Models.IncomingEmail.Attachment;
+using System.Web.UI;
+using HtmlAgilityPack;
 
 namespace Portal.Areas.Invoices.Controllers
 {
@@ -525,7 +534,7 @@ namespace Portal.Areas.Invoices.Controllers
 
             var result = await PortalDb.IncomingEmail_Attachment_Save(dto);
 
-            return Ok(new { });
+            return Ok(result);
         }
 
         [HttpPost]
@@ -550,6 +559,69 @@ namespace Portal.Areas.Invoices.Controllers
             var results = PortalDb.GeneralLedgerCodes.Include("Type").Where(glc => glc.Deleted == false && ((glc.AccountType == "P" || glc.AccountType == "A" || glc.AccountType == "S" || glc.AccountType == "C") || glc.Code == "9999999999") && glc.Code == code).AsQueryable();
 
             return results.ToDataSourceResult(request);
+        }
+
+        [HttpPost]
+        public HttpResponseMessage ConvertEmailToPDF([FromBody] PassEmailToPDF dto)
+        {
+            var pdf = new PdfDocument();
+
+            var fileName = dto.FileName;
+
+            HtmlNode.ElementsFlags["p"] = HtmlElementFlag.Closed;
+            HtmlNode.ElementsFlags["br"] = HtmlElementFlag.Closed;
+            HtmlNode.ElementsFlags["img"] = HtmlElementFlag.Closed;
+            HtmlDocument doc = new HtmlDocument();
+            doc.OptionFixNestedTags = true;
+            doc.OptionAutoCloseOnEnd = true;
+            doc.OptionWriteEmptyNodes = true;
+            doc.LoadHtml(dto.Body);
+
+            var stream = new MemoryStream();
+
+            using (StringWriter sw = new StringWriter())
+            {
+                using (HtmlTextWriter hw = new HtmlTextWriter(sw))
+                {
+                    hw.Write(doc.DocumentNode.OuterHtml);
+                    StringReader sr = new StringReader(sw.ToString());
+                    Document pdfDoc = new Document(PageSize.A4, 10f, 10f, 10f, 0f);
+                    PdfWriter writer = PdfWriter.GetInstance(pdfDoc, stream);
+                    pdfDoc.Open();
+                    XMLWorkerHelper.GetInstance().ParseXHtml(writer, pdfDoc, sr);
+                    pdfDoc.Close();
+                }
+            }
+
+            var httpResponseMessage = Request.CreateResponse(HttpStatusCode.OK);
+
+            httpResponseMessage.Content = new StreamContent(new MemoryStream(stream.GetBuffer()));
+            httpResponseMessage.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment");
+            httpResponseMessage.Content.Headers.ContentDisposition.FileName = fileName;
+            httpResponseMessage.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/pdf");
+
+            return httpResponseMessage;
+
+
+            //// Exact same damned result... EmailID 11462 gets truncated!!!
+
+            //using (Document document = new Document(PageSize.A4))
+            //{
+            //    PdfWriter writer = PdfWriter.GetInstance(document, HttpContext.Current.Response.OutputStream);
+            //    document.Open();
+
+            //    StringReader sr = new StringReader(doc.DocumentNode.OuterHtml);
+            //    XMLWorkerHelper.GetInstance().ParseXHtml(writer, document, sr);
+            //    document.Close();
+            //    HttpContext.Current.Response.ContentType = "application/pdf";
+            //    HttpContext.Current.Response.AddHeader("content-disposition", "attachment; filename=" + DateTime.Now.ToString("yyyyMMdd") + ".pdf");
+            //    System.Web.HttpContext.Current.Response.Write(document);
+            //    HttpContext.Current.Response.Flush();
+            //    HttpContext.Current.Response.End();
+
+            //}
+
+            //return null;
         }
     }
 }

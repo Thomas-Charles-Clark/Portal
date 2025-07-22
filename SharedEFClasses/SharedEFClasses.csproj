@@ -422,6 +422,7 @@
     <Compile Include="Models\ImageDownloadTask.cs" />
     <Compile Include="Models\IncomingEmail\Attachment.cs" />
     <Compile Include="Models\IncomingEmail\Attachment_DuplicateCheck_Result.cs" />
+    <Compile Include="Models\IncomingEmail\Attachment_SaveResult.cs" />
     <Compile Include="Models\IncomingEmail\BudgetHolderSuperSet.cs" />
     <Compile Include="Models\IncomingEmail\Attachment_DuplicateCheck_SelectResult.cs" />
     <Compile Include="Models\IncomingEmail\Dashboard_NoticeResult.cs" />
@@ -443,6 +444,7 @@
     <Compile Include="Models\IncomingEmail\MailboxFunction.cs" />
     <Compile Include="Models\IncomingEmail\PassAttachmentSubmit.cs" />
     <Compile Include="Models\IncomingEmail\PassEmailMessageID.cs" />
+    <Compile Include="Models\IncomingEmail\PassEmailToPDF.cs" />
     <Compile Include="Models\IncomingEmail\PassInvoiceDateParams.cs" />
     <Compile Include="Models\IncomingEmail\PassSupplierDetail.cs" />
     <Compile Include="Models\IncomingEmail\PassAttachmentDetail.cs" />

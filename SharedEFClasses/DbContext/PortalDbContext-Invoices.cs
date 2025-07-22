@@ -281,9 +281,9 @@ namespace SharedEFClasses.Models
             };
         }
 
-        public async Task<int?> IncomingEmail_Attachment_Save(PassAttachmentDetail dto)
+        public async Task<Attachment_SaveResult> IncomingEmail_Attachment_Save(PassAttachmentDetail dto)
         {
-            var result = await this.Database.Connection.QuerySingleOrDefaultAsync<int?>("[IncomingEmail].[Attachment_Save]", dto, null, null, CommandType.StoredProcedure);
+            var result = await this.Database.Connection.QuerySingleAsync<Attachment_SaveResult>("[IncomingEmail].[Attachment_Save]", dto, null, null, CommandType.StoredProcedure);
 
             return result;
         }

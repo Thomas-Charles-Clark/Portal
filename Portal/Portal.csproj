@@ -1720,6 +1720,7 @@
     <Content Include="js\src\lib\tempus-dominus\custom-date-format.js" />
     <Content Include="js\src\lib\tempus-dominus\tempus-dominus-knockout.js" />
     <Content Include="js\src\lib\tempus-dominus\tempus-dominus.js" />
+    <Content Include="js\src\lib\tiff\tiff.js" />
     <Content Include="js\src\lib\tiny-slider\tiny-slider.js" />
     <Content Include="js\src\models\address.js" />
     <Content Include="js\src\models\alternative-products.js" />

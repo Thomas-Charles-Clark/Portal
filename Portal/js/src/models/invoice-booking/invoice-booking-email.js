@@ -619,6 +619,70 @@
         });
     }
 
+    self.downloadEmailAsPDF = () => {
+
+        if (self.Body.length > 20000) {
+
+            window.showConfirm('Polite Notice', `This process is not guaranteed to succeed when presented 
+            with long email threads such as the one you are viewing.
+            <br/><br/>
+            Would you like to proceed?`, () => {
+                self.actuallyDownloadEmailAsPDF();
+            }, () => {
+
+            });
+        } else {
+            self.actuallyDownloadEmailAsPDF();
+        }
+
+    }
+
+    self.actuallyDownloadEmailAsPDF = () => {
+
+        self.modalBusyMessage('Converting HTML Email to PDF Document...');
+        self.modalBusy(true);
+
+        let fileName = self.supplierCode() ? `${ko.unwrap(self.supplierCode)}-${self.Subject}.pdf` : `${self.Subject}.pdf`;
+
+        let data = {
+            emailId: self.EmailID,
+            body: self.Body,
+            fileName: fileName
+        }
+
+        fetch('/api/InvoiceBookingAPI/ConvertEmailToPDF', {
+            method: 'POST',
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: window.fetchHeaders,
+            body: JSON.stringify(data)
+        }).then(response => response.blob())
+            .then(blob => {
+
+                console.log(blob);
+
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = fileName;
+                link.click();
+                self.busy(false);
+                link.remove();
+
+                self.modalBusy(false);
+
+                window.setTimeout(() => {
+                    self.modalBusyMessage('Please Wait');
+                }, 150);
+            })
+            .catch(err => {
+                self.modalBusy(false);
+                window.setTimeout(() => {
+                    self.modalBusyMessage('Please Wait');
+                }, 150);
+                window.catchFetchError(err);
+            });
+    }
+
     //#endregion
 
 

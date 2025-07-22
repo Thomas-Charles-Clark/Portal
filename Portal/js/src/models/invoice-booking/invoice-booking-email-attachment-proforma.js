@@ -171,11 +171,9 @@
             },
             message: 'You must provide an Invoice Total'
         },
-        numberFormatted: {
+        currencyFormatted: {
             digits: 2,
-            currency: {
-                FormattingCulture: 'en-GB', Code: 'GBP'
-            },
+            currency: self.supplierCurrency,
             minValue: 0
         },
         minValue: {
@@ -193,11 +191,9 @@
             },
             message: 'You must provide a VAT total'
         },
-        numberFormatted: {
+        currencyFormatted: {
             digits: 2,
-            currency: {
-                FormattingCulture: 'en-GB', Code: 'GBP'
-            },
+            currency: self.supplierCurrency,
             minValue: 0
         },
         minValue: {
@@ -215,11 +211,9 @@
             },
             message: 'You must provide a Net total'
         },
-        numberFormatted: {
+        currencyFormatted: {
             digits: 2,
-            currency: {
-                FormattingCulture: 'en-GB', Code: 'GBP'
-            },
+            currency: self.supplierCurrency,
             minValue: 0
         },
         minValue: {
@@ -288,6 +282,16 @@
     self.undoingDuplicate = ko.observable(false);
 
     self.duplicateWarningAccepted = ko.observable(false);
+
+    self.invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningThreshold = ko.observable(false);
+
+    self.invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningAccepted = ko.observable(false).extend({
+        equal: {
+            params: true,
+            onlyIf: self.invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningThreshold,
+            message: 'Gross total must not exceed Supplier Invoice Warning Threshold'
+        }
+    });
 
     //#endregion
 
@@ -396,6 +400,21 @@
             }
         });
     });
+
+    self.invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningThresholdComputer = ko.computed(() => {
+        let invoiceTotalIncVATCurrency = self.invoiceTotalIncVATCurrency();
+
+        if (self.supplier()) {
+            let result = invoiceTotalIncVATCurrency >= self.supplier().InvoiceWarningThreshold;
+
+            console.log('invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningThresholdComputer computed', result);
+
+            ko.ignoreDependencies(() => {
+                self.invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningThreshold(result);
+            });
+        }
+
+    }, self);
 
     self.duplicateCheck = ko.computed(() => {
 
@@ -1077,6 +1096,20 @@
         busy: ko.observable(false)
     }
 
+    self.invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningParams = {
+        checkboxId: 'total-inc-warning',
+        label: ko.computed(() => {
+            return `The Gross Invoice Total in Currency exceeds this Supplier\'s Warning Threshold of ${formatCurrency(ko.unwrap(self.supplier).InvoiceWarningThreshold, 0, ko.unwrap(self.supplierCurrency).FormattingCulture, ko.unwrap(self.supplierCurrency).Code)}
+            <br/>
+            I have double checked and am sure that ${formatCurrency(ko.unwrap(self.invoiceTotalIncVATCurrency), 2, ko.unwrap(self.supplierCurrency).FormattingCulture, ko.unwrap(self.supplierCurrency).Code)} is the correct and valid amount.`
+        }, self),
+        observable: self.invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningAccepted,
+        useNativeValidation: false,
+        enable: ko.observable(true),
+        disable: self.readOnly,
+        busy: ko.observable(false)
+    }
+
     self.errorables = [
         self.supplierInvoiceReference,
         self.invoiceDate,
@@ -1086,7 +1119,8 @@
         self.invoiceTotalIncVATCurrency,
         self.vatTotalCurrency,
         self.netTotalCurrency,
-        self.netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT
+        self.netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT,
+        self.invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningAccepted
     ];
 
     //#endregion
