@@ -1,0 +1,53 @@
+﻿@model Portal.Areas.Invoices.ViewModels.EmailViewerViewModel
+@{
+    ViewBag.Title = "Email Viewer - Designers Guild";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en-gb">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Designers Guild</title>
+    @Styles.Render("~/bundles/css/master-5.3.1")
+    @Styles.Render("~/bundles/css/invoice-booking-email-viewer")
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Ubuntu" rel="stylesheet">
+    <meta name="description" content="" />
+</head>
+<body>
+    <nav id="top-navbar" class="navbar navbar-default navbar-expand">
+        <div class="container">
+            <a class="navbar-brand" href="@Url.Action("Index", "Home", new { Area = "" })">
+                <img id="page-navbar-logo" src="~/content/images/logos/designers-guild-header.png" />
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse d-flex justify-content-between">
+                <ul class="nav navbar-nav mb-0 ms-auto me-auto">
+                    <li class="app-title">
+                        <button class="btn btn-lg btn-dark" onclick="window.print();">
+                            Print Email
+                        </button>
+                    </li>
+                </ul>
+                @Html.Partial("_LoginPartial")
+            </div>
+        </div>
+    </nav>
+    <div class="container body-content bg-white">
+        @Html.Raw(Model.Email.Body)
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Designers Guild</p>
+        </footer>
+    </div>
+</body>
+</html>

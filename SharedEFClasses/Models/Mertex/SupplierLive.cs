@@ -73,7 +73,7 @@ namespace SharedEFClasses.Models.Mertex
 
         public byte? CurrencyID { get; set; }
 
-        public int InvoiceWarningThreshold { get; set; }
+        public int InvoiceWarningThresholdGBP { get; set; }
 
         public DateTime? AccountClosedDT { get; set; }
 

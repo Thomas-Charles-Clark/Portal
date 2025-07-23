@@ -45,7 +45,7 @@ namespace Portal.Areas.Invoices.ViewModels
             LoadingEmailStatusID = loadingEmailStatusId;
 
 #if DEBUG
-            DefaultFreeTextSearchString = "11462";
+            DefaultFreeTextSearchString = "Various";
 #else
             DefaultFreeTextSearchString = null;
 #endif

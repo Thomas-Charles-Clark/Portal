@@ -383,18 +383,18 @@ body {
 #email-modal .modal-dialog .modal-content .modal-header.secondary-header h5 {
   margin: 0;
 }
-#email-modal .modal-dialog .modal-content .modal-header.header-unidentified {
+#email-modal .modal-dialog .modal-content .modal-header.secondary-header.header-unidentified {
   background-color: #d13242;
   color: #fff;
 }
-#email-modal .modal-dialog .modal-content .modal-header.header-unprocessed #email-modal .modal-dialog .modal-content .modal-header.header-new-supplier-account-required {
+#email-modal .modal-dialog .modal-content .modal-header.secondary-header.header-unprocessed, #email-modal .modal-dialog .modal-content .modal-header.secondary-header.header-new-supplier-account-required {
   background-color: #e9ecef;
 }
-#email-modal .modal-dialog .modal-content .modal-header.header-processed {
+#email-modal .modal-dialog .modal-content .modal-header.secondary-header.header-processed {
   background-color: #309365;
   color: #fff;
 }
-#email-modal .modal-dialog .modal-content .modal-header.header-junk {
+#email-modal .modal-dialog .modal-content .modal-header.secondary-header.header-junk {
   background-color: #e47112;
   color: #fff;
 }

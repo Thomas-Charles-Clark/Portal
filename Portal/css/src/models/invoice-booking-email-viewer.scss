@@ -1,0 +1,23 @@
+﻿@import "./common.scss";
+
+body {
+    min-width: 1170px;
+    padding-bottom: 0;
+    padding-top: 0;
+}
+
+.blocker {
+    &.success {
+        background-color: rgb(18 99 47 / 80%);
+    }
+}
+
+@media print {
+    #top-navbar {
+        display: none !important;
+    }
+
+    .container {
+        max-width: unset !important;
+    }
+}

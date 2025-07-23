@@ -587,6 +587,8 @@
     <Compile Include="Areas\Invoices\Controllers\InvoiceBookingApiController.cs" />
     <Compile Include="Areas\Invoices\Controllers\InvoiceBookingController.cs" />
     <Compile Include="Areas\Invoices\Models\InvoiceAttachmentNugget.cs" />
+    <Compile Include="Areas\Invoices\Models\PassEmailViewer.cs" />
+    <Compile Include="Areas\Invoices\ViewModels\EmailViewerViewModel.cs" />
     <Compile Include="Areas\Invoices\ViewModels\InvoiceBookingViewModel.cs" />
     <Compile Include="Areas\Marketing\Controllers\MarketingBudgetController.cs" />
     <Compile Include="Areas\Marketing\Controllers\MarketingBudgetAPIController.cs" />
@@ -2601,6 +2603,7 @@
     <Content Include="Areas\Order-Book\Views\OrderBookDetail\BackOrdersWithoutPurchaseOrders.cshtml" />
     <Content Include="Areas\Order-Book\Views\Shared\_BackOrdersWithoutPurchaseOrdersGrid.cshtml" />
     <Content Include="Areas\Order-Book\Views\Shared\_OrdersInfo.cshtml" />
+    <Content Include="Areas\Invoices\Views\Booking\EmailViewer.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
     <Content Include="Areas\Stock\Views\RangeManagement\RangeManagement.cshtml" />
     <None Include="compilerconfig.json" />
@@ -3008,6 +3011,7 @@
     <Content Include="css\src\models\order-book-back-orders-without-purchase-orders.scss" />
     <Content Include="css\src\models\invoice-booking.scss" />
     <Content Include="css\src\models\order-book-orders.scss" />
+    <Content Include="css\src\models\invoice-booking-email-viewer.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

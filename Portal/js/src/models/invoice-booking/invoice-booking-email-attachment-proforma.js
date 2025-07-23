@@ -283,12 +283,12 @@
 
     self.duplicateWarningAccepted = ko.observable(false);
 
-    self.invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningThreshold = ko.observable(false);
+    self.invoiceTotalIncVATInSterlingExceedsSupplierInvoiceWarningThresholdGBP = ko.observable(false);
 
-    self.invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningAccepted = ko.observable(false).extend({
+    self.invoiceTotalIncVATInSterlingExceedsSupplierInvoiceWarningAccepted = ko.observable(false).extend({
         equal: {
             params: true,
-            onlyIf: self.invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningThreshold,
+            onlyIf: self.invoiceTotalIncVATInSterlingExceedsSupplierInvoiceWarningThresholdGBP,
             message: 'Gross total must not exceed Supplier Invoice Warning Threshold'
         }
     });
@@ -401,16 +401,16 @@
         });
     });
 
-    self.invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningThresholdComputer = ko.computed(() => {
-        let invoiceTotalIncVATCurrency = self.invoiceTotalIncVATCurrency();
+    self.invoiceTotalIncVATInSterlingExceedsSupplierInvoiceWarningThresholdGBPComputer = ko.computed(() => {
+        let invoiceTotalIncVATInSterling = self.invoiceTotalIncVATInSterling();
 
         if (self.supplier()) {
-            let result = invoiceTotalIncVATCurrency >= self.supplier().InvoiceWarningThreshold;
+            let result = invoiceTotalIncVATInSterling > self.supplier().InvoiceWarningThresholdGBP;
 
-            console.log('invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningThresholdComputer computed', result);
+            console.log('invoiceTotalIncVATInSterlingExceedsSupplierInvoiceWarningThresholdGBPComputer computed', result);
 
             ko.ignoreDependencies(() => {
-                self.invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningThreshold(result);
+                self.invoiceTotalIncVATInSterlingExceedsSupplierInvoiceWarningThresholdGBP(result);
             });
         }
 
@@ -1099,11 +1099,11 @@
     self.invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningParams = {
         checkboxId: 'total-inc-warning',
         label: ko.computed(() => {
-            return `The Gross Invoice Total in Currency exceeds this Supplier\'s Warning Threshold of ${formatCurrency(ko.unwrap(self.supplier).InvoiceWarningThreshold, 0, ko.unwrap(self.supplierCurrency).FormattingCulture, ko.unwrap(self.supplierCurrency).Code)}
+            return `The Gross Invoice Total in Sterling exceeds this Supplier\'s Warning Threshold of ${formatCurrency(ko.unwrap(self.supplier).InvoiceWarningThresholdGBP, 0, 'en-GB', 'GBP')}
             <br/>
-            I have double checked and am sure that ${formatCurrency(ko.unwrap(self.invoiceTotalIncVATCurrency), 2, ko.unwrap(self.supplierCurrency).FormattingCulture, ko.unwrap(self.supplierCurrency).Code)} is the correct and valid amount.`
+            I have double checked and am sure that ${formatCurrency(ko.unwrap(self.invoiceTotalIncVATInSterling), 2, ko.unwrap(self.supplierCurrency).FormattingCulture, ko.unwrap(self.supplierCurrency).Code)} is the correct and valid amount.`
         }, self),
-        observable: self.invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningAccepted,
+        observable: self.invoiceTotalIncVATInSterlingExceedsSupplierInvoiceWarningAccepted,
         useNativeValidation: false,
         enable: ko.observable(true),
         disable: self.readOnly,
@@ -1120,7 +1120,7 @@
         self.vatTotalCurrency,
         self.netTotalCurrency,
         self.netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT,
-        self.invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningAccepted
+        self.invoiceTotalIncVATInSterlingExceedsSupplierInvoiceWarningAccepted
     ];
 
     //#endregion

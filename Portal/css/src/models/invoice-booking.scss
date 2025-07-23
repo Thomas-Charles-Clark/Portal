@@ -608,26 +608,26 @@ body {
                     h5 {
                         margin: 0;
                     }
-                }
 
-                &.header-unidentified {
-                    background-color: shade-color($red-500, 5%);
-                    color: $white;
-                }
+                    &.header-unidentified {
+                        background-color: shade-color($red-500, 5%);
+                        color: $white;
+                    }
 
-                &.header-unprocessed
-                &.header-new-supplier-account-required {
-                    background-color: $gray-200;
-                }
+                    &.header-unprocessed,
+                    &.header-new-supplier-account-required {
+                        background-color: $gray-200;
+                    }
 
-                &.header-processed {
-                    background-color: tint-color($green-500, 10%);
-                    color: $white;
-                }
+                    &.header-processed {
+                        background-color: tint-color($green-500, 10%);
+                        color: $white;
+                    }
 
-                &.header-junk {
-                    background-color: shade-color($orange-500, 10%);
-                    color: $white;
+                    &.header-junk {
+                        background-color: shade-color($orange-500, 10%);
+                        color: $white;
+                    }
                 }
 
                 .modal-title {

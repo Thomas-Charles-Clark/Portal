@@ -154,7 +154,7 @@
 
                 <div class="attachment-property dispute-checkbox" data-bind="component: { name: 'mdc-checkbox-component', params: disputeParams }"></div>
 
-                <div class="gross-threshold-warning-wrapper mt-3" style="display: none" data-bind="visible: invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningThreshold">
+                <div class="gross-threshold-warning-wrapper mt-3" style="display: none" data-bind="visible: invoiceTotalIncVATInSterlingExceedsSupplierInvoiceWarningThresholdGBP">
                     <div data-bind="component: { name: 'mdc-checkbox-component', params: invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningParams }"></div>
                 </div>
             </div>
@@ -380,7 +380,7 @@
 
                 <div class="attachment-property dispute-checkbox" data-bind="component: { name: 'mdc-checkbox-component', params: disputeParams }"></div>
 
-                <div class="gross-threshold-warning-wrapper mt-3" style="display: none" data-bind="visible: invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningThreshold">
+                <div class="gross-threshold-warning-wrapper mt-3" style="display: none" data-bind="visible: invoiceTotalIncVATInSterlingExceedsSupplierInvoiceWarningThresholdGBP">
                     <div data-bind="component: { name: 'mdc-checkbox-component', params: invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningParams }"></div>
                 </div>
             </div>
@@ -493,7 +493,7 @@
                 <span class="validation-message" data-bind="validationMessage: netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT"></span>
                 @*<div class="attachment-property dispute-checkbox" data-bind="component: { name: 'mdc-checkbox-component', params: disputeParams }"></div>*@
 
-                <div class="gross-threshold-warning-wrapper mt-3" style="display: none" data-bind="visible: invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningThreshold">
+                <div class="gross-threshold-warning-wrapper mt-3" style="display: none" data-bind="visible: invoiceTotalIncVATInSterlingExceedsSupplierInvoiceWarningThresholdGBP">
                     <div data-bind="component: { name: 'mdc-checkbox-component', params: invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningParams }"></div>
                 </div>
             </div>
@@ -769,7 +769,7 @@
         </div>
         <!-- ko foreach: dashboard.notices -->
         <div class="dashboard-notice">
-            <div class="card p-0" data-bind="class: CSSClasses">
+            <div class="card p-0" data-bind="class: CSSClasses, css: { 'mb-0': $index() == $parent.dashboard.notices().length - 1 }">
                 <div class="card-body" data-bind="html: HTMLContents"></div>
             </div>
         </div>
@@ -914,10 +914,10 @@
                 <div id="attachment-viewer" data-bind="with: selectedAttachment">
                     <!-- ko if: isEmailBody -->
                     <div id="email-body">
-                        <button id="download-email-to-pdf" class="btn" data-bind="click: $parent.downloadEmailAsPDF">
+                        <button id="download-email-to-pdf" class="btn" data-bind="click: $parent.openInNewTab">
                             <span class="k-icon k-i-pdf"></span>
-                            Download Email as PDF
-                            <span class="k-icon k-i-download"></span>
+                            Open in New Tab (for Printing to PDF)
+                            <span class="k-icon k-i-hyperlink-open"></span>
                         </button>
                         <div class="p-2 d-flex flex-column" data-bind="html: Body"></div>
                     </div>

@@ -12,6 +12,7 @@
         busy: parent.busy,
         emailStatus,
         additionalInfo,
+        mailboxId: parent.mailboxId,
         parent: {
             refresh: parent.refresh,
             loadEmail: (stub, afterLoad) => {
@@ -617,6 +618,18 @@
                     reject();
                 })
         });
+    }
+
+    self.openInNewTab = () => {
+        let data = {
+            emailId: self.EmailID,
+            mailboxId: self.mailboxId,
+            emailMessageId: self.EmailMessageID
+        }
+
+        let base64 = btoa(JSON.stringify(data));
+
+        window.open(`/invoices/booking/emailViewer?dto=${base64}`, '_blank');
     }
 
     self.downloadEmailAsPDF = () => {

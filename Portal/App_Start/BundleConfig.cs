@@ -397,6 +397,10 @@ namespace Portal
                 $"{cssPrefix}/models/invoice-booking{cssSuffix}"
             ));
 
+            bundles.Add(new StyleBundle("~/bundles/css/invoice-booking-email-viewer").Include(
+                $"{cssPrefix}/models/invoice-booking-email-viewer{cssSuffix}"
+            ));
+
             bundles.Add(new StyleBundle("~/bundles/css/email-contacts").Include(
                 $"{cssPrefix}/lib/tempus-dominus/tempus-dominus{cssSuffix}",
                 $"{cssPrefix}/models/email-contacts{cssSuffix}"
