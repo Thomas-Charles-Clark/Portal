@@ -64,7 +64,7 @@
 
     //#region Methods
 
-    self.fetch = () => {
+    self.fetch = (afterFn) => {
         self.busy(true)
 
         let data = self.parent.getParameters();
@@ -90,6 +90,9 @@
                 self.pods(data.DashboardPods);
                 self.notices(data.Notices);
                 self.selectedPod(self.pods().find(p => p.EmailStatusID == previouslySelectedEmailStatusId));
+
+                if (typeof afterFn == 'function')
+                    afterFn();
             })
             .catch(err => {
                 self.busy(false);

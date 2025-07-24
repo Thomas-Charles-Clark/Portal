@@ -85,6 +85,15 @@ body {
 #email-list .email-stub {
   cursor: pointer;
 }
+#email-list .email-stub.disabled {
+  cursor-events: none;
+  cursor: not-allowed !important;
+  background-color: #e9ecef !important;
+}
+#email-list .email-stub.disabled > td {
+  background-color: #e9ecef !important;
+  color: #212529 !important;
+}
 #email-list .email-stub td {
   white-space: nowrap;
   text-overflow: ellipsis;

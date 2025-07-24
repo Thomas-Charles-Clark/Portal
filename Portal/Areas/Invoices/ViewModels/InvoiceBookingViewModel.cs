@@ -27,11 +27,14 @@ namespace Portal.Areas.Invoices.ViewModels
 
         public string DefaultFreeTextSearchString { get; set; }
 
+        public bool InvoiceRegistrationSuspended { get; set; }
+
         public InvoiceBookingViewModel(
             int mailboxId, 
             IEnumerable<short> lockedToDepartmentGroupIds,
             string lockedToBudgetHolderCode,
             int? loadingEmailStatusId,
+            bool invoiceRegistrationSuspended,
             RoleProperties properties, 
             string applicationHeading, 
             string applicationSubHeading)
@@ -43,9 +46,10 @@ namespace Portal.Areas.Invoices.ViewModels
             LockedToDepartmentGroupIDs = lockedToDepartmentGroupIds;
             LockedToBudgetHolderCode = lockedToBudgetHolderCode;
             LoadingEmailStatusID = loadingEmailStatusId;
+            InvoiceRegistrationSuspended = invoiceRegistrationSuspended;
 
 #if DEBUG
-            DefaultFreeTextSearchString = "Various";
+            //DefaultFreeTextSearchString = "Various";
 #else
             DefaultFreeTextSearchString = null;
 #endif
@@ -56,6 +60,7 @@ namespace Portal.Areas.Invoices.ViewModels
             IEnumerable<short> lockedToDepartmentGroupIds,
             string lockedToBudgetHolderCode,
             int? loadingEmailStatusId,
+            bool invoiceRegistrationSuspended,
             RoleProperties properties,
             string applicationHeading,
             string applicationSubHeading)
@@ -68,6 +73,7 @@ namespace Portal.Areas.Invoices.ViewModels
                 lockedToDepartmentGroupIds, 
                 lockedToBudgetHolderCode, 
                 loadingEmailStatusId,
+                invoiceRegistrationSuspended,
                 properties, 
                 applicationHeading, 
                 applicationSubHeading);

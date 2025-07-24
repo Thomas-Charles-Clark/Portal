@@ -623,5 +623,17 @@ namespace Portal.Areas.Invoices.Controllers
 
             //return null;
         }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> ToggleInvoiceRegistrationSuspension([FromBody] PassInvoiceRegistrationSuspension dto)
+        {
+            var gb = PortalDb.GlobalVariables.Single(p => p.GlobalVariableID == 19);
+
+            gb.Value = dto.Suspended ? "1" : "0";
+
+            await PortalDb.SaveChangesAsync();
+
+            return Ok(new { });
+        }
     }
 }

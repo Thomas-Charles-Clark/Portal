@@ -36,7 +36,7 @@ const invoiceBookingViewModel = ({
 
     self.gridGroupCount = ko.observable(1);
 
-
+    self.invoiceRegistrationSubmissionSuspended = ko.observable(window.getInvoiceRegistrationSubmissionSuspended());
 
     self.testDateInput = ko.observable();
 
@@ -364,15 +364,17 @@ const invoiceBookingViewModel = ({
         sortable: true,
         filterable: true,
         groupable: false,
-        selectable: 'single',
+        selectable: self.invoiceRegistrationSubmissionSuspended() ? 'single' : false,
         change: (event, data) => {
+
             console.log('change', event, data);
 
-            let stub = event.sender.dataItem(event.sender.select());
+                let stub = event.sender.dataItem(event.sender.select());
 
-            self.selectedEmailIndex(event.sender.dataSource.indexOf(stub));
+                self.selectedEmailIndex(event.sender.dataSource.indexOf(stub));
 
-            self.loadEmail(stub);
+                self.loadEmail(stub);
+            
         },
         select: (event) => {
             console.log('select', event)
@@ -388,6 +390,16 @@ const invoiceBookingViewModel = ({
     self.selectedAttachment = ko.computed(() => {
         if (self.selectedEmail()) {
             return ko.unwrap(self.selectedEmail().selectedAttachment);
+        }
+    }, self);
+
+    self.invoiceRegistrationSuspensionLabel = ko.computed(() => {
+        let suspended = self.invoiceRegistrationSubmissionSuspended();
+
+        if (suspended) {
+            return `Enable Submission to Mertex`;
+        } else {
+            return `Suspend Submission to Mertex`;
         }
     }, self);
 
@@ -595,6 +607,36 @@ const invoiceBookingViewModel = ({
     self.modalElement.addEventListener('hidden.bs.modal', (ev) => {
         self.suppressHide = true;
     })
+
+    self.toggleInvoiceRegistrationSuspension = () => {
+        self.busy(true);
+
+        let data = {
+            suspended: !self.invoiceRegistrationSubmissionSuspended()
+        }
+
+        fetch('/api/InvoiceBookingAPI/ToggleInvoiceRegistrationSuspension', {
+            method: 'POST',
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: window.fetchHeaders,
+            body: JSON.stringify(data)
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                console.log('toggleInvoiceRegistrationSuspension returned', data);
+
+                self.dashboard.fetch(() => {
+                    self.busy(false);
+                });
+
+                self.invoiceRegistrationSubmissionSuspended(!self.invoiceRegistrationSubmissionSuspended());
+            })
+            .catch(err => {
+                self.busy(false);
+                window.catchFetchError(err);
+            })
+    }
     
     //#endregion
 

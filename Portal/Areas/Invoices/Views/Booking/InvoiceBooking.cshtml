@@ -41,6 +41,9 @@
         window.setDuplicateTest = () => {
             viewModel.selectedEmail().selectedAttachment().properties().duplicateResults([{ MertexCode: 'Potato', SupplierCode: 'Waffles', SupplierInvoiceReference: 'PAYME!', InvoiceDate: new Date(), InvoiceTotalInCurrencyIncVAT: 180000 }]);
         }
+        window.getInvoiceRegistrationSubmissionSuspended = () => {
+            return @(Model.InvoiceRegistrationSuspended ? "true" : "false");
+        }
     </script>
 
     <style type="text/css">
@@ -723,7 +726,7 @@
         <div class="page-heading-logo">
             <div></div>
         </div>
-        <div class="page-heading text-right">
+        <div class="page-heading text-right d-flex justify-content-between">
             @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
             {
                 <h1 class="main-heading">
@@ -735,6 +738,20 @@
                 <h4 class="sub-heading">
                     <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
                 </h4>
+            }
+            @if (User.IsInRole("Super Admin") || User.IsInRole("Invoice Registration - Full Access"))
+            {
+                <button type="button" class="btn btn-secondary btn-lg" data-bind="html: invoiceRegistrationSuspensionLabel, click: toggleInvoiceRegistrationSuspension">
+                    @(Model.InvoiceRegistrationSuspended ? "Enable Submission to Mertex" : "Suspend Submission to Mertex")
+                </button>
+            } 
+            else if (Model.InvoiceRegistrationSuspended)
+            {
+                <div class="alert alert-danger">
+                    <h4 class="alert-title">
+                        Invoice Submission to Mertex is Currently Suspended
+                    </h4>
+                </div>
             }
         </div>
     </div>

@@ -185,6 +185,16 @@ body {
     .email-stub {
         cursor: pointer;
 
+        &.disabled {
+            cursor-events: none;
+            cursor: not-allowed !important;
+            background-color: $gray-200 !important;
+            > td {
+                background-color: $gray-200 !important;
+                color: $body-color !important;
+            }
+        }
+
         td {
             white-space: nowrap;
             text-overflow: ellipsis;

@@ -81,11 +81,14 @@ namespace Portal.Areas.Invoices.Controllers
                 }
             }
 
+            var invoiceRegistrationSuspended = PortalDb.GlobalVariables.Single(p => p.GlobalVariableID == 19).Value == "0" ? false : true;
+
             var model = await InvoiceBookingViewModel.CreateAsync(
                 1,
                 lockedToDepartmentGroupIds,
                 lockedToBudgetHolderCode,
                 loadingEmailStatusId,
+                invoiceRegistrationSuspended,
                 user.GetActiveRoleProperties(), 
                 application.Heading, 
                 application.SubHeading);

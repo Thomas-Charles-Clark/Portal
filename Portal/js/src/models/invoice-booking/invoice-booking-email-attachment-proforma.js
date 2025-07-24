@@ -1142,6 +1142,14 @@
         }
     })
 
+    self.supplier.subscribe(nv => {
+        if (nv) {
+            self.supplierCurrency(nv.Currency);
+        } else {
+            self.supplierCurrency(undefined);
+        }
+    })
+
     //#endregion
 
 

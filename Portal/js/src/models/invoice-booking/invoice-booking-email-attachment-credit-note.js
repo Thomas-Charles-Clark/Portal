@@ -1218,6 +1218,9 @@
                     v.vatCode(nv.DefaultVATCode);
                 }
             })
+            self.supplierCurrency(nv.Currency);
+        } else {
+            self.supplierCurrency(undefined);
         }
     })
 
