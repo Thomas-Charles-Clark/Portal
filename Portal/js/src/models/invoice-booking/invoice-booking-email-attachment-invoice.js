@@ -1397,6 +1397,10 @@
                 })
             }
         } else {
+            self.vatEntries([]);
+            self.addVATEntry();
+            self.generalLedgerEntries([]);
+            self.addGeneralLedgerEntry();
             //self.vatEntries().forEach(v => v.vatableAmountCurrency(undefined));
             //self.generalLedgerEntries().forEach(v => v.amountExVATInCurrency(undefined));
         }

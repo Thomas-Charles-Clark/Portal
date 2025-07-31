@@ -88,7 +88,7 @@
             </td>
             <td class="text-center attachment-count-cell">
                 <span class="icon-wrapper" data-bind="html: attachmentDisplay"></span>
-            </td>
+            </td>Invoice Total Inc. VAT
         </tr>
     </script>
 
@@ -209,7 +209,7 @@
                             <label class="bold">
                                 Invoice Total Inc. VAT:
                             </label>
-                            <span data-bind="text: $parent.supplierCurrency() ? formatCurrency(InvoiceTotalInCurrencyIncVAT, 2, $parent.supplierCurrency().FormattingCulture, $parent.supplierCurrency().Code) : InvoiceTotalInCurrencyIncVAT"></span>
+                            <span data-bind="text: $parent.supplierCurrency() ? formatCurrency(InvoiceTotalInCurrencyIncVAT.replace(',', ''), 2, $parent.supplierCurrency().FormattingCulture, $parent.supplierCurrency().Code) : InvoiceTotalInCurrencyIncVAT"></span>
                         </div>
                     </li>
                     <!-- /ko -->

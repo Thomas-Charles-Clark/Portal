@@ -98,7 +98,7 @@ const invoiceBookingFiltersViewModel = ({
 
     self.hasAttachments = ko.observable();
 
-    self.freeTextSearch = ko.observable(getFreeTextSearchDefault());
+    self.freeTextSearch = ko.observable();// getFreeTextSearchDefault());
 
     self.freeTextSearchActual = ko.observable().extend({
         rateLimit: {

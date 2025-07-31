@@ -364,16 +364,16 @@ const invoiceBookingViewModel = ({
         sortable: true,
         filterable: true,
         groupable: false,
-        selectable: self.invoiceRegistrationSubmissionSuspended() ? 'single' : false,
+        selectable: 'single',
         change: (event, data) => {
 
             console.log('change', event, data);
 
-                let stub = event.sender.dataItem(event.sender.select());
+            let stub = event.sender.dataItem(event.sender.select());
 
-                self.selectedEmailIndex(event.sender.dataSource.indexOf(stub));
+            self.selectedEmailIndex(event.sender.dataSource.indexOf(stub));
 
-                self.loadEmail(stub);
+            self.loadEmail(stub);
             
         },
         select: (event) => {
