@@ -36,6 +36,8 @@ namespace SharedEFClasses.Models
 
         public int? SupplierID { get; set; }
 
+        public string SupplierCode { get; set; }
+
         public string BuyerCode { get; set; }
 
         public string Status { get; set; }

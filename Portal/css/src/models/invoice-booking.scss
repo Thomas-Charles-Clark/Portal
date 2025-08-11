@@ -11,6 +11,8 @@ body {
     }
 }
 
+$light-blue-highlight: tint-color($blue-100, 75%);
+
 @mixin attachment-styling {
     display: flex;
     align-items: center;
@@ -972,18 +974,18 @@ body {
                                 &.mdc-text-field--disabled {
 
                                     .mdc-notched-outline {
-                                        > * {
+                                        /*> * {
                                             border-color: inherit;
-                                        }
+                                        }*/
                                     }
 
                                     .mdc-floating-label {
-                                        color: inherit;
+                                        /*color: inherit;*/
                                     }
 
                                     .controls {
                                         .close {
-                                            color: inherit;
+                                            /*color: inherit;*/
                                         }
                                     }
                                 }
@@ -1013,19 +1015,19 @@ body {
 
                                 .mdc-numeric-field {
                                     &:not(.mdc-text-field--disabled, .mdc-text-field--invalid) {
-                                        background-color: tint-color($blue-100, 75%);
+                                        background-color: $light-blue-highlight;
                                     }
                                 }
 
                                 .mdc-text-field {
                                     &:not(.mdc-text-field--invalid, .mdc-text-field--disabled) {
-                                        background-color: tint-color($blue-100, 75%);
+                                        background-color: $light-blue-highlight;
                                     }
                                 }
 
                                 .mdc-select:not(.mdc-select--invalid) {
                                     .k-dropdown-wrap {
-                                        background-color: tint-color($blue-100, 75%);
+                                        background-color: $light-blue-highlight;
                                     }
                                 }
                             }
@@ -1182,7 +1184,7 @@ body {
                             .alert-info {
                                 .mdc-numeric-field:not(.mdc-text-field--disabled),
                                 .mdc-text-field:not(.mdc-text-field--disabled) {
-                                    background-color: tint-color($blue-100, 75%);
+                                    background-color: $light-blue-highlight;
                                 }
 
                                 .mdc-text-field__numeric {
@@ -1339,6 +1341,8 @@ body {
 
 #download-attachments-modal {
     .modal-dialog {
+        max-width: fit-content;
+
         .modal-header {
             border-bottom-left-radius: 0;
             border-bottom-right-radius: 0;
@@ -1394,4 +1398,33 @@ body {
     display: flex;
     justify-content: flex-start;
     position: static !important;
+}
+
+#document-currency {
+    flex: 1;
+}
+
+.attachment-property.alert-info,
+.attachment-property-wrap .attachment-property.alert-info {
+
+    .mdc-validating-field {
+
+        .mdc-numeric-field {
+            &:not(.mdc-text-field--disabled, .mdc-text-field--invalid) {
+                background-color: $light-blue-highlight;
+            }
+        }
+
+        .mdc-text-field {
+            &:not(.mdc-text-field--disabled) {
+                background-color: $light-blue-highlight;
+            }
+        }
+
+        .mdc-select.mdc-select--invalid {
+            .k-dropdown-wrap {
+                background-color: $light-blue-highlight;
+            }
+        }
+    }
 }

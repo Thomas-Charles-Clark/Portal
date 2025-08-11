@@ -771,14 +771,16 @@ body {
   position: relative;
   display: flex;
 }
-#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property .mdc-validating-field .mdc-text-field--invalid.mdc-text-field--disabled .mdc-notched-outline > * {
-  border-color: inherit;
+#email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property .mdc-validating-field .mdc-text-field--invalid.mdc-text-field--disabled .mdc-notched-outline {
+  /*> * {
+      border-color: inherit;
+  }*/
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property .mdc-validating-field .mdc-text-field--invalid.mdc-text-field--disabled .mdc-floating-label {
-  color: inherit;
+  /*color: inherit;*/
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property .mdc-validating-field .mdc-text-field--invalid.mdc-text-field--disabled .controls .close {
-  color: inherit;
+  /*color: inherit;*/
 }
 #email-modal .modal-dialog .modal-content .modal-body #data-pane .attachment-property.border-danger .input-group > div:first-of-type * {
   border-color: #dc3545 !important;
@@ -1096,6 +1098,9 @@ body {
   margin: 0;
 }
 
+#download-attachments-modal .modal-dialog {
+  max-width: fit-content;
+}
 #download-attachments-modal .modal-dialog .modal-header {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
@@ -1138,5 +1143,22 @@ body {
   display: flex;
   justify-content: flex-start;
   position: static !important;
+}
+
+#document-currency {
+  flex: 1;
+}
+
+.attachment-property.alert-info .mdc-validating-field .mdc-numeric-field:not(.mdc-text-field--disabled, .mdc-text-field--invalid),
+.attachment-property-wrap .attachment-property.alert-info .mdc-validating-field .mdc-numeric-field:not(.mdc-text-field--disabled, .mdc-text-field--invalid) {
+  background-color: #f3f8ff;
+}
+.attachment-property.alert-info .mdc-validating-field .mdc-text-field:not(.mdc-text-field--disabled),
+.attachment-property-wrap .attachment-property.alert-info .mdc-validating-field .mdc-text-field:not(.mdc-text-field--disabled) {
+  background-color: #f3f8ff;
+}
+.attachment-property.alert-info .mdc-validating-field .mdc-select.mdc-select--invalid .k-dropdown-wrap,
+.attachment-property-wrap .attachment-property.alert-info .mdc-validating-field .mdc-select.mdc-select--invalid .k-dropdown-wrap {
+  background-color: #f3f8ff;
 }
 /*# sourceMappingURL=invoice-booking.css.map */

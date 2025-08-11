@@ -599,6 +599,7 @@
     }
 
     self.downloadAttachment = (src, fileName) => {
+        src = src.replace('https://view.officeapps.live.com/op/embed.aspx?src=https://portal.designersguild.com', '');
         return new Promise((resolve, reject) => {
             fetch(src, {
                 method: 'GET',

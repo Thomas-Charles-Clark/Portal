@@ -12,6 +12,7 @@ using SharedEFClasses.Models;
 using SharedEFClasses.Models.General;
 using Microsoft.AspNet.OData;
 using SharedEFClasses;
+using Microsoft.AspNet.OData.Query;
 
 namespace Portal.Controllers
 {
@@ -35,9 +36,17 @@ namespace Portal.Controllers
 
         // GET: odata/Currencies
         [EnableQuery]
+        [HttpGet]
         public IQueryable<Currency> GetCurrencies()
         {
             return PortalDb.Currencies.AsQueryable();
+        }
+
+        [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
+        [HttpGet]
+        public IQueryable<Currency> InvoiceRegistrationCurrencies()
+        {
+            return PortalDb.Currencies.Where(c => c.MertexCurrencyCode != "E").AsQueryable();
         }
     }
 }

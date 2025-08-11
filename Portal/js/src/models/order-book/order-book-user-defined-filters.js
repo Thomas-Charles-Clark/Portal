@@ -3122,6 +3122,10 @@ const orderBookUserDefinedFiltersViewModel = ({
             stockLocationCodes: self.stockLocationCodes().length == 0 ? null : self.stockLocationCodes().join(',')
         };
 
+        if (self.supplier()) {
+            result.supplierCode = self.supplier().Supplier.Code;
+        }
+
         console.log("userDefinedFilters.json returning", result);
 
         return JSON.stringify(result);

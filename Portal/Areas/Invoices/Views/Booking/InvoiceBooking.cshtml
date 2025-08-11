@@ -138,6 +138,12 @@
                         <span class="validation-message" data-bind="validationMessage: settlementDate"></span>
                     </div>
                 </div>
+
+                <div class="mt-4" data-bind="validationElement: documentCurrencyEqualsSupplierCurrency, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
+                    <div id="document-currency" class="attachment-property" data-bind="highlightNullField: documentCurrencyCode, component: { name: 'mdc-kendo-dropdown-component', params: documentCurrencyParams }"></div>
+                </div>
+                <span class="validation-message" data-bind="validationMessage: documentCurrencyCode"></span>
+                    
                 <div class="attachment-property" data-bind="validationElement: netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
                     <div class="converting-component-wrapper" data-bind="component: { name: 'invoice-conversion-control', params: netTotal }"></div>
                 </div>
@@ -364,6 +370,11 @@
                     </div>
                 </div>
 
+                <div class="mt-4" data-bind="validationElement: documentCurrencyEqualsSupplierCurrency, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
+                    <div id="document-currency" class="attachment-property" data-bind="highlightNullField: documentCurrencyCode, component: { name: 'mdc-kendo-dropdown-component', params: documentCurrencyParams }"></div>
+                </div>
+                <span class="validation-message" data-bind="validationMessage: documentCurrencyCode"></span>
+
                 <div class="attachment-property" data-bind="validationElement: netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
                     <div class="converting-component-wrapper" data-bind="component: { name: 'invoice-conversion-control', params: netTotal }"></div>
                 </div>
@@ -478,6 +489,12 @@
                     <div id="invoice-terms" class="attachment-property d-none" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsParams }"></div>
                 </div>
                 <span class="validation-message" data-bind="validationMessage: invoiceDate"></span>
+
+                <div class="mt-4" data-bind="validationElement: documentCurrencyEqualsSupplierCurrency, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
+                    <div id="document-currency" class="attachment-property" data-bind="highlightNullField: documentCurrencyCode, component: { name: 'mdc-kendo-dropdown-component', params: documentCurrencyParams }"></div>
+                </div>
+                <span class="validation-message" data-bind="validationMessage: documentCurrencyCode"></span>
+
                 <div class="attachment-property" data-bind="validationElement: netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
                     <div class="converting-component-wrapper" data-bind="component: { name: 'invoice-conversion-control', params: netTotal }"></div>
                 </div>

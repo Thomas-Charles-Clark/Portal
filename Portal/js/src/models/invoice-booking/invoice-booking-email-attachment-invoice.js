@@ -161,6 +161,31 @@
 
     self.paymentTerms = ko.observable();
 
+    self.documentCurrencyCode = ko.observable(rec.invoiceCurrencyCode ?? '').extend({
+        required: {
+            params: true,
+            onlyIf: self.validateNow,
+            message: 'You must specify the document currency'
+        },
+        equal: {
+            params: function () {
+                let supplierCurrency = self.supplierCurrency();
+                if (supplierCurrency)
+                    return supplierCurrency.Code;
+            },
+            onlyIf: self.validateNow,
+            message: function () {
+                let documentCurrencyCode = self.documentCurrencyCode()
+                let supplierCurrency = self.supplierCurrency();
+                if (supplierCurrency && supplierCurrency.Code != documentCurrencyCode) {
+                    return `Document Currency: ${documentCurrencyCode} must equal Supplier Currency: ${supplierCurrency.Code}`
+                }
+            }
+        }
+    });
+
+    self.documentCurrency = ko.observable();
+
     self.dispute = ko.observable(rec.dispute);
 
     self.invoiceTotalIncVATCurrency = ko.observable(rec.invoiceTotalIncVATInCurrency).extend({
@@ -341,6 +366,14 @@
             params: true,
             onlyIf: self.validatePreambleSumNow,
             message: 'Gross total must equal Net total plus VAT total'
+        }
+    });
+
+    self.documentCurrencyEqualsSupplierCurrency = ko.observable(false).extend({
+        equal: {
+            params: true,
+            onlyIf: self.validateNow,
+            message: 'Document Currency must equal Supplier Currency'
         }
     });
 
@@ -582,6 +615,19 @@
         }
 
     }, self);
+
+    self.currencyEqualityComputer = ko.computed(() => {
+        let supplier = self.supplierCurrency();
+        let document = self.documentCurrency();
+
+        ko.ignoreDependencies(() => {
+            if (supplier && document && supplier.Code == document.Code) {
+                self.documentCurrencyEqualsSupplierCurrency(true);
+            } else {
+                self.documentCurrencyEqualsSupplierCurrency(false);
+            }
+        });
+    });
 
     self.duplicateCheck = ko.computed(() => {
 
@@ -1115,6 +1161,67 @@
         }
     });
 
+    self.documentCurrencyParams = kendoMDCDropDownList({
+        autoBind: true,
+        label: 'Document Currency',
+        odata: true,
+        endPoint: '/odata/Currencies/Default.InvoiceRegistrationCurrencies()',
+        textField: 'Name',
+        valueField: 'Code',
+        virtual: false,
+        idObservable: self.documentCurrencyCode,
+        objObservable: self.documentCurrency,
+        template: (e) => {
+            return `${e.Name} (${e.Code})`;
+        },
+        valueTemplate: (e) => {
+            if (e.Name && e.Code) {
+                return `${e.Name} (${e.Code})`;
+            } else {
+                return '';
+            }
+        },
+        enable: ko.computed(() => {
+            return !self.readOnly()
+        }, self),
+        disable: self.readOnly,
+        locked: self.readOnly,
+        clearable: ko.observable(false),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        height: 340,
+        sort: {
+            field: 'CurrencyID',
+            dir: 'asc'
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            /// thanks, https://stackoverflow.com/questions/28995757/a-binary-operator-with-incompatible-types-was-detected-found-operand-types-edm/48919770
+            delete d.$inlinecount; // <-- remove inlinecount
+            //delete d.$format; // <-- remove format
+            //delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            if (data.filter &&
+                data.filter.filters.length &&
+                data.filter.filters[0].value != '') {
+
+                let filterValue = data.filter.filters[0].value;
+
+                d.$filter = `StartsWith(ToLower(Name), '${filterValue}') OR StartsWith(ToLower(Code), '${filterValue}')`;
+            }
+
+            return d;
+        },
+        popupSettings: {
+            appendTo: '#document-currency'
+        }
+    });
+
     self.invoiceReferenceParams = {
         label: 'Supplier Invoice Reference',
         observable: self.supplierInvoiceReference,
@@ -1273,21 +1380,32 @@
 
         validateNow += 1;
 
-        if (self.vatableSumEqualsTotalNET.isValid() == false) {
+        var vatableSumEqualsTotalNET = self.vatableSumEqualsTotalNET();
+
+        var vatInCurrencyBreakdownMatchesTotal = self.vatInCurrencyBreakdownMatchesTotal();
+
+        var vatInCurrencyBreakdownBeyondEpsilon = self.vatInCurrencyBreakdownBeyondEpsilon();
+
+        var vatInCurrencyBreakdownWithinEpsilon = self.vatInCurrencyBreakdownWithinEpsilon();
+
+        var vatEpsilonWarningAcceptance = self.vatEpsilonWarningAcceptance(); 
+
+        if (vatableSumEqualsTotalNET == false) {
             self.vatErrors(true);
+            return;
         }
 
-        if (self.vatInCurrencyBreakdownMatchesTotal() == true) {
+        if (vatInCurrencyBreakdownMatchesTotal == true) {
             self.vatErrors(false);
         } else {
-            if (self.vatInCurrencyBreakdownBeyondEpsilon()) {
+            if (vatInCurrencyBreakdownBeyondEpsilon) {
                 self.vatErrors(true);
             } else {
                 if (
-                    (self.vatableSumEqualsTotalNET())// && self.vatInCurrencyBreakdownEqualsTotalVATInCurrency())
+                    (vatableSumEqualsTotalNET)
                     &&
                     (
-                        (self.vatInCurrencyBreakdownWithinEpsilon() == true && self.vatEpsilonWarningAcceptance() == true)
+                        (vatInCurrencyBreakdownWithinEpsilon == true && vatEpsilonWarningAcceptance == true)
                     )) {
                     self.vatErrors(false);
                 } else {
@@ -1336,6 +1454,8 @@
         self.netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT,
         self.generalLedgerSumEqualsTotalMinusVAT,
         self.invoiceTotalIncVATInSterlingExceedsSupplierInvoiceWarningAccepted,
+        self.documentCurrencyCode,
+        self.documentCurrencyEqualsSupplierCurrency,
         self.vatErrors
     ];
 
