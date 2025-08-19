@@ -16804,6 +16804,7 @@ var dispatchFactory = function (parent) {
 
         var deliveryService = Enumerable.From(haulierRecord.services()).MinBy('$.Preference');
         self.selectedOrder().deliveryService(deliveryService);
+        haulierRecord.haulier.deliveryTerms(self.selectedOrder().deliveryService().DeliveryTerms);
 
         //console.log('rebuildServicesList MinBy just fooled you - are you sure you even need to set the service here...?')
 
@@ -17359,8 +17360,8 @@ var dispatchFactory = function (parent) {
                             haulier: group.deliveryService().haulier
                         });
                         group.deliveryService(self.createServiceObject({
-                            haulier: group.deliveryService().haulier
-                        },
+                                haulier: group.deliveryService().haulier
+                            },
                             group.deliveryService(),
                             data.SelectedDeliveryServices[0]
                         ));
@@ -17381,7 +17382,7 @@ var dispatchFactory = function (parent) {
                     self.customerDeliveryDefaults(data.CustomerDeliveryDefaults);
                     self.customerAccountNumbers(data.CustomerAccountNumbers); // this needs joining into the main list of results, on haulier.
                     self.discountReasons(data.DiscountReasons);
-                    self.deliveryTerms(data.DeliveryTerms);
+                    //self.deliveryTerms(data.DeliveryTerms);
 
                     var grouped = Enumerable.From(data.DeliveryServices).GroupBy(function (x) { // group the delivery services, by... quite a lot of things, I'm afraid.
 
@@ -17599,9 +17600,11 @@ var dispatchFactory = function (parent) {
                                 //    return cdd.DeliveryTerms
                                 //}).SingleOrDefault();
 
-                                var deliveryTermsDefault = thisGroupsSelectedServiceFromDatabase ? thisGroupsSelectedServiceFromDatabase.DeliveryTerms : undefined
+                                //var deliveryTermsDefault = thisGroupsSelectedServiceFromDatabase ? thisGroupsSelectedServiceFromDatabase.DeliveryTerms : undefined
 
-                                haulier.deliveryTerms = ko.observable(deliveryTermsDefault).extend({
+
+
+                                haulier.deliveryTerms = ko.observable(service.DeliveryTerms).extend({
                                     required: {
                                         params: true,
                                         onlyIf: function () {
@@ -17941,8 +17944,33 @@ var dispatchFactory = function (parent) {
                                 }));
 
                                 self.allSubscriptions.push(haulier.customersAccountNumberDutyTaxes.observable.subscribe(function (newValue) {
-                                    if (self.selectedService()) {
-                                        self.selectedService().DutyTaxBilledToCode = newValue;
+                                    if (newValue) {
+                                        console.log('customersAccountNumberTransport.observable subscribe hit', newValue);
+                                        // to ensure they're carried over through the service refresh...
+                                        if (self.selectedService()) {
+                                            self.selectedService().TransportBilledToCode = self.selectedService().haulier.customersAccountNumberTransport.observable();
+                                            self.selectedService().DutyTaxBilledToCode = newValue;
+                                        }
+
+                                        haulier.servicesBusy(true);
+
+                                        // this will not have a value if these subscriptions are fired when not viewing the delivery services modal 
+                                        // but... why is it firing at all in this case when simply loading out the value? it should be the INITIAL value
+                                        if (self.selectedOrder()) {
+
+                                            $.error('Warning', 'You have changed the Duty &amp; Taxes Account Number.<br/><br/>Delivery Services are being refreshed.<br/><br/><strong>YOU MUST RE-SELECT YOUR REQUIRED DELIVERY SERVICE.</strong>');
+
+                                            self.saveDeliveryOptions(
+                                                function () {
+                                                    self.refreshServicesList(self.selectedService().haulier.haulierCode, function (data) {
+                                                        console.log('a) dispatchFactory save singular successful, refreshed basketSplitId', self.selectedOrder().deliveryGroup.basketSplitId);
+                                                        self.rebuildServicesList(self.selectedService().haulier.haulierCode, data);
+                                                        haulier.servicesBusy(false);
+                                                    });
+                                                }, // onComplete
+                                                self.selectedOrder().deliveryGroup.basketSplitId, // basketSplitId
+                                                true); // skipValidation
+                                        }
                                     }
                                 }));
 
@@ -18098,15 +18126,15 @@ var dispatchFactory = function (parent) {
 
                             console.log('a) deliveryService is', deliveryService);
 
-                            // if the loaded service was not viable, we *must* have the given deliveryGroup's deliveryService object 
+                            // if the loaded service was not viable, we *must* have the given deliveryGroup's deliveryService object
                             // changed... which it should be by the above MinBy...
 
                             //if (deliveryService != null) { // on initial load, this WILL be missed.
-                            //    //console.log(`a) setting transportShipperButtons and dutyTaxesShipperButtons, 
-                            //    //        TransportBilledToName: ${deliveryService.TransportBilledToName}, 
-                            //    //        TransportBilledToCode: ${deliveryService.TransportBilledToCode}, 
-                            //    //        DutyTaxBilledToName: ${deliveryService.DutyTaxBilledToName}, 
-                            //    //        DutyTaxBilledToCode: ${deliveryService.DutyTaxBilledToCode}, 
+                            //    //console.log(`a) setting transportShipperButtons and dutyTaxesShipperButtons,
+                            //    //        TransportBilledToName: ${deliveryService.TransportBilledToName},
+                            //    //        TransportBilledToCode: ${deliveryService.TransportBilledToCode},
+                            //    //        DutyTaxBilledToName: ${deliveryService.DutyTaxBilledToName},
+                            //    //        DutyTaxBilledToCode: ${deliveryService.DutyTaxBilledToCode},
                             //    //        Haulier: ${deliveryService.haulier.haulierName}`);
 
                             //    //deliveryService.haulier.transportShipperButtons.observable(deliveryService.TransportBilledToCode ? PAYEE_CUSTOMER : PAYEE_DESIGNERSGUILD);
@@ -18124,11 +18152,7 @@ var dispatchFactory = function (parent) {
 
                             // no, retard!
 
-                            hauliers.forEach(function (h) {
-                                if (h.haulier.deliveryTerms() == null) {
-                                    h.haulier.deliveryTerms(deliveryService.DeliveryTerms);
-                                }
-                            });
+
 
                             let result = {
                                 deliveryGroup: deliveryGroup,

@@ -29,6 +29,7 @@ using SharedEFClasses.Models.Mertex;
 using SharedEFClasses.Models.Parcel;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.IncomingEmail;
+using SharedEFClasses.Models.Advertisers;
 
 namespace Portal
 {
@@ -141,6 +142,7 @@ namespace Portal
             odataBuilder.EntitySet<MertexTradeAccountClassificationSuperSet>("MertexTradeAccountClassificationSuperSet");
             odataBuilder.EntitySet<SupplierLive>("MertexLiveSuppliers");
             odataBuilder.EntitySet<SupplierPaymentTerms>("SupplierPaymentTerms");
+            odataBuilder.EntitySet<AdvertiserClass>("AdvertiserClasses");
 
             // This because it's not mapped to SQL and has the [NotMapped] attribute
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_ProductType)).AddProperty(typeof(Mertex_ProductType).GetProperty("Label"));
@@ -196,6 +198,13 @@ namespace Portal
                 .Collection
                 .Function("HoldReasonValueMapper")
                 .ReturnsCollectionFromEntitySet<HoldReason>("HoldReasons");
+
+            holdReasonValueMapperFunction.Parameter<short?>("holdReasonId");
+
+            var advertiserClassValueMapperFunction = odataBuilder.EntityType<AdvertiserClass>()
+                .Collection
+                .Function("AdvertiserClassValueMapper")
+                .ReturnsCollectionFromEntitySet<AdvertiserClass>("AdvertiserClasses");
 
             holdReasonValueMapperFunction.Parameter<short?>("holdReasonId");
 

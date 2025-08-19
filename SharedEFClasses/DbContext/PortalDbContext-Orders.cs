@@ -2320,9 +2320,9 @@ namespace SharedEFClasses.Models
 
                 reader.NextResult();
 
-                result.DeliveryTerms = ((IObjectContextAdapter)this)
-                    .ObjectContext
-                    .Translate<SharedEFClasses.Models.Orders.DeliveryTerm>(reader).ToList();
+                //result.DeliveryTerms = ((IObjectContextAdapter)this)
+                //    .ObjectContext
+                //    .Translate<SharedEFClasses.Models.Orders.DeliveryTerm>(reader).ToList();
 
                 reader.NextResult();
 

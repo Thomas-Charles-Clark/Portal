@@ -156,9 +156,11 @@ namespace SharedEFClasses.Models.TradeAccounts
         [Column("CreditStop")]
         public bool CreditStopped { get; set; }
 
+        public short? AdvertiserClassID { get; set; }
 
-
-
+        [JsonIgnore]
+        [InverseProperty("TradeAccounts")]
+        public virtual Advertisers.AdvertiserClass AdvertiserClass { get;set; }
 
 
 

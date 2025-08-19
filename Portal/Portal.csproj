@@ -551,6 +551,8 @@
     <Compile Include="App_Start\UnityMvcActivator.cs" />
     <Compile Include="App_Start\UnityWebApiActivator.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Areas\Customers\Controllers\AdvertiserMaintenanceAPIController.cs" />
+    <Compile Include="Areas\Customers\Controllers\AdvertiserMaintenanceController.cs" />
     <Compile Include="Areas\Customers\Controllers\GiftVouchersAPIController.cs" />
     <Compile Include="Areas\Customers\Controllers\ContractPricingAPIController.cs" />
     <Compile Include="Areas\Customers\Controllers\GiftVouchersController.cs" />
@@ -566,6 +568,7 @@
     <Compile Include="Areas\Customers\Controllers\CustomerEnquiryODataController.cs" />
     <Compile Include="Areas\Customers\Controllers\CustomerInviteController.cs" />
     <Compile Include="Areas\Customers\CustomersAreaRegistration.cs" />
+    <Compile Include="Areas\Customers\Models\PassAdvertiserMaintenanceSend.cs" />
     <Compile Include="Areas\Customers\Models\PassGiftVoucherCancellation.cs" />
     <Compile Include="Areas\Customers\Models\PassGiftVoucherCreation.cs" />
     <Compile Include="Areas\Customers\Models\PassGiftVoucherExtend.cs" />
@@ -573,6 +576,7 @@
     <Compile Include="Areas\Customers\Models\PassGiftVoucherRedeem.cs" />
     <Compile Include="Areas\Customers\Models\PassGiftVoucherSend.cs" />
     <Compile Include="Areas\Customers\ViewModels\ContractPricingViewModel.cs" />
+    <Compile Include="Areas\Customers\ViewModels\AdvertiserMaintenanceViewModel.cs" />
     <Compile Include="Areas\Customers\ViewModels\GiftVouchersViewModel.cs" />
     <Compile Include="Areas\Customers\ViewModels\TradeAccountCreationEmailMaintenanceViewModel.cs" />
     <Compile Include="Areas\Customers\ViewModels\CustomerMaintenanceViewModel.cs" />
@@ -655,6 +659,7 @@
     <Compile Include="Areas\Stock\ViewModels\StockManagementViewModel.cs" />
     <Compile Include="Controllers\IncomingEmailAttachmentController.cs" />
     <Compile Include="Controllers\ODataControllers\GeneralLedgerAnalysisGroupDsController.cs" />
+    <Compile Include="Controllers\ODataControllers\AdvertiserClassesController.cs" />
     <Compile Include="Controllers\ODataControllers\SupplierPaymentTermsController.cs" />
     <Compile Include="Controllers\ODataControllers\SupplierTypesController.cs" />
     <Compile Include="Controllers\ODataControllers\VATCodesController.cs" />
@@ -1745,6 +1750,7 @@
     <Content Include="js\src\models\email-contacts.js" />
     <Content Include="js\src\models\emailer.js" />
     <Content Include="js\src\models\extensions.js" />
+    <Content Include="js\src\models\advertiser-maintenance.js" />
     <Content Include="js\src\models\invoice-booking\invoice-booking-dashboard.js" />
     <Content Include="js\src\models\invoice-booking\invoice-booking-email-attachment-supplier-only.js" />
     <Content Include="js\src\models\invoice-booking\invoice-booking-email-attachment-proforma.js" />
@@ -1779,6 +1785,7 @@
     <Content Include="js\src\models\member-search.js" />
     <Content Include="js\src\models\order-book\order-book-back-orders-without-purchase-orders.js" />
     <Content Include="js\src\models\order-book\order-book-orders-filters.js" />
+    <Content Include="js\src\models\pager.js" />
     <Content Include="js\src\models\stock-check-request.js" />
     <Content Include="js\src\models\_example-view-model.js" />
     <Content Include="js\src\models\neiman-marcus-order-status.js" />
@@ -2604,6 +2611,7 @@
     <Content Include="Areas\Order-Book\Views\Shared\_BackOrdersWithoutPurchaseOrdersGrid.cshtml" />
     <Content Include="Areas\Order-Book\Views\Shared\_OrdersInfo.cshtml" />
     <Content Include="Areas\Invoices\Views\Booking\EmailViewer.cshtml" />
+    <Content Include="Areas\Customers\Views\AdvertiserMaintenance\AdvertiserMaintenance.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
     <Content Include="Areas\Stock\Views\RangeManagement\RangeManagement.cshtml" />
     <None Include="compilerconfig.json" />
@@ -3012,6 +3020,7 @@
     <Content Include="css\src\models\invoice-booking.scss" />
     <Content Include="css\src\models\order-book-orders.scss" />
     <Content Include="css\src\models\invoice-booking-email-viewer.scss" />
+    <Content Include="css\src\models\advertiser-maintenance.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

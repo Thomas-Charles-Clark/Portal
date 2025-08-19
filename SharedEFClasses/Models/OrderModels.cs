@@ -1976,7 +1976,7 @@ namespace SharedEFClasses.Models.Orders
         public List<DeliveryServiceResult> SelectedDeliveryServices { get; set; }
         public List<DeliveryServiceResult> DeliveryServices { get; set; }
         public List<CustomerDeliveryDefault> CustomerDeliveryDefaults { get; set; }
-        public List<DeliveryTerm> DeliveryTerms { get; set; }
+        //public List<DeliveryTerm> DeliveryTerms { get; set; }
         public List<DeliveryError> DeliveryErrors { get; set; }
         public CustomerDeliveryRequests CustomerRequests { get; set; }
         public DatabaseJSONResult Notifications { get; set; }

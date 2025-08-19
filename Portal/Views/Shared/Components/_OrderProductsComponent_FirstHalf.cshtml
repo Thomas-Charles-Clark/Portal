@@ -3430,7 +3430,7 @@
                                 </div>
                                 <!-- /ko -->
                                 <div>
-                                    <div data-bind="visible: dutyTaxesShipperButtons.observable() == PAYEE_CUSTOMER, component: { name: 'mdc-text-field-component', params: customersAccountNumberDutyTaxes }"></div>
+                                    <div data-bind="visible: dutyTaxesShipperButtons.observable() == PAYEE_CUSTOMER, component: { name: 'mdc-text-field-component-value', params: customersAccountNumberDutyTaxes }"></div>
                                 </div>
                             </div>
                         </div>
@@ -3624,7 +3624,11 @@
                             </h5>
                         </div>*@
                         <div class="section delivery-terms" data-bind="class: 'delivery-terms-' + haulier.haulierCode, with: haulier">
-                            <div data-bind="component: { name: 'mdc-select-component', params: availableDeliveryTerms }"></div>
+                            <h4>
+                                Delivery Terms:
+                                <span data-bind="text: deliveryTerms"></span>
+                            </h4>
+                            @*<div data-bind="component: { name: 'mdc-select-component', params: availableDeliveryTerms }"></div>*@
                         </div>
                         <!-- ko if: services().indexOf($parent.deliveryService()) > -1 -->
                         <!-- ko with: $parent.deliveryService -->

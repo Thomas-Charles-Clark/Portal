@@ -2,6 +2,7 @@
 using Microsoft.Owin.Security;
 
 using SharedEFClasses.Models.ActiveDirectory;
+using SharedEFClasses.Models.Advertisers;
 using SharedEFClasses.Models.Applications;
 using SharedEFClasses.Models.Attributes;
 using SharedEFClasses.Models.DotDigital;
@@ -597,8 +598,7 @@ namespace SharedEFClasses.Models
         public DbSet<InvoiceFile> FenwickInvoiceFiles { get; set; }
 
         #endregion
-
-
+       
         #region Parcel Calculator related stuff
 
         public DbSet<ParcelType> ParcelTypes { get; set; }
@@ -616,6 +616,8 @@ namespace SharedEFClasses.Models
         public DbSet<Box> Boxes { get; set; }
 
         public DbSet<BoxedItem> BoxedItems { get; set; }
+
+        public DbSet<AdvertiserClass> AdvertiserClasses { get; set; }
 
         #endregion
 

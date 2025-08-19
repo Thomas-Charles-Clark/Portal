@@ -418,6 +418,10 @@ namespace Portal
                 $"{cssPrefix}/models/full-width-app{cssSuffix}"
             ));
 
+            bundles.Add(new StyleBundle("~/bundles/css/advertiser-maintenance").Include(
+                $"{cssPrefix}/models/advertiser-maintenance{cssSuffix}"
+            ));
+
             //  
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             //
@@ -957,6 +961,12 @@ namespace Portal
                         $"{jsPrefix}/models/neiman-marcus-order-status{jsSuffix}"
                 ));
 
+            bundles.Add(new ScriptBundle("~/bundles/js/advertiser-maintenance").Include(
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/pager{jsSuffix}",
+                        $"{jsPrefix}/models/advertiser-maintenance{jsSuffix}"
+                ));
 
             foreach (var b in BundleTable.Bundles)
             {

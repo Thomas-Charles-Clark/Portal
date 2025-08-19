@@ -76,7 +76,19 @@
   width: 450px;
 }
 #delivery-services-modal .section.delivery-terms {
-  width: 300px;
+  width: auto;
+  display: inline-block;
+}
+#delivery-services-modal .section.delivery-terms h4 {
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  color: #212529;
+  padding: 1rem;
+  font-size: 1rem;
+  margin: 0;
+}
+#delivery-services-modal .section.delivery-terms h4 span {
+  font-weight: bold;
 }
 #delivery-services-modal .mdc-discounter-group.margin-top-15 {
   margin-top: 30px;

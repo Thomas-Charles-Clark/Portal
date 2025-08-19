@@ -1,0 +1,428 @@
+﻿@model Portal.Areas.Customers.ViewModels.AdvertiserMaintenanceViewModel
+@{
+    ViewBag.Title = "Advertiser Maintenance";
+    Layout = "~/Views/Shared/_Layout-New.cshtml";
+}
+@section styles {
+    @Styles.Render("~/bundles/css/kendo-custom")
+    @Styles.Render("~/bundles/css/generic-forms")
+    @Styles.Render("~/bundles/css/advertiser-maintenance")
+    @Styles.Render("~/bundles/css/tempus-dominus")
+    @Styles.Render("~/bundles/css/mdc-custom")
+}
+@section scripts {
+    @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/datetime-picker")
+    @Scripts.Render("~/bundles/js/generic-forms")
+    @Scripts.Render("~/bundles/js/advertiser-maintenance")
+    @Scripts.Render("~/bundles/js/tempus-dominus")
+
+    <script type="text/javascript">
+        window.getPreselectedSalesMarketId = () => {
+            return '@(Model.FixedSalesMarketID)';
+        }
+    </script>
+
+    <script type="text/javascript">
+
+        var viewModel = advertiserMaintenanceViewModel();
+
+        var vm = viewModel;
+
+        ko.options.deferUpdates = true;
+
+        ko.validation.init({
+            decorateInputElement: true,
+            errorElementClass: 'alert-danger',
+            errorMessageClass: 'validation-message text-danger'
+        });
+
+        ko.applyBindings(viewModel, document.body);
+
+        window.self = viewModel;
+
+    </script>
+}
+
+<script id="ko-pager-template" type="text/html">
+    <li class="page-item bookend ripple disabled" data-bind="css: { 'disabled': false }">
+        <a href="javascript:;">
+            <label class="page-link" aria-label="Previous Page"
+                   data-bind="enable: backEnabled, click: () => navigatePrevious(), css: { 'disabled': !backEnabled() }">
+                <span class="material-icons">
+                    chevron_left
+                </span>
+                <span class="visually-hidden">
+                    <input type="radio" name="page"
+                           data-bind="checked: page, checkedValue: previousPage">
+                </span>
+            </label>
+        </a>
+    </li>
+    <!-- ko if: leftEllipsisVisible -->
+    <li class="page-item ripple disabled" data-bind="css: { 'disabled': false }">
+        <a href="javascript:;">
+            <label class="page-link" aria-label="Page - 2">
+                <span>
+                    &#8230;
+                </span>
+                <span class="visually-hidden">
+                    <input type="radio" name="page"
+                           data-bind="checked: page, checkedValue: 1">
+                </span>
+            </label>
+        </a>
+    </li>
+    <!-- /ko -->
+    <!-- ko foreach: visiblePages -->
+    <li class="page-item ripple disabled" data-bind="css: { 'disabled': false, 'active': $parent.page() == $data.page }">
+        <a href="javascript:;">
+            <label class="page-link" aria-label="Previous Page">
+                <span data-bind="text: $data.page"></span>
+                <span class="visually-hidden">
+                    <input type="radio" name="page"
+                           data-bind="checked: $parent.page, checkedValue: $data.page">
+                </span>
+            </label>
+        </a>
+    </li>
+    <!-- /ko -->
+    <!-- ko if: rightEllipsisVisible -->
+    <li class="page-item ripple disabled" data-bind="css: { 'disabled': false }">
+        <a href="javascript:;">
+            <label class="page-link" aria-label="Page + 2">
+                <span>
+                    &#8230;
+                </span>
+                <span class="visually-hidden">
+                    <input type="radio" name="page"
+                           data-bind="checked: page, checkedValue: pageCount">
+                </span>
+            </label>
+        </a>
+    </li>
+    <!-- /ko -->
+    <li class="page-item bookend ripple disabled" data-bind="css: { 'disabled': false }">
+        <a href="javascript:;">
+            <label class="page-link" aria-label="Previous Page"
+                   data-bind="enable: forwardEnabled, click: () => navigateNext(), css: { 'disabled': !forwardEnabled() }">
+                <span class="material-icons">
+                    chevron_right
+                </span>
+                <span class="visually-hidden">
+                    <input type="radio" name="page"
+                           data-bind="checked: page, checkedValue: nextPage">
+                </span>
+            </label>
+        </a>
+    </li>
+</script>
+
+<script type="text/html" id="trade-account-pod">
+    <h2 data-bind="text: ShortLabel"></h2>
+</script>
+
+<script type="text/html" id="gift-voucher-row-template">
+    <tr class="gift-voucher-row">
+        <td class="text-end">
+            <span data-bind="text: GiftVoucherID"></span>
+        </td>
+        <td>
+            <span data-bind="text: GiftVoucherType.Name"></span>
+        </td>
+        <td>
+            <span data-bind="text: PriceList.Name"></span>
+        </td>
+        <td>
+            <span data-bind="text: Code"></span>
+        </td>
+        <td class="text-end" colspan="500">
+            @*<span data-bind="text: formatCurrency(ValueInc, 2, PriceList.Currency.FormattingCulture, CurrencyCode)"></span>*@
+        </td>
+        @*<td class="text-end">
+            <span data-bind="text: formatCurrency(ValueEx, 2, PriceList.Currency.FormattingCulture, CurrencyCode)"></span>
+        </td>
+        <td>
+            <span data-bind="text: CreatedDT ? moment(CreatedDT).format('DD/MM/YYYY HH:MM') : ''"></span>
+        </td>
+        <td>
+            <span data-bind="text: AuthorisedDT ? moment(AuthorisedDT).format('DD/MM/YYYY HH:MM') : ''"></span>
+        </td>
+        <td>
+            <span data-bind="text: ExpiryDT ? moment(ExpiryDT).format('DD/MM/YYYY HH:MM') : ''"></span>
+        </td>
+        <td>
+            <span data-bind="text: UsedDT ? moment(UsedDT).format('DD/MM/YYYY HH:MM') : ''"></span>
+        </td>
+        <td>
+            <span data-bind="text: CancelledDT ? moment(CancelledDT).format('DD/MM/YYYY HH:MM') : ''"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: RedeemTransactionID"></span>
+        </td>
+        <td class="text-end">
+            <span data-bind="text: SaleTransactionID"></span>
+        </td>
+        <td>
+            <span data-bind="text: CreatedByMember?.FullName ?? 'eCommerce'"></span>
+        </td>
+        <td>
+            <button type="button" class="btn btn-primary grid-btn" data-bind="click: (data, event) => { $parent.giftVoucherExtender.show($data); }">
+                Extend
+            </button>
+            <button type="button" class="btn btn-success grid-btn" data-bind="click: (data, event) => { $parent.giftVoucherRedeemer.show($data); }">
+                Redeem
+            </button>
+            <button type="button" class="btn btn-danger grid-btn" data-bind="click: (data, event) => { $parent.giftVoucherCanceller.show($data); }">
+                Cancel
+            </button>
+            <button type="button" class="btn btn-secondary grid-btn" data-bind="click: (data, event) => { $root.viewVoucher($data); }">
+                View
+            </button>
+            <button type="button" class="btn btn-secondary grid-btn">
+                Email
+            </button>
+        </td>*@
+    </tr>
+</script>
+
+<script type="text/html" id="grid-toolbar-create-new">
+    <a id="create-new-btn" role="button" class="k-button k-button-icontext k-grid-CreateNew" href="javascript:;" data-bind="click: beginNewVoucher">
+        <span class="k-icon k-i-add"></span>
+        Create New
+    </a>
+</script>
+
+<div class="blocker" data-bind="flexFadeVisible: busy">
+    <div class="loading-spinner"></div>
+    <h4 class="mt-3">
+        Please wait...
+    </h4>
+</div>
+
+<div class="page-heading-wrapper">
+    <div class="page-heading-logo">
+        <div></div>
+    </div>
+    <div class="page-heading text-right">
+        @if (!String.IsNullOrEmpty(Model.ApplicationHeading))
+        {
+            <h1 class="main-heading">
+                @(Model.ApplicationHeading)
+            </h1>
+        }
+        @if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
+        {
+            <h4 class="sub-heading">
+                <span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
+            </h4>
+        }
+    </div>
+</div>
+
+<ul class="nav nav-tabs nav-justified mt-5" id="advertiser-group-tabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fs-5 active" id="find-tab-btn" data-bs-toggle="tab" data-bs-target="#find-tab" type="button" role="tab" aria-controls="Find" aria-selected="true">
+            Maintain an Advertiser Group
+        </button>
+    </li>
+    @if (User.IsInRole("Super Admin") || User.IsInRole("Advertiser Maintenance"))
+    {
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fs-5" id="create-tab-btn" data-bs-toggle="tab" data-bs-target="#create-tab" type="button" role="tab" aria-controls="Create" aria-selected="false">
+                Create an Advertiser Group
+            </button>
+        </li>
+    }
+</ul>
+<div class="tab-content" id="advertiser-maintenance-tabs-content">
+    <div class="tab-pane fade active show" id="find-tab" role="tabpanel" aria-labelledby="find-tab-btn">
+        <div id="prefilters">
+            <div id="sales-market-prefilter" class="prefilter" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: salesMarketParams }"></div>
+            <div id="advertiser-group-prefilter" class="prefilter" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: advertiserClassParams }"></div>
+        </div>
+        <div id="advertiser-group-container-wrapper" style="display: none" data-bind="visible: true">
+            <div id="advertiser-group-container">
+                <div class="page-section-grid-nav my-2" data-bind="with: pager, keepElement: pager.upperDomElement">
+                    <div class="grid">
+                        @*<div class="filter-buttons g-col-12 g-col-sm-4 g-col-lg-4">
+                    @if (grid.AttributeGroups.Any())
+                    {
+                        <button class="form-select my-2 filters-button" type="button" data-bs-toggle="offcanvas" data-bs-target="#grid-filters-@(Model.PageSectionID)" aria-controls="grid-filters-@(Model.PageSectionID)">
+                            @HtmlHelperExtra.Resource("Filters", l, c, d)
+                            <span data-bind="text: parent.filterCount() > 0 ? '(' + parent.filterCount() + ')' : ''">
+                                @(grid.FilterCount > 0 ? $"({grid.FilterCount})" : "")
+                            </span>
+                        </button>
+                        <button class="btn btn-secondary my-2 filters-button" style="display: @(grid.FilterCount > 0 ? $"inline-block" : "none")" data-bind="visible: parent.filterCount(), click: parent.clearFilters">
+                            @HtmlHelperExtra.Resource("Clear", l, c, d)
+                        </button>
+                    }
+                    else
+                    {
+                        <span class="btn ps-3 my-2">
+                            @grid.DisplayCount
+                        </span>
+                    }
+                </div>*@
+                        <div class="g-col-12 g-col-sm-4 g-col-lg-4 d-flex justify-content-center">
+                            <nav aria-label="Navigation" class="grid-pager my-2">
+                                <ul class="pagination">
+                                    <!-- ko template: { name: 'ko-pager-template' } --><!-- /ko -->
+                                </ul>
+                            </nav>
+                        </div>
+                        <div class="sort-container g-col-12 g-col-sm-4 g-col-lg-4 d-flex justify-content-end align-items-center">
+                            <label>
+                                <span class="visually-hidden">
+                                    Sort By
+                                </span>
+                                <select class="form-select" name="sort-2" data-bind="value: sort">
+                                    <option value="default" selected>
+                                        Default
+                                    </option>
+                                    <option value="alphaAZ">
+                                        Alphabetical A-Z
+                                    </option>
+                                    <option value="alphaZA">
+                                        Alphabetical Z-A
+                                    </option>
+                                    <option value="new">
+                                        New
+                                    </option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="trade-account-grid grid" data-bind="foreach: { data: visibleTradeAccounts }">
+                    <!-- ko template: { name: 'trade-account-pod' } --><!-- /ko -->
+                </div>
+                <div class="page-section-grid-nav my-2" data-bind="with: pager, keepElement: pager.lowerDomElement">
+                    <div class="grid">
+                        @*<div class="filter-buttons g-col-12 g-col-sm-4 g-col-lg-4">
+                    @if (grid.AttributeGroups.Any())
+                    {
+                        <button class="form-select my-2 filters-button" type="button" data-bs-toggle="offcanvas" data-bs-target="#grid-filters-@(Model.PageSectionID)" aria-controls="grid-filters-@(Model.PageSectionID)">
+                            @HtmlHelperExtra.Resource("Filters", l, c, d)
+                            <span data-bind="text: parent.filterCount() > 0 ? '(' + parent.filterCount() + ')' : ''">
+                                @(grid.FilterCount > 0 ? $"({grid.FilterCount})" : "")
+                            </span>
+                        </button>
+                        <button class="btn btn-secondary my-2 filters-button" style="display: @(grid.FilterCount > 0 ? $"inline-block" : "none")" data-bind="visible: parent.filterCount(), click: parent.clearFilters">
+                            @HtmlHelperExtra.Resource("Clear", l, c, d)
+                        </button>
+                    }
+                    else
+                    {
+                        <span class="btn ps-3 my-2">
+                            @grid.DisplayCount
+                        </span>
+                    }
+                </div>*@
+                        <div class="g-col-12 g-col-sm-4 g-col-lg-4 d-flex justify-content-center">
+                            <nav aria-label="Navigation" class="grid-pager my-2">
+                                <ul class="pagination">
+                                    <!-- ko template: { name: 'ko-pager-template' } --><!-- /ko -->
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                @*<dl class="advertiser-group-details row">
+            <dt class="col-3 text-end">
+                Code
+            </dt>
+            <dd class="col-8" data-bind="text: 'Code'"></dd>
+            <dt id="actions-dt" class="col-3 text-end">
+                Actions
+            </dt>
+            <dd id="actions-dd" class="col-8">
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-primary" data-bind="click: $parent.giftVoucherNotesEditor.show">
+                        Edit Notes
+                    </button>
+                    <button type="button" class="btn btn-primary" data-bind="disable: voucherEditDisabled, click: $parent.giftVoucherExtender.show">
+                        Extend
+                    </button>
+                    <button type="button" class="btn btn-success" data-bind="disable: voucherEditDisabled, click: $parent.giftVoucherRedeemer.show">
+                        Redeem
+                    </button>
+                    <button type="button" class="btn btn-danger" data-bind="disable: voucherEditDisabled, click: $parent.giftVoucherCanceller.show">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary ms-auto" data-bind="click: $parent.viewVoucher">
+                        View
+                    </button>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target=".emailer-collapse">
+                        Email
+                    </button>
+                </div>
+            </dd>
+            <dt class="emailer-collapse collapse">
+
+            </dt>
+            <dd class="emailer-collapse collapse">
+                <dl class="gift-voucher-details row">
+                    <dt class="col-3 text-end">
+                        Email
+                    </dt>
+                    <dd class="col-8">
+                        <div class="py-3">
+                            <!-- ko component: { name: 'emailer-component', params: $parent.emailer } --><!-- /ko -->
+                        </div>
+                    </dd>
+                </dl>
+            </dd>
+        </dl>*@
+            </div>
+        </div>
+    </div>
+    @if (User.IsInRole("Super Admin") || User.IsInRole("Gift Voucher Creator"))
+    {
+        <div class="tab-pane fade" id="create-tab" role="tabpanel" aria-labelledby="new-tab-btn">
+            <fieldset id="creation-fields">
+                <p class="mb-0">
+                    Not yet implemented.
+                </p>
+            </fieldset>
+            <div class="d-flex align-items-center justify-content-end">
+                <button type="button" class="btn btn-success">
+                    Save
+                </button>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="manage-tab" role="tabpanel" aria-labelledby="manage-tab-btn">
+
+        </div>
+    }
+</div>
+
+@*<div id="extend-voucher-modal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header grey-blue">
+                <h4 class="modal-title">
+                    Extend Gift Voucher Expiry
+                </h4>
+                <button class="btn-close btn-close-white"></button>
+            </div>
+            <div class="modal-body">
+                <p class="bold">
+                    Important Notes
+                </p>
+                <p>
+                    Gift vouchers cannot be indefinite. Please avoid extending gift vouchers for more than a month at a time.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary">
+                    Cancel
+                </button>
+                <button class="btn btn-primary">
+                    Ok
+                </button>
+            </div>
+        </div>
+    </div>
+</div>*@
