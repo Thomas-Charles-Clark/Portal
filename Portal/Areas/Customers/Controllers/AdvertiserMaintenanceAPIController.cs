@@ -21,6 +21,7 @@ using System.Collections;
 using Microsoft.AspNet.Identity;
 using Portal.Areas.Customers.Models;
 using SharedEFClasses.Utilities;
+using SharedEFClasses.Models.Advertisers;
 
 namespace Portal.Areas.Customers.Controllers
 {
@@ -87,6 +88,52 @@ namespace Portal.Areas.Customers.Controllers
                 replyTo);
             });
 #pragma warning restore 4014
+
+            return Ok(new { });
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> AddTradeAccountToAdvertiserClass([FromBody] PassTradeAccountAdvertiserClass dto)
+        {
+            var auditRecord = new AdvertiserClass_TradeAccount_Audit()
+            {
+                AdvertiserClassID = dto.AdvertiserClassID,
+                TradeAccountID = dto.TradeAccountID,
+                Action = "Addition",
+                MemberID = User.Identity.GetUserId<int>(),
+                CreatedDT = DateTime.Now,
+            };
+
+            var tradeAccount = PortalDb.TradeAccounts.Single(ta => ta.TradeAccountID == dto.TradeAccountID);
+
+            tradeAccount.AdvertiserClassID = dto.AdvertiserClassID;
+
+            PortalDb.AdvertiserClass_TradeAccount_Audits.Add(auditRecord);
+
+            await PortalDb.SaveChangesAsync();
+
+            return Ok(new { });
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> RemoveTradeAccountFromAdvertiserClass([FromBody]PassTradeAccountAdvertiserClass dto)
+        {
+            var auditRecord = new AdvertiserClass_TradeAccount_Audit()
+            {
+                AdvertiserClassID = dto.AdvertiserClassID,
+                TradeAccountID = dto.TradeAccountID,
+                Action = "Removal",
+                MemberID = User.Identity.GetUserId<int>(),
+                CreatedDT = DateTime.Now,
+            };
+
+            var tradeAccount = PortalDb.TradeAccounts.Single(ta => ta.TradeAccountID == dto.TradeAccountID);
+
+            tradeAccount.AdvertiserClassID = null;
+
+            PortalDb.AdvertiserClass_TradeAccount_Audits.Add(auditRecord);
+
+            await PortalDb.SaveChangesAsync();
 
             return Ok(new { });
         }

@@ -110,5 +110,20 @@ namespace Portal.Controllers
                 (salesAgentId == null || ta.SalesAgentID == salesAgentId.Value)
             ).AsQueryable();
         }
+
+        [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
+        [HttpGet]
+        public IQueryable<TradeAccount> TradeAccountAdvertisers(
+            short? advertiserClassId = null)
+        {
+            return PortalDb.TradeAccounts.Where(ta =>
+                ta.Deleted == false &&
+                ta.Status == "O" &&
+                (
+                    (advertiserClassId == null && ta.AdvertiserClassID != null) || 
+                    (advertiserClassId != null && ta.AdvertiserClassID == advertiserClassId)
+                )
+            ).AsQueryable();
+        }
     }
 }

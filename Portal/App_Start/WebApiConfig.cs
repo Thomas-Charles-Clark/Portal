@@ -154,6 +154,7 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SalesRepresentative)).AddProperty(typeof(SalesRepresentative).GetProperty("Label"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SalesAgent)).AddProperty(typeof(SalesAgent).GetProperty("Label"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccount)).AddProperty(typeof(TradeAccount).GetProperty("ShortLabel"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccount)).AddProperty(typeof(TradeAccount).GetProperty("AdvertiserSinceDT"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_Operator)).AddProperty(typeof(Mertex_Operator).GetProperty("Label"));
             //odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccountGroup)).AddProperty(typeof(TradeAccountGroup).GetProperty("ShortLabel"));
             //odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccountType)).AddProperty(typeof(TradeAccountType).GetProperty("ShortLabel"));
@@ -460,6 +461,12 @@ namespace Portal
 
 
 
+            var tradeAccountAdvertisersFunction = odataBuilder.EntityType<TradeAccount>()
+                .Collection
+                .Function("TradeAccountAdvertisers")
+                .ReturnsCollectionFromEntitySet<TradeAccount>("TradeAccounts");
+
+            tradeAccountAdvertisersFunction.CollectionParameter<short?>("advertiserClassId");
 
 
             var tradeAccountTypeFilterFunction = odataBuilder.EntityType<TradeAccount>()

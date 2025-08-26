@@ -30,13 +30,13 @@ namespace Portal.Areas.Customers.Controllers
         // GET: Customers/Pricing
         public async Task<ActionResult> Index(string a)
         {
-            var application = PortalDb.Applications.Where(p => p.ControllerName == "advertisers" && p.AreaName == "customers" && p.ActionName == "index").Single();
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "advertiserMaintenance" && p.AreaName == "customers" && p.ActionName == "index").Single();
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
             var fixedSalesMarketId = (byte?)null;
 
-            if (user.Id == 8 ||
+            if (//user.Id == 8 ||
                 UserManager.IsInRole(user.Id, "Advertiser Maintenance - FRANCE"))
             {
                 fixedSalesMarketId = PortalDb.SalesMarkets.SingleOrDefault(s => s.Name == "France")?.SalesMarketID;

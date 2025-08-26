@@ -379,6 +379,7 @@
     <Compile Include="Models\ActiveDirectory\ActiveDirectoryUser.cs" />
     <Compile Include="Models\ActiveDirectory\ActiveDirectoryUser_ActiveDirectoryGroup.cs" />
     <Compile Include="Models\Advertisers\AdvertiserClass.cs" />
+    <Compile Include="Models\Advertisers\AdvertiserClass_TradeAccount_Audit.cs" />
     <Compile Include="Models\ArchiveResponse.cs" />
     <Compile Include="Models\Attribute\Attribute.cs" />
     <Compile Include="Models\AttributeGroup\AttributeGroup.cs" />

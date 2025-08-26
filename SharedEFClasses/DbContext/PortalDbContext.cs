@@ -144,6 +144,8 @@ namespace SharedEFClasses.Models
         public DbSet<ProductLifeCycle> ProductLifeCycles { get; set; }
         public DbSet<MertexProductClassificationSuperSet> MertexProductClassificationSuperSet { get; set; }
         public DbSet<MertexTradeAccountClassificationSuperSet> MertexTradeAccountClassificationSuperSet { get; set; }
+        
+        public DbSet<AdvertiserClass_TradeAccount_Audit> AdvertiserClass_TradeAccount_Audits { get; set; }
 
         #endregion
 

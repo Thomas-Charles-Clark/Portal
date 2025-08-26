@@ -575,6 +575,7 @@
     <Compile Include="Areas\Customers\Models\PassGiftVoucherPreview.cs" />
     <Compile Include="Areas\Customers\Models\PassGiftVoucherRedeem.cs" />
     <Compile Include="Areas\Customers\Models\PassGiftVoucherSend.cs" />
+    <Compile Include="Areas\Customers\Models\PassTradeAccountAdvertiserClass.cs" />
     <Compile Include="Areas\Customers\ViewModels\ContractPricingViewModel.cs" />
     <Compile Include="Areas\Customers\ViewModels\AdvertiserMaintenanceViewModel.cs" />
     <Compile Include="Areas\Customers\ViewModels\GiftVouchersViewModel.cs" />

@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNet.OData.Builder;
 using Newtonsoft.Json;
+
+using SharedEFClasses.Models.Advertisers;
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Mertexer;
@@ -338,6 +340,42 @@ namespace SharedEFClasses.Models.TradeAccounts
         [JsonIgnore]
         [InverseProperty("TradeAccount")]
         public virtual ICollection<Fenwick.FenwickInvoice> FenwickInvoices { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("TradeAccount")]
+        public virtual ICollection<AdvertiserClass_TradeAccount_Audit> AdvertiserClassAuditRecords { get; set; }
+
+        [NotMapped]
+        public DateTime? AdvertiserSinceDT
+        {
+            get
+            {
+                if (AdvertiserClassID == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    if (AdvertiserClassAuditRecords.Any() == false)
+                    {
+                        return DateTime.Parse($"{DateTime.Now.Year}/03/01");
+                    }
+                    else
+                    {
+                        var mostRecentlyAdded = AdvertiserClassAuditRecords.Where(a => a.Action == "Addition").ToList().Max(a => a.CreatedDT);
+
+                        if (mostRecentlyAdded != null)
+                        {
+                            return mostRecentlyAdded;
+                        }
+                        else
+                        {
+                            return DateTime.Parse($"{DateTime.Now.Year}/03/01");
+                        }
+                    }
+                }
+            }
+        }
     }
     
     [Table("TradeAccountAddress_Tag", Schema = "dbo")]

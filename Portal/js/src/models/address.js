@@ -2135,7 +2135,10 @@ var addressSearchFactory = function (
             autoWidth: false,
             autoBind: true,
             optionLabel: ' ',
-            filter: 'startswith'
+            filter: 'startswith',
+            popup: {
+                appendTo: self.editModal.DOMElement
+            }
         },
         clearFunction: function () {
             var self = this;
