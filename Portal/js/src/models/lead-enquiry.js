@@ -2840,7 +2840,8 @@ This customer wishes their deliveries to be consolidated. Please double check th
     self.fetchAvailableCreditControllers = function () {
         let data = {
             LanguageID: self.languageId(),
-            SalesMarketID: self.salesMarket() ? self.salesMarket().SalesMarketID : null
+            SalesMarketID: self.salesMarket() ? self.salesMarket().SalesMarketID : null,
+            MertexLanguageCode: self.mertexLanguageCode()
         }
 
         console.log('fetchAvailableCreditControllers calling with', data)
@@ -2850,7 +2851,7 @@ This customer wishes their deliveries to be consolidated. Please double check th
             dataType: 'json',
             data: data,
             success: function (data) {
-                //console.log('fetchAvailableCreditControllers returned', data);
+                console.log('fetchAvailableCreditControllers returned', data);
 
                 self.availableCreditControllers(data);
                 window.setTimeout(function () {
@@ -4037,6 +4038,7 @@ This customer wishes their deliveries to be consolidated. Please double check th
         if (data.Lead.JoinedPatternBookScheme != null)
             self.joinedPatternBookScheme(data.Lead.JoinedPatternBookScheme);
 
+        self.mertexLanguageCode(data.Lead.MertexLanguageCode);
 
         self.fetchAvailableCreditControllers();
 
@@ -4066,8 +4068,6 @@ This customer wishes their deliveries to be consolidated. Please double check th
         }
 
         self.bankCode(data.Lead.BankCode || defaultBank?.BankCode);
-
-        self.mertexLanguageCode(data.Lead.MertexLanguageCode);
 
         self.insuredCreditLimit(data.Lead.InsuredCreditLimit);
         self.purchaseOrderRequired(data.Lead.PurchaseOrderRequired);

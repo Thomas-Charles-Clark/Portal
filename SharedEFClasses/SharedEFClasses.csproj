@@ -449,6 +449,7 @@
     <Compile Include="Models\IncomingEmail\PassEmailToPDF.cs" />
     <Compile Include="Models\IncomingEmail\PassInvoiceDateParams.cs" />
     <Compile Include="Models\IncomingEmail\PassInvoiceRegistrationSuspension.cs" />
+    <Compile Include="Models\IncomingEmail\PassDocumentGridParams.cs" />
     <Compile Include="Models\IncomingEmail\PassSupplierDetail.cs" />
     <Compile Include="Models\IncomingEmail\PassAttachmentDetail.cs" />
     <Compile Include="Models\IncomingEmail\PassInvoiceAttachmentGL.cs" />

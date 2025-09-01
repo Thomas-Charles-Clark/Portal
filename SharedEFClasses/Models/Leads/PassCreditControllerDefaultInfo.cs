@@ -10,5 +10,6 @@ namespace SharedEFClasses.Models.Leads
     {
         public byte? LanguageID { get; set; }
         public byte? SalesMarketID { get; set; }
+        public string MertexLanguageCode { get; set; }
     }
 }

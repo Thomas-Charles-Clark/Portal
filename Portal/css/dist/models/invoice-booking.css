@@ -1161,4 +1161,25 @@ body {
 .attachment-property-wrap .attachment-property.alert-info .mdc-validating-field .mdc-select.mdc-select--invalid .k-dropdown-wrap {
   background-color: #f3f8ff;
 }
+
+#email-or-attachment-tab-list {
+  border-bottom: 0;
+}
+#email-or-attachment-tab-list .nav-link {
+  padding: 1rem 2rem;
+}
+#email-or-attachment-tab-list .nav-link.active {
+  background-color: whitesmoke;
+  color: #212529;
+}
+
+#email-or-attachment-tab-container .k-grid {
+  border-radius: 0;
+}
+#email-or-attachment-tab-container .k-grid-header:first-child {
+  border-radius: 0 3px 0 0;
+}
+#email-or-attachment-tab-container .k-grid-header:first-child th.k-header:first-child {
+  border-radius: 0 0 0 0;
+}
 /*# sourceMappingURL=invoice-booking.css.map */

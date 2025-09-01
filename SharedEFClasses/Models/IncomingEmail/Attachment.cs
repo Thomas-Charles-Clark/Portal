@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 
+using SharedEFClasses.Models.General;
+
 namespace SharedEFClasses.Models.IncomingEmail
 {
     [Table("Attachment", Schema = "IncomingEmail")]
@@ -54,6 +56,22 @@ namespace SharedEFClasses.Models.IncomingEmail
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool SubmittedToMertex { get; set; }
 
+        public DateTime? DocumentDate { get; set; }
+
+        public DateTime? DocumentDueDate { get; set; }
+
+        public decimal? DocumentTotalInc { get; set; }
+
+        public byte? DocumentCurrencyID { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public byte AttachmentStatusID { get; set; }
+
+        [ForeignKey("DocumentCurrencyID")]
+        public Currency DocumentCurrency { get; set; }
+
+        public string SearchKeywords { get; set; }
+        
         [JsonIgnore]
         [ForeignKey("EmailID")]
         public virtual Email Email { get; set; }

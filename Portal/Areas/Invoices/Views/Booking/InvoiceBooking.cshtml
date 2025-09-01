@@ -88,7 +88,30 @@
             </td>
             <td class="text-center attachment-count-cell">
                 <span class="icon-wrapper" data-bind="html: attachmentDisplay"></span>
-            </td>Invoice Total Inc. VAT
+            </td>
+        </tr>
+    </script>
+
+    <script type="text/html" id="attachment-stub-row-template">
+        <tr class="document-stub">
+            <td data-bind="attr: { title: Email.Supplier == null ? '' : `${Email.Supplier?.Code} - ${Email.Supplier?.Name}` }">
+                <span data-bind="html: Email.Supplier == null ? '' : `${Email.Supplier?.Code} - ${Email.Supplier?.Name}`"></span>
+            </td>
+            <td data-bind="attr: { title: `${Email.BudgetHolder.Code})` }">
+                <span data-bind="html: Email.BudgetHolder?.Code"></span>
+            </td>
+            <td data-bind="attr: { title: Subject }">
+                <span data-bind="html: Subject"></span>
+            </td>
+            <td data-bind="attr: { title: moment(ReceivedDT).format('dddd Do MMM YYYY HH:mm') }">
+                <span data-bind="html: moment(ReceivedDT).format('DD/MM/YYYY HH:mm')"></span>
+            </td>
+            <td>
+                <span data-bind="html: (Supplier == null ? 'n/a' : Supplier.BudgetHolder == null ? 'n/a' : Supplier.BudgetHolder.Name)"></span>
+            </td>
+            <td class="text-center attachment-count-cell">
+                <span class="icon-wrapper" data-bind="html: attachmentDisplay"></span>
+            </td>
         </tr>
     </script>
 
@@ -143,7 +166,7 @@
                     <div id="document-currency" class="attachment-property" data-bind="highlightNullField: documentCurrencyCode, component: { name: 'mdc-kendo-dropdown-component', params: documentCurrencyParams }"></div>
                 </div>
                 <span class="validation-message" data-bind="validationMessage: documentCurrencyCode"></span>
-                    
+
                 <div class="attachment-property" data-bind="validationElement: netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
                     <div class="converting-component-wrapper" data-bind="component: { name: 'invoice-conversion-control', params: netTotal }"></div>
                 </div>
@@ -207,6 +230,7 @@
                         </div>
                         <div class="duplicate-property">
                             <label class="bold">
+                                g
                                 Invoice Date:
                             </label>
                             <span data-bind="text: moment(InvoiceDate).format('Do ddd MMMM YYYY (DD/MM/YYYY)')"></span>
@@ -761,7 +785,7 @@
                 <button type="button" class="btn btn-secondary btn-lg" data-bind="html: invoiceRegistrationSuspensionLabel, click: toggleInvoiceRegistrationSuspension">
                     @(Model.InvoiceRegistrationSuspended ? "Enable Submission to Mertex" : "Suspend Submission to Mertex")
                 </button>
-            } 
+            }
             else if (Model.InvoiceRegistrationSuspended)
             {
                 <div class="alert alert-danger">
@@ -781,7 +805,7 @@
 
 <div id="invoice-registration" class="card">
     <div class="card-body">
-        <div id="dashboard" style="display: none" data-bind="visible: true, with: dashboard">
+        <div id="dashboard" style="display: none" data-bind="flexFadeVisible: mode() == 'emails', with: dashboard">
             <!-- ko foreach: sortedPods -->
             <div class="dashboard-pod card" data-bind="click: $parent.select, css: { 'active': $parent.selectedPod() == $data, 'warning': ([1,5].indexOf($data.EmailStatusID) > -1) && (RecordCount > 0) }">
                 <div class="card-body">
@@ -832,7 +856,26 @@
                     </div>
                     <div id="free-text-prefiler" class="prefilter" data-bind="component: { name: 'mdc-text-field-component', params: freeTextSearchParams }"></div>
                 </div>
-                <div id="email-list" data-bind="kendoGrid: mailboxGridParams"></div>
+                <ul class="nav nav-tabs" id="email-or-attachment-tab-list" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="emails-grid-tab" data-bs-toggle="tab" data-bs-target="#emails-grid-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">
+                            Emails
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="documents-grid-tab" data-bs-toggle="tab" data-bs-target="#documents-grid-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">
+                            Documents
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="email-or-attachment-tab-container">
+                    <div class="tab-pane show active" id="emails-grid-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                        <div id="email-list" data-bind="kendoGrid: mailboxGridParams"></div>
+                    </div>
+                    <div class="tab-pane" id="documents-grid-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                        <div id="document-list" data-bind="kendoGrid: documentGridParams"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

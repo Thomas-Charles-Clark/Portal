@@ -181,7 +181,8 @@ $light-blue-highlight: tint-color($blue-100, 75%);
     flex: 1;
 }
 
-#email-list {
+#email-list,
+#document-list {
     margin-bottom: 0;
 
     .email-stub {
@@ -227,6 +228,7 @@ $light-blue-highlight: tint-color($blue-100, 75%);
         }
     }
 }
+
 
 .card {
     &.bottom-shadow {
@@ -1425,6 +1427,37 @@ $light-blue-highlight: tint-color($blue-100, 75%);
             .k-dropdown-wrap {
                 background-color: $light-blue-highlight;
             }
+        }
+    }
+}
+
+#email-or-attachment-tab-list {
+    border-bottom: 0;
+
+    .nav-link {
+        padding: $n-gutter $xl-gutter;
+
+        &.active {
+            background-color: rgba(245,245,245);
+            color: $body-color;
+        }
+    }
+}
+#email-or-attachment-tab-container {
+
+    .k-grid {
+         border-radius: 0;
+    }
+
+    .k-grid-header:first-child {
+
+        .k-header {
+        }
+
+        border-radius: 0 3px 0 0;
+
+        th.k-header:first-child {
+            border-radius: 0 0 0 0;
         }
     }
 }

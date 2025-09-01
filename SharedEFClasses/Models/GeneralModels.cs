@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+
+using SharedEFClasses.Models.IncomingEmail;
 using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Mertex;
 using SharedEFClasses.Models.Mertex;
@@ -264,6 +266,10 @@ namespace SharedEFClasses.Models.General
         [JsonIgnore]
         [InverseProperty("Currency")]
         public virtual ICollection<SupplierLive> MertexLiveSuppliers { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("DocumentCurrency")]
+        public virtual ICollection<Attachment> Attachments { get; set; }
     }
 
     public class Language

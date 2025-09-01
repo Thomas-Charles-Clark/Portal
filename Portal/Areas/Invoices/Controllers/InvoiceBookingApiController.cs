@@ -262,6 +262,127 @@ namespace Portal.Areas.Invoices.Controllers
             return stubs.ToDataSourceResult(request);
         }
 
+        [HttpGet]
+        public DataSourceResult DocumentsGrid(
+            [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+            [FromUri] PassDocumentGridParams dto)
+        {
+            DateTime? toDt = DateTime.Now;
+
+            DateTime? fromDt = null;
+
+            switch (dto.DateRangeID)
+            {
+                case 12: /* Last 12 Months */
+                    fromDt = DateTime.Now.AddYears(-1);
+                    break;
+                case 6: /* Last 6 Months */
+                    fromDt = DateTime.Now.AddMonths(-6);
+                    break;
+                case 1: /* This Month */
+                    fromDt = DateTime.Now.AddDays(-DateTime.Now.Day).AddDays(1);
+                    break;
+                case 30: /* Last 30 Days */
+                    fromDt = DateTime.Now.AddDays(-30);
+                    break;
+                case -1: /* "Custom" */
+                    toDt = dto.ToDT;
+                    fromDt = dto.FromDT;
+                    break;
+                case -2: /* "All Time" noop */
+                    break;
+                case -3:
+                    switch (DateTime.Now.DayOfWeek)
+                    {
+                        case DayOfWeek.Monday:
+                            toDt = DateTime.Now.Date.AddDays(-4);
+                            break;
+                        case DayOfWeek.Tuesday:
+                            toDt = DateTime.Now.Date.AddDays(-4);
+                            break;
+                        case DayOfWeek.Wednesday:
+                            toDt = DateTime.Now.Date.AddDays(-4);
+                            break;
+                        case DayOfWeek.Thursday:
+                            toDt = DateTime.Now.Date.AddDays(-2);
+                            break;
+                        case DayOfWeek.Friday:
+                            toDt = DateTime.Now.Date.AddDays(-2);
+                            break;
+                        case DayOfWeek.Saturday:
+                            toDt = DateTime.Now.Date.AddDays(-2);
+                            break;
+                        case DayOfWeek.Sunday:
+                            toDt = DateTime.Now.Date.AddDays(-3);
+                            break;
+                    }
+                    break;
+            }
+
+            dto.ToDT = toDt;
+
+            dto.FromDT = fromDt;
+
+            var budgetHolderEmails = PortalDb.BudgetHolders.Select(bh => bh.Email).ToList();
+
+            var adUserIds = PortalDb.ActiveDirectoryUsers.Where(u => budgetHolderEmails.Contains(u.Email)).Select(u => u.UserID).ToList();
+
+            var adUserGroups = PortalDb.ActiveDirectory_Users_Groups.Where(ug => adUserIds.Contains(ug.UserID)).ToList();
+
+            IQueryable<SharedEFClasses.Models.IncomingEmail.Attachment> stubs = null;
+
+            if (dto.ActiveDirectoryGroupIDs?.Any() == true)
+            {
+                adUserGroups = adUserGroups.Where(adug => dto.ActiveDirectoryGroupIDs.Contains(adug.GroupID)).ToList();
+
+                var userIds = adUserGroups.Select(g => g.UserID).ToList();
+
+                stubs = PortalDb.Attachments
+                    .Include("Email")
+                    .Where(p =>
+                        p.Deleted == false &&
+                        userIds.Contains((int)p.Email.Supplier.BudgetHolder.UserID) &&
+                        p.Email.MailboxID == dto.MailboxID &&
+                        p.Email.EmailStatusID == dto.EmailStatusID &&
+                        (String.IsNullOrEmpty(dto.BudgetHolderCode) || p.Email.Supplier != null && p.Email.Supplier.BudgetHolderCode == dto.BudgetHolderCode) &&
+                        (String.IsNullOrEmpty(dto.SupplierTypeCode) || p.Email.Supplier != null && p.Email.Supplier.SupplierTypeCode == dto.SupplierTypeCode) &&
+                        (String.IsNullOrEmpty(dto.SupplierCode) || p.Email.SupplierCode == dto.SupplierCode) &&
+                        (String.IsNullOrEmpty(dto.FreeTextSearch) || ((p.SearchKeywords != null) && (p.SearchKeywords.Contains(dto.FreeTextSearch))) == true)
+                    ).AsQueryable();
+            }
+            else
+            {
+                stubs = PortalDb.Attachments
+                    .Include("Email")
+                    .Where(p =>
+                        p.Deleted == false &&
+                        p.Email.MailboxID == dto.MailboxID &&
+                        p.Email.EmailStatusID == dto.EmailStatusID &&
+                        (String.IsNullOrEmpty(dto.BudgetHolderCode) || p.Email.Supplier != null && p.Email.Supplier.BudgetHolderCode == dto.BudgetHolderCode) &&
+                        (String.IsNullOrEmpty(dto.SupplierTypeCode) || p.Email.Supplier != null && p.Email.Supplier.SupplierTypeCode == dto.SupplierTypeCode) &&
+                        (String.IsNullOrEmpty(dto.SupplierCode) || p.Email.SupplierCode == dto.SupplierCode) &&
+                        (String.IsNullOrEmpty(dto.FreeTextSearch) || ((p.SearchKeywords != null) && (p.SearchKeywords.Contains(dto.FreeTextSearch))) == true)
+                ).AsQueryable();
+            }
+            //var groups = PortalDb.ActiveDirectoryGroups.Where(g => ){
+            //    var adUser = PortalDb.ActiveDirectoryUsers.SingleOrDefault(ad => ad.Email == bh.Email);
+            //    var groups = PortalDb.ActiveDirectory_Users_Groups.Where(ug => ug.UserID == adUser.UserID);
+            //    return groups;
+            //});
+
+            if (fromDt.HasValue)
+            {
+                request.Filters.Add(new Kendo.Mvc.FilterDescriptor("Email.ReceivedDT", Kendo.Mvc.FilterOperator.IsGreaterThanOrEqualTo, fromDt.Value));
+            }
+
+            if (toDt.HasValue)
+            {
+                request.Filters.Add(new Kendo.Mvc.FilterDescriptor("Email.ReceivedDT", Kendo.Mvc.FilterOperator.IsLessThanOrEqualTo, toDt.Value));
+            }
+
+            return stubs.ToDataSourceResult(request);
+        }
+
         [HttpPost]
         public async Task<IHttpActionResult> LoadEmailMessage(
             [FromBody] PassEmailMessageID dto)

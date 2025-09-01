@@ -1244,6 +1244,7 @@ namespace SharedEFClasses.Models
 
             SqlParameter languageId = new SqlParameter("@LanguageID", dto.LanguageID ?? (object)DBNull.Value);
             SqlParameter salesMarketId = new SqlParameter("@SalesMarketID", dto.SalesMarketID ?? (object)DBNull.Value);
+            SqlParameter mertexLanguageCode = new SqlParameter("@MertexLanguageCode", dto.MertexLanguageCode ?? (object)DBNull.Value);
 
             var cmd = this.Database.Connection.CreateCommand();
 
@@ -1253,6 +1254,7 @@ namespace SharedEFClasses.Models
 
             cmd.Parameters.Add(languageId);
             cmd.Parameters.Add(salesMarketId);
+            cmd.Parameters.Add(mertexLanguageCode);
 
             try
             {
