@@ -25,6 +25,8 @@ namespace Portal.Areas.Invoices.ViewModels
 
         public IEnumerable<AttachmentType> AttachmentTypes { get; set; }
 
+        public IEnumerable<AttachmentStatus> AttachmentStatuses { get; set; }
+
         public string DefaultFreeTextSearchString { get; set; }
 
         public bool InvoiceRegistrationSuspended { get; set; }
@@ -86,6 +88,8 @@ namespace Portal.Areas.Invoices.ViewModels
             });
 
             result.AttachmentTypes = portalDb.AttachmentTypes.ToList();
+
+            result.AttachmentStatuses = portalDb.AttachmentStatuses.ToList();
 
             return result;
         }

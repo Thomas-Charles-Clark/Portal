@@ -28,6 +28,17 @@
     class: null
 }];
 
+const documentDateAffectors = [{
+    documentDateAffectorId: '1',
+    name: 'Document Date'
+}, {
+    documentDateAffectorId: '2',
+    name: 'Received Date'
+}, {
+    documentDateAffectorId: '3',
+    name: 'Due Date'
+}]
+
 const invoiceBookingFiltersViewModel = ({
     parent
 } = {
@@ -96,6 +107,15 @@ const invoiceBookingFiltersViewModel = ({
         }
     });
 
+    self.documentTypeId = ko.observable('');
+    self.documentType = ko.observable();
+
+    self.documentStatusId = ko.observable('');
+    self.documentStatus = ko.observable();
+
+    self.documentDateAffectorId = ko.observable('1');
+    self.documentDateAffector = ko.observable();
+
     self.hasAttachments = ko.observable();
 
     self.freeTextSearch = ko.observable();// getFreeTextSearchDefault());
@@ -110,8 +130,18 @@ const invoiceBookingFiltersViewModel = ({
     self.pauseFreeTextSearchUpdate = false;
 
     self.refreshParent = () => {
-        self.parent.dashboard.fetch();
-        self.parent.mailboxGridParams.widget().dataSource.page(1);
+
+        switch (self.parent.mode()) {
+            case 'emails':
+                self.parent.dashboard.fetch();
+                self.parent.mailboxGridParams.widget().dataSource.page(1);
+                break;
+            case 'documents':
+                self.parent.documentGridParams.widget().dataSource.page(1);
+                break;
+            default:
+                break;
+        }
     }
 
     //#endregion
@@ -755,6 +785,115 @@ const invoiceBookingFiltersViewModel = ({
         }
     }
 
+    self.documentTypeParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Document Type',
+        data: getAttachmentTypes(),
+        textField: 'Name',
+        valueField: 'AttachmentTypeID',
+        virtual: false,
+        idObservable: self.documentTypeId,
+        objObservable: self.documentType,
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        autoWidth: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'Name'
+        },
+        changeBtnVisible: true,
+        select: function (e) {
+            console.log('documentType select', e);
+        },
+        clearFunction: () => {
+            self.documentTypeId('');
+            self.documentType(undefined);
+            self.parent.dashboard.fetch();
+        },
+        popupSettings: {
+            appendTo: document.getElementById('document-type-prefilter')
+        }
+    });
+
+    self.documentStatusParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Document Status',
+        data: getAttachmentStatuses(),
+        textField: 'Name',
+        valueField: 'AttachmentStatusID',
+        virtual: false,
+        idObservable: self.documentStatusId,
+        objObservable: self.documentStatus,
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        autoWidth: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'DocumentStatusID'
+        },
+        changeBtnVisible: true,
+        select: function (e) {
+            console.log('documentStatus select', e);
+        },
+        clearFunction: () => {
+            self.documentStatusId('');
+            self.documentStatus(undefined);
+            self.parent.dashboard.fetch();
+        },
+        popupSettings: {
+            appendTo: document.getElementById('document-status-prefilter')
+        }
+    });
+
+    self.documentDateAffectorParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Date Affector',
+        data: documentDateAffectors,
+        textField: 'name',
+        valueField: 'documentDateAffectorId',
+        virtual: false,
+        idObservable: self.documentDateAffectorId,
+        objObservable: self.documentDateAffector,
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(false),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        autoWidth: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'DocumentStatusID'
+        },
+        changeBtnVisible: true,
+        select: function (e) {
+            console.log('documentStatus select', e);
+        },
+        clearFunction: () => {
+            self.parent.dashboard.fetch();
+        },
+        popupSettings: {
+            appendTo: document.getElementById('document-date-affector-prefilter')
+        }
+    });
+
     //#endregion
 
 
@@ -864,6 +1003,18 @@ const invoiceBookingFiltersViewModel = ({
         } else {
             self.refreshParent();
         }
+    });
+
+    self.documentTypeId.subscribe(nv => {
+        self.refreshParent();
+    });
+
+    self.documentStatusId.subscribe(nv => {
+        self.refreshParent();
+    });
+
+    self.documentDateAffectorId.subscribe(nv => {
+        self.refreshParent();
     });
 
     //#endregion

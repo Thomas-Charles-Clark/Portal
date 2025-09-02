@@ -344,6 +344,8 @@ namespace Portal.Areas.Invoices.Controllers
                         userIds.Contains((int)p.Email.Supplier.BudgetHolder.UserID) &&
                         p.Email.MailboxID == dto.MailboxID &&
                         p.Email.EmailStatusID == dto.EmailStatusID &&
+                        (dto.DocumentTypeID == null || p.AttachmentTypeID == dto.DocumentTypeID) &&
+                        (dto.DocumentStatusID == null || p.AttachmentStatusID == dto.DocumentStatusID) &&
                         (String.IsNullOrEmpty(dto.BudgetHolderCode) || p.Email.Supplier != null && p.Email.Supplier.BudgetHolderCode == dto.BudgetHolderCode) &&
                         (String.IsNullOrEmpty(dto.SupplierTypeCode) || p.Email.Supplier != null && p.Email.Supplier.SupplierTypeCode == dto.SupplierTypeCode) &&
                         (String.IsNullOrEmpty(dto.SupplierCode) || p.Email.SupplierCode == dto.SupplierCode) &&
@@ -357,7 +359,9 @@ namespace Portal.Areas.Invoices.Controllers
                     .Where(p =>
                         p.Deleted == false &&
                         p.Email.MailboxID == dto.MailboxID &&
-                        p.Email.EmailStatusID == dto.EmailStatusID &&
+                        //p.Email.EmailStatusID == dto.EmailStatusID &&
+                        (dto.DocumentTypeID == null || p.AttachmentTypeID == dto.DocumentTypeID) &&
+                        (dto.DocumentStatusID == null || p.AttachmentStatusID == dto.DocumentStatusID) &&
                         (String.IsNullOrEmpty(dto.BudgetHolderCode) || p.Email.Supplier != null && p.Email.Supplier.BudgetHolderCode == dto.BudgetHolderCode) &&
                         (String.IsNullOrEmpty(dto.SupplierTypeCode) || p.Email.Supplier != null && p.Email.Supplier.SupplierTypeCode == dto.SupplierTypeCode) &&
                         (String.IsNullOrEmpty(dto.SupplierCode) || p.Email.SupplierCode == dto.SupplierCode) &&

@@ -116,6 +116,20 @@ const invoiceBookingViewModel = ({
             data.freeTextSearch = self.filters.freeTextSearch();
         }
 
+        if (self.mode() == 'documents') {
+            if (self.filters.documentTypeId()) {
+                data.documentTypeId = self.filters.documentTypeId();
+            }
+
+            if (self.filters.documentStatusId()) {
+                data.documentStatusId = self.filters.documentStatusId();
+            }
+
+            if (self.filters.documentDateAffectorId()) {
+                data.documentDateAffectorId = self.filters.documentDateAffectorId()
+            }
+        }
+
         return data;
     }
 
@@ -386,11 +400,7 @@ const invoiceBookingViewModel = ({
         columns: [{
             title: 'Type',
             field: 'AttachmentTypeID',
-            width: 200,
-            filterable: false,
-            template: (e) => {
-                return e.AttachmentType.Name;
-            }
+            width: 200
         }, {
             title: 'Supplier',
             field: 'Email.Supplier.Code',
@@ -416,7 +426,7 @@ const invoiceBookingViewModel = ({
         }, {
             field: 'DocumentDate',
             title: 'Document Date',
-            width: 142,
+            width: 150,
         }, {
             field: 'DocumentDueDate',
             title: 'Due Date',
@@ -473,6 +483,8 @@ const invoiceBookingViewModel = ({
                                 data.Data = data.Data.map(dat => {
                                     dat.Items = dat.Items.map(d => invoiceBookingEmailAttachmentViewModel({
                                         parent: Object.assign({
+                                            EmailID: d.Email.EmailID,
+                                            EmailMessageID: d.Email.EmailMessageID,
                                             parent: {
                                                 // fake parents!
                                             }
@@ -537,6 +549,21 @@ const invoiceBookingViewModel = ({
                                 Name: { type: 'string', editable: false }
                             }
                         },
+                        AttachmentStatus: {
+                            type: 'object',
+                            fields: {
+                                AttachmentStatusID: { type: 'number', editable: false },
+                                Name: { type: 'string', editable: false }
+                            }
+                        },
+                        AttachmentType: {
+                            type: 'object',
+                            fields: {
+                                AttachmentTypeID: { type: 'number', editable: false },
+                                Name: { type: 'string', editable: false } 
+                            }
+                        },
+                        AttachmentTypeName: { type: 'string', editable: false },
                         Status: { type: 'string', editable: false },
                         ReceivedDT: { type: 'datetime', editable: false },
                         DocumentDate: { type: 'date', editable: false },
@@ -571,12 +598,14 @@ const invoiceBookingViewModel = ({
             pageSizes: [10, 20, 50, 100, 200]
         },
         sortable: true,
-        filterable: true,
+        filterable: false,
         groupable: false,
         selectable: 'single',
-        change: (event, data) => {
+        change: (e) => {
 
-            console.log('documentGrid change', event, data);
+            console.log('documentGrid change', e);
+
+            self.documentViewer.load(e.sender.dataItem(e.sender.select()));
 
             //let stub = event.sender.dataItem(event.sender.select());
 
@@ -592,6 +621,10 @@ const invoiceBookingViewModel = ({
             self.gridGroupCount(event.sender.dataSource.group().length);
         }
     }
+
+    self.documentViewer = invoiceBookingDocumentViewerViewModel({
+        parent: self
+    });
 
     //#region Computeds
 
@@ -653,7 +686,7 @@ const invoiceBookingViewModel = ({
         self.refresh();
     }
 
-    self.loadEmail = (stub) => {
+    self.loadEmail = (stub, onLoad) => {
 
         return new Promise((resolve, reject) => {
 
@@ -700,6 +733,9 @@ const invoiceBookingViewModel = ({
                             return a;
                         })]
                     }));
+                    if (typeof onLoad === 'function') {
+                        onLoad();
+                    }
                     self.modalBusy(false);
                     resolve();
                 })
@@ -851,7 +887,7 @@ const invoiceBookingViewModel = ({
     //#region Events
 
     self.emailGridTabButton.addEventListener('show.bs.tab', (ev) => {
-        self.mode('email');
+        self.mode('emails');
     });
 
     self.documentGridTabButton.addEventListener('show.bs.tab', (ev) => {

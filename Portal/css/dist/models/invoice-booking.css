@@ -79,32 +79,50 @@ body {
   flex: 1;
 }
 
-#email-list {
+#email-list,
+#document-list {
   margin-bottom: 0;
 }
-#email-list .email-stub {
+#email-list .email-stub,
+#email-list .document-stub,
+#document-list .email-stub,
+#document-list .document-stub {
   cursor: pointer;
 }
-#email-list .email-stub.disabled {
+#email-list .email-stub.disabled,
+#email-list .document-stub.disabled,
+#document-list .email-stub.disabled,
+#document-list .document-stub.disabled {
   cursor-events: none;
   cursor: not-allowed !important;
   background-color: #e9ecef !important;
 }
-#email-list .email-stub.disabled > td {
+#email-list .email-stub.disabled > td,
+#email-list .document-stub.disabled > td,
+#document-list .email-stub.disabled > td,
+#document-list .document-stub.disabled > td {
   background-color: #e9ecef !important;
   color: #212529 !important;
 }
-#email-list .email-stub td {
+#email-list .email-stub td,
+#email-list .document-stub td,
+#document-list .email-stub td,
+#document-list .document-stub td {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-#email-list .email-stub td:last-of-type {
+#email-list .email-stub td:last-of-type,
+#email-list .document-stub td:last-of-type,
+#document-list .email-stub td:last-of-type,
+#document-list .document-stub td:last-of-type {
   border-right: 1px solid #ced4da;
 }
-#email-list tr:last-of-type td {
+#email-list tr:last-of-type td,
+#document-list tr:last-of-type td {
   border-bottom: 0;
 }
-#email-list .k-grid-pager {
+#email-list .k-grid-pager,
+#document-list .k-grid-pager {
   border-bottom-width: 0;
   display: flex;
   align-items: center;
@@ -112,7 +130,8 @@ body {
   border-right-width: 0;
   border-bottom-width: 0;
 }
-#email-list .k-grid-pager .k-pager-info {
+#email-list .k-grid-pager .k-pager-info,
+#document-list .k-grid-pager .k-pager-info {
   margin-left: auto;
   float: none;
 }
@@ -242,15 +261,17 @@ body {
   background-color: #fbe6ea;
 }
 
-#email-list-prefilters {
+#email-list-prefilters,
+#document-grid-prefilters {
   display: flex;
   gap: 1rem;
   margin: 0;
-  padding: 1rem 0;
+  padding: 0 0 1rem 0;
   justify-content: space-between;
   flex-wrap: wrap;
 }
-#email-list-prefilters .prefilter {
+#email-list-prefilters .prefilter,
+#document-grid-prefilters .prefilter {
   flex: 1;
   position: relative;
   display: flex;
@@ -267,22 +288,28 @@ body {
       }
   }*/
 }
-#email-list-prefilters .prefilter > .mdc-validating-field {
+#email-list-prefilters .prefilter > .mdc-validating-field,
+#document-grid-prefilters .prefilter > .mdc-validating-field {
   flex: 1;
 }
-#email-list-prefilters .prefilter > .mdc-validating-field > .mdc-select--selected .k-dropdown-wrap > span.k-input {
+#email-list-prefilters .prefilter > .mdc-validating-field > .mdc-select--selected .k-dropdown-wrap > span.k-input,
+#document-grid-prefilters .prefilter > .mdc-validating-field > .mdc-select--selected .k-dropdown-wrap > span.k-input {
   background-color: #cfe2ff;
 }
-#email-list-prefilters .prefilter > .mdc-validating-field .dropdown.selected .btn {
+#email-list-prefilters .prefilter > .mdc-validating-field .dropdown.selected .btn,
+#document-grid-prefilters .prefilter > .mdc-validating-field .dropdown.selected .btn {
   background-color: #cfe2ff;
 }
-#email-list-prefilters .prefilter .bi-lock-fill {
+#email-list-prefilters .prefilter .bi-lock-fill,
+#document-grid-prefilters .prefilter .bi-lock-fill {
   flex: 0;
 }
-#email-list-prefilters .prefilter .k-list .k-item {
+#email-list-prefilters .prefilter .k-list .k-item,
+#document-grid-prefilters .prefilter .k-list .k-item {
   white-space: nowrap;
 }
-#email-list-prefilters #order-date-prefilter {
+#email-list-prefilters #order-date-prefilter,
+#document-grid-prefilters #order-date-prefilter {
   display: block;
 }
 
@@ -628,27 +655,10 @@ body {
   gap: 1rem;
   flex: 1 1 50%;
 }
-#email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #attachment-iframe-wrapper {
+#email-modal .modal-dialog .modal-content .modal-body #attachment-viewer .attachment-iframe-wrapper {
   --bs-aspect-ratio: 126%;
   border: 1px solid #dee2e6;
   max-width: 55%;
-}
-#email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #attachment-iframe-wrapper pre {
-  padding: 0.25rem 0.5rem;
-  background-color: #fff;
-}
-#email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #attachment-iframe-wrapper pre.prettyprint {
-  font-size: 1.2rem;
-}
-#email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #attachment-iframe-wrapper pre.prettyprint * {
-  font-family: "Cascadia Code", "courier new", monospaced;
-}
-#email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #attachment-iframe-wrapper pre.prettyprint .linenums li {
-  list-style-type: decimal;
-}
-#email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #attachment-iframe-wrapper:has(#tif-canvas-container) {
-  background-color: #fff;
-  --bs-aspect-ratio: unset;
 }
 #email-modal .modal-dialog .modal-content .modal-body #attachment-viewer #email-body {
   width: 100%;
@@ -1162,8 +1172,41 @@ body {
   background-color: #f3f8ff;
 }
 
+.attachment-iframe-wrapper {
+  --bs-aspect-ratio: 126%;
+  border: 1px solid #dee2e6;
+  max-width: 100%;
+}
+.attachment-iframe-wrapper pre {
+  padding: 0.25rem 0.5rem;
+  background-color: #fff;
+}
+.attachment-iframe-wrapper pre.prettyprint {
+  font-size: 1.2rem;
+}
+.attachment-iframe-wrapper pre.prettyprint * {
+  font-family: "Cascadia Code", "courier new", monospaced;
+}
+.attachment-iframe-wrapper pre.prettyprint .linenums li {
+  list-style-type: decimal;
+}
+.attachment-iframe-wrapper:has(.tif-canvas-container) {
+  background-color: #fff;
+  --bs-aspect-ratio: unset;
+}
+
 #email-or-attachment-tab-list {
   border-bottom: 0;
+}
+#email-or-attachment-tab-list li:first-of-type .nav-link {
+  min-width: 202px;
+}
+#email-or-attachment-tab-list li:nth-of-type(2) .nav-link {
+  min-width: 201px;
+}
+#email-or-attachment-tab-list li:nth-of-type(2) .nav-link.active {
+  position: relative;
+  left: -1px;
 }
 #email-or-attachment-tab-list .nav-link {
   padding: 1rem 2rem;
@@ -1181,5 +1224,30 @@ body {
 }
 #email-or-attachment-tab-container .k-grid-header:first-child th.k-header:first-child {
   border-radius: 0 0 0 0;
+}
+
+#document-viewer-modal .modal-dialog {
+  margin-top: 0;
+  margin-bottom: 0;
+  height: 100vh;
+}
+#document-viewer-modal .modal-dialog .modal-content {
+  border-radius: 0;
+  height: 100%;
+}
+#document-viewer-modal .modal-dialog .modal-content .modal-header {
+  background-color: #084298;
+  border-radius: 0;
+  padding: 0.5rem 1rem;
+  height: 68px;
+  border-bottom: 0;
+}
+#document-viewer-modal .modal-dialog .modal-content .modal-title {
+  color: #fff;
+}
+#document-viewer-modal .modal-dialog .modal-content .modal-body .attachment-iframe-wrapper {
+  --bs-aspect-ratio: 146%;
+  border: 1px solid #dee2e6;
+  max-width: 100%;
 }
 /*# sourceMappingURL=invoice-booking.css.map */

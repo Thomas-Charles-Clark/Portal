@@ -423,6 +423,7 @@
     <Compile Include="Models\GiftVoucher_SelectResult.cs" />
     <Compile Include="Models\ImageDownloadTask.cs" />
     <Compile Include="Models\IncomingEmail\Attachment.cs" />
+    <Compile Include="Models\IncomingEmail\AttachmentStatus.cs" />
     <Compile Include="Models\IncomingEmail\Attachment_DuplicateCheck_Result.cs" />
     <Compile Include="Models\IncomingEmail\Attachment_SaveResult.cs" />
     <Compile Include="Models\IncomingEmail\BudgetHolderSuperSet.cs" />

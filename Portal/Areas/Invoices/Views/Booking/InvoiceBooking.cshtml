@@ -44,6 +44,12 @@
         window.getInvoiceRegistrationSubmissionSuspended = () => {
             return @(Model.InvoiceRegistrationSuspended ? "true" : "false");
         }
+        window.getAttachmentTypes = () => {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.AttachmentTypes));
+        }
+        window.getAttachmentStatuses = () => {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.AttachmentStatuses));
+        }
     </script>
 
     <style type="text/css">
@@ -94,23 +100,32 @@
 
     <script type="text/html" id="attachment-stub-row-template">
         <tr class="document-stub">
-            <td data-bind="attr: { title: Email.Supplier == null ? '' : `${Email.Supplier?.Code} - ${Email.Supplier?.Name}` }">
-                <span data-bind="html: Email.Supplier == null ? '' : `${Email.Supplier?.Code} - ${Email.Supplier?.Name}`"></span>
+            @*<td colspan="8">
+                    <div data-bind="prettyPrint: $data"></div>
+                </td>*@
+            <td data-bind="attr: { title: AttachmentType.Name }">
+                <span data-bind="html: AttachmentType.Name"></span>
             </td>
-            <td data-bind="attr: { title: `${Email.BudgetHolder.Code})` }">
-                <span data-bind="html: Email.BudgetHolder?.Code"></span>
+            <td data-bind="attr: { title: Supplier == null ? 'Unknown' : `${Supplier.Code} - ${Supplier.Name}` }">
+                <span data-bind="html: Supplier == null ? 'Unknown' : `${Supplier.Code} - ${Supplier.Name}`"></span>
             </td>
-            <td data-bind="attr: { title: Subject }">
-                <span data-bind="html: Subject"></span>
+            <td data-bind="attr: { title: BudgetHolder == null ? 'N/A' : `${BudgetHolder.Name} - (Code: ${BudgetHolder.Code})` }">
+                <span data-bind="html: BudgetHolder == null ? 'N/A' : `${BudgetHolder.Name} - (Code: ${BudgetHolder.Code})`"></span>
+            </td>
+            <td data-bind="attr: { title: AttachmentStatus == null ? '' : AttachmentStatus.Name }">
+                <span data-bind="html: AttachmentStatus == null ? '' : AttachmentStatus.Name"></span>
             </td>
             <td data-bind="attr: { title: moment(ReceivedDT).format('dddd Do MMM YYYY HH:mm') }">
                 <span data-bind="html: moment(ReceivedDT).format('DD/MM/YYYY HH:mm')"></span>
             </td>
-            <td>
-                <span data-bind="html: (Supplier == null ? 'n/a' : Supplier.BudgetHolder == null ? 'n/a' : Supplier.BudgetHolder.Name)"></span>
+            <td data-bind="attr: { title: DocumentDate == null ? '' : moment(DocumentDate).format('DD/MM/YYYY') }">
+                <span data-bind="html:  DocumentDate == null ? '' : moment(DocumentDate).format('DD/MM/YYYY')"></span>
             </td>
-            <td class="text-center attachment-count-cell">
-                <span class="icon-wrapper" data-bind="html: attachmentDisplay"></span>
+            <td data-bind="attr: { title:  DocumentDueDate == null ? '' : moment(DocumentDueDate).format('DD/MM/YYYY') }">
+                <span data-bind="html: DocumentDueDate == null ? '' :  moment(DocumentDueDate).format('DD/MM/YYYY')"></span>
+            </td>
+            <td class="total-cell">
+                <span data-bind="html: DocumentTotalInc == null ? '' : formatCurrency(DocumentTotalInc, 2, 'en-gb', 'GBP')"></span>
             </td>
         </tr>
     </script>
@@ -805,7 +820,7 @@
 
 <div id="invoice-registration" class="card">
     <div class="card-body">
-        <div id="dashboard" style="display: none" data-bind="flexFadeVisible: mode() == 'emails', with: dashboard">
+        <div id="dashboard" style="display: none" data-bind="flexVisible: mode() == 'emails', with: dashboard">
             <!-- ko foreach: sortedPods -->
             <div class="dashboard-pod card" data-bind="click: $parent.select, css: { 'active': $parent.selectedPod() == $data, 'warning': ([1,5].indexOf($data.EmailStatusID) > -1) && (RecordCount > 0) }">
                 <div class="card-body">
@@ -825,19 +840,19 @@
             </div>
             <!-- /ko -->
         </div>
-        <!-- ko foreach: dashboard.notices -->
-        <div class="dashboard-notice">
-            <div class="card p-0" data-bind="class: CSSClasses, css: { 'mb-0': $index() == $parent.dashboard.notices().length - 1 }">
-                <div class="card-body" data-bind="html: HTMLContents"></div>
+        <div style="display: none" data-bind="fadeVisible: mode() == 'emails', foreach: dashboard.notices">
+            <div class="dashboard-notice">
+                <div class="card p-0" data-bind="class: CSSClasses, css: { 'mb-0': $index() == $parent.dashboard.notices().length - 1 }">
+                    <div class="card-body" data-bind="html: HTMLContents"></div>
+                </div>
             </div>
         </div>
-        <!-- /ko -->
         <div id="mertex-warning" class="card" style="display: none" data-bind="visible: dashboard.mertexWarning">
             <div class="card-body" data-bind="html: dashboard.mertexWarning"></div>
         </div>
         <div class="d-flex gap-3">
             <div id="inbox-browser">
-                <div id="email-list-prefilters" data-bind="with: filters">
+                <div id="email-list-prefilters" data-bind="with: filters, css: { 'pt-3': mode() == 'emails' }">
                     <div id="department-prefilter" class="prefilter" data-bind="component: { name: 'mdc-bootstrap-multiselect-component', params: departmentParams }"></div>
                     <div id="budget-holder-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: budgetHolderParams }"></div>
                     <div id="supplier-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierTypeParams }"></div>
@@ -856,7 +871,19 @@
                     </div>
                     <div id="free-text-prefiler" class="prefilter" data-bind="component: { name: 'mdc-text-field-component', params: freeTextSearchParams }"></div>
                 </div>
-                <ul class="nav nav-tabs" id="email-or-attachment-tab-list" role="tablist">
+                <div id="document-grid-prefilters" style="display: none" data-bind="flexFadeVisible: mode() == 'documents', with: filters">
+                    <div id="document-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentTypeParams }"></div>
+                    <div id="document-status-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentStatusParams }"></div>
+                    <div class="prefilter"></div>
+                    <div class="prefilter"></div>
+                    <div id="date-affector-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentDateAffectorParams }"></div>
+                    <div class="prefilter"></div>
+                    <!-- ko if: dateRangeId() == '-1' -->
+                    <div class="prefilter"></div>
+                    <div class="prefilter"></div>
+                    <!-- /ko -->
+                </div>
+                <ul class="nav nav-tabs" id="email-or-attachment-tab-list" role="tablist" style="display: none" data-bind="visible: true">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="emails-grid-tab" data-bs-toggle="tab" data-bs-target="#emails-grid-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">
                             Emails
@@ -903,28 +930,30 @@
                     <div class="d-inline-flex gap-3">
                         <nav class="nav">
                             <span class="me-3" data-bind="text: `Email ID: ${EmailID}`"></span>
-                            <button class="btn btn-light" type="button" data-bind="css: { 'disabled': navPreviousDisabled }, click: parent.previous">
-                                <i class="bi bi-chevron-left"></i>
-                                <span>
-                                    Previous
-                                </span>
-                            </button>
-                            <label>
-                                <span>
-                                    You're viewing item
-                                </span>
-                                <span data-bind="text: selectedEmailIndex"></span>
-                                <span>
-                                    of
-                                </span>
-                                <span data-bind="text: itemCount"></span>
-                            </label>
-                            <button class="btn btn-light" type="button" data-bind="css: { 'disabled': navNextDisabled }, click: parent.next">
-                                <span>
-                                    Next
-                                </span>
-                                <i class="bi bi-chevron-right"></i>
-                            </button>
+                            <div style="display: none" data-bind="FlexFadeVisible: selectedEmailIndex() != null">
+                                <button class="btn btn-light" type="button" data-bind="css: { 'disabled': navPreviousDisabled }, click: parent.previous">
+                                    <i class="bi bi-chevron-left"></i>
+                                    <span>
+                                        Previous
+                                    </span>
+                                </button>
+                                <label>
+                                    <span>
+                                        You're viewing item
+                                    </span>
+                                    <span data-bind="text: selectedEmailIndex"></span>
+                                    <span>
+                                        of
+                                    </span>
+                                    <span data-bind="text: itemCount"></span>
+                                </label>
+                                <button class="btn btn-light" type="button" data-bind="css: { 'disabled': navNextDisabled }, click: parent.next">
+                                    <span>
+                                        Next
+                                    </span>
+                                    <i class="bi bi-chevron-right"></i>
+                                </button>
+                            </div>
                         </nav>
                     </div>
                 </h5>
@@ -1000,18 +1029,18 @@
                     </div>
                     <!-- /ko -->
                     <!-- ko ifnot: isEmailBody -->
-                    <div id="attachment-iframe-wrapper" class="ratio">
+                    <div class="attachment-iframe-wrapper ratio">
                         <!-- ko if: ['csv','txt','png','jpg','jpeg','gif','bmp','webp','tif','tiff'].indexOf(FileExtension.toLowerCase()) == -1 -->
-                        <iframe id="attachment-frame" data-bind="attr: { src: actualSrc }"></iframe>
+                        <iframe data-bind="attr: { src: actualSrc }"></iframe>
                         <!-- /ko -->
                         <!-- ko if: ['csv','txt'].indexOf(FileExtension.toLowerCase()) > -1 -->
                         <pre class="prettyprint linenums" data-bind="html: prettyPrintedResponse"></pre>
                         <!-- /ko -->
                         <!-- ko if: ['png','jpg','jpeg','gif','bmp','webp'].indexOf(FileExtension.toLowerCase()) > -1 -->
-                        <img id="attachment-frame" data-bind="attr: { src: actualSrc }" />
+                        <img data-bind="attr: { src: actualSrc }" />
                         <!-- /ko -->
                         <!-- ko if: ['tif', 'tiff'].indexOf(FileExtension.toLowerCase()) > -1 -->
-                        <div id="tif-canvas-container">
+                        <div class="tif-canvas-container">
 
                         </div>
                         <!-- /ko -->
@@ -1357,6 +1386,47 @@
                     <!-- /ko -->
                 </button>
                 <div id="download-attachments-progress" class="mt-3" style="display: none" data-bind="fadeVisible: downloadAttachmentsDownloadsBusy, kendoProgressBar: downloadAttachmentsProgressBarParams"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="document-viewer-modal">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content" data-bind="with: documentViewer">
+            <div class="blocker" data-bind="flexFadeVisible: busy">
+                <div class="loading-spinner"></div>
+                <h4 class="mt-3" data-bind="html: busyMessage"></h4>
+            </div>
+            <div class="modal-header">
+                <h5 class="modal-title d-flex justify-content-between align-items-center w-100 pe-2">
+                    View Document
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" data-bind="with: selectedDocument">
+                <div class="attachment-iframe-wrapper ratio">
+                    <!-- ko if: ['csv','txt','png','jpg','jpeg','gif','bmp','webp','tif','tiff'].indexOf(FileExtension.toLowerCase()) == -1 -->
+                    <iframe data-bind="attr: { src: actualSrc }"></iframe>
+                    <!-- /ko -->
+                    <!-- ko if: ['csv','txt'].indexOf(FileExtension.toLowerCase()) > -1 -->
+                    <pre class="prettyprint linenums" data-bind="html: prettyPrintedResponse"></pre>
+                    <!-- /ko -->
+                    <!-- ko if: ['png','jpg','jpeg','gif','bmp','webp'].indexOf(FileExtension.toLowerCase()) > -1 -->
+                    <img data-bind="attr: { src: actualSrc }" />
+                    <!-- /ko -->
+                    <!-- ko if: ['tif', 'tiff'].indexOf(FileExtension.toLowerCase()) > -1 -->
+                    <div class="tif-canvas-container">
+
+                    </div>
+                    <!-- /ko -->
+                </div>
+                <div class="d-flex align-items-center justify-content-start mt-3">
+                    <button class="btn btn-dark btn-lg d-inline-flex justify-content-between align-items-center gap-2" data-bind="click: $parent.viewEmail">
+                        <i class="bi bi-chevron-left"></i>
+                        View Email
+                    </button>
+                </div>
             </div>
         </div>
     </div>

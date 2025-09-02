@@ -185,7 +185,8 @@ $light-blue-highlight: tint-color($blue-100, 75%);
 #document-list {
     margin-bottom: 0;
 
-    .email-stub {
+    .email-stub,
+    .document-stub {
         cursor: pointer;
 
         &.disabled {
@@ -431,11 +432,12 @@ $light-blue-highlight: tint-color($blue-100, 75%);
     }
 }
 
-#email-list-prefilters {
+#email-list-prefilters,
+#document-grid-prefilters {
     display: flex;
     gap: $l-gutter;
     margin: 0;
-    padding: $l-gutter 0;
+    padding: 0 0 $l-gutter 0;
     justify-content: space-between;
     flex-wrap: wrap;
 
@@ -793,32 +795,10 @@ $light-blue-highlight: tint-color($blue-100, 75%);
                     gap: $l-gutter;
                     flex: 1 1 50%;
 
-                    #attachment-iframe-wrapper {
+                    .attachment-iframe-wrapper {
                         --bs-aspect-ratio: 126%;
                         border: 1px solid $gray-300;
                         max-width: 55%;
-
-                        pre {
-                            padding: $vsm-gutter $sm-gutter;
-                            background-color: $white;
-
-                            &.prettyprint {
-                                font-size: 1.2rem;
-
-                                * {
-                                    font-family: 'Cascadia Code', 'courier new', monospaced
-                                }
-
-                                .linenums li {
-                                    list-style-type: decimal;
-                                }
-                            }
-                        }
-
-                        &:has(#tif-canvas-container) {
-                            background-color: $white;
-                            --bs-aspect-ratio: unset;
-                        }
                     }
 
                     #email-body {
@@ -1431,11 +1411,57 @@ $light-blue-highlight: tint-color($blue-100, 75%);
     }
 }
 
+.attachment-iframe-wrapper {
+    --bs-aspect-ratio: 126%;
+    border: 1px solid $gray-300;
+    max-width: 100%;
+
+    pre {
+        padding: $vsm-gutter $sm-gutter;
+        background-color: $white;
+
+        &.prettyprint {
+            font-size: 1.2rem;
+
+            * {
+                font-family: 'Cascadia Code', 'courier new', monospaced
+            }
+
+            .linenums li {
+                list-style-type: decimal;
+            }
+        }
+    }
+
+    &:has(.tif-canvas-container) {
+        background-color: $white;
+        --bs-aspect-ratio: unset;
+    }
+}
+
+
 #email-or-attachment-tab-list {
     border-bottom: 0;
 
+    li:first-of-type {
+        .nav-link {
+            min-width: 202px;
+        }
+    }
+
+    li:nth-of-type(2) {
+        .nav-link {
+            min-width: 201px;
+
+            &.active {
+                position: relative;
+                left: -1px;
+            }
+        }
+    }
+
     .nav-link {
-        padding: $n-gutter $xl-gutter;
+        padding: $l-gutter $xl-gutter;
 
         &.active {
             background-color: rgba(245,245,245);
@@ -1443,6 +1469,7 @@ $light-blue-highlight: tint-color($blue-100, 75%);
         }
     }
 }
+
 #email-or-attachment-tab-container {
 
     .k-grid {
@@ -1458,6 +1485,39 @@ $light-blue-highlight: tint-color($blue-100, 75%);
 
         th.k-header:first-child {
             border-radius: 0 0 0 0;
+        }
+    }
+}
+
+#document-viewer-modal {
+    .modal-dialog {
+        margin-top: 0;
+        margin-bottom: 0;
+        height: 100vh;
+
+        .modal-content {
+            border-radius: 0;
+            height: 100%;
+
+            .modal-header {
+                background-color: $blue-700;
+                border-radius: 0;
+                padding: $sm-gutter $l-gutter;
+                height: 68px;
+                border-bottom: 0;
+            }
+
+            .modal-title {
+                color: $white;
+            }
+
+            .modal-body {
+                .attachment-iframe-wrapper {
+                    --bs-aspect-ratio: 146%;
+                    border: 1px solid $gray-300;
+                    max-width: 100%;
+                }
+            }
         }
     }
 }

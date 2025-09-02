@@ -3838,3 +3838,32 @@ ko.bindingHandlers.resizable = {
 
     }
 }
+
+ko.bindingHandlers.prettyPrint = {
+    init: function (element, valueAccessor, allBindingsAccessor) {
+        if (Object.hasOwn(window, 'PR')) {
+            var options = ko.unwrap(valueAccessor());
+
+            var container = document.createElement("pre");
+
+            container.classList.add('prettyprint');
+            container.classList.add('linenums');
+            container.classList.add('lang-json');
+
+            var contents = PR.prettyPrintOne(JSON.stringify(ko.unwrap(valueAccessor()), null, 4));
+
+            container.innerHTML = contents;
+
+            element.append(container);
+        }
+    },
+    update: function (element, valueAccessor, allBindingsAccessor) {
+        var options = ko.unwrap(valueAccessor());
+
+        var container = element.querySelector('.prettyprint');
+
+        var contents = PR.prettyPrintOne(JSON.stringify(ko.unwrap(valueAccessor()), null, 4));
+
+        container.innerHTML = contents;
+    }
+}

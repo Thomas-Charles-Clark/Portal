@@ -627,6 +627,7 @@ namespace SharedEFClasses.Models
 
         public virtual DbSet<Attachment> Attachments { get; set; }
         public virtual DbSet<AttachmentType> AttachmentTypes { get; set; }
+        public virtual DbSet<AttachmentStatus> AttachmentStatuses { get; set; }
         public virtual DbSet<Domain_SupplierCode_Map> Domain_SupplierCode_Maps { get; set; }
         public virtual DbSet<Email> EmailStubs { get; set; }
         public virtual DbSet<Mailbox> Mailboxes { get; set; }

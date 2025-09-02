@@ -945,6 +945,7 @@ namespace Portal
                         $"{jsPrefix}/models/invoice-booking/invoice-booking-email-attachment-invoice-GL{jsSuffix}",
                         $"{jsPrefix}/models/invoice-booking/invoice-booking-filters{jsSuffix}",
                         $"{jsPrefix}/models/invoice-booking/invoice-booking-dashboard{jsSuffix}",
+                        $"{jsPrefix}/models/invoice-booking/invoice-booking-document-viewer{jsSuffix}",
                         $"{jsPrefix}/models/invoice-booking/invoice-booking{jsSuffix}"
                 ));
 

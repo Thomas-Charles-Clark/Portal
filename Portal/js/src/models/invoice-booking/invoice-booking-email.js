@@ -32,6 +32,11 @@
         itemCount: parent.itemCount,
         selectedIndexOnPage: parent.selectedEmailIndex,
         selectedEmailIndex: ko.computed(() => {
+
+            if (isNaN(parent.selectedEmailIndex())) {
+                return null;
+            }
+
             let page = parent.mailboxGridParams.widget().dataSource.page();
             let pageSize = parent.mailboxGridParams.widget().dataSource.pageSize();
 

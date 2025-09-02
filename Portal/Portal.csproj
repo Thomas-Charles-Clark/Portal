@@ -1752,6 +1752,7 @@
     <Content Include="js\src\models\emailer.js" />
     <Content Include="js\src\models\extensions.js" />
     <Content Include="js\src\models\advertiser-maintenance.js" />
+    <Content Include="js\src\models\invoice-booking\invoice-booking-document-viewer.js" />
     <Content Include="js\src\models\invoice-booking\invoice-booking-dashboard.js" />
     <Content Include="js\src\models\invoice-booking\invoice-booking-email-attachment-supplier-only.js" />
     <Content Include="js\src\models\invoice-booking\invoice-booking-email-attachment-proforma.js" />

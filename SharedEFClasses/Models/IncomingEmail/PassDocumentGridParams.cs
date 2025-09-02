@@ -23,6 +23,8 @@ namespace SharedEFClasses.Models.IncomingEmail
         public string SupplierTypeCode { get; set; }
         public string SupplierCode { get; set; }
         public string FreeTextSearch { get; set; }
-
+        public byte? DocumentTypeID { get; set; }
+        public byte? DocumentStatusID { get; set; }
+        public byte DocumentDateAffectorID { get; set; }
     }
 }
