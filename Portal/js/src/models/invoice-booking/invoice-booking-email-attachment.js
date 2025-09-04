@@ -7,6 +7,7 @@
     let self = Object.assign({
         parentEmailSupplier: parent.supplier,
         parentLoadEmail: async () => parent.parent.loadEmail,
+        documentGridSelectedKeys: parent.documentGridSelectedKeys,
         emailId: parent.EmailID,
         emailMessageId: parent.EmailMessageID,
         modal: parent.parent.modal,
@@ -63,6 +64,8 @@
     self.prettyPrintedResponse = ko.observable();
 
     self.selectedForDownload = ko.observable(true);
+
+    self.selectedFromGrid = ko.observable(false);
 
     //#endregion
 
@@ -219,6 +222,16 @@
 
     self.attachmentTypeId.subscribe(nv => {
         self.determinePropertiesTemplate(true);
+    });
+
+    self.selectedFromGrid.subscribe(nv => {
+        if (nv) {
+            if (!self.documentGridSelectedKeys().find(f => f == self.AttachmentID)) {
+                self.documentGridSelectedKeys.push(self.AttachmentID);
+            }
+        } else {
+            self.documentGridSelectedKeys.remove(self.AttachmentID);
+        }     
     });
 
     //#endregion

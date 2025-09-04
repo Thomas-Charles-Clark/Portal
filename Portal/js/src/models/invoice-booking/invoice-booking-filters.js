@@ -78,9 +78,15 @@ const invoiceBookingFiltersViewModel = ({
 
     self.fromDate = ko.observable();
 
+    self.documentFromDate = ko.observable();
+
     self.toDate = ko.observable();
 
+    self.documentToDate = ko.observable();
+
     self.dateRangeId = ko.observable('-2');
+
+    self.documentDateRangeId = ko.observable('-2');
 
     self.dateRanges = dateRanges;
 
@@ -113,7 +119,7 @@ const invoiceBookingFiltersViewModel = ({
     self.documentStatusId = ko.observable('');
     self.documentStatus = ko.observable();
 
-    self.documentDateAffectorId = ko.observable('1');
+    self.documentDateAffectorId = ko.observable('2');
     self.documentDateAffector = ko.observable();
 
     self.hasAttachments = ko.observable();
@@ -757,6 +763,141 @@ const invoiceBookingFiltersViewModel = ({
         decorateInputElement: true
     };
 
+
+    self.documentDateRangeParams = kendoMDCDropDownList({
+        data: self.dateRanges,
+        textField: 'name',
+        valueField: 'dateRangeId',
+        idObservable: self.documentDateRangeId,
+        objObservable: ko.observable(),
+        template: (e) => `<span class="date-range ${e.class}">${e.name}</span>`,
+        valueTemplate: (e) => `<span class="date-range ${e.class}">${e.name}</span>`,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(false),
+        revertible: ko.observable(false),
+        readOnly: false,
+        autoBind: true,
+        autoWidth: true,
+        clearFunction: () => {
+            self.documentDateRangeId('');
+        },
+        afterClear: () => {
+
+        },
+        popupSettings: {
+            appendTo: document.getElementById('document-date-type-prefilter')
+        },
+    });
+
+    self.documentFromDateParams = {
+        label: "From Date",
+        observable: self.documentFromDate,
+        originalValue: self.documentFromDate(),
+        displayObservable: ko.observable(),
+        dateTimePickerOptions: {
+            localization: {
+                locale: 'en-GB',
+                format: 'dd/MM/yyyy'
+            },
+            display: {
+                sideBySide: false,
+                components: {
+                    clock: false,
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: false,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false
+                },
+                viewMode: 'months',
+                cellSize: '3rem'
+            },
+            restrictions: {
+                disabledDates: []
+            },
+            allowInputToggle: true,
+            useCurrent: false,
+            keepInvalid: true,
+            debug: false
+        },
+        clearable: ko.observable(true),
+        clearFunction: () => {
+            self.documentFromDate(undefined);
+            self.documentFromDateParams.observable.tempusDominus.clear();
+            self.documentFromDateParams.observable.tempusDominus.updateOptions({
+                display: {
+                    viewMode: 'months'
+                }
+            })
+        },
+        revertible: ko.observable(true),
+        revertFunction: () => {
+            self.fromDate.observable(self.documentFromDateParams.originalValue);
+        },
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true,
+    };
+
+    self.documentToDateParams = {
+        label: "To Date",
+        observable: self.documentToDate,
+        originalValue: self.documentToDate(),
+        displayObservable: ko.observable(),
+        dateTimePickerOptions: {
+            localization: {
+                locale: 'en-GB',
+                format: 'dd/MM/yyyy'
+            },
+            display: {
+                sideBySide: false,
+                components: {
+                    clock: false,
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: false,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false
+                },
+                viewMode: 'months',
+                cellSize: '3rem'
+            },
+            restrictions: {
+                disabledDates: []
+            },
+            allowInputToggle: true,
+            useCurrent: false,
+            keepInvalid: true,
+            debug: false
+        },
+        clearable: ko.observable(true),
+        clearFunction: () => {
+            self.documentToDate(undefined);
+            self.documentToDateParams.observable.tempusDominus.clear();
+            self.documentToDateParams.observable.tempusDominus.updateOptions({
+                display: {
+                    viewMode: 'months'
+                }
+            })
+        },
+        revertible: ko.observable(true),
+        revertFunction: () => {
+            self.documentToDate.observable(self.documentToDateParams.originalValue);
+        },
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true
+    };
+
     self.freeTextSearchParams = {
         label: 'Search',
         originalValue: self.freeTextSearch,
@@ -861,7 +1002,7 @@ const invoiceBookingFiltersViewModel = ({
 
     self.documentDateAffectorParams = kendoMDCDropDownList({
         skipCascade: true,
-        label: 'Date Affector',
+        label: 'Date Range',
         data: documentDateAffectors,
         textField: 'name',
         valueField: 'documentDateAffectorId',
@@ -874,7 +1015,6 @@ const invoiceBookingFiltersViewModel = ({
         clearable: ko.observable(false),
         revertible: ko.observable(false),
         readOnly: false,
-        filter: 'contains',
         autoBind: true,
         autoWidth: true,
         height: 340,
@@ -932,6 +1072,12 @@ const invoiceBookingFiltersViewModel = ({
         }
     });
 
+    self.documentDateRangeId.subscribe(nv => {
+        if (nv != -1) {
+            self.refreshParent();
+        }
+    });
+
     self.fromDate.subscribe(nv => {
         //console.trace();
         if (nv) {
@@ -973,6 +1119,56 @@ const invoiceBookingFiltersViewModel = ({
             });
         } else {
             self.fromDate.tempusDominus.updateOptions({
+                restrictions: {
+                    maxDate: undefined
+                }
+            });
+        }
+        self.refreshParent();
+    });
+
+
+    self.documentFromDate.subscribe(nv => {
+        //console.trace();
+        if (nv) {
+            if (self.documentToDate() && +self.documentToDate() < nv) {
+                self.documentToDate(undefined);
+            }
+
+            let oneDayMilliseconds = 1000 * 60 * 60 * 24;
+
+            self.documentToDate.tempusDominus.updateOptions({
+                restrictions: {
+                    minDate: new Date(nv.getTime())// + oneDayMilliseconds)
+                }
+            });
+        } else {
+
+            self.documentToDate.tempusDominus.updateOptions({
+                restrictions: {
+                    minDate: undefined
+                }
+            });
+        }
+        self.refreshParent();
+    });
+
+    self.documentToDate.subscribe(nv => {
+        //console.trace();
+        if (nv) {
+            if (self.documentFromDate() && +self.documentFromDate() > nv) {
+                self.documentFromDate(undefined);
+            }
+
+            let oneDayMilliseconds = 1000 * 60 * 60 * 24;
+
+            self.documentFromDate.tempusDominus.updateOptions({
+                restrictions: {
+                    maxDate: new Date(nv.getTime())// - oneDayMilliseconds)
+                }
+            });
+        } else {
+            self.documentFromDate.tempusDominus.updateOptions({
                 restrictions: {
                     maxDate: undefined
                 }

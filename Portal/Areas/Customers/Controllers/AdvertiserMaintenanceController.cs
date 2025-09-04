@@ -36,10 +36,14 @@ namespace Portal.Areas.Customers.Controllers
 
             var fixedSalesMarketId = (byte?)null;
 
-            if (//user.Id == 8 ||
-                UserManager.IsInRole(user.Id, "Advertiser Maintenance - FRANCE"))
+            if (UserManager.IsInRole(user.Id, "Advertiser Maintenance - FRANCE"))
             {
                 fixedSalesMarketId = PortalDb.SalesMarkets.SingleOrDefault(s => s.Name == "France")?.SalesMarketID;
+            }
+
+            if (UserManager.IsInRole(user.Id, "Advertiser Maintenance - UK"))
+            {
+                fixedSalesMarketId = PortalDb.SalesMarkets.SingleOrDefault(s => s.Name == "United Kingdom")?.SalesMarketID;
             }
 
             var model = await AdvertiserMaintenanceViewModel.CreateAsync(

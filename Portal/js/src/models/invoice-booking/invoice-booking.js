@@ -83,6 +83,12 @@ const invoiceBookingViewModel = ({
 
     self.documentGridTabButton = document.querySelector('#documents-grid-tab');
 
+    self.documentGridSelectAllToggleState = ko.observable(false);
+
+    self.documentGridResultSetKeys = ko.observableArray([]);
+
+    self.documentGridSelectedKeys = ko.observableArray([]);
+
     //#endregion
 
 
@@ -95,9 +101,6 @@ const invoiceBookingViewModel = ({
 
         data = Object.assign({
             emailStatusId: self.filters.emailStatusId() ?? null,
-            fromDate: typeof self.filters.fromDate() == 'object' ? self.filters.fromDate().toUTCString() : self.filters.fromDate(),
-            toDate: typeof self.filters.toDate() == 'object' ? self.filters.toDate().toUTCString() : self.filters.toDate(),
-            dateRangeId: self.filters.dateRangeId() ?? null
         }, data);
 
         if (self.filters.departmentIds().length) {
@@ -116,7 +119,17 @@ const invoiceBookingViewModel = ({
             data.freeTextSearch = self.filters.freeTextSearch();
         }
 
+        if (self.mode() == 'emails') {
+            data.dateRangeId = self.filters.dateRangeId() ?? null;
+            data.fromDt = typeof self.filters.fromDate() == 'object' ? self.filters.fromDate().toUTCString() : self.filters.fromDate();
+            data.toDt = typeof self.filters.toDate() == 'object' ? self.filters.toDate().toUTCString() : self.filters.toDate();
+        }
+
         if (self.mode() == 'documents') {
+            data.dateRangeId = self.filters.documentDateRangeId() ?? null;
+            data.fromDt = typeof self.filters.documentFromDate() == 'object' ? self.filters.documentFromDate().toUTCString() : self.filters.documentFromDate();
+            data.toDt = typeof self.filters.documentToDate() == 'object' ? self.filters.documentToDate().toUTCString() : self.filters.documentToDate();
+
             if (self.filters.documentTypeId()) {
                 data.documentTypeId = self.filters.documentTypeId();
             }
@@ -207,11 +220,12 @@ const invoiceBookingViewModel = ({
             }
         }, {
             field: 'RegularAttachmentCount',
-            title: ' ',
-            width: 40,
+            title: "<span class='b bi-paperclip fs-4'></span>",
+            width: 80,
             headerAttributes: {
                 class: 'text-center attachment-count-header-cell'
             },
+            sortable: true,
             filterable: {
                 extra: false
             },
@@ -372,12 +386,11 @@ const invoiceBookingViewModel = ({
             pageSize: 20,
             pageSizes: [10, 20, 50, 100, 200]
         },
+        selectable: 'single',
         sortable: true,
         filterable: true,
         groupable: false,
-        selectable: 'single',
         change: (event, data) => {
-
             console.log('change', event, data);
 
             let stub = event.sender.dataItem(event.sender.select());
@@ -385,27 +398,41 @@ const invoiceBookingViewModel = ({
             self.selectedEmailIndex(event.sender.dataSource.indexOf(stub));
 
             self.loadEmail(stub);
-            
         },
         select: (event) => {
             console.log('select', event)
         },
-        databound: (event) => {
+        dataBound: (event) => {
             self.gridGroupCount(event.sender.dataSource.group().length);
+
+            self.dashboard.fetch();
+
+            self.dashboard.documentsFetch();
         }
     }
 
     self.documentGridParams = {
         widget: ko.observable(),
         columns: [{
+            headerTemplate: '<div class="form-checkbox"><input type="checkbox" class="form-check-input" onclick="viewModel.toggleDocumentsGridSelection()"/></div>',
+            width: 34
+        }, {
             title: 'Type',
             field: 'AttachmentTypeID',
+            template: `#: AttachmentType.Name #`,
             width: 200
         }, {
             title: 'Supplier',
             field: 'Email.Supplier.Code',
             width: 200,
             filterable: false,
+            template: (e) => {
+                if (e.Supplier) {
+                    return `${e.Supplier.Code} - ${e.Supplier.Name}`
+                } else {
+                    return '';
+                }
+            },
             groupHeaderTemplate: (e) => {
                 if (e.SupplierCode) {
                     return `Supplier: ${e.SupplierCode} - ${e.Supplier.Name}`;
@@ -415,26 +442,64 @@ const invoiceBookingViewModel = ({
             }
         }, {
             title: 'Budget Holder',
-            field: 'BudgetHolder.Code'
+            field: 'BudgetHolder.Code',
+            template: (e) => {
+                if (e.BudgetHolder) {
+                    return `${e.BudgetHolder.Code} - ${e.BudgetHolder.Name}`
+                } else {
+                    return '';
+                }
+            }
         }, {
             field: 'Status',
-            title: 'Status'
+            title: 'Status',
+            template: (e) => {
+                if (e.AttachmentStatus) {
+                    return `${e.AttachmentStatus.Code} - ${e.AttachmentStatus.Name}`
+                } else {
+                    return '';
+                }
+            }
         }, {
             field: 'ReceivedDT',
             title: 'Received Date',
             width: 142,
+            template: (e) => {
+                return moment(e.ReceivedDT).format('DD/MM/YYYY HH:mm');
+            }
         }, {
             field: 'DocumentDate',
             title: 'Document Date',
             width: 150,
+            template: (e) => {
+                if (e.DocumentDate) {
+                    return moment(e.DocumentDate).format('DD/MM/YYYY');
+                } else {
+                    return '';
+                }
+            }
         }, {
             field: 'DocumentDueDate',
             title: 'Due Date',
             width: 142,
+            template: (e) => {
+                if (e.DocumentDueDate) {
+                    return moment(e.DocumentDueDate).format('DD/MM/YYYY');
+                } else {
+                    return '';
+                }
+            }
         }, {
             field: 'DocumentTotalInc',
             title: 'Total',
-            width: 180
+            width: 180,
+            template: (e) => {
+                if (e.DocumentTotalInc != null) {
+                    return formatCurrency(e.DocumentTotalInc, 2, 'en-gb', 'GBP');
+                } else {
+                    return '';
+                }
+            }
         }],
         data: new kendo.data.DataSource({
             pageSize: 20,
@@ -479,12 +544,15 @@ const invoiceBookingViewModel = ({
                         .then(data => {
                             console.log("DocumentsGrid returned", data);
 
+                            self.documentGridResultSetKeys(data.allKeys);
+
                             if (self.documentGridParams.widget().dataSource.group().length) {
-                                data.Data = data.Data.map(dat => {
+                                data.dataSourceResult.Data = data.dataSourceResult.Data.map(dat => {
                                     dat.Items = dat.Items.map(d => invoiceBookingEmailAttachmentViewModel({
                                         parent: Object.assign({
-                                            EmailID: d.Email.EmailID,
-                                            EmailMessageID: d.Email.EmailMessageID,
+                                            EmailID: d.EmailID,
+                                            EmailMessageID: d.EmailMessageID,
+                                            ReceivedDT: d.ReceivedDT,
                                             parent: {
                                                 // fake parents!
                                             }
@@ -494,8 +562,11 @@ const invoiceBookingViewModel = ({
                                     return dat;
                                 })
                             } else {
-                                data.Data = data.Data.map(d => invoiceBookingEmailAttachmentViewModel({
+                                data.dataSourceResult.Data = data.dataSourceResult.Data.map(d => invoiceBookingEmailAttachmentViewModel({
                                     parent: Object.assign({
+                                        EmailID: d.EmailID,
+                                        EmailMessageID: d.EmailMessageID,
+                                        ReceivedDT: d.ReceivedDT,
                                         parent: {
                                         // fake parents!
                                         }
@@ -505,7 +576,7 @@ const invoiceBookingViewModel = ({
                             }
 
                             ko.ignoreDependencies(() => {
-                                options.success(data);
+                                options.success(data.dataSourceResult);
 
                                 self.busy(false);
                             })
@@ -549,13 +620,7 @@ const invoiceBookingViewModel = ({
                                 Name: { type: 'string', editable: false }
                             }
                         },
-                        AttachmentStatus: {
-                            type: 'object',
-                            fields: {
-                                AttachmentStatusID: { type: 'number', editable: false },
-                                Name: { type: 'string', editable: false }
-                            }
-                        },
+                        AttachmentStatusName: { type: 'string', editable: false },
                         AttachmentType: {
                             type: 'object',
                             fields: {
@@ -600,25 +665,39 @@ const invoiceBookingViewModel = ({
         sortable: true,
         filterable: false,
         groupable: false,
-        selectable: 'single',
+        persistSelection: true,
+        selectable: 'single, row',
         change: (e) => {
 
             console.log('documentGrid change', e);
 
+            //e.sender.select().toArray().forEach(d => {
+            //    let item = e.sender.dataItem(d);
+            //    item.selectedFromGrid(!item.selectedFromGrid());
+            //});
+
             self.documentViewer.load(e.sender.dataItem(e.sender.select()));
-
-            //let stub = event.sender.dataItem(event.sender.select());
-
-            //self.selectedEmailIndex(event.sender.dataSource.indexOf(stub));
-
-            //self.loadEmail(stub);
 
         },
         select: (event) => {
-            console.log('select', event)
+            console.log('documentGrid select', event)
         },
-        databound: (event) => {
-            self.gridGroupCount(event.sender.dataSource.group().length);
+        dataBound: (event) => {
+
+            event.sender.element[0].querySelectorAll('td.checkbox-column').forEach(c => c.addEventListener("click", function (e) {
+
+                e.stopPropagation();
+                //e.preventDefault();
+            }));
+
+            event.sender.dataSource.data().forEach(d => {
+                if (self.documentGridSelectedKeys().find(f => f == d.AttachmentID)) {
+                    d.selectedFromGrid(true);
+                }
+            });
+
+            //self.gridGroupCount(event.sender.dataSource.group().length);
+
         }
     }
 
@@ -642,6 +721,21 @@ const invoiceBookingViewModel = ({
         } else {
             return `Suspend Submission to Mertex`;
         }
+    }, self);
+
+    self.documentSelectionLabel = ko.computed(() => {
+        let count = self.documentGridSelectedKeys().length;
+
+        if (count == 0) {
+            return '';
+        }
+
+        if (count == 1) {
+            return '(1 document selected)';
+        }
+
+        return `(${count} documents selected)`;
+
     }, self);
 
     //#endregion
@@ -678,6 +772,7 @@ const invoiceBookingViewModel = ({
 
     self.refresh = () => {
         self.dashboard.fetch();
+        self.dashboard.documentsFetch();
         self.mailboxGridParams.widget().dataSource.read();
     }
 
@@ -874,6 +969,10 @@ const invoiceBookingViewModel = ({
                     self.busy(false);
                 });
 
+                self.dashboard.documentsFetch(() => {
+                    self.busy(false);
+                });
+
                 self.invoiceRegistrationSubmissionSuspended(!self.invoiceRegistrationSubmissionSuspended());
             })
             .catch(err => {
@@ -881,7 +980,69 @@ const invoiceBookingViewModel = ({
                 window.catchFetchError(err);
             })
     }
-    
+
+    self.toggleDocumentsGridSelection = (event, data) => {
+        console.log('toggleDocumentsGridSelection', event, data);
+        self.documentGridSelectAllToggleState(!self.documentGridSelectAllToggleState());
+
+        if (self.documentGridSelectAllToggleState()) {
+
+            self.documentGridSelectedKeys(self.documentGridResultSetKeys());
+
+            self.documentGridParams.widget().select(self.documentGridParams.widget().dataSource.data())
+            self.documentGridParams.widget().dataSource.data().forEach(i => {
+                i.selectedFromGrid(true);
+            })
+        } else {
+
+            self.documentGridSelectedKeys([]);
+
+            self.documentGridParams.widget().dataSource.data().forEach(i => {
+                i.selectedFromGrid(false);
+            })
+        }
+    };
+
+    self.beginDownloadDocuments = () => {
+        self.busy(true);
+
+        let data = {
+            attachmentIds: self.documentGridSelectedKeys()
+        }
+
+        if (data.attachmentIds.length > 5) {
+            window.showConfirm('Are you sure?', `You are requesting ${data.attachmentIds.length} documents. If you intended to request this many, please click the Yes button to continue.`, () => {
+                self.actuallyDownloadDocuments(data);
+            }, () => {
+
+            })
+        } else {
+            self.actuallyDownloadDocuments(data);
+        }
+    }
+
+    self.actuallyDownloadDocuments = (data) => {
+        fetch('/api/InvoiceBookingAPI/DownloadDocuments', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            body: JSON.stringify(data)
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+
+                document.getElementById('archives-leading-text').innerHTML = document.getElementById('archives-leading-text').innerHTML.replace('{COUNT}', data.documentCount);
+
+                bootstrap.Modal.getOrCreateInstance(document.querySelector('#archives-modal')).show();
+
+                self.busy(false);
+
+            })
+            .catch(err => {
+                self.busy(false);
+                window.catchFetchError(err);
+            })
+    }
+
     //#endregion
 
     //#region Events
@@ -890,9 +1051,11 @@ const invoiceBookingViewModel = ({
         self.mode('emails');
     });
 
-    self.documentGridTabButton.addEventListener('show.bs.tab', (ev) => {
-        self.mode('documents');
-    })
+    if (self.documentGridTabButton) {
+        self.documentGridTabButton.addEventListener('show.bs.tab', (ev) => {
+            self.mode('documents');
+        })
+    }
 
     //#endregion
 

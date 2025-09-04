@@ -326,9 +326,9 @@
         result.dropDownListSettings.filtering = filtering;
     }
 
-    if (typeof popupSettings === 'object') {
-        result.dropDownListSettings.popupSettings = popupSettings;
-    }
+    //if (typeof popupSettings === 'object') {
+    //    result.dropDownListSettings.popup = popupSettings;
+    //}
 
     if (typeof enable === 'function') {
         result.enable = enable;

@@ -2,7 +2,7 @@
     parent
 } = {
 
-}) => {
+    }) => {
     let self = {
         parent: parent
     }
@@ -18,12 +18,32 @@
     let emailStatusIdtoLoad = window.getEmailStatusIdToLoad();
 
     self.selectedPod = ko.observable(emailStatusIdtoLoad ?
-        self.pods().find(p => p.EmailStatusID == emailStatusIdtoLoad) 
+        self.pods().find(p => p.EmailStatusID == emailStatusIdtoLoad)
         : self.pods().sort((a, b) => {
             return a.SortOrder === b.SortOrder ? 0
                 : a.SortOrder < b.SortOrder ? -1
                     : 1;
-    })[0]);
+        })[0]);
+
+    self.documentsBusy = ko.observable(false);
+
+    self.documentActionPods = ko.observableArray(window.getDocumentsDashboard().Actions);
+    self.documentStatusPods = ko.observableArray(window.getDocumentsDashboard().DocumentStatuses);
+    self.documentTypeSummaryPods = ko.observableArray(window.getDocumentsDashboard().DocumentTypesSummary);
+    
+    self.documentNotices = ko.observableArray(window.getDocumentsDashboard().Notices);
+
+    let documentStatusIdtoLoad = window.getAttachmentStatusIdToLoad();
+
+    self.selectedDocumentsPod = ko.observable(
+        //documentStatusIdtoLoad ?
+        //self.documentsPods().find(p => p.AttachmentStatusID == documentStatusIdtoLoad)
+        //: self.documentsPods().sort((a, b) => {
+        //    return a.SortOrder === b.SortOrder ? 0
+        //        : a.SortOrder < b.SortOrder ? -1
+        //            : 1;
+        //})[0]
+    );
 
     //#endregion
 
@@ -41,7 +61,31 @@
         return self.pods.sorted((a, b) => {
             return a.SortOrder === b.SortOrder ? 0
                 : a.SortOrder < b.SortOrder ? -1
-                : 1;
+                    : 1;
+        })
+    }, self);
+
+    self.sortedDocumentActionPods = ko.computed(() => {
+        return self.documentActionPods.sorted((a, b) => {
+            return a.SortOrder === b.SortOrder ? 0
+                : a.SortOrder < b.SortOrder ? -1
+                    : 1;
+        })
+    }, self);
+
+    self.sortedDocumentTypeSummaryPods = ko.computed(() => {
+        return self.documentTypeSummaryPods.sorted((a, b) => {
+            return a.SortOrder === b.SortOrder ? 0
+                : a.SortOrder < b.SortOrder ? -1
+                    : 1;
+        })
+    }, self);
+
+    self.sortedDocumentStatusPods = ko.computed(() => {
+        return self.documentStatusPods.sorted((a, b) => {
+            return a.SortOrder === b.SortOrder ? 0
+                : a.SortOrder < b.SortOrder ? -1
+                    : 1;
         })
     }, self);
 
@@ -99,7 +143,6 @@
                 window.catchFetchError(err);
             })
     }
-
     self.select = (data, event) => {
         console.log('dashboard select', data, event);
 
@@ -152,6 +195,72 @@
             default:
                 break;
         }
+
+        self.parent.selectedEmail(undefined);
+
+    } 
+
+    self.documentsFetch = (afterFn) => {
+        self.documentsBusy(true)
+
+        let data = self.parent.getParameters();
+
+        if (window.getDepartmentRestrictions().length && self.parent.filters.departmentIds().length == 0) {
+            data.activeDirectoryGroupIds = window.getDepartmentRestrictions();
+        }
+
+        fetch('/api/InvoiceBookingAPI/DocumentsDashboard', {
+            method: 'POST',
+            cache: 'no-cache',
+            headers: window.fetchHeaders,
+            credentials: 'same-origin',
+            body: JSON.stringify(data)
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                console.log('documents dashboard returned', data);
+
+                let previouslySelectedDocumentStatusId = self.selectedDocumentsPod()?.DocumentStatusID;
+
+                self.documentsBusy(false);
+                self.documentActionPods(data.Actions);
+                self.documentStatusPods(data.DocumentStatuses);
+                self.documentTypeSummaryPods(data.DocumentTypesSummary);
+                self.documentNotices(data.Notices);
+                //self.selectedDocumentsPod(self.documentsPods().find(p => p.AttachmentStatusID == previouslySelectedDocumentStatusId));
+
+                if (typeof afterFn == 'function')
+                    afterFn();
+            })
+            .catch(err => {
+                self.documentsBusy(false);
+                window.catchFetchError(err);
+            })
+    }
+
+    self.documentSelect = (data, event) => {
+        console.log('documents dashboard select', data, event);
+
+        self.selectedDocumentsPod(data);
+
+        if (data.AttachmentStatusID) {
+            self.parent.filters.documentStatusId(data.AttachmentStatusID);
+        }
+
+        if (data.AttachmentTypeID) {
+            self.parent.filters.documentTypeId(data.AttachmentStatusID);
+        }
+
+        if (data.SearchKeywords) {
+            self.parent.filters.freeTextSearch(data.SearchKeywords);
+        }
+
+        self.parent.documentGridParams.widget().dataSource.query({
+            page: 1,
+            pageSize: self.parent.documentGridParams.widget().dataSource.pageSize(),
+            group: self.parent.documentGridParams.widget().dataSource.group(),
+            sort: self.parent.documentGridParams.widget().dataSource.sort()
+        });
 
         self.parent.selectedEmail(undefined);
         

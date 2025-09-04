@@ -2769,24 +2769,25 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     }
 
-    self.downloadArchive = () => {
+    // defunct
+    //self.downloadArchive = () => {
 
 
-        let id = new Date().getTime();
+    //    let id = new Date().getTime();
 
-        fetch(`/stock/range-management/DownloadImageArchive?id=${id}`, {
-            method: 'GET',
-            headers: window.fetchHeaders
-        })
-            .then(window.handleFetchResponse)
-            .then(data => {
+    //    fetch(`/stock/range-management/DownloadImageArchive?id=${id}`, {
+    //        method: 'GET',
+    //        headers: window.fetchHeaders
+    //    })
+    //        .then(window.handleFetchResponse)
+    //        .then(data => {
 
 
-                bootstrap.Modal.getOrCreateInstance(document.querySelector('#archives-modal')).show();
+    //            bootstrap.Modal.getOrCreateInstance(document.querySelector('#archives-modal')).show();
 
-            })
-            .catch(window.catchFetchError)
-    }
+    //        })
+    //        .catch(window.catchFetchError)
+    //}
 
     //#endregion
 

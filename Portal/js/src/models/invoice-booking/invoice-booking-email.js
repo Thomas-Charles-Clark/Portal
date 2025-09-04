@@ -257,7 +257,7 @@
 
     self.attachmentDisplay = ko.computed(() => {
         if (self.RegularAttachmentCount) {
-            return `<i class="bi bi-paperclip" title="${self.RegularAttachmentCount} attachment${(self.RegularAttachmentCount > 1 ? 's' : '')}"></i>`
+            return `<i class="bi bi-paperclip" title="${self.RegularAttachmentCount} attachment${(self.RegularAttachmentCount > 1 ? 's' : '')}"></i><span>${self.RegularAttachmentCount}</span>`
         } else {
             return '';
         }

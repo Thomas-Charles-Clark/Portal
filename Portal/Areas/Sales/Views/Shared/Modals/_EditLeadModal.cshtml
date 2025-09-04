@@ -1,8 +1,8 @@
 ﻿@{
     bool creditControlOverride = false;
 
-    @* Frida Skoglund, Paul Fearn, Super Admins, *@
-    if (new int[] { 1299294, 1395367 }.Contains(User.Identity.GetUserId<int>()) || User.IsInRole("Super Admin"))
+    @* Frida Skoglund, Paul Fearn, Leanne Naidoo, UK Credit Control, Super Admins, *@
+    if (new int[] { 1299294, 1395367, 1559299 }.Contains(User.Identity.GetUserId<int>()) || User.IsInRole("Super Admin"))
     {
         creditControlOverride = true;
     }

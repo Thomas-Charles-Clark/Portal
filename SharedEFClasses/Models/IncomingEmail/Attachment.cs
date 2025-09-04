@@ -65,7 +65,11 @@ namespace SharedEFClasses.Models.IncomingEmail
 
         public byte? DocumentCurrencyID { get; set; }
 
-        public byte AttachmentStatusID { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public byte? AttachmentStatusID { get; set; }
+
+        [NotMapped]
+        public string AttachmentStatusName { get; set; }
 
         [ForeignKey("DocumentCurrencyID")]
         public Currency DocumentCurrency { get; set; }
@@ -115,8 +119,8 @@ namespace SharedEFClasses.Models.IncomingEmail
             } 
         }
 
-        [ForeignKey("AttachmentStatusID")]
-        public virtual AttachmentStatus AttachmentStatus { get; set; }
+        //[ForeignKey("AttachmentStatusID")]
+        //public virtual AttachmentStatus AttachmentStatus { get; set; }
 
         [ForeignKey("ProcessedByMemberID")]
         public virtual Member ProcessedBy { get; set; }

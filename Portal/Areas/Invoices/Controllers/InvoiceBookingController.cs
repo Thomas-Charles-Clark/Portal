@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
 
 using Newtonsoft.Json;
 
@@ -7,11 +8,15 @@ using Portal.Areas.Invoices.ViewModels;
 using Portal.Utilities.DynamicRoles;
 using SharedEFClasses;
 using SharedEFClasses.Models;
+using SharedEFClasses.Models.RangeManagement;
+using SharedEFClasses.SignalR.Hubs;
+
 using SimpleImpersonation;
 
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Security.Principal;
 using System.Text.RegularExpressions;
@@ -37,7 +42,7 @@ namespace Portal.Areas.Invoices.Controllers
         }
 
         // GET: invoices/booking/index
-        public async Task<ActionResult> Index(string pod)
+        public async Task<ActionResult> Index(string pod, string dashboardPod)
         {
             var application = PortalDb.Applications.Where(p => p.ControllerName == "booking" && p.AreaName == "invoices" && p.ActionName == "index").Single();
 
@@ -81,6 +86,18 @@ namespace Portal.Areas.Invoices.Controllers
                 }
             }
 
+            var loadingAttachmentStatusId = (int?)null;
+
+            if (!String.IsNullOrEmpty(dashboardPod))
+            {
+                var es = PortalDb.AttachmentStatuses.ToList().SingleOrDefault(p => p.Name.ToLowerInvariant() == dashboardPod);
+
+                if (es != null)
+                {
+                    loadingAttachmentStatusId = es.AttachmentStatusID;
+                }
+            }
+
             var invoiceRegistrationSuspended = PortalDb.GlobalVariables.Single(p => p.GlobalVariableID == 19).Value == "0" ? false : true;
 
             var model = await InvoiceBookingViewModel.CreateAsync(
@@ -88,6 +105,7 @@ namespace Portal.Areas.Invoices.Controllers
                 lockedToDepartmentGroupIds,
                 lockedToBudgetHolderCode,
                 loadingEmailStatusId,
+                loadingAttachmentStatusId,
                 invoiceRegistrationSuspended,
                 user.GetActiveRoleProperties(), 
                 application.Heading, 
@@ -144,6 +162,15 @@ namespace Portal.Areas.Invoices.Controllers
             var model = new EmailViewerViewModel(message);
 
             return View("EmailViewer", model);
+        }
+
+        public ActionResult DownloadDocumentArchive(string archiveName)
+        {
+            var fullFilePath = $"{Server.MapPath("~/Programmatic/DocumentDownloads")}{archiveName}";
+
+            Response.BufferOutput = false;
+
+            return File(System.IO.File.OpenRead(fullFilePath), MimeMapping.GetMimeMapping(archiveName), archiveName);
         }
     }
 }

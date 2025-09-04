@@ -68,7 +68,7 @@
                 if (self.supplierCurrency() && self.exchangeRate()) {
                     return formatNumber(self.exchangeRate(), 4, 'en-GB', 'GBP');
                 } else {
-                    return self.supplier() && formatNumber(self.supplier().ExchangeRate.SterlingExchangeRate, 4, 'en-GB', 'GBP');
+                    return self.supplier() && formatNumber(self.supplier().ExchangeRate?.SterlingExchangeRate ?? self.supplier().Currency.SterlingExchangeRate, 4, 'en-GB', 'GBP');
                 }
             }, self),
             useNativeValidation: false,
@@ -164,7 +164,7 @@
         
         let vatableAmount = +self.vatableAmountCurrency();
 
-        let exchangeRate = self.exchangeRate() ?? (self.supplier() ? self.supplier().ExchangeRate.SterlingExchangeRate : null);
+        let exchangeRate = self.exchangeRate() ?? (self.supplier() ? self.supplier().ExchangeRate?.SterlingExchangeRate ?? self.supplier().Currency.SterlingExchangeRate : null);
 
         if (vatableAmount && self.supplier()) {
 
@@ -303,7 +303,7 @@
 
         let vatInCurrency = +self.vatInCurrency();
 
-        let exchangeRate = self.exchangeRate() ?? (self.supplier() ? self.supplier().ExchangeRate.SterlingExchangeRate : null);
+        let exchangeRate = self.exchangeRate() ?? (self.supplier() ? self.supplier().ExchangeRate?.SterlingExchangeRate ?? self.supplier().Currency.SterlingExchangeRate : null);
 
         if (vatInCurrency && exchangeRate) {
 

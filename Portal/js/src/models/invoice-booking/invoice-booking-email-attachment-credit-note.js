@@ -46,7 +46,7 @@
 
     self.exchangeRate = rec.exchangeRate ? ko.observable(rec.exchangeRate) : ko.computed(() => {
         if (self.supplier())
-            return self.supplier().ExchangeRate.SterlingExchangeRate
+            return self.supplier().ExchangeRate?.SterlingExchangeRate ?? self.supplier().Currency.SterlingExchangeRate;
         else
             return 1;
     }, self);
@@ -437,7 +437,7 @@
     }, self);
 
     self.forexDisplay = ko.computed(() => {
-        return `Forex (${self.loadedCurrency ? self.loadedCurrency.Code : self.supplierCurrency() && self.supplierCurrency().Code} to GBP): ${formatNumber(self.loadedExchangeRate ? +self.loadedExchangeRate : self.supplier() && self.supplier().ExchangeRate.SterlingExchangeRate, 2, 'en-GB', 'GBP')}`;
+        return `Forex (${self.loadedCurrency ? self.loadedCurrency.Code : self.supplierCurrency() && self.supplierCurrency().Code} to GBP): ${formatNumber(self.loadedExchangeRate ? +self.loadedExchangeRate : self.supplier() && (self.supplier().ExchangeRate?.SterlingExchangeRate ?? self.supplier().Currency.SterlingExchangeRate), 2, 'en-GB', 'GBP')}`;
     })
 
     self.invoiceTotalExVatInSterling = ko.computed(() => {
@@ -495,7 +495,7 @@
     });
 
     self.vatableAmountSumComputer = ko.computed(() => {
-        let breakdown = +self.vatableAmountBreakdownSum();
+        let breakdown = +Math.round(self.vatableAmountBreakdownSum() * 100) / 100;
         let total = +self.netTotalCurrency();
 
         ko.ignoreDependencies(() => {
@@ -1106,7 +1106,7 @@
                 if (self.loadedCurrency && self.loadedExchangeRate && self.invoiceTotalExVatInSterlingFormatted()) {
                     return formatNumber(self.loadedExchangeRate, 4, 'en-GB', 'GBP');
                 } else {
-                    return self.supplier() && formatNumber(self.supplier().ExchangeRate.SterlingExchangeRate, 4, 'en-GB', 'GBP');
+                    return self.supplier() && formatNumber(self.exchangeRate(), 4, 'en-GB', 'GBP');
                 }
             }, self),
             useNativeValidation: false,

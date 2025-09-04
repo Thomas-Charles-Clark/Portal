@@ -254,6 +254,44 @@ namespace SharedEFClasses.Models
             };
         }
 
+        public async Task<InvoiceBookingDocumentDashboard> GetInvoiceBookingDocumentDashboard(PassInvoiceBookingDocumentDashboardParams dto)
+        {
+            var groupIds = new DataTable();
+
+            groupIds.Columns.Add("I");
+
+            foreach (var g in dto.ActiveDirectoryGroupIDs)
+            {
+                groupIds.Rows.Add(g);
+            }
+
+            // expect additional "Mertex SNAFU" result set
+
+            var reader = await this.Database.Connection.QueryMultipleAsync("[IncomingEmail].[DocumentDashboard_Select]", new
+            {
+                GroupIDs = groupIds,
+                dto.MailboxID,
+                dto.BudgetHolderCode,
+                dto.SupplierCode,
+                dto.SupplierTypeCode,
+                dto.From,
+                dto.To,
+                SearchTerm = dto.FreeTextSearch,
+                dto.DateAffector,
+                dto.AttachmentTypeID,
+                dto.AttachmentStatusID
+            }, null, null, CommandType.StoredProcedure);
+
+
+            return new InvoiceBookingDocumentDashboard()
+            {
+                Actions = reader.Read<InvoiceBookingDocumentDashboard_ActionResult>(),
+                DocumentStatuses = reader.Read<InvoiceBookingDocumentDashboard_DocumentStatusResult>(),
+                DocumentTypesSummary = reader.Read<InvoiceBookingDocumentDashboard_DocumentTypeResult>(),
+                Notices = reader.Read<Dashboard_NoticeResult>()
+            };
+        }
+
         public async Task<IEnumerable<Email_SelectResult>> Email_Select(PassEmailMessageID dto)
         {
             var result = await this.Database.Connection.QueryAsync<Email_SelectResult>("[IncomingEmail].[Email_Select]", new { dto.EmailID }, null, null, CommandType.StoredProcedure);

@@ -18,8 +18,8 @@ namespace SharedEFClasses.Models.IncomingEmail
 
         public string Name { get; set; }
     
-        [JsonIgnore]
-        [InverseProperty("AttachmentStatus")]
-        public virtual ICollection<Attachment> Attachments { get; set; }
+        //[JsonIgnore]
+        //[InverseProperty("AttachmentStatus")]
+        //public virtual ICollection<Attachment> Attachments { get; set; }
     }
 }

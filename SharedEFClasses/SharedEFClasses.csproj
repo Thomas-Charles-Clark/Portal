@@ -421,6 +421,7 @@
     <Compile Include="Models\GiftVoucher.cs" />
     <Compile Include="Models\GiftVoucherType.cs" />
     <Compile Include="Models\GiftVoucher_SelectResult.cs" />
+    <Compile Include="Models\DocumentDownloadTask.cs" />
     <Compile Include="Models\ImageDownloadTask.cs" />
     <Compile Include="Models\IncomingEmail\Attachment.cs" />
     <Compile Include="Models\IncomingEmail\AttachmentStatus.cs" />
@@ -437,6 +438,11 @@
     <Compile Include="Models\IncomingEmail\Email_SelectResult.cs" />
     <Compile Include="Models\IncomingEmail\FullEmail.cs" />
     <Compile Include="Models\IncomingEmail\IncomingEmail_Attachment_SelectResult.cs" />
+    <Compile Include="Models\IncomingEmail\InvoiceBookingDocumentDashboard_DocumentTypeResult.cs" />
+    <Compile Include="Models\IncomingEmail\InvoiceBookingDocumentDashboard_DocumentStatusResult.cs" />
+    <Compile Include="Models\IncomingEmail\InvoiceBookingDocumentDashboard_ActionResult.cs" />
+    <Compile Include="Models\IncomingEmail\InvoiceBookingDocumentDashboard_SelectResult.cs" />
+    <Compile Include="Models\IncomingEmail\InvoiceBookingDocumentDashboard.cs" />
     <Compile Include="Models\IncomingEmail\InvoiceBookingDashboard.cs" />
     <Compile Include="Models\IncomingEmail\InvoiceBookingDashboard_SelectResult.cs" />
     <Compile Include="Models\IncomingEmail\InvoiceDueDateResult.cs" />
@@ -446,8 +452,10 @@
     <Compile Include="Models\IncomingEmail\MailboxFolder.cs" />
     <Compile Include="Models\IncomingEmail\MailboxFunction.cs" />
     <Compile Include="Models\IncomingEmail\PassAttachmentSubmit.cs" />
+    <Compile Include="Models\IncomingEmail\PassDocumentDownloadRequest.cs" />
     <Compile Include="Models\IncomingEmail\PassEmailMessageID.cs" />
     <Compile Include="Models\IncomingEmail\PassEmailToPDF.cs" />
+    <Compile Include="Models\IncomingEmail\PassInvoiceBookingDocumentDashboardParams.cs" />
     <Compile Include="Models\IncomingEmail\PassInvoiceDateParams.cs" />
     <Compile Include="Models\IncomingEmail\PassInvoiceRegistrationSuspension.cs" />
     <Compile Include="Models\IncomingEmail\PassDocumentGridParams.cs" />
@@ -678,6 +686,7 @@
     <Compile Include="Models\UPSModels.cs" />
     <Compile Include="Models\ZipTask.cs" />
     <Compile Include="SignalR\Hubs\BasketLockHub.cs" />
+    <Compile Include="SignalR\Hubs\DocumentDownloadHub.cs" />
     <Compile Include="SignalR\Hubs\ImageDownloadHub.cs" />
     <Compile Include="SignalR\Hubs\NotificationHub.cs" />
     <Compile Include="Utilities\BouncyCastle\BouncyCastleHelper.cs" />

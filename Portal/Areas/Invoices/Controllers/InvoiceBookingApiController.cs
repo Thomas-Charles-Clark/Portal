@@ -45,6 +45,10 @@ using System.Web.Http.ModelBinding;
 using Attachment = SharedEFClasses.Models.IncomingEmail.Attachment;
 using System.Web.UI;
 using HtmlAgilityPack;
+using SharedEFClasses.Models.RangeManagement;
+using SharedEFClasses.SignalR.Hubs;
+using Microsoft.AspNet.Identity.Owin;
+using OpenXmlPowerTools;
 
 namespace Portal.Areas.Invoices.Controllers
 {
@@ -56,10 +60,14 @@ namespace Portal.Areas.Invoices.Controllers
         private PortalDbContext PortalDb { get; set; }
         private readonly ApplicationUserManager UserManager;
 
+        public DocumentDownloadHub DocumentDownloadHub { get; set; }
+
         public InvoiceBookingAPIController(PortalDbContext portalDbContext, ApplicationUserManager userManager)
         {
             this.UserManager = userManager;
             this.PortalDb = portalDbContext;
+
+            DocumentDownloadHub = HttpContext.Current.GetOwinContext().Get<DocumentDownloadHub>();
         }
 
         [HttpGet]
@@ -137,6 +145,71 @@ namespace Portal.Areas.Invoices.Controllers
             dto.From = fromDt;
 
             var results = await PortalDb.GetInvoiceBookingDashboard(dto);
+
+            return Ok(results);
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> DocumentsDashboard(
+            [FromBody] PassInvoiceBookingDocumentDashboardParams dto)
+        {
+            DateTime? toDt = DateTime.Now;
+
+            DateTime? fromDt = null;
+
+            switch (dto.DateRangeID)
+            {
+                case 12: /* Last 12 Months */
+                    fromDt = DateTime.Now.AddYears(-1);
+                    break;
+                case 6: /* Last 6 Months */
+                    fromDt = DateTime.Now.AddMonths(-6);
+                    break;
+                case 1: /* This Month */
+                    fromDt = DateTime.Now.AddDays(-DateTime.Now.Day).AddDays(1);
+                    break;
+                case 30: /* Last 30 Days */
+                    fromDt = DateTime.Now.AddDays(-30);
+                    break;
+                case -1: /* "Custom" */
+                    toDt = dto.To;
+                    fromDt = dto.From;
+                    break;
+                case -2: /* "All Time" noop */
+                    break;
+                case -3:
+                    switch (DateTime.Now.DayOfWeek)
+                    {
+                        case DayOfWeek.Monday:
+                            toDt = DateTime.Now.Date.AddDays(-4);
+                            break;
+                        case DayOfWeek.Tuesday:
+                            toDt = DateTime.Now.Date.AddDays(-4);
+                            break;
+                        case DayOfWeek.Wednesday:
+                            toDt = DateTime.Now.Date.AddDays(-4);
+                            break;
+                        case DayOfWeek.Thursday:
+                            toDt = DateTime.Now.Date.AddDays(-2);
+                            break;
+                        case DayOfWeek.Friday:
+                            toDt = DateTime.Now.Date.AddDays(-2);
+                            break;
+                        case DayOfWeek.Saturday:
+                            toDt = DateTime.Now.Date.AddDays(-2);
+                            break;
+                        case DayOfWeek.Sunday:
+                            toDt = DateTime.Now.Date.AddDays(-3);
+                            break;
+                    }
+                    break;
+            }
+
+            dto.To = toDt;
+
+            dto.From = fromDt;
+
+            var results = await PortalDb.GetInvoiceBookingDocumentDashboard(dto);
 
             return Ok(results);
         }
@@ -263,7 +336,7 @@ namespace Portal.Areas.Invoices.Controllers
         }
 
         [HttpGet]
-        public DataSourceResult DocumentsGrid(
+        public IHttpActionResult DocumentsGrid(
             [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
             [FromUri] PassDocumentGridParams dto)
         {
@@ -374,17 +447,43 @@ namespace Portal.Areas.Invoices.Controllers
             //    return groups;
             //});
 
+            var datePropertyName = "Email.ReceivedDT";
+
+            switch (dto.DocumentDateAffectorID)
+            {
+                case 1:
+                    datePropertyName = "DocumentDate";
+                    break;
+                case 2:
+                    datePropertyName = "Email.ReceivedDT";
+                    break;
+                case 3:
+                    datePropertyName = "DocumentDueDate";
+                    break;
+                default:
+                    break;
+            }
+
             if (fromDt.HasValue)
             {
-                request.Filters.Add(new Kendo.Mvc.FilterDescriptor("Email.ReceivedDT", Kendo.Mvc.FilterOperator.IsGreaterThanOrEqualTo, fromDt.Value));
+                request.Filters.Add(new Kendo.Mvc.FilterDescriptor(datePropertyName, Kendo.Mvc.FilterOperator.IsGreaterThanOrEqualTo, fromDt.Value));
             }
 
             if (toDt.HasValue)
             {
-                request.Filters.Add(new Kendo.Mvc.FilterDescriptor("Email.ReceivedDT", Kendo.Mvc.FilterOperator.IsLessThanOrEqualTo, toDt.Value));
+                request.Filters.Add(new Kendo.Mvc.FilterDescriptor(datePropertyName, Kendo.Mvc.FilterOperator.IsLessThanOrEqualTo, toDt.Value));
             }
 
-            return stubs.ToDataSourceResult(request);
+            var statuses = PortalDb.AttachmentStatuses.ToList();
+
+            var ds = stubs.ToDataSourceResult(request);
+
+            foreach(var d in ds.Data.Cast<Attachment>())
+            {
+                d.AttachmentStatusName = statuses.FirstOrDefault(p => p.AttachmentStatusID == d.AttachmentStatusID)?.Name;
+            }
+
+            return Ok(new { dataSourceResult = ds, allKeys = stubs.Select(k => k.AttachmentID).ToArray() });
         }
 
         [HttpPost]
@@ -759,6 +858,46 @@ namespace Portal.Areas.Invoices.Controllers
             await PortalDb.SaveChangesAsync();
 
             return Ok(new { });
+        }
+
+        /*
+         
+            Need to zip and provide a progress reply to an instruction to download N attachment files
+            SignalR hub...?
+            Which zip library will give me a progress event?
+
+         */
+
+
+        [HttpPost]
+        public async Task<IHttpActionResult> DownloadDocuments([FromBody]PassDocumentDownloadRequest dto)
+        {
+            foreach (var fileName in Directory.EnumerateFiles(HttpContext.Current.Server.MapPath("~/Programmatic/DocumentDownloads"), "*.zip"))
+            {
+                var fileInfo = new FileInfo(fileName);
+
+                if (fileInfo.CreationTime < DateTime.Now.AddHours(-6))
+                {
+                    System.IO.File.Delete(fileName);
+                }
+            }
+
+            var user = UserManager.FindById(Convert.ToInt32(User.Identity.GetUserId()));
+
+            var archiveBaseName = $"Invoice_Documents_{DateTime.Now.ToString("yyyy-MM-dd")}";
+
+            HttpContext.Current.Response.Cookies.Add(new HttpCookie($"{User.Identity.GetUserId<int>()}", "document_download_done"));
+
+            var path = HttpContext.Current.Server.MapPath("~/Programmatic/DocumentDownloads");
+
+            _ = System.Threading.Tasks.Task.Run(() =>
+            {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                DocumentDownloadHub.StartTask(user, archiveBaseName, path, dto.AttachmentIDs);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            });
+
+            return Json(new { documentCount = dto.AttachmentIDs.Count() });
         }
     }
 }

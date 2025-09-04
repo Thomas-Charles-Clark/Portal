@@ -19,7 +19,7 @@
     @Scripts.Render("~/bundles/js/invoice-booking")
     @Scripts.Render("~/bundles/js/tempus-dominus")
 
-    <script type="text/javascript">
+<script type="text/javascript">
         window.getMailboxId = () => {
             return @Html.Raw(Model.MailboxID);
         }
@@ -34,6 +34,12 @@
         }
         window.getEmailStatusIdToLoad = () => {
             return @Html.Raw(Model.LoadingEmailStatusID);
+        }
+        window.getDocumentsDashboard = () => {
+            return @Html.Raw(JsonConvert.SerializeObject(Model.DocumentsDashboard));
+        }
+        window.getAttachmentStatusIdToLoad = () => {
+            return @Html.Raw(Model.LoadingAttachmentStatusID);
         }
         window.getFreeTextSearchDefault = () => {
             return '@Html.Raw(Model.DefaultFreeTextSearchString)';
@@ -50,7 +56,7 @@
         window.getAttachmentStatuses = () => {
             return @Html.Raw(JsonConvert.SerializeObject(Model.AttachmentStatuses));
         }
-    </script>
+</script>
 
     <style type="text/css">
         .attachment:not(.disabled):has(@(String.Join(" ", (Model.AttachmentTypes.Select(at => (at.AttachmentTypeID != 1 && at.AttachmentTypeID != 1000) ? $".attachment-type-{at.Name.ToLowerInvariant().Replace(" ", "-").Replace("(", "").Replace(")", "")}," : ""))).TrimEnd(new[] { ',', ' ' })) ) {
@@ -100,9 +106,11 @@
 
     <script type="text/html" id="attachment-stub-row-template">
         <tr class="document-stub">
-            @*<td colspan="8">
-                    <div data-bind="prettyPrint: $data"></div>
-                </td>*@
+            <td class="checkbox-column">
+                <label class="form-checkbox">
+                    <input class="form-check-input" type="checkbox" data-bind="checked: selectedFromGrid" />
+                </label>
+            </td>
             <td data-bind="attr: { title: AttachmentType.Name }">
                 <span data-bind="html: AttachmentType.Name"></span>
             </td>
@@ -112,8 +120,8 @@
             <td data-bind="attr: { title: BudgetHolder == null ? 'N/A' : `${BudgetHolder.Name} - (Code: ${BudgetHolder.Code})` }">
                 <span data-bind="html: BudgetHolder == null ? 'N/A' : `${BudgetHolder.Name} - (Code: ${BudgetHolder.Code})`"></span>
             </td>
-            <td data-bind="attr: { title: AttachmentStatus == null ? '' : AttachmentStatus.Name }">
-                <span data-bind="html: AttachmentStatus == null ? '' : AttachmentStatus.Name"></span>
+            <td data-bind="attr: { title: AttachmentStatusName }">
+                <span data-bind="html: AttachmentStatusName"></span>
             </td>
             <td data-bind="attr: { title: moment(ReceivedDT).format('dddd Do MMM YYYY HH:mm') }">
                 <span data-bind="html: moment(ReceivedDT).format('DD/MM/YYYY HH:mm')"></span>
@@ -766,8 +774,15 @@
         // let the engine cycle so bindings are evaluated before
         window.setTimeout(() => {
             viewModel.init();
-
         }, 0);
+
+        var headerController = new HeaderController();
+
+        ko.cleanNode(document.querySelector("#archives-modal"));
+
+        ko.applyBindings(headerController, document.querySelector("#archives-modal"));
+
+        window.downloadDocumentsViewModel = headerController;
 
     </script>
 }
@@ -840,9 +855,89 @@
             </div>
             <!-- /ko -->
         </div>
+        <div id="documents-dashboard" style="display: none" data-bind="visible: mode() == 'documents', with: dashboard">
+            <div id="documents-pods-accordion" class="accordion">
+                <div class="accordion-item">
+                    <h5 class="accordion-header" id="actions-accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#document-action-pods" aria-expanded="true" aria-controls="dashboard-action-pods">
+                            Actions
+                        </button>
+                    </h5>
+                    <div id="document-action-pods" class="accordion-collapse show">
+                        <div class="accordion-body bg-light">
+                            <!-- ko foreach: sortedDocumentActionPods -->
+                            <div class="dashboard-pod card" data-bind="click: $parent.documentSelect, css: { 'active': $parent.selectedDocumentsPod() == $data }, class: CSSClasses">
+                                <div class="card-body">
+                                    <h4>
+                                        <span data-bind="html: Title"></span>
+                                    </h4>
+                                    <h5>
+                                        <span data-bind="html: HTMLDetails"></span>
+                                    </h5>
+                                </div>
+                            </div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h5 class="accordion-header" id="document-statuses-accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dashboard-document-status-pods" aria-expanded="true" aria-controls="dashboard-document-type-summaries-pods">
+                            Document Statuses
+                        </button>
+                    </h5>
+                    <div id="dashboard-document-status-pods" class="accordion-collapse collapse">
+                        <div class="accordion-body bg-light">
+                            <!-- ko foreach: sortedDocumentStatusPods -->
+                            <div class="dashboard-pod card" data-bind="click: $parent.documentSelect, css: { 'active': $parent.selectedDocumentsPod() == $data }, class: CSSClasses">
+                                <div class="card-body">
+                                    <h4>
+                                        <span data-bind="html: Title"></span>
+                                    </h4>
+                                    <h5>
+                                        <span data-bind="html: HTMLDetails"></span>
+                                    </h5>
+                                </div>
+                            </div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h5 class="accordion-header" id="document-type-summaries-accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#document-type-summaries-pods" aria-expanded="true" aria-controls="dashboard-document-type-summaries-pods">
+                            Document Type Summaries
+                        </button>
+                    </h5>
+                    <div id="document-type-summaries-pods" class="accordion-collapse collapse">
+                        <div class="accordion-body bg-light">
+                            <!-- ko foreach: sortedDocumentTypeSummaryPods -->
+                            <div class="dashboard-pod card" data-bind="click: $parent.documentSelect, css: { 'active': $parent.selectedDocumentsPod() == $data }, class: CSSClasses">
+                                <div class="card-body">
+                                    <h4>
+                                        <span data-bind="html: Title"></span>
+                                    </h4>
+                                    <h5>
+                                        <span data-bind="html: HTMLDetails"></span>
+                                    </h5>
+                                </div>
+                            </div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div style="display: none" data-bind="fadeVisible: mode() == 'emails', foreach: dashboard.notices">
             <div class="dashboard-notice">
                 <div class="card p-0" data-bind="class: CSSClasses, css: { 'mb-0': $index() == $parent.dashboard.notices().length - 1 }">
+                    <div class="card-body" data-bind="html: HTMLContents"></div>
+                </div>
+            </div>
+        </div>
+        <div style="display: none" data-bind="fadeVisible: mode() == 'documents', foreach: dashboard.documentNotices">
+            <div class="dashboard-notice">
+                <div class="card p-0" data-bind="class: CSSClasses, css: { 'mb-0': $index() == $parent.dashboard.documentNotices().length - 1 }">
                     <div class="card-body" data-bind="html: HTMLContents"></div>
                 </div>
             </div>
@@ -874,12 +969,21 @@
                 <div id="document-grid-prefilters" style="display: none" data-bind="flexFadeVisible: mode() == 'documents', with: filters">
                     <div id="document-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentTypeParams }"></div>
                     <div id="document-status-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentStatusParams }"></div>
-                    <div class="prefilter"></div>
-                    <div class="prefilter"></div>
                     <div id="date-affector-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentDateAffectorParams }"></div>
+                    <div id="document-date-prefilter" class="prefilter">
+                        <div id="document-date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentDateRangeParams }"></div>
+                    </div>
+                    <div class="prefilter" style="display: none" data-bind="visible: documentDateRangeId() == -1">
+                        <div id="document-from-date" class="date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: documentFromDateParams }"></div>
+                    </div>
+                    <div class="prefilter" style="display: none" data-bind="visible: documentDateRangeId() == -1">
+                        <div id="document-to-date" class="date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: documentToDateParams }"></div>
+                        <span class="validation-message text-danger" data-bind="validationMessage: fromDate"></span>
+                        <span class="validation-message text-danger" data-bind="validationMessage: toDate"></span>
+                        <span class="validation-message text-danger" data-bind="validationMessage: fromPreceedsTo"></span>
+                    </div>
                     <div class="prefilter"></div>
-                    <!-- ko if: dateRangeId() == '-1' -->
-                    <div class="prefilter"></div>
+                    <!-- ko if: documentDateRangeId() != '-1' -->
                     <div class="prefilter"></div>
                     <!-- /ko -->
                 </div>
@@ -892,6 +996,15 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="documents-grid-tab" data-bs-toggle="tab" data-bs-target="#documents-grid-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">
                             Documents
+                        </button>
+                    </li>
+                    <li class="nav-item download-attachments-nav-item">
+                        <button class="btn btn-dark" data-bind="visible: documentGridSelectedKeys().length, click: beginDownloadDocuments">
+                            <span>
+                                <span class="k-icon k-i-download"></span>
+                                Download
+                            </span>
+                            <span class="document-selection-display" data-bind="text: documentSelectionLabel"></span>
                         </button>
                     </li>
                 </ul>
@@ -930,7 +1043,7 @@
                     <div class="d-inline-flex gap-3">
                         <nav class="nav">
                             <span class="me-3" data-bind="text: `Email ID: ${EmailID}`"></span>
-                            <div style="display: none" data-bind="FlexFadeVisible: selectedEmailIndex() != null">
+                            <div style="display: none" data-bind="flexFadeVisible: selectedEmailIndex() != null" class="justify-content-between align-items-center gap-3">
                                 <button class="btn btn-light" type="button" data-bind="css: { 'disabled': navPreviousDisabled }, click: parent.previous">
                                     <i class="bi bi-chevron-left"></i>
                                     <span>
@@ -1426,6 +1539,52 @@
                         <i class="bi bi-chevron-left"></i>
                         View Email
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div data-bind="stopBinding">
+    <div id="archives-modal" class="modal fade" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        Download Documents
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" aria-label="Close" data-bs-dismiss="modal"></button>
+                </div>
+                <div id="archives-modal-body" class="modal-body">
+                    <p id="archives-leading-text">
+                        To make it easier for you to download, we are consolidating the {COUNT} document(s) you requested into zip file(s). Each zip file will be limited to 2GB. If you request more images than fit in 2GB, additional sequentially numbered zip files will be generated for you as necessary.
+                    </p>
+                    <p id="archives-leading-text-2">
+                        You may begin downloading your zip files as they become available by clicking the green download button(s).
+                    </p>
+                    <div class="list-group" style="margin-bottom: 0;" data-bind="foreach: tasks">
+                        <!-- ko foreach: createdArchiveFiles -->
+                        <a href="#" data-bind="attr: { href: `/invoices/booking/DownloadDocumentArchive?archiveName=${FileName}` }" class="list-group-item complete d-flex justify-content-between align-items-center">
+                            <span data-bind="text: FileName"></span>
+                            <span class="download-display">
+                                <span class="badge bg-primary badge-pill" data-bind="text: FileSize"></span>
+                                <span class="btn btn-success btn-sm">
+                                    Download
+                                </span>
+                            </span>
+                        </a>
+                        <!-- /ko -->
+                        <!-- ko ifnot: complete -->
+                        <div class="list-group-item list-group-item-action" role="menuitem">
+                            <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" data-bind="style: { '--clip-width': taskPercentCss }, css: barCss"></div>
+                            <span data-bind="text: ArchiveBaseName"></span>
+                            <span class="text-center" data-bind="text: taskPercentCss"></span>
+                        </div>
+                        <!-- /ko -->
+                    </div>
+                </div>
+                <div class="modal-footer" style="margin-top: 0">
+                    <button id="archives-modal-close" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
