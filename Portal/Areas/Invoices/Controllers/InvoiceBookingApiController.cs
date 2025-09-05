@@ -413,12 +413,14 @@ namespace Portal.Areas.Invoices.Controllers
                 stubs = PortalDb.Attachments
                     .Include("Email")
                     .Where(p =>
+                        p.IsInline == false &&
                         p.Deleted == false &&
                         userIds.Contains((int)p.Email.Supplier.BudgetHolder.UserID) &&
+                        p.Email.Deleted == false &&
                         p.Email.MailboxID == dto.MailboxID &&
-                        p.Email.EmailStatusID == dto.EmailStatusID &&
-                        (dto.DocumentTypeID == null || p.AttachmentTypeID == dto.DocumentTypeID) &&
-                        (dto.DocumentStatusID == null || p.AttachmentStatusID == dto.DocumentStatusID) &&
+                        //p.Email.EmailStatusID == dto.EmailStatusID &&
+                        (dto.AttachmentTypeID == null || p.AttachmentTypeID == dto.AttachmentTypeID) &&
+                        (dto.AttachmentStatusID == null || p.AttachmentStatusID == dto.AttachmentStatusID) &&
                         (String.IsNullOrEmpty(dto.BudgetHolderCode) || p.Email.Supplier != null && p.Email.Supplier.BudgetHolderCode == dto.BudgetHolderCode) &&
                         (String.IsNullOrEmpty(dto.SupplierTypeCode) || p.Email.Supplier != null && p.Email.Supplier.SupplierTypeCode == dto.SupplierTypeCode) &&
                         (String.IsNullOrEmpty(dto.SupplierCode) || p.Email.SupplierCode == dto.SupplierCode) &&
@@ -430,11 +432,13 @@ namespace Portal.Areas.Invoices.Controllers
                 stubs = PortalDb.Attachments
                     .Include("Email")
                     .Where(p =>
+                        p.IsInline == false && 
                         p.Deleted == false &&
+                        p.Email.Deleted == false &&
                         p.Email.MailboxID == dto.MailboxID &&
                         //p.Email.EmailStatusID == dto.EmailStatusID &&
-                        (dto.DocumentTypeID == null || p.AttachmentTypeID == dto.DocumentTypeID) &&
-                        (dto.DocumentStatusID == null || p.AttachmentStatusID == dto.DocumentStatusID) &&
+                        (dto.AttachmentTypeID == null || p.AttachmentTypeID == dto.AttachmentTypeID) &&
+                        (dto.AttachmentStatusID == null || p.AttachmentStatusID == dto.AttachmentStatusID) &&
                         (String.IsNullOrEmpty(dto.BudgetHolderCode) || p.Email.Supplier != null && p.Email.Supplier.BudgetHolderCode == dto.BudgetHolderCode) &&
                         (String.IsNullOrEmpty(dto.SupplierTypeCode) || p.Email.Supplier != null && p.Email.Supplier.SupplierTypeCode == dto.SupplierTypeCode) &&
                         (String.IsNullOrEmpty(dto.SupplierCode) || p.Email.SupplierCode == dto.SupplierCode) &&

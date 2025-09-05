@@ -28,6 +28,32 @@
     class: null
 }];
 
+const documentDateRanges = [{
+    dateRangeId: '-2',
+    name: 'All Time',
+    class: null
+}, {
+    dateRangeId: '30',
+    name: 'Last 30 Days',
+    class: null
+}, {
+    dateRangeId: '1',
+    name: 'This Month',
+    class: null
+}, {
+    dateRangeId: '6',
+    name: 'Last 6 Months',
+    class: null
+}, {
+    dateRangeId: '12',
+    name: 'Last 12 Months',
+    class: null
+}, {
+    dateRangeId: '-1',
+    name: 'Custom',
+    class: null
+}];
+
 const documentDateAffectors = [{
     documentDateAffectorId: '1',
     name: 'Document Date'
@@ -89,6 +115,8 @@ const invoiceBookingFiltersViewModel = ({
     self.documentDateRangeId = ko.observable('-2');
 
     self.dateRanges = dateRanges;
+
+    self.documentDateRanges = documentDateRanges;
 
     self.validateSearchNow = ko.observable(true);
 
@@ -628,6 +656,16 @@ const invoiceBookingFiltersViewModel = ({
         }
     });
 
+    self.dateRangeIdDependant = ko.observable(undefined);
+
+    self.dateRangeId.subscribe(nv => {
+        if (nv == '-2') {
+            self.dateRangeIdDependant(undefined);
+        } else {
+            self.dateRangeIdDependant(true);
+        }
+    })
+
     self.dateRangeParams = kendoMDCDropDownList({
         label: 'Date Range',
         data: self.dateRanges,
@@ -635,6 +673,7 @@ const invoiceBookingFiltersViewModel = ({
         valueField: 'dateRangeId',
         idObservable: self.dateRangeId,
         objObservable: ko.observable(),
+        dependentObservable: self.dateRangeIdDependant,
         template: (e) => `<span class="date-range ${e.class}">${e.name}</span>`,
         valueTemplate: (e) => `<span class="date-range ${e.class}">${e.name}</span>`,
         enable: ko.observable(true),
@@ -764,12 +803,24 @@ const invoiceBookingFiltersViewModel = ({
     };
 
 
+    self.documentDateRangeIdDependant = ko.observable(undefined);
+
+    self.documentDateRangeId.subscribe(nv => {
+        if (nv == '-2') {
+            self.documentDateRangeIdDependant(undefined);
+        } else {
+            self.documentDateRangeIdDependant(true);
+        }
+    })
+
     self.documentDateRangeParams = kendoMDCDropDownList({
-        data: self.dateRanges,
+        label: 'Date Range',
+        data: self.documentDateRanges,
         textField: 'name',
         valueField: 'dateRangeId',
         idObservable: self.documentDateRangeId,
         objObservable: ko.observable(),
+        dependentObservable: self.documentDateRangeIdDependant,
         template: (e) => `<span class="date-range ${e.class}">${e.name}</span>`,
         valueTemplate: (e) => `<span class="date-range ${e.class}">${e.name}</span>`,
         enable: ko.observable(true),
@@ -907,11 +958,11 @@ const invoiceBookingFiltersViewModel = ({
         insertValidationMessages: false,
         showClear: true,
         clearFunction: function () {
-            var self = this;
-            self.observable(undefined);
-            $(self.observable.DOMElement).focus();
+            self.freeTextSearch(undefined)
+            $(self.freeTextSearch.DOMElement).focus();
             self.pauseFreeTextSearchUpdate = true;
             self.refreshParent();
+            self.parent.dashboard.selectedDocumentActionPod(undefined);
         },
         refreshParent: self.refreshParent,
         permitRevert: false,
@@ -952,11 +1003,13 @@ const invoiceBookingFiltersViewModel = ({
         changeBtnVisible: true,
         select: function (e) {
             console.log('documentType select', e);
+            self.parent.dashboard.selectedDocumentTypePod(self.parent.dashboard.documentTypeSummaryPods().find(p => p.AttacahmentTypeID == e.AttachmentTypeID));
         },
         clearFunction: () => {
             self.documentTypeId('');
             self.documentType(undefined);
             self.parent.dashboard.fetch();
+            self.parent.dashboard.selectedDocumentTypePod(undefined);
         },
         popupSettings: {
             appendTo: document.getElementById('document-type-prefilter')
@@ -989,26 +1042,38 @@ const invoiceBookingFiltersViewModel = ({
         changeBtnVisible: true,
         select: function (e) {
             console.log('documentStatus select', e);
+            self.parent.dashboard.selectedDocumentStatusPod(self.parent.dashboard.documentStatusPods().find(p => p.AttacahmentStatusID == e.AttacahmentStatusID));
         },
         clearFunction: () => {
             self.documentStatusId('');
             self.documentStatus(undefined);
             self.parent.dashboard.fetch();
+            self.parent.dashboard.selectedDocumentStatusPod(undefined);
         },
         popupSettings: {
             appendTo: document.getElementById('document-status-prefilter')
         }
     });
 
+    self.documentDateAffectorHighlighted = ko.observable(undefined);
+
+    self.documentDateRangeId.subscribe(nv => {
+        if (nv != '-2') {
+            self.documentDateAffectorHighlighted(true);
+        } else {
+            self.documentDateAffectorHighlighted(undefined);
+        }
+    })
+
     self.documentDateAffectorParams = kendoMDCDropDownList({
         skipCascade: true,
-        label: 'Date Range',
         data: documentDateAffectors,
         textField: 'name',
         valueField: 'documentDateAffectorId',
         virtual: false,
         idObservable: self.documentDateAffectorId,
         objObservable: self.documentDateAffector,
+        dependentObservable: self.documentDateAffectorHighlighted,
         locked: ko.observable(false),
         enable: ko.observable(true),
         disable: ko.observable(false),

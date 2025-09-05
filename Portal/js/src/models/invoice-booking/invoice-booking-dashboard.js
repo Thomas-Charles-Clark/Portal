@@ -11,6 +11,8 @@
 
     self.busy = ko.observable(false);
 
+    self.logging = ko.observable(false);
+
     self.pods = ko.observableArray(window.getDashboard().DashboardPods);
 
     self.notices = ko.observableArray(window.getDashboard().Notices);
@@ -35,15 +37,9 @@
 
     let documentStatusIdtoLoad = window.getAttachmentStatusIdToLoad();
 
-    self.selectedDocumentsPod = ko.observable(
-        //documentStatusIdtoLoad ?
-        //self.documentsPods().find(p => p.AttachmentStatusID == documentStatusIdtoLoad)
-        //: self.documentsPods().sort((a, b) => {
-        //    return a.SortOrder === b.SortOrder ? 0
-        //        : a.SortOrder < b.SortOrder ? -1
-        //            : 1;
-        //})[0]
-    );
+    self.selectedDocumentActionPod = ko.observable();
+    self.selectedDocumentStatusPod = ko.observable();
+    self.selectedDocumentTypePod = ko.observable();
 
     //#endregion
 
@@ -116,6 +112,8 @@
         if (window.getDepartmentRestrictions().length && self.parent.filters.departmentIds().length == 0) {
             data.activeDirectoryGroupIds = window.getDepartmentRestrictions();
         }
+        if (self.logging())
+            console.log('dashboard calling with', data);
 
         fetch('/api/InvoiceBookingAPI/Dashboard', {
             method: 'POST',
@@ -126,7 +124,8 @@
         })
             .then(window.handleFetchResponse)
             .then(data => {
-                console.log('dashboard returned', data);
+                if (self.logging())
+                    console.log('dashboard returned', data);
 
                 let previouslySelectedEmailStatusId = self.selectedPod().EmailStatusID;
 
@@ -144,7 +143,8 @@
             })
     }
     self.select = (data, event) => {
-        console.log('dashboard select', data, event);
+        if (self.logging())
+            console.log('dashboard select', data, event);
 
         self.selectedPod(data);
 
@@ -203,11 +203,14 @@
     self.documentsFetch = (afterFn) => {
         self.documentsBusy(true)
 
-        let data = self.parent.getParameters();
+        let data = self.parent.getDocumentsParameters();
 
         if (window.getDepartmentRestrictions().length && self.parent.filters.departmentIds().length == 0) {
             data.activeDirectoryGroupIds = window.getDepartmentRestrictions();
         }
+
+        if (self.logging())
+            console.log('documents dashboard calling with', data);
 
         fetch('/api/InvoiceBookingAPI/DocumentsDashboard', {
             method: 'POST',
@@ -218,15 +221,27 @@
         })
             .then(window.handleFetchResponse)
             .then(data => {
-                console.log('documents dashboard returned', data);
-
-                let previouslySelectedDocumentStatusId = self.selectedDocumentsPod()?.DocumentStatusID;
+                if (self.logging())
+                    console.log('documents dashboard returned', data);
 
                 self.documentsBusy(false);
                 self.documentActionPods(data.Actions);
                 self.documentStatusPods(data.DocumentStatuses);
                 self.documentTypeSummaryPods(data.DocumentTypesSummary);
                 self.documentNotices(data.Notices);
+
+                if (self.selectedDocumentActionPod()) {
+                    self.selectedDocumentActionPod(self.documentActionPods().find(p => p.SearchKeywords == self.selectedDocumentActionPod().SearchKeywords));
+                }
+
+                if (self.selectedDocumentStatusPod()) {
+                    self.selectedDocumentStatusPod(self.documentStatusPods().find(p => p.AttachmentStatusID == self.selectedDocumentStatusPod().AttachmentStatusID));
+                }
+
+                if (self.selectedDocumentTypePod()) {
+                    self.selectedDocumentTypePod(self.documentTypeSummaryPods().find(p => p.AttachmentTypeID == self.selectedDocumentTypePod().AttachmentTypeID));
+                }
+
                 //self.selectedDocumentsPod(self.documentsPods().find(p => p.AttachmentStatusID == previouslySelectedDocumentStatusId));
 
                 if (typeof afterFn == 'function')
@@ -239,20 +254,22 @@
     }
 
     self.documentSelect = (data, event) => {
-        console.log('documents dashboard select', data, event);
+        if (self.logging())
+            console.log('documents dashboard select', data, event);
 
-        self.selectedDocumentsPod(data);
+        if (data.SearchKeywords) {
+            self.selectedDocumentActionPod(data);
+            self.parent.documentFilters.freeTextSearch(data.SearchKeywords);
+        }
 
         if (data.AttachmentStatusID) {
-            self.parent.filters.documentStatusId(data.AttachmentStatusID);
+            self.selectedDocumentStatusPod(data);
+            self.parent.documentFilters.documentStatusId(data.AttachmentStatusID);
         }
 
         if (data.AttachmentTypeID) {
-            self.parent.filters.documentTypeId(data.AttachmentStatusID);
-        }
-
-        if (data.SearchKeywords) {
-            self.parent.filters.freeTextSearch(data.SearchKeywords);
+            self.selectedDocumentTypePod(data);
+            self.parent.documentFilters.documentTypeId(data.AttachmentTypeID);
         }
 
         self.parent.documentGridParams.widget().dataSource.query({

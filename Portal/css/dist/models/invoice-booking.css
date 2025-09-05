@@ -35,7 +35,7 @@ body {
   z-index: 100;
 }
 .navbar.navbar-default.navbar-expand .container {
-  max-width: 1520px !important;
+  max-width: 1880px !important;
   width: 100% !important;
   padding-left: 1em;
   padding-right: 1em;
@@ -55,7 +55,7 @@ body {
 }
 
 .container.body-content {
-  max-width: 1520px;
+  max-width: 1880px;
   padding: 1rem;
   padding-top: 20px;
 }
@@ -70,8 +70,8 @@ body {
   height: 90px;
 }
 
-#inbox-browser {
-  flex: 1;
+#invoice-registration {
+  border-top-left-radius: 0;
 }
 
 #loaded-email-wrapper {
@@ -375,16 +375,16 @@ body {
       }
   }*/
 }
-#email-list-prefilters .prefilter > .mdc-validating-field,
-#document-grid-prefilters .prefilter > .mdc-validating-field {
+#email-list-prefilters .prefilter .mdc-validating-field,
+#document-grid-prefilters .prefilter .mdc-validating-field {
   flex: 1;
 }
-#email-list-prefilters .prefilter > .mdc-validating-field > .mdc-select--selected .k-dropdown-wrap > span.k-input,
-#document-grid-prefilters .prefilter > .mdc-validating-field > .mdc-select--selected .k-dropdown-wrap > span.k-input {
+#email-list-prefilters .prefilter .mdc-validating-field > .mdc-select--selected .k-dropdown-wrap > span.k-input,
+#document-grid-prefilters .prefilter .mdc-validating-field > .mdc-select--selected .k-dropdown-wrap > span.k-input {
   background-color: #cfe2ff;
 }
-#email-list-prefilters .prefilter > .mdc-validating-field .dropdown.selected .btn,
-#document-grid-prefilters .prefilter > .mdc-validating-field .dropdown.selected .btn {
+#email-list-prefilters .prefilter .mdc-validating-field .dropdown.selected .btn,
+#document-grid-prefilters .prefilter .mdc-validating-field .dropdown.selected .btn {
   background-color: #cfe2ff;
 }
 #email-list-prefilters .prefilter .bi-lock-fill,
@@ -447,7 +447,11 @@ body {
 }
 #dashboard .dashboard-pod.active:not(.warning),
 #documents-dashboard .accordion-body .dashboard-pod.active:not(.warning) {
-  background-color: #506e9c;
+  background-color: #084298;
+  color: #fff;
+}
+#dashboard .dashboard-pod.active:not(.warning) a,
+#documents-dashboard .accordion-body .dashboard-pod.active:not(.warning) a {
   color: #fff;
 }
 #dashboard .dashboard-pod .card-body,
@@ -472,6 +476,7 @@ body {
 #documents-dashboard .accordion-body .dashboard-pod .card-body h4,
 #documents-dashboard .accordion-body .dashboard-pod .card-body h5 {
   text-decoration: none;
+  line-height: 1.75rem;
 }
 
 #documents-dashboard {
@@ -479,26 +484,36 @@ body {
 }
 #documents-dashboard .accordion-item {
   border-radius: 0;
+  border-color: #052c65;
 }
 #documents-dashboard .accordion-item .accordion-header {
   border-radius: 0;
+  border-color: #052c65;
 }
 #documents-dashboard .accordion-item .accordion-header .accordion-button {
   border-radius: 0;
-  color: #212529;
+  background-color: #2155a2;
+  border-color: #052c65;
+  color: #fff;
+  font-weight: bold;
 }
 #documents-dashboard .accordion-item .accordion-header .accordion-button:not(.collapsed) {
-  background-color: inherit;
+  background-color: #084298;
+}
+#documents-dashboard .accordion-item .accordion-header .accordion-button::after {
+  color: #212529;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
 }
 #documents-dashboard .accordion-item .accordion-body {
   flex-wrap: wrap;
+  justify-content: flex-start;
 }
 #documents-dashboard .accordion-item .accordion-body .dashboard-pod {
-  flex: 1 1 auto;
+  flex: 0 0 calc(20% - 0.8rem);
 }
 #documents-dashboard .accordion-item .accordion-body .dashboard-pod h4 {
   font-size: 1.25rem;
-  font-weight: 500;
+  font-weight: bold;
 }
 .dashboard-notice {
   margin-top: 1rem;
@@ -1339,10 +1354,21 @@ body {
 }
 #email-or-attachment-tab-list .nav-link {
   padding: 1rem 2rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-color: #f8f9fa;
+}
+#email-or-attachment-tab-list .nav-link:hover, #email-or-attachment-tab-list .nav-link:focus {
+  background-color: #fff;
 }
 #email-or-attachment-tab-list .nav-link.active {
-  background-color: whitesmoke;
-  color: #212529;
+  background-color: #084298;
+  border-color: #084298;
+  color: #fff;
+  /*border: 1px solid $blue-600;*/
+  /*border-bottom: 1px solid $gray-400;*/
 }
 
 #email-or-attachment-tab-container .k-grid {

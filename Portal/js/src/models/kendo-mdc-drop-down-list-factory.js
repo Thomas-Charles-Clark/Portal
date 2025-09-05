@@ -7,6 +7,7 @@
     valueField,
     idObservable,
     objObservable,
+    dependentObservable,
     label,
     height,
     template,
@@ -67,6 +68,7 @@
         valueField,
         idObservable: ko.observable(),
         objObservable: ko.observable(),
+        dependentObservable: ko.observable(),
         label: 'List',
         height: 200,
         template: '#:' + textField + '#',
@@ -225,6 +227,7 @@
     var result = {
         originalValue: ko.unwrap(idObservable),
         observable: idObservable,
+        dependentObservable: dependentObservable,
         showClear: showClear,
         label: label,
         valuePrimitive: false,

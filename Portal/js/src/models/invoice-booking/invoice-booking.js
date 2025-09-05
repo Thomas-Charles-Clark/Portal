@@ -15,6 +15,8 @@ const invoiceBookingViewModel = ({
 
     self.busyMessage = ko.observable("Loading");
 
+    self.firstLight = ko.observable(true);
+
     // begin in the 'root' folder
     self.currentMailboxFolderId = ko.observable(null);
 
@@ -96,7 +98,10 @@ const invoiceBookingViewModel = ({
 
     self.getParameters = () => {
         let data = {
-            mailboxId: self.mailboxId
+            mailboxId: self.mailboxId,
+            dateRangeId: self.filters.dateRangeId() ?? null,
+            fromDt: typeof self.filters.fromDate() == 'object' ? self.filters.fromDate().toUTCString() : self.filters.fromDate(),
+            toDt: typeof self.filters.toDate() == 'object' ? self.filters.toDate().toUTCString() : self.filters.toDate()
         }
 
         data = Object.assign({
@@ -119,28 +124,48 @@ const invoiceBookingViewModel = ({
             data.freeTextSearch = self.filters.freeTextSearch();
         }
 
-        if (self.mode() == 'emails') {
-            data.dateRangeId = self.filters.dateRangeId() ?? null;
-            data.fromDt = typeof self.filters.fromDate() == 'object' ? self.filters.fromDate().toUTCString() : self.filters.fromDate();
-            data.toDt = typeof self.filters.toDate() == 'object' ? self.filters.toDate().toUTCString() : self.filters.toDate();
+        return data;
+    }
+
+    self.getDocumentsParameters = () => {
+        let data = {
+            mailboxId: self.mailboxId
         }
 
-        if (self.mode() == 'documents') {
-            data.dateRangeId = self.filters.documentDateRangeId() ?? null;
-            data.fromDt = typeof self.filters.documentFromDate() == 'object' ? self.filters.documentFromDate().toUTCString() : self.filters.documentFromDate();
-            data.toDt = typeof self.filters.documentToDate() == 'object' ? self.filters.documentToDate().toUTCString() : self.filters.documentToDate();
+        data = Object.assign({
+            emailStatusId: self.documentFilters.emailStatusId() ?? null,
+            dateRangeId: self.documentFilters.documentDateRangeId() ?? null,
+            fromDt: typeof self.documentFilters.documentFromDate() == 'object' ? self.documentFilters.documentFromDate().toUTCString() : self.documentFilters.documentFromDate(),
+            toDt: typeof self.documentFilters.documentToDate() == 'object' ? self.documentFilters.documentToDate().toUTCString() : self.documentFilters.documentToDate()
 
-            if (self.filters.documentTypeId()) {
-                data.documentTypeId = self.filters.documentTypeId();
-            }
+        }, data);
 
-            if (self.filters.documentStatusId()) {
-                data.documentStatusId = self.filters.documentStatusId();
-            }
+        if (self.documentFilters.departmentIds().length) {
+            data.activeDirectoryGroupIds = self.documentFilters.departmentIds();
+        }
 
-            if (self.filters.documentDateAffectorId()) {
-                data.documentDateAffectorId = self.filters.documentDateAffectorId()
-            }
+        if (self.documentFilters.budgetHolderCode()) {
+            data.budgetHolderCode = self.documentFilters.budgetHolderCode()
+        }
+
+        if (self.documentFilters.supplierCode()) {
+            data.supplierCode = self.documentFilters.supplierCode()
+        }
+
+        if (self.documentFilters.freeTextSearch()) {
+            data.freeTextSearch = self.documentFilters.freeTextSearch();
+        }
+
+        if (self.documentFilters.documentTypeId()) {
+            data.attachmentTypeId = self.documentFilters.documentTypeId();
+        }
+
+        if (self.documentFilters.documentStatusId()) {
+            data.attachmentStatusId = self.documentFilters.documentStatusId();
+        }
+
+        if (self.documentFilters.documentDateAffectorId()) {
+            data.documentDateAffectorId = self.documentFilters.documentDateAffectorId()
         }
 
         return data;
@@ -156,6 +181,10 @@ const invoiceBookingViewModel = ({
     });
 
     self.filters = invoiceBookingFiltersViewModel({
+        parent: self
+    });
+
+    self.documentFilters = invoiceBookingFiltersViewModel({
         parent: self
     });
 
@@ -262,6 +291,8 @@ const invoiceBookingViewModel = ({
                         data[propertyName] = params[propertyName];
                     }
 
+                    console.log('mailboxGrid calling with', data);
+
                     var params = new URLSearchParams();
 
                     for (var propertyName in data) {
@@ -274,8 +305,6 @@ const invoiceBookingViewModel = ({
                         }
                     }
 
-                    console.log('MailboxGrid calling with', data);
-
                     fetch('/api/InvoiceBookingAPI/MailboxGrid?' + params, {
                         method: 'GET',
                         cache: 'no-cache',
@@ -283,7 +312,9 @@ const invoiceBookingViewModel = ({
                     })
                         .then(window.handleFetchResponse)
                         .then(data => {
-                            console.log("MailboxGrid returned", data);
+
+                            console.log('mailboxGrid returned', data);
+
                             self.itemCount(data.Total);
 
                             if (self.mailboxGridParams.widget().dataSource.group().length) {
@@ -377,7 +408,15 @@ const invoiceBookingViewModel = ({
             serverGrouping: true,
             serverPaging: true,
             serverAggregates: true,
-            serverSorting: true
+            serverSorting: true,
+            requestStart: (e) => {
+                //console.log('mailboxGrid requestStart', e);
+            },
+            requestEnd: (e) => {
+                //console.log('mailboxGrid requestEnd', e);
+
+                self.dashboard.fetch();
+            }
         }),
         useKOTemplates: true,
         rowTemplate: 'email-stub-row-template',
@@ -391,7 +430,7 @@ const invoiceBookingViewModel = ({
         filterable: true,
         groupable: false,
         change: (event, data) => {
-            console.log('change', event, data);
+            console.log('maibloxGrid change', event, data);
 
             let stub = event.sender.dataItem(event.sender.select());
 
@@ -400,18 +439,16 @@ const invoiceBookingViewModel = ({
             self.loadEmail(stub);
         },
         select: (event) => {
-            console.log('select', event)
+            console.log('mailboxGrid select', event)
         },
         dataBound: (event) => {
+            //console.log("mailboxGrid dataBound", event);
             self.gridGroupCount(event.sender.dataSource.group().length);
-
-            self.dashboard.fetch();
-
-            self.dashboard.documentsFetch();
         }
     }
 
     self.documentGridParams = {
+        autoBind: false,
         widget: ko.observable(),
         columns: [{
             headerTemplate: '<div class="form-checkbox"><input type="checkbox" class="form-check-input" onclick="viewModel.toggleDocumentsGridSelection()"/></div>',
@@ -451,7 +488,7 @@ const invoiceBookingViewModel = ({
                 }
             }
         }, {
-            field: 'Status',
+            field: 'AttachmentStatusID',
             title: 'Status',
             template: (e) => {
                 if (e.AttachmentStatus) {
@@ -511,7 +548,7 @@ const invoiceBookingViewModel = ({
                     let data = {};
 
                     ko.ignoreDependencies(() => {
-                        data = self.getParameters();
+                        data = self.getDocumentsParameters();
                     });
 
                     var webapi = new kendo.data.transports.webapi({ prefix: "" });
@@ -520,6 +557,8 @@ const invoiceBookingViewModel = ({
                     for (let propertyName in params) {
                         data[propertyName] = params[propertyName];
                     }
+
+                    console.log('documentsGrid calling with', data);
 
                     var params = new URLSearchParams();
 
@@ -533,8 +572,6 @@ const invoiceBookingViewModel = ({
                         }
                     }
 
-                    console.log('DocumentsGrid calling with', data);
-
                     fetch('/api/InvoiceBookingAPI/DocumentsGrid?' + params, {
                         method: 'GET',
                         cache: 'no-cache',
@@ -542,7 +579,8 @@ const invoiceBookingViewModel = ({
                     })
                         .then(window.handleFetchResponse)
                         .then(data => {
-                            console.log("DocumentsGrid returned", data);
+
+                            console.log('documentsGrid returned', data);
 
                             self.documentGridResultSetKeys(data.allKeys);
 
@@ -653,7 +691,14 @@ const invoiceBookingViewModel = ({
             serverGrouping: true,
             serverPaging: true,
             serverAggregates: true,
-            serverSorting: true
+            serverSorting: true,
+            requestStart: (e) => {
+                //console.log('documentGrid requestStart', e);
+            },
+            requestEnd: (e) => {
+                //console.log('documentGrid requestEnd', e);
+                self.dashboard.documentsFetch();
+            }
         }),
         useKOTemplates: true,
         rowTemplate: 'attachment-stub-row-template',
@@ -684,6 +729,8 @@ const invoiceBookingViewModel = ({
         },
         dataBound: (event) => {
 
+            console.log("documentGrid dataBound", event);
+
             event.sender.element[0].querySelectorAll('td.checkbox-column').forEach(c => c.addEventListener("click", function (e) {
 
                 e.stopPropagation();
@@ -697,7 +744,6 @@ const invoiceBookingViewModel = ({
             });
 
             //self.gridGroupCount(event.sender.dataSource.group().length);
-
         }
     }
 
@@ -784,8 +830,6 @@ const invoiceBookingViewModel = ({
     self.loadEmail = (stub, onLoad) => {
 
         return new Promise((resolve, reject) => {
-
-            //self.selectedEmail(undefined);
 
             self.modalBusy(true);
 
@@ -1048,14 +1092,16 @@ const invoiceBookingViewModel = ({
     //#region Events
 
     self.emailGridTabButton.addEventListener('show.bs.tab', (ev) => {
+        console.log('emailGridTabButton show.bs.tab fired');
         self.mode('emails');
+        self.mailboxGridParams.widget().dataSource.read();
     });
 
-    if (self.documentGridTabButton) {
-        self.documentGridTabButton.addEventListener('show.bs.tab', (ev) => {
-            self.mode('documents');
-        })
-    }
+    self.documentGridTabButton.addEventListener('show.bs.tab', (ev) => {
+        console.log('documentGridTabButton show.bs.tab fired');
+        self.mode('documents');
+        self.documentGridParams.widget().dataSource.read();
+    })
 
     //#endregion
 

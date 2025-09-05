@@ -19,7 +19,7 @@
     @Scripts.Render("~/bundles/js/invoice-booking")
     @Scripts.Render("~/bundles/js/tempus-dominus")
 
-<script type="text/javascript">
+    <script type="text/javascript">
         window.getMailboxId = () => {
             return @Html.Raw(Model.MailboxID);
         }
@@ -56,7 +56,7 @@
         window.getAttachmentStatuses = () => {
             return @Html.Raw(JsonConvert.SerializeObject(Model.AttachmentStatuses));
         }
-</script>
+    </script>
 
     <style type="text/css">
         .attachment:not(.disabled):has(@(String.Join(" ", (Model.AttachmentTypes.Select(at => (at.AttachmentTypeID != 1 && at.AttachmentTypeID != 1000) ? $".attachment-type-{at.Name.ToLowerInvariant().Replace(" ", "-").Replace("(", "").Replace(")", "")}," : ""))).TrimEnd(new[] { ',', ' ' })) ) {
@@ -829,9 +829,31 @@
 </div>
 
 @*<div class="my-5 d-flex gap-3 w-50">
-        <input class="form-control fs-3 py-2 px-3" type="text" data-bind="value: testDateInput" placeholder="Input" />
-        <input class="form-control fs-3 py-2 px-3" type="text" data-bind="value: testDateOutput" placeholder="Result" />
-    </div>*@
+    <input class="form-control fs-3 py-2 px-3" type="text" data-bind="value: testDateInput" placeholder="Input" />
+    <input class="form-control fs-3 py-2 px-3" type="text" data-bind="value: testDateOutput" placeholder="Result" />
+</div>*@
+
+<ul class="nav nav-tabs" id="email-or-attachment-tab-list" role="tablist" style="display: none" data-bind="visible: true">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="emails-grid-tab" data-bs-toggle="tab" data-bs-target="#emails-grid-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">
+            Emails
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="documents-grid-tab" data-bs-toggle="tab" data-bs-target="#documents-grid-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">
+            Documents
+        </button>
+    </li>
+    <li class="nav-item download-attachments-nav-item">
+        <button class="btn btn-dark" data-bind="visible: documentGridSelectedKeys().length, click: beginDownloadDocuments">
+            <span>
+                <span class="k-icon k-i-download"></span>
+                Download
+            </span>
+            <span class="document-selection-display" data-bind="text: documentSelectionLabel"></span>
+        </button>
+    </li>
+</ul>
 
 <div id="invoice-registration" class="card">
     <div class="card-body">
@@ -860,13 +882,13 @@
                 <div class="accordion-item">
                     <h5 class="accordion-header" id="actions-accordion-header">
                         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#document-action-pods" aria-expanded="true" aria-controls="dashboard-action-pods">
-                            Actions
+                            Actionable
                         </button>
                     </h5>
                     <div id="document-action-pods" class="accordion-collapse show">
                         <div class="accordion-body bg-light">
                             <!-- ko foreach: sortedDocumentActionPods -->
-                            <div class="dashboard-pod card" data-bind="click: $parent.documentSelect, css: { 'active': $parent.selectedDocumentsPod() == $data }, class: CSSClasses">
+                            <div class="dashboard-pod card" data-bind="click: $parent.documentSelect, css: { 'active': $parent.selectedDocumentActionPod() == $data }, class: CSSClasses">
                                 <div class="card-body">
                                     <h4>
                                         <span data-bind="html: Title"></span>
@@ -883,13 +905,13 @@
                 <div class="accordion-item">
                     <h5 class="accordion-header" id="document-statuses-accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dashboard-document-status-pods" aria-expanded="true" aria-controls="dashboard-document-type-summaries-pods">
-                            Document Statuses
+                            Documents by Status
                         </button>
                     </h5>
                     <div id="dashboard-document-status-pods" class="accordion-collapse collapse">
                         <div class="accordion-body bg-light">
                             <!-- ko foreach: sortedDocumentStatusPods -->
-                            <div class="dashboard-pod card" data-bind="click: $parent.documentSelect, css: { 'active': $parent.selectedDocumentsPod() == $data }, class: CSSClasses">
+                            <div class="dashboard-pod card" data-bind="click: $parent.documentSelect, css: { 'active': $parent.selectedDocumentStatusPod() == $data }, class: CSSClasses">
                                 <div class="card-body">
                                     <h4>
                                         <span data-bind="html: Title"></span>
@@ -906,13 +928,13 @@
                 <div class="accordion-item">
                     <h5 class="accordion-header" id="document-type-summaries-accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#document-type-summaries-pods" aria-expanded="true" aria-controls="dashboard-document-type-summaries-pods">
-                            Document Type Summaries
+                            Documents by Type
                         </button>
                     </h5>
                     <div id="document-type-summaries-pods" class="accordion-collapse collapse">
                         <div class="accordion-body bg-light">
                             <!-- ko foreach: sortedDocumentTypeSummaryPods -->
-                            <div class="dashboard-pod card" data-bind="click: $parent.documentSelect, css: { 'active': $parent.selectedDocumentsPod() == $data }, class: CSSClasses">
+                            <div class="dashboard-pod card" data-bind="click: $parent.documentSelect, css: { 'active': $parent.selectedDocumentTypePod() == $data }, class: CSSClasses">
                                 <div class="card-body">
                                     <h4>
                                         <span data-bind="html: Title"></span>
@@ -947,67 +969,49 @@
         </div>
         <div class="d-flex gap-3">
             <div id="inbox-browser">
-                <div id="email-list-prefilters" data-bind="with: filters, css: { 'pt-3': mode() == 'emails' }">
-                    <div id="department-prefilter" class="prefilter" data-bind="component: { name: 'mdc-bootstrap-multiselect-component', params: departmentParams }"></div>
-                    <div id="budget-holder-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: budgetHolderParams }"></div>
-                    <div id="supplier-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierTypeParams }"></div>
-                    <div id="supplier-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
-                    <div id="order-date-prefilter" class="prefilter">
-                        <div id="order-date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: dateRangeParams }"></div>
+                <div id="filters-wrapper">
+                    <div id="email-list-prefilters" class="pt-3" data-bind="flexFadeVisible: mode() == 'emails', with: filters">
+                        <div id="department-prefilter" class="prefilter" data-bind="component: { name: 'mdc-bootstrap-multiselect-component', params: departmentParams }"></div>
+                        <div id="budget-holder-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: budgetHolderParams }"></div>
+                        <div id="supplier-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierTypeParams }"></div>
+                        <div id="supplier-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+                        <div id="order-date-prefilter" class="prefilter">
+                            <div id="order-date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: dateRangeParams }"></div>
+                        </div>
+                        <div class="prefilter" style="display: none" data-bind="visible: dateRangeId() == -1">
+                            <div id="from-date" class="date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: fromDateParams }"></div>
+                        </div>
+                        <div class="prefilter" style="display: none" data-bind="visible: dateRangeId() == -1">
+                            <div id="to-date" class="date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: toDateParams }"></div>
+                            <span class="validation-message text-danger" data-bind="validationMessage: fromDate"></span>
+                            <span class="validation-message text-danger" data-bind="validationMessage: toDate"></span>
+                            <span class="validation-message text-danger" data-bind="validationMessage: fromPreceedsTo"></span>
+                        </div>
+                        <div id="free-text-prefiler" class="prefilter" data-bind="component: { name: 'mdc-text-field-component', params: freeTextSearchParams }"></div>
                     </div>
-                    <div class="prefilter" style="display: none" data-bind="visible: dateRangeId() == -1">
-                        <div id="from-date" class="date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: fromDateParams }"></div>
+                    <div id="document-grid-prefilters" style="display: none" data-bind="flexFadeVisible: mode() == 'documents', with: documentFilters">
+                        <div id="department-prefilter" class="prefilter" data-bind="component: { name: 'mdc-bootstrap-multiselect-component', params: departmentParams }"></div>
+                        <div id="budget-holder-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: budgetHolderParams }"></div>
+                        <div id="supplier-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierTypeParams }"></div>
+                        <div id="supplier-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+                        <div id="free-text-prefiler" class="prefilter" data-bind="component: { name: 'mdc-text-field-component', params: freeTextSearchParams }"></div>
+                        <div id="document-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentTypeParams }"></div>
+                        <div id="document-status-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentStatusParams }"></div>
+                        <div id="date-affector-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentDateAffectorParams }"></div>
+                        <div id="document-date-prefilter" class="prefilter">
+                            <div id="document-date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentDateRangeParams }"></div>
+                        </div>
+                        <div class="prefilter" style="display: none" data-bind="visible: documentDateRangeId() == -1">
+                            <div id="document-from-date" class="date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: documentFromDateParams }"></div>
+                        </div>
+                        <div class="prefilter" style="display: none" data-bind="visible: documentDateRangeId() == -1">
+                            <div id="document-to-date" class="date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: documentToDateParams }"></div>
+                            <span class="validation-message text-danger" data-bind="validationMessage: fromDate"></span>
+                            <span class="validation-message text-danger" data-bind="validationMessage: toDate"></span>
+                            <span class="validation-message text-danger" data-bind="validationMessage: fromPreceedsTo"></span>
+                        </div>
                     </div>
-                    <div class="prefilter" style="display: none" data-bind="visible: dateRangeId() == -1">
-                        <div id="to-date" class="date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: toDateParams }"></div>
-                        <span class="validation-message text-danger" data-bind="validationMessage: fromDate"></span>
-                        <span class="validation-message text-danger" data-bind="validationMessage: toDate"></span>
-                        <span class="validation-message text-danger" data-bind="validationMessage: fromPreceedsTo"></span>
-                    </div>
-                    <div id="free-text-prefiler" class="prefilter" data-bind="component: { name: 'mdc-text-field-component', params: freeTextSearchParams }"></div>
                 </div>
-                <div id="document-grid-prefilters" style="display: none" data-bind="flexFadeVisible: mode() == 'documents', with: filters">
-                    <div id="document-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentTypeParams }"></div>
-                    <div id="document-status-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentStatusParams }"></div>
-                    <div id="date-affector-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentDateAffectorParams }"></div>
-                    <div id="document-date-prefilter" class="prefilter">
-                        <div id="document-date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentDateRangeParams }"></div>
-                    </div>
-                    <div class="prefilter" style="display: none" data-bind="visible: documentDateRangeId() == -1">
-                        <div id="document-from-date" class="date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: documentFromDateParams }"></div>
-                    </div>
-                    <div class="prefilter" style="display: none" data-bind="visible: documentDateRangeId() == -1">
-                        <div id="document-to-date" class="date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: documentToDateParams }"></div>
-                        <span class="validation-message text-danger" data-bind="validationMessage: fromDate"></span>
-                        <span class="validation-message text-danger" data-bind="validationMessage: toDate"></span>
-                        <span class="validation-message text-danger" data-bind="validationMessage: fromPreceedsTo"></span>
-                    </div>
-                    <div class="prefilter"></div>
-                    <!-- ko if: documentDateRangeId() != '-1' -->
-                    <div class="prefilter"></div>
-                    <!-- /ko -->
-                </div>
-                <ul class="nav nav-tabs" id="email-or-attachment-tab-list" role="tablist" style="display: none" data-bind="visible: true">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="emails-grid-tab" data-bs-toggle="tab" data-bs-target="#emails-grid-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">
-                            Emails
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="documents-grid-tab" data-bs-toggle="tab" data-bs-target="#documents-grid-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">
-                            Documents
-                        </button>
-                    </li>
-                    <li class="nav-item download-attachments-nav-item">
-                        <button class="btn btn-dark" data-bind="visible: documentGridSelectedKeys().length, click: beginDownloadDocuments">
-                            <span>
-                                <span class="k-icon k-i-download"></span>
-                                Download
-                            </span>
-                            <span class="document-selection-display" data-bind="text: documentSelectionLabel"></span>
-                        </button>
-                    </li>
-                </ul>
                 <div class="tab-content" id="email-or-attachment-tab-container">
                     <div class="tab-pane show active" id="emails-grid-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
                         <div id="email-list" data-bind="kendoGrid: mailboxGridParams"></div>

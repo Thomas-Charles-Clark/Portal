@@ -1358,7 +1358,7 @@
                     'revertible': revertible,
                     'busy': typeof busy === 'undefined' ? false : busy,
                     'mdc-select--disabled': disable() || !enable(),
-                    'mdc-select--selected': observable() || observable() === 0 || observable() === false
+                    'mdc-select--selected': typeof dependentObservable === 'undefined' ? observable() || observable() === 0 || observable() === false : dependentObservable() || dependentObservable() === 0 || dependentObservable() === false 
                 }">
                 <select class="mdc-select__native-control" style="display: none;"></select>
                 <div data-bind="kendoDropDownList: dropDownListSettings, css: controlClass"></div>
