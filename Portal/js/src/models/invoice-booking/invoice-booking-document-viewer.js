@@ -4,20 +4,23 @@
 
     }) => {
     let self = {
-        parent: parent
+        parent: parent,
+        selectedIndex: parent.selectedDocumentIndex
     }
 
     //#region Properties
 
-    self.busy = ko.observable(false);
+    self.modalBusy = ko.observable(false);
 
-    self.busyMessage = ko.observable('Please Wait...');
+    self.modalBusyMessage = ko.observable('Please Wait...');
 
     self.modalElement = document.querySelector('#document-viewer-modal');
 
     self.modal = bootstrap.Modal.getOrCreateInstance(self.modalElement);
 
-    self.selectedDocument = ko.observable();
+    self.selectedEmail = ko.observable();
+
+    self.documentCount = self.parent.documentCount;
 
     //#endregion
 
@@ -38,6 +41,17 @@
 
     //#region Computeds
 
+    self.navPreviousDisabled = ko.computed(() => {
+        return self.documentCount() == 1 || self.selectedIndex() == 1;
+    }, self);
+
+    self.navNextDisabled = ko.computed(() => {
+        return self.documentCount() == 1 || (self.selectedIndex() - 1 == self.documentCount());
+    }, self);
+
+    self.fromDisplay = ko.computed(() => {
+        return `${self.FromName}`;
+    }, self);
 
 
     //#endregion
@@ -53,18 +67,132 @@
     //#region Methods
 
     self.load = (data) => {
-        self.selectedDocument(data);
+        self.selectedEmail(undefined);
+        self.fetchEmailStub(data);
         self.modal.show();
     }
 
-    self.viewEmail = (data) => {
-        console.log('documentViewer.viewEmail', data);
-        let attachmentId = self.selectedDocument().AttachmentID;
+    self.fetchEmailStub = (attachment) => {
+        self.modalBusy(true);
 
-        self.parent.loadEmail(data, () => {
-            self.parent.selectedEmail().selectedAttachment(self.parent.selectedEmail().attachments().find(a => a.AttachmentID == attachmentId));
-        });
-        self.modal.hide();
+        let data = {
+            emailId: attachment.EmailID
+        }
+
+        var params = new URLSearchParams();
+
+        for (var propertyName in data) {
+            if (Array.isArray(data[propertyName])) {
+                data[propertyName].forEach(v => {
+                    params.append(propertyName, v);
+                })
+            } else {
+                params.append(propertyName, data[propertyName]);
+            }
+        }
+
+        console.log('documentViewer calling fetchSingularEmailStub with', data);
+
+        fetch(`/api/InvoiceBookingAPI/FetchSingularEmailStub?${params}`, {
+            method: 'GET',
+            headers: window.fetchHeaders,
+            cache: 'no-cache',
+            credentials: 'same-origin'
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+
+                console.log('documentViewer calling fetchSingularEmailStub returned', data);
+
+                self.parent.loadEmail(data, (data) => {
+
+                    let model = invoiceBookingEmailViewModel({
+                        parent: Object.assign(self.parent, {
+                            modalElement: document.getElementById('document-viewer-modal'),
+                            modal: bootstrap.Modal.getOrCreateInstance(document.getElementById('document-viewer-modal'))
+                        }),
+                        emailStatus: data.emailStatus,
+                        additionalInfo: data.additionalInfo,
+                        rec: data.message,
+                        attachments: [],
+                        gridWidget: self.parent.documentGridParamsWidget
+                    });
+
+                    model.AttachmentID = attachment.AttachmentID;
+
+                    model.selectedIndex = self.selectedIndex;
+
+                    model.selectAttachment({
+                        attachmentId: attachment.AttachmentID
+                    }, () => {
+                        self.modalBusy(false);
+                    })
+
+                    self.selectedEmail(model);
+                });
+            })
+            .catch(err => {
+                self.modalBusy(false);
+                window.catchFetchError(err);
+            })
+    }
+
+    self.next = () => {
+
+        self.selectedEmail()
+            .selectedAttachment()
+            .unsavedChanges()
+            .then(() => {
+                if (self.selectedIndex() == self.parent.documentGridParamsWidget().dataSource.pageSize() - 1) {
+                    // we must page forwards, wait for the paging to be successful, then select the zeroth row on the resultant page
+
+                    self.modalBusy(true);
+
+                    self.parent.documentGridParamsWidget().dataSource.one('requestEnd', (event) => {
+                        self.parent.documentGridParamsWidget().select(`tr:eq(0)`);
+                        //self.parent.documentGridParamsWidget().trigger('change');
+                    });
+
+                    let currentPage = self.parent.documentGridParamsWidget().dataSource.page();
+
+                    self.parent.documentGridParamsWidget().dataSource.page(currentPage + 1);
+
+                } else {
+                    self.parent.documentGridParamsWidget().select(`tr:eq(${self.selectedIndex() + 1})`);
+                    //self.parent.documentGridParamsWidget().trigger('change');
+                }
+            })
+            .catch(err => {
+
+            })
+    }
+
+    self.previous = () => {
+
+        self.selectedEmail()
+            .selectedAttachment()
+            .unsavedChanges()
+            .then(() => {
+                if (self.selectedIndex() == 0) {
+                    // we must page backwards, wait for the paging to be successful, then select the zeroth row on the resultant page
+
+                    self.parent.documentGridParamsWidget().dataSource.one('requestEnd', (event) => {
+                        self.parent.documentGridParamsWidget().select(`tr:eq(${self.parent.documentGridParamsWidget().dataSource.pageSize() - 1})`);
+                        //self.parent.documentGridParamsWidget().trigger('change');
+                    });
+
+                    let currentPage = self.parent.documentGridParamsWidget().dataSource.page();
+
+                    self.parent.documentGridParamsWidget().dataSource.page(currentPage - 1);
+                } else {
+                    self.modalBusy(true);
+                    self.parent.documentGridParamsWidget().select(`tr:eq(${self.selectedIndex() - 1})`);
+                    //self.parent.documentGridParamsWidget().trigger('change');
+                }
+            })
+            .catch(err => {
+
+            })
     }
 
     //#endregion
@@ -73,7 +201,7 @@
     //#region Events
 
     self.modalElement.addEventListener('bs.hidden.modal', (e) => {
-        self.selectedDocument(null);
+        self.selectedEmail(undefined);
     });
 
     //#endregion

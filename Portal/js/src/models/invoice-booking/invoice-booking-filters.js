@@ -65,14 +65,15 @@ const documentDateAffectors = [{
     name: 'Due Date'
 }]
 
-const invoiceBookingFiltersViewModel = ({
-    parent
+const invoiceBookingFiltersViewModel = (params = {
+    parent,
+    appendTo
 } = {
+    parent: null,
+    appendTo: 'body'
+}) => {
 
-    }) => {
-    let self = {
-        parent: parent
-    }
+    let self = params;
 
     //#region Properties
 
@@ -390,7 +391,7 @@ const invoiceBookingFiltersViewModel = ({
             optionLabel: ' ',
             filter: false,
             popup: {
-                appendTo: document.getElementById('department-prefilter')
+                appendTo: document.querySelector(`${self.appendTo} .department-prefilter`)
             },
             label: ko.computed(() => {
 
@@ -483,7 +484,7 @@ const invoiceBookingFiltersViewModel = ({
         },
         parameterMap: self.generateSuperSetParameterMap(self.budgetHolderGroupBy),
         popupSettings: {
-            appendTo: document.getElementById('budget-holder-prefilter')
+            appendTo: document.querySelector(`${self.appendTo} .budget-holder-prefilter`)
         }
     });
 
@@ -544,7 +545,7 @@ const invoiceBookingFiltersViewModel = ({
         },
         parameterMap: self.generateSuperSetParameterMap(self.supplierTypeGroupBy),
         popupSettings: {
-            appendTo: document.getElementById('supplier-type-prefilter')
+            appendTo: document.querySelector(`${self.appendTo} .supplier-type-prefilter`)
         }
     });
 
@@ -603,7 +604,7 @@ const invoiceBookingFiltersViewModel = ({
         },
         parameterMap: self.generateSuperSetParameterMap(self.supplierGroupBy),
         popupSettings: {
-            appendTo: document.getElementById('supplier-prefilter')
+            appendTo: document.querySelector(`${self.appendTo} .supplier-prefilter`)
         }
     });
 
@@ -652,7 +653,7 @@ const invoiceBookingFiltersViewModel = ({
             return d;
         },
         popupSettings: {
-            appendTo: document.getElementById('email-status-prefilter')
+            appendTo: document.querySelector(`${self.appendTo} .email-status-prefilter`)
         }
     });
 
@@ -690,7 +691,7 @@ const invoiceBookingFiltersViewModel = ({
 
         },
         popupSettings: {
-            appendTo: document.getElementById('order-date-type-prefilter')
+            appendTo: document.querySelector(`${self.appendTo} .date-type-prefilter`)
         },
     });
 
@@ -837,7 +838,7 @@ const invoiceBookingFiltersViewModel = ({
 
         },
         popupSettings: {
-            appendTo: document.getElementById('document-date-type-prefilter')
+            appendTo: document.querySelector(`${self.appendTo} .date-type-prefilter`)
         },
     });
 
@@ -1012,7 +1013,7 @@ const invoiceBookingFiltersViewModel = ({
             self.parent.dashboard.selectedDocumentTypePod(undefined);
         },
         popupSettings: {
-            appendTo: document.getElementById('document-type-prefilter')
+            appendTo: document.querySelector(`${self.appendTo} .document-type-prefilter`)
         }
     });
 
@@ -1051,7 +1052,7 @@ const invoiceBookingFiltersViewModel = ({
             self.parent.dashboard.selectedDocumentStatusPod(undefined);
         },
         popupSettings: {
-            appendTo: document.getElementById('document-status-prefilter')
+            appendTo: document.querySelector(`${self.appendTo} .document-status-prefilter`)
         }
     });
 
@@ -1095,7 +1096,7 @@ const invoiceBookingFiltersViewModel = ({
             self.parent.dashboard.fetch();
         },
         popupSettings: {
-            appendTo: document.getElementById('document-date-affector-prefilter')
+            appendTo: document.querySelector(`${self.appendTo} .document-date-affector-prefilter`)
         }
     });
 

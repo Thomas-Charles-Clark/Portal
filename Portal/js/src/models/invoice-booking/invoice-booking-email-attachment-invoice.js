@@ -272,7 +272,7 @@
 
     self.preambleSatisfied = ko.computed(() => {
         return self.preambleComputer() && self.preambleErrorGroup().length == 0;
-    }, self)
+    }, self);
 
     /* End of Lifted Preamble Properties  */
 
@@ -395,6 +395,129 @@
         }
     });
 
+    self.supplierBankName = ko.observable(rec.supplierBankName);
+
+    self.supplierBankAccountNumber = ko.observable(rec.supplierBankAccountNumber);
+
+    self.supplierBankSortCode = ko.observable(rec.supplierBankSortCode);
+
+    self.supplierIBAN = ko.observable(rec.supplierIBAN);
+
+    self.supplierBIC = ko.observable(rec.supplierBIC);
+
+    self.bankingValidation = false;
+
+    self.supplierBankAccountNumberAndSortCode = ko.observable(false);
+
+    self.supplierIBANorBIC = ko.observable(false);
+
+
+
+    self.bankAccountAndSortCodeExtension = {
+        equal: {
+            params: true,
+            onlyIf: () => {
+                return self.validateNow() && (
+                    (self.supplierIBAN() == null || self.supplierIBAN() == '') &&
+                    (self.supplierBIC() == null || self.supplierBIC() == '')
+                );
+            },
+            message: 'Please provide either Account Number and Sort Code, or IBAN, or BIC'
+        }
+    };
+
+    self.bankAccountAndSortCodeRequiredExtension = {
+        required: {
+            params: true,
+            onlyIf: () => {
+                return self.validateNow() && (
+                    (self.supplierIBAN() == null || self.supplierIBAN() == '') &&
+                    (self.supplierBIC() == null || self.supplierBIC() == '')
+                );
+            },
+            message: 'Please provide either Account Number and Sort Code, or IBAN, or BIC'
+        }
+    };
+
+    self.supplierIBANorBICExtension = {
+        equal: {
+            params: true,
+            onlyIf: () => {
+                return self.validateNow() && (
+                    (self.supplierBankAccountNumber() == null || self.supplierBankAccountNumber() == '') &&
+                    (self.supplierBankSortCode() == null || self.supplierBankSortCode() == '')
+                );
+            },
+            message: 'Please provide either Account Number and Sort Code, or IBAN, or BIC'
+        }
+    };
+
+    self.supplierIBANorBICRequiredExtension = {
+        required: {
+            params: true,
+            onlyIf: () => {
+                return self.validateNow() && (
+                    (self.supplierBankAccountNumber() == null || self.supplierBankAccountNumber() == '') &&
+                    (self.supplierBankSortCode() == null || self.supplierBankSortCode() == '') &&
+                    (
+                        (self.supplierIBAN() == null || self.supplierIBAN() == '') ||
+                        (self.supplierBIC() == null || self.supplierBIC() == '')
+                    )
+                );
+            },
+            message: 'Please provide either Account Number and Sort Code, or IBAN, or BIC'
+        }
+    };
+
+    if (self.bankingValidation) {
+
+        self.supplierBankName.extend({
+            required: {
+                params: true,
+                onlyIf: () => {
+                    return self.validateNow();
+                },
+                message: 'Please provide a Bank Name'
+            }
+        });
+
+        self.supplierBankAccountNumberAndSortCode.extend(self.bankAccountAndSortCodeExtension);
+
+        self.supplierIBANorBIC.extend(self.supplierIBANorBICExtension);
+
+        self.supplierBankAccountNumber.extend(self.bankAccountAndSortCodeRequiredExtension);
+
+        self.supplierBankSortCode.extend(self.bankAccountAndSortCodeRequiredExtension);
+
+        self.supplierIBAN.extend({
+            required: {
+                params: true,
+                onlyIf: () => {
+                    return self.validateNow() && (
+                        (self.supplierBankAccountNumber() == null || self.supplierBankAccountNumber() == '') &&
+                        (self.supplierBankSortCode() == null || self.supplierBankSortCode() == '') &&
+                        (self.supplierBIC() == null || self.supplierBIC() == '')
+                    );
+                },
+                message: 'Please provide either Account Number and Sort Code, or IBAN, or BIC'
+            }
+        });
+
+        self.supplierBIC.extend({
+            required: {
+                params: true,
+                onlyIf: () => {
+                    return self.validateNow() && (
+                        (self.supplierBankAccountNumber() == null || self.supplierBankAccountNumber() == '') &&
+                        (self.supplierBankSortCode() == null || self.supplierBankSortCode() == '') &&
+                        (self.supplierIBAN() == null || self.supplierIBAN() == '')
+                    );
+                },
+                message: 'Please provide either Account Number and Sort Code, or IBAN, or BIC'
+            }
+        });
+    }
+    
     //#endregion
 
 
@@ -1245,6 +1368,121 @@
         locked: self.readOnly
     };
 
+    self.supplierBankNameParams = {
+        label: 'Bank Name',
+        observable: self.supplierBankName,
+        charsRemainingOptions: {
+            maxLength: 100
+        },
+        busy: ko.observable(false),
+        enable: ko.computed(() => {
+            return !self.readOnly()
+        }, self),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        clearFunction: () => {
+            self.supplierBankName(null);
+        },
+        revertible: ko.observable(false),
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true,
+        disable: self.readOnly,
+        locked: self.readOnly
+    };
+
+    self.supplierBankAccountNumberParams = {
+        label: 'Account Number',
+        observable: self.supplierBankAccountNumber,
+        charsRemainingOptions: {
+            maxLength: 100
+        },
+        busy: ko.observable(false),
+        enable: ko.computed(() => {
+            return !self.readOnly()
+        }, self),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        clearFunction: () => {
+            self.supplierBankAccountNumber(null);
+        },
+        revertible: ko.observable(false),
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true,
+        disable: self.readOnly,
+        locked: self.readOnly
+    };
+
+    self.supplierBankSortCodeParams = {
+        label: 'Sort Code',
+        observable: self.supplierBankSortCode,
+        charsRemainingOptions: {
+            maxLength: 8
+        },
+        busy: ko.observable(false),
+        enable: ko.computed(() => {
+            return !self.readOnly()
+        }, self),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        clearFunction: () => {
+            self.supplierBankSortCode(null);
+        },
+        revertible: ko.observable(false),
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true,
+        disable: self.readOnly,
+        locked: self.readOnly
+    };
+
+    self.supplierIBANParams = {
+        label: 'IBAN',
+        observable: self.supplierIBAN,
+        charsRemainingOptions: {
+            maxLength: 34
+        },
+        busy: ko.observable(false),
+        enable: ko.computed(() => {
+            return !self.readOnly()
+        }, self),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        clearFunction: () => {
+            self.supplierIBAN(null);
+        },
+        revertible: ko.observable(false),
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true,
+        disable: self.readOnly,
+        locked: self.readOnly
+    };
+
+    self.supplierBICParams = {
+        label: 'BIC',
+        observable: self.supplierBIC,
+        charsRemainingOptions: {
+            maxLength: 11
+        },
+        busy: ko.observable(false),
+        enable: ko.computed(() => {
+            return !self.readOnly()
+        }, self),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        clearFunction: () => {
+            self.supplierBIC(null);
+        },
+        revertible: ko.observable(false),
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true,
+        disable: self.readOnly,
+        locked: self.readOnly
+    };
+
     self.disputeParams = {
         checkboxId: 'dispute',
         label: 'Dispute this Invoice with the Supplier?',
@@ -1459,11 +1697,56 @@
         self.vatErrors
     ];
 
+    if (self.bankingValidation) {
+        self.errorables.push(
+            self.supplierBankName,
+            self.supplierBankAccountNumberAndSortCode,
+            self.supplierIBANorBIC);
+    }
 
     //#endregion
 
 
     //#region Subscriptions
+
+    self.supplierBankAccountNumber.subscribe(nv => {
+        if (nv && self.supplierBankSortCode()) {
+            self.supplierBankAccountNumberAndSortCode(true);
+        } else {
+            self.supplierBankAccountNumberAndSortCode(false);
+        }
+    });
+
+    self.supplierBankSortCode.subscribe(nv => {
+        if (nv && self.supplierBankAccountNumber()) {
+            self.supplierBankAccountNumberAndSortCode(true);
+        } else {
+            self.supplierBankAccountNumberAndSortCode(false);
+        }
+    });
+
+    self.supplierIBAN.subscribe(nv => {
+        if (nv) {
+            self.supplierIBANorBIC(true);
+        } else {
+            if (self.supplierBIC())
+                self.supplierIBANorBIC(true);
+            else
+                self.supplierIBANorBIC(false);
+        }
+    });
+
+    self.supplierBIC.subscribe(nv => {
+        if (nv) {
+            self.supplierIBANorBIC(true);
+        } else {
+            if (self.supplierIBAN()) {
+                self.supplierIBANorBIC(true);
+            } else {
+                self.supplierIBANorBIC(false);
+            }
+        }
+    });
 
     self.invoiceDate.subscribe(nv => {
         if (nv && self.paymentTermsCode()) {

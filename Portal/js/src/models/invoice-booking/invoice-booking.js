@@ -30,14 +30,22 @@ const invoiceBookingViewModel = ({
 
     self.modal = bootstrap.Modal.getOrCreateInstance(self.modalElement);
 
+    self.documentViewerModalElement = document.getElementById('document-viewer-modal');
+
+    self.documentViewerModal = bootstrap.Modal.getOrCreateInstance(self.documentViewerModalElement);
+
     self.modalBusy = ko.observable(false);
 
     self.modalBusyMessage = ko.observable('Please wait');
 
     self.itemCount = ko.observable();
 
-    self.selectedEmailIndex = ko.observable();
+    self.documentCount = ko.observable();
 
+    self.selectedIndex = ko.observable();
+
+    self.selectedDocumentIndex = ko.observable();
+    
     self.gridGroupCount = ko.observable(1);
 
     self.invoiceRegistrationSubmissionSuspended = ko.observable(window.getInvoiceRegistrationSubmissionSuspended());
@@ -90,6 +98,10 @@ const invoiceBookingViewModel = ({
     self.documentGridResultSetKeys = ko.observableArray([]);
 
     self.documentGridSelectedKeys = ko.observableArray([]);
+
+    self.mailboxGridParamsWidget = ko.observable();
+
+    self.documentGridParamsWidget = ko.observable();
 
     //#endregion
 
@@ -181,15 +193,17 @@ const invoiceBookingViewModel = ({
     });
 
     self.filters = invoiceBookingFiltersViewModel({
-        parent: self
+        parent: self,
+        appendTo: '#email-grid-prefilters'
     });
 
     self.documentFilters = invoiceBookingFiltersViewModel({
-        parent: self
+        parent: self,
+        appendTo: '#document-grid-prefilters'
     });
 
     self.mailboxGridParams = {
-        widget: ko.observable(),
+        widget: self.mailboxGridParamsWidget,
         columns: [{
             title: 'Supplier',
             field: 'SupplierCode',
@@ -321,14 +335,16 @@ const invoiceBookingViewModel = ({
                                 data.Data = data.Data.map(dat => {
                                     dat.Items = dat.Items.map(d => invoiceBookingEmailViewModel({
                                         parent: self,
-                                        rec: d
+                                        rec: d,
+                                        gridWidget: self.mailboxGridParamsWidget
                                     }));
                                     return dat;
                                 })
                             } else {
                                 data.Data = data.Data.map(d => invoiceBookingEmailViewModel({
                                     parent: self,
-                                    rec: d
+                                    rec: d,
+                                    gridWidget: self.mailboxGridParamsWidget
                                 }));
                             }
 
@@ -389,7 +405,17 @@ const invoiceBookingViewModel = ({
                                 }
                             }
                         },
-                        SearchKeywords: { type: 'string', editable: false }
+                        SearchKeywords: { type: 'string', editable: false },
+                        BankDetails: {
+                            type: 'object',
+                            fields: {
+                                BankName: { type: 'string', editable: false },
+                                AccountNumber: { type: 'string', editable: false },
+                                SortCode: { type: 'string', editable: false },
+                                IBAN: { type: 'string', editable: false },
+                                BIC: { type: 'string', editable: false }
+                            }
+                        }
                     }
                 }
             }),
@@ -434,7 +460,7 @@ const invoiceBookingViewModel = ({
 
             let stub = event.sender.dataItem(event.sender.select());
 
-            self.selectedEmailIndex(event.sender.dataSource.indexOf(stub));
+            self.selectedIndex(event.sender.dataSource.indexOf(stub));
 
             self.loadEmail(stub);
         },
@@ -449,7 +475,7 @@ const invoiceBookingViewModel = ({
 
     self.documentGridParams = {
         autoBind: false,
-        widget: ko.observable(),
+        widget: self.documentGridParamsWidget,
         columns: [{
             headerTemplate: '<div class="form-checkbox"><input type="checkbox" class="form-check-input" onclick="viewModel.toggleDocumentsGridSelection()"/></div>',
             width: 34
@@ -457,86 +483,39 @@ const invoiceBookingViewModel = ({
             title: 'Type',
             field: 'AttachmentTypeID',
             template: `#: AttachmentType.Name #`,
-            width: 200
+            width: 140
         }, {
             title: 'Supplier',
             field: 'Email.Supplier.Code',
-            width: 200,
-            filterable: false,
-            template: (e) => {
-                if (e.Supplier) {
-                    return `${e.Supplier.Code} - ${e.Supplier.Name}`
-                } else {
-                    return '';
-                }
-            },
-            groupHeaderTemplate: (e) => {
-                if (e.SupplierCode) {
-                    return `Supplier: ${e.SupplierCode} - ${e.Supplier.Name}`;
-                } else {
-                    return `Supplier: Not Identified`
-                }
-            }
+            filterable: false
         }, {
             title: 'Budget Holder',
-            field: 'BudgetHolder.Code',
-            template: (e) => {
-                if (e.BudgetHolder) {
-                    return `${e.BudgetHolder.Code} - ${e.BudgetHolder.Name}`
-                } else {
-                    return '';
-                }
-            }
+            field: 'BudgetHolder.Code'
         }, {
             field: 'AttachmentStatusID',
-            title: 'Status',
-            template: (e) => {
-                if (e.AttachmentStatus) {
-                    return `${e.AttachmentStatus.Code} - ${e.AttachmentStatus.Name}`
-                } else {
-                    return '';
-                }
-            }
+            title: 'Status'
+        }, {
+            title: 'DG Reference',
+            field: 'MertexCode'
+        }, {
+            title: 'Supplier Reference',
+            field: 'SupplierDocumentReference'
         }, {
             field: 'ReceivedDT',
             title: 'Received Date',
-            width: 142,
-            template: (e) => {
-                return moment(e.ReceivedDT).format('DD/MM/YYYY HH:mm');
-            }
+            width: 142
         }, {
             field: 'DocumentDate',
             title: 'Document Date',
-            width: 150,
-            template: (e) => {
-                if (e.DocumentDate) {
-                    return moment(e.DocumentDate).format('DD/MM/YYYY');
-                } else {
-                    return '';
-                }
-            }
+            width: 150
         }, {
             field: 'DocumentDueDate',
             title: 'Due Date',
-            width: 142,
-            template: (e) => {
-                if (e.DocumentDueDate) {
-                    return moment(e.DocumentDueDate).format('DD/MM/YYYY');
-                } else {
-                    return '';
-                }
-            }
+            width: 142
         }, {
             field: 'DocumentTotalInc',
             title: 'Total',
-            width: 180,
-            template: (e) => {
-                if (e.DocumentTotalInc != null) {
-                    return formatCurrency(e.DocumentTotalInc, 2, 'en-gb', 'GBP');
-                } else {
-                    return '';
-                }
-            }
+            width: 140
         }],
         data: new kendo.data.DataSource({
             pageSize: 20,
@@ -583,6 +562,8 @@ const invoiceBookingViewModel = ({
                             console.log('documentsGrid returned', data);
 
                             self.documentGridResultSetKeys(data.allKeys);
+
+                            self.documentCount(data.dataSourceResult.Total);
 
                             if (self.documentGridParams.widget().dataSource.group().length) {
                                 data.dataSourceResult.Data = data.dataSourceResult.Data.map(dat => {
@@ -677,11 +658,8 @@ const invoiceBookingViewModel = ({
                 }
             }),
             sort: [{
-                field: 'Email.Supplier.Code',
-                dir: 'asc'
-            }, {
-                field: 'Email.ReceivedDT',
-                dir: 'asc'
+                field: 'ReceivedDT',
+                dir: 'desc'
             }],
             //group: {
             //    field: 'SupplierCode',
@@ -712,17 +690,20 @@ const invoiceBookingViewModel = ({
         groupable: false,
         persistSelection: true,
         selectable: 'single, row',
-        change: (e) => {
+        change: (event) => {
 
-            console.log('documentGrid change', e);
+            console.log('documentGrid change', event);
 
             //e.sender.select().toArray().forEach(d => {
             //    let item = e.sender.dataItem(d);
             //    item.selectedFromGrid(!item.selectedFromGrid());
             //});
 
-            self.documentViewer.load(e.sender.dataItem(e.sender.select()));
+            let attachment = event.sender.dataItem(event.sender.select());
 
+            self.selectedDocumentIndex(event.sender.dataSource.indexOf(attachment));
+
+            self.documentViewer.load(event.sender.dataItem(event.sender.select()));
         },
         select: (event) => {
             console.log('documentGrid select', event)
@@ -824,6 +805,7 @@ const invoiceBookingViewModel = ({
 
     self.reset = () => {
         self.selectedEmail(undefined);
+        self.documentViewer.selectedEmail(undefined);
         self.refresh();
     }
 
@@ -833,13 +815,17 @@ const invoiceBookingViewModel = ({
 
             self.modalBusy(true);
 
-            self.modal.show();
+            if (typeof onLoad == 'undefined' || onLoad == null) {
+                self.modal.show();
+            }
 
             let data = {
                 mailboxId: self.mailboxId,
                 emailMessageId: stub.EmailMessageID,
                 emailId: stub.EmailID
             };
+
+            console.log('loadEmail calling with', data);
 
             fetch('/api/InvoiceBookingAPI/LoadEmailMessage', {
                 method: 'POST',
@@ -850,30 +836,34 @@ const invoiceBookingViewModel = ({
                 .then(window.handleFetchResponse)
                 .then(data => {
                     console.log('loadEmailMessage returned', data);
-                    self.selectedEmail(invoiceBookingEmailViewModel({
-                        parent: self,
-                        emailStatus: data.emailStatus,
-                        additionalInfo: data.additionalInfo,
-                        rec: data.message,
-                        attachments: [{
-                            AttachmentID: -1,
-                            EmailID: data.message.EmailID,
-                            AttachmentTypeID: null,
-                            FileExtension: "html",
-                            FileName: "View Email",
-                            IsInline: false,
-                            Body: data.message.Body,
-                            SupplierCode: data.message.SupplierCode,
-                            Supplier: data.message.Supplier,
-                            FileSizeDisplay: `${formatNumber((data.message.Body.length * 2) / 1024, 2, 'en-GB')} KB`
-                        }, ...data.attachments.map(a => {
-                            a.SupplierCode = a.SupplierCode ?? data.message.SupplierCode;
-                            a.Supplier = a.Supplier ?? data.message.Supplier;
-                            return a;
-                        })]
-                    }));
                     if (typeof onLoad === 'function') {
-                        onLoad();
+                        onLoad(data);
+                    } else {
+                        self.selectedEmail(invoiceBookingEmailViewModel({
+                            parent: self,
+                            emailStatus: data.emailStatus,
+                            additionalInfo: data.additionalInfo,
+                            rec: Object.assign(data.message, {
+                                BankDetails: data.bankDetails
+                            }),
+                            gridWidget: self.mailboxGridParamsWidget,
+                            attachments: [{
+                                AttachmentID: -1,
+                                EmailID: data.message.EmailID,
+                                AttachmentTypeID: null,
+                                FileExtension: "html",
+                                FileName: "View Email",
+                                IsInline: false,
+                                Body: data.message.Body,
+                                SupplierCode: data.message.SupplierCode,
+                                Supplier: data.message.Supplier,
+                                FileSizeDisplay: `${formatNumber((data.message.Body.length * 2) / 1024, 2, 'en-GB')} KB`
+                            }, ...data.attachments.map(a => {
+                                a.SupplierCode = a.SupplierCode ?? data.message.SupplierCode;
+                                a.Supplier = a.Supplier ?? data.message.Supplier;
+                                return a;
+                            })]
+                        }));
                     }
                     self.modalBusy(false);
                     resolve();
@@ -896,7 +886,7 @@ const invoiceBookingViewModel = ({
             .selectedAttachment()
             .unsavedChanges()
             .then(() => {
-                if (self.selectedEmailIndex() == self.mailboxGridParams.widget().dataSource.pageSize() - 1) {
+                if (self.selectedIndex() == self.mailboxGridParams.widget().dataSource.pageSize() - 1) {
                     // we must page forwards, wait for the paging to be successful, then select the zeroth row on the resultant page
 
                     self.modalBusy(true);
@@ -912,7 +902,7 @@ const invoiceBookingViewModel = ({
 
                 } else {
                     self.modalBusy(true);
-                    self.mailboxGridParams.widget().select(`tr:eq(${self.selectedEmailIndex() + 1})`);
+                    self.mailboxGridParams.widget().select(`tr:eq(${self.selectedIndex() + 1})`);
                     self.mailboxGridParams.widget().trigger('change');
                 }
             })
@@ -927,7 +917,7 @@ const invoiceBookingViewModel = ({
             .selectedAttachment()
             .unsavedChanges()
             .then(() => {
-                if (self.selectedEmailIndex() == 0) {
+                if (self.selectedIndex() == 0) {
                     // we must page backwards, wait for the paging to be successful, then select the zeroth row on the resultant page
 
                     self.mailboxGridParams.widget().dataSource.one('requestEnd', (event) => {
@@ -940,7 +930,7 @@ const invoiceBookingViewModel = ({
                     self.mailboxGridParams.widget().dataSource.page(currentPage - 1);
                 } else {
                     self.modalBusy(true);
-                    self.mailboxGridParams.widget().select(`tr:eq(${self.selectedEmailIndex() - 1})`);
+                    self.mailboxGridParams.widget().select(`tr:eq(${self.selectedIndex() - 1})`);
                     self.mailboxGridParams.widget().trigger('change');
                 }
             })
@@ -989,6 +979,43 @@ const invoiceBookingViewModel = ({
 
     self.modalElement.addEventListener('hidden.bs.modal', (ev) => {
         self.suppressHide = true;
+    })
+
+    self.modalElement.addEventListener('shown.bs.modal', () => {
+        window.setTimeout(() => {
+            self.modalElement.querySelectorAll('.btn').forEach((e) => {
+                new bootstrap.Ripple(e);
+            });
+        }, 0);
+    });
+
+    self.suppressDocumentViewerHide = true;
+
+    self.documentViewerModalElement.addEventListener('hide.bs.modal', (ev) => {
+
+        if (self.suppressDocumentViewerHide) {
+            ev.preventDefault();
+        }
+
+        if (self.documentViewer.selectedEmail()) {
+            self.documentViewer.selectedEmail()
+                .selectedAttachment()
+                .unsavedChanges()
+                .then(() => {
+                    self.suppressDocumentViewerHide = false;
+                    self.documentViewerModal.hide();
+                    self.reset();
+                })
+                .catch(() => {
+
+                })
+        } else {
+            self.reset();
+        }
+    });
+
+    self.documentViewerModalElement.addEventListener('hidden.bs.modal', (ev) => {
+        self.suppressDocumentViewerHide = true;
     })
 
     self.toggleInvoiceRegistrationSuspension = () => {

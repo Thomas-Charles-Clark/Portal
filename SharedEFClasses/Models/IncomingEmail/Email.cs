@@ -96,5 +96,8 @@ namespace SharedEFClasses.Models.IncomingEmail
 
         [ForeignKey("SupplierCode")]
         public virtual SupplierLive Supplier { get; set; }
+
+        [NotMapped]
+        public virtual SupplierBankDetails_SelectResult BankDetails { get; set; }
     }
 }

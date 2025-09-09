@@ -466,6 +466,8 @@
     <Compile Include="Models\IncomingEmail\PassInvoiceBookingDashboardParams.cs" />
     <Compile Include="Models\IncomingEmail\PassInvoiceBookingFlagParams.cs" />
     <Compile Include="Models\IncomingEmail\PassMailboxFolderParams.cs" />
+    <Compile Include="Models\IncomingEmail\SupplierBankDetails.cs" />
+    <Compile Include="Models\IncomingEmail\SupplierBankDetailsResult.cs" />
     <Compile Include="Models\InvoiceModels.cs" />
     <Compile Include="Models\DocumentModels.cs" />
     <Compile Include="Models\FurnitureModels.cs" />

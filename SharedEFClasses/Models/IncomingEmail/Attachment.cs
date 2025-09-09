@@ -76,6 +76,10 @@ namespace SharedEFClasses.Models.IncomingEmail
 
         public string SearchKeywords { get; set; }
 
+        public string MertexCode { get; set; }
+
+        public string SupplierDocumentReference { get; set; }
+
         [JsonIgnore]
         [ForeignKey("EmailID")]
         public virtual Email Email { get; set; }

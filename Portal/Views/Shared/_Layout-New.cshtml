@@ -822,8 +822,6 @@
         </div>
     </script>
 
-
-
     <script id="mdc-phone-field-component" type="text/html">
         <div class="mdc-validating-field" data-bind="visible: $data.hasOwnProperty('visible') ? $data.visible : true">
             <div class="mdc-text-field mdc-text-field--outlined" data-bind="
@@ -1358,7 +1356,7 @@
                     'revertible': revertible,
                     'busy': typeof busy === 'undefined' ? false : busy,
                     'mdc-select--disabled': disable() || !enable(),
-                    'mdc-select--selected': typeof dependentObservable === 'undefined' ? observable() || observable() === 0 || observable() === false : dependentObservable() || dependentObservable() === 0 || dependentObservable() === false 
+                    'mdc-select--selected': typeof dependentObservable === 'undefined' ? observable() || observable() === 0 || observable() === false : dependentObservable() || dependentObservable() === 0 || dependentObservable() === false
                 }">
                 <select class="mdc-select__native-control" style="display: none;"></select>
                 <div data-bind="kendoDropDownList: dropDownListSettings, css: controlClass"></div>
@@ -1598,11 +1596,11 @@
                         },
                         css: {
                             'busy': typeof busy === 'undefined' ? false : busy
-                        }, 
-                        click: function (data, event) { event.preventDefault(); return false; }, 
+                        },
+                        click: function (data, event) { event.preventDefault(); return false; },
                         clickBubble: false" />
                     <!-- ko if: Object.hasOwn($data, 'showCalendarButton') -->
-                    <button type="button" class="btn tempus-dominus-calendar-btn" 
+                    <button type="button" class="btn tempus-dominus-calendar-btn"
                             data-bind="disabled: typeof disabled === 'undefined' ? false : disabled, click: (data, event) => { if (ko.unwrap(disabled) == true) { return false; } else { observable.tempusDominus.toggle(); return false; } }, clickBubble: false">
                         <i class="bi bi-calendar3"></i>
                     </button>

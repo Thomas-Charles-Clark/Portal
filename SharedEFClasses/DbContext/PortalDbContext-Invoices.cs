@@ -349,5 +349,15 @@ namespace SharedEFClasses.Models
 
             return result;
         }
+
+        public async Task<SupplierBankDetails_SelectResult> IncomingEmail_SupplierBankDetails_Select(PassSupplierDetail dto)
+        {
+            var result = await this.Database.Connection.QuerySingleOrDefaultAsync<SupplierBankDetails_SelectResult>("[portal].[SupplierBankDetails_Select]", new
+            {
+                SupplierCode = dto.SupplierCode
+            }, null, null, CommandType.StoredProcedure);
+
+            return result;
+        }
     }
 }

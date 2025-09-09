@@ -35,12 +35,17 @@ namespace Portal.Areas.Invoices.ViewModels
 
         public bool InvoiceRegistrationSuspended { get; set; }
 
+        public long? LoadingAttachmentID { get; set; }
+
+        public long? LoadingEmailID { get; set; }
+
         public InvoiceBookingViewModel(
             int mailboxId, 
             IEnumerable<short> lockedToDepartmentGroupIds,
             string lockedToBudgetHolderCode,
             int? loadingEmailStatusId,
             int? loadingAttachmentStatusId,
+            long? loadingAttachmentId,
             bool invoiceRegistrationSuspended,
             RoleProperties properties, 
             string applicationHeading, 
@@ -54,6 +59,7 @@ namespace Portal.Areas.Invoices.ViewModels
             LockedToBudgetHolderCode = lockedToBudgetHolderCode;
             LoadingEmailStatusID = loadingEmailStatusId;
             LoadingAttachmentStatusID = loadingAttachmentStatusId;
+            LoadingAttachmentID = loadingAttachmentId;
             InvoiceRegistrationSuspended = invoiceRegistrationSuspended;
 
 #if DEBUG
@@ -69,6 +75,7 @@ namespace Portal.Areas.Invoices.ViewModels
             string lockedToBudgetHolderCode,
             int? loadingEmailStatusId,
             int? loadingAttachmentStatusId,
+            long? loadingAttachmentId,
             bool invoiceRegistrationSuspended,
             RoleProperties properties,
             string applicationHeading,
@@ -83,6 +90,7 @@ namespace Portal.Areas.Invoices.ViewModels
                 lockedToBudgetHolderCode, 
                 loadingEmailStatusId,
                 loadingAttachmentStatusId,
+                loadingAttachmentId,
                 invoiceRegistrationSuspended,
                 properties, 
                 applicationHeading, 
@@ -97,7 +105,7 @@ namespace Portal.Areas.Invoices.ViewModels
 
             result.DocumentsDashboard = await portalDb.GetInvoiceBookingDocumentDashboard(new PassInvoiceBookingDocumentDashboardParams()
             {
-                MailboxID= 1,
+                MailboxID = 1,
                 BudgetHolderCode = lockedToBudgetHolderCode,
                 ActiveDirectoryGroupIDs = lockedToDepartmentGroupIds
             });
@@ -105,6 +113,11 @@ namespace Portal.Areas.Invoices.ViewModels
             result.AttachmentTypes = portalDb.AttachmentTypes.ToList();
 
             result.AttachmentStatuses = portalDb.AttachmentStatuses.ToList();
+
+            if (result.LoadingAttachmentID.HasValue)
+            {
+                result.LoadingEmailID = portalDb.Attachments.Single(a => a.AttachmentID == result.LoadingAttachmentID).EmailID;
+            }
 
             return result;
         }

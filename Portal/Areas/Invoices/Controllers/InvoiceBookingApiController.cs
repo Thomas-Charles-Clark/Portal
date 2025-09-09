@@ -215,7 +215,7 @@ namespace Portal.Areas.Invoices.Controllers
         }
 
         [HttpGet]
-        public DataSourceResult MailboxGrid(
+        public async Task<IHttpActionResult> MailboxGrid(
             [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
             [FromUri] PassMailboxFolderParams dto)
         {
@@ -332,7 +332,30 @@ namespace Portal.Areas.Invoices.Controllers
                 request.Filters.Add(new Kendo.Mvc.FilterDescriptor("ReceivedDT", Kendo.Mvc.FilterOperator.IsLessThanOrEqualTo, toDt.Value));
             }
 
-            return stubs.ToDataSourceResult(request);
+            var ds = stubs.ToDataSourceResult(request);
+
+            foreach (var d in ds.Data.Cast<SharedEFClasses.Models.IncomingEmail.Email>())
+            {
+                if (!String.IsNullOrEmpty(d.SupplierCode))
+                {
+                    d.BankDetails = await PortalDb.IncomingEmail_SupplierBankDetails_Select(new PassSupplierDetail()
+                    {
+                        SupplierCode = d.SupplierCode
+                    });
+                }
+            }
+
+            return Ok(ds);
+
+            //return stubs.ToDataSourceResult(request);
+        }
+
+        [HttpGet]
+        public IHttpActionResult FetchSingularEmailStub([FromUri] PassEmailMessageID dto)
+        {
+            var stub = PortalDb.EmailStubs.Include("Supplier").Single(e => e.EmailID == dto.EmailID);
+
+            return Ok(stub);    
         }
 
         [HttpGet]
@@ -340,6 +363,14 @@ namespace Portal.Areas.Invoices.Controllers
             [ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
             [FromUri] PassDocumentGridParams dto)
         {
+            foreach(var s in request.Sorts)
+            {
+                if (s.Member == "ReceivedDT")
+                {
+                    s.Member = "Email.ReceivedDT";
+                }
+            }
+
             DateTime? toDt = DateTime.Now;
 
             DateTime? fromDt = null;
@@ -506,6 +537,8 @@ namespace Portal.Areas.Invoices.Controllers
 
             var additionalInfo = await PortalDb.Email_Select(dto);
 
+            var bankDetails = await PortalDb.IncomingEmail_SupplierBankDetails_Select(new PassSupplierDetail() { SupplierCode = email.SupplierCode });
+
             try
             {
                 var message = await PortalDb.EmailDigester_GetMessage(userId, dto.EmailMessageID);
@@ -546,7 +579,8 @@ namespace Portal.Areas.Invoices.Controllers
                     message,
                     emailStatus = email.EmailStatus,
                     attachments,
-                    additionalInfo
+                    additionalInfo,
+                    bankDetails
                 });
             }
             catch (SqlException)
@@ -556,7 +590,8 @@ namespace Portal.Areas.Invoices.Controllers
                     message = email,
                     emailStatus = email.EmailStatus,
                     attachments,
-                    additionalInfo
+                    additionalInfo,
+                    bankDetails
                 });
             } 
         }
@@ -741,7 +776,9 @@ namespace Portal.Areas.Invoices.Controllers
 
             var result = await PortalDb.IncomingEmail_Supplier_Save(dto);
 
-            return Ok(new { });
+            var bankDetails = await PortalDb.IncomingEmail_SupplierBankDetails_Select(dto);
+
+            return Ok(new { bankDetails });
         }
 
 

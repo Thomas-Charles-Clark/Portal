@@ -5,7 +5,7 @@
 
     }) => {
     let self = Object.assign({
-        parentEmailSupplier: parent.supplier,
+        parentEmailSupplier: ko.observable(ko.unwrap(parent.supplier)),
         parentLoadEmail: async () => parent.parent.loadEmail,
         documentGridSelectedKeys: parent.documentGridSelectedKeys,
         emailId: parent.EmailID,
@@ -141,6 +141,7 @@
         let result = `/incomingemail/attachments/${self.IsInline ? 'inline' : 'regular'}/null/${self.EmailAttachmentID}`;
         switch (self.FileExtension.toLowerCase()) {
             case 'pdf':
+            case 'html':
                 ko.ignoreDependencies(() => {
                     self.canPreviewAttachment(true);
                     self.actualSrc(result);
@@ -442,7 +443,6 @@
 
             switch (self.attachmentTypeId()) {
                 case 2:
-
                     data.formDataJson = JSON.stringify({
                         code: null,
                         invoiceProcessedDate: null,
@@ -454,6 +454,11 @@
                         supplierCurrency: props.supplierCurrency() ?? null,
                         exchangeRate: props.exchangeRate() ?? null,
                         supplierInvoiceReference: props.supplierInvoiceReference() ?? null,
+                        supplierBankName: props.supplierBankName() ?? null,
+                        supplierBankAccountNumber: props.supplierBankAccountNumber() ?? null,
+                        supplierBankSortCode: props.supplierBankSortCode() ?? null,
+                        supplierIBAN: props.supplierIBAN() ?? null,
+                        supplierBIC: props.supplierBIC() ?? null,
                         invoiceDate: self.formatDateString(props.invoiceDate()),
                         invoiceDueDT: self.formatDateString(props.dueDate()),
                         settlementDT: self.formatDateString(props.settlementDate()),

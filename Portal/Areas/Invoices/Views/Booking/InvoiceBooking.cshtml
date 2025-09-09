@@ -1,4 +1,5 @@
 ﻿@model Portal.Areas.Invoices.ViewModels.InvoiceBookingViewModel
+@using Microsoft.AspNet.Identity;
 @{
     ViewBag.Title = "Invoice Booking";
     Layout = "~/Views/Shared/_Layout-New.cshtml";
@@ -123,6 +124,12 @@
             <td data-bind="attr: { title: AttachmentStatusName }">
                 <span data-bind="html: AttachmentStatusName"></span>
             </td>
+            <td data-bind="attr: { title: `DG Document Reference: ${MertexCode}`}">
+                <span data-bind="html: MertexCode"></span>
+            </td>
+            <td data-bind="attr: { title: `Supplier Reference: ${SupplierDocumentReference}` }">
+                <span data-bind="html: SupplierDocumentReference"></span>
+            </td>
             <td data-bind="attr: { title: moment(ReceivedDT).format('dddd Do MMM YYYY HH:mm') }">
                 <span data-bind="html: moment(ReceivedDT).format('DD/MM/YYYY HH:mm')"></span>
             </td>
@@ -140,7 +147,7 @@
 
     <script type="text/html" id="invoice-booking-invoice-template">
         <div id="invoice-properties" class="card">
-            <div class="card-body">
+            <div class="card-body" data-bind="validationElement: preambleSatisfied, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
                 <h5 class="data-heading">
                     <!-- ko ifnot: $parent.Processed -->
                     Please Enter the Invoice Details
@@ -214,7 +221,39 @@
                 </div>
             </div>
         </div>
+        <div id="supplier-bank-properties" class="card">
+            <div class="card-body">
+                <h5>
+                    <span>
+                        Bank Details
+                    </span>
+                </h5>
+                <p>
+                    Please provide banking details (Bank Name and either Account Number &amp; Sort Code <i>or&nbsp;</i> IBAN <i>or&nbsp;</i> BIC).
+                </p>
+                <div id="bank-name" class="attachment-property" data-bind="highlightNullField: supplierBankName, component: { name: 'mdc-text-field-component', params: supplierBankNameParams }"></div>
+                <span class="validation-message" data-bind="validationMessage: supplierBankName"></span>
 
+                <div class="attachment-property-wrap">
+                    <div data-bind="validationOptions: { insertMessages: false }">
+                        <div id="bank-account-number" class="attachment-property" data-bind="highlightNullField: supplierBankAccountNumber, component: { name: 'mdc-text-field-component', params: supplierBankAccountNumberParams }"></div>
+                    </div>
+                    <div data-bind="validationOptions: { insertMessages: false }">
+                        <div id="bank-sort-code" class="attachment-property" data-bind="highlightNullField: supplierBankSortCode, component: { name: 'mdc-text-field-component', params: supplierBankSortCodeParams }"></div>
+                    </div>
+                </div>
+                <span class="validation-message" data-bind="validationMessage: supplierBankAccountNumberAndSortCode"></span>
+                <div class="attachment-property-wrap">
+                    <div data-bind="validationOptions: { insertMessages: false }">
+                        <div id="iban" class="attachment-property" data-bind="highlightNullField: supplierIBAN, component: { name: 'mdc-text-field-component', params: supplierIBANParams }"></div>
+                    </div>
+                    <div data-bind="validationOptions: { insertMessages: false }">
+                        <div id="bic" class="attachment-property" data-bind="highlightNullField: supplierBIC, component: { name: 'mdc-text-field-component', params: supplierBICParams }"></div>
+                    </div>
+                </div>
+                <span class="validation-message" data-bind="validationMessage: supplierIBANorBIC"></span>
+            </div>
+        </div>
         <div id="duplicate-warnings" class="card" style="display: none" data-bind="visible: duplicateResults().length > 0">
             <div class="card-body">
                 <!-- ko ifnot: isFlaggedAsDuplicate -->
@@ -749,6 +788,287 @@
         </div>
     </script>
 
+    <script type="text/html" id="form-template">
+        <!-- ko if: isEmailBody || $parent.supplier() == null -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="data-heading email-details-heading">
+                    <span>
+                        Email Details
+                    </span>
+                    <div class="ms-auto d-flex align-items-center gap-3">
+                        <!-- ko ifnot: $parent.Junk -->
+                        <!-- ko if: $parent.regularAttachments().length == 1 && $parent.Processed == true -->
+                        <button class="btn btn-secondary" data-bind="click: $parent.flagUnprocessed">
+                            Flag as Unread
+                        </button>
+                        <!-- /ko -->
+                        <!-- ko if: $parent.regularAttachments().length == 1 && $parent.Processed == false -->
+                        <button class="btn btn-success" data-bind="click: $parent.flagProcessed">
+                            Flag as Read
+                        </button>
+                        <!-- /ko -->
+                        <!-- /ko -->
+                        <!-- ko if: $parent.mayFlagAsJunk -->
+                        <button class="btn btn-orange" type="button" data-bind="click: $parent.flagJunk">
+                            Flag as Junk
+                        </button>
+                        <!-- /ko -->
+                        <!-- ko if: $parent.Junk == true -->
+                        <button class="btn btn-orange" type="button" data-bind="click: $parent.flagUnjunk">
+                            Flag as not Junk
+                        </button>
+                        <!-- /ko -->
+                    </div>
+                </h5>
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="attachment-supplier-wrapper mb-0">
+                        <div class="attachment-supplier-container">
+                            <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: $parent.supplierParams }"></div>
+                            <div class="supplier-address-display" style="display: none" data-bind="visible: $parent.supplierParams.locked, with: $parent.supplier">
+                                <p class="mb-0" data-bind="text: AddressDisplaySingleLine"></p>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-dark" data-bind="visible: $parent.Processed == false && ($parent.readOnly == true ? false : $parent.supplierParams.locked), click: () => { $parent.supplierParams.locked(!$parent.supplierParams.locked()) }">
+                            Change
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="additional-info" style="display: none" data-bind="visible: $parent.additionalInfo, foreach: $parent.additionalInfo">
+            <div class="card p-0" data-bind="class: CSSClasses">
+                <div class="card-body" data-bind="html: HTMLContents"></div>
+            </div>
+        </div>
+        <!-- /ko -->
+        <!-- ko if: isEmailBody == false && $parent.supplier() != null  -->
+        <ul class="nav nav-tabs" id="data-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="original-data-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#original-data-tab-pane"
+                        type="button"
+                        role="tab"
+                        aria-controls="original-data-tab-pane"
+                        aria-selected="true">
+                    <span data-bind="attr: { title: `Attachment ID: ${AttachmentID}` }">
+                        Attachment Details
+                    </span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation" style="display: none" data-bind="visible: mertexData != null">
+                <button class="nav-link" id="mertex-data-tab" data-bs-toggle="tab" data-bs-target="#mertex-data-tab-pane" type="button" role="tab" aria-controls="mertex-data-tab-pane" aria-selected="false">
+                    Mertex Data
+                </button>
+            </li>
+        </ul>
+        <div class="tab-content" id="original-data-tab-content">
+            <div class="tab-pane fade show active" id="original-data-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                <div class="attachment-property" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: attachmentTypeParams }"></div>
+
+                <!-- ko if: attachmentTypeId() !== 1 -->
+                <!-- ko if: properties -->
+                <div data-bind="template: { name: propertiesTemplateName, data: properties }"></div>
+                <!-- /ko -->
+                <!-- ko ifnot: readOnly -->
+                <!-- ko if: ko.unwrap(properties) -->
+                <!-- ko if: (ko.unwrap(properties).duplicateResults().length != 0) && (ko.unwrap(properties).duplicateWarningAccepted() == false) -->
+                <button type="button" class="btn btn-danger btn-lg w-100 bold mt-3" data-bind="click: () => { ko.unwrap(properties).acknowledgeDuplicate() }">
+                    Click here to agree that this document is a duplicate.
+                    <br />
+                    It will be flagged as such and will not be submitted to Mertex.
+                </button>
+                <!-- /ko -->
+                <!-- ko if: (ko.unwrap(properties).duplicateResults().length == 0) || ((ko.unwrap(properties).duplicateResults().length != 0) && (ko.unwrap(properties).duplicateWarningAccepted() == true)) -->
+                <button class="btn btn-success w-100 btn-lg save-btn mt-3" type="button" data-bind="click: save">
+                    Save
+                </button>
+                <!-- /ko -->
+                <!-- /ko -->
+                <!-- /ko -->
+                <!-- /ko -->
+            </div>
+            <div class="tab-pane fade" id="mertex-data-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0" data-bind="with: mertexData">
+                <!-- ko if: $parent.SubmittedToMertex == false -->
+                <p>
+                    This attachment has not yet been submitted for processing.
+                </p>
+                <!-- /ko -->
+                <!-- ko if: typeof Code != 'undefined' -->
+                <div class="attachment-property loaded-property">
+                    <label>
+                        Mertex Invoice Registry Code
+                    </label>
+                    <span data-bind="text: Code ? Code : 'n/a'"></span>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: typeof SupplierCode != 'undefined' -->
+                <div class="attachment-property loaded-property">
+                    <label>
+                        Supplier Code
+                    </label>
+                    <span data-bind="text: SupplierCode ? SupplierCode : 'n/a'"></span>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: typeof SupplierInvoiceCode != 'undefined' -->
+                <div class="attachment-property loaded-property">
+                    <label>
+                        Supplier Invoice Code
+                    </label>
+                    <span data-bind="text: SupplierInvoiceCode ? SupplierInvoiceCode : 'n/a'"></span>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: typeof InvoiceDate != 'undefined' -->
+                <div class="attachment-property loaded-property">
+                    <label>
+                        Invoice Date
+                    </label>
+                    <span data-bind="text: InvoiceDate ? moment(InvoiceDate).format('dddd Do MMMM YYYY (DD/MM/YYYY)') : 'n/a'"></span>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: typeof InvoiceProcessedDate != 'undefined' -->
+                <div class="attachment-property loaded-property">
+                    <label>
+                        Invoice Processed
+                    </label>
+                    <span data-bind="text: InvoiceProcessedDate ? moment(InvoiceProcessedDate).format('dddd Do MMMM YYYY (DD/MM/YYYY)') : 'n/a'"></span>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: typeof InvoiceReceivedDate != 'undefined' -->
+                <div class="attachment-property loaded-property">
+                    <label>
+                        Invoice Received
+                    </label>
+                    <span data-bind="text: InvoiceReceivedDate ? moment(InvoiceReceivedDate).format('dddd Do MMMM YYYY (DD/MM/YYYY)') : 'n/a'"></span>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: typeof InvoiceDueDT != 'undefined' -->
+                <div class="attachment-property loaded-property">
+                    <label>
+                        Invoice Due
+                    </label>
+                    <span data-bind="text: InvoiceDueDT ? moment(InvoiceDueDT).format('dddd Do MMMM YYYY (DD/MM/YYYY)') : 'n/a'"></span>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: typeof SettlementDT != 'undefined' -->
+                <div class="attachment-property loaded-property">
+                    <label>
+                        Settlement Date
+                    </label>
+                    <span data-bind="text: SettlementDT ? moment(SettlementDT).format('dddd Do MMMM YYYY (DD/MM/YYYY)') : 'n/a'"></span>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: typeof PassedTo != 'undefined' -->
+                <div class="attachment-property loaded-property">
+                    <label>
+                        Passed to
+                    </label>
+                    <span data-bind="text: PassedTo ? `${PassedTo} on ${moment(PassedToDT).format('dddd Do MMMM YYYY (DD/MM/YYYY)')}` : 'n/a'"></span>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: typeof PaymentTermsCode != 'undefined' -->
+                <div class="attachment-property loaded-property">
+                    <label>
+                        Payment Terms Code
+                    </label>
+                    <span data-bind="text: PaymentTermsCode ? PaymentTermsCode : 'n/a'"></span>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: typeof MertexCurrencyCode != 'undefined' -->
+                <div class="attachment-property loaded-property">
+                    <label>
+                        Mertex Currency Code
+                    </label>
+                    <span data-bind="text: MertexCurrencyCode ? MertexCurrencyCode : 'n/a'"></span>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: typeof DocumentBalance != 'undefined' -->
+                <div class="attachment-property loaded-property">
+                    <label>
+                        Document Balance
+                    </label>
+                    <span data-bind="text: DocumentBalance ? DocumentBalance : 'n/a'"></span>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: typeof VATBalance != 'undefined' -->
+                <div class="attachment-property loaded-property">
+                    <label>
+                        VAT Balance
+                    </label>
+                    <span data-bind="text: VATBalance ? VATBalance : 'n/a'"></span>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: typeof ExchangeRate != 'undefined' -->
+                <div class="attachment-property loaded-property">
+                    <label>
+                        Exchange Rate
+                    </label>
+                    <span data-bind="text: ExchangeRate ? ExchangeRate : 'n/a'"></span>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: typeof InvoiceTotalInCurrencyIncVAT != 'undefined' -->
+                <div class="attachment-property loaded-property">
+                    <label>
+                        Invoice Total In Currency Inc. VAT
+                    </label>
+                    <span data-bind="text: InvoiceTotalInCurrencyIncVAT ? InvoiceTotalInCurrencyIncVAT : 'n/a'"></span>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: typeof InvoiceTotalInGBPIncVAT != 'undefined' -->
+                <div class="attachment-property loaded-property">
+                    <label>
+                        Invoice Total In GBP Inc. VAT
+                    </label>
+                    <span data-bind="text: InvoiceTotalInGBPIncVAT ? InvoiceTotalInGBPIncVAT : 'n/a'"></span>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: typeof Memo != 'undefined' -->
+                <div class="attachment-property loaded-property">
+                    <label>
+                        Memo
+                    </label>
+                    <span data-bind="text: Memo ? Memo : 'n/a'"></span>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: typeof OtherMemos != 'undefined' -->
+                <div class="attachment-property loaded-property">
+                    <label>
+                        Other Memos
+                    </label>
+                    <span data-bind="html: OtherMemos ? OtherMemos : 'n/a'"></span>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: typeof GeneralLedgerCodes != 'undefined' -->
+                <div class="attachment-property loaded-property">
+                    <label>
+                        General Ledger Entries
+                    </label>
+                    <div data-bind="foreach: GeneralLedgerCodes">
+                        <span data-bind="text: $data"></span>
+                        :
+                        <span data-bind="text: $parent.GeneralLedgerAmountsExVAT[$index()]"></span>
+                    </div>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: typeof VATCodes != 'undefined' -->
+                <div class="attachment-property loaded-property">
+                    <label>
+                        VAT Entries
+                    </label>
+                    <div data-bind="foreach: VATCodes">
+                        <span data-bind="text: $data"></span>
+                        :
+                        <span data-bind="text: `VATable Value: ${$parent.VATValues[$index()]}`"></span>
+                        -
+                        <span data-bind="text: `VAT: ${$parent.VATValues[$index()]}`"></span>
+                    </div>
+                </div>
+                <!-- /ko -->
+            </div>
+        </div>
+        <!-- /ko -->
+    </script>
 
     <script type="text/javascript">
 
@@ -784,8 +1104,28 @@
 
         window.downloadDocumentsViewModel = headerController;
 
+
+        @*@if (User.Identity.GetUserId<int>() == 8)
+        {
+            @:viewModel.documentGridTabButton.click();
+        }*@
+
     </script>
+
+    @if (Model.LoadingAttachmentID.HasValue)
+    {
+        <script type="text/javascript">
+            window.onload = () => {
+                console.log('window.onload called');
+                viewModel.documentViewer.load({
+                    EmailID: @(Model.LoadingEmailID),
+                    AttachmentID: @(Model.LoadingAttachmentID)
+                });
+            };
+        </script>
+    }
 }
+
 
 <div class="blocker" data-bind="flexFadeVisible: busy">
     <div class="loading-spinner"></div>
@@ -829,9 +1169,9 @@
 </div>
 
 @*<div class="my-5 d-flex gap-3 w-50">
-    <input class="form-control fs-3 py-2 px-3" type="text" data-bind="value: testDateInput" placeholder="Input" />
-    <input class="form-control fs-3 py-2 px-3" type="text" data-bind="value: testDateOutput" placeholder="Result" />
-</div>*@
+        <input class="form-control fs-3 py-2 px-3" type="text" data-bind="value: testDateInput" placeholder="Input" />
+        <input class="form-control fs-3 py-2 px-3" type="text" data-bind="value: testDateOutput" placeholder="Result" />
+    </div>*@
 
 <ul class="nav nav-tabs" id="email-or-attachment-tab-list" role="tablist" style="display: none" data-bind="visible: true">
     <li class="nav-item" role="presentation">
@@ -970,46 +1310,46 @@
         <div class="d-flex gap-3">
             <div id="inbox-browser">
                 <div id="filters-wrapper">
-                    <div id="email-list-prefilters" class="pt-3" data-bind="flexFadeVisible: mode() == 'emails', with: filters">
-                        <div id="department-prefilter" class="prefilter" data-bind="component: { name: 'mdc-bootstrap-multiselect-component', params: departmentParams }"></div>
-                        <div id="budget-holder-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: budgetHolderParams }"></div>
-                        <div id="supplier-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierTypeParams }"></div>
-                        <div id="supplier-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
-                        <div id="order-date-prefilter" class="prefilter">
-                            <div id="order-date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: dateRangeParams }"></div>
+                    <div id="email-grid-prefilters" class="grid-prefilters" data-bind="flexVisible: mode() == 'emails'">
+                        <div class="department-prefilter prefilter" data-bind="component: { name: 'mdc-bootstrap-multiselect-component', params: filters.departmentParams }"></div>
+                        <div class="budget-holder-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: filters.budgetHolderParams }"></div>
+                        <div class="supplier-type-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: filters.supplierTypeParams }"></div>
+                        <div class="supplier-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: filters.supplierParams }"></div>
+                        <div class="date-prefilter prefilter">
+                            <div class="date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: filters.dateRangeParams }"></div>
                         </div>
-                        <div class="prefilter" style="display: none" data-bind="visible: dateRangeId() == -1">
-                            <div id="from-date" class="date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: fromDateParams }"></div>
+                        <div class="prefilter" style="display: none" data-bind="visible: filters.dateRangeId() == -1">
+                            <div class="from-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: filters.fromDateParams }"></div>
                         </div>
-                        <div class="prefilter" style="display: none" data-bind="visible: dateRangeId() == -1">
-                            <div id="to-date" class="date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: toDateParams }"></div>
-                            <span class="validation-message text-danger" data-bind="validationMessage: fromDate"></span>
-                            <span class="validation-message text-danger" data-bind="validationMessage: toDate"></span>
-                            <span class="validation-message text-danger" data-bind="validationMessage: fromPreceedsTo"></span>
+                        <div class="prefilter" style="display: none" data-bind="visible: filters.dateRangeId() == -1">
+                            <div class="to-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: filters.toDateParams }"></div>
+                            <span class="validation-message text-danger" data-bind="validationMessage: filters.fromDate"></span>
+                            <span class="validation-message text-danger" data-bind="validationMessage: filters.toDate"></span>
+                            <span class="validation-message text-danger" data-bind="validationMessage: filters.fromPreceedsTo"></span>
                         </div>
-                        <div id="free-text-prefiler" class="prefilter" data-bind="component: { name: 'mdc-text-field-component', params: freeTextSearchParams }"></div>
+                        <div class="free-text-prefiler prefilter" data-bind="component: { name: 'mdc-text-field-component', params: filters.freeTextSearchParams }"></div>
                     </div>
-                    <div id="document-grid-prefilters" style="display: none" data-bind="flexFadeVisible: mode() == 'documents', with: documentFilters">
-                        <div id="department-prefilter" class="prefilter" data-bind="component: { name: 'mdc-bootstrap-multiselect-component', params: departmentParams }"></div>
-                        <div id="budget-holder-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: budgetHolderParams }"></div>
-                        <div id="supplier-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierTypeParams }"></div>
-                        <div id="supplier-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
-                        <div id="free-text-prefiler" class="prefilter" data-bind="component: { name: 'mdc-text-field-component', params: freeTextSearchParams }"></div>
-                        <div id="document-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentTypeParams }"></div>
-                        <div id="document-status-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentStatusParams }"></div>
-                        <div id="date-affector-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentDateAffectorParams }"></div>
-                        <div id="document-date-prefilter" class="prefilter">
-                            <div id="document-date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentDateRangeParams }"></div>
+                    <div id="document-grid-prefilters" style="display: none" class="grid-prefilters" data-bind="flexVisible: mode() == 'documents'">
+                        <div class="department-prefilter prefilter" data-bind="component: { name: 'mdc-bootstrap-multiselect-component', params: documentFilters.departmentParams }"></div>
+                        <div class="budget-holder-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentFilters.budgetHolderParams }"></div>
+                        <div class="supplier-type-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentFilters.supplierTypeParams }"></div>
+                        <div class="supplier-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentFilters.supplierParams }"></div>
+                        <div class="document-type-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentFilters.documentTypeParams }"></div>
+                        <div class="document-status-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentFilters.documentStatusParams }"></div>
+                        <div class="date-affector-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentFilters.documentDateAffectorParams }"></div>
+                        <div class="document-date-prefilter prefilter">
+                            <div class="date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentFilters.documentDateRangeParams }"></div>
                         </div>
-                        <div class="prefilter" style="display: none" data-bind="visible: documentDateRangeId() == -1">
-                            <div id="document-from-date" class="date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: documentFromDateParams }"></div>
+                        <div class="prefilter" style="display: none" data-bind="visible: documentFilters.documentDateRangeId() == -1">
+                            <div class="from-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: documentFilters.documentFromDateParams }"></div>
                         </div>
-                        <div class="prefilter" style="display: none" data-bind="visible: documentDateRangeId() == -1">
-                            <div id="document-to-date" class="date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: documentToDateParams }"></div>
-                            <span class="validation-message text-danger" data-bind="validationMessage: fromDate"></span>
-                            <span class="validation-message text-danger" data-bind="validationMessage: toDate"></span>
-                            <span class="validation-message text-danger" data-bind="validationMessage: fromPreceedsTo"></span>
+                        <div class="prefilter" style="display: none" data-bind="visible: documentFilters.documentDateRangeId() == -1">
+                            <div class="from-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: documentFilters.documentToDateParams }"></div>
+                            <span class="validation-message text-danger" data-bind="validationMessage: documentFilters.fromDate"></span>
+                            <span class="validation-message text-danger" data-bind="validationMessage: documentFilters.toDate"></span>
+                            <span class="validation-message text-danger" data-bind="validationMessage: documentFilters.fromPreceedsTo"></span>
                         </div>
+                        <div class="free-text-prefiler prefilter" data-bind="component: { name: 'mdc-text-field-component', params: documentFilters.freeTextSearchParams }"></div>
                     </div>
                 </div>
                 <div class="tab-content" id="email-or-attachment-tab-container">
@@ -1047,7 +1387,7 @@
                     <div class="d-inline-flex gap-3">
                         <nav class="nav">
                             <span class="me-3" data-bind="text: `Email ID: ${EmailID}`"></span>
-                            <div style="display: none" data-bind="flexFadeVisible: selectedEmailIndex() != null" class="justify-content-between align-items-center gap-3">
+                            <div style="display: none" data-bind="flexVisible: selectedIndex() != null" class="justify-content-between align-items-center gap-3">
                                 <button class="btn btn-light" type="button" data-bind="css: { 'disabled': navPreviousDisabled }, click: parent.previous">
                                     <i class="bi bi-chevron-left"></i>
                                     <span>
@@ -1058,7 +1398,7 @@
                                     <span>
                                         You're viewing item
                                     </span>
-                                    <span data-bind="text: selectedEmailIndex"></span>
+                                    <span data-bind="text: selectedIndex"></span>
                                     <span>
                                         of
                                     </span>
@@ -1134,7 +1474,7 @@
                         </li>
                     </ul>
                 </div>
-                <div id="attachment-viewer" data-bind="with: selectedAttachment">
+                <div class="attachment-viewer" data-bind="with: selectedAttachment">
                     <!-- ko if: isEmailBody -->
                     <div id="email-body">
                         <button id="download-email-to-pdf" class="btn" data-bind="click: $parent.openInNewTab">
@@ -1163,287 +1503,8 @@
                         <!-- /ko -->
                     </div>
                     <!-- /ko -->
-                    <div id="data-pane">
-                        <!-- ko if: isEmailBody || $parent.supplier() == null -->
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="data-heading email-details-heading">
-                                    <span>
-                                        Email Details
-                                    </span>
-                                    <div class="ms-auto d-flex align-items-center gap-3">
-                                        <!-- ko ifnot: $parent.Junk -->
-                                        <!-- ko if: $parent.regularAttachments().length == 1 && $parent.Processed == true -->
-                                        <button class="btn btn-secondary" data-bind="click: $parent.flagUnprocessed">
-                                            Flag as Unread
-                                        </button>
-                                        <!-- /ko -->
-                                        <!-- ko if: $parent.regularAttachments().length == 1 && $parent.Processed == false -->
-                                        <button class="btn btn-success" data-bind="click: $parent.flagProcessed">
-                                            Flag as Read
-                                        </button>
-                                        <!-- /ko -->
-                                        <!-- /ko -->
-                                        <!-- ko if: $parent.mayFlagAsJunk -->
-                                        <button class="btn btn-orange" type="button" data-bind="click: $parent.flagJunk">
-                                            Flag as Junk
-                                        </button>
-                                        <!-- /ko -->
-                                        <!-- ko if: $parent.Junk == true -->
-                                        <button class="btn btn-orange" type="button" data-bind="click: $parent.flagUnjunk">
-                                            Flag as not Junk
-                                        </button>
-                                        <!-- /ko -->
-                                    </div>
-                                </h5>
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="attachment-supplier-wrapper mb-0">
-                                        <div class="attachment-supplier-container">
-                                            <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: $parent.supplierParams }"></div>
-                                            <div class="supplier-address-display" style="display: none" data-bind="visible: $parent.supplierParams.locked, with: $parent.supplier">
-                                                <p class="mb-0" data-bind="text: AddressDisplaySingleLine"></p>
-                                            </div>
-                                        </div>
-                                        <button type="button" class="btn btn-dark" data-bind="visible: $parent.Processed == false && ($parent.readOnly == true ? false : $parent.supplierParams.locked), click: () => { $parent.supplierParams.locked(!$parent.supplierParams.locked()) }">
-                                            Change
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="additional-info" style="display: none" data-bind="visible: $parent.additionalInfo, foreach: $parent.additionalInfo">
-                            <div class="card p-0" data-bind="class: CSSClasses">
-                                <div class="card-body" data-bind="html: HTMLContents"></div>
-                            </div>
-                        </div>
-                        <!-- /ko -->
-                        <!-- ko if: isEmailBody == false && $parent.supplier() != null  -->
-                        <ul class="nav nav-tabs" id="data-tabs" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="original-data-tab"
-                                        data-bs-toggle="tab"
-                                        data-bs-target="#original-data-tab-pane"
-                                        type="button"
-                                        role="tab"
-                                        aria-controls="original-data-tab-pane"
-                                        aria-selected="true">
-                                    <span data-bind="attr: { title: `Attachment ID: ${AttachmentID}` }">
-                                        Attachment Details
-                                    </span>
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation" style="display: none" data-bind="visible: mertexData != null">
-                                <button class="nav-link" id="mertex-data-tab" data-bs-toggle="tab" data-bs-target="#mertex-data-tab-pane" type="button" role="tab" aria-controls="mertex-data-tab-pane" aria-selected="false">
-                                    Mertex Data
-                                </button>
-                            </li>
-                        </ul>
-                        <div class="tab-content" id="original-data-tab-content">
-                            <div class="tab-pane fade show active" id="original-data-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
-                                <div class="attachment-property" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: attachmentTypeParams }"></div>
-
-                                <!-- ko if: attachmentTypeId() !== 1 -->
-                                <!-- ko if: properties -->
-                                <div data-bind="template: { name: propertiesTemplateName, data: properties }"></div>
-                                <!-- /ko -->
-                                <!-- ko ifnot: readOnly -->
-                                <!-- ko if: ko.unwrap(properties) -->
-                                <!-- ko if: (ko.unwrap(properties).duplicateResults().length != 0) && (ko.unwrap(properties).duplicateWarningAccepted() == false) -->
-                                <button type="button" class="btn btn-danger btn-lg w-100 bold mt-3" data-bind="click: () => { ko.unwrap(properties).acknowledgeDuplicate() }">
-                                    Click here to agree that this document is a duplicate.
-                                    <br />
-                                    It will be flagged as such and will not be submitted to Mertex.
-                                </button>
-                                <!-- /ko -->
-                                <!-- ko if: (ko.unwrap(properties).duplicateResults().length == 0) || ((ko.unwrap(properties).duplicateResults().length != 0) && (ko.unwrap(properties).duplicateWarningAccepted() == true)) -->
-                                <button class="btn btn-success w-100 btn-lg save-btn mt-3" type="button" data-bind="click: save">
-                                    Save
-                                </button>
-                                <!-- /ko -->
-                                <!-- /ko -->
-                                <!-- /ko -->
-                                <!-- /ko -->
-
-                            </div>
-                            <div class="tab-pane fade" id="mertex-data-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0" data-bind="with: mertexData">
-                                <!-- ko if: $parent.SubmittedToMertex == false -->
-                                <p>
-                                    This attachment has not yet been submitted for processing.
-                                </p>
-                                <!-- /ko -->
-                                <!-- ko if: typeof Code != 'undefined' -->
-                                <div class="attachment-property loaded-property">
-                                    <label>
-                                        Mertex Invoice Registry Code
-                                    </label>
-                                    <span data-bind="text: Code ? Code : 'n/a'"></span>
-                                </div>
-                                <!-- /ko -->
-                                <!-- ko if: typeof SupplierCode != 'undefined' -->
-                                <div class="attachment-property loaded-property">
-                                    <label>
-                                        Supplier Code
-                                    </label>
-                                    <span data-bind="text: SupplierCode ? SupplierCode : 'n/a'"></span>
-                                </div>
-                                <!-- /ko -->
-                                <!-- ko if: typeof SupplierInvoiceCode != 'undefined' -->
-                                <div class="attachment-property loaded-property">
-                                    <label>
-                                        Supplier Invoice Code
-                                    </label>
-                                    <span data-bind="text: SupplierInvoiceCode ? SupplierInvoiceCode : 'n/a'"></span>
-                                </div>
-                                <!-- /ko -->
-                                <!-- ko if: typeof InvoiceDate != 'undefined' -->
-                                <div class="attachment-property loaded-property">
-                                    <label>
-                                        Invoice Date
-                                    </label>
-                                    <span data-bind="text: InvoiceDate ? moment(InvoiceDate).format('dddd Do MMMM YYYY (DD/MM/YYYY)') : 'n/a'"></span>
-                                </div>
-                                <!-- /ko -->
-                                <!-- ko if: typeof InvoiceProcessedDate != 'undefined' -->
-                                <div class="attachment-property loaded-property">
-                                    <label>
-                                        Invoice Processed
-                                    </label>
-                                    <span data-bind="text: InvoiceProcessedDate ? moment(InvoiceProcessedDate).format('dddd Do MMMM YYYY (DD/MM/YYYY)') : 'n/a'"></span>
-                                </div>
-                                <!-- /ko -->
-                                <!-- ko if: typeof InvoiceReceivedDate != 'undefined' -->
-                                <div class="attachment-property loaded-property">
-                                    <label>
-                                        Invoice Received
-                                    </label>
-                                    <span data-bind="text: InvoiceReceivedDate ? moment(InvoiceReceivedDate).format('dddd Do MMMM YYYY (DD/MM/YYYY)') : 'n/a'"></span>
-                                </div>
-                                <!-- /ko -->
-                                <!-- ko if: typeof InvoiceDueDT != 'undefined' -->
-                                <div class="attachment-property loaded-property">
-                                    <label>
-                                        Invoice Due
-                                    </label>
-                                    <span data-bind="text: InvoiceDueDT ? moment(InvoiceDueDT).format('dddd Do MMMM YYYY (DD/MM/YYYY)') : 'n/a'"></span>
-                                </div>
-                                <!-- /ko -->
-                                <!-- ko if: typeof SettlementDT != 'undefined' -->
-                                <div class="attachment-property loaded-property">
-                                    <label>
-                                        Settlement Date
-                                    </label>
-                                    <span data-bind="text: SettlementDT ? moment(SettlementDT).format('dddd Do MMMM YYYY (DD/MM/YYYY)') : 'n/a'"></span>
-                                </div>
-                                <!-- /ko -->
-                                <!-- ko if: typeof PassedTo != 'undefined' -->
-                                <div class="attachment-property loaded-property">
-                                    <label>
-                                        Passed to
-                                    </label>
-                                    <span data-bind="text: PassedTo ? `${PassedTo} on ${moment(PassedToDT).format('dddd Do MMMM YYYY (DD/MM/YYYY)')}` : 'n/a'"></span>
-                                </div>
-                                <!-- /ko -->
-                                <!-- ko if: typeof PaymentTermsCode != 'undefined' -->
-                                <div class="attachment-property loaded-property">
-                                    <label>
-                                        Payment Terms Code
-                                    </label>
-                                    <span data-bind="text: PaymentTermsCode ? PaymentTermsCode : 'n/a'"></span>
-                                </div>
-                                <!-- /ko -->
-                                <!-- ko if: typeof MertexCurrencyCode != 'undefined' -->
-                                <div class="attachment-property loaded-property">
-                                    <label>
-                                        Mertex Currency Code
-                                    </label>
-                                    <span data-bind="text: MertexCurrencyCode ? MertexCurrencyCode : 'n/a'"></span>
-                                </div>
-                                <!-- /ko -->
-                                <!-- ko if: typeof DocumentBalance != 'undefined' -->
-                                <div class="attachment-property loaded-property">
-                                    <label>
-                                        Document Balance
-                                    </label>
-                                    <span data-bind="text: DocumentBalance ? DocumentBalance : 'n/a'"></span>
-                                </div>
-                                <!-- /ko -->
-                                <!-- ko if: typeof VATBalance != 'undefined' -->
-                                <div class="attachment-property loaded-property">
-                                    <label>
-                                        VAT Balance
-                                    </label>
-                                    <span data-bind="text: VATBalance ? VATBalance : 'n/a'"></span>
-                                </div>
-                                <!-- /ko -->
-                                <!-- ko if: typeof ExchangeRate != 'undefined' -->
-                                <div class="attachment-property loaded-property">
-                                    <label>
-                                        Exchange Rate
-                                    </label>
-                                    <span data-bind="text: ExchangeRate ? ExchangeRate : 'n/a'"></span>
-                                </div>
-                                <!-- /ko -->
-                                <!-- ko if: typeof InvoiceTotalInCurrencyIncVAT != 'undefined' -->
-                                <div class="attachment-property loaded-property">
-                                    <label>
-                                        Invoice Total In Currency Inc. VAT
-                                    </label>
-                                    <span data-bind="text: InvoiceTotalInCurrencyIncVAT ? InvoiceTotalInCurrencyIncVAT : 'n/a'"></span>
-                                </div>
-                                <!-- /ko -->
-                                <!-- ko if: typeof InvoiceTotalInGBPIncVAT != 'undefined' -->
-                                <div class="attachment-property loaded-property">
-                                    <label>
-                                        Invoice Total In GBP Inc. VAT
-                                    </label>
-                                    <span data-bind="text: InvoiceTotalInGBPIncVAT ? InvoiceTotalInGBPIncVAT : 'n/a'"></span>
-                                </div>
-                                <!-- /ko -->
-                                <!-- ko if: typeof Memo != 'undefined' -->
-                                <div class="attachment-property loaded-property">
-                                    <label>
-                                        Memo
-                                    </label>
-                                    <span data-bind="text: Memo ? Memo : 'n/a'"></span>
-                                </div>
-                                <!-- /ko -->
-                                <!-- ko if: typeof OtherMemos != 'undefined' -->
-                                <div class="attachment-property loaded-property">
-                                    <label>
-                                        Other Memos
-                                    </label>
-                                    <span data-bind="html: OtherMemos ? OtherMemos : 'n/a'"></span>
-                                </div>
-                                <!-- /ko -->
-                                <!-- ko if: typeof GeneralLedgerCodes != 'undefined' -->
-                                <div class="attachment-property loaded-property">
-                                    <label>
-                                        General Ledger Entries
-                                    </label>
-                                    <div data-bind="foreach: GeneralLedgerCodes">
-                                        <span data-bind="text: $data"></span>
-                                        :
-                                        <span data-bind="text: $parent.GeneralLedgerAmountsExVAT[$index()]"></span>
-                                    </div>
-                                </div>
-                                <!-- /ko -->
-                                <!-- ko if: typeof VATCodes != 'undefined' -->
-                                <div class="attachment-property loaded-property">
-                                    <label>
-                                        VAT Entries
-                                    </label>
-                                    <div data-bind="foreach: VATCodes">
-                                        <span data-bind="text: $data"></span>
-                                        :
-                                        <span data-bind="text: `VATable Value: ${$parent.VATValues[$index()]}`"></span>
-                                        -
-                                        <span data-bind="text: `VAT: ${$parent.VATValues[$index()]}`"></span>
-                                    </div>
-                                </div>
-                                <!-- /ko -->
-                            </div>
-                        </div>
-                        <!-- /ko -->
+                    <div class="data-pane">
+                        <!-- ko template: { name: 'form-template' } --><!-- /ko -->
                     </div>
                 </div>
             </div>
@@ -1509,40 +1570,86 @@
 </div>
 
 <div class="modal fade" id="document-viewer-modal">
-    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-dialog modal-xl modal-xxl modal-xxxl modal-xxxxl modal-dialog-scrollable">
         <div class="modal-content" data-bind="with: documentViewer">
-            <div class="blocker" data-bind="flexFadeVisible: busy">
+            <div class="blocker" data-bind="flexFadeVisible: modalBusy">
                 <div class="loading-spinner"></div>
-                <h4 class="mt-3" data-bind="html: busyMessage"></h4>
+                <h4 class="mt-3" data-bind="html: modalBusyMessage"></h4>
             </div>
             <div class="modal-header">
-                <h5 class="modal-title d-flex justify-content-between align-items-center w-100 pe-2">
-                    View Document
+                @*<h5 class="modal-title d-flex justify-content-between align-items-center w-100 pe-2">
+                        View Document
+                    </h5>*@
+                <h5 class="modal-title d-flex justify-content-between align-items-center w-100 pe-2" data-bind="with: selectedEmail">
+                    <span>
+                        <span class="d-inline-flex gap-3">
+                            <span>
+                                From:
+                                <a class="text-white" data-bind="attr: { href: `mailto:${FromEmail}` }, text: (FromName == FromEmail ? FromName : `${FromName} - ${FromEmail}`)"></a>
+                            </span>
+                            <span data-bind="html: `Received: ${moment(ReceivedDT).format('DD/MM/YYYY HH:mm')}`, attr: { title: moment(ReceivedDT).format('dddd Do MMM YYYY HH:mm') }"></span>
+                        </span>
+                        <span class="d-block" data-bind="html: `Subject: ${Subject}`"></span>
+                    </span>
+                    <div class="d-inline-flex gap-3">
+                        <nav class="nav">
+                            <span class="me-3" data-bind="text: `Attachment ID: ${AttachmentID}`"></span>
+                            <div style="display: none" data-bind="flexVisible: selectedIndex() != null, with: $parent" class="justify-content-between align-items-center gap-3">
+                                <button class="btn btn-light" type="button" data-bind="css: { 'disabled': navPreviousDisabled }, click: previous">
+                                    <i class="bi bi-chevron-left"></i>
+                                    <span>
+                                        Previous
+                                    </span>
+                                </button>
+                                <label>
+                                    <span>
+                                        You're viewing document
+                                    </span>
+                                    <span data-bind="text: selectedIndex() + 1"></span>
+                                    <span>
+                                        of
+                                    </span>
+                                    <span data-bind="text: documentCount"></span>
+                                </label>
+                                <button class="btn btn-light" type="button" data-bind="css: { 'disabled': navNextDisabled }, click: next">
+                                    <span>
+                                        Next
+                                    </span>
+                                    <i class="bi bi-chevron-right"></i>
+                                </button>
+                            </div>
+                        </nav>
+                    </div>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" data-bind="with: selectedDocument">
-                <div class="attachment-iframe-wrapper ratio">
-                    <!-- ko if: ['csv','txt','png','jpg','jpeg','gif','bmp','webp','tif','tiff'].indexOf(FileExtension.toLowerCase()) == -1 -->
-                    <iframe data-bind="attr: { src: actualSrc }"></iframe>
-                    <!-- /ko -->
-                    <!-- ko if: ['csv','txt'].indexOf(FileExtension.toLowerCase()) > -1 -->
-                    <pre class="prettyprint linenums" data-bind="html: prettyPrintedResponse"></pre>
-                    <!-- /ko -->
-                    <!-- ko if: ['png','jpg','jpeg','gif','bmp','webp'].indexOf(FileExtension.toLowerCase()) > -1 -->
-                    <img data-bind="attr: { src: actualSrc }" />
-                    <!-- /ko -->
-                    <!-- ko if: ['tif', 'tiff'].indexOf(FileExtension.toLowerCase()) > -1 -->
-                    <div class="tif-canvas-container">
+            <div class="modal-body" data-bind="with: selectedEmail">
+                <div class="attachment-viewer" data-bind="with: selectedAttachment">
+                    <div class="attachment-iframe-wrapper ratio">
+                        <!-- ko if: ['csv','txt','png','jpg','jpeg','gif','bmp','webp','tif','tiff'].indexOf(FileExtension.toLowerCase()) == -1 -->
+                        <iframe data-bind="attr: { src: actualSrc }"></iframe>
+                        <!-- /ko -->
+                        <!-- ko if: ['csv','txt'].indexOf(FileExtension.toLowerCase()) > -1 -->
+                        <pre class="prettyprint linenums" data-bind="html: prettyPrintedResponse"></pre>
+                        <!-- /ko -->
+                        <!-- ko if: ['png','jpg','jpeg','gif','bmp','webp'].indexOf(FileExtension.toLowerCase()) > -1 -->
+                        <img data-bind="attr: { src: actualSrc }" />
+                        <!-- /ko -->
+                        <!-- ko if: ['tif', 'tiff'].indexOf(FileExtension.toLowerCase()) > -1 -->
+                        <div class="tif-canvas-container">
 
+                        </div>
+                        <!-- /ko -->
                     </div>
-                    <!-- /ko -->
+                    <div class="data-pane">
+                        <!-- ko template: { name: 'form-template' } --><!-- /ko -->
+                    </div>
                 </div>
                 <div class="d-flex align-items-center justify-content-start mt-3">
-                    <button class="btn btn-dark btn-lg d-inline-flex justify-content-between align-items-center gap-2" data-bind="click: $parent.viewEmail">
-                        <i class="bi bi-chevron-left"></i>
-                        View Email
-                    </button>
+                    @*<button class="btn btn-dark btn-lg d-inline-flex justify-content-between align-items-center gap-2" data-bind="click: $parent.viewEmail">
+                            <i class="bi bi-chevron-left"></i>
+                            View Email
+                        </button>*@
                 </div>
             </div>
         </div>

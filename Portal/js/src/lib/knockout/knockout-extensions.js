@@ -254,7 +254,6 @@ ko.bindingHandlers.numeric = {
     }
 };
 
-
 // Thanks to http://stackoverflow.com/questions/17048468/make-an-input-only-numeric-type-on-knockout
 ko.bindingHandlers.numericWhole = {
     init: function (element, valueAccessor) {
@@ -600,7 +599,6 @@ ko.extenders.numberFormatted = function (target, options) {
     }).extend({ notify: 'always' });
     return target;
 };
-
 
 ko.extenders.numberUnformatted = function (target, options) {
 
@@ -3045,28 +3043,28 @@ ko.bindingHandlers.matrixLoader = {
             Summer theme
             bg #1ca9c9
             */
-            return [
-                String.fromCodePoint(0x1F60E), //smiling face w / sunglasses
-                String.fromCodePoint(0x1F33B), //sunflower
-                String.fromCodePoint(0x1F334), //palm tree
-                String.fromCodePoint(0x1F34D), //pineapple
-                String.fromCodePoint(0x1F965), //coconut
-                String.fromCodePoint(0x1F3C4), //person surfing
-                String.fromCodePoint(0x1F42C), //dolphin
-                String.fromCodePoint(0x1F41A), //spiral seashell
-                String.fromCodePoint(0x1F98B), //butterfly
-                String.fromCodePoint(0x2708), //aeroplane
-                String.fromCodePoint(0x2600), //sun
-                String.fromCodePoint(0x1F30A), //cresting wave
-                String.fromCodePoint(0x1F453), //glasses
-                String.fromCodePoint(0x1F366), //ice cream cone
-                String.fromCodePoint(0x1F379), //tropical drink
-                String.fromCodePoint(0x1F3D6), //beach w / umbrella
-                String.fromCodePoint(0x1F3DD), //desert island
-                String.fromCodePoint(0x1F9A9), //flamingo
-                String.fromCodePoint(0x1F99C), //parrot
-                String.fromCodePoint(0x1F93F), //snorkel
-            ]
+            //return [
+            //    String.fromCodePoint(0x1F60E), //smiling face w / sunglasses
+            //    String.fromCodePoint(0x1F33B), //sunflower
+            //    String.fromCodePoint(0x1F334), //palm tree
+            //    String.fromCodePoint(0x1F34D), //pineapple
+            //    String.fromCodePoint(0x1F965), //coconut
+            //    String.fromCodePoint(0x1F3C4), //person surfing
+            //    String.fromCodePoint(0x1F42C), //dolphin
+            //    String.fromCodePoint(0x1F41A), //spiral seashell
+            //    String.fromCodePoint(0x1F98B), //butterfly
+            //    String.fromCodePoint(0x2708), //aeroplane
+            //    String.fromCodePoint(0x2600), //sun
+            //    String.fromCodePoint(0x1F30A), //cresting wave
+            //    String.fromCodePoint(0x1F453), //glasses
+            //    String.fromCodePoint(0x1F366), //ice cream cone
+            //    String.fromCodePoint(0x1F379), //tropical drink
+            //    String.fromCodePoint(0x1F3D6), //beach w / umbrella
+            //    String.fromCodePoint(0x1F3DD), //desert island
+            //    String.fromCodePoint(0x1F9A9), //flamingo
+            //    String.fromCodePoint(0x1F99C), //parrot
+            //    String.fromCodePoint(0x1F93F), //snorkel
+            //]
 
             /*
             Jubilee theme
@@ -3080,7 +3078,14 @@ ko.bindingHandlers.matrixLoader = {
             //return [String.fromCodePoint(0x1F31E), String.fromCodePoint(0x1F33B), String.fromCodePoint(0x1F3BE), String.fromCodePoint(0x1F349), String.fromCodePoint(0x1F353), String.fromCodePoint(0x1F343), String.fromCodePoint(0x1F33E), String.fromCodePoint(0x1F337), String.fromCodePoint(0x1F425), String.fromCodePoint(0x1F3CF)]
 
             // Autumn
-            //return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F343), String.fromCodePoint(0x2614), String.fromCodePoint(0x2615), String.fromCodePoint(0x1F36C)]
+            return [
+                String.fromCodePoint(0x1F341),
+                String.fromCodePoint(0x1F342),
+                String.fromCodePoint(0x1F341),
+                String.fromCodePoint(0x1F343),
+                String.fromCodePoint(0x2614),
+                String.fromCodePoint(0x2615),
+                String.fromCodePoint(0x1F36C)]
 
             // Halloween
             //return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F343), String.fromCodePoint(0x1F480), String.fromCodePoint(0x1F383), String.fromCodePoint(0x1F47B), String.fromCodePoint(0x2614), String.fromCodePoint(0x1F987), String.fromCodePoint(0x1F36C), String.fromCodePoint(0x1F578), String.fromCodePoint(0x1F577)]
@@ -3245,7 +3250,7 @@ ko.bindingHandlers.matrixLoader = {
             //self.ctx.fillStyle = "#020202"; // black
             //self.ctx.fillStyle = "rgba(0,0,0,0.25)";
             //self.ctx.fillStyle = "#da5e04"; // autumn (bright)
-            //self.ctx.fillStyle = '#c86e2d'; // autumn (darker)
+            self.ctx.fillStyle = '#c86e2d'; // autumn (darker)
             //self.ctx.fillStyle = "#f0b447"; // autumn (golden yellow)
             //self.ctx.fillStyle = '#003153'; // autumn (prussian blue)
             //self.ctx.fillStyle = "#66b8ff"; //winter
@@ -3255,7 +3260,7 @@ ko.bindingHandlers.matrixLoader = {
             //self.ctx.fillStyle = '#53bfea'; // spring (sky blue)
 
             //self.ctx.fillStyle = '#c1e0ff'; // summer
-            self.ctx.fillStyle = '#1ca9c9'; // summer, Lianne's Pacific Ocean Blue
+            //self.ctx.fillStyle = '#1ca9c9'; // summer, Lianne's Pacific Ocean Blue
 
             //#endregion
 

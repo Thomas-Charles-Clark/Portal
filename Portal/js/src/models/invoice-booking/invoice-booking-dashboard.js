@@ -198,7 +198,7 @@
 
         self.parent.selectedEmail(undefined);
 
-    } 
+    }
 
     self.documentsFetch = (afterFn) => {
         self.documentsBusy(true)

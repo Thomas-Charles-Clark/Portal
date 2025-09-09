@@ -6,6 +6,8 @@ body {
 }
 
 .blocker {
+    z-index: 1005;
+
     &.success {
         background-color: rgb(18 99 47 / 80%);
     }
@@ -317,8 +319,12 @@ $light-blue-highlight: tint-color($blue-100, 75%);
     }
 }
 
-#department-prefilter {
+.department-prefilter {
+
+
     .k-animation-container {
+        width: auto;
+
         .k-list-container {
             .k-item {
                 font-size: $font-size-base;
@@ -326,11 +332,29 @@ $light-blue-highlight: tint-color($blue-100, 75%);
         }
     }
 
-    .dropdown {
-        &.selected {
-            & ~ .mdc-notched-outline {
-                .mdc-floating-label {
-                    color: $body-color;
+    .mdc-bootstrap-multiselect:not(.mdc-select--disabled) {
+
+        .dropdown {
+            &.selected {
+                & ~ .mdc-notched-outline {
+                    .mdc-floating-label {
+                        color: $body-color;
+                    }
+                }
+            }
+
+            .dropdown-menu {
+                width: auto;
+                padding-left: 0;
+                padding-right: 0;
+
+                .form-check {
+                    display: flex;
+                    padding-left: 0;
+
+                    .form-check-input {
+                        margin-left: 0;
+                    }
                 }
             }
         }
@@ -381,59 +405,61 @@ $light-blue-highlight: tint-color($blue-100, 75%);
         }
     }
 }
-#order-date-type-prefilter,
-#document-date-type-prefilter {
 
-    .k-dropdown-wrap {
-        > span.k-input {
-            padding: 0;
-            display: flex;
+.date-type-prefilter {
+    flex: 1;
 
-            > span.date-range {
-                flex: 1;
-                display: inline-block;
-                padding: 8px 32px 10px 0;
+    .k-animation-container {
 
-                &.date-danger {
-                    background-color: tint-color($red-200, 20%);
-                    color: $red-600;
-                    /*padding: 4px 32px 4px 0;*/
+        .k-dropdown-wrap {
+
+            span.k-input {
+                padding: 0;
+                display: flex;
+
+                span.date-range {
+
+                    &.date-danger {
+                        background-color: tint-color($red-200, 20%);
+                        color: $red-600;
+                        /*padding: 4px 32px 4px 0;*/
+                    }
                 }
             }
         }
-    }
 
-    .k-list {
-        .k-item {
-            padding: 0;
+        .k-list {
+            .k-item {
+                padding: 0;
 
-            &:hover,
-            &.k-state-focused,
-            &.k-state-selected,
-            &:focus,
-            &:focus-within {
-                > span {
-                    &.date-danger {
-                        background-color: tint-color($red-200, 20%);
+                &:hover,
+                &.k-state-focused,
+                &.k-state-selected,
+                &:focus,
+                &:focus-within {
+                    > span {
+                        &.date-danger {
+                            background-color: tint-color($red-200, 20%);
+                            color: $red-600;
+                        }
+                    }
+
+                    &:has( > span.date-danger) {
                         color: $red-600;
                     }
                 }
 
-                &:has( > span.date-danger) {
-                    color: $red-600;
-                }
-            }
+                > span {
+                    border-radius: 4px;
+                    padding: 0 4px;
+                    display: block;
+                    width: 100%;
+                    flex: 1;
 
-            > span {
-                border-radius: 4px;
-                padding: 0 4px;
-                display: block;
-                width: 100%;
-                flex: 1;
-
-                &.date-danger {
-                    background-color: tint-color($red-200, 55%);
-                    color: $red-400;
+                    &.date-danger {
+                        background-color: tint-color($red-200, 55%);
+                        color: $red-400;
+                    }
                 }
             }
         }
@@ -444,7 +470,7 @@ $light-blue-highlight: tint-color($blue-100, 75%);
     width: 100%;
 }
 
-#date-affector-prefilter {
+.date-affector-prefilter {
     .mdc-validating-field {
         margin-right: -0.5em;
         .mdc-notched-outline {
@@ -456,7 +482,7 @@ $light-blue-highlight: tint-color($blue-100, 75%);
     }
 }
 
-#document-date-prefilter {
+.document-date-prefilter {
     .mdc-validating-field {
         margin-left: -0.5em;
         .mdc-notched-outline {
@@ -506,12 +532,11 @@ $light-blue-highlight: tint-color($blue-100, 75%);
     }
 }
 
-#email-list-prefilters,
-#document-grid-prefilters {
+.grid-prefilters {
     display: flex;
     gap: $l-gutter;
     margin: 0;
-    padding: 0 0 $l-gutter 0;
+    padding: $l-gutter 0;
     justify-content: space-between;
     flex-wrap: wrap;
 
@@ -564,8 +589,7 @@ $light-blue-highlight: tint-color($blue-100, 75%);
         }*/
     }
 
-    #order-date-prefilter,
-    #document-date-prefilter {
+    .date-prefilter {
         display: block;
     }
 }
@@ -651,7 +675,6 @@ $light-blue-highlight: tint-color($blue-100, 75%);
 }
 
 #documents-dashboard {
-    margin-bottom: $l-gutter;
 
     .accordion-item {
         border-radius: 0;
@@ -730,7 +753,8 @@ $light-blue-highlight: tint-color($blue-100, 75%);
     }
 }
 
-#email-modal {
+#email-modal,
+#document-viewer-modal {
     .modal-dialog {
         margin-top: 0;
         margin-bottom: 0;
@@ -778,6 +802,14 @@ $light-blue-highlight: tint-color($blue-100, 75%);
 
                 .modal-title {
                     color: $white;
+                    
+                    > span {
+                        display: block;
+                        overflow: hidden;
+                        > span {
+
+                        }
+                    }
                 }
 
                 .form-check-label {
@@ -788,6 +820,7 @@ $light-blue-highlight: tint-color($blue-100, 75%);
                     display: flex;
                     gap: $l-gutter;
                     align-items: center;
+                    flex-wrap: nowrap;
 
                     .btn {
                         &.disabled {
@@ -920,7 +953,7 @@ $light-blue-highlight: tint-color($blue-100, 75%);
                     }
                 }
 
-                #attachment-viewer {
+                .attachment-viewer {
                     display: flex;
                     gap: $l-gutter;
                     flex: 1 1 50%;
@@ -984,7 +1017,7 @@ $light-blue-highlight: tint-color($blue-100, 75%);
                     }
                 }
 
-                #data-pane {
+                .data-pane {
                     flex: 1 1 420px;
 
                     .additional-info {
@@ -1659,6 +1692,11 @@ $light-blue-highlight: tint-color($blue-100, 75%);
                     --bs-aspect-ratio: 146%;
                     border: 1px solid $gray-300;
                     max-width: 100%;
+                }
+
+                #document-viewer-wrapper {
+                    display: flex;
+                    gap: $l-gutter;
                 }
             }
         }

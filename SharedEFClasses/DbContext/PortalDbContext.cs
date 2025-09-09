@@ -635,6 +635,7 @@ namespace SharedEFClasses.Models
         public virtual DbSet<MailboxFunction> MailboxFunctions { get; set; }
         public virtual DbSet<BudgetHolderSuperSet> BudgetHolderSuperSet { get; set; }
         public virtual DbSet<EmailStatus> EmailStatuses { get; set; }
+        public virtual DbSet<SupplierBankDetails> SupplierBankDetails { get; set; }
 
         #endregion
 

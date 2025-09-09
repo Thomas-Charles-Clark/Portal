@@ -10,6 +10,7 @@ using SharedEFClasses;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.RangeManagement;
 using SharedEFClasses.SignalR.Hubs;
+using SharedEFClasses.Utilities;
 
 using SimpleImpersonation;
 
@@ -42,7 +43,7 @@ namespace Portal.Areas.Invoices.Controllers
         }
 
         // GET: invoices/booking/index
-        public async Task<ActionResult> Index(string pod, string dashboardPod)
+        public async Task<ActionResult> Index(string pod, string dashboardPod, string document)
         {
             var application = PortalDb.Applications.Where(p => p.ControllerName == "booking" && p.AreaName == "invoices" && p.ActionName == "index").Single();
 
@@ -74,6 +75,12 @@ namespace Portal.Areas.Invoices.Controllers
                 lockedToBudgetHolderCode = null;
             }
 
+            //if (user.Id == 8)
+            //{
+            //    lockedToDepartmentGroupIds = new List<short>() { 61 };
+            //    lockedToBudgetHolderCode = "52";
+            //}
+
             var loadingEmailStatusId = (int?)null;
 
             if (!String.IsNullOrEmpty(pod))
@@ -100,12 +107,28 @@ namespace Portal.Areas.Invoices.Controllers
 
             var invoiceRegistrationSuspended = PortalDb.GlobalVariables.Single(p => p.GlobalVariableID == 19).Value == "0" ? false : true;
 
+            var loadingAttachmentId = (long?)null;
+
+            if (!String.IsNullOrEmpty(document))
+            {
+                try
+                {
+                    var documentDecoded = HttpUtility.UrlDecode(document);
+                    loadingAttachmentId = Convert.ToInt64(dgCrypto.Decrypt(documentDecoded));
+                }
+                catch(Exception)
+                {
+
+                }
+            }
+
             var model = await InvoiceBookingViewModel.CreateAsync(
                 1,
                 lockedToDepartmentGroupIds,
                 lockedToBudgetHolderCode,
                 loadingEmailStatusId,
                 loadingAttachmentStatusId,
+                loadingAttachmentId,
                 invoiceRegistrationSuspended,
                 user.GetActiveRoleProperties(), 
                 application.Heading, 
