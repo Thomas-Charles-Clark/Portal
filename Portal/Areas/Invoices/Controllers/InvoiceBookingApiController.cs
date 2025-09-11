@@ -231,6 +231,9 @@ namespace Portal.Areas.Invoices.Controllers
                 case 6: /* Last 6 Months */
                     fromDt = DateTime.Now.AddMonths(-6);
                     break;
+                case 3: /* Last 3 Months */
+                    fromDt = DateTime.Now.AddMonths(-3);
+                    break;
                 case 1: /* This Month */
                     fromDt = DateTime.Now.AddDays(-DateTime.Now.Day).AddDays(1);
                     break;
@@ -338,7 +341,7 @@ namespace Portal.Areas.Invoices.Controllers
             {
                 if (!String.IsNullOrEmpty(d.SupplierCode))
                 {
-                    d.BankDetails = await PortalDb.IncomingEmail_SupplierBankDetails_Select(new PassSupplierDetail()
+                    d.BankDetails = await PortalDb.SupplierBankDetails_Select(new PassSupplierDetail()
                     {
                         SupplierCode = d.SupplierCode
                     });
@@ -382,6 +385,9 @@ namespace Portal.Areas.Invoices.Controllers
                     break;
                 case 6: /* Last 6 Months */
                     fromDt = DateTime.Now.AddMonths(-6);
+                    break;
+                case 3: /* Last 3 Months */
+                    fromDt = DateTime.Now.AddMonths(-3);
                     break;
                 case 1: /* This Month */
                     fromDt = DateTime.Now.AddDays(-DateTime.Now.Day).AddDays(1);
@@ -537,7 +543,7 @@ namespace Portal.Areas.Invoices.Controllers
 
             var additionalInfo = await PortalDb.Email_Select(dto);
 
-            var bankDetails = await PortalDb.IncomingEmail_SupplierBankDetails_Select(new PassSupplierDetail() { SupplierCode = email.SupplierCode });
+            var bankDetails = await PortalDb.SupplierBankDetails_Select(new PassSupplierDetail() { SupplierCode = email.SupplierCode });
 
             try
             {
@@ -776,9 +782,17 @@ namespace Portal.Areas.Invoices.Controllers
 
             var result = await PortalDb.IncomingEmail_Supplier_Save(dto);
 
-            var bankDetails = await PortalDb.IncomingEmail_SupplierBankDetails_Select(dto);
+            return Ok(new { });
+        }
 
-            return Ok(new { bankDetails });
+        [HttpPost]
+        public async Task<IHttpActionResult> FetchSupplierBankDetails([FromBody] PassSupplierDetail dto)
+        {
+            dto.MemberID = User.Identity.GetUserId<int>();
+
+            var result = await PortalDb.SupplierBankDetails_Select(dto);
+
+            return Ok(result);
         }
 
 
@@ -939,6 +953,27 @@ namespace Portal.Areas.Invoices.Controllers
             });
 
             return Json(new { documentCount = dto.AttachmentIDs.Count() });
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> ForwardAttachment([FromBody] PassAttachmentForward dto)
+        {
+            dto.ForwardedByMemberID = User.Identity.GetUserId<int>();
+
+            var budgetHolder = PortalDb.BudgetHolders.SingleOrDefault(bh => bh.Code == dto.ForwardedToBudgetHolderCode);
+
+            if (budgetHolder != null && budgetHolder.MemberID.HasValue)
+            {
+                dto.ForwardedToMemberID = budgetHolder.MemberID.Value;
+
+                await PortalDb.IncomingEmail_Attachment_Forward(dto);
+
+                return Ok(budgetHolder);
+            }
+            else
+            {
+                return BadRequest($"Could not find either BudgetHolder or BudgetHolder.MemberID");
+            }
         }
     }
 }

@@ -15,6 +15,10 @@
     name: 'This Month',
     class: null
 }, {
+    dateRangeId: '3',
+    name: 'Last 3 Months',
+    class: null
+}, {
     dateRangeId: '6',
     name: 'Last 6 Months',
     class: null
@@ -39,6 +43,10 @@ const documentDateRanges = [{
 }, {
     dateRangeId: '1',
     name: 'This Month',
+    class: null
+}, {
+    dateRangeId: '3',
+    name: 'Last 3 Months',
     class: null
 }, {
     dateRangeId: '6',
@@ -111,9 +119,9 @@ const invoiceBookingFiltersViewModel = (params = {
 
     self.documentToDate = ko.observable();
 
-    self.dateRangeId = ko.observable('-2');
+    self.dateRangeId = ko.observable('30');
 
-    self.documentDateRangeId = ko.observable('-2');
+    self.documentDateRangeId = ko.observable('30');
 
     self.dateRanges = dateRanges;
 

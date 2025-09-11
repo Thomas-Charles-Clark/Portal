@@ -930,8 +930,9 @@ body {
 #document-viewer-modal .modal-dialog .modal-content .modal-body .data-pane {
   flex: 1 1 420px;
 }
-#email-modal .modal-dialog .modal-content .modal-body .data-pane .additional-info,
-#document-viewer-modal .modal-dialog .modal-content .modal-body .data-pane .additional-info {
+#email-modal .modal-dialog .modal-content .modal-body .data-pane .card + .card, #email-modal .modal-dialog .modal-content .modal-body .data-pane .card + .additional-info,
+#document-viewer-modal .modal-dialog .modal-content .modal-body .data-pane .card + .card,
+#document-viewer-modal .modal-dialog .modal-content .modal-body .data-pane .card + .additional-info {
   margin-top: 1rem;
 }
 #email-modal .modal-dialog .modal-content .modal-body .data-pane .data-heading,
@@ -1581,6 +1582,35 @@ body {
 #document-viewer-modal .modal-dialog .modal-content .modal-body #document-viewer-wrapper {
   display: flex;
   gap: 1rem;
+}
+
+#forward-attachment-modal .modal-dialog .modal-content .blocker {
+  border-radius: 0.375rem;
+}
+#forward-attachment-modal .modal-dialog .modal-content .modal-header {
+  background-color: #084298;
+  border-radius: 0;
+  padding: 0.5rem 1rem;
+  height: 68px;
+  border-bottom: 0;
+}
+#forward-attachment-modal .modal-dialog .modal-content .modal-title {
+  color: #fff;
+}
+.btn.forward-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.btn.forward-btn .material-icons {
+  font-weight: normal;
+}
+.btn.forward-btn:disabled {
+  pointer-events: all;
+  cursor: not-allowed;
 }
 
 #archives-modal-body .list-group .list-group-item {

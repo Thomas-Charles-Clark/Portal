@@ -145,6 +145,43 @@
         </tr>
     </script>
 
+    <script type="text/html" id="bank-details-template">
+        <div class="supplier-bank-properties card">
+            <div class="card-body">
+                <h5>
+                    <span>
+                        <span data-bind="text: templateLabel"></span>
+                        Bank Details
+                    </span>
+                </h5>
+                <p>
+                    Please provide banking details (Bank Name and either Account Number &amp; Sort Code <i>or&nbsp;</i> IBAN <i>or&nbsp;</i> BIC).
+                </p>
+                <div class="bank-name attachment-property" data-bind="highlightNullField: supplierBankName, component: { name: 'mdc-text-field-component', params: supplierBankNameParams }"></div>
+                <span class="validation-message" data-bind="validationMessage: supplierBankName"></span>
+
+                <div class="attachment-property-wrap">
+                    <div data-bind="validationOptions: { insertMessages: false }">
+                        <div class="bank-account-number attachment-property" data-bind="highlightNullField: supplierBankAccountNumber, component: { name: 'mdc-text-field-component', params: supplierBankAccountNumberParams }"></div>
+                    </div>
+                    <div data-bind="validationOptions: { insertMessages: false }">
+                        <div class="bank-sort-code attachment-property" data-bind="highlightNullField: supplierBankSortCode, component: { name: 'mdc-text-field-component', params: supplierBankSortCodeParams }"></div>
+                    </div>
+                </div>
+                <span class="validation-message" data-bind="validationMessage: supplierBankAccountNumberAndSortCode"></span>
+                <div class="attachment-property-wrap">
+                    <div data-bind="validationOptions: { insertMessages: false }">
+                        <div class="iban attachment-property" data-bind="highlightNullField: supplierIBAN, component: { name: 'mdc-text-field-component', params: supplierIBANParams }"></div>
+                    </div>
+                    <div data-bind="validationOptions: { insertMessages: false }">
+                        <div class="bic attachment-property" data-bind="highlightNullField: supplierBIC, component: { name: 'mdc-text-field-component', params: supplierBICParams }"></div>
+                    </div>
+                </div>
+                <span class="validation-message" data-bind="validationMessage: supplierIBANorBIC"></span>
+            </div>
+        </div>
+    </script>
+
     <script type="text/html" id="invoice-booking-invoice-template">
         <div id="invoice-properties" class="card">
             <div class="card-body" data-bind="validationElement: preambleSatisfied, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
@@ -161,7 +198,7 @@
                     <div class="attachment-supplier-container">
                         <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
                         <div class="supplier-address-display" style="display: none" data-bind="visible: supplierParams.locked, with: supplier">
-                            <p class="mb-0" data-bind="text: AddressDisplaySingleLine"></p>
+                            <p class="mb-0" data-bind="text: typeof AddressDisplaySingleLine === 'undefined' ? '' : AddressDisplaySingleLine, attr: { 'a': '1' }"></p>
                         </div>
                     </div>
                     <button type="button" class="btn btn-dark" style="display: none;" data-bind="visible: supplierParams.changeBtnVisible, click: () => { supplierParams.locked(!supplierParams.locked()) }">
@@ -221,39 +258,7 @@
                 </div>
             </div>
         </div>
-        <div id="supplier-bank-properties" class="card">
-            <div class="card-body">
-                <h5>
-                    <span>
-                        Bank Details
-                    </span>
-                </h5>
-                <p>
-                    Please provide banking details (Bank Name and either Account Number &amp; Sort Code <i>or&nbsp;</i> IBAN <i>or&nbsp;</i> BIC).
-                </p>
-                <div id="bank-name" class="attachment-property" data-bind="highlightNullField: supplierBankName, component: { name: 'mdc-text-field-component', params: supplierBankNameParams }"></div>
-                <span class="validation-message" data-bind="validationMessage: supplierBankName"></span>
-
-                <div class="attachment-property-wrap">
-                    <div data-bind="validationOptions: { insertMessages: false }">
-                        <div id="bank-account-number" class="attachment-property" data-bind="highlightNullField: supplierBankAccountNumber, component: { name: 'mdc-text-field-component', params: supplierBankAccountNumberParams }"></div>
-                    </div>
-                    <div data-bind="validationOptions: { insertMessages: false }">
-                        <div id="bank-sort-code" class="attachment-property" data-bind="highlightNullField: supplierBankSortCode, component: { name: 'mdc-text-field-component', params: supplierBankSortCodeParams }"></div>
-                    </div>
-                </div>
-                <span class="validation-message" data-bind="validationMessage: supplierBankAccountNumberAndSortCode"></span>
-                <div class="attachment-property-wrap">
-                    <div data-bind="validationOptions: { insertMessages: false }">
-                        <div id="iban" class="attachment-property" data-bind="highlightNullField: supplierIBAN, component: { name: 'mdc-text-field-component', params: supplierIBANParams }"></div>
-                    </div>
-                    <div data-bind="validationOptions: { insertMessages: false }">
-                        <div id="bic" class="attachment-property" data-bind="highlightNullField: supplierBIC, component: { name: 'mdc-text-field-component', params: supplierBICParams }"></div>
-                    </div>
-                </div>
-                <span class="validation-message" data-bind="validationMessage: supplierIBANorBIC"></span>
-            </div>
-        </div>
+        <!-- ko template: { name: 'bank-details-template', data: Object.assign($data, { templateLabel: 'Invoice' }) } --><!-- /ko -->
         <div id="duplicate-warnings" class="card" style="display: none" data-bind="visible: duplicateResults().length > 0">
             <div class="card-body">
                 <!-- ko ifnot: isFlaggedAsDuplicate -->
@@ -427,7 +432,7 @@
                     <div class="attachment-supplier-container">
                         <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
                         <div class="supplier-address-display" style="display: none" data-bind="visible: supplierParams.locked, with: supplier">
-                            <p class="mb-0" data-bind="text: AddressDisplaySingleLine"></p>
+                            <p class="mb-0" data-bind="text: typeof AddressDisplaySingleLine === 'undefined' ? '' : AddressDisplaySingleLine, attr: { 'a': '2' }"></p>
                         </div>
                     </div>
                     <button type="button" class="btn btn-dark" style="display: none;" data-bind="visible: supplierParams.changeBtnVisible, click: () => { supplierParams.locked(!supplierParams.locked()) }">
@@ -561,7 +566,7 @@
                     <div class="attachment-supplier-container">
                         <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
                         <div class="supplier-address-display" style="display: none" data-bind="visible: supplierParams.locked, with: supplier">
-                            <p class="mb-0" data-bind="text: AddressDisplaySingleLine"></p>
+                            <p class="mb-0" data-bind="text: typeof AddressDisplaySingleLine === 'undefined' ? '' : AddressDisplaySingleLine, attr: { 'a': '3' }"></p>
                         </div>
                     </div>
                     <button type="button" class="btn btn-dark" style="display: none;" data-bind="visible: supplierParams.changeBtnVisible, click: () => { supplierParams.locked(!supplierParams.locked()) }">
@@ -777,7 +782,7 @@
                     <div class="attachment-supplier-container">
                         <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
                         <div class="supplier-address-display" style="display: none" data-bind="visible: supplierParams.locked, with: supplier">
-                            <p class="mb-0" data-bind="text: AddressDisplaySingleLine"></p>
+                            <p class="mb-0" data-bind="text: typeof AddressDisplaySingleLine === 'undefined' ? '' : AddressDisplaySingleLine, attr: { 'a': '4' }"></p>
                         </div>
                     </div>
                     <button type="button" class="btn btn-dark" style="display: none;" data-bind="visible: supplierParams.changeBtnVisible, click: () => { supplierParams.locked(!supplierParams.locked()) }">
@@ -826,7 +831,7 @@
                         <div class="attachment-supplier-container">
                             <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: $parent.supplierParams }"></div>
                             <div class="supplier-address-display" style="display: none" data-bind="visible: $parent.supplierParams.locked, with: $parent.supplier">
-                                <p class="mb-0" data-bind="text: AddressDisplaySingleLine"></p>
+                                <p class="mb-0" data-bind="text: typeof AddressDisplaySingleLine === 'undefined' ? '' : AddressDisplaySingleLine, attr: { 'a': '5' }"></p>
                             </div>
                         </div>
                         <button type="button" class="btn btn-dark" data-bind="visible: $parent.Processed == false && ($parent.readOnly == true ? false : $parent.supplierParams.locked), click: () => { $parent.supplierParams.locked(!$parent.supplierParams.locked()) }">
@@ -839,6 +844,33 @@
         <div class="additional-info" style="display: none" data-bind="visible: $parent.additionalInfo, foreach: $parent.additionalInfo">
             <div class="card p-0" data-bind="class: CSSClasses">
                 <div class="card-body" data-bind="html: HTMLContents"></div>
+            </div>
+        </div>
+        <!-- /ko -->
+        <!-- ko if: (typeof Forwarded != 'undefined') && (Forwarded == true) -->
+        <div class="card mb-3">
+            <div class="card-body bg-blue-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <p class="mb-0">
+                        <span>
+                            This attachment was forwarded to
+                        </span>
+                        <span class="bold" data-bind="text: ForwardedToMember.FullName"></span>
+                        (<a href="#" data-bind="text: ForwardedToMember.Email, attr: {  href: `mailto:${ForwardedToMember.Email}` }"></a>)
+                        <br />
+                        <span>
+                            on
+                        </span>
+                        <span data-bind="text: moment(ForwardedDT).format('dddd [the] Do MMMM YYYY [at] HH:mm')"></span>
+                        <br />
+                        <span>
+                            by
+                        </span>
+                        <span class="bold" data-bind="text: ForwardedByMember.FullName"></span>
+                        (<a href="#" data-bind="text: ForwardedByMember.Email, attr: {  href: `mailto:${ForwardedByMember.Email}` }"></a>).
+                    </p>
+                    <span class="material-symbols-outlined fs-1">outgoing_mail</span>
+                </div>
             </div>
         </div>
         <!-- /ko -->
@@ -860,6 +892,14 @@
             <li class="nav-item" role="presentation" style="display: none" data-bind="visible: mertexData != null">
                 <button class="nav-link" id="mertex-data-tab" data-bs-toggle="tab" data-bs-target="#mertex-data-tab-pane" type="button" role="tab" aria-controls="mertex-data-tab-pane" aria-selected="false">
                     Mertex Data
+                </button>
+            </li>
+            <li class="nav-item ms-auto">
+                <button class="btn btn-secondary forward-btn" type="button" data-bind="click: showAttachmentForwarder, disable: readOnly">
+                    <span class="material-symbols-outlined">
+                        forward
+                    </span>
+                    Forward Attachment
                 </button>
             </li>
         </ul>
@@ -1591,6 +1631,12 @@
                         </span>
                         <span class="d-block" data-bind="html: `Subject: ${Subject}`"></span>
                     </span>
+                    @*<div data-bind="with: selectedAttachment">
+                            <button class="btn btn-light" type="button" data-bind="click: copySharingLinkToClipboard" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Tooltip on bottom">
+                                <i class="bi bi-share"></i>
+                                Copy Link
+                            </button>
+                        </div>*@
                     <div class="d-inline-flex gap-3">
                         <nav class="nav">
                             <span class="me-3" data-bind="text: `Attachment ID: ${AttachmentID}`"></span>
@@ -1696,6 +1742,43 @@
                 </div>
                 <div class="modal-footer" style="margin-top: 0">
                     <button id="archives-modal-close" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="forward-attachment-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div data-bind="with: selectedEmail">
+                <div data-bind="with: selectedAttachment">
+                    <div class="blocker" data-bind="flexFadeVisible: forwardAttachmentModalBusy">
+                        <div class="loading-spinner"></div>
+                        <h4 class="mt-3">
+                            Please Wait...
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-header">
+                <h5 class="modal-title d-flex justify-content-between align-items-center w-100 pe-2">
+                    Forward Attachment
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body relative">
+                <p>
+                    Please select the Budget Holder to forward to.
+                </p>
+                <div id="destination-budget-holder" class="relative" data-bind="with: selectedEmail">
+                    <div data-bind="with: selectedAttachment">
+                        <div class="relative" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: forwardToBudgetHolderParams }"></div>
+                        <span class="validation-message" data-bind="validationMessage: forwardToBudgetHolderCode"></span>
+                        <button class="btn btn-dark w-100 mt-3" data-bind="click: forwardAttachment">
+                            Forward
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

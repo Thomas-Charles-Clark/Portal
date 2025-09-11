@@ -113,8 +113,7 @@ namespace Portal.Areas.Invoices.Controllers
             {
                 try
                 {
-                    var documentDecoded = HttpUtility.UrlDecode(document);
-                    loadingAttachmentId = Convert.ToInt64(dgCrypto.Decrypt(documentDecoded));
+                    loadingAttachmentId = Convert.ToInt64(dgCrypto.Decrypt(document));
                 }
                 catch(Exception)
                 {

@@ -49,8 +49,62 @@
             return null;
         }),
         modalElement: parent.modalElement,
-        reset: parent.reset
+        reset: parent.reset,
+        forwardAttachmentModal: parent.forwardAttachmentModal
     });
+
+    //#region Lifted Methods
+
+    self.reallySelectAttachment = (data, callback) => {
+
+        self.modalBusy(true);
+
+        let params = {
+            attachmentId: data.AttachmentID ?? data.attachmentId
+        }
+
+        if (params.attachmentId == -1) {
+            self.selectedAttachment(self.regularAttachments()[0]);
+            self.modalBusy(false);
+        } else {
+            fetch('/api/InvoiceBookingAPI/LoadAttachment', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                cache: 'no-cache',
+                credentials: 'same-origin',
+                body: JSON.stringify(params)
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    console.log('LoadAttachment returned', data);
+
+                    self.selectedAttachment(invoiceBookingEmailAttachmentViewModel({
+                        rec: data,
+                        parent: self
+                    }));
+
+                    let original = self.attachments().find(a => a.AttachmentID == data.AttachmentID ?? data.attachmentId);
+
+                    if (original) {
+                        self.attachments.replace(original, self.selectedAttachment());
+                    } else {
+                        self.attachments.push(self.selectedAttachment());
+                    }
+
+                    if (typeof callback == 'function') {
+                        callback();
+                    } else {
+                        self.modalBusy(false);
+                    }
+                })
+                .catch(err => {
+                    self.modalBusy(false);
+                    window.catchFetchError(err);
+                })
+        }
+    }
+
+    //#endregion
 
     //#region Properties
 
@@ -106,16 +160,7 @@
 
     self.downloadAttachmentsIndividualPortionPercentage = ko.observable(Math.round((100 / self.attachments().filter(a => a.isEmailBody == false && a.IsInline == false).length) * 100) / 100);
 
-    self.supplierBankName = ko.observable(rec.BankDetails.BankName);
-
-    self.supplierBankAccountNumber = ko.observable(rec.BankDetails.AccountNumber);
-
-    self.supplierBankSortCode = ko.observable(rec.BankDetails.SortCode);
-
-    self.supplierIBAN = ko.observable(rec.BankDetails.IBAN);
-
-    self.supplierBIC = ko.observable(rec.BankDetails.BIC);
-
+    self.readOnly = ko.observable(rec.Processed);
 
     //#endregion
 
@@ -123,10 +168,9 @@
     //#region Components
 
     self.supplierParams = kendoMDCDropDownList({
-        skipCascade: true,
         label: 'Supplier',
         odata: true,
-        endPoint: '/odata/MertexLiveSuppliers?$expand=Currency,ExchangeRate,PaymentTerms,SupplierBankDetails',
+        endPoint: '/odata/MertexLiveSuppliers?$expand=Currency,ExchangeRate,PaymentTerms',
         textField: 'Name',
         valueField: 'Code',
         template: (e) => {
@@ -175,7 +219,7 @@
         disable: ko.observable(false),
         clearable: ko.observable(true),
         revertible: ko.observable(false),
-        readOnly: false,
+        readOnly: self.readOnly,
         filter: 'contains',
         autoBind: true,
         height: 340,
@@ -305,22 +349,6 @@
         return self.regularAttachments().filter(f => !f.isEmailBody && f.selectedForDownload());
     }, self);
 
-    self.bankDetailsComputer = ko.computed(() => {
-        let result = {
-            bankName: self.supplierBankName(),
-            bankAccountNumber: self.supplierBankAccountNumber(),
-            bankSortCode: self.supplierBankSortCode(),
-            iban: self.supplierIBAN(),
-            bic: self.supplierBIC()
-        }
-        return result;
-    }, self).extend({
-        rateLimit: {
-            timeout: 0,
-            method: 'notifyWhenChangesStop'
-        }
-    });
-
     //#endregion
 
 
@@ -352,21 +380,18 @@
                 .then(window.handleFetchResponse)
                 .then(data => {
                     console.log('saveSupplierDetail returned', data);
-                    // we should have called IncomingEmail.SupplierBankDetails_Select in SaveSupplierDetail
-                    // we can then pass the bank details to any regular attachments of type invoice
-                    // or lift them TO any attachment which BECOMES type invoice.
-
-                    self.supplierBankName(data.bankDetails.BankName);
-                    self.supplierBankAccountNumber(data.bankDetails.AccountNumber);
-                    self.supplierBankSortCode(data.bankDetails.SortCode);
-                    self.supplierIBAN(data.bankDetails.IBAN);
-                    self.supplierBIC(data.bankDetails.BIC);
                 })
                 .catch(window.catchFetchError);
 
         } else {
             self.isPropagatingSupplier = false;
         }
+
+        let invoices = self.regularAttachments().filter(r => r.attachmentTypeId() == 2);
+
+        invoices.forEach(i => {
+            i.properties() && i.properties().fetchSupplierBankDetails(nv);
+        });
     });
 
     self.addingAttachments.subscribe((nv) => {
@@ -428,39 +453,17 @@
 
     self.selectedAttachment.subscribe(nv => {
         if (nv) {
-            self.modalElement.querySelectorAll('.btn').forEach((e) => {
-                new bootstrap.Ripple(e);
-            });
+            window.setTimeout(() => {
+                self.modalElement.querySelectorAll('.btn').forEach((e) => {
+                    new bootstrap.Ripple(e);
+                });
+            }, 0);
         }
     });
 
     self.attachmentsSelectedForDownload.subscribe(nv => {
         self.downloadAttachmentsProgressPercentage(0);
         self.downloadAttachmentsIndividualPortionPercentage(Math.round((100 / nv.length) * 100) / 100)
-    });
-
-    self.bankDetailsComputer.subscribe(nv => {
-        var invoices = self.regularAttachments().filter(r => r.attachmentTypeId() == 2); // invoices
-
-        invoices.forEach(i => {
-            if (i.properties()) {
-                if (i.properties().supplierBankName() == null || i.properties().supplierBankName() == '') {
-                    i.properties().supplierBankName(nv.bankName)
-                }
-                if (i.properties().supplierBankAccountNumber() == null || i.properties().supplierBankAccountNumber() == '') {
-                    i.properties().supplierBankAccountNumber(nv.bankAccountNumber)
-                }
-                if (i.properties().supplierBankSortCode() == null || i.properties().supplierBankSortCode() == '') {
-                    i.properties().supplierBankAccountNumber(nv.bankAccountNumber)
-                }
-                if (i.properties().supplierIBAN() == null || i.properties().supplierIBAN() == '') {
-                    i.properties().supplierIBAN(nv.iban)
-                }
-                if (i.properties().supplierBIC() == null || i.properties().supplierBIC() == '') {
-                    i.properties().supplierBIC(nv.bic)
-                }
-            }
-        });
     });
 
     //#endregion
@@ -481,55 +484,6 @@
         }
         else {
             self.reallySelectAttachment(data, callback)
-        }
-    }
-
-    self.reallySelectAttachment = (data, callback) => {
-
-        self.modalBusy(true);
-
-        let params = {
-            attachmentId: data.AttachmentID ?? data.attachmentId
-        }
-
-        if (params.attachmentId == -1) {
-            self.selectedAttachment(self.regularAttachments()[0]);
-            self.modalBusy(false);
-        } else {
-            fetch('/api/InvoiceBookingAPI/LoadAttachment', {
-                method: 'POST',
-                headers: window.fetchHeaders,
-                cache: 'no-cache',
-                credentials: 'same-origin',
-                body: JSON.stringify(params)
-            })
-                .then(window.handleFetchResponse)
-                .then(data => {
-                    console.log('LoadAttachment returned', data);
-
-                    self.selectedAttachment(invoiceBookingEmailAttachmentViewModel({
-                        rec: data,
-                        parent: self
-                    }));
-
-                    let original = self.attachments().find(a => a.AttachmentID == data.AttachmentID);
-
-                    if (original) {
-                        self.attachments.replace(original, self.selectedAttachment());
-                    } else {
-                        self.attachments.push(self.selectedAttachment());
-                    }
-
-                    if (typeof callback == 'function') {
-                        callback();
-                    } else {
-                        self.modalBusy(false);
-                    }
-                })
-                .catch(err => {
-                    self.modalBusy(false);
-                    window.catchFetchError(err);
-                })
         }
     }
 

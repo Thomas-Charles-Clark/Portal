@@ -391,6 +391,24 @@ const invoiceBookingViewModel = ({
                         SupplierCode: { type: 'string', editable: false },
                         EmailStatusID: { type: 'number', editable: false },
                         RegularAttachmentCount: { type: 'number', editable: false },
+                        Forwarded: { type: 'boolean', editable: false },
+                        ForwardedDT: { type: 'datetime', editable: false },
+                        ForwardedToMemberID: { type: 'number', editable: false },
+                        ForwardedToMember: {
+                            type: 'object',
+                            fields: {
+                                FullName: { type: 'string', editable: false },
+                                Email: { type: 'string', editable: false }
+                            }
+                        },
+                        ForwardedByMemberID: { type: 'number', editable: false },
+                        ForwardedByMember: {
+                            type: 'object',
+                            fields: {
+                                FullName: { type: 'string', editable: false },
+                                Email: { type: 'string', editable: false }
+                            }
+                        },
                         Supplier: {
                             type: 'object',
                             fields: {
@@ -1128,7 +1146,24 @@ const invoiceBookingViewModel = ({
         console.log('documentGridTabButton show.bs.tab fired');
         self.mode('documents');
         self.documentGridParams.widget().dataSource.read();
-    })
+    });
+
+    self.setPopupAppendTo = () => {
+        window.setTimeout(() => {
+            self.selectedAttachment().forwardToBudgetHolderParams.dropDownListSettings.widget().setOptions({
+                popup: {
+                    appendTo: document.querySelector('#destination-budget-holder')
+                }
+            });
+        }, 0);
+    }
+
+    self.selectedAttachment.subscribe(nv => {
+
+        nv.forwardAttachmentModal._element.removeEventListener('shown.bs.modal', self.setPopupAppendTo);
+        nv.forwardAttachmentModal._element.addEventListener('shown.bs.modal', self.setPopupAppendTo);
+
+    });
 
     //#endregion
 

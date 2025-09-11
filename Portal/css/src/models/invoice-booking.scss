@@ -802,12 +802,12 @@ $light-blue-highlight: tint-color($blue-100, 75%);
 
                 .modal-title {
                     color: $white;
-                    
+
                     > span {
                         display: block;
                         overflow: hidden;
-                        > span {
 
+                        > span {
                         }
                     }
                 }
@@ -1020,8 +1020,11 @@ $light-blue-highlight: tint-color($blue-100, 75%);
                 .data-pane {
                     flex: 1 1 420px;
 
-                    .additional-info {
-                        margin-top: $l-gutter;
+                    .card {
+                        & + .card,
+                        & + .additional-info {
+                            margin-top: $l-gutter;
+                        }
                     }
 
                     .data-heading {
@@ -1700,6 +1703,51 @@ $light-blue-highlight: tint-color($blue-100, 75%);
                 }
             }
         }
+    }
+}
+
+#forward-attachment-modal {
+    .modal-dialog {
+
+        .modal-content {
+
+            .blocker {
+                border-radius: $border-radius;
+            }
+
+            .modal-header {
+                background-color: $blue-700;
+                border-radius: 0;
+                padding: $sm-gutter $l-gutter;
+                height: 68px;
+                border-bottom: 0;
+            }
+
+            .modal-title {
+                color: $white;
+            }
+
+            .modal-body {
+            }
+        }
+    }
+}
+
+.btn.forward-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: $sm-gutter;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+
+    .material-icons {
+        font-weight: normal;
+    }
+
+    &:disabled {
+        pointer-events: all;
+        cursor: not-allowed;
     }
 }
 

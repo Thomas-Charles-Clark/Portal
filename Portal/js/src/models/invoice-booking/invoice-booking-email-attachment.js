@@ -5,7 +5,7 @@
 
     }) => {
     let self = Object.assign({
-        parentEmailSupplier: ko.observable(ko.unwrap(parent.supplier)),
+        parentEmailSupplier: parent.supplier,
         parentLoadEmail: async () => parent.parent.loadEmail,
         documentGridSelectedKeys: parent.documentGridSelectedKeys,
         emailId: parent.EmailID,
@@ -13,7 +13,8 @@
         modal: parent.parent.modal,
         modalBusy: parent.modalBusy,
         modalBusyMessage: parent.modalBusyMessage,
-        reset: parent.reset
+        reset: parent.reset,
+        reloadAttachment: parent.reallySelectAttachment
     }, rec);
 
     //let toLoad = rec.SelectResult?.MostRecent ?? rec.SelectResult?.Original;
@@ -66,6 +67,29 @@
     self.selectedForDownload = ko.observable(true);
 
     self.selectedFromGrid = ko.observable(false);
+
+    self.validateForwardToBudgetHolderNow = ko.observable(false);
+
+    self.forwardToBudgetHolderCode = ko.observable('').extend({
+        notEqual: {
+            params: '',
+            onlyIf: self.validateForwardToBudgetHolderNow,
+            message: 'You must select a Budget Holder to forward to'
+        },
+        required: {
+            params: true,
+            onlyIf: self.validateForwardToBudgetHolderNow,
+            message: 'You must select a Budget Holder to forward to'
+        }
+    })
+
+    self.forwardToBudgetHolder = ko.observable();
+
+    self.forwardAttachmentModalElement = document.querySelector('#forward-attachment-modal');
+
+    self.forwardAttachmentModal = bootstrap.Modal.getOrCreateInstance(self.forwardAttachmentModalElement);
+
+    self.forwardAttachmentModalBusy = ko.observable(false);
 
     //#endregion
 
@@ -127,6 +151,83 @@
         busy: ko.observable(false),
         originalValue: self.dispute()
     }
+
+    self.budgetHolderGroupBy = `groupby((BudgetHolder/Code,BudgetHolder/Name))/filter((BudgetHolder/Code ne null))`;
+
+    self.budgetHolderTemplate = (e) => {
+        if (e.BudgetHolder && e.BudgetHolder.Code && e.BudgetHolder.Name) {
+            return `<span title="${e.BudgetHolder.Name} (${e.BudgetHolder.Code})">${e.BudgetHolder.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.budgetHolderValueTemplate = (e) => {
+        if (e.BudgetHolder && e.BudgetHolder.Code && e.BudgetHolder.Name) {
+            return `<span title="${e.BudgetHolder.Name} (${e.BudgetHolder.Code})">${e.BudgetHolder.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.forwardToBudgetHolderParams = kendoMDCDropDownList({
+        skipCascade: false,
+        label: 'Budget Holder',
+        odata: true,
+        endPoint: '/odata/BudgetHolderSuperSet',
+        textField: 'BudgetHolder.Name',
+        valueField: 'BudgetHolder.Code',
+        virtual: false,
+        template: self.budgetHolderTemplate,
+        valueTemplate: self.budgetHolderValueTemplate,
+        idObservable: self.forwardToBudgetHolderCode,
+        objObservable: self.forwardToBudgetHolder,
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        autoWidth: true,
+        sort: {
+            dir: 'asc',
+            field: 'BudgetHolder.Name'
+        },
+        select: function (e) {
+
+        },
+        open: (e) => {
+
+        },
+        clearFunction: () => {
+            self.forwardToBudgetHolderCode('');
+            self.forwardToBudgetHolder(undefined);
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            d.$apply = self.budgetHolderGroupBy;
+
+            return d;
+        },
+        popupSettings: {
+            appendTo: document.querySelector('#forward-attachment-modal .modal-content')
+        }
+    });
+
+    self.forwardToBudgetHolderErrorables = ko.validation.group([
+        self.forwardToBudgetHolderCode
+    ])
 
     //#endregion
 
@@ -232,7 +333,7 @@
             }
         } else {
             self.documentGridSelectedKeys.remove(self.AttachmentID);
-        }     
+        }
     });
 
     //#endregion
@@ -306,7 +407,7 @@
                     break;
             }
 
-            if (self.parentEmailSupplier() && self.toLoad.SupplierCode == null) {
+            if (self.parentEmailSupplier()) {
                 self.toLoad.supplierCode = self.parentEmailSupplier().Code;
                 self.toLoad.supplier = self.parentEmailSupplier();
                 self.toLoad.supplierCurrency = self.parentEmailSupplier().Currency;
@@ -333,24 +434,6 @@
                     live: true
                 });
 
-                //window.setTimeout(() => {
-                //    if (properties.supplierCode && properties.supplierCode() == '' && self.parentEmailSupplier()) {
-                //        if (!properties.supplierParams.dropDownListSettings.widget()) {
-                //            let s = properties.supplierParams.dropDownListSettings.widget.subscribe(nv => {
-                //                nv.value(self.parentEmailSupplier().Code);
-                //                window.setTimeout(() => {
-                //                    nv.trigger('change');
-                //                    s.dispose();
-                //                }, 0);
-                //            })
-                //        } else {
-                //            properties.supplierParams.dropDownListSettings.widget().value(self.parentEmailSupplier().Code);
-                //            window.setTimeout(() => {
-                //                properties.supplierParams.dropDownListSettings.widget().trigger('change');
-                //            }, 0);
-                //        }
-                //    }
-                //}, 0);
             } else {
                 self.errors = ko.validation.group([]);
             }
@@ -639,66 +722,64 @@
         self.selectedForDownload(!self.selectedForDownload());
     }
 
-    //self.reloadWithoutReloadingAttachment = () => {
+    self.copySharingLinkToClipboard = async () => {
+        try {
+            await navigator.clipboard.writeText(self.AttachmentSharingLink);
+        } catch (error) {
+            console.error(error.message);
+        }
+    }
 
-    //    var data = {
-    //        attachmentId: self.AttachmentID
-    //    }
+    self.showAttachmentForwarder = () => {
+        self.forwardAttachmentModal.show();
+    }
 
-    //    console.log('ReloadAttachmentWithoutReloadingAttachment calling with', data);
+    self.forwardAttachment = () => {
 
+        self.validateForwardToBudgetHolderNow(true); 
 
-    //    fetch('/api/InvoiceBookingAPI/LoadAttachment', {
-    //        method: 'POST',
-    //        headers: window.fetchHeaders,
-    //        body: JSON.stringify(data)
-    //    })
-    //        .then(window.handleFetchResponse)
-    //        .then(data => {
+        window.setTimeout(() => {
 
-    //            console.log('ReloadAttachmentWithoutReloadingAttachment returned', data);
+            if (self.forwardToBudgetHolderErrorables().length) {
 
-    //            self.toLoad = data.SelectResult;
+                self.forwardToBudgetHolderErrorables.showAllMessages(true);
 
-    //            Object.assign(self.toLoad, {
-    //                readOnly: true
-    //            });
+                self.forwardToBudgetHolderErrorables.filter(x => {
+                    x.isValid.notifySubscribers(x.isValid());
+                });
+            } else {
+                self.forwardAttachmentModalBusy(true);
 
-    //            self.readOnly = true;
+                var data = {
+                    attachmentId: self.AttachmentID,
+                    forwardedToBudgetHolderCode: self.forwardToBudgetHolderCode()
+                }
 
-    //            self.attachmentTypeParams.disable(true);
-    //            self.attachmentTypeParams.locked(true);
+                fetch('/api/InvoiceBookingAPI/ForwardAttachment', {
+                    method: 'POST',
+                    headers: window.fetchHeaders,
+                    cache: 'no-cache',
+                    credentials: 'same-origin',
+                    body: JSON.stringify(data)
+                })
+                    .then(window.handleFetchResponse)
+                    .then(data => {
+                        self.forwardAttachmentModalBusy(false);
+                        window.showInfo('Success', `Attachment ID ${self.AttachmentID} has been successfully forwarded to ${data.Name}.`, () => {
+                            self.forwardAttachmentModal.hide();
+                            self.reloadAttachment({
+                                AttachmentID: self.AttachmentID
+                            }, null)
+                        })
+                    })
+                    .catch(err => {
+                        self.forwardAttachmentModalBusy(false);
+                        window.showError("Sorry, an error occurred attempting to forward this attachment. Please contact <a href='mailto:itsupport@designersguild.com'>itsupport@designersguild.com</a>");
+                    });
+            }
 
-    //            self.disputeParams.disable(true);
-
-    //            self.determinePropertiesTemplate(true);
-
-    //            self.modalBusy(false);
-
-    //            window.setTimeout(() => {
-    //                self.modal._element.querySelector('.blocker').classList.remove('success');
-    //                self.modalBusyMessage('Please Wait')
-    //            }, 300);
-
-    //        })
-    //        .catch(err => {
-    //            self.busy(false);
-    //            window.catchFetchError(err);
-    //        })
-    //}
-
-    //self.switchDataSet = (mostRecent) => {
-    //    if (mostRecent) {
-    //        self.toLoad = Object.assign({
-    //            readOnly: true
-    //        }, self.mostRecent);
-    //    } else {
-    //        self.toLoad = Object.assign({
-    //            readOnly: true
-    //        }, self.original);
-    //    }
-    //    self.determinePropertiesTemplate();
-    //}
+        }, 0);
+    }
 
     //#endregion
 

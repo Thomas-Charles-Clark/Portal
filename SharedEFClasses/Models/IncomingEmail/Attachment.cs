@@ -5,11 +5,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 using Newtonsoft.Json;
 
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Mertex;
+using SharedEFClasses.Utilities;
 
 namespace SharedEFClasses.Models.IncomingEmail
 {
@@ -68,9 +70,6 @@ namespace SharedEFClasses.Models.IncomingEmail
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public byte? AttachmentStatusID { get; set; }
 
-        [NotMapped]
-        public string AttachmentStatusName { get; set; }
-
         [ForeignKey("DocumentCurrencyID")]
         public Currency DocumentCurrency { get; set; }
 
@@ -79,6 +78,20 @@ namespace SharedEFClasses.Models.IncomingEmail
         public string MertexCode { get; set; }
 
         public string SupplierDocumentReference { get; set; }
+
+        public DateTime? ForwardedDT { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public bool Forwarded { get; set; }
+
+        public DateTime? ForwardedNotificationSentDT { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public bool ForwardedNotificationSent { get; set; }
+
+        public int? ForwardedByMemberID { get; set; }
+
+        public int? ForwardedToMemberID { get; set; }
 
         [JsonIgnore]
         [ForeignKey("EmailID")]
@@ -140,5 +153,27 @@ namespace SharedEFClasses.Models.IncomingEmail
 
         [NotMapped]
         public virtual IncomingEmail_Attachment_SelectResult SelectResult { get; set; }
+
+
+        [NotMapped]
+        public string AttachmentStatusName { get; set; }
+
+        [NotMapped]
+        public string AttachmentSharingLink 
+        { 
+            get 
+            {
+                return $"{HttpContext.Current.Request.Url.Scheme}://{HttpContext.Current.Request.Url.Authority}/invoices/booking?document={HttpUtility.UrlEncode(dgCrypto.Encrypt($"{AttachmentID}"))}";    
+            }
+        }
+
+        //[ForeignKey("AttachmentStatusID")]
+        //public virtual AttachmentStatus AttachmentStatus { get; set; }
+
+        [ForeignKey("ForwardedToMemberID")]
+        public virtual Member ForwardedToMember { get; set; }
+
+        [ForeignKey("ForwardedByMemberID")]
+        public virtual Member ForwardedByMember { get; set; }
     }
 }

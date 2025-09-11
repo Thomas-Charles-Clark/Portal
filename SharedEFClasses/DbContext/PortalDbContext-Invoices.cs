@@ -350,14 +350,25 @@ namespace SharedEFClasses.Models
             return result;
         }
 
-        public async Task<SupplierBankDetails_SelectResult> IncomingEmail_SupplierBankDetails_Select(PassSupplierDetail dto)
+        public async Task<SupplierBankDetails_SelectResult> SupplierBankDetails_Select(PassSupplierDetail dto)
         {
             var result = await this.Database.Connection.QuerySingleOrDefaultAsync<SupplierBankDetails_SelectResult>("[portal].[SupplierBankDetails_Select]", new
             {
-                SupplierCode = dto.SupplierCode
+                dto.SupplierCode
             }, null, null, CommandType.StoredProcedure);
 
             return result;
+        }
+
+        public async Task<bool> IncomingEmail_Attachment_Forward(PassAttachmentForward dto)
+        {
+            await this.Database.Connection.QueryAsync("[IncomingEmail].[Attachment_Forward]", new { 
+                dto.AttachmentID,
+                dto.ForwardedToMemberID,
+                dto.ForwardedByMemberID
+            }, null, null, CommandType.StoredProcedure);
+
+            return true;
         }
     }
 }

@@ -24,6 +24,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
+using SharedEFClasses.Models.IncomingEmail;
+
 namespace SharedEFClasses.Models
 {
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit http://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
@@ -299,6 +301,14 @@ namespace SharedEFClasses.Models
         [JsonIgnore]
         [InverseProperty("Member")]
         public virtual ICollection<BudgetHolder> BudgetHolderRecords { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("ForwardedByMember")]
+        public virtual ICollection<Attachment> IncomingEmailAttachmentsForwarded { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("ForwardedToMember")]
+        public virtual ICollection<Attachment> IncomingEmailAttachmentsReceived { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
         {

@@ -399,7 +399,15 @@
 
     self.supplierBankAccountNumber = ko.observable(rec.supplierBankAccountNumber);
 
-    self.supplierBankSortCode = ko.observable(rec.supplierBankSortCode);
+    self.supplierBankSortCode = ko.observable(rec.supplierBankSortCode).extend({
+        numberFormatted: {
+            digits: 0,
+            currency: {
+                FormattingCulture: 'en-GB',
+                Code: 'GBP'
+            }
+        }
+    });
 
     self.supplierIBAN = ko.observable(rec.supplierIBAN);
 
@@ -1461,7 +1469,7 @@
     };
 
     self.supplierBICParams = {
-        label: 'BIC',
+        label: 'SWIFT / BIC',
         observable: self.supplierBIC,
         charsRemainingOptions: {
             maxLength: 11
@@ -1770,8 +1778,17 @@
                 }
             })
             self.supplierCurrency(nv.Currency);
+
+            self.fetchSupplierBankDetails(nv.Code);
+
         } else {
             self.supplierCurrency(undefined);
+
+            self.supplierBankName(null);
+            self.supplierBankAccountNumber(null);
+            self.supplierBankSortCode(null);
+            self.supplierIBAN(null);
+            self.supplierBIC(null);
         }
     })
 
@@ -1871,6 +1888,71 @@
     self.removeVATEntry = (data) => {
         self.vatEntries.remove(data);
     }
+
+    self.fetchSupplierBankDetails = (code) => {
+
+        if (code || self.supplierCode()) {
+
+            let params = {
+                supplierCode: code ?? self.supplierCode()
+            }
+
+            fetch('/api/InvoiceBookingAPI/FetchSupplierBankDetails', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                cache: 'no-cache',
+                credentials: 'same-origin',
+                body: JSON.stringify(params)
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    self.supplierBankName(data.BankName);
+                    self.supplierBankAccountNumber(data.AccountNumber);
+                    self.supplierBankSortCode(data.SortCode);
+                    self.supplierIBAN(data.IBAN);
+                    self.supplierBIC(data.BIC);
+                })
+                .catch(window.catchFetchError)
+        }
+    }
+
+    /*
+    
+    
+
+    self.bankingPropagationComputer = ko.computed(() => {
+
+        var invoices = self.regularAttachments().filter(r => r.attachmentTypeId() == 2); // invoices
+
+        let nv = self.bankDetailsComputer();
+
+        invoices.forEach(i => {
+            if (i.properties() && !ko.unwrap(i.readOnly)) {
+                if (i.properties().supplierBankName() == null || i.properties().supplierBankName() == '') {
+                    i.properties().supplierBankName(nv.bankName);
+                    console.log('invoiceBookingEmail bankDetailsComputer subscription updated supplierBankName on attachmentId', i.AttachmentID);
+                }
+                if (i.properties().supplierBankAccountNumber() == null || i.properties().supplierBankAccountNumber() == '') {
+                    i.properties().supplierBankAccountNumber(nv.bankAccountNumber);
+                    console.log('invoiceBookingEmail bankDetailsComputer subscription updated supplierBankAccountNumber on attachmentId', i.AttachmentID);
+                }
+                if (i.properties().supplierBankSortCode() == null || i.properties().supplierBankSortCode() == '') {
+                    i.properties().supplierBankSortCode(nv.bankSortCode);
+                    console.log('invoiceBookingEmail bankDetailsComputer subscription updated supplierBankSortCode on attachmentId', i.AttachmentID);
+                }
+                if (i.properties().supplierIBAN() == null || i.properties().supplierIBAN() == '') {
+                    i.properties().supplierIBAN(nv.iban);
+                    console.log('invoiceBookingEmail bankDetailsComputer subscription updated supplierIBAN on attachmentId', i.AttachmentID);
+                }
+                if (i.properties().supplierBIC() == null || i.properties().supplierBIC() == '') {
+                    i.properties().supplierBIC(nv.bic);
+                    console.log('invoiceBookingEmail bankDetailsComputer subscription updated supplierBIC on attachmentId', i.AttachmentID);
+                }
+            }
+        });
+    }, self);
+    
+    */
 
     //#endregion
 
