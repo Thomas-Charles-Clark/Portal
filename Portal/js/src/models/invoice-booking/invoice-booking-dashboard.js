@@ -32,6 +32,7 @@
     self.documentActionPods = ko.observableArray(window.getDocumentsDashboard().Actions);
     self.documentStatusPods = ko.observableArray(window.getDocumentsDashboard().DocumentStatuses);
     self.documentTypeSummaryPods = ko.observableArray(window.getDocumentsDashboard().DocumentTypesSummary);
+    self.documentBudgetHolderPods = ko.observableArray(window.getDocumentsDashboard().BudgetHolders);
     
     self.documentNotices = ko.observableArray(window.getDocumentsDashboard().Notices);
 
@@ -40,6 +41,7 @@
     self.selectedDocumentActionPod = ko.observable();
     self.selectedDocumentStatusPod = ko.observable();
     self.selectedDocumentTypePod = ko.observable();
+    self.selectedDocumentBudgetHolderPod = ko.observable();
 
     //#endregion
 
@@ -79,6 +81,14 @@
 
     self.sortedDocumentStatusPods = ko.computed(() => {
         return self.documentStatusPods.sorted((a, b) => {
+            return a.SortOrder === b.SortOrder ? 0
+                : a.SortOrder < b.SortOrder ? -1
+                    : 1;
+        })
+    }, self);
+
+    self.sortedDocumentBudgetHolderPods = ko.computed(() => {
+        return self.documentBudgetHolderPods.sorted((a, b) => {
             return a.SortOrder === b.SortOrder ? 0
                 : a.SortOrder < b.SortOrder ? -1
                     : 1;
@@ -142,6 +152,7 @@
                 window.catchFetchError(err);
             })
     }
+
     self.select = (data, event) => {
         if (self.logging())
             console.log('dashboard select', data, event);
@@ -167,6 +178,11 @@
                 });
                 break;
             case 2:
+                if (data.BudgetHolderCode)
+                    self.parent.filters.budgetHolderCode(data.BudgetHolderCode);
+                else
+                    self.parent.filters.budgetHolderCode('');
+
                 self.parent.mailboxGridParams.widget().dataSource.query({
                     page: 1,
                     pageSize: self.parent.mailboxGridParams.widget().dataSource.pageSize(),
@@ -192,6 +208,17 @@
                     }]
                 });
                 break;
+            case null:
+                self.parent.filters.budgetHolderCode(data.BudgetHolderCode);
+                self.parent.mailboxGridParams.widget().dataSource.query({
+                    page: 1,
+                    pageSize: self.parent.mailboxGridParams.widget().dataSource.pageSize(),
+                    group: self.parent.mailboxGridParams.widget().dataSource.group(),
+                    sort: [{
+                        field: 'ReceivedDT',
+                        dir: 'desc'
+                    }]
+                });
             default:
                 break;
         }
@@ -228,6 +255,7 @@
                 self.documentActionPods(data.Actions);
                 self.documentStatusPods(data.DocumentStatuses);
                 self.documentTypeSummaryPods(data.DocumentTypesSummary);
+                self.documentBudgetHolderPods(data.BudgetHolders);
                 self.documentNotices(data.Notices);
 
                 if (self.selectedDocumentActionPod()) {
@@ -242,6 +270,9 @@
                     self.selectedDocumentTypePod(self.documentTypeSummaryPods().find(p => p.AttachmentTypeID == self.selectedDocumentTypePod().AttachmentTypeID));
                 }
 
+                if (self.selectedDocumentBudgetHolderPod()) {
+                    self.selectedDocumentBudgetHolderPod(self.documentBudgetHolderPods().find(p => p.BudgetHolderCode == self.selectedDocumentBudgetHolderPod().BudgetHolderCode));
+                }
                 //self.selectedDocumentsPod(self.documentsPods().find(p => p.AttachmentStatusID == previouslySelectedDocumentStatusId));
 
                 if (typeof afterFn == 'function')
@@ -258,18 +289,43 @@
             console.log('documents dashboard select', data, event);
 
         if (data.SearchKeywords) {
-            self.selectedDocumentActionPod(data);
-            self.parent.documentFilters.freeTextSearch(data.SearchKeywords);
+            if (self.selectedDocumentActionPod() === data) {
+                self.selectedDocumentActionPod(undefined);
+                self.parent.documentFilters.freeTextSearch(undefined);
+            } else {
+                self.selectedDocumentActionPod(data);
+                self.parent.documentFilters.freeTextSearch(data.SearchKeywords);
+            }
         }
 
         if (data.AttachmentStatusID) {
-            self.selectedDocumentStatusPod(data);
-            self.parent.documentFilters.documentStatusId(data.AttachmentStatusID);
+            if (self.selectedDocumentStatusPod() === data) {
+                self.selectedDocumentStatusPod(undefined);
+                self.parent.documentFilters.documentStatusId('');
+            } else {
+                self.selectedDocumentStatusPod(data);
+                self.parent.documentFilters.documentStatusId(data.AttachmentStatusID);
+            }
         }
 
         if (data.AttachmentTypeID) {
-            self.selectedDocumentTypePod(data);
-            self.parent.documentFilters.documentTypeId(data.AttachmentTypeID);
+            if (self.selectedDocumentTypePod() === data) {
+                self.selectedDocumentTypePod(undefined);
+                self.parent.documentFilters.documentTypeId('');
+            } else {
+                self.selectedDocumentTypePod(data);
+                self.parent.documentFilters.documentTypeId(data.AttachmentTypeID);
+            }
+        }
+
+        if (data.BudgetHolderCode) {
+            if (self.selectedDocumentBudgetHolderPod() === data) {
+                self.selectedDocumentBudgetHolderPod(undefined);
+                self.parent.documentFilters.budgetHolderCode('');
+            } else {
+                self.selectedDocumentBudgetHolderPod(data);
+                self.parent.documentFilters.budgetHolderCode(data.BudgetHolderCode);
+            }
         }
 
         self.parent.documentGridParams.widget().dataSource.query({
@@ -280,7 +336,6 @@
         });
 
         self.parent.selectedEmail(undefined);
-        
     } 
 
     //#endregion

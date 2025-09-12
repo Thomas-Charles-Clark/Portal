@@ -5,6 +5,8 @@ using SharedEFClasses.Models;
 using SharedEFClasses.Models.IncomingEmail;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.TradeOrders;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -81,6 +83,10 @@ namespace Portal.Areas.Invoices.ViewModels
             string applicationHeading,
             string applicationSubHeading)
         {
+            DateTime? toDt = DateTime.Now;
+
+            // DateRangeID == 30
+            DateTime? fromDt = DateTime.Now.AddDays(-30);
 
             var portalDb = new PortalDbContext();
 
@@ -99,6 +105,9 @@ namespace Portal.Areas.Invoices.ViewModels
             result.Dashboard = await portalDb.GetInvoiceBookingDashboard(new PassInvoiceBookingDashboardParams()
             {
                 MailboxID = 1,
+                DateRangeID = 30,
+                To = toDt,
+                From = fromDt,
                 BudgetHolderCode = lockedToBudgetHolderCode,
                 ActiveDirectoryGroupIDs = lockedToDepartmentGroupIds
             });
@@ -106,6 +115,9 @@ namespace Portal.Areas.Invoices.ViewModels
             result.DocumentsDashboard = await portalDb.GetInvoiceBookingDocumentDashboard(new PassInvoiceBookingDocumentDashboardParams()
             {
                 MailboxID = 1,
+                DateRangeID = 30,
+                To = toDt,
+                From = fromDt,
                 BudgetHolderCode = lockedToBudgetHolderCode,
                 ActiveDirectoryGroupIDs = lockedToDepartmentGroupIds
             });

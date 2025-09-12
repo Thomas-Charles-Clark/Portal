@@ -177,7 +177,8 @@ const invoiceBookingViewModel = ({
         }
 
         if (self.documentFilters.documentDateAffectorId()) {
-            data.documentDateAffectorId = self.documentFilters.documentDateAffectorId()
+            data.dateAffectorId = self.documentFilters.documentDateAffectorId();
+            data.dateAffector = ko.unwrap(self.documentFilters.documentDateAffector()).name;
         }
 
         return data;
@@ -496,43 +497,145 @@ const invoiceBookingViewModel = ({
         widget: self.documentGridParamsWidget,
         columns: [{
             headerTemplate: '<div class="form-checkbox"><input type="checkbox" class="form-check-input" onclick="viewModel.toggleDocumentsGridSelection()"/></div>',
-            width: 34
+            width: 34,
+            exportable: false
         }, {
             title: 'Type',
             field: 'AttachmentTypeID',
-            template: `#: AttachmentType.Name #`,
+            template: (e) => {
+                if (e.AttachmentType) {
+                    return e.AttachmentType.Name;
+                } else {
+                    return '';
+                }
+            },
             width: 140
         }, {
-            title: 'Supplier',
-            field: 'Email.Supplier.Code',
+            title: 'Supplier Code',
+            field: 'Supplier.Code',
+            template: (e) => {
+                if (e.Supplier) {
+                    return e.Supplier.Code;
+                } else {
+                    return '';
+                }
+            },
             filterable: false
         }, {
-            title: 'Budget Holder',
-            field: 'BudgetHolder.Code'
+            title: 'Supplier Name',
+            field: 'Supplier.Name',
+            template: (e) => {
+                if (e.Supplier) {
+                    return e.Supplier.Name
+                } else {
+                    return '';
+                }
+            },
+            hidden: true
         }, {
-            field: 'AttachmentStatusID',
-            title: 'Status'
+            title: 'Budget Holder Code',
+            field: 'BudgetHolder.Code',
+            template: (e) => {
+                if (e.BudgetHolder) {
+                    return e.BudgetHolder.Code;
+                } else {
+                    return '';
+                }
+            },
+        }, {
+            title: 'Budget Holder Name',
+            field: 'BudgetHolder.Name',
+            template: (e) => {
+                if (e.BudgetHolder) {
+                    return e.BudgetHolder.Name;
+                } else {
+                    return '';
+                }
+            },
+            hidden: true
+        }, {
+            title: 'Processed By',
+            field: 'ProcessedByMemberID',
+            template: (e) => {
+                if (e.ProcessedBy) {
+                    return e.ProcessedBy.FullName;
+                } else {
+                    return '';
+                }
+            },
+        }, {
+            field: 'AttachmentStatusName',
+            title: 'Status',
+            template: (e) => {
+                if (e.AttachmentStatusName) {
+                    return e.AttachmentStatusName;
+                } else {
+                    return '';
+                }
+            },
         }, {
             title: 'DG Reference',
-            field: 'MertexCode'
+            field: 'MertexCode',
+            template: (e) => {
+                if (e.MertexCode) {
+                    return e.MertexCode;
+                } else {
+                    return '';
+                }
+            },
         }, {
             title: 'Supplier Reference',
-            field: 'SupplierDocumentReference'
+            field: 'SupplierDocumentReference',
+            template: (e) => {
+                if (e.SupplierDocumentReference) {
+                    return e.SupplierDocumentReference;
+                } else {
+                    return '';
+                }
+            },
         }, {
             field: 'ReceivedDT',
             title: 'Received Date',
+            template: (e) => {
+                if (e.ReceivedDT) {
+                    return moment(ReceivedDT).format('DD/MM/YYYY HH:mm');
+                } else {
+                    return '';
+                }
+            },
             width: 142
         }, {
             field: 'DocumentDate',
             title: 'Document Date',
+            template: (e) => {
+                if (e.DocumentDate) {
+                    return moment(DocumentDate).format('DD/MM/YYYY');
+                } else {
+                    return '';
+                }
+            },
             width: 150
         }, {
             field: 'DocumentDueDate',
             title: 'Due Date',
+            template: (e) => {
+                if (e.DocumentDueDate) {
+                    return moment(DocumentDueDate).format('DD/MM/YYYY');
+                } else {
+                    return '';
+                }
+            },
             width: 142
         }, {
             field: 'DocumentTotalInc',
             title: 'Total',
+            template: (e) => {
+                if (e.DocumentTotalInc) {
+                    return DocumentTotalInc;
+                } else {
+                    return '';
+                }
+            },
             width: 140
         }],
         data: new kendo.data.DataSource({
@@ -701,7 +804,7 @@ const invoiceBookingViewModel = ({
         pageSize: 20,
         pageable: {
             pageSize: 20,
-            pageSizes: [10, 20, 50, 100, 200]
+            pageSizes: [10, 20, 50, 100, 200, 'all']
         },
         sortable: true,
         filterable: false,
@@ -743,6 +846,75 @@ const invoiceBookingViewModel = ({
             });
 
             //self.gridGroupCount(event.sender.dataSource.group().length);
+        },
+        excelExport: (e) => {
+            let data = e.data;
+            let gridColumns = e.sender.columns;
+            let sheet = e.workbook.sheets[0];
+            let visibleGridColumns = [];
+            let columnTemplates = [];
+            let dataItem;
+            // Create element to generate templates in.
+            let elem = document.createElement('div');
+
+            // Get a list of visible columns
+            for (let i = 0; i < gridColumns.length; i++) {
+                if (gridColumns[i].exportable !== false) {
+                    visibleGridColumns.push(gridColumns[i]);
+                }
+            }
+
+            // Create a collection of the column templates, together with the current column index
+            for (let i = 0; i < visibleGridColumns.length; i++) {
+                if (visibleGridColumns[i].template) {
+                    columnTemplates.push({
+                        cellIndex: i,
+                        template: kendo.template(visibleGridColumns[i].template)
+                    });
+                }
+            }
+
+            let header = sheet.rows.find(r => r.type == 'header');
+
+            header.cells.splice(2, 0, {
+                background: "#7a7a7a",
+                colSpan: 1,
+                color: "#fff",
+                rowSpan: 1,
+                value: "Supplier Name"
+            });
+
+            header.cells.splice(4, 0, {
+                background: "#7a7a7a",
+                colSpan: 1,
+                color: "#fff",
+                rowSpan: 1,
+                value: "Budget Holder Name"
+            });
+
+            // Traverse all exported rows.
+            for (let i = 1; i < sheet.rows.length; i++) {
+                let row = sheet.rows[i];
+                // Traverse the column templates and apply them for each row at the stored column position.
+
+                // Splice back in the hidden columns, because of annoying reasons. Shush. 
+                row.cells.splice(2, 0, { value: null });
+                row.cells.splice(4, 0, { value: null });
+
+                // Get the data item corresponding to the current row.
+                let dataItem = data[i - 1];
+                for (let j = 0; j < columnTemplates.length; j++) {
+                    let columnTemplate = columnTemplates[j];
+                    // Generate the template content for the current cell.
+                    elem.innerHTML = columnTemplate.template(dataItem);
+                    if (row.cells[columnTemplate.cellIndex] != undefined)
+                        row.cells[columnTemplate.cellIndex].type = "string";
+                        // Output the text content of the templated cell into the exported cell.
+                        row.cells[columnTemplate.cellIndex].value = elem.textContent || elem.innerText || "";
+                }
+            }
+
+            e.workbook.fileName = "Documents.xlsx";
         }
     }
 
@@ -819,6 +991,9 @@ const invoiceBookingViewModel = ({
         self.dashboard.fetch();
         self.dashboard.documentsFetch();
         self.mailboxGridParams.widget().dataSource.read();
+        if (self.documentGridParams.widget()) {
+            self.documentGridParams.widget().dataSource.read();
+        }
     }
 
     self.reset = () => {
@@ -1164,6 +1339,10 @@ const invoiceBookingViewModel = ({
         nv.forwardAttachmentModal._element.addEventListener('shown.bs.modal', self.setPopupAppendTo);
 
     });
+
+    self.exportDocumentGrid = () => {
+        self.documentGridParams.widget().saveAsExcel();
+    }
 
     //#endregion
 

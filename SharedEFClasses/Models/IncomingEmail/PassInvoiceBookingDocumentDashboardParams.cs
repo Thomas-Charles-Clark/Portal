@@ -18,6 +18,7 @@ namespace SharedEFClasses.Models.IncomingEmail
         public string SupplierTypeCode { get; set; }
         public string FreeTextSearch { get; set; }
         public string DateAffector { get; set; }
+        public byte DateAffectorID { get; set; }
         public byte? AttachmentTypeID { get; set; }
         public byte? AttachmentStatusID { get; set; }
     }

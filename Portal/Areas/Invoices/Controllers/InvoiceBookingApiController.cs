@@ -100,6 +100,9 @@ namespace Portal.Areas.Invoices.Controllers
                 case 6: /* Last 6 Months */
                     fromDt = DateTime.Now.AddMonths(-6);
                     break;
+                case 3: /* This Month */
+                    fromDt = DateTime.Now.AddMonths(-3);
+                    break;
                 case 1: /* This Month */
                     fromDt = DateTime.Now.AddDays(-DateTime.Now.Day).AddDays(1);
                     break;
@@ -164,6 +167,9 @@ namespace Portal.Areas.Invoices.Controllers
                     break;
                 case 6: /* Last 6 Months */
                     fromDt = DateTime.Now.AddMonths(-6);
+                    break;
+                case 3: /* This Month */
+                    fromDt = DateTime.Now.AddMonths(-3);
                     break;
                 case 1: /* This Month */
                     fromDt = DateTime.Now.AddDays(-DateTime.Now.Day).AddDays(1);
@@ -298,7 +304,7 @@ namespace Portal.Areas.Invoices.Controllers
                         p.Deleted == false &&
                         userIds.Contains((int)p.Supplier.BudgetHolder.UserID) &&
                         p.MailboxID == dto.MailboxID && 
-                        p.EmailStatusID == dto.EmailStatusID &&
+                        (dto.EmailStatusID == null || p.EmailStatusID == dto.EmailStatusID) &&
                         (String.IsNullOrEmpty(dto.BudgetHolderCode) || p.Supplier != null && p.Supplier.BudgetHolderCode == dto.BudgetHolderCode) &&
                         (String.IsNullOrEmpty(dto.SupplierTypeCode) || p.Supplier != null && p.Supplier.SupplierTypeCode == dto.SupplierTypeCode) &&
                         (String.IsNullOrEmpty(dto.SupplierCode) || p.SupplierCode == dto.SupplierCode) &&
@@ -312,7 +318,7 @@ namespace Portal.Areas.Invoices.Controllers
                     .Where(p =>
                         p.Deleted == false &&
                         p.MailboxID == dto.MailboxID &&
-                        p.EmailStatusID == dto.EmailStatusID &&
+                        (dto.EmailStatusID == null || p.EmailStatusID == dto.EmailStatusID) &&
                         (String.IsNullOrEmpty(dto.BudgetHolderCode) || p.Supplier != null && p.Supplier.BudgetHolderCode == dto.BudgetHolderCode) &&
                         (String.IsNullOrEmpty(dto.SupplierTypeCode) || p.Supplier != null && p.Supplier.SupplierTypeCode == dto.SupplierTypeCode) &&
                         (String.IsNullOrEmpty(dto.SupplierCode) || p.SupplierCode == dto.SupplierCode) &&
@@ -537,7 +543,7 @@ namespace Portal.Areas.Invoices.Controllers
 
             var email = PortalDb.EmailStubs.Include("EmailStatus").Single(m => m.EmailID == dto.EmailID);
 
-            var supplier = PortalDb.Suppliers_Live.Include("Currency").Where(s => s.Code == email.SupplierCode).SingleOrDefault();
+            var supplier = PortalDb.Suppliers_Live.Include("Currency").Include("BudgetHolder").Where(s => s.Code == email.SupplierCode).SingleOrDefault();
 
             var attachments = PortalDb.Attachments.Include("AttachmentType").Where(a => a.EmailID == dto.EmailID && a.Deleted == false).ToList();
 
@@ -937,7 +943,7 @@ namespace Portal.Areas.Invoices.Controllers
                 }
             }
 
-            var user = UserManager.FindById(Convert.ToInt32(User.Identity.GetUserId()));
+            var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
             var archiveBaseName = $"Invoice_Documents_{DateTime.Now.ToString("yyyy-MM-dd")}";
 
@@ -974,6 +980,16 @@ namespace Portal.Areas.Invoices.Controllers
             {
                 return BadRequest($"Could not find either BudgetHolder or BudgetHolder.MemberID");
             }
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> RequestBudgetHolderChange([FromBody]PassSupplierDetail dto)
+        {
+            dto.MemberID = User.Identity.GetUserId<int>();
+
+            var result = await PortalDb.ChangeBudgetHolder_Request(dto);
+
+            return Ok(new { });
         }
     }
 }

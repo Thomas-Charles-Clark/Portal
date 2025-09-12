@@ -288,6 +288,7 @@ namespace SharedEFClasses.Models
                 Actions = reader.Read<InvoiceBookingDocumentDashboard_ActionResult>(),
                 DocumentStatuses = reader.Read<InvoiceBookingDocumentDashboard_DocumentStatusResult>(),
                 DocumentTypesSummary = reader.Read<InvoiceBookingDocumentDashboard_DocumentTypeResult>(),
+                BudgetHolders = reader.Read<InvoiceBookingDocumentDashboard_BudgetHolderResult>(),
                 Notices = reader.Read<Dashboard_NoticeResult>()
             };
         }
@@ -366,6 +367,17 @@ namespace SharedEFClasses.Models
                 dto.AttachmentID,
                 dto.ForwardedToMemberID,
                 dto.ForwardedByMemberID
+            }, null, null, CommandType.StoredProcedure);
+
+            return true;
+        }
+
+        public async Task<bool> ChangeBudgetHolder_Request(PassSupplierDetail dto)
+        {
+            await this.Database.Connection.QueryAsync("[IncomingEmail].[ChangeBudgetHolder_Request]", new
+            {
+                dto.SupplierCode,
+                ChangeRequestMemberID = dto.MemberID
             }, null, null, CommandType.StoredProcedure);
 
             return true;

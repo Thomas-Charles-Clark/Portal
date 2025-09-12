@@ -121,6 +121,11 @@
             <td data-bind="attr: { title: BudgetHolder == null ? 'N/A' : `${BudgetHolder.Name} - (Code: ${BudgetHolder.Code})` }">
                 <span data-bind="html: BudgetHolder == null ? 'N/A' : `${BudgetHolder.Name} - (Code: ${BudgetHolder.Code})`"></span>
             </td>
+            <td data-bind="attr: { title: ProcessedBy == null ? 'N/A' : `${ProcessedBy.FullName}` }">
+                <!-- ko if: ProcessedBy -->
+                <a href="#" data-bind="attr: { href: `mailto:${ProcessedBy.Email}` }, text: ProcessedBy.FullName" target="_blank"></a>
+                <!-- /ko -->
+            </td>
             <td data-bind="attr: { title: AttachmentStatusName }">
                 <span data-bind="html: AttachmentStatusName"></span>
             </td>
@@ -202,6 +207,18 @@
                         </div>
                     </div>
                     <button type="button" class="btn btn-dark" style="display: none;" data-bind="visible: supplierParams.changeBtnVisible, click: () => { supplierParams.locked(!supplierParams.locked()) }">
+                        Change
+                    </button>
+                </div>
+                <div class="attachment-property attachment-supplier-wrapper" data-bind="with: Supplier">
+                    <div class="attachment-supplier-container" data-bind="with: BudgetHolder">
+                        <div class="attachment-supplier">
+                            <label>
+                                Budget Holder: <span data-bind="text: Name"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-dark" data-bind="click: $parentContext.$parent.requestBudgetHolderChange">
                         Change
                     </button>
                 </div>
@@ -439,6 +456,18 @@
                         Change
                     </button>
                 </div>
+                <div class="attachment-property attachment-supplier-wrapper" data-bind="with: Supplier">
+                    <div class="attachment-supplier-container" data-bind="with: BudgetHolder">
+                        <div class="attachment-supplier">
+                            <label>
+                                Budget Holder: <span data-bind="text: Name"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-dark" data-bind="click: $parentContext.$parent.requestBudgetHolderChange">
+                        Change
+                    </button>
+                </div>
                 <div id="invoice-reference" class="attachment-property" data-bind="highlightNullField: supplierInvoiceReference, component: { name: 'mdc-text-field-component', params: invoiceReferenceParams }"></div>
                 <span class="validation-message" data-bind="validationMessage: supplierInvoiceReference"></span>
                 <div class="attachment-property-wrap">
@@ -570,6 +599,18 @@
                         </div>
                     </div>
                     <button type="button" class="btn btn-dark" style="display: none;" data-bind="visible: supplierParams.changeBtnVisible, click: () => { supplierParams.locked(!supplierParams.locked()) }">
+                        Change
+                    </button>
+                </div>
+                <div class="attachment-property attachment-supplier-wrapper" data-bind="with: Supplier">
+                    <div class="attachment-supplier-container" data-bind="with: BudgetHolder">
+                        <div class="attachment-supplier">
+                            <label>
+                                Budget Holder: <span data-bind="text: Name"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-dark" data-bind="click: $parentContext.$parent.requestBudgetHolderChange">
                         Change
                     </button>
                 </div>
@@ -789,6 +830,18 @@
                         Change
                     </button>
                 </div>
+                <div class="attachment-property attachment-supplier-wrapper" data-bind="with: Supplier">
+                    <div class="attachment-supplier-container" data-bind="with: BudgetHolder">
+                        <div class="attachment-supplier">
+                            <label>
+                                Budget Holder: <span data-bind="text: Name"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-dark" data-bind="click: $parentContext.$parent.requestBudgetHolderChange">
+                        Change
+                    </button>
+                </div>
             </div>
         </div>
     </script>
@@ -838,6 +891,18 @@
                             Change
                         </button>
                     </div>
+                </div>
+                <div class="attachment-property attachment-supplier-wrapper" data-bind="with: Supplier">
+                    <div class="attachment-supplier-container" data-bind="with: BudgetHolder">
+                        <div class="attachment-supplier">
+                            <label>
+                                Budget Holder: <span data-bind="text: Name"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-dark" data-bind="click: $parentContext.$parent.requestBudgetHolderChange">
+                        Change
+                    </button>
                 </div>
             </div>
         </div>
@@ -1239,7 +1304,7 @@
     <div class="card-body">
         <div id="dashboard" style="display: none" data-bind="flexVisible: mode() == 'emails', with: dashboard">
             <!-- ko foreach: sortedPods -->
-            <div class="dashboard-pod card" data-bind="click: $parent.select, css: { 'active': $parent.selectedPod() == $data, 'warning': ([1,5].indexOf($data.EmailStatusID) > -1) && (RecordCount > 0) }">
+            <div class="dashboard-pod card" data-bind="click: $parent.select, css: { 'active': $parent.selectedPod() == $data, 'warning': (([1,5,null].indexOf($data.EmailStatusID) > -1) && (RecordCount > 0)) || EmailStatusID == 2 && BudgetHolderCode != null }">
                 <div class="card-body">
                     <h4>
                         <span data-bind="html: Label"></span>
@@ -1251,7 +1316,7 @@
                         <span data-bind="html: AttachmentStats"></span>
                     </h5>
                     <h5>
-                        <span data-bind="html: InvoiceStats"></span>
+                        <span data-bind="html: Stats"></span>
                     </h5>
                 </div>
             </div>
@@ -1315,6 +1380,29 @@
                         <div class="accordion-body bg-light">
                             <!-- ko foreach: sortedDocumentTypeSummaryPods -->
                             <div class="dashboard-pod card" data-bind="click: $parent.documentSelect, css: { 'active': $parent.selectedDocumentTypePod() == $data }, class: CSSClasses">
+                                <div class="card-body">
+                                    <h4>
+                                        <span data-bind="html: Title"></span>
+                                    </h4>
+                                    <h5>
+                                        <span data-bind="html: HTMLDetails"></span>
+                                    </h5>
+                                </div>
+                            </div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h5 class="accordion-header" id="document-budget-holder-accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#document-budget-holder-pods" aria-expanded="true" aria-controls="document-budget-holder-pods">
+                            Documents by Budget Holder
+                        </button>
+                    </h5>
+                    <div id="document-budget-holder-pods" class="accordion-collapse collapse">
+                        <div class="accordion-body bg-light">
+                            <!-- ko foreach: sortedDocumentBudgetHolderPods -->
+                            <div class="dashboard-pod card" data-bind="click: $parent.documentSelect, css: { 'active': $parent.selectedDocumentBudgetHolderPod() == $data }, class: CSSClasses">
                                 <div class="card-body">
                                     <h4>
                                         <span data-bind="html: Title"></span>
@@ -1398,6 +1486,12 @@
                     </div>
                     <div class="tab-pane" id="documents-grid-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
                         <div id="document-list" data-bind="kendoGrid: documentGridParams"></div>
+                        <div class="d-flex align-items-center justify-content-end mt-3">
+                            <button class="btn btn-dark d-flex justify-content-between gap-2 align-items-center" data-bind="click: exportDocumentGrid">
+                                <span class="k-icon k-i-excel"></span>
+                                Export to Excel
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

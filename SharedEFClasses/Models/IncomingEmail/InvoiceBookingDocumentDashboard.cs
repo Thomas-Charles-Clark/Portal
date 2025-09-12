@@ -8,9 +8,10 @@ namespace SharedEFClasses.Models.IncomingEmail
 {
     public class InvoiceBookingDocumentDashboard
     {
-        public IEnumerable<InvoiceBookingDocumentDashboard_SelectResult> Actions { get; set; }
-        public IEnumerable<InvoiceBookingDocumentDashboard_SelectResult> DocumentTypesSummary { get; set; }
-        public IEnumerable<InvoiceBookingDocumentDashboard_SelectResult> DocumentStatuses { get; set; }
+        public IEnumerable<InvoiceBookingDocumentDashboard_ActionResult> Actions { get; set; }
+        public IEnumerable<InvoiceBookingDocumentDashboard_DocumentTypeResult> DocumentTypesSummary { get; set; }
+        public IEnumerable<InvoiceBookingDocumentDashboard_DocumentStatusResult> DocumentStatuses { get; set; }
+        public IEnumerable<InvoiceBookingDocumentDashboard_BudgetHolderResult> BudgetHolders { get; set; }
         public IEnumerable<Dashboard_NoticeResult> Notices { get; set; }
     }
 }

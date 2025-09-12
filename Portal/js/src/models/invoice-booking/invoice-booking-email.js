@@ -715,6 +715,45 @@
             });
     }
 
+    self.requestBudgetHolderChange = () => {
+        window.showConfirm('Are you sure?', `This will flag Supplier ${self.supplierCode()} "${self.supplier().Name}" as having an Unknown Budget Holder.`, () => {
+            self.reallyRequestBudgetHolderChange();
+        });
+    }
+
+    self.reallyRequestBudgetHolderChange = () => {
+        self.modalBusy(true);
+
+        var data = {
+            supplierCode: self.supplierCode()
+        };
+
+        fetch('/api/InvoiceBookingAPI/RequestBudgetHolderChange', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            body: JSON.stringify(data)
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                if (data) {
+                    window.showInfo('Done', `Supplier ${self.supplierCode()} "${self.supplier().Name}" has been flagged as having an Unknown Budget Holder.`, () => {
+                        self.parent.modal.hide();
+                        self.parent.refresh();
+                        window.infoModalInstance.hide();
+                    })
+                } else {
+                    window.showError('Something went wrong processing that change request. Please contact <a href="mailto:itsupport@designersguild.com">itsupport@designersguild.com</a>.');
+                }
+                self.modalBusy(false);
+            })
+            .catch(err => {
+                self.modalBusy(false);
+                window.catchFetchError(err);
+            })
+    }
+
     //#endregion
 
 

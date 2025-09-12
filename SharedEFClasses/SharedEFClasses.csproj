@@ -439,6 +439,7 @@
     <Compile Include="Models\IncomingEmail\Email_SelectResult.cs" />
     <Compile Include="Models\IncomingEmail\FullEmail.cs" />
     <Compile Include="Models\IncomingEmail\IncomingEmail_Attachment_SelectResult.cs" />
+    <Compile Include="Models\IncomingEmail\InvoiceBookingDocumentDashboard_BudgetHolderResult.cs" />
     <Compile Include="Models\IncomingEmail\InvoiceBookingDocumentDashboard_DocumentTypeResult.cs" />
     <Compile Include="Models\IncomingEmail\InvoiceBookingDocumentDashboard_DocumentStatusResult.cs" />
     <Compile Include="Models\IncomingEmail\InvoiceBookingDocumentDashboard_ActionResult.cs" />

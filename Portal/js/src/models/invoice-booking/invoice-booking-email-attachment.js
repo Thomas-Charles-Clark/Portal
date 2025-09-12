@@ -288,20 +288,22 @@
                 ko.ignoreDependencies(() => {
                     self.canPreviewAttachment(true);
                 });
-                fetch(`${result}`, {
-                    method: 'GET',
-                    headers: window.fetchHeaders,
-                    cache: 'no-cache'
-                }).then(response => response.arrayBuffer())
-                    .then(buffer => {
-                        let t = new Tiff({ buffer });
-                        let canvas = t.toCanvas();
-                        canvas.classList.add('tif-canvas');
-                        document.querySelector('#tif-canvas-container').innerHTML = '';
-                        document.querySelector('#tif-canvas-container').appendChild(canvas);
-                    })
-                    .catch(window.catchFetchError)
-                break;
+                if (document.querySelector('#tif-canvas-container')) {
+                    fetch(`${result}`, {
+                        method: 'GET',
+                        headers: window.fetchHeaders,
+                        cache: 'no-cache'
+                    }).then(response => response.arrayBuffer())
+                        .then(buffer => {
+                            let t = new Tiff({ buffer });
+                            let canvas = t.toCanvas();
+                            canvas.classList.add('tif-canvas');
+                            document.querySelector('#tif-canvas-container').innerHTML = '';
+                            document.querySelector('#tif-canvas-container').appendChild(canvas);
+                        })
+                        .catch(window.catchFetchError)
+                }
+            break;
             default:
                 self.canPreviewAttachment(false);
                 break;

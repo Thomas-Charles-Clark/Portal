@@ -129,7 +129,7 @@ $light-blue-highlight: tint-color($blue-100, 75%);
     z-index: 100;
 
     .container {
-        max-width: 1880px !important;
+        max-width: 1980px !important;
         width: 100% !important;
         padding-left: 1em;
         padding-right: 1em;
@@ -155,7 +155,7 @@ $light-blue-highlight: tint-color($blue-100, 75%);
 
 .container {
     &.body-content {
-        max-width: 1880px;
+        max-width: 1980px;
         padding: $l-gutter;
         padding-top: 20px;
     }
@@ -1394,11 +1394,22 @@ $light-blue-highlight: tint-color($blue-100, 75%);
 
                         .attachment-supplier-container {
                             flex: 1;
+                            align-self: center;
 
                             .attachment-supplier {
                                 display: flex;
                                 align-items: center;
+                                justify-content: flex-end;
                                 flex: 1;
+
+                                label {
+                                    font-weight: bold;
+                                    font-size: $font-size-md;
+
+                                    span {
+                                        font-weight: normal;
+                                    }
+                                }
 
                                 .mdc-validating-field {
                                     flex: 1;
