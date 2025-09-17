@@ -300,6 +300,7 @@ namespace Portal.Areas.Invoices.Controllers
 
                 stubs = PortalDb.EmailStubs
                     .Include("Supplier")
+                    .Include("Supplier.BudgetHolder")
                     .Where(p =>
                         p.Deleted == false &&
                         userIds.Contains((int)p.Supplier.BudgetHolder.UserID) &&
@@ -315,6 +316,7 @@ namespace Portal.Areas.Invoices.Controllers
             {
                 stubs = PortalDb.EmailStubs
                     .Include("Supplier")
+                    .Include("Supplier.BudgetHolder")
                     .Where(p =>
                         p.Deleted == false &&
                         p.MailboxID == dto.MailboxID &&
@@ -983,13 +985,23 @@ namespace Portal.Areas.Invoices.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> RequestBudgetHolderChange([FromBody]PassSupplierDetail dto)
+        public async Task<IHttpActionResult> RequestBudgetHolderChange([FromBody] PassSupplierDetail dto)
         {
             dto.MemberID = User.Identity.GetUserId<int>();
 
             var result = await PortalDb.ChangeBudgetHolder_Request(dto);
 
             return Ok(new { });
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> ChangeBudgetHolder([FromBody] PassChangeBudgetHolderAction dto)
+        {
+            dto.ChangeActionMemberID = User.Identity.GetUserId<int>();
+
+            var result = await PortalDb.ChangeBudgetHolder_Action(dto);
+
+            return Ok(result);
         }
     }
 }

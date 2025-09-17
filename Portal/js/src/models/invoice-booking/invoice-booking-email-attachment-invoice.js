@@ -858,7 +858,7 @@
         skipCascade: true,
         label: 'Supplier',
         odata: true,
-        endPoint: '/odata/MertexLiveSuppliers?$expand=Currency,ExchangeRate,PaymentTerms,VATCode',
+        endPoint: '/odata/MertexLiveSuppliers?$expand=Currency,ExchangeRate,PaymentTerms,VATCode,BudgetHolder',
         textField: 'Name',
         valueField: 'Code',
         template: (e) => {
@@ -877,7 +877,7 @@
             valueMapper: function (options) {
                 if (options.value) {
                     $.ajax({
-                        url: `/odata/MertexLiveSuppliers/Default.MertexLiveSupplierValueMapper(supplierCode='${options.value}')?$expand=Currency,ExchangeRate,PaymentTerms,VATCode`,
+                        url: `/odata/MertexLiveSuppliers/Default.MertexLiveSupplierValueMapper(supplierCode='${options.value}')?$expand=Currency,ExchangeRate,PaymentTerms,VATCode,BudgetHolder`,
                         type: 'GET',
                         success: function (data) {
                             options.success(data.value);

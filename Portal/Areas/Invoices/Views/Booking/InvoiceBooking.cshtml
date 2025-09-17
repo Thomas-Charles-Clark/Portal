@@ -210,8 +210,8 @@
                         Change
                     </button>
                 </div>
-                <div class="attachment-property attachment-supplier-wrapper" data-bind="with: Supplier">
-                    <div class="attachment-supplier-container" data-bind="with: BudgetHolder">
+                <div class="attachment-property attachment-supplier-wrapper" data-bind="with: supplier">
+                    <div class="attachment-supplier-container" data-bind="with: BudgetHolder, attr: { 'a': 1 }">
                         <div class="attachment-supplier">
                             <label>
                                 Budget Holder: <span data-bind="text: Name"></span>
@@ -456,8 +456,8 @@
                         Change
                     </button>
                 </div>
-                <div class="attachment-property attachment-supplier-wrapper" data-bind="with: Supplier">
-                    <div class="attachment-supplier-container" data-bind="with: BudgetHolder">
+                <div class="attachment-property attachment-supplier-wrapper" data-bind="with: supplier">
+                    <div class="attachment-supplier-container" data-bind="with: BudgetHolder, attr: { 'a': 2 }">
                         <div class="attachment-supplier">
                             <label>
                                 Budget Holder: <span data-bind="text: Name"></span>
@@ -602,8 +602,8 @@
                         Change
                     </button>
                 </div>
-                <div class="attachment-property attachment-supplier-wrapper" data-bind="with: Supplier">
-                    <div class="attachment-supplier-container" data-bind="with: BudgetHolder">
+                <div class="attachment-property attachment-supplier-wrapper" data-bind="with: supplier">
+                    <div class="attachment-supplier-container" data-bind="with: BudgetHolder, attr: { 'a': 3 }">
                         <div class="attachment-supplier">
                             <label>
                                 Budget Holder: <span data-bind="text: Name"></span>
@@ -830,8 +830,8 @@
                         Change
                     </button>
                 </div>
-                <div class="attachment-property attachment-supplier-wrapper" data-bind="with: Supplier">
-                    <div class="attachment-supplier-container" data-bind="with: BudgetHolder">
+                <div class="attachment-property attachment-supplier-wrapper" data-bind="with: supplier">
+                    <div class="attachment-supplier-container" data-bind="with: BudgetHolder, attr: { 'a': 4 }">
                         <div class="attachment-supplier">
                             <label>
                                 Budget Holder: <span data-bind="text: Name"></span>
@@ -892,8 +892,8 @@
                         </button>
                     </div>
                 </div>
-                <div class="attachment-property attachment-supplier-wrapper" data-bind="with: Supplier">
-                    <div class="attachment-supplier-container" data-bind="with: BudgetHolder">
+                <div class="attachment-property attachment-supplier-wrapper" data-bind="with: parentEmailSupplier">
+                    <div class="attachment-supplier-container" data-bind="with: BudgetHolder, attr: { 'a': 5}">
                         <div class="attachment-supplier">
                             <label>
                                 Budget Holder: <span data-bind="text: Name"></span>
@@ -1874,6 +1874,41 @@
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="change-budget-holder-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div data-bind="with: selectedEmail">
+                <div class="blocker" data-bind="flexFadeVisible: changeBudgetHolderBusy">
+                    <div class="loading-spinner"></div>
+                    <h4 class="mt-3">
+                        Please Wait...
+                    </h4>
+                </div>
+            </div>
+            <div class="modal-header" data-bind="with: selectedEmail">
+                <h5 class="modal-title" data-bind="with: supplier">
+                    Specify Budget Holder for <span data-bind="text: `${Code} - ${Name}`"></span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" aria-label="Close" data-bind="click: closeChangeBudgetHolderModal"></button>
+            </div>
+            <div class="modal-body relative">
+                <div data-bind="with: selectedEmail">
+                    <p data-bind="with: supplier">
+                        Please select the new Budget Holder for <span data-bind="text: `${Code} - ${Name}`"></span>.
+                    </p>
+                </div>
+                <div id="change-budget-holder" class="relative" data-bind="with: selectedEmail">
+                    <div class="relative" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: changeBudgetHolderParams }"></div>
+                    <span class="validation-message" data-bind="validationMessage: changeBudgetHolderCode"></span>
+                    <button class="btn btn-dark w-100 mt-3" data-bind="click: actionBudgetHolderChange">
+                        Confirm
+                    </button>
+                </div
             </div>
         </div>
     </div>

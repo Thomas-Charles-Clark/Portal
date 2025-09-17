@@ -382,5 +382,23 @@ namespace SharedEFClasses.Models
 
             return true;
         }
+
+        public async Task<ChangeBudgetHolderResult> ChangeBudgetHolder_Action(PassChangeBudgetHolderAction dto)
+        {
+            var p = new DynamicParameters();
+
+            p.AddDynamicParams(dto);
+
+            p.Add("ErrorNumber", DbType.Int32, direction: ParameterDirection.Output);
+            p.Add("ErrorMessage", DbType.Int32, direction: ParameterDirection.Output);
+
+            var result = await this.Database.Connection.QueryAsync("[IncomingEmail].[ChangeBudgetHolder_Action]", p, null, null, CommandType.StoredProcedure);
+
+            return new ChangeBudgetHolderResult()
+            {
+                ErrorNumber = p.Get<int?>("ErrorNumber"),
+                ErrorMessage = p.Get<string>("ErrorMessage")
+            };
+        }
     }
 }

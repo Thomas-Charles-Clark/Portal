@@ -107,10 +107,10 @@
                 self.parent.loadEmail(data, (data) => {
 
                     let model = invoiceBookingEmailViewModel({
-                        parent: Object.assign(self.parent, {
+                        parent: Object.assign({
                             modalElement: document.getElementById('document-viewer-modal'),
                             modal: bootstrap.Modal.getOrCreateInstance(document.getElementById('document-viewer-modal'))
-                        }),
+                        }, self.parent),
                         emailStatus: data.emailStatus,
                         additionalInfo: data.additionalInfo,
                         rec: data.message,

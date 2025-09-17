@@ -1323,22 +1323,40 @@ const invoiceBookingViewModel = ({
         self.documentGridParams.widget().dataSource.read();
     });
 
-    self.setPopupAppendTo = () => {
+    self.setAttachmentBudgetHolderPopupAppendTo = () => {
         window.setTimeout(() => {
             self.selectedAttachment().forwardToBudgetHolderParams.dropDownListSettings.widget().setOptions({
                 popup: {
                     appendTo: document.querySelector('#destination-budget-holder')
                 }
             });
-        }, 0);
+        }, 100);
     }
 
     self.selectedAttachment.subscribe(nv => {
-
-        nv.forwardAttachmentModal._element.removeEventListener('shown.bs.modal', self.setPopupAppendTo);
-        nv.forwardAttachmentModal._element.addEventListener('shown.bs.modal', self.setPopupAppendTo);
-
+        nv.forwardAttachmentModal._element.removeEventListener('shown.bs.modal', self.setAttachmentBudgetHolderPopupAppendTo);
+        nv.forwardAttachmentModal._element.addEventListener('shown.bs.modal', self.setAttachmentBudgetHolderPopupAppendTo);
     });
+
+    self.setChangeBudgetHolderPopupAppendTo = () => {
+        self.selectedEmail().changeBudgetHolderParams.dropDownListSettings.widget().setOptions({
+            popup: {
+                appendTo: '#change-budget-holder'
+            }
+        });
+    }
+
+    self.selectedEmail.subscribe(nv => {
+        nv.changeBudgetHolderModal._element.removeEventListener('shown.bs.modal', self.setChangeBudgetHolderPopupAppendTo);
+        nv.changeBudgetHolderModal._element.addEventListener('shown.bs.modal', self.setChangeBudgetHolderPopupAppendTo);
+
+        window.setTimeout(() => {
+            if (nv.Supplier.BudgetHolderCode == '101') {
+                nv.modalBusy(true);
+                nv.changeBudgetHolderModal.show();
+            }
+        }, 0);
+    })
 
     self.exportDocumentGrid = () => {
         self.documentGridParams.widget().saveAsExcel();

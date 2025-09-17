@@ -1327,6 +1327,15 @@ body {
   margin-top: 0.75rem;
 }
 
+#change-budget-holder-modal .modal-dialog .modal-header {
+  background-color: #084298;
+  color: #fff;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
 #email-body {
   background-color: #fff;
   transform: translate3d(0, 0, 0);

@@ -893,7 +893,11 @@ namespace Portal.Utilities.Document
 
                 if (orderFooter.OrderFooterValue2 != null)
                 {
-                    orderFooterPhrase2.Add(new Chunk($"{orderFooter.OrderFooterValue2}", normalFont));
+                    foreach(var ofvgp in ProcessTextBlock(rootPath, orderFooter.OrderFooterValue2))
+                    {
+                        orderFooterPhrase2.Add(ofvgp);
+                    }
+
                     addOrderFooterPhrase2Newline = true;
                 }
 

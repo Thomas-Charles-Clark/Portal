@@ -455,6 +455,8 @@
     <Compile Include="Models\IncomingEmail\MailboxFunction.cs" />
     <Compile Include="Models\IncomingEmail\PassAttachmentForward.cs" />
     <Compile Include="Models\IncomingEmail\PassAttachmentSubmit.cs" />
+    <Compile Include="Models\IncomingEmail\ChangeBudgetHolderActionResult.cs" />
+    <Compile Include="Models\IncomingEmail\PassChangeBudgetHolderAction.cs" />
     <Compile Include="Models\IncomingEmail\PassDocumentDownloadRequest.cs" />
     <Compile Include="Models\IncomingEmail\PassEmailMessageID.cs" />
     <Compile Include="Models\IncomingEmail\PassEmailToPDF.cs" />

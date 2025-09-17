@@ -137,12 +137,21 @@
                 if (self.logging())
                     console.log('dashboard returned', data);
 
-                let previouslySelectedEmailStatusId = self.selectedPod().EmailStatusID;
+                let previouslySelectedEmailStatusId = null;
+
+                if (self.selectedPod()) {
+                    previouslySelectedEmailStatusId = self.selectedPod().EmailStatusID;
+                }
 
                 self.busy(false);
                 self.pods(data.DashboardPods);
                 self.notices(data.Notices);
-                self.selectedPod(self.pods().find(p => p.EmailStatusID == previouslySelectedEmailStatusId));
+
+                if (previouslySelectedEmailStatusId) {
+                    self.selectedPod(self.pods().find(p => p.EmailStatusID == previouslySelectedEmailStatusId));
+                } else {
+                    self.selectedPod(undefined);
+                }
 
                 if (typeof afterFn == 'function')
                     afterFn();
@@ -273,7 +282,6 @@
                 if (self.selectedDocumentBudgetHolderPod()) {
                     self.selectedDocumentBudgetHolderPod(self.documentBudgetHolderPods().find(p => p.BudgetHolderCode == self.selectedDocumentBudgetHolderPod().BudgetHolderCode));
                 }
-                //self.selectedDocumentsPod(self.documentsPods().find(p => p.AttachmentStatusID == previouslySelectedDocumentStatusId));
 
                 if (typeof afterFn == 'function')
                     afterFn();

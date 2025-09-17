@@ -1460,9 +1460,22 @@ $light-blue-highlight: tint-color($blue-100, 75%);
     }
 }
 
+#change-budget-holder-modal {
+    .modal-dialog {
+        .modal-header {
+            background-color: $blue-700;
+            color: $white;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+    }
+}
+
 #email-body {
     background-color: $white;
-    transform: translate3d(0,0,0); 
+    transform: translate3d(0,0,0);
 
     table {
         tbody {

@@ -162,15 +162,43 @@
 
     self.readOnly = ko.observable(rec.Processed);
 
+    self.changeBudgetHolderBusy = ko.observable(false);
+
+    self.validateChangeBudgetHolderNow = ko.observable(false);
+
+    self.changeBudgetHolderCode = ko.observable('').extend({
+        required: {
+            params: true,
+            onlyIf: self.validateChangeBudgetHolderNow,
+            message: 'You must specify a Budget Holder'
+        },
+        notEqual: {
+            params: '',
+            onlyIf: self.validateChangeBudgetHolderNow,
+            message: 'You must specify a Budget Holder'
+        }
+    });
+
+    self.changeBudgetHolder = ko.observable();
+
+    self.changeBudgetHolderModalElement = document.querySelector('#change-budget-holder-modal');
+
+    self.changeBudgetHolderModal = bootstrap.Modal.getOrCreateInstance(self.changeBudgetHolderModalElement);
+
+    self.changeBudgetHolderErrors = ko.validation.group([
+        self.changeBudgetHolderCode
+    ]);
+
     //#endregion
 
 
     //#region Components
 
     self.supplierParams = kendoMDCDropDownList({
+        skipCascade: false,
         label: 'Supplier',
         odata: true,
-        endPoint: '/odata/MertexLiveSuppliers?$expand=Currency,ExchangeRate,PaymentTerms',
+        endPoint: '/odata/MertexLiveSuppliers?$expand=Currency,ExchangeRate,PaymentTerms,BudgetHolder',
         textField: 'Name',
         valueField: 'Code',
         template: (e) => {
@@ -201,7 +229,7 @@
             valueMapper: function (options) {
                 if (options.value) {
                     $.ajax({
-                        url: `/odata/MertexLiveSuppliers/Default.MertexLiveSupplierValueMapper(supplierCode='${options.value}')?$expand=Currency,ExchangeRate,PaymentTerms`,
+                        url: `/odata/MertexLiveSuppliers/Default.MertexLiveSupplierValueMapper(supplierCode='${options.value}')?$expand=Currency,ExchangeRate,PaymentTerms,BudgetHolder`,
                         type: 'GET',
                         success: function (data) {
                             options.success(data.value);
@@ -281,6 +309,82 @@
 
         }
     }
+
+    self.changeBudgetHolderParams = kendoMDCDropDownList({
+        skipCascade: false,
+        label: 'New Budget Holder',
+        odata: true,
+        endPoint: '/odata/BudgetHolders',
+        textField: 'Name',
+        valueField: 'Code',
+        virtual: false,
+        template: `#: Code # - #: Name #`,
+        valueTemplate: (e) => {
+            if (e.Code) {
+                self.changeBudgetHolder(e);
+                return `${e.Code} - ${e.Name}`;
+            } else {
+                return '';
+            }
+        },
+        idObservable: self.changeBudgetHolderCode,
+        objObservable: self.changeBudgetHolder,
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        autoWidth: true,
+        sort: {
+            dir: 'asc',
+            field: 'Name'
+        },
+        select: function (e) {
+            console.log('changeBudgetHolderParams select', e);
+        },
+        open: (e) => {
+            console.trace('changeBudgetHolderParams open');
+        },
+        clearFunction: () => {
+            self.changeBudgetHolderCode('');
+            self.changeBudgetHolder(undefined);
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            let filters = [];
+
+            if (data.filter && data.filter.filters.length) {
+                let f = data.filter.filters.find(f => f.field === "Name");
+                filters.push(`(contains(Name, '${f.value}') or equals(tolower(Code), '${f.value}'))`);
+
+                if (d.$filter) {
+                    delete d.$filter;
+                }
+            }
+
+            if (filters.length) {
+                let filterString = filters.join(' and ');
+                d.$apply = `filter(${filterString})`;
+            }
+
+            d.$count = true;
+
+            return d;
+        },
+        popupSettings: {
+            appendTo: document.querySelector(`#change-budget-holder`)
+        }
+    });
 
     //#endregion
 
@@ -752,6 +856,64 @@
                 self.modalBusy(false);
                 window.catchFetchError(err);
             })
+    }
+
+    self.actionBudgetHolderChange = () => {
+        self.validateChangeBudgetHolderNow(true);
+
+        window.setTimeout(() => {
+            if (self.changeBudgetHolderErrors().length) {
+                self.changeBudgetHolderErrors.showAllMessages(true);
+                self.changeBudgetHolderErrors.filter(x => {
+                    x.isValid.notifySubscribers(x.isValid());
+                })
+            } else {
+                window.showConfirm('Are you sure?', `This will set ${self.changeBudgetHolder().Name} as the budget holder for Supplier ${self.supplierCode()} "${self.supplier().Name}"`, () => {
+                    self.reallyActionBudgetHolderChange();
+                });
+            }
+        }, 0);
+    }
+
+    self.reallyActionBudgetHolderChange = () => {
+        self.changeBudgetHolderBusy(true);
+
+        var data = {
+            supplierCode: self.supplierCode(),
+            newBudgetHolderCode: self.changeBudgetHolderCode()
+        };
+
+        fetch('/api/InvoiceBookingAPI/ChangeBudgetHolder', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            body: JSON.stringify(data)
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                if (data.ErrorMessage == null) {
+                    window.showInfo('Done', `Supplier ${self.supplierCode()} "${self.supplier().Name}" has now been assigned to ${self.changeBudgetHolder().Name}.`, () => {
+                        self.closeChangeBudgetHolderModal();
+                    })
+                } else {
+                    window.showError(`Something went wrong processing that request. Please contact <a href="mailto:itsupport@designersguild.com">itsupport@designersguild.com</a>.
+                    <br/><br/>
+                    ${data.ErrorMessage}`);
+                }
+                self.changeBudgetHolderBusy(false);
+            })
+            .catch(err => {
+                self.changeBudgetHolderBusy(false);
+                window.catchFetchError(err);
+            })
+    }
+
+    self.closeChangeBudgetHolderModal = () => {
+        self.changeBudgetHolderModal.hide();
+        self.parent.modal.hide();
+        self.parent.refresh();
+        window.infoModalInstance.hide();
     }
 
     //#endregion
