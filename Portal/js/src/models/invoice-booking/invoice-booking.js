@@ -1174,6 +1174,10 @@ const invoiceBookingViewModel = ({
         self.suppressHide = true;
     })
 
+    self.modalElement.addEventListener('hide.bs.modal', (ev) => {
+        self.selectedEmail(undefined);
+    });
+
     self.modalElement.addEventListener('shown.bs.modal', () => {
         window.setTimeout(() => {
             self.modalElement.querySelectorAll('.btn').forEach((e) => {
@@ -1334,8 +1338,10 @@ const invoiceBookingViewModel = ({
     }
 
     self.selectedAttachment.subscribe(nv => {
-        nv.forwardAttachmentModal._element.removeEventListener('shown.bs.modal', self.setAttachmentBudgetHolderPopupAppendTo);
-        nv.forwardAttachmentModal._element.addEventListener('shown.bs.modal', self.setAttachmentBudgetHolderPopupAppendTo);
+        if (nv) {
+            nv.forwardAttachmentModal._element.removeEventListener('shown.bs.modal', self.setAttachmentBudgetHolderPopupAppendTo);
+            nv.forwardAttachmentModal._element.addEventListener('shown.bs.modal', self.setAttachmentBudgetHolderPopupAppendTo);
+        }
     });
 
     self.setChangeBudgetHolderPopupAppendTo = () => {
@@ -1347,15 +1353,17 @@ const invoiceBookingViewModel = ({
     }
 
     self.selectedEmail.subscribe(nv => {
-        nv.changeBudgetHolderModal._element.removeEventListener('shown.bs.modal', self.setChangeBudgetHolderPopupAppendTo);
-        nv.changeBudgetHolderModal._element.addEventListener('shown.bs.modal', self.setChangeBudgetHolderPopupAppendTo);
+        if (nv) {
+            nv.changeBudgetHolderModal._element.removeEventListener('shown.bs.modal', self.setChangeBudgetHolderPopupAppendTo);
+            nv.changeBudgetHolderModal._element.addEventListener('shown.bs.modal', self.setChangeBudgetHolderPopupAppendTo);
 
-        window.setTimeout(() => {
-            if (nv.Supplier.BudgetHolderCode == '101') {
-                nv.modalBusy(true);
-                nv.changeBudgetHolderModal.show();
-            }
-        }, 0);
+            window.setTimeout(() => {
+                if (nv.Supplier.BudgetHolderCode == '101') {
+                    nv.modalBusy(true);
+                    nv.changeBudgetHolderModal.show();
+                }
+            }, 0);
+        }
     })
 
     self.exportDocumentGrid = () => {

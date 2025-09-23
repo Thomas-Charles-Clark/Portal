@@ -410,10 +410,17 @@
             }
 
             if (self.parentEmailSupplier()) {
-                self.toLoad.supplierCode = self.parentEmailSupplier().Code;
-                self.toLoad.supplier = self.parentEmailSupplier();
-                self.toLoad.supplierCurrency = self.parentEmailSupplier().Currency;
-                self.toLoad.paymentTermsCode = self.parentEmailSupplier().PaymentTermsCode;
+                if (self.toLoad.supplierCode == null || self.toLoad.supplierCode == '')
+                    self.toLoad.supplierCode = self.parentEmailSupplier().Code;
+
+                if (self.toLoad.supplier == null) 
+                    self.toLoad.supplier = self.parentEmailSupplier();
+
+                if (self.toLoad.supplierCurrency == null)
+                    self.toLoad.supplierCurrency = self.parentEmailSupplier().Currency;
+
+                if (self.toLoad.paymentTermsCode == null || self.toLoad.paymentTermsCode == '')
+                    self.toLoad.paymentTermsCode = self.parentEmailSupplier().PaymentTermsCode;
             }
 
             if (typeof propertiesViewModelFn == 'function') {

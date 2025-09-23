@@ -625,15 +625,20 @@
                 transactionId: transaction.TransactionID
             },
             success: function (data) {
-                self.jsonViewer(JSON.stringify(data.json, null, '\t'));
                 //self.jsonViewer(data.JSON);
+
+                self.jsonViewer(PR.prettyPrintOne(JSON.stringify(data.json, null, '\t')));
+
                 self.busy(false);
+
                 window.setTimeout(function () {
-                    PR.prettyPrint();
+
                     $([document.documentElement, document.body]).animate({
                         scrollTop: $("#json-viewer").offset().top - 60
                     }, 500);
+
                 }, 0);
+
             },
             error: function (xhr, s, a) {
                 self.busy(false);

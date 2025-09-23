@@ -211,6 +211,7 @@
                     </button>
                 </div>
                 <div class="attachment-property attachment-supplier-wrapper" data-bind="with: supplier">
+                    <!-- ko ifnot: typeof BudgetHolder === 'undefined' -->
                     <div class="attachment-supplier-container" data-bind="with: BudgetHolder, attr: { 'a': 1 }">
                         <div class="attachment-supplier">
                             <label>
@@ -218,9 +219,10 @@
                             </label>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-dark" data-bind="click: $parentContext.$parent.requestBudgetHolderChange">
+                    <button type="button" class="btn btn-dark" data-bind="css: { 'd-none': $parent.readOnly }, click: $parentContext.$parent.requestBudgetHolderChange">
                         Change
                     </button>
+                    <!-- /ko -->
                 </div>
                 <div id="invoice-reference" class="attachment-property" data-bind="highlightNullField: supplierInvoiceReference, component: { name: 'mdc-text-field-component', params: invoiceReferenceParams }"></div>
                 <span class="validation-message" data-bind="validationMessage: supplierInvoiceReference"></span>
@@ -457,6 +459,7 @@
                     </button>
                 </div>
                 <div class="attachment-property attachment-supplier-wrapper" data-bind="with: supplier">
+                    <!-- ko ifnot: typeof BudgetHolder === 'undefined' -->
                     <div class="attachment-supplier-container" data-bind="with: BudgetHolder, attr: { 'a': 2 }">
                         <div class="attachment-supplier">
                             <label>
@@ -464,9 +467,10 @@
                             </label>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-dark" data-bind="click: $parentContext.$parent.requestBudgetHolderChange">
+                    <button type="button" class="btn btn-dark" data-bind="visible: $parentContext.$parent.supplierParams.changeBtnVisible, click: $parentContext.$parent.requestBudgetHolderChange">
                         Change
                     </button>
+                    <!-- /ko -->
                 </div>
                 <div id="invoice-reference" class="attachment-property" data-bind="highlightNullField: supplierInvoiceReference, component: { name: 'mdc-text-field-component', params: invoiceReferenceParams }"></div>
                 <span class="validation-message" data-bind="validationMessage: supplierInvoiceReference"></span>
@@ -603,6 +607,7 @@
                     </button>
                 </div>
                 <div class="attachment-property attachment-supplier-wrapper" data-bind="with: supplier">
+                    <!-- ko ifnot: typeof BudgetHolder === 'undefined' -->
                     <div class="attachment-supplier-container" data-bind="with: BudgetHolder, attr: { 'a': 3 }">
                         <div class="attachment-supplier">
                             <label>
@@ -610,9 +615,10 @@
                             </label>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-dark" data-bind="click: $parentContext.$parent.requestBudgetHolderChange">
+                    <button type="button" class="btn btn-dark" data-bind="css: { 'd-none': $parent.readOnly }, click: $parentContext.$parent.requestBudgetHolderChange">
                         Change
                     </button>
+                    <!-- /ko -->
                 </div>
                 <div id="invoice-reference" class="attachment-property" data-bind="highlightNullField: supplierInvoiceReference, component: { name: 'mdc-text-field-component', params: invoiceReferenceParams }"></div>
                 <span class="validation-message" data-bind="validationMessage: supplierInvoiceReference"></span>
@@ -831,6 +837,7 @@
                     </button>
                 </div>
                 <div class="attachment-property attachment-supplier-wrapper" data-bind="with: supplier">
+                    <!-- ko ifnot: typeof BudgetHolder === 'undefined' -->
                     <div class="attachment-supplier-container" data-bind="with: BudgetHolder, attr: { 'a': 4 }">
                         <div class="attachment-supplier">
                             <label>
@@ -838,9 +845,10 @@
                             </label>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-dark" data-bind="click: $parentContext.$parent.requestBudgetHolderChange">
+                    <button type="button" class="btn btn-dark" data-bind="css: { 'd-none': $parent.readOnly }, $parentContext.$parent.requestBudgetHolderChange">
                         Change
                     </button>
+                    <!-- /ko -->
                 </div>
             </div>
         </div>
@@ -893,6 +901,7 @@
                     </div>
                 </div>
                 <div class="attachment-property attachment-supplier-wrapper" data-bind="with: parentEmailSupplier">
+                    <!-- ko ifnot: typeof BudgetHolder === 'undefined' -->
                     <div class="attachment-supplier-container" data-bind="with: BudgetHolder, attr: { 'a': 5}">
                         <div class="attachment-supplier">
                             <label>
@@ -900,9 +909,10 @@
                             </label>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-dark" data-bind="click: $parentContext.$parent.requestBudgetHolderChange">
+                    <button type="button" class="btn btn-dark" data-bind="css: { 'd-none': $parentContext.$parent.readOnly }, $parentContext.$parent.requestBudgetHolderChange">
                         Change
                     </button>
+                    <!-- /ko -->
                 </div>
             </div>
         </div>
@@ -1611,11 +1621,18 @@
                 <div class="attachment-viewer" data-bind="with: selectedAttachment">
                     <!-- ko if: isEmailBody -->
                     <div id="email-body">
-                        <button id="download-email-to-pdf" class="btn" data-bind="click: $parent.openInNewTab">
-                            <span class="k-icon k-i-pdf"></span>
-                            Open in New Tab (for Printing to PDF)
-                            <span class="k-icon k-i-hyperlink-open"></span>
-                        </button>
+                        <div class="email-body-heading-wrapper">
+                            <h5 class="email-body-heading">
+                                <span>
+                                    Email Contents
+                                </span>
+                                <button id="download-email-to-pdf" class="btn" data-bind="click: $parent.openInNewTab">
+                                    <span class="k-icon k-i-pdf"></span>
+                                    Open in New Tab (for Printing to PDF)
+                                    <span class="k-icon k-i-hyperlink-open"></span>
+                                </button>
+                            </h5>
+                        </div>
                         <div class="p-2 d-flex flex-column" data-bind="html: Body"></div>
                     </div>
                     <!-- /ko -->

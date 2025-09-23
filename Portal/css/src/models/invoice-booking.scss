@@ -779,7 +779,7 @@ $light-blue-highlight: tint-color($blue-100, 75%);
                         margin: 0;
                     }
 
-                    &.header-unidentified {
+                    &.header-unidentified-supplier {
                         background-color: shade-color($red-500, 5%);
                         color: $white;
                     }
@@ -960,15 +960,17 @@ $light-blue-highlight: tint-color($blue-100, 75%);
 
                     .attachment-iframe-wrapper {
                         --bs-aspect-ratio: 126%;
-                        border: 1px solid $gray-300;
+                        border: 1px solid $gray-400;
                         max-width: 55%;
                     }
 
                     #email-body {
                         width: 100%;
                         position: relative;
-                        border: 1px solid $gray-300;
+                        border: 1px solid $gray-400;
                         max-width: 55%;
+                        border-top-left-radius: $border-radius;
+                        border-top-right-radius: $border-radius;
 
                         mailto {
                             display: block;
@@ -979,39 +981,48 @@ $light-blue-highlight: tint-color($blue-100, 75%);
                             height: auto !important;
                         }
 
-                        #download-email-to-pdf {
-                            display: flex;
-                            align-items: center;
-                            gap: $sm-gutter;
-                            position: absolute;
-                            background-color: $light;
-                            color: $body-color;
-                            border: 1px solid $gray-400;
-                            border-top-width: 0;
-                            border-right-width: 0;
-                            border-radius: 0;
-                            border-bottom-left-radius: $border-radius;
-                            right: 0;
-                            top: 0;
-                            transition: none;
+                        .email-body-heading-wrapper {
+                            margin-bottom: $m-gutter;
+                            padding-bottom: $m-gutter;
+                            border-bottom: 1px solid $gray-300;
+                            padding: $l-gutter 0;
+                            margin: 0 $l-gutter $sm-gutter;
 
-                            .k-icon {
-                                font-size: 1.5rem;
-                            }
+                            .email-body-heading {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                margin-bottom: 0;
 
-                            .k-i-download {
-                                position: relative;
-                                top: 3px;
-                            }
 
-                            &:hover,
-                            &:focus,
-                            &:focus-within {
-                                border: 1px solid $blue-800;
-                                border-top-width: 0;
-                                border-right-width: 0;
-                                background-color: $blue-700;
-                                color: $white;
+                                #download-email-to-pdf {
+                                    display: flex;
+                                    align-items: center;
+                                    gap: $sm-gutter;
+                                    background-color: $light;
+                                    color: $body-color;
+                                    border: 1px solid $gray-400;
+                                    transition: none;
+
+                                    .k-icon {
+                                        font-size: 1.5rem;
+                                    }
+
+                                    .k-i-download {
+                                        position: relative;
+                                        top: 3px;
+                                    }
+
+                                    &:hover,
+                                    &:focus,
+                                    &:focus-within {
+                                        border: 1px solid $blue-800;
+                                        border-top-width: 0;
+                                        border-right-width: 0;
+                                        background-color: $blue-700;
+                                        color: $white;
+                                    }
+                                }
                             }
                         }
                     }
