@@ -467,7 +467,7 @@
                             </label>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-dark" data-bind="visible: $parentContext.$parent.supplierParams.changeBtnVisible, click: $parentContext.$parent.requestBudgetHolderChange">
+                    <button type="button" class="btn btn-dark" data-bind="visible: $parentContext.$parentContext.$parent.supplierParams.changeBtnVisible().changeBtnVisible, click: $parentContext.$parent.requestBudgetHolderChange">
                         Change
                     </button>
                     <!-- /ko -->
