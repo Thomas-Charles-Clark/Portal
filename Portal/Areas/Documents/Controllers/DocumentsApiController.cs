@@ -34,6 +34,46 @@ namespace Portal.Areas.Documents.Controllers
             this.PortalDb = portalDbContext;
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public IHttpActionResult GetDocument([FromUri] PassDocumentBase64Identifier objDoc64)
+        {
+            byte[] byteArray = Convert.FromBase64String(objDoc64.d);
+
+            string jsonBack = null;
+
+            PassDocumentIdentifier objDoc = null;
+
+            try
+            {
+                jsonBack = Encoding.UTF8.GetString(byteArray);
+
+                objDoc = JsonConvert.DeserializeObject<PassDocumentIdentifier>(jsonBack);
+            }
+            catch (Exception)
+            {
+                jsonBack = Encoding.Unicode.GetString(byteArray);
+
+                objDoc = JsonConvert.DeserializeObject<PassDocumentIdentifier>(jsonBack);
+            }
+
+            objDoc.memberId = 0;
+
+            var result = PortalDb.SelectDocument(objDoc);
+
+            var stream = GenericDocumentPDFWriter.GenerateDocument(System.Web.Hosting.HostingEnvironment.MapPath("~"),
+                result);
+
+            HttpContext.Current.Response.ContentType = "application/pdf";
+            HttpContext.Current.Response.Buffer = false;
+            HttpContext.Current.Response.Clear();
+            HttpContext.Current.Response.OutputStream.Write(stream.GetBuffer(), 0, stream.GetBuffer().Length);
+            HttpContext.Current.Response.OutputStream.Flush();
+            HttpContext.Current.Response.End();
+
+            return null;
+        }
+
         [HttpPost]
         public IHttpActionResult FetchDocument([FromBody]PassDocumentBase64Identifier objDoc64)
         {

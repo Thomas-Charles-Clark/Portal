@@ -923,7 +923,8 @@
                 cellSize: '3rem'
             },
             restrictions: {
-                disabledDates: []
+                disabledDates: [],
+                maxDate: new Date(new Date().getTime() + oneDayMilliseconds)
             },
             allowInputToggle: false,
             useCurrent: false,
