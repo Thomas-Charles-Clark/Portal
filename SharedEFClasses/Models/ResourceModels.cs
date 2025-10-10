@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNet.OData.Builder;
 using Microsoft.OData.Edm;
 using Newtonsoft.Json;
+
+using SharedEFClasses.Models.Documents;
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.TradeAccounts;

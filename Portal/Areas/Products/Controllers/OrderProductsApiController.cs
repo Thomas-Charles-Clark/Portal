@@ -178,12 +178,15 @@ namespace Portal.Areas.Products.Controllers
             {
                 subject = $"Receipt for Order {String.Join("; ", receiptData.OrderHeads.Select(p => p.OrderHeadID).ToList())} - Designers Guild";
             }
+
             var body = inkyMarkup;
 
             var attachments = new Dictionary<string, MemoryStream>();
 
             var attachmentStream = new MemoryStream();
+
             attachmentStream.Write(stream.GetBuffer(), 0, stream.GetBuffer().Length);
+
             attachmentStream.Position = 0;
 
             attachments.Add("Designers-Guild-Receipt.pdf", attachmentStream);

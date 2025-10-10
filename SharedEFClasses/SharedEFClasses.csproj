@@ -400,6 +400,13 @@
     <Compile Include="Models\CreditControlRegion.cs" />
     <Compile Include="Models\CreditControlRegion_SalesMarket.cs" />
     <Compile Include="Models\Department.cs" />
+    <Compile Include="Models\Documents\Document.cs" />
+    <Compile Include="Models\Documents\DocumentResource.cs" />
+    <Compile Include="Models\Documents\DocumentSentReport_Record.cs" />
+    <Compile Include="Models\Documents\DocumentSentReport_Pod.cs" />
+    <Compile Include="Models\Documents\DocumentSentReportResult.cs" />
+    <Compile Include="Models\Documents\PassDocumentFilePath.cs" />
+    <Compile Include="Models\Documents\PassDocumentSentReportDto.cs" />
     <Compile Include="Models\DotDigitalMemberControl.cs" />
     <Compile Include="Models\DotDigital\DotDigitalAccount.cs" />
     <Compile Include="Models\DotDigital\PassCreateContact.cs" />

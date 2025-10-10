@@ -731,6 +731,8 @@
         }
     }
 
+    let oneDayMilliseconds = 1000 * 60 * 60 * 24;
+
     self.invoiceDateParams = {
         label: `Invoice Date (e.g. ${self.formatDateString(self.today)})`,
         id: "invoice-date",

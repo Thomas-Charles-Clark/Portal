@@ -1287,41 +1287,6 @@ namespace SharedEFClasses.Models.General
         public long imageId { get; set; }
     }
 
-    [Table("Document", Schema = "portal")]
-    public class Document
-    {
-        [Key]
-        public short DocumentID { get; set; }
-        public string Name { get; set; }
-        public DateTime CreatedDT { get; set; }
-        public DateTime? ModifiedDT { get; set; }
-        public DateTime? DeletedDT { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public bool Deleted { get; set; }
-
-        [InverseProperty("Document")]
-        public virtual ICollection<DocumentResource> Resources { get; set; }
-    }
-
-    [Table("Document_Resource", Schema = "portal")]
-    public class DocumentResource
-    {
-        [Key]
-        [Column(Order = 1)]
-        public short DocumentID { get; set; }
-
-        [Key]
-        [Column(Order = 2)]
-        public short ResourceID { get; set; }
-
-        [JsonIgnore]
-        [ForeignKey("DocumentID")]
-        public virtual Document Document { get; set; }
-
-        [ForeignKey("ResourceID")]
-        public virtual Resource Resource { get; set; }
-    }
-
     public class PassClientError
     {
         public string name { get; set; }

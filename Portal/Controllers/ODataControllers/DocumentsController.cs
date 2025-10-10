@@ -13,6 +13,9 @@ using Microsoft.AspNet.OData;
 using SharedEFClasses;
 using SharedEFClasses.Models.General;
 using Microsoft.AspNet.OData.Routing;
+using SharedEFClasses.Models.Documents;
+using Microsoft.AspNet.OData.Query;
+using SharedEFClasses.Models.Mertex;
 
 namespace Portal.Controllers
 {
@@ -40,6 +43,16 @@ namespace Portal.Controllers
         public IQueryable<Document> GetDocuments()
         {
             return PortalDb.Documents.AsQueryable();
+        }
+
+        [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
+        [HttpGet]
+        public IQueryable<Document> DocumentsValueMapper(short documentId)
+        {
+            return PortalDb.Documents.Where(h =>
+                h.Deleted == false &&
+                h.DocumentID == documentId
+            ).AsQueryable();
         }
     }
 }

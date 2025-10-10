@@ -77,7 +77,6 @@ namespace Portal.Controllers
             return PortalDb.TradeAccounts.Where(p => p.TradeAccountID == tradeAccountId).AsQueryable();
         }
 
-        // GET: odata/Products
         [EnableQuery(MaxNodeCount = 200)]
         public IQueryable<TradeAccount> GetTradeAccountsForOrderBookSummary()
         {
@@ -85,6 +84,17 @@ namespace Portal.Controllers
             return PortalDb.TradeAccounts.Where(ta =>
                 ta.Deleted == false &&
                 ta.Status == "O"
+            ).AsQueryable();
+        }
+
+        [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
+        [HttpGet]
+        public IQueryable<TradeAccount> GetTradeAccountsForDocumentsSentReport(bool includeClosedAccounts = false, bool includeDeletedAccounts = false)
+        {
+            // Include deleted and closed accounts: we might want to check what we sent a previously closed account?
+            return PortalDb.TradeAccounts.Where(ta =>
+                ((includeDeletedAccounts == true) || (includeDeletedAccounts == false && ta.Deleted == false)) &&
+                ((includeClosedAccounts == true) || (includeClosedAccounts == false) && (ta.Status == "O"))
             ).AsQueryable();
         }
 

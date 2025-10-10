@@ -581,6 +581,8 @@
     <Compile Include="Areas\Customers\ViewModels\GiftVouchersViewModel.cs" />
     <Compile Include="Areas\Customers\ViewModels\TradeAccountCreationEmailMaintenanceViewModel.cs" />
     <Compile Include="Areas\Customers\ViewModels\CustomerMaintenanceViewModel.cs" />
+    <Compile Include="Areas\Documents\Controllers\DocumentsSentReportController.cs" />
+    <Compile Include="Areas\Documents\ViewModels\DocumentsSentReportViewModel.cs" />
     <Compile Include="Areas\Email\Controllers\EmailContactsController.cs" />
     <Compile Include="Areas\Email\Controllers\EmailContactsAPIController.cs" />
     <Compile Include="Areas\Email\EmailAreaRegistration.cs" />
@@ -1332,6 +1334,8 @@
     <Content Include="css\dist\lib\tempus-dominus\tempus-dominus.min.css" />
     <Content Include="css\dist\lib\tiny-slider\tiny-slider.css" />
     <Content Include="css\dist\lib\tiny-slider\tiny-slider.min.css" />
+    <Content Include="css\dist\models\advertiser-maintenance.css" />
+    <Content Include="css\dist\models\advertiser-maintenance.min.css" />
     <Content Include="css\dist\models\alternative-products.css" />
     <Content Include="css\dist\models\alternative-products.min.css" />
     <Content Include="css\dist\models\application-groups.css" />
@@ -1364,6 +1368,8 @@
     <Content Include="css\dist\models\customer-visit.min.css" />
     <Content Include="css\dist\models\documents-preview.css" />
     <Content Include="css\dist\models\documents-preview.min.css" />
+    <Content Include="css\dist\models\documents-sent-report.css" />
+    <Content Include="css\dist\models\documents-sent-report.min.css" />
     <Content Include="css\dist\models\download-products.css" />
     <Content Include="css\dist\models\download-products.min.css" />
     <Content Include="css\dist\models\email-contacts.css" />
@@ -1747,6 +1753,10 @@
     <Content Include="js\src\models\customer-tagging.js" />
     <Content Include="js\src\models\customer-visit.js" />
     <Content Include="js\src\models\documents-preview.js" />
+    <Content Include="js\src\models\documents\sent-report\documents-sent-report-filters.js" />
+    <Content Include="js\src\models\documents\sent-report\documents-sent-report-viewing-document.js" />
+    <Content Include="js\src\models\documents\sent-report\documents-sent-report.js" />
+    <Content Include="js\src\models\documents\sent-report\documents-sent-report-dashboard.js" />
     <Content Include="js\src\models\download-products.js" />
     <Content Include="js\src\models\email-contacts.js" />
     <Content Include="js\src\models\emailer.js" />
@@ -2618,6 +2628,7 @@
     <Content Include="Areas\Order-Book\Views\Shared\_OrdersInfo.cshtml" />
     <Content Include="Areas\Invoices\Views\Booking\EmailViewer.cshtml" />
     <Content Include="Areas\Customers\Views\AdvertiserMaintenance\AdvertiserMaintenance.cshtml" />
+    <Content Include="Areas\Documents\Views\SentReport\DocumentsSentReport.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
     <Content Include="Areas\Stock\Views\RangeManagement\RangeManagement.cshtml" />
     <None Include="compilerconfig.json" />
@@ -2974,6 +2985,10 @@
     <Content Include="css\dist\models\visit-booker.min.css.map" />
     <Content Include="css\dist\models\visit-search.css.map" />
     <Content Include="css\dist\models\visit-search.min.css.map" />
+    <Content Include="css\dist\models\documents-sent-report.css.map" />
+    <Content Include="css\dist\models\documents-sent-report.min.css.map" />
+    <Content Include="css\dist\models\advertiser-maintenance.css.map" />
+    <Content Include="css\dist\models\advertiser-maintenance.min.css.map" />
     <None Include="css\src\fonts\src\bootstrap-icons.woff2.bak" />
     <Content Include="css\src\fonts\src\courier-new-400-italic.woff2" />
     <Content Include="css\src\fonts\src\courier-new-400.woff2" />
@@ -3027,6 +3042,7 @@
     <Content Include="css\src\models\order-book-orders.scss" />
     <Content Include="css\src\models\invoice-booking-email-viewer.scss" />
     <Content Include="css\src\models\advertiser-maintenance.scss" />
+    <Content Include="css\src\models\documents-sent-report.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

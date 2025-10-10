@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SharedEFClasses.Models.Documents
+{
+    public class DocumentSentReport_Pod
+    {
+        public short DocumentID { get; set; }
+        public string PodGroup { get; set; }
+        public string Pod { get; set; }
+        public int SortOrder { get; set; }
+        public string CSSClasses { get; set; }
+        public string HTMLContents { get; set; }
+    }
+}

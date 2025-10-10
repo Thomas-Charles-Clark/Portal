@@ -18,6 +18,7 @@ using SharedEFClasses.Utilities;
 using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Orders;
 using System.Text;
+using System.IO;
 
 namespace SharedEFClasses.Models
 {
@@ -126,10 +127,12 @@ namespace SharedEFClasses.Models
             string subject,
             string body,
             short emailSourceId,
+            string replyTo = null,
             string cc = null,
             string bcc = null,
             short emailTemplateId = 1,
-            short emailTypeId = 2)
+            short emailTypeId = 2,
+            IEnumerable<Tuple<string, string, byte[]>> fileAttachments = null)
         {
             long result = -1;
 
@@ -146,12 +149,35 @@ namespace SharedEFClasses.Models
                     new SqlParameter("@To", destination),
                     new SqlParameter("@CC", cc ?? (object)DBNull.Value),
                     new SqlParameter("@BCC", bcc ?? (object)DBNull.Value),
+                    new SqlParameter("@ReplyTo", replyTo ?? (object)DBNull.Value),
                     new SqlParameter("@Subject", subject),
                     new SqlParameter("@Body", body),
                     new SqlParameter("@EmailTemplateID", emailTemplateId),
                     new SqlParameter("@EmailSourceID", emailSourceId),
                     new SqlParameter("@EmailTypeID", emailTypeId)
                 });
+
+                var attachmentsTableType = new DataTable();
+
+                attachmentsTableType.Columns.Add("FileName", typeof(string));
+                attachmentsTableType.Columns.Add("MimeType", typeof(string));
+                attachmentsTableType.Columns.Add("FileBytes", typeof(byte[]));
+
+                if (fileAttachments != null)
+                {
+                    foreach (var i in fileAttachments)
+                    {
+                        attachmentsTableType.Rows.Add(i.Item1, i.Item2, i.Item3);
+                    }
+
+                    var attachmentsTableTypeParam = new SqlParameter("@FileAttachmentsTable", attachmentsTableType)
+                    {
+                        SqlDbType = SqlDbType.Structured,
+                        TypeName = "FileAttachmentsTableType"
+                    };
+
+                    cmd.Parameters.Add(attachmentsTableTypeParam);
+                }
 
                 var p = new SqlParameter("@EmailID", DBNull.Value);
 

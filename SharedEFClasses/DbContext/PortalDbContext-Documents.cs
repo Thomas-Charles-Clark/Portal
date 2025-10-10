@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+﻿using Dapper;
+
+using Microsoft.AspNet.Identity.EntityFramework;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Documents;
+using SharedEFClasses.Models.IncomingEmail;
 using SharedEFClasses.Utilities;
 using System;
 using System.Collections.Generic;
@@ -25,6 +28,7 @@ namespace SharedEFClasses.Models
                 new SqlParameter("@BasketID", objSearch.BasketID ?? (object)DBNull.Value),
                 new SqlParameter("@TransactionID", objSearch.TransactionID ?? (object)DBNull.Value),
                 new SqlParameter("@OrderHeadID", objSearch.OrderHeadID ?? (object)DBNull.Value),
+                new SqlParameter("@TradeAccountID", objSearch.TradeAccountID ?? (object)DBNull.Value),
                 new SqlParameter("@SentByMemberID", memberId),
                 new SqlParameter("@To", objSearch.To ?? (object)DBNull.Value),
                 new SqlParameter("@ReplyTo", objSearch.ReplyTo ?? (object)DBNull.Value),
@@ -67,7 +71,8 @@ namespace SharedEFClasses.Models
                 new SqlParameter("@DocumentID", objSearch.documentType),
                 new SqlParameter("@BasketID", objSearch.basketId ?? (object)DBNull.Value),
                 new SqlParameter("@TransactionID", objSearch.transactionId ?? (object)DBNull.Value),
-                new SqlParameter("@OrderHeadID", objSearch.orderHeadId ?? (object)DBNull.Value)
+                new SqlParameter("@OrderHeadID", objSearch.orderHeadId ?? (object)DBNull.Value),
+                new SqlParameter("@TradeAccountID", objSearch.tradeAccountId ?? (object)DBNull.Value)
             };
 
             // Create a SQL command to execute the sproc
@@ -89,7 +94,7 @@ namespace SharedEFClasses.Models
             }
             catch (SqlException e)
             {
-                PortalFramework.LogErrorToDatabase(e);
+                //PortalFramework.LogErrorToDatabase(e);
                 throw e;
             }
             finally
@@ -98,6 +103,26 @@ namespace SharedEFClasses.Models
             }
 
             return result;
+        }
+
+        public async Task<DocumentSentReportResult> FetchDocumentSentReport(PassDocumentSentReportDto dto)
+        {
+            var results = await this.Database.Connection.QueryMultipleAsync("[portal].[DocumentSent_Report]", new {
+                dto.DocumentID,
+                dto.Page,
+                dto.PageSize,
+                dto.SearchString,
+                dto.FromDate,
+                dto.ToDate,
+                dto.SentDTSortDirection,
+                dto.TradeAccountID
+            }, null, null, CommandType.StoredProcedure);
+
+            return new DocumentSentReportResult()
+            {
+                DashboardPods = results.Read<DocumentSentReport_Pod>(),
+                Records = results.Read<DocumentSentReport_Record>()
+            };
         }
     }
 }

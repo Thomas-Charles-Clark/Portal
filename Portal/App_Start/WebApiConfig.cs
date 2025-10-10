@@ -30,6 +30,7 @@ using SharedEFClasses.Models.Parcel;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.IncomingEmail;
 using SharedEFClasses.Models.Advertisers;
+using SharedEFClasses.Models.Documents;
 
 namespace Portal
 {
@@ -167,6 +168,13 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(OrderTaker)).AddProperty(typeof(OrderTaker).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_DeliveryType)).AddProperty(typeof(Mertex_DeliveryType).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SupplierLive)).AddProperty(typeof(SupplierLive).GetProperty("AddressDisplaySingleLine"));
+
+            var documentsValueMapperFunction = odataBuilder.EntityType<Document>()
+                .Collection
+                .Function("DocumentsValueMapper")
+                .ReturnsCollectionFromEntitySet<Document>("Documents");
+
+            documentsValueMapperFunction.Parameter<short>("documentId");
 
             var currencyInvoiceRegistrationFunction = odataBuilder.EntityType<Currency>()
                 .Collection
@@ -439,6 +447,14 @@ namespace Portal
                 .Collection
                 .Function("GetTradeAccountsForOrderBookSummary")
                 .ReturnsCollectionFromEntitySet<TradeAccount>("TradeAccounts");
+
+            var tradeAccountDocumentsSentReportFilterFunction = odataBuilder.EntityType<TradeAccount>()
+                .Collection
+                .Function("GetTradeAccountsForDocumentsSentReport")
+                .ReturnsCollectionFromEntitySet<TradeAccount>("TradeAccounts");
+
+            tradeAccountDocumentsSentReportFilterFunction.Parameter<bool>("includeDeletedAccounts");
+            tradeAccountDocumentsSentReportFilterFunction.Parameter<bool>("includeClosedAccounts");
 
             var tradeAccountGroupFilterFunction = odataBuilder.EntityType<TradeAccount>()
                 .Collection

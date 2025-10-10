@@ -123,7 +123,7 @@ namespace SharedEFClasses
             }
         }
 
-        public async System.Threading.Tasks.Task SendFoundationEmailWithAttachmentsAsync(IdentityMessage message, Dictionary<string, MemoryStream> attachments, string replyTo = null)
+        public async Task SendFoundationEmailWithAttachmentsAsync(IdentityMessage message, Dictionary<string, MemoryStream> attachments, string replyTo = null)
         {
             // Plug in your email service here to send an email.
             try

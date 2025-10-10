@@ -3384,7 +3384,8 @@ namespace SharedEFClasses.Models
                 new SqlParameter("@TransactionID", objDoc.transactionId ?? (object)DBNull.Value),
                 new SqlParameter("@OrderHeadID", objDoc.orderHeadId ?? (object)DBNull.Value),
                 new SqlParameter("@LanguageID", objDoc.languageId),
-                new SqlParameter("@MemberID", objDoc.memberId)
+                new SqlParameter("@MemberID", objDoc.memberId),
+                new SqlParameter("@TradeAccountID", objDoc.tradeAccountId)
             };
 
             // Create a SQL command to execute the sproc

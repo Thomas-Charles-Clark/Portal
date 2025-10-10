@@ -422,6 +422,10 @@ namespace Portal
                 $"{cssPrefix}/models/advertiser-maintenance{cssSuffix}"
             ));
 
+            bundles.Add(new StyleBundle("~/bundles/css/documents-sent-report").Include(
+                    $"{cssPrefix}/models/documents-sent-report{cssSuffix}"
+            ));
+
             //  
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             //
@@ -971,6 +975,14 @@ namespace Portal
                         $"{jsPrefix}/models/emailer{jsSuffix}",
                         $"{jsPrefix}/models/pager{jsSuffix}",
                         $"{jsPrefix}/models/advertiser-maintenance{jsSuffix}"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/documents-sent-report").Include(
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/documents/sent-report/documents-sent-report-filters{jsSuffix}",
+                        $"{jsPrefix}/models/documents/sent-report/documents-sent-report-dashboard{jsSuffix}",
+                        $"{jsPrefix}/models/documents/sent-report/documents-sent-report-viewing-document{jsSuffix}",
+                        $"{jsPrefix}/models/documents/sent-report/documents-sent-report{jsSuffix}"
                 ));
 
             foreach (var b in BundleTable.Bundles)

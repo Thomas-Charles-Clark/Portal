@@ -872,7 +872,7 @@ namespace Portal.Areas.Invoices.Controllers
                 {
                     hw.Write(doc.DocumentNode.OuterHtml);
                     StringReader sr = new StringReader(sw.ToString());
-                    Document pdfDoc = new Document(PageSize.A4, 10f, 10f, 10f, 0f);
+                    iTextSharp.text.Document pdfDoc = new iTextSharp.text.Document(PageSize.A4, 10f, 10f, 10f, 0f);
                     PdfWriter writer = PdfWriter.GetInstance(pdfDoc, stream);
                     pdfDoc.Open();
                     XMLWorkerHelper.GetInstance().ParseXHtml(writer, pdfDoc, sr);

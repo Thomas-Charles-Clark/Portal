@@ -5,6 +5,7 @@ using SharedEFClasses.Models.ActiveDirectory;
 using SharedEFClasses.Models.Advertisers;
 using SharedEFClasses.Models.Applications;
 using SharedEFClasses.Models.Attributes;
+using SharedEFClasses.Models.Documents;
 using SharedEFClasses.Models.DotDigital;
 using SharedEFClasses.Models.Fenwick;
 using SharedEFClasses.Models.General;

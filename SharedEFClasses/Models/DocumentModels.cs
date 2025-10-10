@@ -315,6 +315,7 @@ namespace SharedEFClasses.Models.Documents
         public int? transactionId { get; set; }
         public int? orderHeadId { get; set; }
         public byte languageId { get; set; }
+        public int? tradeAccountId { get; set; }
         public string email { get; set; }
         public string replyTo { get; set; }
         public string subject { get; set; }
@@ -354,6 +355,7 @@ namespace SharedEFClasses.Models.Documents
         public long? BasketID { get; set; }
         public int? TransactionID { get; set; }
         public int? OrderHeadID { get; set; }
+        public int? TradeAccountID { get; set; }
         public string To { get; set; }
         public string ReplyTo { get; set; }
         public string CC { get; set; }
@@ -366,5 +368,6 @@ namespace SharedEFClasses.Models.Documents
         public long? basketId { get; set; }
         public int? transactionId { get; set; }
         public int? orderHeadId { get; set; }
+        public int? tradeAccountId { get; set; }
     }
 }
