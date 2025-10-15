@@ -36,6 +36,13 @@
 
         //#region Subscriptions
 
+        // Halloween spectacular
+        self.busy.subscribe(function (newValue) {
+            if (Math.random() < 0.5) {
+                self.busyMessage.skipSubscription = true;
+                self.busyMessage('<div class="halloween-message">' + HALLOWEEN_RANDOM_MESSAGES[Math.floor(Math.random() * HALLOWEEN_RANDOM_MESSAGES.length)] + '</div>')
+            }
+        });
 
         //#endregion
 

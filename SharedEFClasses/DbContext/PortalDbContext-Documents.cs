@@ -33,7 +33,8 @@ namespace SharedEFClasses.Models
                 new SqlParameter("@To", objSearch.To ?? (object)DBNull.Value),
                 new SqlParameter("@ReplyTo", objSearch.ReplyTo ?? (object)DBNull.Value),
                 new SqlParameter("@CC", objSearch.CC ?? (object)DBNull.Value),
-                new SqlParameter("@BCC", objSearch.BCC ?? (object)DBNull.Value)
+                new SqlParameter("@BCC", objSearch.BCC ?? (object)DBNull.Value),
+                new SqlParameter("@FileAttachments", objSearch.FileAttachments ?? (object)DBNull.Value)
             };
 
             // Create a SQL command to execute the sproc

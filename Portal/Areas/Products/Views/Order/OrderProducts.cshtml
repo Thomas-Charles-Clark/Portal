@@ -315,6 +315,9 @@
             <span data-bind="html: Reference"></span>
         </td>
         <td>
+            <span data-bind="text: moment(HeldSince).format('DD/MM/YYYY HH:mm')"></span>
+        </td>
+        <td>
             <span class="display-block" data-bind="text: CustomerCode"></span>
             <span class="display-block" data-bind="text: CustomerName"></span>
         </td>

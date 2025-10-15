@@ -407,6 +407,7 @@
     <Compile Include="Models\Documents\DocumentSentReportResult.cs" />
     <Compile Include="Models\Documents\PassDocumentFilePath.cs" />
     <Compile Include="Models\Documents\PassDocumentSentReportDto.cs" />
+    <Compile Include="Models\Documents\PassEmailDocumentFromFilePathDto.cs" />
     <Compile Include="Models\DotDigitalMemberControl.cs" />
     <Compile Include="Models\DotDigital\DotDigitalAccount.cs" />
     <Compile Include="Models\DotDigital\PassCreateContact.cs" />

@@ -17,7 +17,7 @@
     @Scripts.Render("~/bundles/js/documents-sent-report")
     @Scripts.Render("~/bundles/js/tempus-dominus")
 
-<script type="text/javascript">
+    <script type="text/javascript">
 
         window.getDto = () => {
             return @Html.Raw(JsonConvert.SerializeObject(Model.Dto));
@@ -30,7 +30,7 @@
         window.getDashboardNotices = () => {
             return [];
         }
-</script>
+    </script>
 
     <script type="text/javascript">
 
@@ -57,26 +57,24 @@
 }
 
 <script type="text/html" id="document-sent-row-template">
-    <tr class="document-sent-row" data-bs-toggle="popover">
+    <tr class="document-sent-row" data-bind="attr: { title: `Document Sent ID: ${DocumentSentID}` }">
         <td data-bind="html: TradeAccount"></td>
         <td class="wrapping" data-bind="html: SentRegarding"></td>
-        <td>
-            <a href="javascript:;" data-bind="click: $parent.selectRow, text: Document, clickBubble: true"></a>
+        <td class="pointer" data-bind="click: $parent.openDocument">
+            <a href="javascript:;" data-bind="text: Document, clickBubble: true"></a>
         </td>
-        <td>
+        <td class="pointer" data-bind="click: $parent.openDocument">
             <span data-bind="text: moment(SentDT).format('DD/MM/YYYY HH:mm')"></span>
         </td>
-        <td data-bind="html: SentTo"></td>
-        <td data-bind="html: SentBy"></td>
-        <td data-bind="html: ReplyTo"></td>
+        <td class="pointer" data-bind="click: $parent.openDocument, html: SentTo"></td>
+        <td class="pointer" data-bind="click: $parent.openDocument, html: SentBy"></td>
+        <td class="pointer" data-bind="click: $parent.openDocument, html: ReplyTo"></td>
     </tr>
 </script>
 
 <div class="blocker" data-bind="flexFadeVisible: busy">
     <div class="loading-spinner"></div>
-    <h4 class="mt-3">
-        Please wait...
-    </h4>
+    <h4 class="mt-3" data-bind="text: busyMessage"></h4>
 </div>
 
 <div class="page-heading-wrapper">
@@ -99,67 +97,67 @@
     </div>
 </div>
 
-<div id="document-history-wrapper">
-    <div class="tab-content" id="documents-sent-tabs-content">
-        <div class="tab-pane active" id="browse-tab" role="tabpanel" aria-labelledby="browse-tab-btn">
-            <div id="dashboard" style="display: none;" data-bind="visible: true">
-                <div id="dashboard-pods" data-bind="with: dashboard">
-                    <!-- ko foreach: sortedPods -->
-                    <div class="dashboard-pod" data-bind="click: $parent.select, css: { 'active': $parent.selectedPod() == $data }">
-                        <div data-bind="class: CSSClasses, html: HTMLContents"></div>
-                    </div>
-                    <!-- /ko -->
+<div class="tab-content" id="documents-sent-tabs-content">
+    <div class="tab-pane active" id="browse-tab" role="tabpanel" aria-labelledby="browse-tab-btn">
+        <div id="dashboard" style="display: none;" data-bind="visible: true">
+            <div id="dashboard-pods" data-bind="with: dashboard">
+                <!-- ko foreach: sortedPods -->
+                <div class="dashboard-pod" data-bind="click: $parent.select, css: { 'active': $parent.selectedPod() == $data }">
+                    <div data-bind="class: CSSClasses, html: HTMLContents"></div>
                 </div>
-            </div>
-            <div id="prefilters" data-bind="with: filters">
-                <div class="document-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentParams }"></div>
-                <div class="trade-account-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountParams }"></div>
-                <div class="document-date-range-prefilter date-prefilter prefilter">
-                    <div class="date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentDateRangeParams }"></div>
-                </div>
-                <div class="prefilter" style="display: none" data-bind="visible: documentDateRangeId() == -1">
-                    <div class="from-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: documentFromDateParams }"></div>
-                </div>
-                <div class="prefilter" style="display: none" data-bind="visible: documentDateRangeId() == -1">
-                    <div class="to-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: documentToDateParams }"></div>
-                    <span class="validation-message text-danger" data-bind="validationMessage: documentFromDate"></span>
-                    <span class="validation-message text-danger" data-bind="validationMessage: documentToDate"></span>
-                    <span class="validation-message text-danger" data-bind="validationMessage: fromPreceedsTo"></span>
-                </div>
-                <div class="free-text-prefiler prefilter" data-bind="component: { name: 'mdc-text-field-component', params: freeTextSearchParams }"></div>
-            </div>
-            <div id="grid-wrapper">
-                <div data-bind="kendoGrid: gridParams"></div>
+                <!-- /ko -->
             </div>
         </div>
+        <div id="prefilters" data-bind="with: filters">
+            <div class="document-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentParams }"></div>
+            <div class="trade-account-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountParams }"></div>
+            <div class="document-date-range-prefilter date-prefilter prefilter">
+                <div class="date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentDateRangeParams }"></div>
+            </div>
+            <div class="prefilter" style="display: none" data-bind="visible: documentDateRangeId() == -1">
+                <div class="from-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: documentFromDateParams }"></div>
+            </div>
+            <div class="prefilter" style="display: none" data-bind="visible: documentDateRangeId() == -1">
+                <div class="to-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: documentToDateParams }"></div>
+                <span class="validation-message text-danger" data-bind="validationMessage: documentFromDate"></span>
+                <span class="validation-message text-danger" data-bind="validationMessage: documentToDate"></span>
+                <span class="validation-message text-danger" data-bind="validationMessage: fromPreceedsTo"></span>
+            </div>
+            <div class="free-text-prefiler prefilter" data-bind="component: { name: 'mdc-text-field-component', params: freeTextSearchParams }"></div>
+        </div>
+        <div id="grid-wrapper">
+            <div data-bind="kendoGrid: gridParams"></div>
+        </div>
     </div>
-    <!-- ko if: viewingDocument -->
-    <div id="viewing-document-wrapper" class="ratio" data-bind="css: { 'd-block': viewingDocumentLoaded }, with: viewingDocument">
-        
-    </div>
-    <!-- /ko -->
 </div>
 
-<div id="generic-modal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header grey-blue">
-                <h4 class="modal-title">
-                    Modal
+<div id="emailer-modal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg modal-xl modal-xxl">
+        <div class="modal-content" data-bind="with: viewingDocument">
+            <div class="blocker" data-bind="flexFadeVisible: busy">
+                <div class="loading-spinner"></div>
+                <h4 class="mt-3" data-bind="text: busyMessage"></h4>
+            </div>
+            <div class="modal-header bg-blue-700">
+                <h4 class="modal-title text-white">
+                    &nbsp;
                 </h4>
                 <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p class="bold">
-                    Important Notes
-                </p>
-                <p class="mb-0">
-                    This is a modal window.
-                </p>
+                <div id="viewing-document-wrapper" class="ratio"></div>
+                <div class="mt-3 d-flex justify-content-end">
+                    <button type="button" class="btn btn-dark" data-bs-toggle="collapse" data-bs-target="#emailer-collapse" aria-expanded="false" aria-controls="collapseExample">
+                        Toggle Emailer
+                    </button>
+                </div>
+                <div id="emailer-collapse" class="collapse">
+                    <div data-bind="component: { name: 'emailer-component', params: emailer }"></div>
+                </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" data-bs-dismiss="modal">
-                    Ok
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                    Cancel
                 </button>
             </div>
         </div>

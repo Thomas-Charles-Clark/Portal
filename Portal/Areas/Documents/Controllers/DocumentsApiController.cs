@@ -230,6 +230,96 @@ namespace Portal.Areas.Documents.Controllers
             }));
         }
 
+        [HttpPost]
+        public async Task<IHttpActionResult> EmailDocumentFromPath([FromBody] PassEmailDocumentFromFilePathDto dto)
+        {
+            var memberId = User.Identity.GetUserId<int>();
+
+            var inkyMarkup = $@"
+            <style type=""text/css"">
+                {PortalFramework.FoundationEmailCSS}
+            </style>
+            <meta name=""x-apple-disable-message-reformatting""/>
+            <container>
+	            <row>
+		            <columns>
+			            <p class=""text-left"" style=""margin-top: 0"">
+				            {System.Text.RegularExpressions.Regex.Replace(dto.Body, "\n", "<br/>")}
+			            </p>
+		            </columns>
+	            </row>
+                <spacer size=""15""></spacer>
+            </container>";
+
+            using (var client = new HttpClient())
+            {
+                var content = new StringContent(inkyMarkup);
+
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+
+                var inkyResult = await client.PostAsync(PortalFramework.InkyEndpoint, content);
+
+                inkyMarkup = await inkyResult.Content.ReadAsStringAsync();
+            }
+
+            var body = inkyMarkup;
+
+            var attachments = new Dictionary<string, MemoryStream>();
+
+            var fileBytes = new byte[] { };
+
+            var credentials = new UserCredentials("DESIGNERSGUILD\\SQLAgentFileAccess", "34949C02-4677-4711-999C-8E038E26B10F");
+
+            var token = credentials.LogonUser(LogonType.Interactive);
+
+            WindowsIdentity.RunImpersonated(token, () =>
+            {
+                fileBytes = System.IO.File.ReadAllBytes(dto.FilePath);
+            });
+
+            var attachmentStream = new MemoryStream();
+
+            attachmentStream.Write(fileBytes, 0, fileBytes.Length);
+
+            attachmentStream.Position = 0;
+
+            attachments.Add($"Designers Guild {dto.DocumentTypeHeader}.pdf", attachmentStream);
+
+            PortalDb.SaveDocumentSend(new PassDocumentSend()
+            {
+                To = dto.Recipient,
+                ReplyTo = dto.ReplyTo,
+                CC = null,
+#if DEBUG
+                BCC = "tclark@designersguild.com",
+#endif
+                Subject = dto.Subject,         
+                BasketID = dto.BasketID,
+                OrderHeadID = dto.OrderHeadID,
+                TransactionID = dto.TransactionID,
+                DocumentID = dto.DocumentID,
+                TradeAccountID = dto.TradeAccountID,
+                FileAttachments = dto.FilePath,
+            }, memberId);
+
+
+#pragma warning disable 4014
+            System.Threading.Tasks.Task.Factory.StartNew(() =>
+            {
+                ((EmailService)UserManager.EmailService).SendFoundationEmailWithAttachmentsAsync(new IdentityMessage()
+                {
+                    Body = body,
+                    Subject = dto.Subject,
+                    Destination = dto.Recipient
+                },
+                attachments,
+                dto.ReplyTo);
+            });
+#pragma warning restore 4014
+
+            return Ok(new {});
+        }
+
         public IHttpActionResult FetchDocumentSendHistory([FromBody] PassDocumentSendFetch objFetch)
         {
             return Ok(PortalDb.FetchDocumentSendHistory(new PassDocumentSendFetch()

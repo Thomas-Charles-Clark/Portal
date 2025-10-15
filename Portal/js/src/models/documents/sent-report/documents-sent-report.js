@@ -5,6 +5,8 @@
 
     self.busy = ko.observable(true);
 
+    self.busyMessage = ko.observable('Please wait...');
+
     self.validateNow = ko.observable(false);
 
     self.filters = documentsSentReportFiltersViewModel({
@@ -183,18 +185,31 @@
             model: {
                 id: 'DocumentSentID',
                 fields: {
-                    GiftVoucherID: { type: 'number', editable: false },
+                    DocumentSentID: { type: 'number', editable: false },
                     TradeAccount: { type: 'string', editable: false },
-                    SentRegarding: { type: 'object', editable: false },
-                    Code: { type: 'string', editable: false },
-                    PriceListID: { type: 'number', editable: true },
-                    PriceList: { type: 'object', editable: false }
+                    SentRegarding: { type: 'string', editable: false },
+                    Document: { type: 'string', editable: false },
+                    DocumentLink: { type: 'string', editable: false },
+                    SentDT: { type: 'datetime', editable: false },
+                    SentTo: { type: 'string', editable: false },
+                    SentBy: { type: 'string', editable: false },
+                    ReplyTo: { type: 'string', editable: false },
+                    Status: { type: 'string', editable: false },
+                    FilePath: { type: 'string', editable: false },
+                    TotalRowCount: { type: 'number', editable: false },
+                    Subject: { type: 'string', editable: false },
+                    RecipientEmailAddress: { type: 'string', editable: false },
+                    DocumentID: { type: 'number', editable: false },
+                    BasketID: { type: 'number', editable: false },
+                    OrderHeadID: { type: 'number', editable: false },
+                    TransactionID: { type: 'number', editable: false },
+                    TradeAccountID: { type: 'number', editable: false },
                 }
             }
         }),
         aggregate: [],
         sort: {
-            field: 'GiftVoucherID',
+            field: 'SentDT',
             dir: 'desc'
         },
         //sort: { field: "BasketID", dir: "desc" },
@@ -228,7 +243,7 @@
         rowTemplate: 'document-sent-row-template',
         sortable: true,
         groupable: false,
-        filterable: true,
+        filterable: false,
         reorderable: true,
         editable: false,
         selectable: 'single',
@@ -242,11 +257,13 @@
         select: (e) => {
             console.log('gridParams select', e);
         },
-        change: (e) => {
-            console.log('gridParams change', e);
-            let dataItem = e.sender.dataItem(e.sender.select());
-            self.openDocument(dataItem);
-        }
+        //change: (e) => {
+        //    console.log('gridParams change', e);
+
+        //    let dataItem = e.sender.dataItem(e.sender.select());
+
+        //    self.openDocument(dataItem);
+        //}
     }
 
     //#endregion
@@ -299,7 +316,12 @@
     }
 
     self.refresh = () => {
-        self.gridParams.widget().dataSource.read();
+        let pageSize = self.gridParams.widget().dataSource.pageSize();
+
+        self.gridParams.widget().dataSource.query({
+            page: 1,
+            pageSize: pageSize
+        });
     }
 
     self.openDocument = (data, event) => {

@@ -6533,15 +6533,6 @@ ul.copy-list li div.thumb {
     margin-top: -5px;
 }
 
-.attribution {
-    font-size: 80%;
-    font-style: italic;
-}
-
-.attribution::before {
-    content: ' - ';
-}
-
 span.shining {
     display: block;
     font-family: "courier new";

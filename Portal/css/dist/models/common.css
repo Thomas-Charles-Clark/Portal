@@ -18,4 +18,20 @@
 .mb-0 {
   margin-bottom: 0;
 }
+
+.halloween-message {
+  font-family: "Trixie";
+}
+.halloween-message .shining {
+  display: block;
+  font-family: "Trixie Rough";
+}
+.halloween-message .attribution {
+  font-size: 60%;
+  font-family: "Courier New";
+  font-style: italic;
+}
+.halloween-message .attribution::before {
+  content: " - ";
+}
 /*# sourceMappingURL=common.css.map */

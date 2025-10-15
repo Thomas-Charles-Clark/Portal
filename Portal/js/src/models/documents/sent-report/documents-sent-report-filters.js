@@ -469,7 +469,7 @@ const documentsSentReportFiltersViewModel = ({
     };
 
     self.freeTextSearchParams = {
-        label: 'Search',
+        label: 'Search by DG or Customer Order Number',
         originalValue: self.freeTextSearch,
         observable: self.freeTextSearch,
         useNativeValidation: false,

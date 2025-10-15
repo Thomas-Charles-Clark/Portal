@@ -162,6 +162,12 @@
         filterable: false,
         hidden: true
     }, {
+        field: 'HeldSince',
+        title: 'Held Since',
+        width: 95,
+        filterable: false,
+        sortable: true
+    }, {
         field: 'Label',
         title: 'Trade Account',
         filterable: false
@@ -2755,7 +2761,7 @@
             }
         }),
         sort: {
-            field: 'Expires',
+            field: 'HeldSince',
             dir: 'desc'
         },
         //sort: { field: "BasketID", dir: "desc" },
@@ -2856,7 +2862,7 @@
                     AllowTransactionDelete: { type: 'bool' },
                     Documents: { type: 'string' },
                     documents: { type: 'object' },
-                    HeldSince: { type: 'date' },
+                    HeldSince: { type: 'datetime' },
                     BasketID: { type: 'number' },
                     LanguageID: { type: 'number' },
                     TransactionID: { type: 'number' },
@@ -2865,7 +2871,7 @@
             }
         }),
         sort: {
-            field: 'Expires',
+            field: 'HeldSince',
             dir: 'desc'
         },
         //sort: { field: "BasketID", dir: "desc" },
@@ -3011,7 +3017,7 @@
             }
         }),
         sort: {
-            field: 'Expires',
+            field: 'HeldSince',
             dir: 'desc'
         },
         //sort: { field: "BasketID", dir: "desc" },

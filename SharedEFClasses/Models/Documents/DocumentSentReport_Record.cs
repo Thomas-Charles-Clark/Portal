@@ -20,5 +20,12 @@ namespace SharedEFClasses.Models.Documents
         public string Status { get; set; }
         public string FilePath { get; set; }
         public int TotalRowCount { get; set; }
+        public string Subject { get; set; }
+        public string RecipientEmailAddress { get; set; }
+        public int TradeAccountID { get; set; }
+        public short DocumentID { get; set; }
+        public long? BasketID { get; set; }
+        public int? OrderHeadID { get; set; }
+        public int? TransactionID { get; set; }
     }
 }

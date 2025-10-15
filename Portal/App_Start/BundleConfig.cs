@@ -215,9 +215,9 @@ namespace Portal
                         $"{cssPrefix}/lib/bootstrap-3.3.7/bootstrap-3.3.7{cssSuffix}",
                         $"{cssPrefix}/lib/bootstrap-switch/bootstrap-switch{cssSuffix}",
                         $"{cssPrefix}/models/site{cssSuffix}",
-                        $"{cssPrefix}/models/css-shake{cssSuffix}",
-                        $"{cssPrefix}/fonts/fonts{cssSuffix}"
-                ).Include($"{cssPrefix}/lib/bootstrap-icons/bootstrap-icons{cssSuffix}", new CssRewriteUrlTransform()));
+                        $"{cssPrefix}/models/css-shake{cssSuffix}"
+                ).Include($"{cssPrefix}/lib/bootstrap-icons/bootstrap-icons{cssSuffix}", new CssRewriteUrlTransform())
+                 .Include($"{cssPrefix}/fonts/fonts{cssSuffix}", new CssRewriteUrlTransform()));
 
             bundles.Add(new StyleBundle("~/bundles/css/master-5.3.1").Include(
                         $"{cssPrefix}/lib/jquery-ui/jquery-ui{cssSuffix}",
@@ -283,6 +283,7 @@ namespace Portal
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/customer-maintenance").Include(
+                      $"{cssPrefix}/models/common{cssSuffix}",
                       $"{cssPrefix}/models/customer-maintenance{cssSuffix}"
                 ));
 
@@ -979,6 +980,7 @@ namespace Portal
 
             bundles.Add(new ScriptBundle("~/bundles/js/documents-sent-report").Include(
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/emailer{jsSuffix}",
                         $"{jsPrefix}/models/documents/sent-report/documents-sent-report-filters{jsSuffix}",
                         $"{jsPrefix}/models/documents/sent-report/documents-sent-report-dashboard{jsSuffix}",
                         $"{jsPrefix}/models/documents/sent-report/documents-sent-report-viewing-document{jsSuffix}",

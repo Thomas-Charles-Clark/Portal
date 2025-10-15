@@ -97,43 +97,7 @@
     NONCONSOLIDATED_SHIPMENT = 0,
     CONSOLIDATED_SHIPMENT = 1,
     DISCOUNT_STATE_MONETARY = 0,
-    DISCOUNT_STATE_PERCENTAGE = 1,
-    HALLOWEEN_RANDOM_MESSAGES = [
-        '<span class="shake shake-constant">WooooOOOoooooOOoooOooooo!</span>',
-        '<span class="shake shake-constant">BOO!!!</span>',
-        'While I nodded, nearly napping, suddenly there came a tapping,\n\
-         As of someone gently rapping, rapping at my chamber door...<br/><br/><span class="attribution">Edgar Allen Poe</span>',
-        'Quoth the Raven “Nevermore.”<br/><br/><span class="attribution">Edgar Allen Poe</span>',
-        'By the pricking of my thumbs,\n\
-Something wicked this way comes...<br/><br/><span class="attribution">William Shakespeare</span>',
-        '<span class="shake shake-constant">Eeeeeeek!</span>',
-        'Yesterday, upon the stair,\n\
-I saw a man who wasn\'t there!\n\
-He wasn\'t there again today,\n\
-Oh how I wish he\'d go away!<br/><br/><span class="attribution">William Hughes Mearns</span>',
-        '<span class="shake shake-constant">AaaaAAaAAAIEeeeeeee!!!</span>',
-        'Listen to them, the children of the night.\n\
-What music they make!<br/><br/><span class="attribution">Bram Stoker</span>',
-        'I dwell in a lonely house I know\n\
-That vanished many a summer ago<br/><br/><span class="attribution">Robert Frost</span>',
-        'We ask only to be reassured about the noises in the cellar\n\
-and the window that should not have been open...<br/><br/><span class="attribution">T.S. Eliot</span>',
-        '<span class="shining">All work and no play makes Jack a dull boy</span>\
-<span class="shining">All work and no play makes Jack a dull boy</span>\
-<span class="shining">All work and no play makes Jack a dull boy</span>\
-<span class="shining">All work and no play makes Jack a dull boy</span>\
-<span class="shining">All work and no play makes Jack a dull boy</span>\
-<span class="shining">All work and no play makes Jack a dull boy</span>\
-<span class="shining">All work and no play makes Jack a dull boy</span>\
-<span class="shining">All work and no play makes Jack a dull boy</span>\
-<span class="shining">All work and no play makes Jack a dull boy</span>\
-<span class="shining">All work and no play makes Jack a dull boy</span>\
-<span class="shining">All work and no play makes Jack a dull boy</span>\
-<span class="shining">All work and no play makes Jack a dull boy</span>\
-<br/><br/><span class="attribution">Stephen King</span>',
-        'Double, double, toil and trouble;\n\
-Fire burn and cauldron bubble!<br/><br/><span class="attribution">William Shakespeare</span>'
-    ]
+    DISCOUNT_STATE_PERCENTAGE = 1;
 
 // this must be referred to by the parent as "orderFactory".
 var orderProductsViewModel = function (parent, tradeAccountObservable) {
@@ -1685,29 +1649,64 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
 
     self.busyMessage.skipSubscription = false;
 
-    // Halloween spectacular
     self.busyMessage.subscribe(function (newValue) {
-        if (newValue && self.useMatrixLoader()) {
-            if (self.busyMessage.skipSubscription) {
-                self.busyMessage.skipSubscription = false;
-                return;
-            }
-            //if (Math.random() < 0.5) {
-            //    self.busyMessage.skipSubscription = true;
-            //    self.busyMessage('<div class="halloween-message">' + HALLOWEEN_RANDOM_MESSAGES[Math.floor(Math.random() * HALLOWEEN_RANDOM_MESSAGES.length)] + '</div>')
-            //}
+        // Halloween spectacular, ALL THE MESSAGES
+        //if (self.busyMessage.skipSubscription) {
+        //    self.busyMessage.skipSubscription = false;
+        //    return;
+        //}
+
+        if (newValue !== 'Please wait, deleting basket...') {
+
+            ko.ignoreDependencies(() => {
+                self.busyMessage('<div class="halloween-message">' + HALLOWEEN_RANDOM_MESSAGES[Math.floor(Math.random() * HALLOWEEN_RANDOM_MESSAGES.length)] + '</div>')
+            })
+
         }
+
+        //if (newValue && self.useMatrixLoader()) {
+            
+        //    //if (Math.random() < 0.75) {
+        //        //self.busyMessage.skipSubscription = true;
+        //        //ko.ignoreDependencies(() => {
+        //        //    self.busyMessage('<div class="halloween-message">' + HALLOWEEN_RANDOM_MESSAGES[Math.floor(Math.random() * HALLOWEEN_RANDOM_MESSAGES.length)] + '</div>')
+        //        //})
+        //    //}
+        //}
     });
 
     self.useMatrixLoader = ko.pureComputed(function () {
-        return [ORDERFACTORY_PHASE_DISPATCH,
+
+        return [
+
+            //ORDERFACTORY_PHASE_DISPATCH,
+            //ORDERFACTORY_PHASE_COMMENTS,
+            //ORDERFACTORY_PHASE_REVIEW_VATNUMBER,
+            //ORDERFACTORY_PHASE_REVIEW_MANAGER_DISCO,
+            //ORDERFACTORY_PHASE_REVIEW_DUPLICATES,
+            //ORDERFACTORY_PHASE_REVIEW_FOC,
+            //ORDERFACTORY_PHASE_REVIEW_HOLD,
+            //ORDERFACTORY_PHASE_RETAIL
+
+            ORDERFACTORY_PHASE_BLANK,
+            ORDERFACTORY_PHASE_MISC,
+            ORDERFACTORY_PHASE_ADDRESS,
+            ORDERFACTORY_PHASE_PREAMBLE,
+            ORDERFACTORY_PHASE_SEARCH,
+            ORDERFACTORY_PHASE_BASKET,
+            ORDERFACTORY_PHASE_SHIPPINGCHECK,
+            ORDERFACTORY_PHASE_DISPATCH,
+            ORDERFACTORY_PHASE_DELIVERY_ALERT,
             ORDERFACTORY_PHASE_COMMENTS,
             ORDERFACTORY_PHASE_REVIEW_VATNUMBER,
             ORDERFACTORY_PHASE_REVIEW_MANAGER_DISCO,
             ORDERFACTORY_PHASE_REVIEW_DUPLICATES,
             ORDERFACTORY_PHASE_REVIEW_FOC,
+            ORDERFACTORY_PHASE_REVIEW_FOC_ERROR,
             ORDERFACTORY_PHASE_REVIEW_HOLD,
-            ORDERFACTORY_PHASE_RETAIL].indexOf(self.phase()) > -1
+            ORDERFACTORY_PHASE_RETAIL
+
+        ].indexOf(self.phase()) > -1
     }, self);
 
     self.matrixLoader = {
