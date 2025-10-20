@@ -19,6 +19,22 @@
   margin-bottom: 0;
 }
 
+.halloween-message {
+  font-family: "Trixie";
+}
+.halloween-message .shining {
+  display: block;
+  font-family: "Trixie Rough";
+}
+.halloween-message .attribution {
+  font-size: 60%;
+  font-family: "Courier New";
+  font-style: italic;
+}
+.halloween-message .attribution::before {
+  content: " - ";
+}
+
 span.shining {
   display: block;
   font-family: "courier new";
@@ -459,7 +475,7 @@ tr.readonly {
   flex: 0 1 240px;
 }
 #order-entry-tabs-container .prefilters #held-orders-search-term-filter {
-  flex: 0 1 490px;
+  flex: 1 1 490px;
 }
 #order-entry-tabs-container .prefilters #held-orders-filter-search-btn {
   flex: 0 1 105px;
@@ -499,7 +515,7 @@ tr.readonly {
   border: 4px solid #fff;
   border-radius: 0.375rem;
   cursor: pointer;
-  flex: 0 1 240px;
+  flex: 1 1 auto;
   will-change: background-color, border-color, color;
   transition: background-color 150ms ease-in-out, border-color 150ms ease-in-out, color 150ms ease-in-out;
   position: relative;
@@ -579,5 +595,9 @@ tr.readonly {
 }
 .drilldown-stock-table .alert .request-stock-check-btn {
   margin-top: 1rem;
+}
+
+.k-grid.k-widget .k-grid-content td .alert {
+  margin-bottom: 0;
 }
 /*# sourceMappingURL=order-products-e.css.map */

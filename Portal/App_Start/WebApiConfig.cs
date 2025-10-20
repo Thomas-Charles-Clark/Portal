@@ -801,6 +801,11 @@ namespace Portal
 
 
 
+            var salesMarketForCustomerAdvertisersFunction = odataBuilder.EntityType<SalesMarket>()
+                .Collection
+                .Function("SalesMarketsForCustomerAdvertisers")
+                .ReturnsCollectionFromEntitySet<SalesMarket>("SalesMarket");
+
 
             var salesMarketValueMapperFunction = odataBuilder.EntityType<SalesMarket>()
                 .Collection

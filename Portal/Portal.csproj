@@ -1330,6 +1330,8 @@
     <Content Include="css\dist\lib\owl-carousel\owl.carousel.min.css" />
     <Content Include="css\dist\lib\owl-carousel\owl.theme.default.css" />
     <Content Include="css\dist\lib\owl-carousel\owl.theme.default.min.css" />
+    <Content Include="css\dist\lib\prettify\sunburst.css" />
+    <Content Include="css\dist\lib\prettify\sunburst.min.css" />
     <Content Include="css\dist\lib\tempus-dominus\tempus-dominus.css" />
     <Content Include="css\dist\lib\tempus-dominus\tempus-dominus.min.css" />
     <Content Include="css\dist\lib\tiny-slider\tiny-slider.css" />
@@ -2989,6 +2991,8 @@
     <Content Include="css\dist\models\documents-sent-report.min.css.map" />
     <Content Include="css\dist\models\advertiser-maintenance.css.map" />
     <Content Include="css\dist\models\advertiser-maintenance.min.css.map" />
+    <Content Include="css\dist\lib\prettify\sunburst.css.map" />
+    <Content Include="css\dist\lib\prettify\sunburst.min.css.map" />
     <None Include="css\src\fonts\src\bootstrap-icons.woff2.bak" />
     <Content Include="css\src\fonts\src\courier-new-400-italic.woff2" />
     <Content Include="css\src\fonts\src\courier-new-400.woff2" />
@@ -3043,6 +3047,7 @@
     <Content Include="css\src\models\invoice-booking-email-viewer.scss" />
     <Content Include="css\src\models\advertiser-maintenance.scss" />
     <Content Include="css\src\models\documents-sent-report.scss" />
+    <Content Include="css\src\lib\prettify\sunburst.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

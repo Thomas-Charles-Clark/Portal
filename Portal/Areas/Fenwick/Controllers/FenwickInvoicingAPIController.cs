@@ -154,7 +154,7 @@ namespace Portal.Areas.Fenwick.Controllers
         public async Task<object> InvoiceDocumentUpsert()
         {
             // Check if the request contains multipart/form-data.
-            if (!Request.Content.IsMimeMultipartContent())
+           if (!Request.Content.IsMimeMultipartContent())
             {
                 throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
             }

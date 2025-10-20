@@ -46,7 +46,7 @@
 
     self.exchangeRate = rec.exchangeRate ? ko.observable(rec.exchangeRate) : ko.computed(() => {
         if (self.supplier())
-            return self.supplier().ExchangeRate?.SterlingExchangeRate ?? self.supplier().Currency.SterlingExchangeRate;
+            return self.supplier().ExchangeRate.SterlingExchangeRate;
         else
             return 1;
     }, self); 

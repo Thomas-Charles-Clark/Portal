@@ -1,0 +1,121 @@
+﻿/* Pretty printing styles. Used with prettify.js. */
+/* Vim sunburst theme by David Leibovic */
+
+pre.sunburst .str, code.sunburst .str {
+    color: #65B042;
+}
+/* string  - green */
+pre.sunburst .kwd, code.sunburst .kwd {
+    color: #E28964;
+}
+/* keyword - dark pink */
+pre.sunburst .com, code.sunburst .com {
+    color: #AEAEAE;
+    font-style: italic;
+}
+/* comment - gray */
+pre.sunburst .typ, code.sunburst .typ {
+    color: #89bdff;
+}
+/* type - light blue */
+pre.sunburst .lit, code.sunburst .lit {
+    color: #3387CC;
+}
+/* literal - blue */
+pre.sunburst .pun, code.sunburst .pun {
+    color: #fff;
+}
+/* punctuation - white */
+pre.sunburst .pln, code.sunburst .pln {
+    color: #fff;
+}
+/* plaintext - white */
+pre.sunburst .tag, code.sunburst .tag {
+    color: #89bdff;
+}
+/* html/xml tag    - light blue */
+pre.sunburst .atn, code.sunburst .atn {
+    color: #bdb76b;
+}
+/* html/xml attribute name  - khaki */
+pre.sunburst .atv, code.sunburst .atv {
+    color: #65B042;
+}
+/* html/xml attribute value - green */
+pre.sunburst .dec, code.sunburst .dec {
+    color: #3387CC;
+}
+/* decimal - blue */
+
+pre.prettyprint, code.prettyprint {
+    background-color: #000;
+    border-radius: 8px;
+}
+
+pre.prettyprint {
+    width: 95%;
+    margin: 1em auto;
+    padding: 1em;
+    white-space: pre-wrap;
+}
+
+
+/* Specify class=linenums on a pre.sunburst to get line numbering */
+ol.linenums {
+    margin-top: 0;
+    margin-bottom: 0;
+    color: #AEAEAE;
+}
+/* IE indents via margin-left */
+li.L0, li.L1, li.L2, li.L3, li.L5, li.L6, li.L7, li.L8 {
+    list-style-type: none
+}
+/* Alternate shading for lines */
+li.L1, li.L3, li.L5, li.L7, li.L9 {
+}
+
+@media print {
+    pre.sunburst .str, code.sunburst .str {
+        color: #060;
+    }
+
+    pre.sunburst .kwd, code.sunburst .kwd {
+        color: #006;
+        font-weight: bold;
+    }
+
+    pre.sunburst .com, code.sunburst .com {
+        color: #600;
+        font-style: italic;
+    }
+
+    pre.sunburst .typ, code.sunburst .typ {
+        color: #404;
+        font-weight: bold;
+    }
+
+    pre.sunburst .lit, code.sunburst .lit {
+        color: #044;
+    }
+
+    pre.sunburst .pun, code.sunburst .pun {
+        color: #440;
+    }
+
+    pre.sunburst .pln, code.sunburst .pln {
+        color: #000;
+    }
+
+    pre.sunburst .tag, code.sunburst .tag {
+        color: #006;
+        font-weight: bold;
+    }
+
+    pre.sunburst .atn, code.sunburst .atn {
+        color: #404;
+    }
+
+    pre.sunburst .atv, code.sunburst .atv {
+        color: #060;
+    }
+}

@@ -7,6 +7,8 @@
 
     self.busy = ko.observable(false);
 
+    self.busyMessage = ko.observable('Please Wait...')
+
     self.basketCount = ko.observable();
 
     self.importBasketCount = ko.observable();
@@ -55,6 +57,10 @@
 
     self.heldOrdersSearchTerm = ko.observable();
 
+    self.heldOrdersHeldFromDt = ko.observable();
+
+    self.heldOrdersHeldToDt = ko.observable();
+
     self.heldOrdersGridWidget = ko.observable();
 
     self.holdReasons = ko.observableArray([]);
@@ -91,6 +97,8 @@
     };
 
     self.activeHeldOrderReasonGroupId = ko.observable(window.getHeldOrderReasonGroupIdToLoad());
+
+    self.activeHeldOrderReasonPodId = ko.observable(window.getHeldOrderReasonPodIdToLoad());
 
     // if we've selected a pod via query string parameter, we want to clear the active hold reason on next change of heldReasonListSelection
     self.clearActiveHoldReasonOnNextSubscriptionFire = window.getHeldOrderReasonGroupIdToLoad() == null; 
@@ -170,7 +178,8 @@
     }, {
         field: 'Label',
         title: 'Trade Account',
-        filterable: false
+        filterable: false,
+        width: 280
     }, {
         field: 'CustomerReference',
         title: 'Order Reference',
@@ -183,9 +192,9 @@
         filterable: false
     }, {
         field: 'HasAllocations',
-        title: ' ',
+        title: 'Stock Allocated',
         filterable: false,
-        width: 45,
+        width: 140,
         attributes: {
             class: 'text-center'
         }
@@ -194,10 +203,14 @@
         title: 'Held Reasons',
         width: 200,
         filterable: false
-    },{
+    }, {
         field: 'Controls',
         title: 'Controls',
         width: 180,
+        filterable: false
+    }, {
+        field: 'DocumentSendHistory',
+        title: 'Document Send History',
         filterable: false
     }];
 
@@ -449,7 +462,7 @@
         self.heldReasonListSelection([]);
 
         // this is the pod highlighted
-        self.activeHeldOrderReasonGroupId(null);
+        self.activeHeldOrderReasonPodId(null);
 
         // this is the multiselect which is showing/hiding the checkbox dropdown for some stupid reason
         self.heldOrdersHoldReasonsParams.multiSelectSettings.value([]);
@@ -520,11 +533,11 @@
             self.prefilteredDisplayProperty(`Held Order Reason ID: ${heldOrderReasonIdToLoad}`);
         }
 
-        let heldOrderReasonGroupIdToLoad = window.getHeldOrderReasonGroupIdToLoad();
+        let heldOrderReasonPodIdToLoad = window.getHeldOrderReasonPodIdToLoad();
 
-        if (heldOrderReasonGroupIdToLoad) {
-            console.log(`heldOrderReasonGroupIdToLoad`, heldOrderReasonGroupIdToLoad);
-            self.prefilteredDisplayProperty(`Held Order Reason Group ID: ${heldOrderReasonGroupIdToLoad}`);
+        if (heldOrderReasonPodIdToLoad) {
+            console.log(`heldOrderReasonPodIdToLoad`, heldOrderReasonPodIdToLoad);
+            self.prefilteredDisplayProperty(`Held Order Reason Pod ID: ${heldOrderReasonPodIdToLoad}`);
         }
 
         let tabToLoad = window.getTabToLoad();
@@ -567,7 +580,7 @@
                 self.customHeldReasonFilterActive(true);
             }
 
-            if (heldOrderReasonGroupIdToLoad) {
+            if (heldOrderReasonPodIdToLoad) {
 
                 filters.push({ field: 'HoldReasonGroupIDsString', operator: 'contains', value: `~${self.activeHeldOrderReasonGroupId()}~` });
 
@@ -793,6 +806,8 @@
 
         console.log("memberBasketFetcher resultGridDataSourceRead calling with", data);
 
+        self.busy(true);
+
         $.ajax({
             url: '/api/componentapi/FetchMemberBaskets',
             type: "GET",
@@ -812,6 +827,7 @@
                     }
                 });
                 options.success(data);
+                self.busy(false);
             },
             error: function (xhr, s, a) {
                 options.error();
@@ -834,6 +850,8 @@
         }
 
         console.log("memberBasketFetcher importResultGridDataSourceRead calling with", data);
+
+        self.busy(true);
 
         $.ajax({
             url: '/api/componentapi/FetchImportedBaskets',
@@ -864,6 +882,7 @@
                     }
                 });
                 options.success(data);
+                self.busy(false);
             },
             error: function (xhr, s, a) {
                 options.error();
@@ -1144,6 +1163,7 @@
             roleHeadLiSelectAll.addEventListener("click", () => {
                 console.log("woo");
                 self.activeHeldOrderReasonGroupId(null);
+                self.activeHeldOrderReasonPodId(undefined);
 
                 let newSelection = [];
                 document.querySelectorAll(`input[type="checkbox"][data-hold-reason-role-id="${roleId}"]`).forEach(e => {
@@ -1167,6 +1187,7 @@
             roleHeadLiClear.addEventListener("click", () => {
                 console.log("hoo");
                 self.activeHeldOrderReasonGroupId(null);
+                self.activeHeldOrderReasonPodId(undefined);
 
                 let removals = [];
                 document.querySelectorAll(`input[type="checkbox"][data-hold-reason-role-id="${roleId}"]`).forEach(e => {
@@ -1224,6 +1245,7 @@
                 headLiSelectAll.addEventListener("click", () => {
                     console.log("woowoo");
                     self.activeHeldOrderReasonGroupId(null);
+                    self.activeHeldOrderReasonPodId(undefined);
 
                     let newSelection = [];
                     document.querySelectorAll(`input[type="checkbox"][data-hold-reason-group-id="${holdReasonGroupId}"]`).forEach(e => {
@@ -1246,6 +1268,7 @@
                 headLiClear.addEventListener("click", () => {
                     console.log("hoohoo");
                     self.activeHeldOrderReasonGroupId(null);
+                    self.activeHeldOrderReasonPodId(undefined);
 
                     let removals = [];
                     document.querySelectorAll(`input[type="checkbox"][data-hold-reason-group-id="${holdReasonGroupId}"]`).forEach(e => {
@@ -1353,14 +1376,16 @@
             memberId: self.memberId(),
             marketCode: self.heldOrdersMarketId() ?? "",
             searchTerm: self.heldOrdersSearchTerm() ?? "",
-            holdReasonIds: self.heldOrdersHoldReasonIdsJson() ?? ""
+            holdReasonIds: self.heldOrdersHoldReasonIdsJson() ?? "",
+            heldFromDt: self.heldOrdersHeldFromDt() ?? "",
+            heldToDt: self.heldOrdersHeldToDt() ?? ""
         };
 
         for (var propertyName in params) {
             data[propertyName] = params[propertyName];
         }
 
-        console.log("memberBasketFetcher heldOrdersGridDataSourceRead calling with", data);
+        console.log("memberBasketFetcher FetchHeldOrdersManagement calling with", data);
 
         $.ajax({
             url: '/api/componentapi/FetchHeldOrdersManagement',
@@ -1403,7 +1428,7 @@
 
                         return 0;
                     }).map(p => holdReasonSummaryPod({
-                        active: self.activeHeldOrderReasonGroupId() == p.HoldReasonGroupID,
+                        active: self.activeHeldOrderReasonPodId() == p.HoldReasonSummaryPodID,
                         rec: p,
                         parent: self
                     }));
@@ -1768,6 +1793,7 @@
 
         self.heldOrdersHoldReasonsParams.clearFunction();
         self.activeHeldOrderReasonGroupId(null);
+        self.activeHeldOrderReasonPodId(null);
         self.heldOrderReasonIdToLoad = null;
 
         self.heldOrdersSearchTermParams.clearFunction();
@@ -2756,7 +2782,8 @@
                     LanguageID: { type: 'number' },
                     TransactionID: { type: 'number' },
                     Imported: { type: 'bool' },
-                    HeldSince: { type: 'date' }
+                    HeldSince: { type: 'date' },
+                    DocumentSendHistory: { type: 'string' }
                 }
             }
         }),
@@ -3116,6 +3143,10 @@
         console.log('activeHeldOrderReasonGroupId', nv);
     })
 
+    self.activeHeldOrderReasonPodId.subscribe(nv => {
+        console.log('activeHeldOrderReasonPodId', nv);
+    })
+
     self.submittedOrderTradeAccountId.subscribe(nv => {
         self.submittedOrderSearch();
     });
@@ -3320,6 +3351,7 @@
             // hilariously enough clicking the pod causes the heldReasonListSelection to change...
             if (self.clearActiveHoldReasonOnNextSubscriptionFire == true) {
                 self.activeHeldOrderReasonGroupId(null); // this is necessary because you might no longer be looking just a pod
+                self.activeHeldOrderReasonPodId(undefined);
             } else {
                 self.clearActiveHoldReasonOnNextSubscriptionFire = true;
             }
@@ -3334,136 +3366,7 @@
 
     //#region Events
 
-    //self.parent.ready.subscribe(nv => {
-    //    if (nv) {
 
-    //        let basketIdToLoad = window.getBasketIdToLoad();
-
-    //        if (basketIdToLoad) {
-    //            console.log(`basketIdToLoad`, basketIdToLoad);
-    //        }
-
-    //        let marketToLoad = window.getMarketToLoad();
-
-    //        if (marketToLoad) {
-    //            console.log(`marketToLoad`, marketToLoad);
-    //        }
-
-    //        let transactionIdToLoad = window.getTransactionIdToLoad();
-
-    //        if (transactionIdToLoad) {
-    //            console.log(`transactionIdToLoad`, transactionIdToLoad);
-    //        }
-
-    //        let orderHeadIdToLoad = window.getOrderHeadIdToLoad();
-
-    //        if (orderHeadIdToLoad) {
-    //            console.log(`orderHeadIdToLoad`, orderHeadIdToLoad);
-    //        }
-
-    //        let heldOrderReasonIdToLoad = window.getHeldOrderReasonIdToLoad();
-
-    //        if (heldOrderReasonIdToLoad) {
-    //            console.log(`heldOrderReasonIdToLoad`, heldOrderReasonIdToLoad);
-    //        }
-
-    //        let heldOrderReasonGroupIdToLoad = window.getHeldOrderReasonGroupIdToLoad();
-
-    //        if (heldOrderReasonGroupIdToLoad) {
-    //            console.log(`heldOrderReasonGroupIdToLoad`, heldOrderReasonGroupIdToLoad);
-    //        }
-
-    //        let tradeAccountCodeToLoad = window.getTradeAccountCodeToLoad();
-
-    //        if (tradeAccountCodeToLoad) {
-    //            console.log(`tradeAccountCodeToLoad`, tradeAccountCodeToLoad);
-    //        }
-
-    //        let tabToLoad = window.getTabToLoad();
-
-    //        let gridWidget = null;
-
-    //        switch (tabToLoad) {
-    //            case "mySavedOrders":
-    //                gridWidget = self.resultGridWidget();
-    //                break;
-    //            case "myHeldOrders":
-    //                gridWidget = self.myHeldOrdersGridWidget();
-    //                break;
-    //            case "customerHeldOrders":
-    //                gridWidget = self.customerHeldBasketsGridWidget();
-    //                break;
-    //            case "ordersToApprove":
-    //                gridWidget = self.heldOrdersGridWidget();
-    //                break;
-    //            default: break;
-    //        }
-
-    //        if (gridWidget) {
-    //            let filters = [];
-
-    //            if (tabToLoad == "ordersToApprove") {
-    //                if (basketIdToLoad) {
-    //                    filters.push({ field: 'Reference', operator: 'contains', value: basketIdToLoad.toString() });
-    //                }
-    //                if (marketToLoad) {
-    //                    filters.push({ field: 'Market', operator: 'eq', value: marketToLoad });
-    //                    self.heldOrdersMarketParams.dropDownListSettings.widget().value(marketToLoad);
-    //                    self.heldOrdersMarketParams.dropDownListSettings.widget().trigger('change');
-    //                }
-    //                if (transactionIdToLoad) {
-    //                    filters.push({ field: 'Reference', operator: 'contains', value: transactionIdToLoad.toString() });
-    //                }
-    //                if (orderHeadIdToLoad) {
-    //                    filters.push({ field: 'Reference', operator: 'contains', value: orderHeadIdToLoad.toString() });
-    //                }
-    //                if (tradeAccountCodeToLoad) {
-    //                    filters.push({ field: 'CustomerCode', operator: 'equals', value: tradeAccountCodeToLoad.toString() });
-    //                }
-
-    //                if (transactionIdToLoad ||
-    //                    orderHeadIdToLoad ||
-    //                    basketIdToLoad
-    //                ) {
-    //                    self.heldOrdersSearchTerm(transactionIdToLoad || orderHeadIdToLoad || basketIdToLoad);
-    //                    self.heldOrdersSearchTermParams.enterKey();
-    //                }
-
-
-    //                if (heldOrderReasonIdToLoad) {
-    //                    filters.push({ field: 'HoldReasonIDsString', operator: 'contains', value: `~${heldOrderReasonIdToLoad}~` });
-    //                    //self.selectedHoldReasonIds = [heldOrderReasonIdToLoad];
-
-    //                    self.heldOrderReasonIdToLoad = heldOrderReasonIdToLoad;
-
-    //                    self.customHeldReasonFilterActive(true);
-    //                }
-
-    //                if (heldOrderReasonGroupIdToLoad) {
-
-    //                    // this is necessary here because the filterMenuOpen event handler needs to check the relevant checkboxes
-    //                    self.heldOrderReasonGroupIdToLoad = heldOrderReasonGroupIdToLoad;
-
-    //                    filters.push({ field: 'HoldReasonGroupIDsString', operator: 'contains', value: `~${heldOrderReasonGroupIdToLoad}~` });
-
-    //                    self.customHeldReasonFilterActive(true);
-    //                }
-
-    //            }
-    //            else {
-    //                if (basketIdToLoad) {
-    //                    filters.push({ field: 'BasketID', operator: 'eq', value: basketIdToLoad.toString() });
-    //                }
-    //            }
-
-    //            if (filters.length) {
-    //                gridWidget.dataSource.filter(filters);
-    //            } else {
-    //                gridWidget.dataSource.read();
-    //            }
-    //        }
-    //    }
-    //})
 
     //#endregion
 
@@ -3477,12 +3380,12 @@ const holdReasonSummaryPod = ({ active, rec, parent } = { rec: {}, parent: {} })
     }, rec);
 
     self.active = ko.computed(() => {
-        return self.HoldReasonGroupID == self.parent.activeHeldOrderReasonGroupId();
+        return self.HoldReasonSummaryPodID == self.parent.activeHeldOrderReasonPodId();
     }, self);
 
-    self.apply = () => {
+    self.apply = (data) => {
 
-        self.parent.activeHeldOrderReasonGroupId(self.HoldReasonGroupID);
+        console.log('apply called with', data);
 
         // because this action necessarily causes a change of  self.parent.heldReasonListSelection
         // and that has a subscription above which clears the activeHeldOrderReasonGroupId
@@ -3491,20 +3394,50 @@ const holdReasonSummaryPod = ({ active, rec, parent } = { rec: {}, parent: {} })
 
         self.parent.skipNextHeldOrderGridRead = true;
 
-        let holdReasonIds = [];
+        self.parent.heldOrdersHeldFromDt(data.HeldFromDT);
 
-        document.querySelectorAll(`input[type="checkbox"][data-hold-reason-role-id="${self.RoleID}"]`).forEach(e => {
-            e.checked = true;
-            holdReasonIds.push(+e.dataset.holdReasonId);
-        });
+        self.parent.heldOrdersHeldToDt(data.HeldToDT);
 
-        self.parent.heldOrdersGridWidget().dataSource.filter({
-            field: 'HoldReasonGroupIDsString',
-            operator: 'contains',
-            value: `~${self.HoldReasonGroupID}~`
-        });
+        self.parent.heldReasonListSelection(self.parent.holdReasons().filter(x => x.HoldReasonGroupID == data.HoldReasonGroupID).map(hr => hr.HoldReasonID));
+
+        self.parent.activeHeldOrderReasonGroupId(self.HoldReasonGroupID);
+
+        self.parent.activeHeldOrderReasonPodId(self.PodID);
 
         self.parent.customHeldReasonFilterActive(true);
+
+        //let holdReasonIds = [];
+
+        //document.querySelectorAll(`input[type="checkbox"][data-hold-reason-role-id="${self.RoleID}"]`).forEach(e => {
+        //    e.checked = true;
+        //    holdReasonIds.push(+e.dataset.holdReasonId);
+        //});
+
+        //let filters = []
+
+        //if (data.HeldFromDT) {
+        //    filters.push({
+        //        field: 'HeldSinceDT',
+        //        operator: 'gte',
+        //        value: data.HeldFromDT
+        //    });
+        //}
+
+        //if (data.HeldToDT) {
+        //    filters.push({
+        //        field: 'HeldSinceDT',
+        //        operator: 'lte',
+        //        value: data.HeldToDT
+        //    });
+        //}
+
+        //self.parent.heldOrdersGridWidget().dataSource.filter(filters);
+
+        //self.parent.activeHeldOrderReasonGroupId(self.HoldReasonGroupID);
+
+        //self.parent.customHeldReasonFilterActive(true);
+
+        //self.
     }
 
     return self;

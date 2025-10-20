@@ -308,6 +308,7 @@
                 self.canPreviewAttachment(false);
                 break;
         }
+
         return result;
     }, self);
 
@@ -342,6 +343,8 @@
 
 
     //#region Methods
+
+
 
     self.determinePropertiesTemplate = (force) => {
 
@@ -534,7 +537,7 @@
         if (props) {
 
             switch (self.attachmentTypeId()) {
-                case 2:
+                case 2: // Invoice
                     data.formDataJson = JSON.stringify({
                         code: null,
                         invoiceProcessedDate: null,
@@ -578,14 +581,12 @@
                                 vatCode: v.vatCode(),
                                 vatRate: Math.round((v.vatRate() ?? 0) * 10000) / 10000,
                                 vatAmountCurrency: Math.round((v.vatInCurrency() ?? 0) * 10000) / 10000,
-                                vatAmountSterling: Math.round((v.vatToSterlingComputer() ?? 0) * 10000) / 10000,
-                                supplierCurrency: v.supplierCurrency(),
-                                exchangeRate: Math.round((v.exchangeRate() ?? 0) * 10000) / 10000
+                                vatAmountSterling: Math.round((v.vatToSterlingComputer() ?? 0) * 10000) / 10000
                             }
                         }),
                         duplicateResults: props.duplicateResults(),
                         isFlaggedAsDuplicate: props.isFlaggedAsDuplicate()
-                    });
+                    }, null, 4);
                     break;
                 case 3:
                     data.formDataJson = JSON.stringify({
@@ -596,8 +597,8 @@
                         passedToDT: null,
                         supplierCode: props.supplierCode() ?? null,
                         supplier: props.supplier() ?? null,
-                        supplierCurrency: props.supplierCurrency() ?? null,
-                        exchangeRate: props.exchangeRate() ?? null,
+                        supplierCurrency: props.supplierCurrency() ?? null, // ✔
+                        exchangeRate: props.exchangeRate() ?? null, // ✔
                         supplierInvoiceReference: props.supplierInvoiceReference() ?? null,
                         invoiceDate: self.formatDateString(props.invoiceDate()),
                         invoiceDueDT: self.formatDateString(props.dueDate()),
@@ -614,9 +615,9 @@
                         dispute: props.dispute() ? 'D' : null,
                         duplicateResults: props.duplicateResults(),
                         isFlaggedAsDuplicate: props.isFlaggedAsDuplicate()
-                    });
+                    }, null, 4);
                     break;
-                case 4:
+                case 4: // Credit Note
                     data.formDataJson = JSON.stringify({
                         code: null,
                         creditProcessedDate: null,
@@ -654,21 +655,19 @@
                                 vatCode: v.vatCode(),
                                 vatRate: Math.round((v.vatRate() ?? 0) * 10000) / 10000,
                                 vatAmountCurrency: Math.round((v.vatInCurrency() ?? 0) * 10000) / 10000,
-                                vatAmountSterling: Math.round((v.vatToSterlingComputer() ?? 0) * 10000) / 10000,
-                                supplierCurrency: v.supplierCurrency(),
-                                exchangeRate: Math.round((v.exchangeRate() ?? 0) * 10000) / 10000
+                                vatAmountSterling: Math.round((v.vatToSterlingComputer() ?? 0) * 10000) / 10000
                             }
                         }),
                         duplicateResults: props.duplicateResults(),
                         isFlaggedAsDuplicate: props.isFlaggedAsDuplicate()
-                    });
+                    }, null, 4);
                     break;
                 default:
                     data.formDataJson = JSON.stringify({
                         supplierCode: props.supplierCode() ?? null,
                         supplier: props.supplier() ?? null,
                         supplierCurrency: props.supplierCurrency() ?? null,
-                    });
+                    }, null, 4);
                     break;
             }
         }
@@ -710,8 +709,13 @@
                         window.showError(`Sorry<br/><br/>There was an error while saving this attachment\'s form data. Please click here <a href="mailto:itsupport@designersguild.com?subject=IncomingEmail.Attachment_Save%20Error:%20Attachment%20ID%20=%20${data.attachmentId}&body=${encodeURIComponent(JSON.stringify(result))}">itsupport@designersguild.com</a> to begin a templated email providing IT with useful information about this event.`)
                     }
                 } else {
-                    window.showError(`Validation Failure: Error Number ${result.ValidationErrorNumber}<br/><br/>${result.ValidationErrorMessage}<br/><br/>
-                    Please click here <a href="mailto:itsupport@designersguild.com?subject=IncomingEmail.Attachment_Save%20Error:%20Attachment%20ID%20=%20${data.attachmentId}&body=${encodeURIComponent(JSON.stringify(result, null, '\t'))}">itsupport@designersguild.com</a> to begin a templated email providing IT with useful information about this event.`)
+                    document.querySelector('#error-modal .modal-dialog').classList.add('modal-xl');
+                    window.showError(`Validation Failure: Error Number ${result.ValidationErrorNumber}<br/><br/>${result.ValidationErrorMessage}<br/><br/><pre class="prettify mt-3 mb-0">${PR.prettyPrintOne(data.formDataJson)}</pre>
+                    Please click here <a href="mailto:itsupport@designersguild.com?subject=IncomingEmail.Attachment_Save%20Error:%20Attachment%20ID%20=%20${data.attachmentId}&body=${encodeURIComponent(JSON.stringify(result, null, '\t'))}">itsupport@designersguild.com</a> to begin a templated email providing IT with useful information about this event.`, () => {
+
+                    }, () => {
+                        document.querySelector('#error-modal .modal-dialog').classList.add('modal-xl');
+                    })
                 }
 
                 window.setTimeout(() => {

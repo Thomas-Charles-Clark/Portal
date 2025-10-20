@@ -640,12 +640,14 @@ namespace Portal.Controllers
             int? memberId,
             string marketCode,
             string searchTerm,
-            string holdReasonIds
+            string holdReasonIds,
+            DateTime? heldFromDt = null,
+            DateTime? heldToDt = null
             )
         {
             var mid = memberId ?? User.Identity.GetUserId<int>();
 
-            var results = await PortalDb.FetchHeldOrders(mid, marketCode, searchTerm, holdReasonIds, "M");
+            var results = await PortalDb.FetchHeldOrders(mid, marketCode, searchTerm, holdReasonIds, "M", heldFromDt, heldToDt);
 
             var response = results.Data.ToList().AsQueryable().ToDataSourceResult(request);
 
@@ -673,11 +675,11 @@ namespace Portal.Controllers
         }
 
         [HttpGet]
-        public async Task<IHttpActionResult> FetchHeldOrdersOperator([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request, int? memberId)
+        public async Task<IHttpActionResult> FetchHeldOrdersOperator([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request, int? memberId, DateTime? heldFromDt = null, DateTime? heldToDt = null)
         {
             memberId = memberId ?? User.Identity.GetUserId<int>();
              
-            var result = await PortalDb.FetchHeldOrders(memberId.Value, null, null, null, "O");
+            var result = await PortalDb.FetchHeldOrders(memberId.Value, null, null, null, "O", heldFromDt, heldToDt);
 
             var response = result.Data.AsQueryable().ToDataSourceResult(request);
 

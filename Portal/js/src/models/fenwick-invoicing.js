@@ -381,13 +381,14 @@ const fenwickInvoicingViewModel = (() => {
 
         self.invoiceDocumentPdfParams.busy(true);
 
-        let headers = Object.assign({}, window.fetchHeaders);
-
-        delete headers["content-type"];// = "multipart/form-data";
-
         fetch('/api/FenwickInvoicingAPI/InvoiceDocumentUpsert', {
             method: 'POST',
-            headers: headers,
+            headers: {
+                accept: 'application/json',
+                contentType: 'multipart/form-data',
+                contentDisposition: 'form-data; name="upload"',
+                authorization: `Bearer ${localStorage.BearerToken}`
+            },
             body: fd
         })
             .then(window.handleFetchResponse)

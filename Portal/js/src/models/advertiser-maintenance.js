@@ -105,7 +105,7 @@ const advertiserMaintenanceViewModel = (() => {
     self.salesMarketParams = kendoMDCDropDownList({
         label: 'Market',
         odata: true,
-        endPoint: '/odata/SalesMarkets',
+        endPoint: '/odata/SalesMarkets/Default.SalesMarketsForCustomerAdvertisers()',
         textField: 'Label',
         valueField: 'SalesMarketID',
         virtual: true,
@@ -131,7 +131,7 @@ const advertiserMaintenanceViewModel = (() => {
         objObservable: self.salesMarket,
         enable: ko.observable(true),
         disable: ko.observable(getPreselectedSalesMarketId() != ''),
-        clearable: ko.observable(false),
+        clearable: ko.observable(true),
         revertible: ko.observable(false),
         readOnly: false,
         filter: 'contains',
@@ -142,7 +142,11 @@ const advertiserMaintenanceViewModel = (() => {
             field: 'SalesMarketID'
         },
         select: self.genericUnsavedChangesSelect,
-        clearFunction: self.genericUnsavedChangesClear,
+        clearFunction: () => {
+            self.salesMarketId('');
+            self.salesMarket(undefined);
+            self.salesMarketParams.dropDownListSettings.widget().trigger('change');
+        },
         dataBound: function (e) {
             console.log('salesMarketParams dataBound', e);
         },
@@ -169,6 +173,10 @@ const advertiserMaintenanceViewModel = (() => {
             delete d.$inlinecount; // <-- remove inlinecount
             delete d.$format; // <-- remove format
             delete d.$callback; // <-- remove callback
+
+            if (self.advertiserClassId() != '') {
+                d.$filter = `TradeAccounts/any(ta: ta/AdvertiserClassID eq ${+self.advertiserClassId()})`;
+            }
 
             d.$count = true;
 
@@ -217,7 +225,11 @@ const advertiserMaintenanceViewModel = (() => {
             field: 'AdvertiserClassID'
         },
         select: self.genericUnsavedChangesSelect,
-        clearFunction: self.genericUnsavedChangesClear,
+        clearFunction: () => {
+            self.advertiserClassId('');
+            self.advertiserClass(undefined);
+            self.advertiserClassParams.dropDownListSettings.widget().trigger('change');
+        },
         dataBound: function (e) {
 
         },
@@ -229,6 +241,12 @@ const advertiserMaintenanceViewModel = (() => {
             delete d.$inlinecount; // <-- remove inlinecount
             delete d.$format; // <-- remove format
             delete d.$callback; // <-- remove callback
+
+            let filters = [];
+
+            if (self.salesMarketId() != '') {
+                d.$filter = `TradeAccounts/any(ta: ta/SalesMarketID eq ${+self.salesMarketId()})`
+            }
 
             d.$count = true;
 
@@ -373,8 +391,13 @@ const advertiserMaintenanceViewModel = (() => {
 
                 let dataItem = self.advertiserClassGridParams.widget().dataSource.getByUid(e.masterRow.data("uid")); 
 
+                if (self.searchingTradeAccountId()) {
+                    dataItem.TradeAccounts = dataItem.TradeAccounts.filter(ta => ta.TradeAccountID == +self.searchingTradeAccountId());
+                }
+
                 let model = {
                     gridParams: {
+                        widget: ko.observable(),
                         useKOTemplates: true,
                         rowTemplate: 'trade-account-row-template',
                         data: dataItem.TradeAccounts.map(ta => Object.assign(ta, { AdvertiserClassName: dataItem.Name })).sort((a, b) => {
@@ -802,6 +825,21 @@ const advertiserMaintenanceViewModel = (() => {
                 if (self.advertiserClassGridParams.widget().expandRow(self.advertiserClassGridParams.widget()))
                     self.advertiserClassGridParams.widget().expandRow(self.advertiserClassGridParams.widget().tbody.find("tr.k-master-row").first());
             }
+
+            document.querySelectorAll('.k-grid.detail-grid .k-grid-content tr:first-of-type').forEach(e => {
+                ko.contextFor(e).$parent.gridParams.widget().dataSource.filter({
+                    field: 'TradeAccountID',
+                    operator: 'eq',
+                    value: nv
+                })
+            });
+        } else {
+            document.querySelectorAll('.k-grid.detail-grid .k-grid-content tr:first-of-type').forEach(e => {
+                ko.contextFor(e).$parent.gridParams.widget().dataSource.query({
+                    page: ko.contextFor(e).$parent.gridParams.widget().dataSource.page(),
+                    pageSize: ko.contextFor(e).$parent.gridParams.widget().dataSource.pageSize()
+                })
+            });
         }
     });
 
@@ -887,9 +925,10 @@ const advertiserMaintenanceViewModel = (() => {
 
     //#region Events
 
-    self.addingTradeAccountModalElement.addEventListener('bs.modal.hide', () => {
+    self.addingTradeAccountModalElement.addEventListener('hide.bs.modal', () => {
+        self.addingTradeAccountId('');
         self.addingTradeAccount(undefined);
-        self.addingToAdvertisingClass(undefined);
+        self.tradeAccountSelectorParams.dropDownListSettings.widget().trigger('change');
     })
 
     //#endregion

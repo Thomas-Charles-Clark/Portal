@@ -26,7 +26,7 @@ namespace Portal.Areas.Products.Controllers
         }
 
         // GET: Products/Order
-        public ActionResult Index(string tab, long? basketId, string market, int? transactionId, int? orderHeadId, short? holdReasonId, short? holdReasonGroupId, string tradeAccountCode)
+        public ActionResult Index(string tab, long? basketId, string market, int? transactionId, int? orderHeadId, short? holdReasonId, short? holdReasonPodId, string tradeAccountCode)
         {
             var application = PortalDb.Applications.Where(p => p.ControllerName == "order" && p.AreaName == "products" && p.ActionName == "index").Single();
 
@@ -41,7 +41,7 @@ namespace Portal.Areas.Products.Controllers
                 transactionId,
                 orderHeadId,
                 holdReasonId,
-                holdReasonGroupId,
+                holdReasonPodId,
                 tradeAccountCode,
                 user.GetActiveRoleProperties(),
                 application.Heading,

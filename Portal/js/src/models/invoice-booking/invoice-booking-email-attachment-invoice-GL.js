@@ -10,8 +10,7 @@
         supplier: parent.supplier,
         supplierCurrency: parent.supplierCurrency,
         forexParams: parent.forexParams,
-        loadedCurrency: parent.loadedCurrency,
-        loadedExchangeRate: parent.loadedExchangeRate,
+        exchangeRate: parent.exchangeRate,
         disabled: ko.computed(() => { return parent.preambleSatisfied() == false; })
     });
 
@@ -175,10 +174,10 @@
                     return '';
             }, self),
             observable: ko.computed(() => {
-                if (self.loadedCurrency && self.loadedExchangeRate) {
-                    return formatNumber(self.loadedExchangeRate, 4, 'en-GB', 'GBP');
+                if (self.exchangeRate()) {
+                    return formatNumber(self.exchangeRate(), 4, 'en-GB', 'GBP');
                 } else {
-                    return self.supplier() && formatNumber(self.supplier().ExchangeRate?.SterlingExchangeRate ?? self.supplier().Currency.SterlingExchangeRate, 4, 'en-GB', 'GBP');
+                    return self.supplier() && formatNumber(self.supplier().ExchangeRate.SterlingExchangeRate, 4, 'en-GB', 'GBP');
                 }
             }, self),
             useNativeValidation: false,

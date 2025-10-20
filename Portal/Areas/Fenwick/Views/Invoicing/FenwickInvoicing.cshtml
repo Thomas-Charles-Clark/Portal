@@ -127,7 +127,7 @@
             </thead>
             <tbody>
                 <!-- ko foreach: selfBillInvoices -->
-                <tr data-bind="css: { 'table-active': $parent.selectedBranchId() === $data.BranchID }, click: $parent.selectBranch">
+                <tr data-bind="css: { 'table-active': $parent.selectedBranchId() === $data.BranchID }, click: $parent.selectBranch, attr: { title: `Self-Bill Invoice ID: ${SelfBillInvoiceID}` }">
                     <td>
                         <span data-bind="text: BranchName "></span>
                     </td>

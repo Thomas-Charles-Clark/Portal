@@ -43,6 +43,15 @@ namespace Portal.Controllers
             return PortalDb.SalesMarkets.AsQueryable();
         }
 
+        // GET: odata/Products
+        [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
+        [HttpGet]
+        public IQueryable<SalesMarket> SalesMarketsForCustomerAdvertisers()
+        {
+            // trade account
+            return PortalDb.SalesMarkets.Where(s => s.TradeAccounts.Any(ta => ta.AdvertiserClassID != null)).AsQueryable();
+        }
+
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
         [HttpGet]
         public IQueryable<SalesMarket> SalesMarketValueMapper(byte? salesMarketId)

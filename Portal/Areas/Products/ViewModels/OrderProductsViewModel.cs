@@ -18,7 +18,7 @@ namespace Portal.Areas.Products.ViewModels
         public int? TransactionID { get; set; }
         public int? OrderHeadID { get; set; }
         public short? HoldReasonID { get; set; }
-        public short? HoldReasonGroupID { get; set; }
+        public int? HoldReasonSummaryPodID { get; set; }
         public string TradeAccountCode { get; set; }
 
         public OrderProductsViewModel(
@@ -30,7 +30,7 @@ namespace Portal.Areas.Products.ViewModels
             int? transactionId,
             int? orderHeadId,
             short? holdReasonId,
-            short? holdReasonGroupId,
+            int? holdReasonPodId,
             string tradeAccountCode,
             RoleProperties properties, 
             string applicationHeading, 
@@ -47,7 +47,7 @@ namespace Portal.Areas.Products.ViewModels
             TransactionID = transactionId;
             OrderHeadID = orderHeadId;
             HoldReasonID = holdReasonId;
-            HoldReasonGroupID = holdReasonGroupId;
+            HoldReasonSummaryPodID = holdReasonPodId;
             TradeAccountCode = tradeAccountCode;
         }
     }

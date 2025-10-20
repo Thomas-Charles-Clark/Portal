@@ -1628,6 +1628,13 @@ a.supplier-link {
         }
     }
 
+    .blocker {
+        border-radius: 0 0 4px 4px;
+        &.d-none {
+            display: none !important;
+        }
+    }
+
     .btn.btn-flat {
         border: 1px solid #ddd;
     }

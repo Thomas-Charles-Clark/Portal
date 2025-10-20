@@ -1230,6 +1230,8 @@ namespace SharedEFClasses.Models.Orders
 
         public DateTime HeldSince { get; set; }
 
+        public string DocumentSendHistory { get; set; }
+
         public string HoldReasonIDsString { get; set; }
 
         public string HoldReasonGroupIDsString { get; set; }
@@ -1347,6 +1349,7 @@ namespace SharedEFClasses.Models.Orders
 
     public class HoldReasonSummaryPod
     {
+        public int HoldReasonSummaryPodID { get; set; }
         public string RoleName { get; set; }
         public int RoleSortOrder { get; set; }
         public int RoleID { get; set; }
@@ -1355,6 +1358,8 @@ namespace SharedEFClasses.Models.Orders
         public short HoldReasonGroupID { get; set; }
         public int Count { get; set; }
         public bool Priority { get; set; }
+        public DateTime? HeldFromDT { get; set; }
+        public DateTime? HeldToDT { get; set; }
     }
 
     public class HoldReasonSelectResult

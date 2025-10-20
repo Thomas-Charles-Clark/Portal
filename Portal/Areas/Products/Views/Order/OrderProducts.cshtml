@@ -18,7 +18,7 @@
     @Scripts.Render("~/bundles/js/popper")
     @Scripts.Render("~/bundles/js/tempus-dominus")
 
-    <script type="text/javascript">
+<script type="text/javascript">
     window.getTabToLoad = () => {
         return '@Html.Raw(Model.Tab)';
     }
@@ -44,7 +44,11 @@
     }
 
     window.getHeldOrderReasonGroupIdToLoad = () => {
-        return @Html.Raw(Model.HoldReasonGroupID);
+        return null;
+    }
+
+    window.getHeldOrderReasonPodIdToLoad = () => {
+        return @Html.Raw(Model.HoldReasonSummaryPodID);
     }
 
     window.getTradeAccountCodeToLoad = () => {
@@ -130,7 +134,7 @@
     function getMemberId() {
         return @(User.Identity.GetUserId<int>())
     }
-    </script>
+</script>
 
     @if (User.IsInRole("Super Admin") || User.IsInRole("Senior Manager") || User.IsInRole("User Masquerade") || User.IsInRole("Customer Services"))
     {
@@ -327,7 +331,7 @@
         <td class="text-right">
             <span data-bind="html: Value"></span>
         </td>
-        <td>
+        <td class="text-center">
             <!-- ko if: HasAllocations -->
             <span class="material-icons" title="Has Allocations">
                 done
@@ -395,6 +399,9 @@
                 <span data-bind="text: label"></span>
             </button>
             <!-- /ko -->
+        </td>
+        <td>
+            <div class="mb-0" data-bind="html: DocumentSendHistory"></div>
         </td>
     </tr>
 </script>
@@ -768,15 +775,10 @@
                 <div class="clearfix"></div>
             </div>
             <div class="panel-collapse">
-                <div class="selector panel-body bg-info">
-                    <div class="blocker" data-bind="visible: busy">
-                        <div class="busy-bars">
-                            <div class="rect1 alert alert-info"></div>
-                            <div class="rect2 alert alert-info"></div>
-                            <div class="rect3 alert alert-info"></div>
-                            <div class="rect4 alert alert-info"></div>
-                            <div class="rect5 alert alert-info"></div>
-                        </div>
+                <div class="selector panel-body bg-info relative">
+                    <div class="blocker" data-bind="flexFadeVisible: busy">
+                        <div class="loading-spinner"></div>
+                        <h4 class="" data-bind="html: busyMessage"></h4>
                     </div>
                     <div class="prefilters" style="display: none" data-bind="visible: true">
                         <div id="held-orders-market-filter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: heldOrdersMarketParams }"></div>

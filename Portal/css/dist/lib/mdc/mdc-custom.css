@@ -19,6 +19,22 @@
   margin-bottom: 0;
 }
 
+.halloween-message {
+  font-family: "Trixie";
+}
+.halloween-message .shining {
+  display: block;
+  font-family: "Trixie Rough";
+}
+.halloween-message .attribution {
+  font-size: 60%;
+  font-family: "Courier New";
+  font-style: italic;
+}
+.halloween-message .attribution::before {
+  content: " - ";
+}
+
 :root {
   --mdc-theme-primary: #3a64b0;
   --mdc-theme-secondary: #6ebe2c;
@@ -3550,7 +3566,7 @@ svg.mdc-button__icon {
   background-color: var(--mdc-theme-secondary, #6ebe2c);
 }
 
-@keyframes mdc-checkbox-fade-in-background-uyqjyuv {
+@keyframes mdc-checkbox-fade-in-background-uzgvg6z {
   0% {
     border-color: rgba(0, 0, 0, 0.54);
     background-color: transparent;
@@ -3564,7 +3580,7 @@ svg.mdc-button__icon {
     background-color: var(--mdc-theme-secondary, #6ebe2c);
   }
 }
-@keyframes mdc-checkbox-fade-out-background-uyqjyuv {
+@keyframes mdc-checkbox-fade-out-background-uzgvg6z {
   0%, 80% {
     border-color: #6ebe2c;
     /* @alternate */
@@ -3579,10 +3595,10 @@ svg.mdc-button__icon {
   }
 }
 .mdc-checkbox--anim-unchecked-checked .mdc-checkbox__native-control:enabled ~ .mdc-checkbox__background, .mdc-checkbox--anim-unchecked-indeterminate .mdc-checkbox__native-control:enabled ~ .mdc-checkbox__background {
-  animation-name: mdc-checkbox-fade-in-background-uyqjyuv;
+  animation-name: mdc-checkbox-fade-in-background-uzgvg6z;
 }
 .mdc-checkbox--anim-checked-unchecked .mdc-checkbox__native-control:enabled ~ .mdc-checkbox__background, .mdc-checkbox--anim-indeterminate-unchecked .mdc-checkbox__native-control:enabled ~ .mdc-checkbox__background {
-  animation-name: mdc-checkbox-fade-out-background-uyqjyuv;
+  animation-name: mdc-checkbox-fade-out-background-uzgvg6z;
 }
 
 .mdc-checkbox__checkmark {

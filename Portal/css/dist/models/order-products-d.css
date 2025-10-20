@@ -19,6 +19,22 @@
   margin-bottom: 0;
 }
 
+.halloween-message {
+  font-family: "Trixie";
+}
+.halloween-message .shining {
+  display: block;
+  font-family: "Trixie Rough";
+}
+.halloween-message .attribution {
+  font-size: 60%;
+  font-family: "Courier New";
+  font-style: italic;
+}
+.halloween-message .attribution::before {
+  content: " - ";
+}
+
 #delivery-services-modal .modal-body .tab-content {
   padding: 15px 0 0;
   color: #31548B;
@@ -1195,6 +1211,12 @@ a.supplier-link {
 
 #tab-held-orders .k-grid tr:hover {
   background-color: unset;
+}
+#tab-held-orders .blocker {
+  border-radius: 0 0 4px 4px;
+}
+#tab-held-orders .blocker.d-none {
+  display: none !important;
 }
 #tab-held-orders .btn.btn-flat {
   border: 1px solid #ddd;

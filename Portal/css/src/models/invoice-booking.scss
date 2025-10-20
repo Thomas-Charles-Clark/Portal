@@ -962,6 +962,12 @@ $light-blue-highlight: tint-color($blue-100, 75%);
                         --bs-aspect-ratio: 126%;
                         border: 1px solid $gray-400;
                         max-width: 55%;
+                        
+                        .prettyprint {
+                            li {
+                                background-color: transparent;
+                            }
+                        }
                     }
 
                     #email-body {

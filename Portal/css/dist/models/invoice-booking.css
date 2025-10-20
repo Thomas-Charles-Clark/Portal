@@ -19,6 +19,22 @@
   margin-bottom: 0;
 }
 
+.halloween-message {
+  font-family: "Trixie";
+}
+.halloween-message .shining {
+  display: block;
+  font-family: "Trixie Rough";
+}
+.halloween-message .attribution {
+  font-size: 60%;
+  font-family: "Courier New";
+  font-style: italic;
+}
+.halloween-message .attribution::before {
+  content: " - ";
+}
+
 body {
   min-width: 1170px;
   padding-bottom: 0;
@@ -873,6 +889,10 @@ body {
   --bs-aspect-ratio: 126%;
   border: 1px solid #ced4da;
   max-width: 55%;
+}
+#email-modal .modal-dialog .modal-content .modal-body .attachment-viewer .attachment-iframe-wrapper .prettyprint li,
+#document-viewer-modal .modal-dialog .modal-content .modal-body .attachment-viewer .attachment-iframe-wrapper .prettyprint li {
+  background-color: transparent;
 }
 #email-modal .modal-dialog .modal-content .modal-body .attachment-viewer #email-body,
 #document-viewer-modal .modal-dialog .modal-content .modal-body .attachment-viewer #email-body {

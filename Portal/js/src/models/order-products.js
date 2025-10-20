@@ -162,6 +162,10 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
         console.log('orderFactory lastPhaseVisited subscribe hit', newValue);
     });
 
+    let now = new Date();
+
+    self.halloweenMode = ko.observable(now.getMonth() == 9 && now.getDate() >= 13 && now.getDate() <= 31);
+
     self.phaseButtons = [{
         phases: [ORDERFACTORY_PHASE_MISC],
         name: 'Invoice Address',
@@ -240,7 +244,6 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
         click: function () {
             if (self.phase() != ORDERFACTORY_PHASE_BASKET) {
                 self.busy(true);
-                self.busyMessage('Loading Basket');
                 self.phase(ORDERFACTORY_PHASE_BASKET);
             }
         }
@@ -1649,64 +1652,63 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
 
     self.busyMessage.skipSubscription = false;
 
-    self.busyMessage.subscribe(function (newValue) {
-        // Halloween spectacular, ALL THE MESSAGES
-        //if (self.busyMessage.skipSubscription) {
-        //    self.busyMessage.skipSubscription = false;
-        //    return;
-        //}
+    if (self.halloweenMode()) {
+        self.busyMessage.subscribe(function (newValue) {
+            console.log('busyMessage subscribe hit', newValue);
 
-        if (newValue !== 'Please wait, deleting basket...') {
+            if ((newValue && newValue.indexOf('halloween-message') == -1) &&
+                newValue !== 'Submitting Order...' &&
+                newValue !== 'Please wait, deleting basket...') {
 
-            ko.ignoreDependencies(() => {
-                self.busyMessage('<div class="halloween-message">' + HALLOWEEN_RANDOM_MESSAGES[Math.floor(Math.random() * HALLOWEEN_RANDOM_MESSAGES.length)] + '</div>')
-            })
+                ko.ignoreDependencies(() => {
+                    self.busyMessage('<div class="halloween-message">' + HALLOWEEN_RANDOM_MESSAGES[Math.floor(Math.random() * HALLOWEEN_RANDOM_MESSAGES.length)] + '</div>')
+                })
+            }
 
-        }
-
-        //if (newValue && self.useMatrixLoader()) {
-            
-        //    //if (Math.random() < 0.75) {
-        //        //self.busyMessage.skipSubscription = true;
-        //        //ko.ignoreDependencies(() => {
-        //        //    self.busyMessage('<div class="halloween-message">' + HALLOWEEN_RANDOM_MESSAGES[Math.floor(Math.random() * HALLOWEEN_RANDOM_MESSAGES.length)] + '</div>')
-        //        //})
-        //    //}
-        //}
-    });
+            //if (newValue && self.useMatrixLoader()) {
+            //    //if (Math.random() < 0.75) {
+            //        //self.busyMessage.skipSubscription = true;
+            //        //ko.ignoreDependencies(() => {
+            //        //    self.busyMessage('<div class="halloween-message">' + HALLOWEEN_RANDOM_MESSAGES[Math.floor(Math.random() * HALLOWEEN_RANDOM_MESSAGES.length)] + '</div>')
+            //        //})
+            //    //}
+            //}
+        });
+    }
 
     self.useMatrixLoader = ko.pureComputed(function () {
 
-        return [
-
-            //ORDERFACTORY_PHASE_DISPATCH,
-            //ORDERFACTORY_PHASE_COMMENTS,
-            //ORDERFACTORY_PHASE_REVIEW_VATNUMBER,
-            //ORDERFACTORY_PHASE_REVIEW_MANAGER_DISCO,
-            //ORDERFACTORY_PHASE_REVIEW_DUPLICATES,
-            //ORDERFACTORY_PHASE_REVIEW_FOC,
-            //ORDERFACTORY_PHASE_REVIEW_HOLD,
-            //ORDERFACTORY_PHASE_RETAIL
-
-            ORDERFACTORY_PHASE_BLANK,
-            ORDERFACTORY_PHASE_MISC,
-            ORDERFACTORY_PHASE_ADDRESS,
-            ORDERFACTORY_PHASE_PREAMBLE,
-            ORDERFACTORY_PHASE_SEARCH,
-            ORDERFACTORY_PHASE_BASKET,
-            ORDERFACTORY_PHASE_SHIPPINGCHECK,
-            ORDERFACTORY_PHASE_DISPATCH,
-            ORDERFACTORY_PHASE_DELIVERY_ALERT,
-            ORDERFACTORY_PHASE_COMMENTS,
-            ORDERFACTORY_PHASE_REVIEW_VATNUMBER,
-            ORDERFACTORY_PHASE_REVIEW_MANAGER_DISCO,
-            ORDERFACTORY_PHASE_REVIEW_DUPLICATES,
-            ORDERFACTORY_PHASE_REVIEW_FOC,
-            ORDERFACTORY_PHASE_REVIEW_FOC_ERROR,
-            ORDERFACTORY_PHASE_REVIEW_HOLD,
-            ORDERFACTORY_PHASE_RETAIL
-
-        ].indexOf(self.phase()) > -1
+        if (!self.halloweenMode()) {
+            return [
+                ORDERFACTORY_PHASE_DISPATCH,
+                ORDERFACTORY_PHASE_COMMENTS,
+                ORDERFACTORY_PHASE_REVIEW_VATNUMBER,
+                ORDERFACTORY_PHASE_REVIEW_MANAGER_DISCO,
+                ORDERFACTORY_PHASE_REVIEW_DUPLICATES,
+                ORDERFACTORY_PHASE_REVIEW_FOC,
+                ORDERFACTORY_PHASE_REVIEW_HOLD,
+                ORDERFACTORY_PHASE_RETAIL
+            ].indexOf(self.phase()) > -1
+        } else {
+            return [
+                ORDERFACTORY_PHASE_BLANK,
+                ORDERFACTORY_PHASE_MISC,
+                ORDERFACTORY_PHASE_ADDRESS,
+                ORDERFACTORY_PHASE_PREAMBLE,
+                ORDERFACTORY_PHASE_BASKET,
+                ORDERFACTORY_PHASE_SHIPPINGCHECK,
+                ORDERFACTORY_PHASE_DISPATCH,
+                ORDERFACTORY_PHASE_DELIVERY_ALERT,
+                ORDERFACTORY_PHASE_COMMENTS,
+                ORDERFACTORY_PHASE_REVIEW_VATNUMBER,
+                ORDERFACTORY_PHASE_REVIEW_MANAGER_DISCO,
+                ORDERFACTORY_PHASE_REVIEW_DUPLICATES,
+                ORDERFACTORY_PHASE_REVIEW_FOC,
+                ORDERFACTORY_PHASE_REVIEW_FOC_ERROR,
+                ORDERFACTORY_PHASE_REVIEW_HOLD,
+                ORDERFACTORY_PHASE_RETAIL
+            ].indexOf(self.phase()) > -1
+        }
     }, self);
 
     self.matrixLoader = {
@@ -3869,7 +3871,9 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
 
                                         Promise.allSettled(promises).then(function () {
                                             self.busy(false);
-                                            self.busyMessage(undefined);
+
+                                            if (!self.halloweenMode())
+                                                self.busyMessage(undefined);
                                         });
                                     });
                                 }, false, false);
@@ -3923,7 +3927,8 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
 
                         Promise.allSettled(promises).then(function () {
                             self.busy(false);
-                            self.busyMessage(undefined);
+                            if (!self.halloweenMode())
+                                self.busyMessage(undefined);
                         });
                     });
                     break;
@@ -5301,8 +5306,8 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
     }
 
     self.fetchBasketReview = function () {
-        self.busy(true);
         self.busyMessage('Loading Basket Review...');
+        self.busy(true);
         var data = {
             basketId: self.basketId()
         }
@@ -5379,8 +5384,8 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
         if (!self.heldForSalesRecord.isValid()) {
             self.heldForSalesRecord.isValid.notifySubscribers(self.heldForSalesRecord.isValid());
         } else {
-            self.busy(true);
             self.busyMessage('Saving Basket Review...');
+            self.busy(true);
             var data = {
                 basketId: self.basketId(),
                 discountApprovedByManagerMemberId: self.basketReviewManager() ? self.basketReviewManager() : null,
@@ -5480,8 +5485,8 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                 savedBasketReasonId: self.savedBasketReason()
             }
             console.log('orderFactory saveAndCloseBasket calling with', data);
-            self.busy(true);
             self.busyMessage('Saving...');
+            self.busy(true);
             $.ajax({
                 url: '/api/componentapi/saveBasketReason',
                 type: 'POST',
@@ -7028,7 +7033,8 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                     complete();
                 } else {
                     self.busy(false);
-                    self.busyMessage(undefined);
+                    if (!self.halloweenMode())
+                        self.busyMessage(undefined);
                 }
             },
             error: function (xhr, s, a) {
@@ -7208,8 +7214,8 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                     basketId: BasketID || self.basketId()
                 }
                 console.log('orderFactory deleteBasket calling with', data);
-                self.busy(true);
                 self.busyMessage('Please wait, deleting basket...');
+                self.busy(true);
                 $.ajax({
                     url: '/api/componentapi/DeleteBasket',
                     type: 'POST',
@@ -8322,8 +8328,8 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                     });
                 } else {
 
-                    self.busy(true);
                     self.busyMessage('Saving...');
+                    self.busy(true);
 
                     var data = {
                         basketId: self.basketServerObject().BasketID,
@@ -8375,7 +8381,8 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                         success: function (data) {
                             console.log('orderFactory saveBasketDetails returned', data)
                             self.busy(false);
-                            self.busyMessage(undefined);
+                            if (!self.halloweenMode())
+                                self.busyMessage(undefined);
                             if (self.basketServerObject().DeliveryAlertEmail == null &&
                                 self.emailManager.emails().length >= 1) {
                                 self.basketServerObject().DeliveryAlertEmail = self.emailManager.emails()[0].observable();
@@ -8699,8 +8706,8 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
             //}
 
             self.productSearchInProgress = true;
-            self.busy(true);
             self.busyMessage('Searching...');
+            self.busy(true);
             console.log('productSearch calling with', data);
 
             var ticksNow = new Date().getTime();
@@ -8735,7 +8742,8 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                     self.searchResults(results);
 
                     self.busy(false);
-                    self.busyMessage(undefined);
+                    if (!self.halloweenMode())
+                        self.busyMessage(undefined);
                     self.productSearchInProgress = false;
 
                     self.allFulfilmentOptions.valueHasMutated();
@@ -9233,8 +9241,8 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
 
     self.saveClauses = function (onComplete, onError) {
 
-        self.busy(true);
         self.busyMessage('Saving Comments, Notes & Clauses...');
+        self.busy(true);
 
         var nextBasketClauseId = 1;
 
@@ -9395,8 +9403,8 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
             retailSessionNumber: self.retailSessionNumber(),
             retailPayments: self.retailPayments()
         };
-        self.busy(true);
         self.busyMessage('Saving Retail Payment Information...');
+        self.busy(true);
         console.log('orderFactory saveRetail calling with', data);
         $.ajax({
             url: '/api/orderproducts/saveBasketRetailParameters',
@@ -9423,9 +9431,10 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
 
             $.confirm('Are you sure?', 'This will submit your basket to a queue where it will await submission to Mertex.', function () {
 
-                self.busy(true);
 
                 self.busyMessage('Submitting Order...');
+
+                self.busy(true);
 
                 var data = {
                     basketId: self.basketId()
@@ -16680,6 +16689,8 @@ var dispatchFactory = function (parent) {
 
     self.currency = parent.currency;
 
+    self.halloweenMode = parent.halloweenMode;
+
     self.busyMessage = self.parent.busyMessage;
 
     self.allSubscriptions = [];
@@ -17252,8 +17263,8 @@ var dispatchFactory = function (parent) {
     }
 
     self.fetchDispatchInfo = function (basketSplitId, onComplete) {
-        self.busy(true);
         self.busyMessage('Loading Despatch Options...');
+        self.busy(true);
 
         var data = {
             basketId: self.parent.basketId(),
@@ -18324,8 +18335,8 @@ var dispatchFactory = function (parent) {
                                 console.log('a) dispatchFactory save rejected', self.selectedOrder().deliveryService().errors());
                             } else {
                                 console.log('a) dispatchFactory save permissible');
-                                self.busy(true);
                                 self.busyMessage('Saving Despatch Options...');
+                                self.busy(true);
                                 self.saveDeliveryOptions(function () {
 
                                     console.log('a) dispatchFactory save returned');
@@ -18835,8 +18846,8 @@ var dispatchFactory = function (parent) {
         skipValidation = typeof skipValidation === 'undefined' ? false : skipValidation;
 
         if (basketSplitId == null) {
-            self.busy(true);
             self.busyMessage('Saving despatch options...');
+            self.busy(true);
         }
 
         var deliveryServices = [];
@@ -18981,7 +18992,8 @@ var dispatchFactory = function (parent) {
                     success: function (data) {
                         if (basketSplitId == null) {
                             //self.busy(false);
-                            self.busyMessage(undefined);
+                            if (!self.halloweenMode())
+                                self.busyMessage(undefined);
                         }
 
                         self.parent.basketRequestsEORI(data.RequestEORI);
@@ -19065,6 +19077,8 @@ var deliveryAddressFactory = function (parent) {
     self.parent = parent;
 
     self.busyMessage = parent.busyMessage;
+
+    self.halloweenMode = parent.halloweenMode;
 
     self.busy = parent.busy;
 
@@ -19358,9 +19372,9 @@ var deliveryAddressFactory = function (parent) {
             }
         }
 
-        self.busy(true);
-
         self.busyMessage('Loading Addresses...');
+
+        self.busy(true);
 
         var data = {
             basketId: self.parent.basketId(),
@@ -19435,7 +19449,9 @@ var deliveryAddressFactory = function (parent) {
                 if (clearBusy) {
                     window.setTimeout(function () { // give a chance for the addresses to render before seeming 'unbusy'
                         self.busy(false);
-                        self.busyMessage(undefined);
+
+                        if (!self.halloweenMode())
+                            self.busyMessage(undefined);
                     }, 100);
                 }
 
@@ -19502,9 +19518,9 @@ var deliveryAddressFactory = function (parent) {
 
         skipDeliveryRestrictions = skipDeliveryRestrictions || false;
 
-        self.busy(true);
-
         self.busyMessage('Saving Delivery Address...');
+
+        self.busy(true);
 
         var data = {
             skipDeliveryRestrictions: skipDeliveryRestrictions,
@@ -19611,9 +19627,9 @@ var deliveryAddressFactory = function (parent) {
 
     self.confirmMisc = function (onComplete) {
 
-        self.busy(true);
-
         self.busyMessage('Saving');
+
+        self.busy(true);
 
         var data = {
             basketId: self.parent.basketId()
@@ -19777,8 +19793,8 @@ var deliveryAddressFactory = function (parent) {
         self.deliveryAddressSearch.pcaLookup.searchEndpoint(self.deliveryAddressSearch.mertexEndpoint);
 
     self.confirmEndCustomer = function (address) {
-        self.busyMessage('Saving');
         self.busy(true);
+        self.busyMessage('Saving');
         var data = {
             basketId: self.parent.basketId(),
             tradeAccountId: address.tradeAccountId

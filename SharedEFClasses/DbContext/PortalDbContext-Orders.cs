@@ -590,7 +590,7 @@ namespace SharedEFClasses.Models
             return results;
         }
 
-        public async Task<HeldOrderResultWrapper> FetchHeldOrders(int memberId, string marketCode, string searchTerm, string holdReasonIds, string tab)
+        public async Task<HeldOrderResultWrapper> FetchHeldOrders(int memberId, string marketCode, string searchTerm, string holdReasonIds, string tab, DateTime? heldFromDt, DateTime? heldToDt)
         {
             var results = new List<HeldOrderSelectResult>();
 
@@ -600,7 +600,9 @@ namespace SharedEFClasses.Models
                 MarketCode = marketCode,
                 SearchTerm = searchTerm,
                 HoldReasonIDs = holdReasonIds,
-                Tab = tab
+                Tab = tab,
+                HeldFromDT = heldFromDt,
+                HeldToDT = heldToDt
             }, null, null, CommandType.StoredProcedure);
 
             return new HeldOrderResultWrapper()

@@ -5,7 +5,6 @@
     Layout = "~/Views/Shared/_Layout-New.cshtml";
 }
 @section styles {
-    @*@Styles.Render("~/bundles/css/full-width-app")*@
     @Styles.Render("~/bundles/css/kendo-custom")
     @Styles.Render("~/bundles/css/generic-forms")
     @Styles.Render("~/bundles/css/invoice-booking")
@@ -1642,7 +1641,7 @@
                         <iframe data-bind="attr: { src: actualSrc }"></iframe>
                         <!-- /ko -->
                         <!-- ko if: ['csv','txt'].indexOf(FileExtension.toLowerCase()) > -1 -->
-                        <pre class="prettyprint linenums" data-bind="html: prettyPrintedResponse"></pre>
+                        <pre class="prettyprint linenums bg-dark" data-bind="html: prettyPrintedResponse"></pre>
                         <!-- /ko -->
                         <!-- ko if: ['png','jpg','jpeg','gif','bmp','webp'].indexOf(FileExtension.toLowerCase()) > -1 -->
                         <img data-bind="attr: { src: actualSrc }" />
