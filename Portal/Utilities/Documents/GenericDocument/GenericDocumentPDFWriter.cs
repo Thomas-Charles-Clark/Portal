@@ -25,8 +25,9 @@ namespace Portal.Utilities.Document
         private static Regex TextEffectsEndRegex = new Regex(@"{\/[bius]+}", RegexOptions.Compiled);
         private static Regex ColourMatchStartRegex = new Regex(@"{(rgba\(([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5]),\s?[01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5]),\s?([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5]),\s?([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\)}", RegexOptions.Compiled);
         private static Regex ColourMatchEndRegex = new Regex(@"{\/rgba}", RegexOptions.Compiled);
-        private static Regex URISmartTagStartRegex = new Regex(@"{(uri=([^}]+))}", RegexOptions.Compiled);
-        private static Regex URISmartTagEndRegex = new Regex(@"{\/uri}", RegexOptions.Compiled);
+        private static Regex RGBARegex = new Regex(@"(\d+)", RegexOptions.Compiled);
+        private static Regex URIStartRegex = new Regex(@"{(uri=([^}]+))}", RegexOptions.Compiled);
+        private static Regex URIEndRegex = new Regex(@"{\/uri}", RegexOptions.Compiled);
 
         public static string GetResource(List<ResourceSelect> resources, string name)
         {
@@ -149,14 +150,14 @@ namespace Portal.Utilities.Document
 
                         if (input.DocumentHeader.HeaderLabel1 != null)
                         {
-                            documentHeadPhrase1.Add(ProcessPhrase($"{{b}}{input.DocumentHeader.HeaderLabel1}{{/b}}"));
+                            documentHeadPhrase1.AddRange(ProcessPhrase($"{{b}}{input.DocumentHeader.HeaderLabel1}{{/b}}"));
                             //documentHeadPhrase1.Add(new Chunk($"{input.DocumentHeader.HeaderLabel1}", boldFont));
                             addDocumentHeadPhrase1Newline = true;
                         }
 
                         if (input.DocumentHeader.HeaderValue1 != null)
                         {
-                            documentHeadPhrase1.Add(ProcessPhrase($"{input.DocumentHeader.HeaderValue1}"));
+                            documentHeadPhrase1.AddRange(ProcessPhrase($"{input.DocumentHeader.HeaderValue1}"));
                             //documentHeadPhrase1.Add(new Chunk($"{input.DocumentHeader.HeaderValue1}", normalFont));
                             addDocumentHeadPhrase1Newline = true;
                         }
@@ -173,13 +174,13 @@ namespace Portal.Utilities.Document
 
                         if (input.DocumentHeader.HeaderLabel2 != null)
                         {
-                            documentHeadPhrase2.Add(ProcessPhrase($"{{b}}{input.DocumentHeader.HeaderLabel2}{{/b}}"));
+                            documentHeadPhrase2.AddRange(ProcessPhrase($"{{b}}{input.DocumentHeader.HeaderLabel2}{{/b}}"));
                             addDocumentHeadPhrase2Newline = true;
                         }
 
                         if (input.DocumentHeader.HeaderValue2 != null)
                         {
-                            documentHeadPhrase2.Add(ProcessPhrase($"{input.DocumentHeader.HeaderValue2}"));
+                            documentHeadPhrase2.AddRange(ProcessPhrase($"{input.DocumentHeader.HeaderValue2}"));
                             addDocumentHeadPhrase2Newline = true;
                         }
 
@@ -195,13 +196,13 @@ namespace Portal.Utilities.Document
 
                         if (input.DocumentHeader.HeaderLabel3 != null)
                         {
-                            documentHeadPhrase3.Add(ProcessPhrase($"{{b}}{input.DocumentHeader.HeaderLabel3}{{/b}}"));
+                            documentHeadPhrase3.AddRange(ProcessPhrase($"{{b}}{input.DocumentHeader.HeaderLabel3}{{/b}}"));
                             addDocumentHeadPhrase3Newline = true;
                         }
 
                         if (input.DocumentHeader.HeaderValue3 != null)
                         {
-                            documentHeadPhrase3.Add(ProcessPhrase($"{input.DocumentHeader.HeaderValue3}"));
+                            documentHeadPhrase3.AddRange(ProcessPhrase($"{input.DocumentHeader.HeaderValue3}"));
                             addDocumentHeadPhrase3Newline = true;
                         }
 
@@ -217,13 +218,13 @@ namespace Portal.Utilities.Document
 
                         if (input.DocumentHeader.HeaderLabel4 != null)
                         {
-                            documentHeadPhrase4.Add(ProcessPhrase($"{{b}}{input.DocumentHeader.HeaderLabel4}{{/b}}"));
+                            documentHeadPhrase4.AddRange(ProcessPhrase($"{{b}}{input.DocumentHeader.HeaderLabel4}{{/b}}"));
                             addDocumentHeadPhrase4Newline = true;
                         }
 
                         if (input.DocumentHeader.HeaderValue4 != null)
                         {
-                            documentHeadPhrase4.Add(ProcessPhrase($"{input.DocumentHeader.HeaderValue4}"));
+                            documentHeadPhrase4.AddRange(ProcessPhrase($"{input.DocumentHeader.HeaderValue4}"));
                             addDocumentHeadPhrase4Newline = true;
                         }
 
@@ -345,25 +346,25 @@ namespace Portal.Utilities.Document
 
                         if (input.PageFooter.PageFooterLine1Label1 != null)
                         {
-                            pageFooterTableCellPhrase.Add(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine1Label1}{{/b}}"));
+                            pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine1Label1}{{/b}}"));
                             addFooterLine1Break = true;
                         }
 
                         if (input.PageFooter.PageFooterLine1Value1 != null)
                         {
-                            pageFooterTableCellPhrase.Add(ProcessPhrase($"{input.PageFooter.PageFooterLine1Value1}"));
+                            pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{input.PageFooter.PageFooterLine1Value1}"));
                             addFooterLine1Break = true;
                         }
 
                         if (input.PageFooter.PageFooterLine1Label2 != null)
                         {
-                            pageFooterTableCellPhrase.Add(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine1Label2}{{/b}}"));
+                            pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine1Label2}{{/b}}"));
                             addFooterLine1Break = true;
                         }
 
                         if (input.PageFooter.PageFooterLine1Value2 != null)
                         {
-                            pageFooterTableCellPhrase.Add(ProcessPhrase($"{input.PageFooter.PageFooterLine1Value2}"));
+                            pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{input.PageFooter.PageFooterLine1Value2}"));
                             addFooterLine1Break = true;
                         }
 
@@ -376,25 +377,25 @@ namespace Portal.Utilities.Document
 
                         if (input.PageFooter.PageFooterLine2Label1 != null)
                         {
-                            pageFooterTableCellPhrase.Add(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine2Label1}{{/b}}"));
+                            pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine2Label1}{{/b}}"));
                             addFooterLine2Break = true;
                         }
 
                         if (input.PageFooter.PageFooterLine2Value1 != null)
                         {
-                            pageFooterTableCellPhrase.Add(ProcessPhrase($"{input.PageFooter.PageFooterLine2Value1}"));
+                            pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{input.PageFooter.PageFooterLine2Value1}"));
                             addFooterLine2Break = true;
                         }
 
                         if (input.PageFooter.PageFooterLine2Label2 != null)
                         {
-                            pageFooterTableCellPhrase.Add(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine2Label2}{{/b}}"));
+                            pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine2Label2}{{/b}}"));
                             addFooterLine2Break = true;
                         }
 
                         if (input.PageFooter.PageFooterLine2Value2 != null)
                         {
-                            pageFooterTableCellPhrase.Add(ProcessPhrase($"{input.PageFooter.PageFooterLine2Value2}"));
+                            pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{input.PageFooter.PageFooterLine2Value2}"));
                             addFooterLine2Break = true;
                         }
 
@@ -407,25 +408,25 @@ namespace Portal.Utilities.Document
 
                         if (input.PageFooter.PageFooterLine3Label1 != null)
                         {
-                            pageFooterTableCellPhrase.Add(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine3Label1}{{/b}}"));
+                            pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine3Label1}{{/b}}"));
                             addFooterLine2Break = true;
                         }
 
                         if (input.PageFooter.PageFooterLine3Value1 != null)
                         {
-                            pageFooterTableCellPhrase.Add(ProcessPhrase($"{input.PageFooter.PageFooterLine3Value1}"));
+                            pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{input.PageFooter.PageFooterLine3Value1}"));
                             addFooterLine2Break = true;
                         }
 
                         if (input.PageFooter.PageFooterLine3Label2 != null)
                         {
-                            pageFooterTableCellPhrase.Add(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine3Label2}{{/b}}"));
+                            pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine3Label2}{{/b}}"));
                             addFooterLine2Break = true;
                         }
 
                         if (input.PageFooter.PageFooterLine3Value2 != null)
                         {
-                            pageFooterTableCellPhrase.Add(ProcessPhrase($"{input.PageFooter.PageFooterLine3Value2}"));
+                            pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{input.PageFooter.PageFooterLine3Value2}"));
                             addFooterLine2Break = true;
                         }
 
@@ -466,13 +467,13 @@ namespace Portal.Utilities.Document
 
                     if (orderHead.OrderHeaderLabel1 != null)
                     {
-                        orderHeadPhrase1.Add(ProcessPhrase($"{{b}}{orderHead.OrderHeaderLabel1}{{/b}}"));
+                        orderHeadPhrase1.AddRange(ProcessPhrase($"{{b}}{orderHead.OrderHeaderLabel1}{{/b}}"));
                         addOrderHeadPhrase1Newline = true;
                     }
 
                     if (orderHead.OrderHeaderValue1 != null)
                     {
-                        orderHeadPhrase1.Add(ProcessPhrase($"{orderHead.OrderHeaderValue1}"));
+                        orderHeadPhrase1.AddRange(ProcessPhrase($"{orderHead.OrderHeaderValue1}"));
                         addOrderHeadPhrase1Newline = true;
                     }
 
@@ -488,13 +489,13 @@ namespace Portal.Utilities.Document
 
                     if (orderHead.OrderHeaderLabel2 != null)
                     {
-                        orderHeadPhrase2.Add(ProcessPhrase($"{{b}}{orderHead.OrderHeaderLabel2}{{/b}}"));
+                        orderHeadPhrase2.AddRange(ProcessPhrase($"{{b}}{orderHead.OrderHeaderLabel2}{{/b}}"));
                         addOrderHeadPhrase2Newline = true;
                     }
 
                     if (orderHead.OrderHeaderValue2 != null)
                     {
-                        orderHeadPhrase2.Add(ProcessPhrase($"{orderHead.OrderHeaderValue2}"));
+                        orderHeadPhrase2.AddRange(ProcessPhrase($"{orderHead.OrderHeaderValue2}"));
                         addOrderHeadPhrase2Newline = true;
                     }
 
@@ -510,13 +511,13 @@ namespace Portal.Utilities.Document
 
                     if (orderHead.OrderHeaderLabel3 != null)
                     {
-                        orderHeadPhrase3.Add(ProcessPhrase($"{{b}}{orderHead.OrderHeaderLabel3}{{/b}}"));
+                        orderHeadPhrase3.AddRange(ProcessPhrase($"{{b}}{orderHead.OrderHeaderLabel3}{{/b}}"));
                         addOrderHeadPhrase3Newline = true;
                     }
 
                     if (orderHead.OrderHeaderValue3 != null)
                     {
-                        orderHeadPhrase3.Add(ProcessPhrase($"{orderHead.OrderHeaderValue3}"));
+                        orderHeadPhrase3.AddRange(ProcessPhrase($"{orderHead.OrderHeaderValue3}"));
                         addOrderHeadPhrase3Newline = true;
                     }
 
@@ -532,13 +533,13 @@ namespace Portal.Utilities.Document
 
                     if (orderHead.OrderHeaderLabel4 != null)
                     {
-                        orderHeadPhrase4.Add(ProcessPhrase($"{{b}}{orderHead.OrderHeaderLabel4}{{/b}}"));
+                        orderHeadPhrase4.AddRange(ProcessPhrase($"{{b}}{orderHead.OrderHeaderLabel4}{{/b}}"));
                         addOrderHeadPhrase4Newline = true;
                     }
 
                     if (orderHead.OrderHeaderValue4 != null)
                     {
-                        orderHeadPhrase4.Add(ProcessPhrase($"{orderHead.OrderHeaderValue4}"));
+                        orderHeadPhrase4.AddRange(ProcessPhrase($"{orderHead.OrderHeaderValue4}"));
                         addOrderHeadPhrase4Newline = true;
                     }
 
@@ -900,13 +901,13 @@ namespace Portal.Utilities.Document
 
                         if (orderFooter.OrderFooterLabel1 != null)
                         {
-                            orderFooterPhrase1.Add(ProcessPhrase($"{{b}}{orderFooter.OrderFooterLabel1}{{/b}}"));
+                            orderFooterPhrase1.AddRange(ProcessPhrase($"{{b}}{orderFooter.OrderFooterLabel1}{{/b}}"));
                             addOrderFooterPhrase1Newline = true;
                         }
 
                         if (orderFooter.OrderFooterValue1 != null)
                         {
-                            orderFooterPhrase1.Add(ProcessPhrase($"{orderFooter.OrderFooterValue1}"));
+                            orderFooterPhrase1.AddRange(ProcessPhrase($"{orderFooter.OrderFooterValue1}"));
                             addOrderFooterPhrase1Newline = true;
                         }
 
@@ -922,7 +923,7 @@ namespace Portal.Utilities.Document
 
                         if (orderFooter.OrderFooterLabel2 != null)
                         {
-                            orderFooterPhrase2.Add(ProcessPhrase($"{{b}}{orderFooter.OrderFooterLabel2}{{/b}}"));
+                            orderFooterPhrase2.AddRange(ProcessPhrase($"{{b}}{orderFooter.OrderFooterLabel2}{{/b}}"));
                             addOrderFooterPhrase2Newline = true;
                         }
 
@@ -948,13 +949,13 @@ namespace Portal.Utilities.Document
 
                         if (orderFooter.OrderFooterLabel3 != null)
                         {
-                            orderFooterPhrase3.Add(ProcessPhrase($"{{b}}{orderFooter.OrderFooterLabel3}{{/b}}"));
+                            orderFooterPhrase3.AddRange(ProcessPhrase($"{{b}}{orderFooter.OrderFooterLabel3}{{/b}}"));
                             addOrderFooterPhrase3Newline = true;
                         }
 
                         if (orderFooter.OrderFooterValue3 != null)
                         {
-                            orderFooterPhrase3.Add(ProcessPhrase($"{orderFooter.OrderFooterValue3}"));
+                            orderFooterPhrase3.AddRange(ProcessPhrase($"{orderFooter.OrderFooterValue3}"));
                             addOrderFooterPhrase3Newline = true;
                         }
 
@@ -970,13 +971,13 @@ namespace Portal.Utilities.Document
 
                         if (orderFooter.OrderFooterLabel4 != null)
                         {
-                            orderFooterPhrase4.Add(ProcessPhrase($"{{b}}{orderFooter.OrderFooterLabel4}{{/b}}"));
+                            orderFooterPhrase4.AddRange(ProcessPhrase($"{{b}}{orderFooter.OrderFooterLabel4}{{/b}}"));
                             addOrderFooterPhrase4Newline = true;
                         }
 
                         if (orderFooter.OrderFooterValue4 != null)
                         {
-                            orderFooterPhrase4.Add(ProcessPhrase($"{orderFooter.OrderFooterValue4}"));
+                            orderFooterPhrase4.AddRange(ProcessPhrase($"{orderFooter.OrderFooterValue4}"));
                             addOrderFooterPhrase4Newline = true;
                         }
 
@@ -1108,13 +1109,13 @@ namespace Portal.Utilities.Document
 
                         if (input.DocumentFooter.DocumentFooterLabel1 != null)
                         {
-                            documentFooterPhrase1.Add(ProcessPhrase($"{{b}}{input.DocumentFooter.DocumentFooterLabel1}{{/b}}"));
+                            documentFooterPhrase1.AddRange(ProcessPhrase($"{{b}}{input.DocumentFooter.DocumentFooterLabel1}{{/b}}"));
                             addDocumentFooterPhrase1Newline = true;
                         }
 
                         if (input.DocumentFooter.DocumentFooterValue1 != null)
                         {
-                            documentFooterPhrase1.Add(ProcessPhrase($"{input.DocumentFooter.DocumentFooterValue1}"));
+                            documentFooterPhrase1.AddRange(ProcessPhrase($"{input.DocumentFooter.DocumentFooterValue1}"));
                             addDocumentFooterPhrase1Newline = true;
                         }
 
@@ -1130,13 +1131,13 @@ namespace Portal.Utilities.Document
 
                         if (input.DocumentFooter.DocumentFooterLabel2 != null)
                         {
-                            documentFooterPhrase2.Add(ProcessPhrase($"{{b}}{input.DocumentFooter.DocumentFooterLabel2}{{/b}}"));
+                            documentFooterPhrase2.AddRange(ProcessPhrase($"{{b}}{input.DocumentFooter.DocumentFooterLabel2}{{/b}}"));
                             addDocumentFooterPhrase2Newline = true;
                         }
 
                         if (input.DocumentFooter.DocumentFooterValue2 != null)
                         {
-                            documentFooterPhrase2.Add(ProcessPhrase($"{input.DocumentFooter.DocumentFooterValue2}"));
+                            documentFooterPhrase2.AddRange(ProcessPhrase($"{input.DocumentFooter.DocumentFooterValue2}"));
                             addDocumentFooterPhrase2Newline = true;
                         }
 
@@ -1152,13 +1153,13 @@ namespace Portal.Utilities.Document
 
                         if (input.DocumentFooter.DocumentFooterLabel3 != null)
                         {
-                            documentFooterPhrase3.Add(ProcessPhrase($"{{b}}{input.DocumentFooter.DocumentFooterLabel3}{{/b}}"));
+                            documentFooterPhrase3.AddRange(ProcessPhrase($"{{b}}{input.DocumentFooter.DocumentFooterLabel3}{{/b}}"));
                             addDocumentFooterPhrase3Newline = true;
                         }
 
                         if (input.DocumentFooter.DocumentFooterValue3 != null)
                         {
-                            documentFooterPhrase3.Add(ProcessPhrase($"{input.DocumentFooter.DocumentFooterValue3}"));
+                            documentFooterPhrase3.AddRange(ProcessPhrase($"{input.DocumentFooter.DocumentFooterValue3}"));
                             addDocumentFooterPhrase3Newline = true;
                         }
 
@@ -1174,13 +1175,13 @@ namespace Portal.Utilities.Document
 
                         if (input.DocumentFooter.DocumentFooterLabel4 != null)
                         {
-                            documentFooterPhrase4.Add(ProcessPhrase($"{{b}}{input.DocumentFooter.DocumentFooterLabel4}{{/b}}"));
+                            documentFooterPhrase4.AddRange(ProcessPhrase($"{{b}}{input.DocumentFooter.DocumentFooterLabel4}{{/b}}"));
                             addDocumentFooterPhrase4Newline = true;
                         }
 
                         if (input.DocumentFooter.DocumentFooterValue4 != null)
                         {
-                            documentFooterPhrase4.Add(ProcessPhrase($"{input.DocumentFooter.DocumentFooterValue4}"));
+                            documentFooterPhrase4.AddRange(ProcessPhrase($"{input.DocumentFooter.DocumentFooterValue4}"));
                             addDocumentFooterPhrase4Newline = true;
                         }
 
@@ -1336,16 +1337,19 @@ namespace Portal.Utilities.Document
                         var documentHeadPhrase1 = new Phrase();
 
                         var addDocumentHeadPhrase1Newline = false;
+                        var addDocumentHeadPhrase2Newline = false;
+                        var addDocumentHeadPhrase3Newline = false;
+                        var addDocumentHeadPhrase4Newline = false;
 
                         if (input.DocumentHeader.HeaderLabel1 != null)
                         {
-                            documentHeadPhrase1.Add(ProcessPhrase($"{{b}}{input.DocumentHeader.HeaderLabel1}{{/b}}"));
+                            documentHeadPhrase1.AddRange(ProcessPhrase($"{{b}}{input.DocumentHeader.HeaderLabel1}{{/b}}"));
                             addDocumentHeadPhrase1Newline = true;
                         }
 
                         if (input.DocumentHeader.HeaderValue1 != null)
                         {
-                            documentHeadPhrase1.Add(ProcessPhrase($"{input.DocumentHeader.HeaderValue1}"));
+                            documentHeadPhrase1.AddRange(ProcessPhrase($"{input.DocumentHeader.HeaderValue1}"));
                             addDocumentHeadPhrase1Newline = true;
                         }
 
@@ -1357,17 +1361,15 @@ namespace Portal.Utilities.Document
 
                         var documentHeadPhrase2 = new Phrase();
 
-                        var addDocumentHeadPhrase2Newline = false;
-
                         if (input.DocumentHeader.HeaderLabel2 != null)
                         {
-                            documentHeadPhrase2.Add(ProcessPhrase($"{{b}}{input.DocumentHeader.HeaderLabel2}{{/b}}"));
+                            documentHeadPhrase2.AddRange(ProcessPhrase($"{{b}}{input.DocumentHeader.HeaderLabel2}{{/b}}"));
                             addDocumentHeadPhrase2Newline = true;
                         }
 
                         if (input.DocumentHeader.HeaderValue2 != null)
                         {
-                            documentHeadPhrase2.Add(ProcessPhrase($"{input.DocumentHeader.HeaderValue2}"));
+                            documentHeadPhrase2.AddRange(ProcessPhrase($"{input.DocumentHeader.HeaderValue2}"));
                             addDocumentHeadPhrase2Newline = true;
                         }
 
@@ -1379,17 +1381,15 @@ namespace Portal.Utilities.Document
 
                         var documentHeadPhrase3 = new Phrase();
 
-                        var addDocumentHeadPhrase3Newline = false;
-
                         if (input.DocumentHeader.HeaderLabel3 != null)
                         {
-                            documentHeadPhrase3.Add(ProcessPhrase($"{{b}}{input.DocumentHeader.HeaderLabel3}{{/b}}"));
+                            documentHeadPhrase3.AddRange(ProcessPhrase($"{{b}}{input.DocumentHeader.HeaderLabel3}{{/b}}"));
                             addDocumentHeadPhrase3Newline = true;
                         }
 
                         if (input.DocumentHeader.HeaderValue3 != null)
                         {
-                            documentHeadPhrase3.Add(ProcessPhrase($"{input.DocumentHeader.HeaderValue3}"));
+                            documentHeadPhrase3.AddRange(ProcessPhrase($"{input.DocumentHeader.HeaderValue3}"));
                             addDocumentHeadPhrase3Newline = true;
                         }
 
@@ -1401,17 +1401,15 @@ namespace Portal.Utilities.Document
 
                         var documentHeadPhrase4 = new Phrase();
 
-                        var addDocumentHeadPhrase4Newline = false;
-
                         if (input.DocumentHeader.HeaderLabel4 != null)
                         {
-                            documentHeadPhrase4.Add(ProcessPhrase($"{{b}}{input.DocumentHeader.HeaderLabel4}{{/b}}"));
+                            documentHeadPhrase4.AddRange(ProcessPhrase($"{{b}}{input.DocumentHeader.HeaderLabel4}{{/b}}"));
                             addDocumentHeadPhrase4Newline = true;
                         }
 
                         if (input.DocumentHeader.HeaderValue4 != null)
                         {
-                            documentHeadPhrase4.Add(ProcessPhrase($"{input.DocumentHeader.HeaderValue4}"));
+                            documentHeadPhrase4.AddRange(ProcessPhrase($"{input.DocumentHeader.HeaderValue4}"));
                             addDocumentHeadPhrase4Newline = true;
                         }
 
@@ -1488,13 +1486,13 @@ namespace Portal.Utilities.Document
 
                     if (orderHead.OrderHeaderLabel1 != null)
                     {
-                        orderHeadPhrase1.Add(ProcessPhrase($"{{b}}{orderHead.OrderHeaderLabel1}{{/b}}"));
+                        orderHeadPhrase1.AddRange(ProcessPhrase($"{{b}}{orderHead.OrderHeaderLabel1}{{/b}}"));
                         addOrderHeadPhrase1Newline = true;
                     }
 
                     if (orderHead.OrderHeaderValue1 != null)
                     {
-                        orderHeadPhrase1.Add(ProcessPhrase($"{orderHead.OrderHeaderValue1}"));
+                        orderHeadPhrase1.AddRange(ProcessPhrase($"{orderHead.OrderHeaderValue1}"));
                         addOrderHeadPhrase1Newline = true;
                     }
 
@@ -1510,13 +1508,13 @@ namespace Portal.Utilities.Document
 
                     if (orderHead.OrderHeaderLabel2 != null)
                     {
-                        orderHeadPhrase2.Add(ProcessPhrase($"{{b}}{orderHead.OrderHeaderLabel2}{{/b}}"));
+                        orderHeadPhrase2.AddRange(ProcessPhrase($"{{b}}{orderHead.OrderHeaderLabel2}{{/b}}"));
                         addOrderHeadPhrase2Newline = true;
                     }
 
                     if (orderHead.OrderHeaderValue2 != null)
                     {
-                        orderHeadPhrase2.Add(ProcessPhrase($"{orderHead.OrderHeaderValue2}"));
+                        orderHeadPhrase2.AddRange(ProcessPhrase($"{orderHead.OrderHeaderValue2}"));
                         addOrderHeadPhrase2Newline = true;
                     }
 
@@ -1532,13 +1530,13 @@ namespace Portal.Utilities.Document
 
                     if (orderHead.OrderHeaderLabel3 != null)
                     {
-                        orderHeadPhrase3.Add(ProcessPhrase($"{{b}}{orderHead.OrderHeaderLabel3}{{/b}}"));
+                        orderHeadPhrase3.AddRange(ProcessPhrase($"{{b}}{orderHead.OrderHeaderLabel3}{{/b}}"));
                         addOrderHeadPhrase3Newline = true;
                     }
 
                     if (orderHead.OrderHeaderValue3 != null)
                     {
-                        orderHeadPhrase3.Add(ProcessPhrase($"{orderHead.OrderHeaderValue3}"));
+                        orderHeadPhrase3.AddRange(ProcessPhrase($"{orderHead.OrderHeaderValue3}"));
                         addOrderHeadPhrase3Newline = true;
                     }
 
@@ -1554,13 +1552,13 @@ namespace Portal.Utilities.Document
 
                     if (orderHead.OrderHeaderLabel4 != null)
                     {
-                        orderHeadPhrase4.Add(ProcessPhrase($"{{b}}{orderHead.OrderHeaderLabel4}{{/b}}"));
+                        orderHeadPhrase4.AddRange(ProcessPhrase($"{{b}}{orderHead.OrderHeaderLabel4}{{/b}}"));
                         addOrderHeadPhrase4Newline = true;
                     }
 
                     if (orderHead.OrderHeaderValue4 != null)
                     {
-                        orderHeadPhrase4.Add(ProcessPhrase($"{orderHead.OrderHeaderValue4}"));
+                        orderHeadPhrase4.AddRange(ProcessPhrase($"{orderHead.OrderHeaderValue4}"));
                         addOrderHeadPhrase4Newline = true;
                     }
 
@@ -1946,13 +1944,13 @@ namespace Portal.Utilities.Document
 
                         if (orderFooter.OrderFooterLabel1 != null)
                         {
-                            orderFooterPhrase1.Add(ProcessPhrase($"{{b}}{orderFooter.OrderFooterLabel1}{{/b}}"));
+                            orderFooterPhrase1.AddRange(ProcessPhrase($"{{b}}{orderFooter.OrderFooterLabel1}{{/b}}"));
                             addOrderFooterPhrase1Newline = true;
                         }
 
                         if (orderFooter.OrderFooterValue1 != null)
                         {
-                            orderFooterPhrase1.Add(ProcessPhrase($"{orderFooter.OrderFooterValue1}"));
+                            orderFooterPhrase1.AddRange(ProcessPhrase($"{orderFooter.OrderFooterValue1}"));
                             addOrderFooterPhrase1Newline = true;
                         }
 
@@ -1968,7 +1966,7 @@ namespace Portal.Utilities.Document
 
                         if (orderFooter.OrderFooterLabel2 != null)
                         {
-                            orderFooterPhrase2.Add(ProcessPhrase($"{{b}}{orderFooter.OrderFooterLabel2}{{/b}}"));
+                            orderFooterPhrase2.AddRange(ProcessPhrase($"{{b}}{orderFooter.OrderFooterLabel2}{{/b}}"));
                             addOrderFooterPhrase2Newline = true;
                         }
 
@@ -1994,13 +1992,13 @@ namespace Portal.Utilities.Document
 
                         if (orderFooter.OrderFooterLabel3 != null)
                         {
-                            orderFooterPhrase3.Add(ProcessPhrase($"{{b}}{orderFooter.OrderFooterLabel3}{{/b}}"));
+                            orderFooterPhrase3.AddRange(ProcessPhrase($"{{b}}{orderFooter.OrderFooterLabel3}{{/b}}"));
                             addOrderFooterPhrase3Newline = true;
                         }
 
                         if (orderFooter.OrderFooterValue3 != null)
                         {
-                            orderFooterPhrase3.Add(ProcessPhrase($"{orderFooter.OrderFooterValue3}"));
+                            orderFooterPhrase3.AddRange(ProcessPhrase($"{orderFooter.OrderFooterValue3}"));
                             addOrderFooterPhrase3Newline = true;
                         }
 
@@ -2016,13 +2014,13 @@ namespace Portal.Utilities.Document
 
                         if (orderFooter.OrderFooterLabel4 != null)
                         {
-                            orderFooterPhrase4.Add(ProcessPhrase($"{{b}}{orderFooter.OrderFooterLabel4}{{/b}}"));
+                            orderFooterPhrase4.AddRange(ProcessPhrase($"{{b}}{orderFooter.OrderFooterLabel4}{{/b}}"));
                             addOrderFooterPhrase4Newline = true;
                         }
 
                         if (orderFooter.OrderFooterValue4 != null)
                         {
-                            orderFooterPhrase4.Add(ProcessPhrase($"{orderFooter.OrderFooterValue4}"));
+                            orderFooterPhrase4.AddRange(ProcessPhrase($"{orderFooter.OrderFooterValue4}"));
                             addOrderFooterPhrase4Newline = true;
                         }
 
@@ -2154,13 +2152,13 @@ namespace Portal.Utilities.Document
 
                         if (input.DocumentFooter.DocumentFooterLabel1 != null)
                         {
-                            documentFooterPhrase1.Add(ProcessPhrase($"{{b}}{input.DocumentFooter.DocumentFooterLabel1}{{/b}}"));
+                            documentFooterPhrase1.AddRange(ProcessPhrase($"{{b}}{input.DocumentFooter.DocumentFooterLabel1}{{/b}}"));
                             addDocumentFooterPhrase1Newline = true;
                         }
 
                         if (input.DocumentFooter.DocumentFooterValue1 != null)
                         {
-                            documentFooterPhrase1.Add(ProcessPhrase($"{input.DocumentFooter.DocumentFooterValue1}"));
+                            documentFooterPhrase1.AddRange(ProcessPhrase($"{input.DocumentFooter.DocumentFooterValue1}"));
                             addDocumentFooterPhrase1Newline = true;
                         }
 
@@ -2176,13 +2174,13 @@ namespace Portal.Utilities.Document
 
                         if (input.DocumentFooter.DocumentFooterLabel2 != null)
                         {
-                            documentFooterPhrase2.Add(ProcessPhrase($"{{b}}{input.DocumentFooter.DocumentFooterLabel2}{{/b}}"));
+                            documentFooterPhrase2.AddRange(ProcessPhrase($"{{b}}{input.DocumentFooter.DocumentFooterLabel2}{{/b}}"));
                             addDocumentFooterPhrase2Newline = true;
                         }
 
                         if (input.DocumentFooter.DocumentFooterValue2 != null)
                         {
-                            documentFooterPhrase2.Add(ProcessPhrase($"{input.DocumentFooter.DocumentFooterValue2}"));
+                            documentFooterPhrase2.AddRange(ProcessPhrase($"{input.DocumentFooter.DocumentFooterValue2}"));
                             addDocumentFooterPhrase2Newline = true;
                         }
 
@@ -2198,13 +2196,13 @@ namespace Portal.Utilities.Document
 
                         if (input.DocumentFooter.DocumentFooterLabel3 != null)
                         {
-                            documentFooterPhrase3.Add(ProcessPhrase($"{{b}}{input.DocumentFooter.DocumentFooterLabel3}{{/b}}"));
+                            documentFooterPhrase3.AddRange(ProcessPhrase($"{{b}}{input.DocumentFooter.DocumentFooterLabel3}{{/b}}"));
                             addDocumentFooterPhrase3Newline = true;
                         }
 
                         if (input.DocumentFooter.DocumentFooterValue3 != null)
                         {
-                            documentFooterPhrase3.Add(ProcessPhrase($"{input.DocumentFooter.DocumentFooterValue3}"));
+                            documentFooterPhrase3.AddRange(ProcessPhrase($"{input.DocumentFooter.DocumentFooterValue3}"));
                             addDocumentFooterPhrase3Newline = true;
                         }
 
@@ -2220,13 +2218,13 @@ namespace Portal.Utilities.Document
 
                         if (input.DocumentFooter.DocumentFooterLabel4 != null)
                         {
-                            documentFooterPhrase4.Add(ProcessPhrase($"{{b}}{input.DocumentFooter.DocumentFooterLabel4}{{/b}}"));
+                            documentFooterPhrase4.AddRange(ProcessPhrase($"{{b}}{input.DocumentFooter.DocumentFooterLabel4}{{/b}}"));
                             addDocumentFooterPhrase4Newline = true;
                         }
 
                         if (input.DocumentFooter.DocumentFooterValue4 != null)
                         {
-                            documentFooterPhrase4.Add(ProcessPhrase($"{input.DocumentFooter.DocumentFooterValue4}"));
+                            documentFooterPhrase4.AddRange(ProcessPhrase($"{input.DocumentFooter.DocumentFooterValue4}"));
                             addDocumentFooterPhrase4Newline = true;
                         }
 
@@ -2347,25 +2345,25 @@ namespace Portal.Utilities.Document
 
                     if (input.PageFooter.PageFooterLine1Label1 != null)
                     {
-                        pageFooterTableCellPhrase.Add(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine1Label1}{{/b}}"));
+                        pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine1Label1}{{/b}}"));
                         addFooterLine1Break = true;
                     }
 
                     if (input.PageFooter.PageFooterLine1Value1 != null)
                     {
-                        pageFooterTableCellPhrase.Add(ProcessPhrase($"{input.PageFooter.PageFooterLine1Value1}"));
+                        pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{input.PageFooter.PageFooterLine1Value1}"));
                         addFooterLine1Break = true;
                     }
 
                     if (input.PageFooter.PageFooterLine1Label2 != null)
                     {
-                        pageFooterTableCellPhrase.Add(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine1Label2}{{/b}}"));
+                        pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine1Label2}{{/b}}"));
                         addFooterLine1Break = true;
                     }
 
                     if (input.PageFooter.PageFooterLine1Value2 != null)
                     {
-                        pageFooterTableCellPhrase.Add(ProcessPhrase($"{input.PageFooter.PageFooterLine1Value2}"));
+                        pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{input.PageFooter.PageFooterLine1Value2}"));
                         addFooterLine1Break = true;
                     }
 
@@ -2378,25 +2376,25 @@ namespace Portal.Utilities.Document
 
                     if (input.PageFooter.PageFooterLine2Label1 != null)
                     {
-                        pageFooterTableCellPhrase.Add(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine2Label1}{{/b}}"));
+                        pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine2Label1}{{/b}}"));
                         addFooterLine2Break = true;
                     }
 
                     if (input.PageFooter.PageFooterLine2Value1 != null)
                     {
-                        pageFooterTableCellPhrase.Add(ProcessPhrase($"{input.PageFooter.PageFooterLine2Value1}"));
+                        pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{input.PageFooter.PageFooterLine2Value1}"));
                         addFooterLine2Break = true;
                     }
 
                     if (input.PageFooter.PageFooterLine2Label2 != null)
                     {
-                        pageFooterTableCellPhrase.Add(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine2Label2}{{/b}}"));
+                        pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine2Label2}{{/b}}"));
                         addFooterLine2Break = true;
                     }
 
                     if (input.PageFooter.PageFooterLine2Value2 != null)
                     {
-                        pageFooterTableCellPhrase.Add(ProcessPhrase($"{input.PageFooter.PageFooterLine2Value2}"));
+                        pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{input.PageFooter.PageFooterLine2Value2}"));
                         addFooterLine2Break = true;
                     }
 
@@ -2409,25 +2407,25 @@ namespace Portal.Utilities.Document
 
                     if (input.PageFooter.PageFooterLine3Label1 != null)
                     {
-                        pageFooterTableCellPhrase.Add(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine3Label1}{{/b}}"));
+                        pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine3Label1}{{/b}}"));
                         addFooterLine2Break = true;
                     }
 
                     if (input.PageFooter.PageFooterLine3Value1 != null)
                     {
-                        pageFooterTableCellPhrase.Add(ProcessPhrase($"{input.PageFooter.PageFooterLine3Value1}"));
+                        pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{input.PageFooter.PageFooterLine3Value1}"));
                         addFooterLine2Break = true;
                     }
 
                     if (input.PageFooter.PageFooterLine3Label2 != null)
                     {
-                        pageFooterTableCellPhrase.Add(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine3Label2}{{/b}}"));
+                        pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{{b}}{input.PageFooter.PageFooterLine3Label2}{{/b}}"));
                         addFooterLine2Break = true;
                     }
 
                     if (input.PageFooter.PageFooterLine3Value2 != null)
                     {
-                        pageFooterTableCellPhrase.Add(ProcessPhrase($"{input.PageFooter.PageFooterLine3Value2}"));
+                        pageFooterTableCellPhrase.AddRange(ProcessPhrase($"{input.PageFooter.PageFooterLine3Value2}"));
                         addFooterLine2Break = true;
                     }
 
@@ -2572,309 +2570,306 @@ namespace Portal.Utilities.Document
 
             finalStream.Close();
 
-            // Phrases are made up of chunks
             Phrase ProcessPhrase(string line)
             {
-                //if (forceMonospaced)
-                //{
-                //    baseFont = BaseFont.CreateFont(BaseFont.COURIER, BaseFont.CP1252, BaseFont.EMBEDDED);
-                //}
+                // Chunk, Identifier ($0,$1,$2...)
+                // This should allow for: finding e.g. a URI within a Colour tag
+                // or a Colour tag within a Bold tag
+                var chunks = new List<Tuple<Chunk, string>>();
 
-                var chunks = new List<Chunk>();
+                var chunkIndex = 0;
 
-                //var smallItalicFont = FontFactory.GetFont("Arial", standardSize - 1, Font.ITALIC, BaseColor.BLACK);
-                //var italicBold = FontFactory.GetFont("Arial", standardSize - 1, Font.BOLDITALIC, BaseColor.BLACK);
-                //var smallNormalFont = FontFactory.GetFont("Arial", standardSize - 2, Font.NORMAL, BaseColor.BLACK);
-                //var smallBoldFont = FontFactory.GetFont("Arial", standardSize - 2, Font.BOLD, BaseColor.BLACK);
-                //var normalFont = new Font(baseFont, standardSize, Font.NORMAL, BaseColor.BLACK);
-                //var italicFont = new Font(baseFont, standardSize, Font.ITALIC, BaseColor.BLACK);
-                //var underlined = new Font(baseFont, standardSize, Font.UNDERLINE, BaseColor.BLACK);
-                //var italicBoldUnderlined = FontFactory.GetFont("Arial", standardSize - 1, Font.UNDERLINE | Font.BOLDITALIC, BaseColor.BLACK);
-                //var boldFont = FontFactory.GetFont("Arial", standardSize - 1, Font.BOLD, BaseColor.BLACK);
-                //var italicUnderlined = new Font(baseFont, standardSize, Font.ITALIC | Font.UNDERLINE, BaseColor.BLACK);
-                //var boldUnderlined = FontFactory.GetFont("Arial", standardSize - 1, Font.BOLD | Font.UNDERLINE, BaseColor.BLACK);
-                //var smallerFont = new Font(baseFont, standardSize - 1, Font.NORMAL, BaseColor.BLACK);
-                //var hyperlinkFont = new Font(baseFont, standardSize, Font.UNDERLINE, BaseColor.BLUE);
+                chunks.Add(new Tuple<Chunk, string>(new Chunk(line), $"${chunkIndex}"));
 
-                var boldItalicUnderlineStrikeOpenings = TextEffectsStartRegex.Matches(line).Cast<Match>().Select(p => p.Value).ToList();
+                // we'll have to loop to know when we've parsed the whole line; might as well parse it destructively
 
-                while (line.Length > 0) // we'll have to loop to know when we've parsed the whole line; might as well parse it destructively
+                // Grab Text Effects
+                var textEffectStarts = TextEffectsStartRegex.Matches(line).Cast<Match>();
+
+                var textEffectEnds = TextEffectsEndRegex.Matches(line).Cast<Match>();
+
+                for (var i = 0; i < textEffectStarts.Count(); i++)
                 {
-                    if (boldItalicUnderlineStrikeOpenings.Any())
+                    chunkIndex += 1;
+
+                    var chunkIdentifier = $"${chunkIndex}";
+
+                    var effectStart = textEffectStarts.ElementAt(i);
+
+                    var effectEnd = textEffectEnds.ElementAt(i);
+
+                    string stringToAffect = null;
+
+                    var effectStartValue = effectStart.Value.Replace("{", "").Replace("}", "");
+
+                    var effectEndValue = effectEnd.Value.Replace("{", "").Replace("}", "");
+
+                    var matchSubstring = line.Substring(effectStart.Index, (effectEnd.Index + effectEnd.Length) - effectStart.Index);
+
+                    matchSubstring = TextEffectsStartRegex.Replace(matchSubstring, "");
+
+                    matchSubstring = TextEffectsEndRegex.Replace(matchSubstring, "");
+
+                    stringToAffect = matchSubstring;
+
+                    //line = line.Replace($"{{{effectStartValue}}}{matchSubstring}{{{effectEndValue}}}", chunkIdentifier);
+
+                    if (!String.IsNullOrEmpty(stringToAffect))
                     {
-                        foreach (var match in boldItalicUnderlineStrikeOpenings)
+                        Font font = null;
+
+                        switch (effectStart.Value)
                         {
-                            var start = line.IndexOf(match);
-
-                            var ending = TextEffectsEndRegex.Matches(line).Cast<Match>().Select(p => p.Value).FirstOrDefault();
-
-                            if (start > -1 && ending != null)
-                            {
-                                var end = line.IndexOf(ending);
-
-                                if (ending.Replace("/", "").Replace("{", "").Replace("}", "") == match.Replace("{", "").Replace("}", ""))
-                                {
-                                    // we have a tag in our line
-                                    if (end > start)
-                                    {
-                                        // we have a tag end, further along in our line than the start: valid tag! parse it into a new chunk.
-                                        var subString = line.Substring(0, start);
-
-                                        line = line.Substring(start);
-
-                                        var colourMatchStart = ColourMatchStartRegex.Match(line);
-
-                                        string colour = null;
-
-                                        if (colourMatchStart.Success)
-                                        {
-                                            var colourMatchStartValue = colourMatchStart?.Value.Replace("{", "").Replace("}", "");
-
-                                            colour = colourMatchStartValue;
-
-                                            //System.Diagnostics.Debug.WriteLine($"colourMatchStart.Index: {colourMatchStart.Index}");
-
-                                            //System.Diagnostics.Debug.WriteLine($"colourMatchStart.Value: {colourMatchStartValue}");
-
-                                            //System.Diagnostics.Debug.WriteLine($"colourMatchStart.Result: {colourMatchStart.Result("")}");
-
-                                            var colourMatchEnd = ColourMatchEndRegex.Match(line);
-
-                                            var colourMatchEndValue = colourMatchEnd?.Value.Replace("{", "").Replace("}", "");
-
-                                            //System.Diagnostics.Debug.WriteLine($"colourMatchEnd.Index: {colourMatchEnd.Index}");
-
-                                            //System.Diagnostics.Debug.WriteLine($"colourMatchEnd.Value: {colourMatchEndValue}");
-
-                                            //System.Diagnostics.Debug.WriteLine($"colourMatchEnd.Result: {colourMatchEnd.Result("")}");
-
-                                            line = line.Replace($"{{{colourMatchStartValue}}}", "");
-
-                                            line = line.Replace($"{{{colourMatchEndValue}}}", "");
-                                        }
-
-                                        Font font = null;
-
-                                        switch (match)
-                                        {
-                                            case "{s}":
-                                                font = smallNormalFont;
-                                                break;
-                                            case "{sb}":
-                                            case "{bs}":
-                                                font = smallBoldFont;
-                                                break;
-                                            case "{si}":
-                                            case "{is}":
-                                                font = smallItalicFont;
-                                                break;
-                                            case "{u}":
-                                                font = underlined;
-                                                break;
-                                            case "{b}":
-                                                font = boldFont;
-                                                break;
-                                            case "{bu}":
-                                            case "{ub}":
-                                                font = boldUnderlined;
-                                                break;
-                                            case "{bi}":
-                                            case "{ib}":
-                                                font = italicBold;
-                                                break;
-                                            case "{i}":
-                                                font = italicFont;
-                                                break;
-                                            case "{iu}":
-                                            case "{ui}":
-                                                font = italicUnderlined;
-                                                break;
-                                            case "{biu}":
-                                            case "{bui}":
-                                            case "{ibu}":
-                                            case "{iub}":
-                                            case "{uib}":
-                                            case "{ubi}":
-                                                font = italicBoldUnderlined;
-                                                break;
-                                        }
-
-                                        var uriMatchStart = URISmartTagStartRegex.Match(line);
-
-                                        string uri = null;
-
-                                        if (uriMatchStart.Success)
-                                        {
-                                            var uriMatchStartValue = uriMatchStart?.Value.Replace("{", "").Replace("}", "");
-
-                                            uri = uriMatchStartValue;
-
-                                            //System.Diagnostics.Debug.WriteLine($"uriMatchStart.Index: {uriMatchStart.Index}");
-
-                                            //System.Diagnostics.Debug.WriteLine($"uriMatchStart.Value: {uri}");
-
-                                            //System.Diagnostics.Debug.WriteLine($"uriMatchStart.Result: {uriMatchStart.Result("")}");
-
-                                            var uriMatchEnd = URISmartTagEndRegex.Match(line);
-
-                                            var uriMatchEndValue = uriMatchEnd?.Value.Replace("{", "").Replace("}", "");
-
-                                            //System.Diagnostics.Debug.WriteLine($"uriMatchEnd.Index: {uriMatchEnd.Index}");
-
-                                            //System.Diagnostics.Debug.WriteLine($"uriMatchEnd.Value: {uriMatchEndValue}");
-
-                                            //System.Diagnostics.Debug.WriteLine($"uriMatchEnd.Result: {uriMatchEnd.Result("")}");
-
-                                            line = line.Replace($"{{{uriMatchStartValue}}}", "");
-
-                                            line = line.Replace($"{{{uriMatchEndValue}}}", "");
-                                        }
-
-                                        Chunk c = new Chunk(subString, normalFont);
-
-                                        if (!String.IsNullOrEmpty(uri))
-                                        {
-                                            c = new Chunk(line, hyperlinkFont).SetAnchor(uri.Replace("uri=", ""));
-                                        }
-
-                                        chunks.Add(c);
-
-                                        var affectedString = line.Substring(match.Length, line.IndexOf(ending) - match.Length);
-
-                                        if (affectedString.Trim() == "")
-                                        {
-                                            affectedString = Regex.Replace(affectedString, " ", $"\u00a0");
-                                        }
-
-                                        Chunk b = null;
-
-                                        if (!String.IsNullOrEmpty(colour))
-                                        {
-                                            var rgba = Regex.Matches(colour, @"(\d+)").Cast<Match>().Select(m => Convert.ToInt32(m.Value)).ToList();
-
-                                            var colouredFont = new Font(font);
-
-                                            colouredFont.Color = new BaseColor(System.Drawing.Color.FromArgb(rgba[3], rgba[0], rgba[1], rgba[2]));
-
-                                            b = new Chunk(affectedString, colouredFont);
-                                        }
-                                        else
-                                        {
-                                            b = new Chunk(affectedString, font);
-                                        }
-
-                                        chunks.Add(b);
-
-                                        line = line.Substring((affectedString.Length + match.Length + ending.Length));
-                                    }
-                                    else
-                                    {
-                                        // we have some positioning error with our bold start and end tags (at least the first ones). Ignore all of them and consume the line.
-                                        Chunk c = new Chunk(line, normalFont);
-                                        chunks.Add(c);
-                                        line = "";
-                                    }
-                                }
-                                else
-                                {
-                                    // we have no bold tag, turn this line directly into a chunk and add it to the list.
-                                    // remember to set the length to 0 so our while loop ends.
-                                    Chunk c = new Chunk(line, normalFont);
-                                    chunks.Add(c);
-                                    line = "";
-                                }
-                            }
-                            else
-                            {
-                                // we have no bold tag, turn this line directly into a chunk and add it to the list.
-                                // remember to set the length to 0 so our while loop ends.
-                                Chunk c = new Chunk(line, normalFont);
-                                chunks.Add(c);
-                                line = "";
-                            }
+                            case "{s}":
+                                font = smallNormalFont;
+                                break;
+                            case "{sb}":
+                            case "{bs}":
+                                font = smallBoldFont;
+                                break;
+                            case "{si}":
+                            case "{is}":
+                                font = smallItalicFont;
+                                break;
+                            case "{u}":
+                                font = underlined;
+                                break;
+                            case "{b}":
+                                font = boldFont;
+                                break;
+                            case "{bu}":
+                            case "{ub}":
+                                font = boldUnderlined;
+                                break;
+                            case "{bi}":
+                            case "{ib}":
+                                font = italicBold;
+                                break;
+                            case "{i}":
+                                font = italicFont;
+                                break;
+                            case "{iu}":
+                            case "{ui}":
+                                font = italicUnderlined;
+                                break;
+                            case "{biu}":
+                            case "{bui}":
+                            case "{ibu}":
+                            case "{iub}":
+                            case "{uib}":
+                            case "{ubi}":
+                                font = italicBoldUnderlined;
+                                break;
                         }
+
+                        var affectedChunk = new Chunk(stringToAffect, font);
+
+                        chunks.Add(new Tuple<Chunk, string>(affectedChunk, chunkIdentifier));
                     }
-                    else
+                }
+
+                // Grab URIs
+                var uriStartMatches = URIStartRegex.Matches(line).Cast<Match>();
+
+                var uriEndMatches = URIEndRegex.Matches(line).Cast<Match>();
+
+                for (var i = 0; i < uriStartMatches.Count(); i++)
+                {
+                    chunkIndex += 1;
+
+                    var chunkIdentifier = $"${chunkIndex}";
+
+                    var uriStart = uriStartMatches.ElementAt(i);
+
+                    var uriEnd = uriEndMatches.ElementAt(i);
+                    
+                    string stringToAnchor = null;
+
+                    string uri = null;
+
+                    var uriMatchStartValue = uriStart.Value.Replace("{", "").Replace("}", "");
+
+                    uri = uriMatchStartValue;
+
+                    var uriMatchEndValue = uriEnd?.Value.Replace("{", "").Replace("}", "");
+
+                    // This is throwing because the final section is negative: revisit and remedy
+                    var startIndex = uriStart.Index;
+
+                    var endIndex = (uriEnd.Index + uriEnd.Length) - uriStart.Index;
+
+                    var uriMatchSubstring = line.Substring(startIndex, endIndex);
+
+                    uriMatchSubstring = URIStartRegex.Replace(uriMatchSubstring, "");
+
+                    uriMatchSubstring = URIEndRegex.Replace(uriMatchSubstring, "");
+
+                    stringToAnchor = uriMatchSubstring;
+
+                    //line = line.Replace($"{{{uriMatchStartValue}}}{stringToAnchor}{{{uriMatchEndValue}}}", chunkIdentifier);
+
+                    if (!String.IsNullOrEmpty(uri))
                     {
+                        var anchorChunk = new Chunk(stringToAnchor, hyperlinkFont).SetAnchor(uri.Replace("uri=", ""));
 
-                        var colourMatchStart = ColourMatchStartRegex.Match(line);
-
-                        //if (colourMatchStart.Success)
-                        //{
-                        //    System.Diagnostics.Debug.WriteLine($"ColourMatch.result: {colourMatch.Result("")}");
-                        //}
-
-                        if (colourMatchStart.Success)
-                        {
-                            var colourMatchStartValue = colourMatchStart?.Value;
-
-                            //System.Diagnostics.Debug.WriteLine($"colourMatchStart.Index: {colourMatchStart.Index}");
-
-                            //System.Diagnostics.Debug.WriteLine($"colourMatchStart.Value: {colourMatchStartValue}");
-
-                            //System.Diagnostics.Debug.WriteLine($"colourMatchStart.Result: {colourMatchStart.Result("")}");
-
-                            var colourMatchEnd = ColourMatchEndRegex.Match(line);
-
-                            var colourMatchEndValue = colourMatchEnd?.Value;
-
-                            //System.Diagnostics.Debug.WriteLine($"colourMatchEnd.Index: {colourMatchEnd.Index}");
-
-                            //System.Diagnostics.Debug.WriteLine($"colourMatchEnd.Value: {colourMatchEndValue}");
-
-                            //System.Diagnostics.Debug.WriteLine($"colourMatchEnd.Result: {colourMatchEnd.Result("")}");
-                        }
-
-                        // we have no bold tag, turn this line directly into a chunk and add it to the list.
-                        // remember to set the length to 0 so our while loop ends.
-                        Chunk c = new Chunk(line, normalFont);
-
-                        var uriMatchStart = URISmartTagStartRegex.Match(line);
-
-                        string uri = null;
-
-                        if (uriMatchStart.Success)
-                        {
-                            var uriMatchStartValue = uriMatchStart?.Value.Replace("{", "").Replace("}", "");
-
-                            uri = uriMatchStartValue;
-
-                            //System.Diagnostics.Debug.WriteLine($"uriMatchStart.Index: {uriMatchStart.Index}");
-
-                            //System.Diagnostics.Debug.WriteLine($"uriMatchStart.Value: {uri}");
-
-                            //System.Diagnostics.Debug.WriteLine($"uriMatchStart.Result: {uriMatchStart.Result("")}");
-
-                            var uriMatchEnd = URISmartTagEndRegex.Match(line);
-
-                            var uriMatchEndValue = uriMatchEnd?.Value.Replace("{", "").Replace("}", "");
-
-                            //System.Diagnostics.Debug.WriteLine($"uriMatchEnd.Index: {uriMatchEnd.Index}");
-
-                            //System.Diagnostics.Debug.WriteLine($"uriMatchEnd.Value: {uriMatchEndValue}");
-
-                            //System.Diagnostics.Debug.WriteLine($"uriMatchEnd.Result: {uriMatchEnd.Result("")}");
-
-                            line = line.Replace($"{{{uriMatchStartValue}}}", "");
-
-                            line = line.Replace($"{{{uriMatchEndValue}}}", "");
-                        }
-
-                        if (!String.IsNullOrEmpty(uri))
-                        {
-                            c = new Chunk(line, hyperlinkFont).SetAnchor(uri.Replace("uri=", ""));
-                        }
-
-                        chunks.Add(c);
-                        line = "";
+                        chunks.Add(new Tuple<Chunk, string>(anchorChunk, chunkIdentifier));
                     }
-                } // as long as we remember to actually destroy it as we go
+                }
+
+                chunks.AddRange(PerformColourRegexing(ref chunkIndex, line));
+
+                //if (textEffectStarts.Any())
+                //{
+                //    foreach (var match in textEffectStarts)
+                //    {
+                //        var start = line.IndexOf(match);
+
+                //        if (start > 0)
+                //        {
+                //            chunks.Add(new Chunk(line.Substring(0, start), normalFont));
+
+                //            line = line.Substring(start);
+
+                //            start = 0;
+                //        }
+
+                //        var ending = TextEffectsEndRegex.Matches(line).Cast<Match>().Select(p => p.Value).FirstOrDefault();
+
+                //        if (start > -1 && ending != null)
+                //        {
+                //            var end = line.IndexOf(ending);
+
+                //            if (ending.Replace("/", "").Replace("{", "").Replace("}", "") == match.Replace("{", "").Replace("}", ""))
+                //            {
+                //                // we have a tag in our line
+                //                if (end > start)
+                //                {
+                //                    // we have a tag end, further along in our line than the start: valid tag! parse it into a new chunk.
+                //                    var subString = line.Substring(0, start);
+
+                //                    line = line.Substring(start);
+
+                //                    var uriMatchStart = URIStartRegex.Match(line);
+
+                //                    string uri = null;
+
+                //                    string stringToAnchor = null;
+
+                //                    Chunk anchorChunk = null;
+
+                //                    if (uriMatchStart.Success)
+                //                    {
+                //                        var uriMatchStartValue = uriMatchStart?.Value.Replace("{", "").Replace("}", "");
+
+                //                        uri = uriMatchStartValue;
+
+                //                        //System.Diagnostics.Debug.WriteLine($"uriMatchStart.Index: {uriMatchStart.Index}");
+
+                //                        //System.Diagnostics.Debug.WriteLine($"uriMatchStart.Value: {uri}");
+
+                //                        //System.Diagnostics.Debug.WriteLine($"uriMatchStart.Result: {uriMatchStart.Result("")}");
+
+                //                        var uriMatchEnd = URIEndRegex.Match(line);
+
+                //                        var uriMatchEndValue = uriMatchEnd?.Value.Replace("{", "").Replace("}", "");
+
+                //                        var uriMatchSubstring = line.Substring(uriMatchStart.Index, (uriMatchEnd.Index + uriMatchEnd.Length) - uriMatchStart.Index);
+
+                //                        //System.Diagnostics.Debug.WriteLine($"uriMatchEnd.Index: {uriMatchEnd.Index}");
+
+                //                        //System.Diagnostics.Debug.WriteLine($"uriMatchEnd.Value: {uriMatchEndValue}");
+
+                //                        //System.Diagnostics.Debug.WriteLine($"uriMatchEnd.Result: {uriMatchEnd.Result("")}");
+
+                //                        uriMatchSubstring = URIStartRegex.Replace(uriMatchSubstring, "");
+
+                //                        uriMatchSubstring = URIEndRegex.Replace(uriMatchSubstring, "");
+
+                //                        stringToAnchor = uriMatchSubstring;
+
+                //                        line = line.Replace($"{{{uriMatchStartValue}}}{stringToAnchor}{{{uriMatchEndValue}}}", "");;
+                //                    }
+
+                //                    Chunk c = new Chunk(subString, normalFont);
+
+                //                    if (!String.IsNullOrEmpty(uri))
+                //                    {
+                //                        anchorChunk = new Chunk(stringToAnchor, hyperlinkFont).SetAnchor(uri.Replace("uri=", ""));
+                //                    }
+
+                //                    chunks.Add(c);
+
+                //                    var affectedString = line.Substring(match.Length, line.IndexOf(ending) - match.Length);
+
+                //                    if (affectedString.Trim() == "")
+                //                    {
+                //                        affectedString = Regex.Replace(affectedString, " ", $"\u00a0");
+                //                    }
+
+                //                    Chunk b = null;
+
+                //                    if (!String.IsNullOrEmpty(colour))
+                //                    {
+                //                        var rgba = Regex.Matches(colour, @"(\d+)").Cast<Match>().Select(m => Convert.ToInt32(m.Value)).ToList();
+
+                //                        var colouredFont = new Font(font);
+
+                //                        colouredFont.Color = new BaseColor(System.Drawing.Color.FromArgb(rgba[3], rgba[0], rgba[1], rgba[2]));
+
+                //                        colourisedChunk = new Chunk(stringToColourise, colouredFont);
+                //                    }
+
+                //                    b = new Chunk(affectedString, font);
+
+                //                    chunks.Add(b);
+
+                //                    if (colourisedChunk != null)
+                //                    {
+                //                        chunks.Add(colourisedChunk);
+                //                    }
+
+                //                    if (anchorChunk != null)
+                //                    {
+                //                        chunks.Add(anchorChunk);
+                //                    }
+
+                //                    line = line.Substring((affectedString.Length + match.Length + ending.Length));
+                //                }
+                //                else
+                //                {
+                //                    // we have some positioning error with our bold start and end tags (at least the first ones). Ignore all of them and consume the line.
+                //                    Chunk c = new Chunk(line, normalFont);
+                //                    chunks.Add(c);
+                //                    line = "";
+                //                }
+                //            }
+                //            else
+                //            {
+                //                // we have no bold tag, turn this line directly into a chunk and add it to the list.
+                //                // remember to set the length to 0 so our while loop ends.
+                //                Chunk c = new Chunk(line, normalFont);
+                //                chunks.Add(c);
+                //                line = "";
+                //            }
+                //        }
+                //        else
+                //        {
+                //            // we have no bold tag, turn this line directly into a chunk and add it to the list.
+                //            // remember to set the length to 0 so our while loop ends.
+                //            Chunk c = new Chunk(line, normalFont);
+                //            chunks.Add(c);
+                //            line = "";
+                //        }
+                //    }
+                //}
 
                 var phrase = new Phrase();
 
-                foreach (var c in chunks)
+                var chunksList = chunks.Select(chunk => chunk.Item1).ToList();
+
+                foreach (var c in chunksList)
                 {
-                    if (c == chunks.Last())
+                    if (c == chunksList.Last())
                     {
                         if (c.Content == System.Environment.NewLine)
                         {
@@ -2884,9 +2879,64 @@ namespace Portal.Utilities.Document
                     phrase.Add(c);
                 }
 
-                return phrase;
+                return phrase;//new Phrase(line);
             }
 
+            List<Tuple<Chunk, string>> PerformColourRegexing(ref int chunkIndex, string line)
+            {
+                var chunks = new List<Tuple<Chunk, string>>();
+
+                // Grab Colours
+                var colourStartMatches = ColourMatchStartRegex.Matches(line).Cast<Match>();
+
+                var colourEndMatches = ColourMatchEndRegex.Matches(line).Cast<Match>();
+
+                for (var i = 0; i < colourStartMatches.Count(); i++)
+                {
+                    chunkIndex += 1;
+
+                    var chunkIdentifier = $"${chunkIndex}";
+
+                    var colourStart = colourStartMatches.ElementAt(i);
+
+                    var colourEnd = colourEndMatches.ElementAt(i);
+
+                    string colour = null;
+
+                    string stringToColourise = null;
+
+                    var colourMatchStartValue = colourStart.Value.Replace("{", "").Replace("}", "");
+
+                    colour = colourMatchStartValue;
+
+                    var colourMatchEndValue = colourEnd.Value.Replace("{", "").Replace("}", "");
+
+                    var colourMatchSubstring = line.Substring(colourStart.Index, (colourEnd.Index + colourEnd.Length) - colourStart.Index);
+
+                    colourMatchSubstring = ColourMatchStartRegex.Replace(colourMatchSubstring, "");
+
+                    colourMatchSubstring = ColourMatchEndRegex.Replace(colourMatchSubstring, "");
+
+                    stringToColourise = colourMatchSubstring;
+
+                    //line = line.Replace($"{{{colourMatchStartValue}}}{colourMatchSubstring}{{{colourMatchEndValue}}}", chunkIdentifier);
+
+                    if (!String.IsNullOrEmpty(stringToColourise))
+                    {
+                        var colouredFont = new Font(normalFont);
+
+                        var rgba = RGBARegex.Matches(colour).Cast<Match>().Select(m => Convert.ToInt32(m.Value)).ToList();
+
+                        colouredFont.Color = new BaseColor(System.Drawing.Color.FromArgb(rgba[3], rgba[0], rgba[1], rgba[2]));
+
+                        var colouredChunk = new Chunk(stringToColourise, colouredFont);
+
+                        chunks.Add(new Tuple<Chunk, string>(colouredChunk, chunkIdentifier));
+                    }
+                }
+
+                return chunks;
+            }
 
             return stamperStream;
         }
