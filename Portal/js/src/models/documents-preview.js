@@ -11,6 +11,34 @@
 
     self.documentSendHistory = ko.observableArray(typeof getDocumentSendHistory === 'function' ? getDocumentSendHistory() : []);
 
+    self.documentId = ko.observable(typeof getDocumentType === 'function' ? getDocumentType() : undefined).extend({
+        required: {
+            params: true,
+            onlyIf: function () {
+                return self.validateNow()
+            },
+            message: 'Document is required'
+        },
+    });
+
+    self.languageId = ko.observable(typeof getLanguageId === 'function' ? getLanguageId() : undefined).extend({
+        required: {
+            params: true,
+            onlyIf: function () {
+                return self.validateNow()
+            },
+            message: 'Language is required'
+        },
+    });
+
+    self.tradeAccountId = ko.observable(typeof getTradeAccountId === 'function' ? getTradeAccountId() : '');
+
+    self.basketId = ko.observable(typeof getBasketId === 'function' ? getBasketId() : undefined);
+
+    self.orderHeadId = ko.observable(typeof getOrderHeadId === 'function' ? getOrderHeadId() : undefined);
+
+    self.transactionId = ko.observable(typeof getTransactionId === 'function' ? getTransactionId() : undefined);
+
     self.documentParams = kendoMDCDropDownList({
         label: 'Document',
         odata: true,
@@ -18,15 +46,7 @@
         textField: 'Name',
         valueField: 'DocumentID',
         virtual: false,
-        idObservable: ko.observable(typeof getDocumentType === 'function' ? getDocumentType() : undefined).extend({
-            required: {
-                params: true,
-                onlyIf: function () {
-                    return self.validateNow()
-                },
-                message: 'Document is required'
-            },
-        }),
+        idObservable: self.documentId,
         objObservable: ko.observable(),
         optionLabel: {
             DocumentID: '',
@@ -44,15 +64,7 @@
         textField: 'Name',
         valueField: 'LanguageID',
         virtual: false,
-        idObservable: ko.observable(typeof getLanguageId === 'function' ? getLanguageId() : undefined).extend({
-            required: {
-                params: true,
-                onlyIf: function () {
-                    return self.validateNow()
-                },
-                message: 'Language is required'
-            },
-        }),
+        idObservable: self.languageId,
         objObservable: ko.observable(),
         optionLabel: {
             LanguageID: '',
@@ -63,26 +75,103 @@
         autoBind: true
     });
 
-    self.basketId = ko.observable(typeof getBasketId === 'function' ? getBasketId() : undefined);
+    self.tradeAccountParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Trade Account',
+        odata: true,
+        endPoint: '/odata/TradeAccounts',
+        textField: 'ShortLabel',
+        valueField: 'TradeAccountID',
+        virtual: true,
+        pageSize: 40,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/TradeAccounts/Default.TradeAccountValueMapper(tradeAccountId=${options.value})`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        template: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        valueTemplate: (e) => {
+            if ((e.ShortLabel != '') && (e.TradeAccountID != null))
+                return `<span title="${e.ShortLabel}">Trade Account: ${e.ShortLabel}</span>`
+            else
+                return '';
+        },
+        idObservable: self.tradeAccountId,
+        objObservable: ko.observable(),
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: [{
+            dir: 'asc',
+            field: 'Code'
+        }, {
+            dir: 'asc',
+            field: 'Name'
+        }],
+        select: function (e) {
+            console.log('tradeAccountParams select', e);
+        },
+        showClear: ko.observable(true),
+        clearFunction: (e) => {
+            self.tradeAccountId('');
+            self.tradeAccountParams.observable(undefined);
+            self.tradeAccountParams.dropDownListSettings.widget().value('');
+            self.tradeAccountParams.dropDownListSettings.widget().trigger('change');
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
 
-    self.orderHeadId = ko.observable(typeof getOrderHeadId === 'function' ? getOrderHeadId() : undefined);
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
 
-    self.transactionId = ko.observable(typeof getTransactionId === 'function' ? getTransactionId() : undefined);
+            d.$count = true;
+
+            if (d.$filter && d.$filter.indexOf('contains(tolower(ShortLabel)' === 0)) {
+                d.$filter = `${d.$filter.replace("ShortLabel", "Name")} or ${d.$filter.replace("contains", "startswith").replace("ShortLabel", "Code")}`;
+            }
+
+            return d;
+        }
+    });
 
     self.basketId.extend({
         required: {
             params: true,
             onlyIf: function () {
-                return self.validateNow() && (self.orderHeadId() == null && self.transactionId() == null)
+                return self.validateNow() && (self.documentId() != 7 && self.orderHeadId() == null && self.transactionId() == null)
             },
             message: 'One of TransactionID, OrderHeadID or BasketID is required'
         },
-        numberFormatted: {
+        numberUnformatted: {
             digits: 0,
+            minValue: 0,
+            maxValue: 9223372036854775807,
             currency: {
                 FormattingCulture: 'en-GB'
             }
-        }
+        },
     });
 
     self.basketParams = {
@@ -98,16 +187,18 @@
         required: {
             params: true,
             onlyIf: function () {
-                return self.validateNow() && (self.basketId() == null && self.transactionId() == null)
+                return self.validateNow() && (self.documentId() != 7 && self.basketId() == null && self.transactionId() == null)
             },
             message: 'One of TransactionID, OrderHeadID or BasketID is required'
         },
-        numberFormatted: {
+        numberUnformatted: {
             digits: 0,
+            minValue: 0,
+            maxValue: 2147483647,
             currency: {
                 FormattingCulture: 'en-GB'
             }
-        }
+        },
     });
 
     self.orderHeadParams = {
@@ -123,12 +214,14 @@
         required: {
             params: true,
             onlyIf: function () {
-                return self.validateNow() && (self.basketId() == null && self.orderHeadId() == null)
+                return self.validateNow() && (self.documentId() != 7 && self.basketId() == null && self.orderHeadId() == null)
             },
             message: 'One of TransactionID, OrderHeadID or BasketID is required'
         },
-        numberFormatted: {
+        numberUnformatted: {
             digits: 0,
+            minValue: 0,
+            maxValue: 2147483647,
             currency: {
                 FormattingCulture: 'en-GB'
             }
@@ -148,9 +241,17 @@
         self.basketId,
         self.orderHeadId,
         self.transactionId,
-        self.documentParams.observable,
-        self.languageParams.observable
+        self.tradeAccountId,
+        self.documentId,
+        self.languageId
     ]);
+
+    self.tradeAccountId.subscribe(function (newValue) {
+        self.validateNow(false);
+        self.orderHeadId(undefined);
+        self.transactionId(undefined);
+        self.basketId(undefined);
+    });
 
     self.transactionId.subscribe(function (newValue) {
         self.validateNow(false);
@@ -300,11 +401,12 @@
 
     self.getData = function () {
         return {
-            documentType: self.documentParams.observable(),
+            documentType: self.documentId(),
+            languageId: self.languageId(),
+            tradeAccountId: self.tradeAccountId(),
             basketId: self.basketId(),
             transactionId: self.transactionId(),
-            orderHeadId: self.orderHeadId(),
-            languageId: self.languageParams.observable()
+            orderHeadId: self.orderHeadId()
         };
     }
 
@@ -312,7 +414,8 @@
         let d = null,
             b = null,
             o = null,
-            t = null;
+            t = null,
+            tid = null;
 
         d = self.documentParams.dropDownListSettings.dataItem();
 
@@ -321,9 +424,11 @@
         else if (self.orderHeadId())
             o = self.orderHeadId();
         else if (self.transactionId())
-            t = self.transactionId();
+            t = self.transactionId()
+        else if (self.tradeAccountId())
+            tid = self.tradeAccountId();
 
-        return d && (b || o || t);
+        return d && (b || o || t || tid);
     });
 
     self.init = function () {
@@ -333,11 +438,12 @@
 
     self.link = ko.pureComputed(function () {
         let objJsonStr = JSON.stringify({
-            documentType: self.documentParams.observable(),
-            basketId: self.basketParams.observable(),
-            transactionId: self.transactionParams.observable(),
-            orderHeadId: self.orderHeadParams.observable(),
-            languageId: self.languageParams.observable()
+            documentType: self.documentId(),
+            languageId: self.languageId(),
+            tradeAccountId: self.tradeAccountId(),
+            basketId: self.basketId(),
+            transactionId: self.transactionId(),
+            orderHeadId: self.orderHeadId(),
         });
         let objJsonB64 = btoa(objJsonStr);
         return new URLSearchParams({

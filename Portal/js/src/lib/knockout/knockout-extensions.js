@@ -34,10 +34,14 @@ I saw a man who wasn\'t there.\n\
 He wasn\'t there again today,\n\
 Oh how I wish he\'d go away...<br/><br/><span class="attribution">William Hughes Mearns</span>',
     '<span class="shake shake-constant">AaaaAAaAAAIEeeeeeee!!!</span>',
+    'A census taker tried to quantify me once.\n\
+I ate his liver with some fava beans and a big Amarone.<br/><br/><span class="attribution">Thomas Harris</span>',
     'Listen to them, the children of the night.\n\
 What music they make!<br/><br/><span class="attribution">Bram Stoker</span>',
     'I dwell in a lonely house I know\n\
 That vanished many a summer ago<br/><br/><span class="attribution">Robert Frost</span>',
+    'The oldest and strongest emotion of mankind is fear,\n\
+and the oldest and strongest kind of fear is fear of the unknown<br/><br/><span class="attribution">H.P. Lovecraft</span>',
     'We ask only to be reassured about the noises in the cellar\n\
 and the window that should not have been open...<br/><br/><span class="attribution">T.S. Eliot</span>',
     '<span class="shining">All work and no play makes Jack a dull boy</span>\

@@ -775,8 +775,8 @@
                 <div class="clearfix"></div>
             </div>
             <div class="panel-collapse">
-                <div class="selector panel-body bg-info relative">
-                    <div class="blocker" data-bind="flexFadeVisible: busy">
+                <div class="selector panel-body bg-info">
+                    <div class="blocker" data-bind="flexFadeVisible: heldOrdersGridBusy">
                         <div class="loading-spinner"></div>
                         <h4 class="" data-bind="html: busyMessage"></h4>
                     </div>
@@ -801,7 +801,7 @@
                     <div class="hold-reason-summary-pods" style="display: none" data-bind="visible: true">
                         <div class="pods-wrapper">
                             <!-- ko foreach: holdReasonSummaryPods -->
-                            <div class="card hold-reason-summary-pod" data-bind="click: apply, css: { 'active': active, 'priority': Priority }, attr: { 'data-hold-reason-group-id': HoldReasonGroupID }">
+                            <div class="card hold-reason-summary-pod" data-bind="click: apply, css: { 'active': active, 'priority': Priority }, attr: { 'data-hold-reason-summary-pod-id': HoldReasonSummaryPodID }">
                                 <div class="title-wrapper">
                                     <h4 class="title" data-bind="html: HoldReasonGroupName"></h4>
                                     <h5 class="subtitle" data-bind="html: RoleName"></h5>

@@ -4,6 +4,9 @@
   grid-column-gap: 15px;
   grid-row-gap: 15px;
 }
+.grid-container .mdc-text-field .mdc-text-field__input.mdc-text-field__numeric {
+  text-align: left !important;
+}
 
 #document-iframe-container {
   height: 100vh;

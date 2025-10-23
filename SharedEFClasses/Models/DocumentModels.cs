@@ -13,7 +13,10 @@ namespace SharedEFClasses.Models.Documents
         ProformaInvoice = 1,
         BasketRetailReceipt = 2,
         BasketQuote = 3,
-        CustomerFurnitureSpecification = 4
+        CustomerFurnitureSpecification = 4,
+        FurniturePurchaseOrderForSupplier = 5,
+        TradeQuote = 6,
+        TradeAccountStatement = 7
     }
 
     public class DocumentSelectResult
@@ -169,7 +172,11 @@ namespace SharedEFClasses.Models.Documents
             }
             get
             {
-                return JsonConvert.DeserializeObject<List<JsonParagraph>>(FormattedLineMemoJSON ?? "[]").ToList();
+                var results = JsonConvert.DeserializeObject<List<JsonParagraph>>(FormattedLineMemoJSON ?? "[]").ToList();
+
+                results.ForEach(m => m.text = $"{{si}}{m.text}{{/si}}");
+
+                return results;
             }
         }
     }
@@ -267,6 +274,7 @@ namespace SharedEFClasses.Models.Documents
         public DocumentFooter DocumentFooter { get; set; }
         public PageFooter PageFooter { get; set; }
         public DocumentEmail DocumentEmail { get; set; }
+        public short DocumentID { get; set; }
 
         public DocumentSelect()
         {
@@ -282,6 +290,7 @@ namespace SharedEFClasses.Models.Documents
             DocumentFooter = new DocumentFooter();
             PageFooter = new PageFooter();
             DocumentEmail = new DocumentEmail();
+            DocumentID = 0;
         }
     }
 

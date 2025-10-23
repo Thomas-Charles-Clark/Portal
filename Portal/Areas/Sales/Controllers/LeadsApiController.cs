@@ -681,7 +681,7 @@ namespace Portal.Areas.Sales.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult CreditControllerSelectList(PassCreditControllerDefaultInfo dto)
+        public IHttpActionResult CreditControllerSelectList([FromBody]PassCreditControllerDefaultInfo dto)
         {
             var results = portalDb.CreditController_SelectList(dto);
 

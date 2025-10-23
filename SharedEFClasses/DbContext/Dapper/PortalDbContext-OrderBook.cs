@@ -432,6 +432,7 @@ namespace SharedEFClasses.Models
                 "view",
                 "filterable",
                 "salesMarketIds",
+                "supplierCode",
                 "orderLineDetailedStatusGroupIds"
             };
 

@@ -40,6 +40,10 @@
         function getOrderHeadId() {
             return @(Model.DocumentDetails?.orderHeadId);
         }
+        
+        function getTradeAccountId() {
+            return '@(Model.DocumentDetails?.tradeAccountId)';
+        }
 
         function getDocumentSendHistory() {
             return @Html.Raw(JsonConvert.SerializeObject(Model.DocumentSendHistory?.Results));
@@ -106,13 +110,13 @@
         <div class="panel panel-default">
             <div class="panel-body">
                 <div class="grid-container">
-                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentParams }"></div>
-                    <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: languageParams }"></div>
+                    <div id="document-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentParams }"></div>
+                    <div id="language-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: languageParams }"></div>
+                    <div id="trade-account-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountParams }"></div>
                     <div></div>
-                    <div></div>
-                    <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: transactionParams }"></div>
-                    <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: orderHeadParams }"></div>
-                    <div data-bind="component: { name: 'mdc-text-field-numeric-component', params: basketParams }"></div>
+                    <div id="transaction-prefilter" data-bind="component: { name: 'mdc-text-field-numeric-component', params: transactionParams }"></div>
+                    <div id="order-prefilter" data-bind="component: { name: 'mdc-text-field-numeric-component', params: orderHeadParams }"></div>
+                    <div id="basket-prefilter" data-bind="component: { name: 'mdc-text-field-numeric-component', params: basketParams }"></div>
                     <button class="btn btn-flat btn-default pull-right" data-bind="click: fetchDocument">
                         Fetch Document
                     </button>

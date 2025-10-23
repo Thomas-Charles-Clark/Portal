@@ -602,10 +602,14 @@ tr.readonly {
 
                     &:hover,
                     &:focus,
-                    &:focus-within,
-                    &.active {
+                    &:focus-within {
                         background-color: $light-red-bg;
                         border-color: shade-color($light-red-bg, 30%);
+                    }
+
+                    &.active {
+                        background-color: $red-500;
+                        border-color: shade-color($gray-700, 40%);
                     }
                 }
 
@@ -641,6 +645,16 @@ tr.readonly {
                 margin-top: $m-gutter;
                 border-top: 1px solid $gray-400;
             }
+        }
+    }
+
+    #tab-held-orders {
+        .blocker {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
         }
     }
 }

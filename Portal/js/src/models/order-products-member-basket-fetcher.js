@@ -7,6 +7,8 @@
 
     self.busy = ko.observable(false);
 
+    self.heldOrdersGridBusy = ko.observable(false);
+
     self.busyMessage = ko.observable('Please Wait...')
 
     self.basketCount = ko.observable();
@@ -96,8 +98,6 @@
         pods: false
     };
 
-    self.activeHeldOrderReasonGroupId = ko.observable(window.getHeldOrderReasonGroupIdToLoad());
-
     self.activeHeldOrderReasonPodId = ko.observable(window.getHeldOrderReasonPodIdToLoad());
 
     // if we've selected a pod via query string parameter, we want to clear the active hold reason on next change of heldReasonListSelection
@@ -106,7 +106,7 @@
     // if we've clicked a held order group pod, that click is going to fire the grid filter with the heldOrderReasonString ~3~ thing.
     // it will also mutate the heldOrdersHoldReasonIds array, which could cause a secondary firing of the grid, which is undesirable.
     // this toggle mitigates that consequence.
-    self.skipNextHeldOrderGridRead = false;
+    //self.skipNextHeldOrderGridRead = false;
 
     //#endregion
 
@@ -582,7 +582,7 @@
 
             if (heldOrderReasonPodIdToLoad) {
 
-                filters.push({ field: 'HoldReasonGroupIDsString', operator: 'contains', value: `~${self.activeHeldOrderReasonGroupId()}~` });
+                filters.push({ field: 'HoldReasonPodIDsString', operator: 'contains', value: `~${self.activeHeldOrderReasonPodId()}~` });
 
                 self.customHeldReasonFilterActive(true);
 
@@ -1162,7 +1162,6 @@
             roleHeadLiSelectAll.classList.add("bi-check2-all");
             roleHeadLiSelectAll.addEventListener("click", () => {
                 console.log("woo");
-                self.activeHeldOrderReasonGroupId(null);
                 self.activeHeldOrderReasonPodId(undefined);
 
                 let newSelection = [];
@@ -1186,7 +1185,6 @@
             roleHeadLiClear.classList.add("bi-x");
             roleHeadLiClear.addEventListener("click", () => {
                 console.log("hoo");
-                self.activeHeldOrderReasonGroupId(null);
                 self.activeHeldOrderReasonPodId(undefined);
 
                 let removals = [];
@@ -1244,7 +1242,6 @@
                 headLiSelectAll.classList.add("bi-check2-all");
                 headLiSelectAll.addEventListener("click", () => {
                     console.log("woowoo");
-                    self.activeHeldOrderReasonGroupId(null);
                     self.activeHeldOrderReasonPodId(undefined);
 
                     let newSelection = [];
@@ -1267,7 +1264,6 @@
                 headLiClear.classList.add("bi-x");
                 headLiClear.addEventListener("click", () => {
                     console.log("hoohoo");
-                    self.activeHeldOrderReasonGroupId(null);
                     self.activeHeldOrderReasonPodId(undefined);
 
                     let removals = [];
@@ -1372,20 +1368,15 @@
         var webapi = new kendo.data.transports.webapi({ prefix: "" });
         var params = webapi.parameterMap(options.data);
 
-        var data = {
-            memberId: self.memberId(),
-            marketCode: self.heldOrdersMarketId() ?? "",
-            searchTerm: self.heldOrdersSearchTerm() ?? "",
-            holdReasonIds: self.heldOrdersHoldReasonIdsJson() ?? "",
-            heldFromDt: self.heldOrdersHeldFromDt() ?? "",
-            heldToDt: self.heldOrdersHeldToDt() ?? ""
-        };
+        var data = self.heldOrdersGridAdditionalParameters();
 
         for (var propertyName in params) {
             data[propertyName] = params[propertyName];
         }
 
         console.log("memberBasketFetcher FetchHeldOrdersManagement calling with", data);
+
+        self.heldOrdersGridBusy(true);
 
         $.ajax({
             url: '/api/componentapi/FetchHeldOrdersManagement',
@@ -1438,29 +1429,33 @@
                     self.ordersToApproveFiltersLoadCompletion.pods = true;
                 }
 
-                if (self.activeHeldOrderReasonGroupId()) {
+                //if (self.activeHeldOrderReasonPodId()) {
 
-                    console.log("woo");
+                //    let summaryPod = self.holdReasonSummaryPods().find(p => p.HoldReasonSummaryPodID == self.activeHeldOrderReasonPodId());
 
-                    let newSelection = [];
+                //    summaryPod.apply(summaryPod);
 
-                    self.holdReasons().forEach(e => {
-                        if (e.HoldReasonGroupID == self.activeHeldOrderReasonGroupId())
-                            newSelection.push(e.HoldReasonID);
-                    });
+                //    //console.log("woo");
 
-                    window.setTimeout(() => {
-                        self.heldOrdersHoldReasonWidget().value(newSelection);
-                        self.heldOrdersHoldReasonWidget().trigger('change');
-                    }, 10);
+                //    //let newSelection = [];
 
-                    self.heldReasonListSelection(newSelection);
+                //    //self.holdReasons().forEach(e => {
+                //    //    if (e.HoldReasonSummaryPodID == self.activeHeldOrderReasonPodId())
+                //    //        newSelection.push(e.HoldReasonID);
+                //    //});
 
-                    self.ordersToApproveFiltersLoadCompletion.holdReasonIds = true;
+                //    //window.setTimeout(() => {
+                //    //    self.heldOrdersHoldReasonWidget().value(newSelection);
+                //    //    self.heldOrdersHoldReasonWidget().trigger('change');
+                //    //}, 10);
 
-                } else {
-                    self.ordersToApproveFiltersLoadCompletion.holdReasonIds = true;
-                }
+                //    //self.heldReasonListSelection(newSelection);
+
+                //    //self.ordersToApproveFiltersLoadCompletion.holdReasonIds = true;
+
+                //} else {
+                //    self.ordersToApproveFiltersLoadCompletion.holdReasonIds = true;
+                //}
                 
 
                 if (self.heldOrderReasonIdToLoad) {
@@ -1487,10 +1482,13 @@
 
 
                 options.success(data.kendoResult);
+
+                self.heldOrdersGridBusy(false);
             },
             error: function (xhr, s, a) {
                 options.error();
                 $.showError(xhr, s, a);
+                self.heldOrdersGridBusy(false);
             }
         });
     }
@@ -1789,22 +1787,25 @@
     }
 
     self.clearHeldOrdersGridFilters = function () {
-        self.heldOrdersMarketParams.clearFunction();
 
+        self.heldOrdersMarketParams.clearFunction();
         self.heldOrdersHoldReasonsParams.clearFunction();
-        self.activeHeldOrderReasonGroupId(null);
+        self.heldOrdersSearchTermParams.clearFunction();
+
         self.activeHeldOrderReasonPodId(null);
         self.heldOrderReasonIdToLoad = null;
-
-        self.heldOrdersSearchTermParams.clearFunction();
         self.transactionIdToLoad = null;
         self.orderHeadIdToLoad = null;
         self.basketIdToLoad = null;
 
         self.heldOrdersHoldReasonIds([]);
+
         self.customHeldReasonFilterActive(false);
 
-        self.heldOrdersGridWidget().dataSource.filter({});
+        //self.heldOrdersGridWidget().dataSource.query({
+        //    page: 1,
+        //    pageSize: self.heldOrdersGridWidget().dataSource.pageSize()
+        //});
     }
 
     self.clearImportGridFilters = () => {
@@ -2530,7 +2531,7 @@
             field: 'Name'
         },
         clearFunction: (e) => {
-            self.heldOrdersMarketId(undefined);
+            self.heldOrdersMarketId('');
             self.heldOrdersMarket(undefined);
             self.heldOrdersMarketParams.dropDownListSettings.widget().value('');
             self.heldOrdersMarketParams.dropDownListSettings.widget().trigger('change');
@@ -2793,10 +2794,8 @@
         },
         //sort: { field: "BasketID", dir: "desc" },
         requestStart: function (e) {
-            $("#grid-loading").show();
         },
         requestEnd: function (e) {
-            $("#grid-loading").hide();
         },
         noDataTemplate: 'There are no Held Orders for your consideration.',
         filter: self.buildInitialFilters()
@@ -2828,8 +2827,8 @@
                 $('th[data-field="HeldReasons"]', e.sender.element).find('a.k-grid-filter').removeClass('k-state-active');
             }
 
-            if (self.activeHeldOrderReasonGroupId()) {
-                let ele = document.querySelector(`.hold-reason-summary-pod[data-hold-reason-group-id="${self.activeHeldOrderReasonGroupId()}"]`);
+            if (self.activeHeldOrderReasonPodId()) {
+                let ele = document.querySelector(`.hold-reason-summary-pod[data-hold-reason-pod-id="${self.activeHeldOrderReasonPodId()}"]`);
                 ele && ele.classList.add("active");
             }
         },
@@ -3134,14 +3133,38 @@
         return null;
     }, self);
 
+    self.heldOrdersGridAdditionalParameters = ko.observable().extend({
+        rateLimit: {
+            method: 'notifyWhenChangesStop',
+            timeout: 100
+        }
+    });
+
+    self.heldOrdersGridParmetersComputed = ko.computed(() => {
+
+        let data = {
+            memberId: self.memberId(),
+            marketCode: self.heldOrdersMarketId() ?? "",
+            searchTerm: self.heldOrdersSearchTerm() ?? "",
+            holdReasonIds: self.heldOrdersHoldReasonIdsJson() ?? "",
+            heldFromDt: self.heldOrdersHeldFromDt() ?? "",
+            heldToDt: self.heldOrdersHeldToDt() ?? ""
+        };
+
+        self.heldOrdersGridAdditionalParameters(data);
+
+        return data;
+
+    }, self);
+
     //#endregion
 
 
     //#region Subscriptions
 
-    self.activeHeldOrderReasonGroupId.subscribe(nv => {
-        console.log('activeHeldOrderReasonGroupId', nv);
-    })
+    //self.activeHeldOrderReasonGroupId.subscribe(nv => {
+    //    console.log('activeHeldOrderReasonGroupId', nv);
+    //})
 
     self.activeHeldOrderReasonPodId.subscribe(nv => {
         console.log('activeHeldOrderReasonPodId', nv);
@@ -3167,81 +3190,81 @@
         // if you've only filtered one column, you'll see a singular object be returned
         // if you've filtered more than one column, you'll see an array of objects returned
 
-        let filterConfig = self.heldOrdersGridWidget().dataSource.filter();
+        //let filterConfig = self.heldOrdersGridWidget().dataSource.filter();
 
-        // we want to remove any extant market filter before potentially adding this one.
+        //// we want to remove any extant market filter before potentially adding this one.
 
-        if (filterConfig) {
+        //if (filterConfig) {
 
-            //let example = {
-            //    "logic": "and",
-            //    "filters": [
-            //        { // this is a set of "singular" filters
-            //            "field": "Market",
-            //            "operator": "eq",
-            //            "value": "H"
-            //        },
-            //        { // the singular filters potentially get AND'ed together with the filters OR'ing between themselves
-            //
-            //            "logic": "or", // this object contains multiple filters OR'ed together
-            //            "filters": [
-            //                {
-            //                    "field": "HeldSince",
-            //                    "operator": "eq",
-            //                    "value": "2024/11/21"
-            //                },
-            //                {
-            //                    "field": "HeldSince",
-            //                    "operator": "eq",
-            //                    "value": "2024/11/20"
-            //                }
-            //            ]
-            //        }
-            //    ]
-            //}
+        //    //let example = {
+        //    //    "logic": "and",
+        //    //    "filters": [
+        //    //        { // this is a set of "singular" filters
+        //    //            "field": "Market",
+        //    //            "operator": "eq",
+        //    //            "value": "H"
+        //    //        },
+        //    //        { // the singular filters potentially get AND'ed together with the filters OR'ing between themselves
+        //    //
+        //    //            "logic": "or", // this object contains multiple filters OR'ed together
+        //    //            "filters": [
+        //    //                {
+        //    //                    "field": "HeldSince",
+        //    //                    "operator": "eq",
+        //    //                    "value": "2024/11/21"
+        //    //                },
+        //    //                {
+        //    //                    "field": "HeldSince",
+        //    //                    "operator": "eq",
+        //    //                    "value": "2024/11/20"
+        //    //                }
+        //    //            ]
+        //    //        }
+        //    //    ]
+        //    //}
 
-            let singularFilters = filterConfig.filters.filter(f => !Object.hasOwn(f, 'filters')) ?? [];
-            let multipleFilters = filterConfig.filters.find(f => Object.hasOwn(f, 'filters')) ?? {
-                logic: 'or'
-            };
+        //    let singularFilters = filterConfig.filters.filter(f => !Object.hasOwn(f, 'filters')) ?? [];
+        //    let multipleFilters = filterConfig.filters.find(f => Object.hasOwn(f, 'filters')) ?? {
+        //        logic: 'or'
+        //    };
 
-            singularFilters = singularFilters.filter(f => f.field != 'Market');
+        //    singularFilters = singularFilters.filter(f => f.field != 'Market');
 
-            if (Object.hasOwn(multipleFilters, 'filters')) {
-                multipleFilters.filters = multipleFilters.filters.filter(f => f.field != 'Market');
-            } else {
-                multipleFilters.filters = [];
-            }
+        //    if (Object.hasOwn(multipleFilters, 'filters')) {
+        //        multipleFilters.filters = multipleFilters.filters.filter(f => f.field != 'Market');
+        //    } else {
+        //        multipleFilters.filters = [];
+        //    }
 
-            if (nv) {
-                singularFilters.push({
-                    field: 'Market',
-                    operator: 'eq',
-                    value: nv
-                });
-            }
+        //    if (nv) {
+        //        singularFilters.push({
+        //            field: 'Market',
+        //            operator: 'eq',
+        //            value: nv
+        //        });
+        //    }
 
-            filterConfig.filters = [];
+        //    filterConfig.filters = [];
 
-            if (singularFilters.length) {
-                filterConfig.filters = [...singularFilters];
-            }
+        //    if (singularFilters.length) {
+        //        filterConfig.filters = [...singularFilters];
+        //    }
 
-            if (multipleFilters.filters.length) {
-                filterConfig.filters.push(multipleFilters);
-            }
+        //    if (multipleFilters.filters.length) {
+        //        filterConfig.filters.push(multipleFilters);
+        //    }
             
-            self.heldOrdersGridWidget().dataSource.filter(filterConfig);
+        //    self.heldOrdersGridWidget().dataSource.filter(filterConfig);
 
-        } else {
-            if (nv) {
-                self.heldOrdersGridWidget().dataSource.filter({
-                    field: 'Market',
-                    operator: 'eq',
-                    value: nv
-                });
-            }
-        }
+        //} else {
+        //    if (nv) {
+        //        self.heldOrdersGridWidget().dataSource.filter({
+        //            field: 'Market',
+        //            operator: 'eq',
+        //            value: nv
+        //        });
+        //    }
+        //}
     });
 
     self.heldOrdersHoldReasonIds.subscribe(nv => {
@@ -3258,79 +3281,79 @@
 
         console.log('heldOrdersHoldReasonIds', nv);
 
-        if (self.ordersToApproveFiltersLoadCompletion.holdReasonIds) {
+        //if (self.ordersToApproveFiltersLoadCompletion.holdReasonIds) {
             
-            let filterConfig = self.heldOrdersGridWidget().dataSource.filter();
+        //    let filterConfig = self.heldOrdersGridWidget().dataSource.filter();
 
-            if (self.skipNextHeldOrderGridRead) {
-                self.skipNextHeldOrderGridRead = false;
-            } else {
-                if (filterConfig) {
+        //    //if (self.skipNextHeldOrderGridRead) {
+        //    //    self.skipNextHeldOrderGridRead = false;
+        //    //} else {
+        //        if (filterConfig) {
 
-                    let singularFilters = filterConfig.filters.filter(f => !Object.hasOwn(f, 'filters')) ?? [];
-                    let multipleFilters = filterConfig.filters.find(f => Object.hasOwn(f, 'filters')) ?? {
-                        logic: 'or'
-                    };
+        //            let singularFilters = filterConfig.filters.filter(f => !Object.hasOwn(f, 'filters')) ?? [];
+        //            let multipleFilters = filterConfig.filters.find(f => Object.hasOwn(f, 'filters')) ?? {
+        //                logic: 'or'
+        //            };
 
-                    singularFilters = singularFilters.filter(f => f.field != 'HoldReasonIDsString');
+        //            singularFilters = singularFilters.filter(f => f.field != 'HoldReasonIDsString');
 
-                    if (Object.hasOwn(multipleFilters, 'filters')) {
-                        multipleFilters.filters = multipleFilters.filters.filter(f => f.field != 'HoldReasonIDsString');
-                    } else {
-                        multipleFilters.filters = [];
-                    }
+        //            if (Object.hasOwn(multipleFilters, 'filters')) {
+        //                multipleFilters.filters = multipleFilters.filters.filter(f => f.field != 'HoldReasonIDsString');
+        //            } else {
+        //                multipleFilters.filters = [];
+        //            }
 
-                    if (nv && nv.length) {
-                        let holdReasonIds = nv.map(r => `~${r}~`);
+        //            if (nv && nv.length) {
+        //                let holdReasonIds = nv.map(r => `~${r}~`);
 
-                        holdReasonIds.forEach(r => {
-                            multipleFilters.filters.push({
-                                field: 'HoldReasonIDsString',
-                                operator: 'contains',
-                                value: r
-                            });
-                        });
-                    }
+        //                holdReasonIds.forEach(r => {
+        //                    multipleFilters.filters.push({
+        //                        field: 'HoldReasonIDsString',
+        //                        operator: 'contains',
+        //                        value: r
+        //                    });
+        //                });
+        //            }
 
-                    filterConfig.filters = []; 
+        //            filterConfig.filters = []; 
 
-                    if (singularFilters.length) {
-                        singularFilters.forEach(f => filterConfig.filters.push(f));
-                    }
+        //            if (singularFilters.length) {
+        //                singularFilters.forEach(f => filterConfig.filters.push(f));
+        //            }
 
-                    if (multipleFilters.filters.length) {
-                        filterConfig.filters.push(multipleFilters);
-                    }
+        //            if (multipleFilters.filters.length) {
+        //                filterConfig.filters.push(multipleFilters);
+        //            }
 
-                    self.heldOrdersGridWidget().dataSource.filter(filterConfig);
+        //            self.heldOrdersGridWidget().dataSource.filter(filterConfig);
 
-                } else {
-                    if (nv && nv.length) {
-                        let multipleFilters = {
-                            logic: 'or',
-                            filters: []
-                        }
+        //        } else {
+        //            if (nv && nv.length) {
+        //                let multipleFilters = {
+        //                    logic: 'or',
+        //                    filters: []
+        //                }
 
-                        let holdReasonIds = nv.map(r => `~${r}~`);
+        //                let holdReasonIds = nv.map(r => `~${r}~`);
 
-                        holdReasonIds.forEach(r => {
-                            multipleFilters.filters.push({
-                                field: 'HoldReasonIDsString',
-                                operator: 'contains',
-                                value: r
-                            });
-                        });
+        //                holdReasonIds.forEach(r => {
+        //                    multipleFilters.filters.push({
+        //                        field: 'HoldReasonIDsString',
+        //                        operator: 'contains',
+        //                        value: r
+        //                    });
+        //                });
 
-                        let filterConfig = {
-                            logic: 'and',
-                            filters: [multipleFilters]
-                        }
+        //                let filterConfig = {
+        //                    logic: 'and',
+        //                    filters: [multipleFilters]
+        //                }
 
-                        self.heldOrdersGridWidget().dataSource.filter(filterConfig);
-                    }
-                }
-            }
-        }
+        //                self.heldOrdersGridWidget().dataSource.filter(filterConfig);
+        //            }
+        //        }
+        //    //}
+        //}
     });
 
     self.heldReasonListSelection.subscribe(nv => {
@@ -3350,7 +3373,6 @@
 
             // hilariously enough clicking the pod causes the heldReasonListSelection to change...
             if (self.clearActiveHoldReasonOnNextSubscriptionFire == true) {
-                self.activeHeldOrderReasonGroupId(null); // this is necessary because you might no longer be looking just a pod
                 self.activeHeldOrderReasonPodId(undefined);
             } else {
                 self.clearActiveHoldReasonOnNextSubscriptionFire = true;
@@ -3387,25 +3409,45 @@ const holdReasonSummaryPod = ({ active, rec, parent } = { rec: {}, parent: {} })
 
         console.log('apply called with', data);
 
+        if (self.parent.activeHeldOrderReasonPodId() == self.HoldReasonSummaryPodID) {
+
+            self.parent.heldOrdersHeldFromDt(null);
+
+            self.parent.heldOrdersHeldToDt(null);
+
+            self.parent.heldReasonListSelection([self.parent.holdReasons().filter(x => x.HoldReasonGroupID == data.HoldReasonGroupID).map(hr => hr.HoldReasonID)]);
+
+            self.parent.activeHeldOrderReasonPodId(undefined);
+
+            self.parent.customHeldReasonFilterActive(false);
+
+            self.parent.heldOrdersHoldReasonsParams.multiSelectSettings.value([]);
+            self.parent.heldOrdersHoldReasonsParams.multiSelectSettings.widget().value([]);
+            self.parent.heldOrdersHoldReasonsParams.multiSelectSettings.widget().trigger('change');
+
+            //self.parent.heldOrdersGridWidget().dataSource.query({
+            //    page: 1,
+            //    pageSize: self.parent.heldOrdersGridWidget().dataSource.pageSize()
+            //});
+
+        } else {
+            self.parent.clearActiveHoldReasonOnNextSubscriptionFire = false;
+
+            self.parent.heldOrdersHeldFromDt(data.HeldFromDT);
+
+            self.parent.heldOrdersHeldToDt(data.HeldToDT);
+
+            self.parent.heldReasonListSelection(self.parent.holdReasons().filter(x => x.HoldReasonGroupID == data.HoldReasonGroupID).map(hr => hr.HoldReasonID));
+
+            self.parent.activeHeldOrderReasonPodId(self.HoldReasonSummaryPodID);
+
+            self.parent.customHeldReasonFilterActive(true);
+        }
+
         // because this action necessarily causes a change of  self.parent.heldReasonListSelection
         // and that has a subscription above which clears the activeHeldOrderReasonGroupId
         // we need to flag whether or not to actually clear the activeHeldOrderReasonGroupId
-        self.parent.clearActiveHoldReasonOnNextSubscriptionFire = false;
-
-        self.parent.skipNextHeldOrderGridRead = true;
-
-        self.parent.heldOrdersHeldFromDt(data.HeldFromDT);
-
-        self.parent.heldOrdersHeldToDt(data.HeldToDT);
-
-        self.parent.heldReasonListSelection(self.parent.holdReasons().filter(x => x.HoldReasonGroupID == data.HoldReasonGroupID).map(hr => hr.HoldReasonID));
-
-        self.parent.activeHeldOrderReasonGroupId(self.HoldReasonGroupID);
-
-        self.parent.activeHeldOrderReasonPodId(self.PodID);
-
-        self.parent.customHeldReasonFilterActive(true);
-
+        
         //let holdReasonIds = [];
 
         //document.querySelectorAll(`input[type="checkbox"][data-hold-reason-role-id="${self.RoleID}"]`).forEach(e => {
