@@ -91,18 +91,18 @@
         title: 'ID',
         hidden: true
     }, {
+        field: 'Document',
+        title: 'Document',
+        width: 180,
+        sortable: false
+    }, {
         field: 'TradeAccount',
         title: 'Trade Account',
         width: 200,
         sortable: false
     }, {
         field: 'SentRegarding',
-        title: 'Sent Regarding',
-        sortable: false
-    }, {
-        field: 'Document',
-        title: 'Document',
-        width: 180,
+        title: 'Details',
         sortable: false
     }, {
         field: 'SentDT',

@@ -1,0 +1,101 @@
+:root {
+  --vsm-gutter: 0.25rem;
+  --sm-gutter: 0.5rem;
+  --m-gutter: 0.75rem;
+  --l-gutter: 1rem;
+  --mxl-gutter: 1.5rem;
+  --xl-gutter: 2rem;
+  --xxl-gutter: 3rem;
+  --disco-color: #e51f7c;
+  --letter-spacing-slight: 0.05rem;
+  --page-heading-colour: #44546b;
+}
+
+.input-group-lg .btn {
+  font-size: 1rem;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.halloween-message {
+  font-family: "Trixie";
+}
+.halloween-message .shining {
+  display: block;
+  font-family: "Trixie Rough";
+}
+.halloween-message .attribution {
+  font-size: 60%;
+  font-family: "Courier New";
+  font-style: italic;
+}
+.halloween-message .attribution::before {
+  content: " - ";
+}
+
+#statements-tabs-content {
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  margin-bottom: 1rem;
+}
+#statements-tabs-content .tab-pane {
+  padding: 1rem;
+}
+#statements-tabs-content #prefilters {
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+  padding: 0 0 1rem 0;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+#statements-tabs-content #prefilters .prefilter {
+  flex: 1;
+  position: relative;
+  display: flex;
+  /*.k-dropdown-wrap {
+      > span.k-input {
+          padding: 0;
+          display: flex;
+
+          > span {
+              flex: 1;
+              display: inline-block;
+              padding: 4px 32px 4px 0;
+          }
+      }
+  }*/
+}
+#statements-tabs-content #prefilters .prefilter .mdc-validating-field {
+  flex: 1;
+}
+#statements-tabs-content #prefilters .prefilter .mdc-validating-field > .mdc-select--selected .k-dropdown-wrap > span.k-input {
+  background-color: #cfe2ff;
+}
+#statements-tabs-content #prefilters .prefilter .mdc-validating-field .date-select--selected {
+  background-color: #cfe2ff;
+}
+#statements-tabs-content #prefilters .prefilter .mdc-validating-field .dropdown.selected .btn {
+  background-color: #cfe2ff;
+}
+#statements-tabs-content #prefilters .prefilter .bi-lock-fill {
+  flex: 0;
+}
+#statements-tabs-content #prefilters .prefilter .k-list .k-item {
+  white-space: nowrap;
+}
+#statements-tabs-content #prefilters .date-prefilter {
+  display: block;
+}
+#statements-tabs-content #prefilters .date-picker {
+  flex: 1;
+}
+
+#response-container .alert {
+  margin-top: 1rem;
+  margin-bottom: 0;
+}
+/*# sourceMappingURL=statements.css.map */

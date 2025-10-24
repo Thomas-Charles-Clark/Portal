@@ -369,6 +369,7 @@
     <Compile Include="DbContext\Dapper\PortalDbContext-Products.cs" />
     <Compile Include="DbContext\PortalDbContext-Delivery.cs" />
     <Compile Include="DbContext\PortalDbContext-Documents.cs" />
+    <Compile Include="DbContext\PortalDbContext-CreditControl.cs" />
     <Compile Include="DbContext\PortalDbContext-General.cs" />
     <Compile Include="DbContext\PortalDbContext-Invoices.cs" />
     <Compile Include="DbContext\PortalDbContext-EmailDigester.cs" />
@@ -399,6 +400,8 @@
     <Compile Include="Models\ContractPricing\ContractProductRestriction.cs" />
     <Compile Include="Models\CreditControlRegion.cs" />
     <Compile Include="Models\CreditControlRegion_SalesMarket.cs" />
+    <Compile Include="Models\CreditControl\PassSendStatementsDto.cs" />
+    <Compile Include="Models\CreditControl\SendStatementsResult.cs" />
     <Compile Include="Models\Department.cs" />
     <Compile Include="Models\Documents\Document.cs" />
     <Compile Include="Models\Documents\DocumentResource.cs" />

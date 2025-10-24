@@ -248,7 +248,8 @@
         }
     }
 
-    .date-container-months {
+    .date-container-months,
+    .date-container-years {
         div:not(.no-highlight) {
             width: 100%;
             min-width: calc($td-cell-size * 2);

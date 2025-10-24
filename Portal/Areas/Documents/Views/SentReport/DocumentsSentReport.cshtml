@@ -58,11 +58,11 @@
 
 <script type="text/html" id="document-sent-row-template">
     <tr class="document-sent-row" data-bind="attr: { title: `Document Sent ID: ${DocumentSentID}` }">
-        <td data-bind="html: TradeAccount"></td>
-        <td class="wrapping" data-bind="html: SentRegarding"></td>
         <td class="pointer" data-bind="click: $parent.openDocument">
             <a href="javascript:;" data-bind="text: Document, clickBubble: true"></a>
         </td>
+        <td data-bind="html: TradeAccount"></td>
+        <td class="wrapping" data-bind="html: SentRegarding"></td>
         <td class="pointer" data-bind="click: $parent.openDocument">
             <span data-bind="text: moment(SentDT).format('DD/MM/YYYY HH:mm')"></span>
         </td>

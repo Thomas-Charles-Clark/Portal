@@ -330,6 +330,7 @@ namespace SharedEFClasses.Models.Documents
         public string subject { get; set; }
         public string body { get; set; }
         public int? memberId { get; set; }
+        public DateTime? date { get; set; }
     }
 
     public class DocumentColumnHeading

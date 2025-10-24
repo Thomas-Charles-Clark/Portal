@@ -551,6 +551,10 @@
     <Compile Include="App_Start\UnityMvcActivator.cs" />
     <Compile Include="App_Start\UnityWebApiActivator.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Areas\Credit-Control\Controllers\StatementsApiController.cs" />
+    <Compile Include="Areas\Credit-Control\Controllers\StatementsController.cs" />
+    <Compile Include="Areas\Credit-Control\CreditControlAreaRegistration.cs" />
+    <Compile Include="Areas\Credit-Control\ViewModels\StatementsViewModel.cs" />
     <Compile Include="Areas\Customers\Controllers\AdvertiserMaintenanceAPIController.cs" />
     <Compile Include="Areas\Customers\Controllers\AdvertiserMaintenanceController.cs" />
     <Compile Include="Areas\Customers\Controllers\GiftVouchersAPIController.cs" />
@@ -1747,6 +1751,7 @@
     <Content Include="js\src\models\common-modals-old.js" />
     <Content Include="js\src\models\common-modals.js" />
     <Content Include="js\src\models\contract-pricing.js" />
+    <Content Include="js\src\models\credit-control\statements-filters.js" />
     <Content Include="js\src\models\customer-care.js" />
     <Content Include="js\src\models\customer-enquiry.js" />
     <Content Include="js\src\models\customer-invite.js" />
@@ -1804,6 +1809,7 @@
     <Content Include="js\src\models\order-book\order-book-back-orders-without-purchase-orders.js" />
     <Content Include="js\src\models\order-book\order-book-orders-filters.js" />
     <Content Include="js\src\models\pager.js" />
+    <Content Include="js\src\models\credit-control\statements.js" />
     <Content Include="js\src\models\stock-check-request.js" />
     <Content Include="js\src\models\_example-view-model.js" />
     <Content Include="js\src\models\neiman-marcus-order-status.js" />
@@ -2631,6 +2637,8 @@
     <Content Include="Areas\Invoices\Views\Booking\EmailViewer.cshtml" />
     <Content Include="Areas\Customers\Views\AdvertiserMaintenance\AdvertiserMaintenance.cshtml" />
     <Content Include="Areas\Documents\Views\SentReport\DocumentsSentReport.cshtml" />
+    <Content Include="Areas\Credit-Control\Views\web.config" />
+    <Content Include="Areas\Credit-Control\Views\Statements\Statements.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
     <Content Include="Areas\Stock\Views\RangeManagement\RangeManagement.cshtml" />
     <None Include="compilerconfig.json" />
@@ -3048,6 +3056,7 @@
     <Content Include="css\src\models\advertiser-maintenance.scss" />
     <Content Include="css\src\models\documents-sent-report.scss" />
     <Content Include="css\src\lib\prettify\sunburst.scss" />
+    <Content Include="css\src\models\statements.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -6526,6 +6535,8 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\ApplicationGroups\Views\Shared\" />
+    <Folder Include="Areas\Credit-Control\Data\" />
+    <Folder Include="Areas\Credit-Control\Views\Shared\" />
     <Folder Include="Areas\Customers\Views\Shared\" />
     <Folder Include="Areas\Documents\Views\Shared\" />
     <Folder Include="Areas\Downloads\Views\Shared\" />
@@ -6567,6 +6578,7 @@
     <Folder Include="Views\Members\" />
     <Folder Include="Views\PaintMixing\" />
     <Folder Include="Views\PricingOData\" />
+    <Folder Include="Views\Statements\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

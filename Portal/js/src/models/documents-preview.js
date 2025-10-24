@@ -39,6 +39,51 @@
 
     self.transactionId = ko.observable(typeof getTransactionId === 'function' ? getTransactionId() : undefined);
 
+    self.date = ko.observable();
+
+    self.dateParams = {
+        label: 'Date',
+        observable: self.date,
+        displayObservable: ko.observable(),
+        dateTimePickerOptions: {
+            localization: {
+                locale: 'en-GB',
+                format: 'ddd Do MMM yyyy'
+            },
+            display: {
+                sideBySide: false,
+                components: {
+                    clock: false
+                },
+                //cellSize: '4rem'
+            },
+            restrictions: {
+                disabledDates: []
+            },
+            allowInputToggle: true,
+            useCurrent: false,
+            keepInvalid: true,
+            debug: false,
+            eventHandlers: {
+                onChange: (e) => {
+                    //self.from.tempusDominus.updateOptions({
+                    //    restrictions: {
+                    //        maxDate: e.date,
+                    //    },
+                    //});
+                }
+            }
+        },
+        clearable: ko.observable(true),
+        clearFunction: () => {
+            self.date(undefined);
+        },
+        revertible: ko.observable(false),
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true
+    };
+
     self.documentParams = kendoMDCDropDownList({
         label: 'Document',
         odata: true,
@@ -271,6 +316,12 @@
         self.transactionId(undefined);
     });
 
+    self.date.subscribe(nv => {
+        if (nv) {
+            self.fetchDocument();
+        }
+    })
+
     self.emailer = emailer({ parent: self });
 
     self.toBinary = function (string) {
@@ -406,7 +457,8 @@
             tradeAccountId: self.tradeAccountId(),
             basketId: self.basketId(),
             transactionId: self.transactionId(),
-            orderHeadId: self.orderHeadId()
+            orderHeadId: self.orderHeadId(),
+            date: self.date() ? self.date().toISOString() : null
         };
     }
 
@@ -415,7 +467,8 @@
             b = null,
             o = null,
             t = null,
-            tid = null;
+            tid = null,
+            da = null;
 
         d = self.documentParams.dropDownListSettings.dataItem();
 
@@ -428,7 +481,9 @@
         else if (self.tradeAccountId())
             tid = self.tradeAccountId();
 
-        return d && (b || o || t || tid);
+        da = self.date();
+
+        return (d && (b || o || t || tid)) || (d == 7 && da != null);
     });
 
     self.init = function () {
@@ -444,6 +499,7 @@
             basketId: self.basketId(),
             transactionId: self.transactionId(),
             orderHeadId: self.orderHeadId(),
+            date: self.date() ? self.date().toISOString() : null
         });
         let objJsonB64 = btoa(objJsonStr);
         return new URLSearchParams({

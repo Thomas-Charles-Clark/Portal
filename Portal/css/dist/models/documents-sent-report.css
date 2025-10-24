@@ -92,12 +92,27 @@
   flex: 0 1 25%;
   min-height: 100%;
   display: flex;
+  border-radius: 0.375rem;
 }
 #documents-sent-tabs-content #dashboard #dashboard-pods .dashboard-pod.active .alert {
   background-color: #084298;
   color: #fff;
 }
-#documents-sent-tabs-content #dashboard #dashboard-pods .dashboard-pod .alert {
+#documents-sent-tabs-content #dashboard #dashboard-pods .dashboard-pod.active {
+  /*text-decoration: underline;*/
+}
+#documents-sent-tabs-content #dashboard #dashboard-pods .dashboard-pod.active .warning {
+  background-color: #a72834;
+  color: #fff;
+}
+#documents-sent-tabs-content #dashboard #dashboard-pods .dashboard-pod.active:not(.warning) {
+  background-color: #084298;
+  color: #fff;
+}
+#documents-sent-tabs-content #dashboard #dashboard-pods .dashboard-pod.active:not(.warning) a {
+  color: #fff;
+}
+#documents-sent-tabs-content #dashboard #dashboard-pods .dashboard-pod > div {
   flex: 1;
   align-self: stretch;
   display: flex;
@@ -107,11 +122,24 @@
   align-items: center;
   margin-bottom: 0;
   cursor: pointer;
-  filter: brightness(1);
-  transition: brightness 150ms ease-in-out, background-color 150ms ease-in-out, color 150ms ease-in-out;
+  will-change: background-color;
+  background-color: #fff;
+  color: #212529;
+  transition: background-color 150ms ease-in-out, color 150ms ease-in-out, border-color 150ms ease-in-out;
+  padding: 1rem 1rem;
+  border: 1px solid #adb5bd;
+  border-radius: 0.375rem;
 }
-#documents-sent-tabs-content #dashboard #dashboard-pods .dashboard-pod .alert:hover, #documents-sent-tabs-content #dashboard #dashboard-pods .dashboard-pod .alert:focus, #documents-sent-tabs-content #dashboard #dashboard-pods .dashboard-pod .alert:focus-within {
-  filter: brightness(0.9);
+#documents-sent-tabs-content #dashboard #dashboard-pods .dashboard-pod > div.warning {
+  background-color: #b02a37;
+  color: #fff;
+  border-color: #b43541;
+}
+#documents-sent-tabs-content #dashboard #dashboard-pods .dashboard-pod > div:hover, #documents-sent-tabs-content #dashboard #dashboard-pods .dashboard-pod > div:focus, #documents-sent-tabs-content #dashboard #dashboard-pods .dashboard-pod > div:focus-within {
+  text-decoration: underline;
+}
+#documents-sent-tabs-content #dashboard #dashboard-pods .dashboard-pod > div p:last-of-type {
+  margin-bottom: 0;
 }
 #documents-sent-tabs-content #prefilters {
   display: flex;
@@ -188,5 +216,9 @@
 #emailer-modal .modal-header {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
+}
+
+.k-grid-header th.k-header {
+  vertical-align: middle;
 }
 /*# sourceMappingURL=documents-sent-report.css.map */

@@ -8,10 +8,11 @@
 }
 @section scripts {
     @Scripts.Render("~/bundles/js/jqueryui")
+    @Scripts.Render("~/bundles/js/tempus-dominus")
     @Scripts.Render("~/bundles/js/documents-preview")
 
     <script type="text/javascript">
-        
+
         function autoLoad() {
             var self = this;
             self.canFire.subscribe(function (newValue) {
@@ -40,7 +41,7 @@
         function getOrderHeadId() {
             return @(Model.DocumentDetails?.orderHeadId);
         }
-        
+
         function getTradeAccountId() {
             return '@(Model.DocumentDetails?.tradeAccountId)';
         }
@@ -48,7 +49,7 @@
         function getDocumentSendHistory() {
             return @Html.Raw(JsonConvert.SerializeObject(Model.DocumentSendHistory?.Results));
         }
-        
+
         var viewModel = new documentsPreviewViewModel();
 
         viewModel.emailer.to('@(Model.To)');
@@ -66,7 +67,7 @@
             //    $(viewModel.basketParams.observable.DOMElement).select();
             //}, 0);
         });
-        
+
     </script>
 }
 
@@ -113,7 +114,7 @@
                     <div id="document-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentParams }"></div>
                     <div id="language-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: languageParams }"></div>
                     <div id="trade-account-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountParams }"></div>
-                    <div></div>
+                    <div id="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: dateParams }"></div>
                     <div id="transaction-prefilter" data-bind="component: { name: 'mdc-text-field-numeric-component', params: transactionParams }"></div>
                     <div id="order-prefilter" data-bind="component: { name: 'mdc-text-field-numeric-component', params: orderHeadParams }"></div>
                     <div id="basket-prefilter" data-bind="component: { name: 'mdc-text-field-numeric-component', params: basketParams }"></div>
@@ -157,16 +158,16 @@
                 <div id="send-email" class="collapse">
                     <!-- ko component: { name: 'emailer-component', params: emailer } --><!-- /ko -->
                     @*<div id="email-wrapper" class="flex-container margin-bottom-15">
-                        <div data-bind="component: { name: 'mdc-text-field-component', params: toParams }"></div>
-                         <button class="btn btn-success" data-bind="click: sendDocument">
-                            Send
-                             <span class="glyphicon glyphicon-send"></span>
-                        </button>
-                    </div>
-                    <div class="margin-bottom-15" data-bind="component: { name: 'mdc-text-field-component', params: subjectParams }"></div>
-                    <div class="margin-bottom-15" data-bind="component: { name: 'mdc-text-field-component', params: replyToParams }"></div>
-                    <div class="margin-bottom-15" data-bind="component: { name: 'mdc-text-area-component', params: bodyParams }"></div>
-                    <div id="receipt-sent-successfully" class="text-success margin-bottom-15" style="display: none; font-size: 14px;" data-bind="fadeVisible: showLastSentTo, fadeSpeed: 'slow', html: 'Sent successfully to: ' + sentTo() + ' &#x2714;'"></div>*@
+                            <div data-bind="component: { name: 'mdc-text-field-component', params: toParams }"></div>
+                             <button class="btn btn-success" data-bind="click: sendDocument">
+                                Send
+                                 <span class="glyphicon glyphicon-send"></span>
+                            </button>
+                        </div>
+                        <div class="margin-bottom-15" data-bind="component: { name: 'mdc-text-field-component', params: subjectParams }"></div>
+                        <div class="margin-bottom-15" data-bind="component: { name: 'mdc-text-field-component', params: replyToParams }"></div>
+                        <div class="margin-bottom-15" data-bind="component: { name: 'mdc-text-area-component', params: bodyParams }"></div>
+                        <div id="receipt-sent-successfully" class="text-success margin-bottom-15" style="display: none; font-size: 14px;" data-bind="fadeVisible: showLastSentTo, fadeSpeed: 'slow', html: 'Sent successfully to: ' + sentTo() + ' &#x2714;'"></div>*@
                 </div>
                 <div id="send-history" class="collapse">
                     <div class="well">
@@ -177,8 +178,8 @@
                         <ul>
                             <!-- ko foreach: documentSendHistory() -->
                             <li>
-                                <span class="display-block" >
-                                    <span data-bind="text: moment(SentDT).format('dddd Do MMM YYYY HH:mm:ss')"></span> 
+                                <span class="display-block">
+                                    <span data-bind="text: moment(SentDT).format('dddd Do MMM YYYY HH:mm:ss')"></span>
                                 </span>
                                 <span class="display-block">
                                     To: <a data-bind="attr: { href: To }, text: To"></a>

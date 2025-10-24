@@ -273,7 +273,8 @@
   bottom: 6px;
   right: 6px;
 }
-.tempus-dominus-widget .date-container-months div:not(.no-highlight) {
+.tempus-dominus-widget .date-container-months div:not(.no-highlight),
+.tempus-dominus-widget .date-container-years div:not(.no-highlight) {
   width: 100%;
   min-width: calc(var(--td-cell-size) * 2);
   height: auto;

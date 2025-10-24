@@ -243,6 +243,7 @@ namespace Portal
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/documents-preview").Include(
+                $"{cssPrefix}/lib/tempus-dominus/tempus-dominus{cssSuffix}",
                         $"{cssPrefix}/models/documents-preview{cssSuffix}"
                 ));
 
@@ -425,6 +426,10 @@ namespace Portal
 
             bundles.Add(new StyleBundle("~/bundles/css/documents-sent-report").Include(
                     $"{cssPrefix}/models/documents-sent-report{cssSuffix}"
+            ));
+
+            bundles.Add(new StyleBundle("~/bundles/css/statements").Include(
+                    $"{cssPrefix}/models/statements{cssSuffix}"
             ));
 
             //  
@@ -985,6 +990,12 @@ namespace Portal
                         $"{jsPrefix}/models/documents/sent-report/documents-sent-report-dashboard{jsSuffix}",
                         $"{jsPrefix}/models/documents/sent-report/documents-sent-report-viewing-document{jsSuffix}",
                         $"{jsPrefix}/models/documents/sent-report/documents-sent-report{jsSuffix}"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/statements").Include(
+                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/credit-control/statements-filters{jsSuffix}",
+                        $"{jsPrefix}/models/credit-control/statements{jsSuffix}"
                 ));
 
             foreach (var b in BundleTable.Bundles)

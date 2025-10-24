@@ -456,6 +456,14 @@ namespace Portal
             tradeAccountDocumentsSentReportFilterFunction.Parameter<bool>("includeDeletedAccounts");
             tradeAccountDocumentsSentReportFilterFunction.Parameter<bool>("includeClosedAccounts");
 
+            var tradeAccountStatementsFilterFunction = odataBuilder.EntityType<TradeAccount>()
+                .Collection
+                .Function("GetTradeAccountsForStatements")
+                .ReturnsCollectionFromEntitySet<TradeAccount>("TradeAccounts");
+
+            tradeAccountStatementsFilterFunction.Parameter<bool>("includeDeletedAccounts");
+            tradeAccountStatementsFilterFunction.Parameter<bool>("includeClosedAccounts");
+
             var tradeAccountGroupFilterFunction = odataBuilder.EntityType<TradeAccount>()
                 .Collection
                 .Function("TradeAccountGroupFilter")
