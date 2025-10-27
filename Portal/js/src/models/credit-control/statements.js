@@ -113,32 +113,42 @@
     }
 
     self.sendStatements = (data, event) => {
-        window.showConfirm('Are you sure?', 'This might send Statement PDF(s)', () => {
-            self.busy(true);
 
-            let data = self.getParameters();
+        self.filters.validateNow(true);
 
-            console.log('calling sendStatements with', data);
-
-            fetch('/api/StatementsAPI/SendStatements', {
-                method: 'POST',
-                headers: window.fetchHeaders,
-                cache: 'no-cache',
-                credentials: 'same-origin',
-                body: JSON.stringify(data)
+        if (self.filters.errors().length) {
+            self.filters.errors.showAllMessages(true);
+            self.filters.errors.forEach(x => {
+                x.isValid.notifySubscribers(x.isValid());
             })
-                .then(window.handleFetchResponse)
-                .then(data => {
-                    self.busy(false);
-                    self.sendResponse(data.Response);
-                })
-                .catch(err => {
-                    self.busy(false);
-                    window.catchFetchError(err);
-                });
-        }, () => {
+        } else {
+            window.showConfirm('Are you sure?', 'This might send Statement PDF(s)', () => {
+                self.busy(true);
 
-        });
+                let data = self.getParameters();
+
+                console.log('calling sendStatements with', data);
+
+                fetch('/api/StatementsAPI/SendStatements', {
+                    method: 'POST',
+                    headers: window.fetchHeaders,
+                    cache: 'no-cache',
+                    credentials: 'same-origin',
+                    body: JSON.stringify(data)
+                })
+                    .then(window.handleFetchResponse)
+                    .then(data => {
+                        self.busy(false);
+                        self.sendResponse(data.Response);
+                    })
+                    .catch(err => {
+                        self.busy(false);
+                        window.catchFetchError(err);
+                    });
+            }, () => {
+
+            });
+        }
     }
 
     self.refresh = () => {

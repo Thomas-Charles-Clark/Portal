@@ -74,7 +74,10 @@
     <div class="tab-pane active" id="browse-tab" role="tabpanel" aria-labelledby="browse-tab-btn">
         <form id="prefilters" data-bind="with: filters" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
             <div class="trade-account-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountParams }"></div>
-            <div class="prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: dateParams }"></div>
+            <div class="prefilter">
+                <div class="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: dateParams }"></div>
+                <span class="validation-message" data-bind="validationMessage: date"></span>
+            </div>
         </form>
         <div id="controls-wrapper">
             <button class="btn btn-dark" data-bind="click: sendStatements">

@@ -25,7 +25,6 @@ $active-color: $white;
         .prefilter {
             flex: 1;
             position: relative;
-            display: flex;
 
             .mdc-validating-field {
                 flex: 1;
@@ -76,6 +75,7 @@ $active-color: $white;
 
         .date-prefilter {
             display: block;
+            width: 100%;
         }
 
         .date-picker {

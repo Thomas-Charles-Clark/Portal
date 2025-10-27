@@ -1300,7 +1300,8 @@ namespace Portal.Utilities.Document
                             normalFont,
                             boldFont,
                             orderHeadIndex + 1,
-                            input.OrderHeaders.Count);
+                            input.OrderHeaders.Count,
+                            ProcessPhrase);
 
                         headerTable.WriteSelectedRows(0, -1, 25, 812, c); // write stuff to it
 
@@ -2511,7 +2512,8 @@ namespace Portal.Utilities.Document
                         normalFont,
                         boldFont,
                         1,
-                        input.OrderHeaders.Count);
+                        input.OrderHeaders.Count,
+                        ProcessPhrase);
 
                     headerTable.WriteSelectedRows(0, -1, 25, 812, c); // write stuff to it
 
@@ -2954,7 +2956,8 @@ namespace Portal.Utilities.Document
             iTextSharp.text.Font normalFont, 
             iTextSharp.text.Font boldFont,
             int orderHeadIndex,
-            int orderHeadCount) 
+            int orderHeadCount,
+            Func<string, Font, Phrase> ProcessPhrase) 
         {
             var monoBase = BaseFont.CreateFont(BaseFont.COURIER, BaseFont.CP1252, BaseFont.EMBEDDED);
             var monoFont = new Font(monoBase, normalFont.Size, Font.NORMAL, BaseColor.BLACK);
@@ -3012,24 +3015,24 @@ namespace Portal.Utilities.Document
 
             //var orderIdSplitIntoThrees = String.Join(" ", CustomExtensions.Split(orderIdentifier.ToString(), 3).ToArray());
 
-            Chunk OrderLabelChunk = null;
-            Chunk OrderIDChunk = null;
+            Phrase OrderLabelPhrase = null;
+            Phrase OrderIDPhrase = null;
 
             if ((int)documentType != (int)PortalPDFDocument.TradeAccountStatement)
             {
-                OrderIDChunk = new Chunk($"{orderIdentifier} ({Receipts.PageLabel} {x} {Receipts.Of} {y})", normalFont);
-                OrderLabelChunk = new Chunk($"{preHeader.HeaderOrderIdentifierLabel}: ", normalFont);
+                OrderIDPhrase = ProcessPhrase($"{{b}}{orderIdentifier}{{/b}} ({Receipts.PageLabel} {x} {Receipts.Of} {y})", normalFont);
+                OrderLabelPhrase = ProcessPhrase($"{{b}}{preHeader.HeaderOrderIdentifierLabel}: {{/b}}", normalFont);
             }
             else
             {
-                OrderIDChunk = new Chunk($"{Receipts.PageLabel} {x} {Receipts.Of} {y}", normalFont);
-                OrderLabelChunk = new Chunk($"", boldFont);
+                OrderIDPhrase = ProcessPhrase($"{Receipts.PageLabel} {x} {Receipts.Of} {y}", normalFont);
+                OrderLabelPhrase = ProcessPhrase($"", boldFont);
             }
 
             //var OrderIDChunk = new Chunk($"{orderIdentifier} ({Receipts.PageLabel} {x} {Receipts.Of} {y})", normalFont);
             var OrderNumberPhrase = new Phrase();
-            OrderNumberPhrase.Add(OrderLabelChunk);
-            OrderNumberPhrase.Add(OrderIDChunk);
+            OrderNumberPhrase.Add(OrderLabelPhrase);
+            OrderNumberPhrase.Add(OrderIDPhrase);
 
             var DateChunk = new Chunk($"{preHeader.HeaderDate}\n", normalFont);
             var DateLabelChunk = new Chunk($"{preHeader.HeaderDateLabel}: ", boldFont);

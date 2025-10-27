@@ -55,7 +55,6 @@
 #statements-tabs-content #prefilters .prefilter {
   flex: 1;
   position: relative;
-  display: flex;
   /*.k-dropdown-wrap {
       > span.k-input {
           padding: 0;
@@ -89,6 +88,7 @@
 }
 #statements-tabs-content #prefilters .date-prefilter {
   display: block;
+  width: 100%;
 }
 #statements-tabs-content #prefilters .date-picker {
   flex: 1;

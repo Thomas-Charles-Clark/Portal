@@ -11,13 +11,25 @@
 
     self.busy = parent.busy;
 
-    self.date = ko.observable();
+    self.validateNow = ko.observable(false);
+
+    self.date = ko.observable().extend({
+        required: {
+            params: true,
+            onlyIf: self.validateNow,
+            message: 'Please specify a date'
+        }
+    });
 
     self.includeClosedTradeAccounts = ko.observable(false);
     self.includeDeletedTradeAccounts = ko.observable(false);
 
     self.tradeAccountId = ko.observable(self.toLoadDto?.tradeAccountId ?? '');
     self.tradeAccount = ko.observable();
+
+    self.errors = ko.validation.group([
+        self.date
+    ])
 
     //#endregion
 
