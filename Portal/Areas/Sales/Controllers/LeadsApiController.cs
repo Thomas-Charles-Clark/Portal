@@ -683,6 +683,8 @@ namespace Portal.Areas.Sales.Controllers
         [HttpPost]
         public IHttpActionResult CreditControllerSelectList([FromBody]PassCreditControllerDefaultInfo dto)
         {
+            dto.CallerMemberID = User.Identity.GetUserId<int>();
+
             var results = portalDb.CreditController_SelectList(dto);
 
             return Ok(results.CreditControllers);

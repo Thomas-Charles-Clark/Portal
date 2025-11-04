@@ -1,6 +1,8 @@
 ﻿var documentsPreviewViewModel = function () {
     var self = this;
 
+    //#region Properties
+
     self.busy = ko.observable(false);
 
     self.busyMessage = ko.observable(undefined);
@@ -39,7 +41,16 @@
 
     self.transactionId = ko.observable(typeof getTransactionId === 'function' ? getTransactionId() : undefined);
 
-    self.date = ko.observable();
+    self.date = ko.observable(typeof getDocumentDate === 'function' ? getDocumentDate() : undefined);
+
+    self.liveDocuments = ko.observableArray([]);
+
+    //#endregion
+
+
+    //#region Components
+
+    self.emailer = emailer({ parent: self });
 
     self.dateParams = {
         label: 'Date',
@@ -282,6 +293,120 @@
         showClear: true
     };
 
+    self.liveDocumentsGridParams = {
+        autoBind: true,
+        widget: ko.observable(),
+        columns: [{
+            field: 'DocumentLabel',
+            title: 'Document',
+            filterable: {
+                extra: false
+            }
+        }, {
+            field: 'LanguageLabel',
+            title: 'Language',
+            filterable: {
+                extra: false
+            }
+        }, {
+            field: 'TradeAccountLabel',
+            title: 'Trade Account',
+            filterable: {
+                extra: false
+            }
+        }, {
+            field: 'DocumentTotal',
+            title: 'Document Total',
+            width: 140,
+            filterable: {
+                extra: false
+            }
+        }, {
+            field: 'Date',
+            title: 'Date',
+            width: 140,
+            filterable: {
+                extra: false
+            }
+        }],
+        data: self.liveDocuments,
+        dataSource: new kendo.data.DataSource({
+            sortable: true,
+            filterable: true,
+            grouping: false,
+            serverGrouping: false,
+            serverFiltering: false,
+            serverPaging: false,
+            pageSize: 10,
+            pageable: {
+                pageSize: 10,
+                pageSizes: [10, 20, 50, 100, 250, 500, 'all']
+            },
+            schema: $.extend({}, kendo.data.schemas.webapi, {
+                data: "Data",
+                total: "Total",
+                errors: "Errors",
+                aggregates: "Aggregates",
+                model: {
+                    id: 'RowKey',
+                    fields: {
+                        RowKey: { type: 'number' },
+                        DocumentID: { type: 'number' },
+                        DocumentLabel: { type: 'string' },
+                        LanguageID: { type: 'number' },
+                        LanguageLabel: { type: 'string' },
+                        BasketID: { type: 'number' },
+                        TransactionID: { type: 'number' },
+                        OrderHeadID: { type: 'number' },
+                        TradeAccountID: { type: 'number' },
+                        TradeAccountLabel: { type: 'string' },
+                        Date: { type: 'date' },
+                        DocumentTotal: { type: 'number' },
+                        CurrencyCode: { type: 'string' },
+                        FormattingCulture: { type: 'string' },
+                    }
+                }
+            }),
+            requestStart: (e) => {
+                self.busy(true);
+            },
+            requestEnd: (e) => {
+                self.busy(false);
+            }
+        }),
+        useKOTemplates: true,
+        rowTemplate: 'live-document-row-template',
+        scrollable: false,
+        sortable: true,
+        filterable: true,
+        reorderable: false,
+        paging: true,
+        pageSize: 10,
+        pageable: {
+            pageSize: 10,
+            pageSizes: [10, 20, 50, 100, 250, 500, 'all']
+        },
+        selectable: 'single',
+        change: function (e) {
+            let dataItem = e.sender.dataItem(e.sender.select());
+            
+            console.log('change', dataItem);
+
+            self.fetchDocument(undefined, undefined, {
+                documentType: dataItem.DocumentID,
+                languageId: dataItem.LanguageID,
+                tradeAccountId: dataItem.TradeAccountID,
+                basketId: dataItem.BasketID,
+                transactionId: dataItem.TransactionID,
+                orderHeadId: dataItem.OrderHeadID,
+                date: dataItem.Date ? dataItem.Date : null
+            });
+        },
+        dataBound: function (e) {
+
+        }
+    };
+
     self.errors = ko.validation.group([
         self.basketId,
         self.orderHeadId,
@@ -290,6 +415,11 @@
         self.documentId,
         self.languageId
     ]);
+
+    //#endregion
+
+
+    //#region Subscriptions
 
     self.tradeAccountId.subscribe(function (newValue) {
         self.validateNow(false);
@@ -322,7 +452,10 @@
         }
     })
 
-    self.emailer = emailer({ parent: self });
+    //#endregion
+
+
+    //#region Methods
 
     self.toBinary = function (string) {
         const codeUnits = new Uint16Array(string.length);
@@ -378,12 +511,17 @@
 
     self.emailer.send = self.sendDocument;
 
-    self.fetchDocument = function () {
-        self.validateNow(false);
-        self.validateNow(true);
+    self.fetchDocument = function (data, event, overrideParameters) {
+
+        console.log('fetchDocument', data, event, overrideParameters);
+
+        if (typeof overrideParameters === 'undefined') {
+            self.validateNow(false);
+            self.validateNow(true);
+        }
         self.emailer.validateSendNow(false);
         window.setTimeout(function () {
-            if (self.errors().length) {
+            if (typeof overrideParameters === 'undefined' && self.errors().length) {
                 self.errors.filter(function (x) {
                     x.isValid.notifySubscribers(x.isValid());
                 })
@@ -399,13 +537,15 @@
 
                 let url = '/api/documentsapi/FetchDocument';
 
-                var data = self.getData();
+                var data = overrideParameters ?? self.getData();
 
                 let objJsonStr = JSON.stringify(data);
 
                 let objJsonB64 = btoa(objJsonStr);
 
                 self.fetchDocumentSendHistory();
+
+                console.log('fetchDocument calling with', data);
 
                 if (window.fetch) {
                     fetch(url, {
@@ -462,6 +602,11 @@
         };
     }
 
+    //#endregion
+
+
+    //#region Computeds
+
     self.canFire = ko.pureComputed(function () {
         let d = null,
             b = null,
@@ -486,11 +631,6 @@
         return (d && (b || o || t || tid)) || (d == 7 && da != null);
     });
 
-    self.init = function () {
-        if (typeof autoLoad == 'function')
-            autoLoad.call(self);
-    }
-
     self.link = ko.pureComputed(function () {
         let objJsonStr = JSON.stringify({
             documentType: self.documentId(),
@@ -511,6 +651,60 @@
         return window.location.origin + '/documents/view?' + self.link()
     }, self);
 
+    self.adminLink = ko.pureComputed(function () {
+        return window.location.origin + '/documents/preview?' + self.link()
+    }, self);
+
+    self.fetchLiveDocuments = ko.computed(() => {
+
+        ko.ignoreDependencies(() => {
+            self.busy(true);
+        });
+
+        let data = {
+            documentId: self.documentId(),
+            tradeAccountId: self.tradeAccountId(),
+            languageId: self.languageId(),
+            date: self.date()
+        };
+
+        console.log('FetchLiveDocuments calling with', data);
+
+        fetch('/api/documentsapi/FetchDocumentList', {
+            method: 'POST',
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: window.fetchHeaders,
+            body: JSON.stringify(data)
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                console.log('FetchLiveDocuments returned', data);
+                ko.ignoreDependencies(() => {
+                    self.liveDocuments(data.Results)
+                    self.busy(false);
+                });
+            })
+            .catch(err => {
+
+                ko.ignoreDependencies(() => {
+                    self.busy(false);
+                });
+
+                window.catchFetchError(err);
+            })
+    }, self)
+
+    //#endregion
+
+
+    //#region Events
+
+    self.init = function () {
+        if (typeof autoLoad == 'function')
+            autoLoad.call(self);
+    }
+
     self.copyUserLink = function (e) {
         e.preventDefault();
         navigator.permissions.query({ name: "clipboard-write" }).then(result => {
@@ -524,10 +718,6 @@
         });
     }
 
-    self.adminLink = ko.pureComputed(function () {
-        return window.location.origin + '/documents/preview?' + self.link()
-    }, self);
-
     self.copyAdminLink = function (e) {
         e.preventDefault();
         navigator.permissions.query({ name: "clipboard-write" }).then(result => {
@@ -540,4 +730,7 @@
             }
         });
     }
+
+    //#endregion
+
 }

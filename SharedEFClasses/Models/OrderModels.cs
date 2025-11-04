@@ -2712,6 +2712,7 @@ namespace SharedEFClasses.Models.Orders
         public long BasketID { get; set; }
         public string OrderReference { get; set; }
         public int TransactionID { get; set; }
+        public int TradeAccountID { get; set; }
         public string TradeAccountCode { get; set; }
         public string TradeAccountName { get; set; }
         public string MemberName { get; set; }

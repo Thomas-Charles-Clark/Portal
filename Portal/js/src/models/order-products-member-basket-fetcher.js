@@ -937,6 +937,9 @@
                 ko.utils.arrayForEach(data.Data, function (d) {
                     ko.utils.arrayForEach(d.orderDetails, function (od) {
                         var dataCarry = JSON.parse(JSON.stringify(od)); // poor man's clone!
+                        if (dataCarry.hasOwnProperty('documents') && dataCarry.documents != null) {
+                            dataCarry.documents.forEach(doc => doc.tradeAccountId = d.TradeAccountID);
+                        }
                         od.bootstrapPopoverDetails = {
                             title: 'Order Details',
                             label: od.label,
@@ -1499,6 +1502,7 @@
             basketId: parent.BasketID,
             transactionId: parent.TransactionID,
             orderHeadId: document.orderHeadId,
+            tradeAccountId: document.tradeAccountId,
             languageId: parent.LanguageID || parent.languageId
         });
         let objJsonB64 = btoa(objJsonStr);

@@ -114,3 +114,13 @@
         text-decoration: none;
     }
 }
+
+.k-grid {
+    tbody {
+        tr {
+            td {
+                cursor: pointer;
+            }
+        }
+    }
+}

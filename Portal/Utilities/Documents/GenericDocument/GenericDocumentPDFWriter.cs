@@ -1658,9 +1658,9 @@ namespace Portal.Utilities.Document
 
                     if (columnCount > 0)
                     {
-                        var leftColumnSpan = input.ColumnHeadings.Count - 4;
+                        var leftColumnSpan = 1;
 
-                        var rightColumnSpan = 3;
+                        var rightColumnSpan = input.ColumnHeadings.Count - 2;
 
                         var columnWidths = new List<float>();
 

@@ -80,6 +80,14 @@ namespace Portal.Areas.Documents.Controllers
         }
 
         [HttpPost]
+        public async Task<IHttpActionResult> FetchDocumentList([FromBody] PassDocumentListDto dto)
+        {
+            var results = await PortalDb.FetchDocumentList(dto);
+
+			return Ok(results);
+        }
+
+        [HttpPost]
         public IHttpActionResult FetchDocument([FromBody] PassDocumentBase64Identifier objDoc64)
         {
             byte[] byteArray = Convert.FromBase64String(objDoc64.d);

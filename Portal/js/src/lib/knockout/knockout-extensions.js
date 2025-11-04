@@ -3105,21 +3105,161 @@ ko.bindingHandlers.matrixLoader = {
         self.showFPS = false;
 
         // ------------------------------
-        // Character set
+        // Character set Function
         // ------------------------------
-        self.generateItemArray = () => [
-            String.fromCodePoint(0x1F341),
-            String.fromCodePoint(0x1F342),
-            String.fromCodePoint(0x1F343),
-            String.fromCodePoint(0x1F480),
-            String.fromCodePoint(0x1F383),
-            String.fromCodePoint(0x1F47B),
-            String.fromCodePoint(0x2614),
-            String.fromCodePoint(0x1F987),
-            String.fromCodePoint(0x1F36C),
-            String.fromCodePoint(0x1F578),
-            String.fromCodePoint(0x1F577)
-        ];
+
+        self.generateItemArray = () => {
+
+            //#region Generally Emoji sets
+
+            //U+26F7
+            //Spring
+            //return [
+            //    String.fromCodePoint(0x1F490), // Bouquet of flowers
+            //    String.fromCodePoint(0x1F994), // Hedgehog
+            //    String.fromCodePoint(0x1F338), // Pink flower
+            //    String.fromCodePoint(0x1F407), // White rabbit
+            //    String.fromCodePoint(0x1F33C), // Daisy
+            //    String.fromCodePoint(0x1F343), // Leaf
+            //    String.fromCodePoint(0x1F331), // Sprouting seedling
+            //    String.fromCodePoint(0x1F337), // Tulip
+            //    String.fromCodePoint(0x1F423), // Chick hatching
+            //    String.fromCodePoint(0x1F340)  // Four-leaf clover
+            //]
+
+            //Winter
+            //return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F343), String.fromCodePoint(0x2614), String.fromCodePoint(0x1F36C), String.fromCodePoint(0x26C4), String.fromCodePoint(0x1F3BF), String.fromCodePoint(0x1F3C2), String.fromCodePoint(0x2B50)]
+
+            // Christmas
+            //return [String.fromCodePoint(0x2744),
+            //    String.fromCodePoint(0x26C4),
+            //    String.fromCodePoint(0x1F381),
+            //    String.fromCodePoint(0x1F380), // ribbon
+            //    String.fromCodePoint(0x1F384), // christmas tree
+            //    String.fromCodePoint(0x2B50),
+            //    String.fromCodePoint(0x1F385),
+            //    String.fromCodePoint(0x1F98C),
+            //    String.fromCodePoint(0x1F328),
+            //    String.fromCodePoint(0x1F384), // christmas tree
+            //    String.fromCodePoint(0x2603),
+            //    String.fromCodePoint(0x1F941), // drum
+            //    String.fromCodePoint(0x26C4),
+            //    String.fromCodePoint(0x2728),
+            //    String.fromCodePoint(0x1F56F), // candle
+            //    String.fromCodePoint(0x1F384), // christmas tree
+            //    String.fromCodePoint(0x1F514), // bell
+            //    String.fromCodePoint(0x1F370)
+            //]
+
+            //Valentine's
+            //return [
+            //    String.fromCodePoint(0x1F970), // smiling face with hearts
+            //    String.fromCodePoint(0x1F3F5), // yellow rosette
+            //    String.fromCodePoint(0x1F490), // bouquet
+            //    String.fromCodePoint(0x1F490), // bouquet
+            //    String.fromCodePoint(0x1F490), // bouquet
+            //    String.fromCodePoint(0x1F337), // tuplip
+            //    String.fromCodePoint(0x1F33C), // daisy
+            //    String.fromCodePoint(0x1F380), // ribbon
+            //    String.fromCodePoint(0x1F33A), // hibiscus
+            //    String.fromCodePoint(0x1F36D), // lollipop
+            //    String.fromCodePoint(0x2764), // red heart
+            //    String.fromCodePoint(0x1F9E1), // orange heart
+            //    String.fromCodePoint(0x1F49B), // yellow heart
+            //    String.fromCodePoint(0x1F49A), // green heart
+            //    String.fromCodePoint(0x1F499), // blue heart
+            //    String.fromCodePoint(0x1F49C),  // purple heart
+            //    String.fromCodePoint(0x1F49D), // heart with ribbon
+            //    String.fromCodePoint(0x1F498), // heart with arrow
+            //    String.fromCodePoint(0x1F49F), // heart decoration
+            //    String.fromCodePoint(0x1F49E), // revolving hearts
+            //]
+
+            /*
+            Lianne's contribution:
+            Summer theme
+            bg #1ca9c9
+            */
+            //return [
+            //    String.fromCodePoint(0x1F60E), //smiling face w / sunglasses
+            //    String.fromCodePoint(0x1F33B), //sunflower
+            //    String.fromCodePoint(0x1F334), //palm tree
+            //    String.fromCodePoint(0x1F34D), //pineapple
+            //    String.fromCodePoint(0x1F965), //coconut
+            //    String.fromCodePoint(0x1F3C4), //person surfing
+            //    String.fromCodePoint(0x1F42C), //dolphin
+            //    String.fromCodePoint(0x1F41A), //spiral seashell
+            //    String.fromCodePoint(0x1F98B), //butterfly
+            //    String.fromCodePoint(0x2708), //aeroplane
+            //    String.fromCodePoint(0x2600), //sun
+            //    String.fromCodePoint(0x1F30A), //cresting wave
+            //    String.fromCodePoint(0x1F453), //glasses
+            //    String.fromCodePoint(0x1F366), //ice cream cone
+            //    String.fromCodePoint(0x1F379), //tropical drink
+            //    String.fromCodePoint(0x1F3D6), //beach w / umbrella
+            //    String.fromCodePoint(0x1F3DD), //desert island
+            //    String.fromCodePoint(0x1F9A9), //flamingo
+            //    String.fromCodePoint(0x1F99C), //parrot
+            //    String.fromCodePoint(0x1F93F), //snorkel
+            //]
+
+            /*
+            Jubilee theme
+            String.fromCodePoint(0x1F482), // beefeater
+            String.fromCodePoint(0x1F451), // crown
+            String.fromCodePoint(0x1F48E), // gem (diamond?)
+            String.fromCodePoint(0x1F478), // princess (queen)
+            */
+
+            //Summer
+            //return [String.fromCodePoint(0x1F31E), String.fromCodePoint(0x1F33B), String.fromCodePoint(0x1F3BE), String.fromCodePoint(0x1F349), String.fromCodePoint(0x1F353), String.fromCodePoint(0x1F343), String.fromCodePoint(0x1F33E), String.fromCodePoint(0x1F337), String.fromCodePoint(0x1F425), String.fromCodePoint(0x1F3CF)]
+
+            // Autumn
+            return [
+                String.fromCodePoint(0x1F341),
+                String.fromCodePoint(0x1F342),
+                String.fromCodePoint(0x1F341),
+                String.fromCodePoint(0x1F343),
+                String.fromCodePoint(0x2614),
+                String.fromCodePoint(0x2615),
+                String.fromCodePoint(0x1F36C)]
+
+            // Halloween
+            //return [
+            //    String.fromCodePoint(0x1F341),
+            //    String.fromCodePoint(0x1F342),
+            //    String.fromCodePoint(0x1F343),
+            //    String.fromCodePoint(0x1F480),
+            //    String.fromCodePoint(0x1F383),
+            //    String.fromCodePoint(0x1F47B),
+            //    String.fromCodePoint(0x2614),
+            //    String.fromCodePoint(0x1F987),
+            //    String.fromCodePoint(0x1F36C),
+            //    String.fromCodePoint(0x1F578),
+            //    String.fromCodePoint(0x1F577)]
+
+            //return [String.fromCodePoint(0x1F337), String.fromCodePoint(0x1F33C), String.fromCodePoint(0x1F33A), String.fromCodePoint(0x1F98B), String.fromCharCode(0x2734), String.fromCharCode(0x2747), String.fromCharCode(0x2734), String.fromCharCode(0x2600), String.fromCharCode(0x2B50)]
+
+            //return [...Array(Math.round(1))].map(() => String.fromCharCode(0x2744));
+            //return [...Array(Math.round(60))].map(() => String.fromCharCode(0x1F030 + Math.random() * (0x1F3BE - 0x0460 + 1)));
+            //#endregion
+
+        }
+
+        self.getBackgroundColour = () => {
+            //return "#020202";// black(ish)
+            //return "rgba(0,0,0,0.25)"; // also darkish
+            //return "#da5e04"; // autumn (bright)
+            //return '#c86e2d'; // autumn (darker)
+            return "#f0b447"; // autumn (golden yellow)
+            //return '#003153'; // autumn (prussian blue)
+            //return "#66b8ff"; //winter
+            //return "#ffbbd7"; //valentine's (pink)
+            //return '#f8c9dd'; // spring (pink)
+            //return '#53bfea'; // spring (sky blue)
+            //return '#c1e0ff'; // summer
+            //return '#1ca9c9'; // summer, Lianne's Pacific Ocean Blue
+        }
 
         // ------------------------------
         // Resizing
@@ -3192,7 +3332,7 @@ ko.bindingHandlers.matrixLoader = {
             }
 
             // Clear and draw background
-            self.ctx.fillStyle = "#020202";
+            self.ctx.fillStyle = self.getBackgroundColour();
             self.ctx.fillRect(0, 0, self.canvasWidth, self.canvasHeight);
 
             // Draw particles
@@ -3270,134 +3410,6 @@ ko.bindingHandlers.matrixLoader = {
 //        let self = $.extend(ko.unwrap(valueAccessor()), {});
 
 //        //#region Lifted Methods
-
-//        self.generateItemArray = () => {
-
-//            //#region Generally Emoji sets
-
-//            //U+26F7
-//            //Spring
-//            //return [
-//            //    String.fromCodePoint(0x1F490), // Bouquet of flowers
-//            //    String.fromCodePoint(0x1F994), // Hedgehog
-//            //    String.fromCodePoint(0x1F338), // Pink flower
-//            //    String.fromCodePoint(0x1F407), // White rabbit
-//            //    String.fromCodePoint(0x1F33C), // Daisy
-//            //    String.fromCodePoint(0x1F343), // Leaf
-//            //    String.fromCodePoint(0x1F331), // Sprouting seedling
-//            //    String.fromCodePoint(0x1F337), // Tulip
-//            //    String.fromCodePoint(0x1F423), // Chick hatching
-//            //    String.fromCodePoint(0x1F340)  // Four-leaf clover
-//            //]
-
-//            //Winter
-//            //return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F343), String.fromCodePoint(0x2614), String.fromCodePoint(0x1F36C), String.fromCodePoint(0x26C4), String.fromCodePoint(0x1F3BF), String.fromCodePoint(0x1F3C2), String.fromCodePoint(0x2B50)]
-
-//            // Christmas
-//            //return [String.fromCodePoint(0x2744),
-//            //    String.fromCodePoint(0x26C4),
-//            //    String.fromCodePoint(0x1F381),
-//            //    String.fromCodePoint(0x1F380), // ribbon
-//            //    String.fromCodePoint(0x1F384), // christmas tree
-//            //    String.fromCodePoint(0x2B50),
-//            //    String.fromCodePoint(0x1F385),
-//            //    String.fromCodePoint(0x1F98C),
-//            //    String.fromCodePoint(0x1F328),
-//            //    String.fromCodePoint(0x1F384), // christmas tree
-//            //    String.fromCodePoint(0x2603),
-//            //    String.fromCodePoint(0x1F941), // drum
-//            //    String.fromCodePoint(0x26C4),
-//            //    String.fromCodePoint(0x2728),
-//            //    String.fromCodePoint(0x1F56F), // candle
-//            //    String.fromCodePoint(0x1F384), // christmas tree
-//            //    String.fromCodePoint(0x1F514), // bell
-//            //    String.fromCodePoint(0x1F370)
-//            //]
-
-//            //Valentine's
-//            //return [
-//            //    String.fromCodePoint(0x1F970), // smiling face with hearts
-//            //    String.fromCodePoint(0x1F3F5), // yellow rosette
-//            //    String.fromCodePoint(0x1F490), // bouquet
-//            //    String.fromCodePoint(0x1F490), // bouquet
-//            //    String.fromCodePoint(0x1F490), // bouquet
-//            //    String.fromCodePoint(0x1F337), // tuplip
-//            //    String.fromCodePoint(0x1F33C), // daisy
-//            //    String.fromCodePoint(0x1F380), // ribbon
-//            //    String.fromCodePoint(0x1F33A), // hibiscus
-//            //    String.fromCodePoint(0x1F36D), // lollipop
-//            //    String.fromCodePoint(0x2764), // red heart
-//            //    String.fromCodePoint(0x1F9E1), // orange heart
-//            //    String.fromCodePoint(0x1F49B), // yellow heart
-//            //    String.fromCodePoint(0x1F49A), // green heart
-//            //    String.fromCodePoint(0x1F499), // blue heart
-//            //    String.fromCodePoint(0x1F49C),  // purple heart
-//            //    String.fromCodePoint(0x1F49D), // heart with ribbon
-//            //    String.fromCodePoint(0x1F498), // heart with arrow
-//            //    String.fromCodePoint(0x1F49F), // heart decoration
-//            //    String.fromCodePoint(0x1F49E), // revolving hearts
-//            //]
-
-//            /*
-//            Lianne's contribution:
-//            Summer theme
-//            bg #1ca9c9
-//            */
-//            //return [
-//            //    String.fromCodePoint(0x1F60E), //smiling face w / sunglasses
-//            //    String.fromCodePoint(0x1F33B), //sunflower
-//            //    String.fromCodePoint(0x1F334), //palm tree
-//            //    String.fromCodePoint(0x1F34D), //pineapple
-//            //    String.fromCodePoint(0x1F965), //coconut
-//            //    String.fromCodePoint(0x1F3C4), //person surfing
-//            //    String.fromCodePoint(0x1F42C), //dolphin
-//            //    String.fromCodePoint(0x1F41A), //spiral seashell
-//            //    String.fromCodePoint(0x1F98B), //butterfly
-//            //    String.fromCodePoint(0x2708), //aeroplane
-//            //    String.fromCodePoint(0x2600), //sun
-//            //    String.fromCodePoint(0x1F30A), //cresting wave
-//            //    String.fromCodePoint(0x1F453), //glasses
-//            //    String.fromCodePoint(0x1F366), //ice cream cone
-//            //    String.fromCodePoint(0x1F379), //tropical drink
-//            //    String.fromCodePoint(0x1F3D6), //beach w / umbrella
-//            //    String.fromCodePoint(0x1F3DD), //desert island
-//            //    String.fromCodePoint(0x1F9A9), //flamingo
-//            //    String.fromCodePoint(0x1F99C), //parrot
-//            //    String.fromCodePoint(0x1F93F), //snorkel
-//            //]
-
-//            /*
-//            Jubilee theme
-//            String.fromCodePoint(0x1F482), // beefeater
-//            String.fromCodePoint(0x1F451), // crown
-//            String.fromCodePoint(0x1F48E), // gem (diamond?)
-//            String.fromCodePoint(0x1F478), // princess (queen)
-//            */
-
-//            //Summer
-//            //return [String.fromCodePoint(0x1F31E), String.fromCodePoint(0x1F33B), String.fromCodePoint(0x1F3BE), String.fromCodePoint(0x1F349), String.fromCodePoint(0x1F353), String.fromCodePoint(0x1F343), String.fromCodePoint(0x1F33E), String.fromCodePoint(0x1F337), String.fromCodePoint(0x1F425), String.fromCodePoint(0x1F3CF)]
-
-//            // Autumn
-//            //return [
-//            //    String.fromCodePoint(0x1F341),
-//            //    String.fromCodePoint(0x1F342),
-//            //    String.fromCodePoint(0x1F341),
-//            //    String.fromCodePoint(0x1F343),
-//            //    String.fromCodePoint(0x2614),
-//            //    String.fromCodePoint(0x2615),
-//            //    String.fromCodePoint(0x1F36C)]
-
-//            // Halloween
-//            return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F343), String.fromCodePoint(0x1F480), String.fromCodePoint(0x1F383), String.fromCodePoint(0x1F47B), String.fromCodePoint(0x2614), String.fromCodePoint(0x1F987), String.fromCodePoint(0x1F36C), String.fromCodePoint(0x1F578), String.fromCodePoint(0x1F577)]
-
-//            //return [String.fromCodePoint(0x1F337), String.fromCodePoint(0x1F33C), String.fromCodePoint(0x1F33A), String.fromCodePoint(0x1F98B), String.fromCharCode(0x2734), String.fromCharCode(0x2747), String.fromCharCode(0x2734), String.fromCharCode(0x2600), String.fromCharCode(0x2B50)]
-
-//            //return [...Array(Math.round(1))].map(() => String.fromCharCode(0x2744));
-//            //return [...Array(Math.round(60))].map(() => String.fromCharCode(0x1F030 + Math.random() * (0x1F3BE - 0x0460 + 1)));
-//            //#endregion
-
-//        }
-
 
 //        //#endregion
 

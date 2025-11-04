@@ -11,7 +11,27 @@
     @Scripts.Render("~/bundles/js/tempus-dominus")
     @Scripts.Render("~/bundles/js/documents-preview")
 
-    <script type="text/javascript">
+    <script type="text/html" id="live-document-row-template">
+		<tr>
+			<td>
+				<span data-bind="attr: { title: `Document ID: ${DocumentID} - ${DocumentLabel}` }, text: DocumentLabel"></span>
+			</td>
+			<td>
+				<span data-bind="text: LanguageLabel"></span>
+			</td>
+			<td>
+				<span data-bind="text: TradeAccountLabel"></span>
+			</td>
+			<td>
+				<span data-bind="text: formatCurrency(DocumentTotal, 2, FormattingCulture, CurrencyCode)"></span>
+			</td>
+			<td>
+				<span data-bind="text: Date ? moment(Date).format('DD/MM/YYYY') : ''"></span>
+			</td>
+		</tr>
+    </script>
+
+<script type="text/javascript">
 
         function autoLoad() {
             var self = this;
@@ -46,6 +66,15 @@
             return '@(Model.DocumentDetails?.tradeAccountId)';
         }
 
+        @if (Model.DocumentDetails?.date != null)
+        {
+            <text>
+            function getDocumentDate() {
+                return new Date(Date.parse('@($"{Model.DocumentDetails?.date:yyyy-MM-ddTHH:mm:ssZ}")'));
+            }
+            </text>
+        }
+
         function getDocumentSendHistory() {
             return @Html.Raw(JsonConvert.SerializeObject(Model.DocumentSendHistory?.Results));
         }
@@ -68,7 +97,7 @@
             //}, 0);
         });
 
-    </script>
+</script>
 }
 
 <div class="blocker" data-bind="visible: busy">
@@ -125,6 +154,10 @@
             </div>
         </div>
     </div>
+</div>
+
+<div id="live-documents-wrapper" style="display: none" data-bind="visible: true">
+    <div class="margin-bottom-15" data-bind="kendoGrid: liveDocumentsGridParams"></div>
 </div>
 
 <div id="document-wrapper" style="display: none;" class="row" data-bind="visible: showDocument">

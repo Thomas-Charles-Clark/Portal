@@ -31,7 +31,7 @@ namespace SharedEFClasses.Models.Documents
 
         public PortalPDFDocument DocumentType { get; set; }
 
-        public DocumentSelectResult(PortalPDFDocument documentType)
+		public DocumentSelectResult(PortalPDFDocument documentType)
         {
             DocumentType = documentType;
 

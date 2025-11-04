@@ -352,6 +352,7 @@
     <Compile Include="App_Start\UnityMvcActivator.cs" />
     <Compile Include="BaseController.cs" />
     <Compile Include="BaseViewModel.cs" />
+    <Compile Include="DbContext\Dapper\PortalDbContext-Documents.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-ContractPricing.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-DotDigital.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-NeimanMarcus.cs" />
@@ -404,11 +405,14 @@
     <Compile Include="Models\CreditControl\SendStatementsResult.cs" />
     <Compile Include="Models\Department.cs" />
     <Compile Include="Models\Documents\Document.cs" />
+    <Compile Include="Models\Documents\DocumentListResult.cs" />
+    <Compile Include="Models\Documents\DocumentRecord.cs" />
     <Compile Include="Models\Documents\DocumentResource.cs" />
     <Compile Include="Models\Documents\DocumentSentReport_Record.cs" />
     <Compile Include="Models\Documents\DocumentSentReport_Pod.cs" />
     <Compile Include="Models\Documents\DocumentSentReportResult.cs" />
     <Compile Include="Models\Documents\PassDocumentFilePath.cs" />
+    <Compile Include="Models\Documents\PassDocumentListDto.cs" />
     <Compile Include="Models\Documents\PassDocumentSentReportDto.cs" />
     <Compile Include="Models\Documents\PassEmailDocumentFromFilePathDto.cs" />
     <Compile Include="Models\DotDigitalMemberControl.cs" />

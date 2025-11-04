@@ -2839,6 +2839,7 @@ This customer wishes their deliveries to be consolidated. Please double check th
 
     self.fetchAvailableCreditControllers = function () {
         let data = {
+            LeadID: self.leadId(),
             LanguageID: self.languageId(),
             SalesMarketID: self.salesMarket() ? self.salesMarket().SalesMarketID : null,
             MertexLanguageCode: self.mertexLanguageCode()

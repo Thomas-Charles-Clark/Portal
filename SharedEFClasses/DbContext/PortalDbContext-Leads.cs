@@ -1242,6 +1242,8 @@ namespace SharedEFClasses.Models
         {
             var result = new CreditController_SelectResult();
 
+            SqlParameter leadId = new SqlParameter("@LeadID", dto.LeadID);
+            SqlParameter callerMemberId = new SqlParameter("@CallerMemberID", dto.CallerMemberID);
             SqlParameter languageId = new SqlParameter("@LanguageID", dto.LanguageID ?? (object)DBNull.Value);
             SqlParameter salesMarketId = new SqlParameter("@SalesMarketID", dto.SalesMarketID ?? (object)DBNull.Value);
             SqlParameter mertexLanguageCode = new SqlParameter("@MertexLanguageCode", dto.MertexLanguageCode ?? (object)DBNull.Value);
@@ -1252,7 +1254,9 @@ namespace SharedEFClasses.Models
 
             cmd.CommandText = "[portal].[CreditControllerAssignment_SelectList]";
 
-            cmd.Parameters.Add(languageId);
+            cmd.Parameters.Add(leadId);
+            cmd.Parameters.Add(callerMemberId);
+			cmd.Parameters.Add(languageId);
             cmd.Parameters.Add(salesMarketId);
             cmd.Parameters.Add(mertexLanguageCode);
 

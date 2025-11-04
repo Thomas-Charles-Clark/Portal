@@ -105,25 +105,5 @@ namespace SharedEFClasses.Models
 
             return result;
         }
-
-        public async Task<DocumentSentReportResult> FetchDocumentSentReport(PassDocumentSentReportDto dto)
-        {
-            var results = await this.Database.Connection.QueryMultipleAsync("[portal].[DocumentSent_Report]", new {
-                dto.DocumentID,
-                dto.Page,
-                dto.PageSize,
-                dto.SearchString,
-                dto.FromDate,
-                dto.ToDate,
-                dto.SentDTSortDirection,
-                dto.TradeAccountID
-            }, null, null, CommandType.StoredProcedure);
-
-            return new DocumentSentReportResult()
-            {
-                DashboardPods = results.Read<DocumentSentReport_Pod>(),
-                Records = results.Read<DocumentSentReport_Record>()
-            };
-        }
     }
 }

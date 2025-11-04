@@ -65,12 +65,12 @@
             field: 'Resource.Name',
             title: 'Resource',
             template: '#= Resource  ? Resource.Name : ""#',
-            editor: self.resourceNameEditor,
+            readOnly: false
         }, {
             field: 'Resource.Value',
             title: 'Resource',
             template: '#= Resource  ? Resource.Value : ""#',
-            editor: self.resourceEditor,
+            readOnly: true
         }, {
             field: 'Language',
             title: 'Language',
