@@ -139,18 +139,22 @@
     <div class="col-xs-12">
         <div class="panel panel-default">
             <div class="panel-body">
-                <div class="grid-container">
-                    <div id="document-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentParams }"></div>
-                    <div id="language-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: languageParams }"></div>
-                    <div id="trade-account-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountParams }"></div>
-                    <div id="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: dateParams }"></div>
-                    <div id="transaction-prefilter" data-bind="component: { name: 'mdc-text-field-numeric-component', params: transactionParams }"></div>
-                    <div id="order-prefilter" data-bind="component: { name: 'mdc-text-field-numeric-component', params: orderHeadParams }"></div>
-                    <div id="basket-prefilter" data-bind="component: { name: 'mdc-text-field-numeric-component', params: basketParams }"></div>
-                    <button class="btn btn-flat btn-default pull-right" data-bind="click: fetchDocument">
-                        Fetch Document
-                    </button>
-                </div>
+				<div class="grid-container">
+					<div id="document-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentParams }"></div>
+					<div id="language-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: languageParams }"></div>
+					<div id="trade-account-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountParams }"></div>
+					<div id="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: dateParams }"></div>
+					<div id="transaction-prefilter" data-bind="component: { name: 'mdc-text-field-numeric-component', params: transactionParams }"></div>
+					<div id="order-prefilter" data-bind="component: { name: 'mdc-text-field-numeric-component', params: orderHeadParams }"></div>
+					<div id="basket-prefilter" data-bind="component: { name: 'mdc-text-field-numeric-component', params: basketParams }"></div>
+					<div></div>
+					<div id="output-mode-prefilter" data-bind="component: { name: 'mdc-text-field-component', params: outputModeParams }"></div>
+					<div></div>
+					<div></div>
+					<button class="btn btn-flat btn-default pull-right" data-bind="click: fetchDocument">
+						Fetch Document
+					</button>
+				</div>
             </div>
         </div>
     </div>

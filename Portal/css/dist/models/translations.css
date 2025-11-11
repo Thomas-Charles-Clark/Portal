@@ -1,10 +1,46 @@
+:root {
+  --vsm-gutter: 0.25rem;
+  --sm-gutter: 0.5rem;
+  --m-gutter: 0.75rem;
+  --l-gutter: 1rem;
+  --mxl-gutter: 1.5rem;
+  --xl-gutter: 2rem;
+  --xxl-gutter: 3rem;
+  --disco-color: #e51f7c;
+  --letter-spacing-slight: 0.05rem;
+  --page-heading-colour: #44546b;
+}
+
+.input-group-lg .btn {
+  font-size: 1rem;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.halloween-message {
+  font-family: "Trixie";
+}
+.halloween-message .shining {
+  display: block;
+  font-family: "Trixie Rough";
+}
+.halloween-message .attribution {
+  font-size: 60%;
+  font-family: "Courier New";
+  font-style: italic;
+}
+.halloween-message .attribution::before {
+  content: " - ";
+}
+
 .prefilters {
   margin-bottom: 15px;
 }
 
 .k-widget textarea {
-  width: 97%;
-  height: 100%;
+  width: 100%;
 }
 
 .k-dirty-cell .k-dirty {
@@ -12,7 +48,96 @@
   left: unset;
 }
 
-.k-grid .k-edit-cell {
-  padding: 4px 6px;
+.k-dropdown-wrap.k-state-hover {
+  background-color: #fff;
+}
+
+.k-grid tr:hover, .k-grid tr:focus-within {
+  background-color: white;
+}
+.k-grid tr:hover td, .k-grid tr:focus-within td {
+  background-color: #e9ecef;
+}
+.k-grid tr.dirty {
+  background-color: #f8d7da;
+}
+.k-grid tr.dirty td.translator-cell {
+  background-color: #f8d7da;
+}
+.k-grid tr.dirty:hover td, .k-grid tr.dirty:focus-within td {
+  background-color: #f1aeb5;
+}
+.k-grid tr td {
+  vertical-align: top;
+}
+.k-grid tr td.id-column {
+  text-align: right;
+  cursor: pointer;
+}
+.k-grid tr td.translator-cell {
+  cursor: pointer;
+}
+.k-grid tr td.translator-cell:focus, .k-grid tr td.translator-cell:focus-within {
+  background-color: #fff;
+}
+.k-grid tr td.translator-cell .grow-wrap {
+  /* easy way to plop the elements on top of each other and have them both sized based on the tallest one's height */
+  display: grid;
+}
+.k-grid tr td.translator-cell .grow-wrap::after {
+  /* Note the weird space! Needed to preventy jumpy behavior */
+  content: attr(data-replicated-value) " ";
+  /* This is how textarea text behaves */
+  white-space: pre-wrap;
+  /* Hidden from view, clicks, and screen readers */
+  visibility: hidden;
+}
+.k-grid tr td.translator-cell .grow-wrap > textarea {
+  padding: 0;
+  max-width: 100%;
+  width: 100%;
+  /* You could leave this, but after a user resizes, then it ruins the auto sizing */
+  resize: none;
+  /* Firefox shows scrollbar on growth, you can hide like this. */
+  overflow: hidden;
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+  background-color: transparent;
+}
+.k-grid tr td.translator-cell .grow-wrap > textarea:focus, .k-grid tr td.translator-cell .grow-wrap > textarea:focus-visible, .k-grid tr td.translator-cell .grow-wrap > textarea:focus-within {
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+}
+.k-grid tr td.translator-cell .grow-wrap > textarea,
+.k-grid tr td.translator-cell .grow-wrap::after {
+  /* Identical styling required!! */
+  border: 0;
+  /* Place on top of each other */
+  grid-row-start: 1;
+  grid-column-start: 1;
+  grid-row-end: 1;
+  grid-column-end: 1;
+}
+.k-grid tr td.approval-cell {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.k-grid-header th.k-header .k-link {
+  margin: 0;
+}
+
+.approval-check {
+  display: inline;
+  margin: 0 auto;
+  font-size: 1.25rem;
+}
+.approval-check.pending {
+  cursor: pointer;
+}
+.approval-check.pending:hover, .approval-check.pending:focus, .approval-check.pending:focus-within {
+  cursor: pointer;
 }
 /*# sourceMappingURL=translations.css.map */

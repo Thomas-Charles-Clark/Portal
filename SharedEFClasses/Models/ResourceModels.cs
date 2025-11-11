@@ -55,6 +55,10 @@ namespace SharedEFClasses.Models
 
         public string Value { get; set; }
 
+        public int? MemberID { get; set; }
+
+        public DateTime? ModifiedDT { get; set; }
+
         [JsonIgnore]
         [AutoExpand]
         [ForeignKey("ResourceID")]
@@ -63,6 +67,9 @@ namespace SharedEFClasses.Models
         [ForeignKey("LanguageID")]
         [AutoExpand]
         public virtual Language Language { get; set; }
+
+        [ForeignKey("MemberID")]
+        public virtual Member ModifiedBy { get; set; }
     }
 
     public class ResourceSelect

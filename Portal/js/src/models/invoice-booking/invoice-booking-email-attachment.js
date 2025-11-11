@@ -14,7 +14,8 @@
         modalBusy: parent.modalBusy,
         modalBusyMessage: parent.modalBusyMessage,
         reset: parent.reset,
-        reloadAttachment: parent.reallySelectAttachment
+        reloadAttachment: parent.reallySelectAttachment,
+        downloadAttachment: parent.downloadAttachment
     }, rec);
 
     //let toLoad = rec.SelectResult?.MostRecent ?? rec.SelectResult?.Original;
@@ -261,13 +262,15 @@
                 break;
             case 'txt':
             case 'csv':
+                ko.ignoreDependencies(() => {
+                    self.canPreviewAttachment(true);
+                })
                 fetch(`${result}`, {
                     method: 'GET',
                     headers: window.fetchHeaders,
                     cache: 'no-cache'
                 }).then(response => response.text())
                     .then(csvText => {
-                        self.canPreviewAttachment(true);
                         self.prettyPrintedResponse(PR.prettyPrintOne(csvText, self.FileExtension.toLowerCase(), true));
                     })
                     .catch(window.catchFetchError)
@@ -286,23 +289,23 @@
             case 'tif':
             case 'tiff':
                 ko.ignoreDependencies(() => {
-                    self.canPreviewAttachment(true);
+                    self.canPreviewAttachment(false);
                 });
-                if (document.querySelector('#tif-canvas-container')) {
-                    fetch(`${result}`, {
-                        method: 'GET',
-                        headers: window.fetchHeaders,
-                        cache: 'no-cache'
-                    }).then(response => response.arrayBuffer())
-                        .then(buffer => {
-                            let t = new Tiff({ buffer });
-                            let canvas = t.toCanvas();
-                            canvas.classList.add('tif-canvas');
-                            document.querySelector('#tif-canvas-container').innerHTML = '';
-                            document.querySelector('#tif-canvas-container').appendChild(canvas);
-                        })
-                        .catch(window.catchFetchError)
-                }
+                //if (document.querySelector('#tif-canvas-container')) {
+                //    fetch(`${result}`, {
+                //        method: 'GET',
+                //        headers: window.fetchHeaders,
+                //        cache: 'no-cache'
+                //    }).then(response => response.arrayBuffer())
+                //        .then(buffer => {
+                //            let t = new Tiff({ buffer });
+                //            let canvas = t.toCanvas();
+                //            canvas.classList.add('tif-canvas');
+                //            document.querySelector('#tif-canvas-container').innerHTML = '';
+                //            document.querySelector('#tif-canvas-container').appendChild(canvas);
+                //        })
+                //        .catch(window.catchFetchError)
+                //}
             break;
             default:
                 self.canPreviewAttachment(false);
@@ -354,9 +357,11 @@
 
                     let result = `/incomingemail/attachments/${self.IsInline ? 'inline' : 'regular'}/null/${self.EmailAttachmentID}`
 
-                    ko.ignoreDependencies(() => {
-                        self.actualSrc(result);
-                    });
+                    //ko.ignoreDependencies(() => {
+                    //    self.actualSrc(result);
+                    //}); 
+
+                    self.downloadAttachment(result, `${self.FileName}.${self.FileExtension}`)
 
                 }, () => {
 

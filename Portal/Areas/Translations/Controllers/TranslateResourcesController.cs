@@ -28,6 +28,9 @@ namespace Portal.Areas.Translations.Controllers
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
+            // possibly lift a languageId from a user's role to fix them to, just to prevent... any
+            // potential for crossing wires
+
             var model = new TranslateResourcesViewModel(user.GetActiveRoleProperties(),
                 application.Heading,
                 application.SubHeading);

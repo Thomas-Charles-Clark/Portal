@@ -547,7 +547,9 @@ namespace Portal.Areas.Invoices.Controllers
 
             var supplier = PortalDb.Suppliers_Live.Include("Currency").Include("BudgetHolder").Where(s => s.Code == email.SupplierCode).SingleOrDefault();
 
-            var attachments = PortalDb.Attachments.Include("AttachmentType").Where(a => a.EmailID == dto.EmailID && a.Deleted == false).ToList();
+            var attachments = PortalDb.Attachments.Include("AttachmentType").Where(a =>
+                a.EmailID == dto.EmailID && 
+                a.Deleted == false).ToList();
 
             var additionalInfo = await PortalDb.Email_Select(dto);
 
@@ -577,7 +579,7 @@ namespace Portal.Areas.Invoices.Controllers
 
                     if (a != null)
                     {
-                        return $"src=\"/incomingemail/attachments/{(a.IsInline ? "inline" : "regular")}/{dto.EmailID}/{a.EmailAttachmentID}\"";
+                        return $"src=\"/incomingemail/attachments/{(a.IsInline ? "inline" : "regular")}/{dto.EmailID}/{a.EmailAttachmentID}\" loading=\"lazy\"";
                     }
                     else
                     {

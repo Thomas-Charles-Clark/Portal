@@ -310,7 +310,12 @@ namespace SharedEFClasses.Models
         [InverseProperty("ForwardedToMember")]
         public virtual ICollection<Attachment> IncomingEmailAttachmentsReceived { get; set; }
 
-        public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
+        [JsonIgnore]
+        [InverseProperty("ModifiedBy")]
+        public virtual ICollection<Resource_Language> ResourcesTranslated { get; set; }
+
+
+		public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
             ClaimsIdentity userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);

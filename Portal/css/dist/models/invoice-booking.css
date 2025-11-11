@@ -621,7 +621,7 @@ body {
 }
 #email-modal .modal-dialog .modal-content .modal-body,
 #document-viewer-modal .modal-dialog .modal-content .modal-body {
-  height: 100%;
+  max-height: 100vh;
   background-color: #f3f1ed;
 }
 #email-modal .modal-dialog .modal-content .modal-body #attachments-list-container,
@@ -893,6 +893,21 @@ body {
 #email-modal .modal-dialog .modal-content .modal-body .attachment-viewer .attachment-iframe-wrapper .prettyprint li,
 #document-viewer-modal .modal-dialog .modal-content .modal-body .attachment-viewer .attachment-iframe-wrapper .prettyprint li {
   background-color: transparent;
+}
+#email-modal .modal-dialog .modal-content .modal-body .attachment-viewer .attachment-iframe-wrapper:has(.attachment-img),
+#document-viewer-modal .modal-dialog .modal-content .modal-body .attachment-viewer .attachment-iframe-wrapper:has(.attachment-img) {
+  --bs-aspect-ratio: 75%;
+  background-color: #020202;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#email-modal .modal-dialog .modal-content .modal-body .attachment-viewer .attachment-iframe-wrapper img.attachment-img,
+#document-viewer-modal .modal-dialog .modal-content .modal-body .attachment-viewer .attachment-iframe-wrapper img.attachment-img {
+  width: auto;
+  height: auto;
+  position: static;
+  max-width: 90%;
 }
 #email-modal .modal-dialog .modal-content .modal-body .attachment-viewer #email-body,
 #document-viewer-modal .modal-dialog .modal-content .modal-body .attachment-viewer #email-body {

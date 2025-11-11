@@ -20,7 +20,7 @@ namespace SharedEFClasses.Models
     {
         public async Task<SendStatementsResult> SendStatements(PassSendStatementsDto dto)
         {
-            var result = await this.Database.Connection.QuerySingleAsync<SendStatementsResult>("portal.CreditControl_AccountStatement_Send", dto,
+            var result = await this.Database.Connection.QuerySingleAsync<SendStatementsResult>("portal.CreditControl_AccountStatement_AddToDocumentEmailQueue", dto,
                 null, null, CommandType.StoredProcedure);
 
             return result;

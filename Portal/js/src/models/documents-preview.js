@@ -11,6 +11,10 @@
 
     self.showDocument = ko.observable(false);
 
+    self.overrideParameters = ko.observable();
+
+    self.outputMode = ko.observable();
+
     self.documentSendHistory = ko.observableArray(typeof getDocumentSendHistory === 'function' ? getDocumentSendHistory() : []);
 
     self.documentId = ko.observable(typeof getDocumentType === 'function' ? getDocumentType() : undefined).extend({
@@ -392,18 +396,40 @@
             
             console.log('change', dataItem);
 
-            self.fetchDocument(undefined, undefined, {
+            //new Date(Date.parse('@($"{Model.DocumentDetails?.date:yyyy-MM-ddTHH:mm:ssZ}")'));
+
+            var overrideParameters = {
                 documentType: dataItem.DocumentID,
                 languageId: dataItem.LanguageID,
                 tradeAccountId: dataItem.TradeAccountID,
                 basketId: dataItem.BasketID,
                 transactionId: dataItem.TransactionID,
                 orderHeadId: dataItem.OrderHeadID,
-                date: dataItem.Date ? dataItem.Date : null
-            });
+                date: dataItem.Date ? dataItem.Date : null,
+                outputMode: dataItem.OutputMode
+            };
+
+            self.overrideParameters(overrideParameters);
+
+            self.fetchDocument(undefined, undefined, overrideParameters);
         },
         dataBound: function (e) {
 
+        }
+    };
+
+    self.outputModeParams = {
+        label: 'Output Mode',
+        observable: self.outputMode,
+        useNativeValidation: false,
+        decorateInputElement: true,
+        insertValidationMessages: false,
+        showClear: true,
+        clearFunction: () => {
+            self.outputMode(undefined);
+        },
+        enterKey: () => {
+            self.fetchDocument()
         }
     };
 
@@ -421,7 +447,16 @@
 
     //#region Subscriptions
 
+    self.documentId.subscribe(nv => {
+        self.overrideParameters(undefined);
+    });
+
+    self.languageId.subscribe(nv => {
+        self.overrideParameters(undefined);
+    });
+
     self.tradeAccountId.subscribe(function (newValue) {
+        self.overrideParameters(undefined);
         self.validateNow(false);
         self.orderHeadId(undefined);
         self.transactionId(undefined);
@@ -429,26 +464,38 @@
     });
 
     self.transactionId.subscribe(function (newValue) {
+        self.overrideParameters(undefined);
         self.validateNow(false);
         self.orderHeadId(undefined);
         self.basketId(undefined);
     });
 
     self.orderHeadId.subscribe(function (newValue) {
+        self.overrideParameters(undefined);
         self.validateNow(false);
         self.basketId(undefined);
         self.transactionId(undefined);
     });
 
     self.basketId.subscribe(function (newValue) {
+        self.overrideParameters(undefined);
         self.validateNow(false);
         self.orderHeadId(undefined);
         self.transactionId(undefined);
     });
 
     self.date.subscribe(nv => {
+        self.overrideParameters(undefined);
         if (nv) {
             self.fetchDocument();
+        }
+    });
+
+    self.outputMode.subscribe(nv => {
+        if (self.overrideParameters()) {
+            self.overrideParameters(Object.assign({
+                outputMode: nv
+            }, self.overrideParameters()));
         }
     })
 
@@ -511,17 +558,17 @@
 
     self.emailer.send = self.sendDocument;
 
-    self.fetchDocument = function (data, event, overrideParameters) {
+    self.fetchDocument = function (data, event) {
 
-        console.log('fetchDocument', data, event, overrideParameters);
+        console.log('fetchDocument', data, event);
 
-        if (typeof overrideParameters === 'undefined') {
+        if (self.overrideParameters() === 'undefined') {
             self.validateNow(false);
             self.validateNow(true);
         }
         self.emailer.validateSendNow(false);
         window.setTimeout(function () {
-            if (typeof overrideParameters === 'undefined' && self.errors().length) {
+            if (self.overrideParameters() === 'undefined' && self.errors().length) {
                 self.errors.filter(function (x) {
                     x.isValid.notifySubscribers(x.isValid());
                 })
@@ -537,7 +584,7 @@
 
                 let url = '/api/documentsapi/FetchDocument';
 
-                var data = overrideParameters ?? self.getData();
+                var data = self.overrideParameters() ?? self.getData();
 
                 let objJsonStr = JSON.stringify(data);
 
@@ -548,6 +595,19 @@
                 console.log('fetchDocument calling with', data);
 
                 if (window.fetch) {
+                    fetch('/api/documentsapi/GetDocumentEmailerProperties', {
+                        method: 'POST',
+                        headers: window.fetchHeaders,
+                        body: JSON.stringify({ d: objJsonB64 })
+                    })
+                        .then(window.handleFetchResponse)
+                        .then(data => {
+                            self.emailer.to(data.EmailTo);
+                            self.emailer.subject(data.EmailSubject);
+                            self.emailer.body(data.EmailBody);
+                        })
+                        .catch(window.catchFetchError)
+
                     fetch(url, {
                         method: 'POST',
                         body: JSON.stringify({ d: objJsonB64 }),
@@ -555,18 +615,67 @@
                             'Content-Type': 'application/json',
                             'Authorization': 'Bearer ' + localStorage.BearerToken
                         }
-                    }).then(function (response) {
-                        if (response.ok)
-                            return response.blob();
-                        else
-                            throw new error('Document not Found');
-                    }).then(function (blob) {
+                    })
+                        .then(response => response.blob()) 
+                    //.then(async response => {
+
+                    //    const reader = response.body.getReader();
+
+                    //    let pdfBytes = [];
+
+                    //    while (true) {
+                    //        const result = {
+                    //            done, value
+                    //        } = await reader.read();
+
+                    //        if (!done) {
+
+                    //        }
+                    //    }
+
+                    //    let result = {
+                    //        done,
+                    //        value
+                    //    } = await reader.read();
+
+                    //    var pdfBlob = new Blob([result.value]);
+
+                    //    $('#document-iframe').remove();
+                    //    $('#document-iframe-container').html(`<iframe src="${window.URL.createObjectURL(pdfBlob)}#view=fit" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%;" allowfullscreen></iframe>`);
+
+                    //    self.showDocument(true);
+
+                    //    result = {
+                    //        done,
+                    //        value
+                    //    } = await reader.read();
+
+                    //    var emailerJson = JSON.parse(Buffer.from(result.value).toString('utf8'));
+
+                    //    console.log(emailerJson)
+
+                    //    self.busy(false);
+                    //    self.busyMessage(undefined);
+
+                    //    //if (response.ok)
+                    //    //    return response.blob();
+                    //    //else
+                    //    //    throw new error('Document not Found');
+                    //    })
+                    //.then(function (response) {
+                    //    if (response.ok)
+                    //        return response.blob();
+                    //    else
+                    //        throw new error('Document not Found');
+                    //})
+                    .then(function (blob) {
                         $('#document-iframe').remove();
                         $('#document-iframe-container').html(`<iframe src="${window.URL.createObjectURL(blob)}#view=fit" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%;" allowfullscreen></iframe>`);
                         self.showDocument(true);
                         self.busy(false);
                         self.busyMessage(undefined);
-                    }).catch(function (xhr, s, a) {
+                    })
+                    .catch(err => {
                         $.info('Sorry', "Failed to retrieve Document");
                         self.busy(false);
                     });
@@ -632,7 +741,9 @@
     });
 
     self.link = ko.pureComputed(function () {
-        let objJsonStr = JSON.stringify({
+
+
+        let objJson = {
             documentType: self.documentId(),
             languageId: self.languageId(),
             tradeAccountId: self.tradeAccountId(),
@@ -640,19 +751,30 @@
             transactionId: self.transactionId(),
             orderHeadId: self.orderHeadId(),
             date: self.date() ? self.date().toISOString() : null
-        });
-        let objJsonB64 = btoa(objJsonStr);
+        };
+
+        if (self.overrideParameters() != null) {
+            objJson = self.overrideParameters();
+        }
+
+        if (self.outputMode()) {
+            objJson.outputMode = self.outputMode();
+        }
+
+        let objJsonB64 = btoa(JSON.stringify(objJson));
+
         return new URLSearchParams({
             d: objJsonB64
         }).toString();
+
     }, self);
 
     self.userLink = ko.pureComputed(function () {
-        return window.location.origin + '/documents/view?' + self.link()
+        return window.location.origin + '/documents/view?' + self.link()?.replace(/%3D/gm, '=');
     }, self);
 
     self.adminLink = ko.pureComputed(function () {
-        return window.location.origin + '/documents/preview?' + self.link()
+        return window.location.origin + '/documents/preview?' + self.link()?.replace(/%3D/gm, '=')
     }, self);
 
     self.fetchLiveDocuments = ko.computed(() => {

@@ -1322,7 +1322,7 @@ namespace Portal.Utilities.Document
             {
                 var output = new MemoryStream();
 
-                var document = new iTextSharp.text.Document(PageSize.A4, 25, 25, 90, 125);
+                var document = new iTextSharp.text.Document(PageSize.A4, 25, 25, 90, 90);
 
                 var writer = PdfWriter.GetInstance(document, output);
 
@@ -1902,7 +1902,7 @@ namespace Portal.Utilities.Document
                         spacingTable.AddCell(spacingCell);
 
                         spacingTable.SpacingBefore = 0.0f;
-                        spacingTable.SpacingAfter = 30.0f;
+                        spacingTable.SpacingAfter = 0.0f;
 
                         document.Add(spacingTable);
                     }

@@ -1644,12 +1644,7 @@
                         <pre class="prettyprint linenums bg-dark" data-bind="html: prettyPrintedResponse"></pre>
                         <!-- /ko -->
                         <!-- ko if: ['png','jpg','jpeg','gif','bmp','webp'].indexOf(FileExtension.toLowerCase()) > -1 -->
-                        <img data-bind="attr: { src: actualSrc }" />
-                        <!-- /ko -->
-                        <!-- ko if: ['tif', 'tiff'].indexOf(FileExtension.toLowerCase()) > -1 -->
-                        <div class="tif-canvas-container">
-
-                        </div>
+                        <img class="attachment-img" data-bind="attr: { src: actualSrc }" />
                         <!-- /ko -->
                     </div>
                     <!-- /ko -->
@@ -1663,7 +1658,7 @@
 </div>
 
 <div class="modal fade" id="download-attachments-modal">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content" data-bind="with: selectedEmail">
             <div class="blocker" data-bind="flexFadeVisible: downloadAttachmentsModalBusy">
                 <div class="loading-spinner"></div>
@@ -1790,11 +1785,6 @@
                         <!-- /ko -->
                         <!-- ko if: ['png','jpg','jpeg','gif','bmp','webp'].indexOf(FileExtension.toLowerCase()) > -1 -->
                         <img data-bind="attr: { src: actualSrc }" />
-                        <!-- /ko -->
-                        <!-- ko if: ['tif', 'tiff'].indexOf(FileExtension.toLowerCase()) > -1 -->
-                        <div class="tif-canvas-container">
-
-                        </div>
                         <!-- /ko -->
                     </div>
                     <div class="data-pane">

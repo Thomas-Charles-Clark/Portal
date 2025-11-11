@@ -835,7 +835,7 @@ $light-blue-highlight: tint-color($blue-100, 75%);
             }
 
             .modal-body {
-                height: 100%;
+                max-height: 100vh;
                 background-color: $warm-grey-background;
 
                 #attachments-form {
@@ -962,11 +962,26 @@ $light-blue-highlight: tint-color($blue-100, 75%);
                         --bs-aspect-ratio: 126%;
                         border: 1px solid $gray-400;
                         max-width: 55%;
-                        
+
                         .prettyprint {
                             li {
                                 background-color: transparent;
                             }
+                        }
+
+                        &:has(.attachment-img) {
+                            --bs-aspect-ratio: 75%;
+                            background-color: #020202;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+
+                        img.attachment-img {
+                            width: auto;
+                            height: auto;
+                            position: static;
+                            max-width: 90%;
                         }
                     }
 
@@ -1861,3 +1876,4 @@ $light-blue-highlight: tint-color($blue-100, 75%);
         }
     }
 }
+

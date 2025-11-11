@@ -3241,38 +3241,6 @@
         //    }
         //});
     </script>
-
-    <script type="text/javascript">
-        function foo() {
-            let url = '/api/componentapi/FetchDocument';
-            if (window.fetch) {
-                fetch(url, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        documentType: 2,
-                        basketId: 134037,
-                        transactionId: null,
-                        orderHeadId: null,
-                        languageId: 1
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + localStorage.BearerToken
-                    }
-                }).then(function (response) {
-                    return response.blob();
-                }).then(function (blob) {
-                    const newWindow = window.open('', '')
-                    //newWindow.document.title = 'Document.pdf'
-                    newWindow.document.write('<html><head><title>Document.pdf</title><link rel="shortcut icon" type="image/x-icon" href="https://www.designersguild.com/favicon.ico" /></head><body style="margin: 0">')
-                    newWindow.document.write(`<iframe src="${window.URL.createObjectURL(blob)}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
-                    newWindow.document.write('</body></html');
-                }).catch(function (xhr, s, a) {
-                    $.showError(xhr, s, a);
-                });
-            }
-        }
-    </script>
     <div class="modal fade" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" id="confirm-modal">
         <div class="modal-dialog">
             <div class="modal-content">

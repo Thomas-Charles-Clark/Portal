@@ -296,6 +296,7 @@ namespace SharedEFClasses.Models.Documents
 
     public class DocumentEmail
     {
+        public short EmailTemplateID { get; set; }
         public string EmailTo { get; set; }
         public string EmailSubject { get; set; }
         public string EmailBody { get; set; }
@@ -314,7 +315,6 @@ namespace SharedEFClasses.Models.Documents
     public class PassDocumentBase64Identifier
     {
         public string d { get; set; }
-        public string body { get; set; }
     }
 
     public class PassDocumentIdentifier
@@ -331,6 +331,7 @@ namespace SharedEFClasses.Models.Documents
         public string body { get; set; }
         public int? memberId { get; set; }
         public DateTime? date { get; set; }
+        public string outputMode { get; set; }
     }
 
     public class DocumentColumnHeading

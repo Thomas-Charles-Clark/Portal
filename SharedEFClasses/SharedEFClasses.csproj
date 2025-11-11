@@ -673,6 +673,7 @@
     <Compile Include="Models\DeliveryModels.cs" />
     <Compile Include="Models\GenericKendoDataTransferModels.cs" />
     <Compile Include="Models\MaintenanceModels.cs" />
+    <Compile Include="Models\Resources\PassResource_Language.cs" />
     <Compile Include="Models\Retail\RetailStoreMember.cs" />
     <Compile Include="Models\ReturnModels.cs" />
     <Compile Include="Models\SampleOrderConfirmationTextResult.cs" />

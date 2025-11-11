@@ -305,7 +305,7 @@
 
         if (vatInCurrency && exchangeRate) {
 
-            let result = Math.round((vatInCurrency * exchangeRate) * 10000) / 10000;
+            let result = Math.round((vatInCurrency / exchangeRate) * 10000) / 10000;
 
             return result;
         } else {

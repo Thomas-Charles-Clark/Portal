@@ -19,12 +19,14 @@ using System.Linq;
 using System.Management.Automation.Language;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
+using System.Web.Http.Results;
 
 namespace Portal.Areas.Documents.Controllers
 {
@@ -41,7 +43,7 @@ namespace Portal.Areas.Documents.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IHttpActionResult GetDocument([FromUri] PassDocumentBase64Identifier objDoc64)
+        public async Task<IHttpActionResult> GetDocument([FromUri] PassDocumentBase64Identifier objDoc64)
         {
             byte[] byteArray = Convert.FromBase64String(objDoc64.d);
 
@@ -69,14 +71,19 @@ namespace Portal.Areas.Documents.Controllers
             var stream = GenericDocumentPDFWriter.GenerateDocument(System.Web.Hosting.HostingEnvironment.MapPath("~"),
                 result);
 
-            HttpContext.Current.Response.ContentType = "application/pdf";
-            HttpContext.Current.Response.Buffer = false;
-            HttpContext.Current.Response.Clear();
-            HttpContext.Current.Response.OutputStream.Write(stream.GetBuffer(), 0, stream.GetBuffer().Length);
-            HttpContext.Current.Response.OutputStream.Flush();
-            HttpContext.Current.Response.End();
+            var content = new MultipartContent();
 
-            return null;
+			content.Add(new StreamContent(new MemoryStream(stream.GetBuffer())));
+			content.Add(new StreamContent(new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(result.Document.DocumentEmail)))));
+
+			HttpContext.Current.Response.ContentType = "application/pdf";
+			HttpContext.Current.Response.Buffer = true;
+			HttpContext.Current.Response.Clear();
+			HttpContext.Current.Response.OutputStream.Write(stream.GetBuffer(), 0, stream.GetBuffer().Length);
+			HttpContext.Current.Response.OutputStream.Flush();
+			HttpContext.Current.Response.End();
+
+			return null;
         }
 
         [HttpPost]
@@ -88,7 +95,7 @@ namespace Portal.Areas.Documents.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult FetchDocument([FromBody] PassDocumentBase64Identifier objDoc64)
+        public async Task<IHttpActionResult> FetchDocument([FromBody] PassDocumentBase64Identifier objDoc64)
         {
             byte[] byteArray = Convert.FromBase64String(objDoc64.d);
 
@@ -100,20 +107,38 @@ namespace Portal.Areas.Documents.Controllers
 
             objDoc.memberId = memberId;
 
-            var result = PortalDb.SelectDocument(objDoc);
+			var result = PortalDb.SelectDocument(objDoc);
 
-            var stream = GenericDocumentPDFWriter.GenerateDocument(System.Web.Hosting.HostingEnvironment.MapPath("~"),
-                result);
+			var stream = GenericDocumentPDFWriter.GenerateDocument(System.Web.Hosting.HostingEnvironment.MapPath("~"),
+				result);
 
             HttpContext.Current.Response.ContentType = "application/pdf";
-            HttpContext.Current.Response.Buffer = false;
-            HttpContext.Current.Response.Clear();
+			HttpContext.Current.Response.Buffer = true;
+			HttpContext.Current.Response.Clear();
             HttpContext.Current.Response.OutputStream.Write(stream.GetBuffer(), 0, stream.GetBuffer().Length);
             HttpContext.Current.Response.OutputStream.Flush();
-            HttpContext.Current.Response.End();
+			HttpContext.Current.Response.End();
 
-            return null;
-        }
+			return null;
+		}
+
+        [HttpPost]
+        public IHttpActionResult GetDocumentEmailerProperties([FromBody] PassDocumentBase64Identifier objDoc64)
+		{
+			byte[] byteArray = Convert.FromBase64String(objDoc64.d);
+
+			string jsonBack = Encoding.UTF8.GetString(byteArray);
+
+			var memberId = User.Identity.GetUserId<int>();
+
+			var objDoc = JsonConvert.DeserializeObject<PassDocumentIdentifier>(jsonBack);
+
+			objDoc.memberId = memberId;
+
+			var result = PortalDb.SelectDocument(objDoc);
+
+            return Ok(result.Document.DocumentEmail);
+		}
 
         [HttpPost]
         public async Task<IHttpActionResult> EmailDocument([FromBody] PassDocumentBase64Identifier objDoc64)

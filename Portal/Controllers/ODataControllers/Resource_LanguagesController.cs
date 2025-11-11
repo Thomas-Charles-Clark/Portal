@@ -12,6 +12,7 @@ using SharedEFClasses.Models;
 using SharedEFClasses.Models.General;
 using Microsoft.AspNet.OData;
 using SharedEFClasses;
+using SharedEFClasses.Models.Resources;
 
 namespace Portal.Controllers
 {
@@ -46,7 +47,7 @@ namespace Portal.Controllers
             {
                 return BadRequest(ModelState);
             }
-
+            
             // Now. This one is a bit of a kludge, because I'm permitting creation of the parent entity
             // using a grid designed for the child. No matter:
 
@@ -61,6 +62,8 @@ namespace Portal.Controllers
 
             PortalDb.Resource_Language_Initialise();
 
+            // PortalDb.Resource_Language_AutoTranslate();
+
             // Rather leaves me wondering what to return here, I'm afraid... I haven't created a specific entity, because I haven't
             // demanded a language... I could default that language... but to what? there... hmm... isn't an answer yet.
 
@@ -68,7 +71,7 @@ namespace Portal.Controllers
         }
 
         [EnableQuery]
-        public async Task<IHttpActionResult> Put([FromODataUri]short keyResourceId, [FromODataUri]byte keyLanguageId, [FromBody]Resource_Language entity)
+        public async Task<IHttpActionResult> Put([FromODataUri]short keyResourceId, [FromODataUri]byte keyLanguageId, [FromBody]PassResource_Language entity)
         {
             if (!ModelState.IsValid)
             {
@@ -79,9 +82,9 @@ namespace Portal.Controllers
                 return BadRequest("The key from the url must match the key of the entity in the body");
             }
 
-            var original = await PortalDb.Resource_Languages.FindAsync(keyResourceId, keyLanguageId);
+            var dbrec = await PortalDb.Resource_Languages.FindAsync(keyResourceId, keyLanguageId);
 
-            if (original == null)
+            if (dbrec == null)
             {
                 return NotFound();
             }
@@ -90,7 +93,10 @@ namespace Portal.Controllers
                 if (String.IsNullOrWhiteSpace(entity.Value))
                     entity.Value = null;
 
-                PortalDb.Entry(original).CurrentValues.SetValues(entity);
+                dbrec.MemberID = entity.MemberID;
+
+				dbrec.Value = entity.Value;
+
                 await PortalDb.SaveChangesAsync();
             }
 

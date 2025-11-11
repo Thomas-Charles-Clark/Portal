@@ -2610,9 +2610,12 @@ This customer wishes their deliveries to be consolidated. Please double check th
             self.newNoteErrors.showAllMessages(false);
         }
     });
+
     self.salesMarket.subscribe(function (newValue) {
         //console.log('salesMarket subscribe hit');
         //self.leadSaveBusy(true);
+
+        self.fetchAvailableCreditControllers();
 
         self.salesRepresentative(undefined);
         self.salesAgent(undefined);
