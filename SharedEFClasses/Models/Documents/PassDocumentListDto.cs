@@ -12,5 +12,6 @@ namespace SharedEFClasses.Models.Documents
 		public int? TradeAccountID { get; set; }
 		public byte? LanguageID { get; set; }
 		public DateTime? Date { get; set; }
+		public string OutputMode { get; set; }
 	}
 }

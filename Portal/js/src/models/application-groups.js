@@ -200,7 +200,7 @@
                 },
                 destroy: {
                     url: function (data) {
-                        return '/odata/ApplicationGroups(resourceId=' + data.ApplicationGroupID + ')?$expand=Applications'
+                        return '/odata/ApplicationGroups(applicationGroupId=' + data.ApplicationGroupID + ')?$expand=Applications'
                     }
                 },
                 parameterMap: function (data, type) {

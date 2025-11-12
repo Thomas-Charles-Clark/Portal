@@ -170,13 +170,6 @@
                     url: function () {
                         return '/odata/Resource_Languages'
                     },
-                    //dataFilter: (data, dataType) => {
-                    //    console.log('dataFilter called with', data, dataType)
-                    //    return data.map(d => translationRecord({
-                    //        record: d,
-                    //        parent: self
-                    //    }));
-                    //}
                 },
                 update: {
                     url: function (data) {
@@ -190,24 +183,27 @@
                 },
                 create: {
                     url: function (dataItem) {
-                        delete dataItem.ResourceID;
-                        delete dataItem.LanguageID;
+                        delete dataItem.resourceId;
+                        delete dataItem.languageId;
                         return '/odata/Resource_Languages';
                     }
                 },
+                destroy: {
+                    url: function (data) {
+                        return '/odata/Resource_Languages(resourceId=' + data.resourceId + ',languageId=' + data.LanguageIdw + ')'
+                    }
+                },
                 parameterMap: function (data, type) {
+                    var result = kendo.data.transports["odata-v4"].parameterMap(data, type);
 
                     if (type === "update") {
-                        data = Object.assign({
-                            memberId: +getUserId()
-                        }, data);
+                        if (data.Value == "")
+                            data.Value = null;
                         console.log('updating', data);
                         self.resourceGridSettings.widget().one("dataBound", function (e) {
                             self.resourceGridSettings.widget().dataSource.read();
                         });
                     }
-
-                    var result = kendo.data.transports["odata-v4"].parameterMap(data, type);
 
                     //if (result.$filter) {
                     //    result.$filter = result.$filter.replace('datetime', 'datetimeoffset');
@@ -229,26 +225,26 @@
                     fields: {
                         ResourceID: {
                             type: 'number',
-                            editable: false,
-                            nullable: true
+                            editable: false
                         },
                         Resource: {
                             type: 'object',
-                            editable: false,
+                            editable: true,
                             validation: {
                                 required: true,
                                 nullable: false
                             },
                             defaultValue: {
+                                ResourceID: 0,
                                 Name: '',
                                 Value: ''
-                            },
-                            fields: {
-                                Name: { type: 'string', editable: false },
-                                Value: { type: 'string', editable: false }
                             }
                         },
                         //Resource: {
+                        //    type: 'object',
+                        //    validation: {
+                        //        required: true
+                        //    },
                         //    editable: false
                         //},
                         Language: {
@@ -271,16 +267,6 @@
                                 nullable: true
                             },
                             defaultValue: null
-                        },
-                        ModifiedBy: {
-                            type: 'object',
-                            fields: {
-                                FullName: { type: 'string', editable: false },
-                                Email: { type: 'string', editable: false }
-                            }
-                        },
-                        ModifiedDT: {
-                            type: 'datetime'
                         }
                     }
                 }

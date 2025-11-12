@@ -34,4 +34,8 @@
 .halloween-message .attribution::before {
   content: " - ";
 }
+
+.mdc-text-field--html-editor .k-widget {
+  border: 0;
+}
 /*# sourceMappingURL=common.css.map */

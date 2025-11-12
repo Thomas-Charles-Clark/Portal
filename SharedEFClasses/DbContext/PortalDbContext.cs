@@ -102,6 +102,7 @@ namespace SharedEFClasses.Models
         public DbSet<Resource_Language> Resource_Languages { get; set; }
         public DbSet<Document> Documents { get; set; }
         public DbSet<DocumentResource> DocumentResources { get; set; }
+        public DbSet<DocumentOutputMode> DocumentOutputModes { get; set; }
         public DbSet<Image> Images { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Mertex.OrderTaker> OrderTakers { get; set; }
@@ -165,7 +166,6 @@ namespace SharedEFClasses.Models
         public DbSet<PurchasingRecommendation> PurchasingRecommendations { get; set; }
 
         #endregion
-
 
         #region PreAllocations 
 
@@ -456,7 +456,6 @@ namespace SharedEFClasses.Models
         public virtual DbSet<ActiveDirectoryUser_ActiveDirectoryGroup> ActiveDirectory_Users_Groups { get; set; }
 
         #endregion
-
 
         #region Lead
 

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using SharedEFClasses.Models.General;
+using Newtonsoft.Json;
 
 namespace SharedEFClasses.Models.Documents
 {
@@ -25,6 +26,9 @@ namespace SharedEFClasses.Models.Documents
 
         [InverseProperty("Document")]
         public virtual ICollection<DocumentResource> Resources { get; set; }
+
+        [InverseProperty("Document")]
+        public virtual ICollection<DocumentOutputMode> OutputModes { get; set; }
     }
 
 }

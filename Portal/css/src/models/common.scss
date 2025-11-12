@@ -73,3 +73,9 @@ $readonly-background: repeating-linear-gradient(-45deg, rgb(0 0 0 / 5%), transpa
         content: ' - ';
     }
 }
+
+.mdc-text-field--html-editor {
+    .k-widget {
+        border: 0;
+    }
+}

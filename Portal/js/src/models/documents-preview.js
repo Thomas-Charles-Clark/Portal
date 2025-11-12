@@ -13,8 +13,6 @@
 
     self.overrideParameters = ko.observable();
 
-    self.outputMode = ko.observable();
-
     self.documentSendHistory = ko.observableArray(typeof getDocumentSendHistory === 'function' ? getDocumentSendHistory() : []);
 
     self.documentId = ko.observable(typeof getDocumentType === 'function' ? getDocumentType() : undefined).extend({
@@ -26,6 +24,20 @@
             message: 'Document is required'
         },
     });
+
+    self.document = ko.observable();
+
+    self.documentOutputModeCode = ko.observable(typeof getDocumentOutputModeCode === 'function' ? getDocumentOutputModeCode() : '').extend({
+        required: {
+            params: true,
+            onlyIf: function () {
+                return self.validateNow() && (self.document() && self.document().OutputModes != null && self.document().OutputModes().length);
+            },
+            message: 'Document Output Mode is required'
+        },
+    });
+
+    self.documentOutputMode = ko.observable();
 
     self.languageId = ko.observable(typeof getLanguageId === 'function' ? getLanguageId() : undefined).extend({
         required: {
@@ -102,19 +114,95 @@
     self.documentParams = kendoMDCDropDownList({
         label: 'Document',
         odata: true,
-        endPoint: '/odata/Documents',
+        endPoint: '/odata/Documents?$expand=OutputModes',
         textField: 'Name',
         valueField: 'DocumentID',
         virtual: false,
         idObservable: self.documentId,
-        objObservable: ko.observable(),
+        objObservable: self.document,
         optionLabel: {
             DocumentID: '',
             Name: ''
         },
         optionLabelTemplate: '',
         filter: false,
-        autoBind: true
+        autoBind: true,
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            let filters = [];
+
+            let documentOutputModeCode = self.documentOutputModeCode();
+
+            if (documentOutputModeCode) {
+                filters.push(`OutputModes/any(c: c/Code eq '${documentOutputModeCode}')`);
+            }
+
+            if (filters.length) {
+                let filterString = filters.join(' and ');
+                d.$apply = `filter(${filterString})`;
+            }
+
+            if (d.$filter) {
+                delete d.$filter;
+            }
+
+            return d;
+        }
+    });
+
+    self.documentOutputModeParams = kendoMDCDropDownList({
+        label: 'Document Output Mode',
+        odata: true,
+        endPoint: '/odata/DocumentOutputModes',
+        textField: 'Name',
+        valueField: 'Code',
+        virtual: false,
+        idObservable: self.documentOutputModeCode,
+        objObservable: self.documentOutputMode,
+        optionLabel: {
+            Code: '',
+            Name: ''
+        },
+        optionLabelTemplate: '',
+        filter: false,
+        autoBind: true,
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            let filters = [];
+
+            let documentId = self.documentId()
+
+            if (documentId) {
+                filters.push(`DocumentID eq ${documentId}`);
+            }
+
+            if (filters.length) {
+                let filterString = filters.join(' and ');
+                d.$apply = `filter(${filterString})`;
+            }
+
+            if (d.$filter) {
+                delete d.$filter;
+            }
+            
+            return d;
+        }
     });
 
     self.languageParams = kendoMDCDropDownList({
@@ -418,21 +506,6 @@
         }
     };
 
-    self.outputModeParams = {
-        label: 'Output Mode',
-        observable: self.outputMode,
-        useNativeValidation: false,
-        decorateInputElement: true,
-        insertValidationMessages: false,
-        showClear: true,
-        clearFunction: () => {
-            self.outputMode(undefined);
-        },
-        enterKey: () => {
-            self.fetchDocument()
-        }
-    };
-
     self.errors = ko.validation.group([
         self.basketId,
         self.orderHeadId,
@@ -491,7 +564,7 @@
         }
     });
 
-    self.outputMode.subscribe(nv => {
+    self.documentOutputModeCode.subscribe(nv => {
         if (self.overrideParameters()) {
             self.overrideParameters(Object.assign({
                 outputMode: nv
@@ -592,7 +665,7 @@
 
                 self.fetchDocumentSendHistory();
 
-                console.log('fetchDocument calling with', data);
+                console.log('getDocumentEmailerProperties calling with', data);
 
                 if (window.fetch) {
                     fetch('/api/documentsapi/GetDocumentEmailerProperties', {
@@ -602,11 +675,16 @@
                     })
                         .then(window.handleFetchResponse)
                         .then(data => {
+
+                            console.log('getDocumentEmailerProperties returned', data);
+
                             self.emailer.to(data.EmailTo);
                             self.emailer.subject(data.EmailSubject);
                             self.emailer.body(data.EmailBody);
                         })
                         .catch(window.catchFetchError)
+
+                    console.log('fetchDocument calling with', { d: objJsonB64 });
 
                     fetch(url, {
                         method: 'POST',
@@ -707,7 +785,8 @@
             basketId: self.basketId(),
             transactionId: self.transactionId(),
             orderHeadId: self.orderHeadId(),
-            date: self.date() ? self.date().toISOString() : null
+            date: self.date() ? self.date().toISOString() : null,
+            outputMode: self.documentOutputModeCode()
         };
     }
 
@@ -757,8 +836,8 @@
             objJson = self.overrideParameters();
         }
 
-        if (self.outputMode()) {
-            objJson.outputMode = self.outputMode();
+        if (self.documentOutputModeCode()) {
+            objJson.outputMode = self.documentOutputModeCode();
         }
 
         let objJsonB64 = btoa(JSON.stringify(objJson));
@@ -787,7 +866,8 @@
             documentId: self.documentId(),
             tradeAccountId: self.tradeAccountId(),
             languageId: self.languageId(),
-            date: self.date()
+            date: self.date(),
+            outputMode: self.documentOutputModeCode()
         };
 
         console.log('FetchLiveDocuments calling with', data);

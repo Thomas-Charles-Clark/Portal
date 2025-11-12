@@ -4183,3 +4183,129 @@ ko.bindingHandlers.prettyPrint = {
         container.innerHTML = contents;
     }
 }
+
+
+ko.bindingHandlers.mdcHtmlEditorComponent = {
+    init: function (element, valueAccessor, allBindingsAccessor) {
+        if (!window.mdc) {
+            console.error('mdcHtmlEditorComponent binding handler: global mdc was not defined', element)
+            return;
+        }
+
+        var params = valueAccessor();
+
+        element.MDCTextField = new mdc.textField.MDCTextField(element);
+
+        params.boundTo.mdcTextField = element.MDCTextField;
+
+        params.boundTo.mdcTextField.useNativeValidation = params.useNativeValidation;
+
+        // legacy
+        if (params.hasOwnProperty('disabled')) {
+            if (ko.isObservable(params.disabled)) {
+                params.disabled.subscribe(function (newValue) {
+                    params.boundTo.mdcTextField.disabled = newValue;
+                });
+            }
+            params.boundTo.mdcTextField.disabled = ko.unwrap(params.disabled);
+        }
+
+        // newer
+        if (params.hasOwnProperty('disable')) {
+            if (ko.isObservable(params.disable)) {
+                params.disable.subscribe(function (newValue) {
+                    params.boundTo.mdcTextField.disabled = newValue;
+                });
+            }
+            params.boundTo.mdcTextField.disabled = ko.unwrap(params.disable);
+        }
+
+        // newer
+        if (params.hasOwnProperty('enable')) {
+            if (ko.isObservable(params.enable)) {
+                params.enable.subscribe(function (newValue) {
+                    params.boundTo.mdcTextField.disabled = !newValue;
+                });
+            }
+            params.boundTo.mdcTextField.disabled = !ko.unwrap(params.enable);
+        }
+
+        if (params.useNativeValidation == false) {
+            if (!params.boundTo.hasOwnProperty('isValid')) {
+                //console.warn('mdcTextFieldComponent observable has no isValid - did you forget some validation?', element);
+            } else {
+                params.boundTo.isValid.extend({
+                    notify: 'always'
+                });
+                params.boundTo.isValid.subscribe(function (newValue) {
+                    if (newValue === true) {
+                        params.boundTo.mdcTextField.valid = true;
+                        //params.boundTo.mdcTextField.root_.classList.remove("shake");
+                    }
+                    if (newValue === false) {
+                        params.boundTo.mdcTextField.valid = false;
+                        if (params.label) {
+                            if (!$(params.boundTo.mdcTextField.label_.root_).hasClass('mdc-floating-label--float-above')) {
+                                params.boundTo.mdcTextField.label_.shake(true);
+                            }
+                        } else {
+                            //params.boundTo.mdcTextField.root_.classList.add("shake");
+                            //window.setTimeout(() => {
+                            //    params.boundTo.mdcTextField.root_.classList.remove("shake");
+                            //}, 150);
+                        }
+                    }
+                });
+            }
+        }
+
+        params.boundTo.subscribe(function (newValue) {
+            if (newValue === '') {
+                newValue = null;
+            }
+            if (newValue != null) {
+                if (!$(params.boundTo.mdcTextField.label_.root_).hasClass('mdc-floating-label--float-above')) {
+                    //window.setTimeout(function () {
+                    params.boundTo.mdcTextField.label_.float(true);
+                    params.boundTo.mdcTextField.getDefaultFoundation().adapter_.notchOutline(params.boundTo.mdcTextField.getDefaultFoundation().adapter_.getLabelWidth() * 0.75);
+                    //}, 50);
+                }
+            } else {
+                if ($(params.boundTo.mdcTextField.label_.root_).hasClass('mdc-floating-label--float-above')) {
+                    //window.setTimeout(function () {
+                    params.boundTo.mdcTextField.label_.float(false);
+                    params.boundTo.mdcTextField.getDefaultFoundation().adapter_.closeOutline();
+                    //}, 50);
+                }
+            }
+        });
+
+        //if (params.boundTo() != null) {
+        //    // We're starting with some value; float the label!
+        //    params.boundTo.mdcTextField.label_.float(true);
+        //}
+
+        //window.setTimeout(function () {
+        //    params.boundTo.mdcTextField.layout();
+        //}, 0);
+
+        assignVisibilityCallback(element, function (visible) {
+            //console.log('mdcTextField visibleCallback hit', visible, element);
+            if (visible) {
+                window.setTimeout(function () {
+                    if (params.boundTo() != null && params.boundTo() !== '') {
+                        params.boundTo.mdcTextField.label_.float(true);
+                        params.boundTo.mdcTextField.getDefaultFoundation().adapter_.notchOutline(params.boundTo.mdcTextField.getDefaultFoundation().adapter_.getLabelWidth() * 0.75);
+                    } else {
+                        params.boundTo.mdcTextField.label_.float(false);
+                        params.boundTo.mdcTextField.getDefaultFoundation().adapter_.closeOutline();
+                    }
+                }, 100);
+            }
+        });
+
+        $('input', element).on('focus', function () {
+            $('input', element).select();
+        });
+    }
+}

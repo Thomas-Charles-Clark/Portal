@@ -406,6 +406,7 @@
     <Compile Include="Models\Department.cs" />
     <Compile Include="Models\Documents\Document.cs" />
     <Compile Include="Models\Documents\DocumentListResult.cs" />
+    <Compile Include="Models\Documents\DocumentOutputMode.cs" />
     <Compile Include="Models\Documents\DocumentRecord.cs" />
     <Compile Include="Models\Documents\DocumentResource.cs" />
     <Compile Include="Models\Documents\DocumentSentReport_Record.cs" />

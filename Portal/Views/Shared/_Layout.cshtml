@@ -1265,7 +1265,7 @@
 		</div>
 		<div class="margin-bottom-15" data-bind="component: { name: 'mdc-text-field-component', params: subjectParams }"></div>
 		<div class="margin-bottom-15" data-bind="component: { name: 'mdc-text-field-component', params: replyToParams }"></div>
-		<div class="margin-bottom-15" data-bind="component: { name: 'mdc-text-area-component', params: bodyParams }"></div>
+		<div class="margin-bottom-15" data-bind="component: { name: 'mdc-kendo-html-editor-component', params: bodyParams }"></div>
 		<div class="send-success text-success margin-bottom-15" style="display: none; font-size: 14px;" data-bind="fadeVisible: showLastSentTo, fadeSpeed: 'slow', html: 'Sent successfully to: ' + sentTo() + ' &#x2714;'"></div>
 	</script>
 
@@ -1354,6 +1354,51 @@
 			<!-- ko if: typeof showClear != 'undefined' && showClear && typeof clearFunction === 'function' -->
 			<div class="btn-close" data-bind="click: clearFunction, css: { 'disabled':  typeof disabled == 'undefined' ? false : disabled }"></div>
 			<!-- /ko -->
+		</div>
+	</script>
+
+	<script id="mdc-kendo-html-editor-component" type="text/html">
+		<div class="mdc-validating-field" data-bind="visible: $data.hasOwnProperty('visible') ? $data.visible : true">
+			<div class="mdc-text-field mdc-text-field--textarea mdc-text-field--html-editor" data-bind="mdcHtmlEditorComponent: {
+					boundTo: observable,
+					useNativeValidation: useNativeValidation,
+					enable: enable,
+					disable: disable,
+                    label: typeof label === 'undefined' ? null : label
+                },
+				 validationOptions: {
+					insertMessages: insertValidationMessages,
+					decorateInputElement: decorateInputElement
+				 },
+				 css: {
+					'busy': typeof busy === 'undefined' ? false : busy,
+					'mdc-text-field--disabled': typeof disabled == 'undefined' ? false : disabled
+				 }">
+				<textarea class="mdc-kendo-html-editor-container"></textarea>
+				<div class="mdc-notched-outline">
+					<div class="mdc-notched-outline__leading"></div>
+					<div class="mdc-notched-outline__notch">
+						<label for="input" class="mdc-floating-label">
+							<span data-bind="text: label"></span>
+						</label>
+					</div>
+					<div class="mdc-notched-outline__trailing"></div>
+				</div>
+				<div class="controls">
+					<!-- ko if: revertible -->
+					<div class="close revert" data-bind="click: revertFunction">
+						<i class="material-icons">
+							replay
+						</i>
+					</div>
+					<!-- /ko -->
+					<!-- ko if: clearable -->
+					<div class="close clear" data-bind="click: clearFunction">
+						&times;
+					</div>
+					<!-- /ko -->
+				</div>
+			</div>
 		</div>
 	</script>
 
@@ -2297,7 +2342,11 @@
 
         ko.components.register('mdc-file-field-component', {
             template: { element: document.getElementById('mdc-file-field-component') }
-        });
+		});
+
+		ko.components.register('mdc-kendo-html-editor-component', {
+			template: { element: document.getElementById('mdc-kendo-html-editor-component') }
+		});
 
 	</script>
 

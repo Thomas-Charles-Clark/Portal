@@ -31,6 +31,7 @@ using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.IncomingEmail;
 using SharedEFClasses.Models.Advertisers;
 using SharedEFClasses.Models.Documents;
+using System.Net.Http.Headers;
 
 namespace Portal
 {
@@ -108,7 +109,8 @@ namespace Portal
             odataBuilder.EntitySet<TradeAccount_TradeHaulier_Override>("TradeAccount_TradeHaulier_Overrides");
             odataBuilder.EntitySet<RingFencePreAllocation>("RingFencePreAllocations");
             odataBuilder.EntitySet<Document>("Documents");
-            odataBuilder.EntitySet<Treatment>("Treatments");
+            odataBuilder.EntitySet<DocumentOutputMode>("DocumentOutputModes");
+			odataBuilder.EntitySet<Treatment>("Treatments");
             odataBuilder.EntitySet<Member>("Members");
             odataBuilder.EntitySet<MarketingBudget>("MarketingBudgets");
             odataBuilder.EntitySet<SelfBillInvoice>("SelfBillInvoices");
@@ -176,7 +178,14 @@ namespace Portal
 
             documentsValueMapperFunction.Parameter<short>("documentId");
 
-            var currencyInvoiceRegistrationFunction = odataBuilder.EntityType<Currency>()
+			var documentOutputModesValueMapperFunction = odataBuilder.EntityType<DocumentOutputMode>()
+				.Collection
+				.Function("DocumentOutputModesValueMapper")
+				.ReturnsCollectionFromEntitySet<DocumentOutputMode>("DocumentOutputModes");
+
+			documentOutputModesValueMapperFunction.Parameter<short>("documentOutputModeId");
+
+			var currencyInvoiceRegistrationFunction = odataBuilder.EntityType<Currency>()
                 .Collection
                 .Function("InvoiceRegistrationCurrencies")
                 .ReturnsCollectionFromEntitySet<Currency>("Currencies");
@@ -382,11 +391,6 @@ namespace Portal
                 .Collection
                 .Function("GetOrdersForOrderBookSummary")
                 .ReturnsCollectionFromEntitySet<OrderBookGrouped>("OrderBooksGrouped");
-
-
-
-
-
 
             odataBuilder.EntityType<Resource_Language>().HasKey(p => new { p.ResourceID, p.LanguageID });
 

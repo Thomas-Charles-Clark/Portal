@@ -70,8 +70,8 @@ namespace Portal.Controllers
             return Created(entity);
         }
 
-        [EnableQuery]
-        public async Task<IHttpActionResult> Put([FromODataUri]short keyResourceId, [FromODataUri]byte keyLanguageId, [FromBody]PassResource_Language entity)
+		[EnableQuery]
+		public async Task<IHttpActionResult> Put([FromODataUri] byte keyLanguageId, [FromODataUri] short keyResourceId, [FromBody]Resource_Language entity)
         {
             if (!ModelState.IsValid)
             {

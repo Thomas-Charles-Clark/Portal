@@ -66,6 +66,10 @@
             return '@(Model.DocumentDetails?.tradeAccountId)';
         }
 
+        function getDocumentOutputModeCode() {
+            return '@(Model.DocumentDetails?.outputMode)';
+        }
+
         @if (Model.DocumentDetails?.date != null)
         {
             <text>
@@ -148,7 +152,7 @@
 					<div id="order-prefilter" data-bind="component: { name: 'mdc-text-field-numeric-component', params: orderHeadParams }"></div>
 					<div id="basket-prefilter" data-bind="component: { name: 'mdc-text-field-numeric-component', params: basketParams }"></div>
 					<div></div>
-					<div id="output-mode-prefilter" data-bind="component: { name: 'mdc-text-field-component', params: outputModeParams }"></div>
+					<div id="output-mode-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentOutputModeParams }"></div>
 					<div></div>
 					<div></div>
 					<button class="btn btn-flat btn-default pull-right" data-bind="click: fetchDocument">
