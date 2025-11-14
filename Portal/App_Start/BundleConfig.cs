@@ -757,7 +757,6 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/customer-invite").Include(
-                        $"{jsPrefix}/models/emailer{jsSuffix}",
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/customer-invite{jsSuffix}"
                 ));
@@ -833,7 +832,6 @@ namespace Portal
 
             bundles.Add(new ScriptBundle("~/bundles/js/stock-management").Include(
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/emailer{jsSuffix}",
                         $"{jsPrefix}/models/stock-management{jsSuffix}"
                 ));
 
@@ -843,7 +841,6 @@ namespace Portal
 
             bundles.Add(new ScriptBundle("~/bundles/js/range-management").Include(
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/emailer{jsSuffix}",
                         $"{jsPrefix}/models/range-management{jsSuffix}"
                 ));
 
@@ -866,7 +863,6 @@ namespace Portal
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-book").Include(
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/emailer{jsSuffix}",
                         $"{jsPrefix}/models/order-book/order-book-summary-filter{jsSuffix}",
                         $"{jsPrefix}/models/order-book/order-book-user-defined-filters{jsSuffix}",
                         $"{jsPrefix}/models/order-book/order-book-date-filters{jsSuffix}",
@@ -880,7 +876,6 @@ namespace Portal
             bundles.Add(new ScriptBundle("~/bundles/js/order-book-detail").Include(
                         $"{jsPrefix}/models/virtual-scrolling-deferred-data{jsSuffix}",
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/emailer{jsSuffix}",
                         $"{jsPrefix}/models/order-book/order-book-advanced-filters{jsSuffix}",
                         $"{jsPrefix}/models/order-book/order-book-summary-filter{jsSuffix}",
                         $"{jsPrefix}/models/order-book/order-book-user-defined-filters{jsSuffix}",
@@ -943,7 +938,6 @@ namespace Portal
 
             bundles.Add(new ScriptBundle("~/bundles/js/invoice-booking").Include(
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/emailer{jsSuffix}",
                         $"{jsPrefix}/lib/tiff/tiff{jsSuffix}",
                         $"{jsPrefix}/models/invoice-booking/controllers/invoice-document-download-task-header-controller{jsSuffix}",
                         $"{jsPrefix}/models/invoice-booking/controllers/invoice-document-download-tasks-controller{jsSuffix}",

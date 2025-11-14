@@ -4263,19 +4263,21 @@ ko.bindingHandlers.mdcHtmlEditorComponent = {
             if (newValue === '') {
                 newValue = null;
             }
-            if (newValue != null) {
-                if (!$(params.boundTo.mdcTextField.label_.root_).hasClass('mdc-floating-label--float-above')) {
-                    //window.setTimeout(function () {
-                    params.boundTo.mdcTextField.label_.float(true);
-                    params.boundTo.mdcTextField.getDefaultFoundation().adapter_.notchOutline(params.boundTo.mdcTextField.getDefaultFoundation().adapter_.getLabelWidth() * 0.75);
-                    //}, 50);
-                }
-            } else {
-                if ($(params.boundTo.mdcTextField.label_.root_).hasClass('mdc-floating-label--float-above')) {
-                    //window.setTimeout(function () {
-                    params.boundTo.mdcTextField.label_.float(false);
-                    params.boundTo.mdcTextField.getDefaultFoundation().adapter_.closeOutline();
-                    //}, 50);
+            if (params.boundTo.mdcTextField.label_) {
+                if (newValue != null) {
+                    if (!$(params.boundTo.mdcTextField.label_.root_).hasClass('mdc-floating-label--float-above')) {
+                        //window.setTimeout(function () {
+                        params.boundTo.mdcTextField.label_.float(true);
+                        params.boundTo.mdcTextField.getDefaultFoundation().adapter_.notchOutline(params.boundTo.mdcTextField.getDefaultFoundation().adapter_.getLabelWidth() * 0.75);
+                        //}, 50);
+                    }
+                } else {
+                    if ($(params.boundTo.mdcTextField.label_.root_).hasClass('mdc-floating-label--float-above')) {
+                        //window.setTimeout(function () {
+                        params.boundTo.mdcTextField.label_.float(false);
+                        params.boundTo.mdcTextField.getDefaultFoundation().adapter_.closeOutline();
+                        //}, 50);
+                    }
                 }
             }
         });
@@ -4289,20 +4291,22 @@ ko.bindingHandlers.mdcHtmlEditorComponent = {
         //    params.boundTo.mdcTextField.layout();
         //}, 0);
 
-        assignVisibilityCallback(element, function (visible) {
-            //console.log('mdcTextField visibleCallback hit', visible, element);
-            if (visible) {
-                window.setTimeout(function () {
-                    if (params.boundTo() != null && params.boundTo() !== '') {
-                        params.boundTo.mdcTextField.label_.float(true);
-                        params.boundTo.mdcTextField.getDefaultFoundation().adapter_.notchOutline(params.boundTo.mdcTextField.getDefaultFoundation().adapter_.getLabelWidth() * 0.75);
-                    } else {
-                        params.boundTo.mdcTextField.label_.float(false);
-                        params.boundTo.mdcTextField.getDefaultFoundation().adapter_.closeOutline();
-                    }
-                }, 100);
-            }
-        });
+        if (params.boundTo.mdcTextField.label_) {
+            assignVisibilityCallback(element, function (visible) {
+                //console.log('mdcTextField visibleCallback hit', visible, element);
+                if (visible) {
+                    window.setTimeout(function () {
+                        if (params.boundTo() != null && params.boundTo() !== '') {
+                            params.boundTo.mdcTextField.label_.float(true);
+                            params.boundTo.mdcTextField.getDefaultFoundation().adapter_.notchOutline(params.boundTo.mdcTextField.getDefaultFoundation().adapter_.getLabelWidth() * 0.75);
+                        } else {
+                            params.boundTo.mdcTextField.label_.float(false);
+                            params.boundTo.mdcTextField.getDefaultFoundation().adapter_.closeOutline();
+                        }
+                    }, 100);
+                }
+            });
+        }
 
         $('input', element).on('focus', function () {
             $('input', element).select();

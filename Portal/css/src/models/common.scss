@@ -74,8 +74,84 @@ $readonly-background: repeating-linear-gradient(-45deg, rgb(0 0 0 / 5%), transpa
     }
 }
 
+
 .mdc-text-field--html-editor {
+    .mdc-text-field__input {
+        line-height: normal;
+    }
+
     .k-widget {
         border: 0;
+
+        .k-content {
+            height: 450px;
+        }
+
+        &.k-editor-widget {
+            background-color: transparent;
+            box-shadow: none;
+        }
+    }
+
+    .mdc-text-field__input {
+        display: none !important;
+    }
+
+    .k-button-group {
+        box-shadow: none;
+    }
+
+    .k-editor-toolbar {
+        margin-left: 100px;
+        transition: margin-left 150ms ease-in-out;
+    }
+
+    .mdc-notched-outline {
+        .mdc-notched-outline__notch {
+            .mdc-floating-label {
+                top: 14px;
+            }
+        }
+    }
+
+    &:has(.mdc-floating-label--float-above) {
+        .k-editor-toolbar {
+            margin-left: 0;
+        }
+    }
+
+    .controls {
+        position: relative;
+        top: 6px;
+    }
+}
+
+.mdc-text-field--html-editor-inline-no-outline {
+    display: inline-flex;
+    align-items: center;
+
+
+    .k-widget {
+        border: 0;
+        flex: 1;
+        box-shadow: none;
+
+        &.k-editor-widget {
+            background-color: transparent;
+            box-shadow: none;
+        }
+    }
+
+    .mdc-text-field__input {
+        display: none !important;
+    }
+
+    .k-editor-inline {
+        line-height: 1.6em;
+        padding: .4em .6em;
+    }
+
+    .controls {
+        position: static;
     }
 }

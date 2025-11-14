@@ -35,6 +35,64 @@
   content: " - ";
 }
 
+.mdc-text-field--html-editor .mdc-text-field__input {
+  line-height: normal;
+}
+.mdc-text-field--html-editor .k-widget {
+  border: 0;
+}
+.mdc-text-field--html-editor .k-widget .k-content {
+  height: 450px;
+}
+.mdc-text-field--html-editor .k-widget.k-editor-widget {
+  background-color: transparent;
+  box-shadow: none;
+}
+.mdc-text-field--html-editor .mdc-text-field__input {
+  display: none !important;
+}
+.mdc-text-field--html-editor .k-button-group {
+  box-shadow: none;
+}
+.mdc-text-field--html-editor .k-editor-toolbar {
+  margin-left: 100px;
+  transition: margin-left 150ms ease-in-out;
+}
+.mdc-text-field--html-editor .mdc-notched-outline .mdc-notched-outline__notch .mdc-floating-label {
+  top: 14px;
+}
+.mdc-text-field--html-editor:has(.mdc-floating-label--float-above) .k-editor-toolbar {
+  margin-left: 0;
+}
+.mdc-text-field--html-editor .controls {
+  position: relative;
+  top: 6px;
+}
+
+.mdc-text-field--html-editor-inline-no-outline {
+  display: inline-flex;
+  align-items: center;
+}
+.mdc-text-field--html-editor-inline-no-outline .k-widget {
+  border: 0;
+  flex: 1;
+  box-shadow: none;
+}
+.mdc-text-field--html-editor-inline-no-outline .k-widget.k-editor-widget {
+  background-color: transparent;
+  box-shadow: none;
+}
+.mdc-text-field--html-editor-inline-no-outline .mdc-text-field__input {
+  display: none !important;
+}
+.mdc-text-field--html-editor-inline-no-outline .k-editor-inline {
+  line-height: 1.6em;
+  padding: 0.4em 0.6em;
+}
+.mdc-text-field--html-editor-inline-no-outline .controls {
+  position: static;
+}
+
 .prefilters {
   margin-bottom: 15px;
 }
@@ -52,39 +110,40 @@
   background-color: #fff;
 }
 
-.k-grid tr:hover, .k-grid tr:focus-within {
+.k-grid-content tr:hover, .k-grid-content tr:focus-within {
   background-color: white;
 }
-.k-grid tr:hover td, .k-grid tr:focus-within td {
+.k-grid-content tr:hover td:not(.translator-cell), .k-grid-content tr:focus-within td:not(.translator-cell) {
   background-color: #e9ecef;
 }
-.k-grid tr.dirty {
+.k-grid-content tr.dirty {
   background-color: #f8d7da;
 }
-.k-grid tr.dirty td.translator-cell {
-  background-color: #f8d7da;
+.k-grid-content tr.dirty td.translator-cell {
+  background-color: #fff;
 }
-.k-grid tr.dirty:hover td, .k-grid tr.dirty:focus-within td {
+.k-grid-content tr.dirty:hover td:not(.translator-cell), .k-grid-content tr.dirty:focus-within td:not(.translator-cell) {
   background-color: #f1aeb5;
 }
-.k-grid tr td {
+.k-grid-content tr td {
   vertical-align: top;
 }
-.k-grid tr td.id-column {
+.k-grid-content tr td.id-column {
   text-align: right;
   cursor: pointer;
 }
-.k-grid tr td.translator-cell {
+.k-grid-content tr td.translator-cell {
   cursor: pointer;
+  padding: 0;
 }
-.k-grid tr td.translator-cell:focus, .k-grid tr td.translator-cell:focus-within {
+.k-grid-content tr td.translator-cell:focus, .k-grid-content tr td.translator-cell:focus-within {
   background-color: #fff;
 }
-.k-grid tr td.translator-cell .grow-wrap {
+.k-grid-content tr td.translator-cell .grow-wrap {
   /* easy way to plop the elements on top of each other and have them both sized based on the tallest one's height */
   display: grid;
 }
-.k-grid tr td.translator-cell .grow-wrap::after {
+.k-grid-content tr td.translator-cell .grow-wrap::after {
   /* Note the weird space! Needed to preventy jumpy behavior */
   content: attr(data-replicated-value) " ";
   /* This is how textarea text behaves */
@@ -92,7 +151,7 @@
   /* Hidden from view, clicks, and screen readers */
   visibility: hidden;
 }
-.k-grid tr td.translator-cell .grow-wrap > textarea {
+.k-grid-content tr td.translator-cell .grow-wrap > textarea {
   padding: 0;
   max-width: 100%;
   width: 100%;
@@ -105,13 +164,13 @@
   box-shadow: none;
   background-color: transparent;
 }
-.k-grid tr td.translator-cell .grow-wrap > textarea:focus, .k-grid tr td.translator-cell .grow-wrap > textarea:focus-visible, .k-grid tr td.translator-cell .grow-wrap > textarea:focus-within {
+.k-grid-content tr td.translator-cell .grow-wrap > textarea:focus, .k-grid-content tr td.translator-cell .grow-wrap > textarea:focus-visible, .k-grid-content tr td.translator-cell .grow-wrap > textarea:focus-within {
   border: 0;
   outline: 0;
   box-shadow: none;
 }
-.k-grid tr td.translator-cell .grow-wrap > textarea,
-.k-grid tr td.translator-cell .grow-wrap::after {
+.k-grid-content tr td.translator-cell .grow-wrap > textarea,
+.k-grid-content tr td.translator-cell .grow-wrap::after {
   /* Identical styling required!! */
   border: 0;
   /* Place on top of each other */
@@ -120,7 +179,7 @@
   grid-row-end: 1;
   grid-column-end: 1;
 }
-.k-grid tr td.approval-cell {
+.k-grid-content tr td.approval-cell {
   vertical-align: middle;
   text-align: center;
 }
@@ -139,5 +198,43 @@
 }
 .approval-check.pending:hover, .approval-check.pending:focus, .approval-check.pending:focus-within {
   cursor: pointer;
+}
+.mdc-text-field--html-editor {
+  display: block;
+}
+.mdc-text-field--html-editor .k-widget {
+  border: 0;
+}
+.mdc-text-field--html-editor .k-widget.k-editor-widget {
+  border-collapse: collapse;
+}
+.mdc-text-field--html-editor .k-widget .k-content {
+  min-height: 250px;
+  height: 100%;
+  border: 0;
+}
+.mdc-text-field--html-editor .k-editor {
+  border-spacing: 0;
+}
+.mdc-text-field--html-editor .k-editor-toolbar {
+  margin-left: 0;
+  margin-bottom: 0;
+  background-color: #fff;
+  transition: none;
+}
+.mdc-text-field--html-editor .k-editable-area {
+  padding: 0;
+  border-bottom: 0;
+}
+.mdc-text-field--html-editor .k-dropdown-wrap {
+  border-width: 1px;
+}
+.mdc-text-field--html-editor .controls {
+  position: absolute;
+  top: 3px;
+  right: 0;
+}
+.mdc-text-field--html-editor .controls .close {
+  padding-right: 0.75rem;
 }
 /*# sourceMappingURL=translations.css.map */

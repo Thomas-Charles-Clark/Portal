@@ -22,7 +22,7 @@ namespace Portal.Areas.Translations.Controllers
 
         }
 
-        public ActionResult Index()
+        public ActionResult Index(string languageCode = null, bool? approved = null)
         {
             var application = PortalDb.Applications.Where(p => p.ControllerName == "resources" && p.AreaName == "translations" && p.ActionName == "index").Single();
 
@@ -31,7 +31,10 @@ namespace Portal.Areas.Translations.Controllers
             // possibly lift a languageId from a user's role to fix them to, just to prevent... any
             // potential for crossing wires
 
-            var model = new TranslateResourcesViewModel(user.GetActiveRoleProperties(),
+            var model = new TranslateResourcesViewModel(
+                languageCode,
+                approved,
+                user.GetActiveRoleProperties(),
                 application.Heading,
                 application.SubHeading);
 

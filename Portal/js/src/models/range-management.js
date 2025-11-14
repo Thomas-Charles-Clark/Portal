@@ -9,7 +9,7 @@ const rangeManagementViewModel = ({ } = {}) => {
 
     //#region Properties
 
-    // impossible virtual scrolling property madness
+    //Impossible virtual scrolling property madness
 
     self.rowHeight = 80;
 

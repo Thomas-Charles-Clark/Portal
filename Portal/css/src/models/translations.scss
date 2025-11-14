@@ -23,14 +23,13 @@
     }
 }
 
-.k-grid {
+.k-grid-content {
     tr {
-
         &:hover,
         &:focus-within {
             background-color: white;
 
-            td {
+            td:not(.translator-cell) {
                 background-color: $gray-200;
             }
         }
@@ -39,12 +38,12 @@
             background-color: $red-100;
 
             td.translator-cell {
-                background-color: $red-100;
+                background-color: $white;
             }
 
             &:hover,
             &:focus-within {
-                td {
+                td:not(.translator-cell) {
                     background-color: $red-200;
                 }
             }
@@ -61,6 +60,7 @@
 
         td.translator-cell {
             cursor: pointer;
+            padding: 0;
 
             &:focus,
             &:focus-within {
@@ -151,6 +151,55 @@
             &.material-icons {
 
             }
+        }
+    }
+}
+
+
+.mdc-text-field--html-editor {
+    display: block;
+
+    .k-widget {
+        border: 0;
+
+        &.k-editor-widget {
+            border-collapse: collapse
+        }
+
+        .k-content {
+            min-height: 250px;
+            height: 100%;
+            border: 0;
+        }
+    }
+
+    .k-editor {
+        border-spacing: 0;
+    }
+
+    .k-editor-toolbar {
+        margin-left: 0;
+        margin-bottom: 0;
+        background-color: $white;
+        transition: none;
+    }
+
+    .k-editable-area {
+        padding: 0;
+        border-bottom: 0;
+    }
+
+    .k-dropdown-wrap {
+        border-width: 1px;
+    }
+
+    .controls {
+        position: absolute;
+        top: 3px;
+        right: 0;
+
+        .close {
+            padding-right: $m-gutter;
         }
     }
 }

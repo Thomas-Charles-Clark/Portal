@@ -29,6 +29,12 @@
         }
         </text>
     }
+		window.getLanguageId = () => {
+			return @(Model.LanguageID);
+		}
+		window.getApproval = () => {
+			return @(Model.Approval.HasValue ? $"{Model.Approval.Value.ToString().ToLower()}" : "");
+		}
 	</script>
 
 	<script type="text/javascript">
@@ -47,6 +53,11 @@
 
 		$(document).ready(function () {
 			ko.applyBindings(viewModel, document.body);
+			window.setTimeout(() => {
+				if (window.getLanguageId()) {
+					viewModel.resourceGridSettings.widget().dataSource.page(1);
+				}
+			}, 0)
 		});
 
 		window.onBeforeUnloadPreventDefault = (e) => {
@@ -85,12 +96,13 @@
 			<div data-bind="html: Resource.Value"></div>
 		</td>
 		<td class="translator-cell" data-bind="click: translatorCellClick">
-			<div class="grow-wrap" data-bind="attr: { 'data-replicated-value': translation }">
+			@*<div class="grow-wrap" data-bind="attr: { 'data-replicated-value': translation }">
 				<textarea data-bind="value: translation"></textarea>
-			</div>
+			</div>*@
+			<div data-bind="component: { name: 'mdc-kendo-html-editor-component-inline-no-outline', params: translationParams }"></div>
 		</td>
-		<td class="approval-cell">
-			<div data-bind="component: { name: 'mdc-checkbox-component', params: approvalParams }"></div>
+		<td class="approval-cell" data-bind="attr: { title: approvalTitle }">
+			<div data-bind="component: { name: 'mdc-checkbox-component', params: approvalParams },attr: { title: approvalTitle }"></div>
 		</td>
 	</tr>
 </script>

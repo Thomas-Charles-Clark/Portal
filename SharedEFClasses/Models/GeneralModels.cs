@@ -283,6 +283,9 @@ namespace SharedEFClasses.Models.General
         public DateTime CreatedDT { get; set; }
         public DateTime? DeletedDT { get; set; }
 
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public bool Deleted { get; set; }
+
         [JsonIgnore]
         public virtual ICollection<TradeAccount> TradeAccounts { get; set; }
 

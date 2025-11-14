@@ -18,7 +18,7 @@
 
     //#region Components
 
-    self.languageId = ko.observable('');
+    self.languageId = ko.observable(getLanguageId());
 
     self.language = ko.observable();
 
@@ -50,10 +50,14 @@
 
     self.languageId.subscribe(function (newValue) {
         if (newValue) {
-            self.resourceGridSettings.widget().dataSource.filter({
-                field: 'LanguageID',
-                operator: 'eq',
-                value: newValue
+            self.resourceGridSettings.widget().dataSource.query({
+                page: 1,
+                pageSize: self.resourceGridSettings.widget().dataSource.pageSize(),
+                filter: {
+                    field: 'LanguageID',
+                    operator: 'eq',
+                    value: newValue
+                }
             });
         }
     });
@@ -168,29 +172,34 @@
             transport: {
                 read: {
                     url: function () {
-                        return '/odata/Resource_Languages'
+                        return '/odata/Resource_Languages?$expand=Resource,ModifiedBy'
                     },
                 },
                 update: {
                     url: function (data) {
-                        return '/odata/Resource_Languages(resourceId=' + data.resourceId + ',languageId=' + data.languageId + ')'
+                        return '/odata/Resource_Languages(resourceId=' + data.resourceId + ',languageId=' + data.languageId + ')?$expand=Resource,ModifiedBy'
+                    },
+                    data: function () { 
+                        return {
+                            memberId: getUserId()
+                        }
                     }
                 },
                 batch: {
                     url: function () {
-                        return "/odata/$batch";
+                        return "/odata/$batch?$expand=Resource,ModifiedBy";
                     }
                 },
                 create: {
                     url: function (dataItem) {
                         delete dataItem.resourceId;
                         delete dataItem.languageId;
-                        return '/odata/Resource_Languages';
+                        return '/odata/Resource_Languages?$expand=Resource,ModifiedBy';
                     }
                 },
                 destroy: {
                     url: function (data) {
-                        return '/odata/Resource_Languages(resourceId=' + data.resourceId + ',languageId=' + data.LanguageIdw + ')'
+                        return '/odata/Resource_Languages(resourceId=' + data.resourceId + ',languageId=' + data.LanguageIdw + ')?$expand=Resource,ModifiedBy'
                     }
                 },
                 parameterMap: function (data, type) {
@@ -267,6 +276,14 @@
                                 nullable: true
                             },
                             defaultValue: null
+                        },
+                        ModifiedBy: {
+                            type: 'object',
+                            editable: false,
+                            fields: [{
+                                MemberID: { type: 'number', editable: false },
+                                FullName: { type: 'string', editable: false }
+                            }]
                         }
                     }
                 }
@@ -277,15 +294,54 @@
             },
             requestEnd: (e) => {
                 console.log('requestEnd', e);
-                if (Object.hasOwn(e, 'response')) {
+                if (Object.hasOwn(e, 'response') && typeof e.response != 'undefined') {
                     e.response.value = e.response.value.map(r => translationRecord({
-                        record: r,
-                        parent: self
+                        record: r
                     }))
                 }
                 self.busy(false);
                 self.unsavedChanges(false);
             },
+            filter: (() => {
+                let languageId = self.languageId();
+                let prefilter = window.getApproval();
+
+                var filters = [];
+
+                if (languageId) {
+                    filters.push({
+                        field: 'LanguageID',
+                        operator: 'eq',
+                        value: languageId
+                    });
+                }
+
+                switch (prefilter) {
+                    case true:
+                    case false:
+                        filters.push({
+                            field: 'MemberID',
+                            operator: prefilter ? 'neq' : 'eq',
+                            value: 0
+                        }, {
+                            field: 'MemberID',
+                            operator: 'isnotnull'
+                        });
+                        //[
+
+                        //    {
+                        //    field: 'MemberID',
+                        //    operator: prefilter ? 'neq' : 'eq',
+                        //    value: 0
+                        //},
+                        
+                        //];
+                    default:
+                        break;
+                }
+
+                return filters;
+            })(),
             //requestEnd: function (e) {
             //    if (e.type == "create") {
             //        // Make a read request to expand Category. By default the OData controller doesn't expand on create.
@@ -360,14 +416,13 @@
 }
 
 const translationRecord = ({
-    record,
-    parent
+    record
 } = {
     record: {},
-    parent: {}
+    dataItemFn: (i) => i
 }) => {
     let self = Object.assign({
-        parent: parent.resourceGridSettings.widget
+
     }, record);
 
     //#region Properties
@@ -392,9 +447,79 @@ const translationRecord = ({
         observable: self.approval,
         checkboxId: `resource-id-${self.ResourceID}-approval`,
         useNativeValidation: false,
-        disable: ko.observable(false),
-        enable: ko.observable(true),
+        disable: ko.observable(ko.unwrap(self.approval)),
+        enable: ko.observable(!ko.unwrap(self.approval)),
         busy: ko.observable(false)
+    }
+
+    self.translationParams = {
+        label: 'Translation',
+        originalValue: self.originalTranslation,
+        observable: self.translation,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        showClear: true,
+        rows: 10,
+        clearFunction: function () {
+            self.body('');
+            window.setTimeout(() => {
+                //self.translationParams.editorParams.widget().value('');
+                //self.translationParams.editorParams.widget().trigger('change');
+                //self.translationParams.editorParams.widget().focus();
+            }, 0);
+        },
+        permitRevert: true,
+        revertFunction: function () {
+            self.translation(self.originalTranslation);
+            window.setTimeout(() => {
+                //self.translationParams.editorParams.widget().value(self.originalBody());
+                //self.translationParams.editorParams.widget().trigger('change');
+                //self.translationParams.editorParams.widget().focus();
+            }, 0);
+        },
+        charsRemainingOptions: {
+            maxLength: 4000
+        },
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(true),
+        visible: ko.observable(true),
+        editorParams: {
+            value: self.translation,
+            enabled: ko.observable(true),
+            height: 450,
+            stylesheets: [
+                "/css/dist/lib/bootstrap-5.3.1/dist/css/bootstrap.css"
+            ],
+            tools: [
+                "formatting",
+                "bold",
+                "italic",
+                "underline",
+                "justifyLeft",
+                "justifyCenter",
+                "justifyRight",
+                "insertUnorderedList",
+                "insertOrderedList",
+                "indent",
+                "outdent",
+                "createLink",
+                "unlink",
+                "insertImage",
+                "tableWizard",
+                "createTable",
+                "addColumnLeft",
+                "addColumnRight",
+                "addRowAbove",
+                "addRowBelow",
+                "deleteRow",
+                "deleteColumn",
+                "viewHtml"
+            ]
+        }
     }
 
     //#endregion
@@ -406,18 +531,27 @@ const translationRecord = ({
             (self.translation() != self.originalTranslation);
     })
 
+    self.approvalTitle = ko.computed(() => {
+        if (self.ModifiedBy?.MemberID != null) {
+            return `${self.ModifiedBy.FullName} - ${moment(self.ModifiedDT).format('DD/MM/YYYY HH:mm')}`
+        } else {
+            return `Google Neural Machine Translation (NMT) - ${moment(self.ModifiedDT).format('DD/MM/YYYY HH:mm')}`
+        }
+    });
+
     //#endregion
 
     //#region Subscriptions
 
-    self.approval.subscribe(nv => {
-        window.setTimeout(() => {
-            document.getElementById(`resource-id-${self.ResourceID}-approval`).blur();
-        }, 0);
-    });
+    //self.approval.subscribe(nv => {
+    //    //window.setTimeout(() => {
+    //    //    document.getElementById(`resource-id-${self.ResourceID}-approval`).blur();
+    //    //}, 0);
+    //});
 
     self.dirty.subscribe(nv => {
-        let item = self.parent().dataItem(self.element.DOMElement);
+
+        let item = viewModel.resourceGridSettings.widget().dataItem(self.element.DOMElement);
 
         if (self.originalTranslation != self.translation()) {
             item.set('Translation', self.translation());
@@ -447,7 +581,7 @@ const translationRecord = ({
     self.translatorCellClick = (data, event) => {
         if (event.target.type === 'textarea')
             return;
-        else
+        else if (event.target.querySelector('textarea'))
             event.target.querySelector('textarea').focus();
     }
 

@@ -387,7 +387,7 @@
     </div>
 </div>
 
-<div id="emailer-modal" class="modal fade">
+<div id="emailer-modal" class="modal fade" data-backdrop="static">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="blocker" data-bind="visible: busy">
@@ -403,7 +403,10 @@
                 </h4>
             </div>
             <div class="modal-body">
-                <div data-bind="component: { name: 'emailer-component', params: emailer }"></div>
+                <div class="margin-bottom-15" data-bind="component: { name: 'emailer-component', params: emailer }"></div>
+                <i>
+                    The message above will appear as a specific section in the tracking email, with the heading "Operator Message". Please feel free to send a test email to yourself to see precisely what will be sent to other recipients.
+                </i>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal">

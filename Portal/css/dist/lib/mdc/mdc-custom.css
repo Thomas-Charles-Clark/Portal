@@ -35,6 +35,30 @@
   content: " - ";
 }
 
+.mdc-text-field--html-editor .k-widget {
+  border: 0;
+}
+.mdc-text-field--html-editor .mdc-text-field__input {
+  display: none !important;
+}
+.mdc-text-field--html-editor .k-button-group {
+  box-shadow: none;
+}
+.mdc-text-field--html-editor .k-editor-toolbar {
+  margin-left: 100px;
+  transition: margin-left 150ms ease-in-out;
+}
+.mdc-text-field--html-editor .mdc-notched-outline .mdc-notched-outline__notch .mdc-floating-label {
+  top: 14px;
+}
+.mdc-text-field--html-editor:has(.mdc-floating-label--float-above) .k-editor-toolbar {
+  margin-left: 0;
+}
+.mdc-text-field--html-editor .controls {
+  position: relative;
+  top: 6px;
+}
+
 :root {
   --mdc-theme-primary: #3a64b0;
   --mdc-theme-secondary: #6ebe2c;
@@ -3566,7 +3590,7 @@ svg.mdc-button__icon {
   background-color: var(--mdc-theme-secondary, #6ebe2c);
 }
 
-@keyframes mdc-checkbox-fade-in-background-uc4goqe {
+@keyframes mdc-checkbox-fade-in-background-us7lrc5 {
   0% {
     border-color: rgba(0, 0, 0, 0.54);
     background-color: transparent;
@@ -3580,7 +3604,7 @@ svg.mdc-button__icon {
     background-color: var(--mdc-theme-secondary, #6ebe2c);
   }
 }
-@keyframes mdc-checkbox-fade-out-background-uc4goqe {
+@keyframes mdc-checkbox-fade-out-background-us7lrc5 {
   0%, 80% {
     border-color: #6ebe2c;
     /* @alternate */
@@ -3595,10 +3619,10 @@ svg.mdc-button__icon {
   }
 }
 .mdc-checkbox--anim-unchecked-checked .mdc-checkbox__native-control:enabled ~ .mdc-checkbox__background, .mdc-checkbox--anim-unchecked-indeterminate .mdc-checkbox__native-control:enabled ~ .mdc-checkbox__background {
-  animation-name: mdc-checkbox-fade-in-background-uc4goqe;
+  animation-name: mdc-checkbox-fade-in-background-us7lrc5;
 }
 .mdc-checkbox--anim-checked-unchecked .mdc-checkbox__native-control:enabled ~ .mdc-checkbox__background, .mdc-checkbox--anim-indeterminate-unchecked .mdc-checkbox__native-control:enabled ~ .mdc-checkbox__background {
-  animation-name: mdc-checkbox-fade-out-background-uc4goqe;
+  animation-name: mdc-checkbox-fade-out-background-us7lrc5;
 }
 
 .mdc-checkbox__checkmark {

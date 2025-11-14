@@ -35,6 +35,30 @@
   content: " - ";
 }
 
+.mdc-text-field--html-editor .k-widget {
+  border: 0;
+}
+.mdc-text-field--html-editor .mdc-text-field__input {
+  display: none !important;
+}
+.mdc-text-field--html-editor .k-button-group {
+  box-shadow: none;
+}
+.mdc-text-field--html-editor .k-editor-toolbar {
+  margin-left: 100px;
+  transition: margin-left 150ms ease-in-out;
+}
+.mdc-text-field--html-editor .mdc-notched-outline .mdc-notched-outline__notch .mdc-floating-label {
+  top: 14px;
+}
+.mdc-text-field--html-editor:has(.mdc-floating-label--float-above) .k-editor-toolbar {
+  margin-left: 0;
+}
+.mdc-text-field--html-editor .controls {
+  position: relative;
+  top: 6px;
+}
+
 .mdc-select .k-dropdown-wrap.k-state-hover {
   background-color: white;
 }

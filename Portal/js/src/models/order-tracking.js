@@ -161,7 +161,9 @@
                     if (data.hasOwnProperty('order')) {
                         self.orderSearchResult(data.order);
                         self.emailer.subject(`Order ${data.order?.OrderID} Tracking Update - Designers Guild`);
+                        self.emailer.originalSubject(self.emailer.subject());
                         self.emailer.to(data.order?.DeliveryAlertEmail);
+                        self.emailer.originalTo(self.emailer.to());
                     } else {
                         self.orderNumberSearchResults(data.searchResults);
                     }
@@ -182,6 +184,8 @@
 
         self.emailer.subject('Tracking Update - Designers Guild');
         self.emailer.body(getBodyDefault());
+
+        self.emailer.bodyParams.label = "Message";
 
         self.emailer.send = function () {
             self.emailer.validateSendNow(true);

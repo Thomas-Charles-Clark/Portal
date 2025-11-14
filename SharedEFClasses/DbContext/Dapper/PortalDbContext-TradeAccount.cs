@@ -13,6 +13,8 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
+using SimpleImpersonation;
+
 namespace SharedEFClasses.Models
 {
     public partial class PortalDbContext : IdentityDbContext<Member, Role, int, Member_Login, Member_Role, Member_Claim>
@@ -30,25 +32,34 @@ namespace SharedEFClasses.Models
                 attachments.Rows.Add(a.name, $"{a.FinalFilePath}");
             }
 
-            var results = await this.Database.Connection.QueryMultipleAsync("[portal].[TradeAccountCreationEmail_Send]", new
-            {
-                To = dto.to,
-                Subject = dto.subject,
-                TradeAccountCode = "AB123456",
-                TradeAccountName = "Test Account",
-                DisplayContactDetails_AccountManager = dto.displayAccountManager,
-                DisplayContactDetails_CustomerService = dto.displayCustomerService,
-                DisplayContactDetails_CreditControl = dto.displayCreditControl,
-                DisplayB2BRegistrationRequest = dto.displayB2BRegistration,
-                DisplayLookbook = dto.displayLookbook,
-                FileAttachments = attachments
-            }, null, null, System.Data.CommandType.StoredProcedure);
+			var credentials = new UserCredentials("DESIGNERSGUILD\\SQLAgentFileAccess", "34949C02-4677-4711-999C-8E038E26B10F");
 
-            var user = results.ReadSingle<string>();
+			var token = credentials.LogonUser(LogonType.Interactive);
 
-            var result = results.ReadSingle<int>();
+			var sendResult = await WindowsIdentity.RunImpersonated(token, async () =>
+			{
+				var results = await this.Database.Connection.QueryMultipleAsync("[portal].[TradeAccountCreationEmail_Send]", new
+				{
+					To = dto.to,
+					Subject = dto.subject,
+					TradeAccountCode = "AB123456",
+					TradeAccountName = "Test Account",
+					DisplayContactDetails_AccountManager = dto.displayAccountManager,
+					DisplayContactDetails_CustomerService = dto.displayCustomerService,
+					DisplayContactDetails_CreditControl = dto.displayCreditControl,
+					DisplayB2BRegistrationRequest = dto.displayB2BRegistration,
+					DisplayLookbook = dto.displayLookbook,
+					FileAttachments = attachments
+				}, null, null, System.Data.CommandType.StoredProcedure);
 
-            return result;
+				var user = results.ReadSingle<string>();
+
+				var result = results.ReadSingle<int>();
+
+				return result;
+			});
+
+            return sendResult;
         }
 
         public int SaveTradeAccountCreationEmailTest(SaveTradeAccountCreationEmailDto dto)

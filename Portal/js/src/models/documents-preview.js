@@ -594,7 +594,7 @@
         } else {
             self.busy(true);
             self.busyMessage('Emailing to ' + self.emailer.to());
-            var data = $.extend(self.getData(), {
+            var data = $.extend(self.overrideParameters() ?? self.getData(), {
                 email: self.emailer.to(),
                 replyTo: self.emailer.replyTo(),
                 subject: self.emailer.subject(),
@@ -679,8 +679,13 @@
                             console.log('getDocumentEmailerProperties returned', data);
 
                             self.emailer.to(data.EmailTo);
+                            self.emailer.originalTo(data.EmailTo);
+
                             self.emailer.subject(data.EmailSubject);
+                            self.emailer.originalSubject(data.EmailSubject);
+
                             self.emailer.body(data.EmailBody);
+                            self.emailer.originalBody(data.EmailBody);
                         })
                         .catch(window.catchFetchError)
 
@@ -814,9 +819,11 @@
         else if (self.tradeAccountId())
             tid = self.tradeAccountId();
 
-        da = self.date();
+        da = self.date
 
-        return (d && (b || o || t || tid)) || (d == 7 && da != null);
+        let result = (d && (b || o || t || tid)) || (d == 7 && da != null);
+
+        return result;
     });
 
     self.link = ko.pureComputed(function () {
@@ -883,7 +890,10 @@
             .then(data => {
                 console.log('FetchLiveDocuments returned', data);
                 ko.ignoreDependencies(() => {
-                    self.liveDocuments(data.Results)
+                    self.liveDocuments(data.Results);
+                    window.setTimeout(() => {
+                        self.showDocument(false);
+                    }, 0);
                     self.busy(false);
                 });
             })
