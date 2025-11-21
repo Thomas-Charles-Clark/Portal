@@ -555,10 +555,6 @@ $heading-font-size: 1.1rem;
     }
 }
 
-$selected-background-color: $blue-700;
-$selected-color: $white;
-$disabled-background-color: $gray-300;
-
 .mdc-validating-field {
 
     .mdc-bootstrap-multiselect {
@@ -765,101 +761,6 @@ $disabled-background-color: $gray-300;
     li .dropdown-item .form-check-input {
         cursor: pointer;
         user-select: none;
-    }
-}
-
-$multiselect-group-border-color: #4861b8;
-$multiselect-group-color: $white;
-
-
-.mdc-bootstrap-multiselect {
-
-    &.mdc-text-field {
-        .dropdown {
-            .dropdown-toggle {
-                &:after {
-                    display: none;
-                }
-            }
-        }
-    }
-
-    .dropdown {
-        .dropdown-toggle {
-            &:after {
-                /*display: inline-block;*/
-            }
-        }
-
-        .dropdown-toggle {
-            &.show {
-            }
-        }
-
-        .dropdown-menu {
-            min-width: 320px;
-            margin-bottom: $sm-gutter; 
-
-            .form-check {
-                margin-bottom: 0;
-                margin-left: $sm-gutter;
-                margin-right: $sm-gutter;
-
-                &.group-wrapper {
-                    margin-top: $sm-gutter;
-                    padding: $sm-gutter $m-gutter;
-                    background: $multiselect-group-border-color;
-                    color: $multiselect-group-color;
-                    /* border-top-left-radius: $border-radius;
-                    border-top-right-radius: $border-radius;*/
-
-                    a {
-                        color: $white;
-                        text-decoration: none;
-                    }
-
-                    &:hover,
-                    &:focus,
-                    &:focus-within {
-                        a {
-                            text-decoration: underline;
-                        }
-                    }
-                }
-
-                &.group-item {
-                    border-left: 2px solid $multiselect-group-border-color;
-                    border-right: 2px solid $multiselect-group-border-color;
-
-                    &.final-group-item {
-                        /*         border-bottom-left-radius: $border-radius;
-                        border-bottom-right-radius: $border-radius;*/
-                        border-bottom: 2px solid $multiselect-group-border-color;
-                    }
-                }
-            }
-
-            .dropdown-item {
-                padding: $sm-gutter $m-gutter;
-                display: flex;
-                align-items: center;
-                gap: $vsm-gutter;
-
-                .form-check-input {
-                    top: 0;
-                    cursor: pointer;
-                }
-            }
-
-            .form-check {
-                text-indent: 0;
-                padding-left: 0;
-
-                label {
-                    padding-left: $xl-gutter;
-                }
-            }
-        }
     }
 }
 

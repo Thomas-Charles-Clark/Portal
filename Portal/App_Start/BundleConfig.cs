@@ -432,15 +432,19 @@ namespace Portal
                     $"{cssPrefix}/models/statements{cssSuffix}"
             ));
 
-            //  
-            // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            //
-            // Scripts
-            //
-            // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            //
+			bundles.Add(new StyleBundle("~/bundles/css/trade-account-contacts").Include(
+					$"{cssPrefix}/models/trade-account-contacts{cssSuffix}"
+			));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/bootstrap").Include(
+			//  
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			//
+			// Scripts
+			//
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			//
+
+			bundles.Add(new ScriptBundle("~/bundles/js/bootstrap").Include(
                       $"{jsPrefix}/lib/bootstrap-3.3.7/bootstrap-3.3.7{jsSuffix}",
                       $"{jsPrefix}/lib/respond/respond{jsSuffix}"
                 ));
@@ -992,7 +996,16 @@ namespace Portal
                         $"{jsPrefix}/models/credit-control/statements{jsSuffix}"
                 ));
 
-            foreach (var b in BundleTable.Bundles)
+			bundles.Add(new ScriptBundle("~/bundles/js/trade-account-contacts").Include(
+						$"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+						$"{jsPrefix}/models/trade-accounts/trade-account{jsSuffix}",
+						$"{jsPrefix}/models/trade-accounts/trade-account-contacts-filters{jsSuffix}",
+						$"{jsPrefix}/models/trade-accounts/trade-account-contacts{jsSuffix}",
+						$"{jsPrefix}/models/trade-accounts/trade-account-contacts-dashboard-pod{jsSuffix}",
+						$"{jsPrefix}/models/trade-accounts/trade-account-contact{jsSuffix}"
+				));
+
+			foreach (var b in BundleTable.Bundles)
             {
                 b.Transforms.Clear();
             }

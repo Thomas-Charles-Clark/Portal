@@ -14,6 +14,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 using SimpleImpersonation;
+using SharedEFClasses.Models.NeimanMarcus;
+using SharedEFClasses.Models.TradeAccounts;
 
 namespace SharedEFClasses.Models
 {
@@ -143,5 +145,17 @@ namespace SharedEFClasses.Models
 
             return 0;
         }
-    }
+
+
+		public async Task<TradeAccountMaintenance_TradeAccount_Search_Result> TradeAccountMaintenance_TradeAccount_Search(TradeAccountMaintenance_TradeAccount_Search_DTO dto)
+		{
+			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[TradeAccountMaintenance_TradeAccount_Search]", dto, null, 30, CommandType.StoredProcedure);
+
+			return new TradeAccountMaintenance_TradeAccount_Search_Result()
+			{
+				DashboardPods = await reply.ReadAsync<TradeAccountMaintenance_TradeAccount_Search_DashboardPod>(),
+                Results = await reply.ReadAsync<TradeAccountMaintenance_TradeAccount_Search_Record>()
+			};
+		}
+	}
 }

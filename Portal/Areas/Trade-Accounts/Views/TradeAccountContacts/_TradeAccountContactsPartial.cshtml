@@ -1,0 +1,24 @@
+@model Portal.Areas.TradeAccounts.ViewModels.TradeAccountContactsViewModel
+
+<div class="tab-content" id="trade-account-contacts-tabs-content">
+	<div class="tab-pane active" id="trade-account-contacts-filters-tab" role="tabpanel" aria-labelledby="browse-tab-btn">
+		<form id="trade-account-contacts-prefilters" data-bind="with: filters" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
+			<div id="sales-markets-prefilter" class="prefilter" data-bind="component: { name: 'mdc-bootstrap-multiselect-component', params: salesMarketsParams }"></div>
+			<div id="sales-representative-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesRepresentativeParams }"></div>
+			<div id="sales-agent-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesAgentParams }"></div>
+			<div id="sales-area-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesAreaParams }"></div>
+			<div id="country-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: countryParams }"></div>
+			<div id="trade-account-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountTypeParams }"></div>
+			<div id="trade-account-group-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountGroupParams }"></div>
+			<div id="payment-terms-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsParams }"></div>
+			<div id="payment-terms-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsTypeParams }"></div>
+			<div id="credit-stopped-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: creditStoppedParams }"></div>
+		</form>
+		<div class="dashboard" data-bind="foreach: dashboardPods">
+			<div class="dashboard-pod" data-bind="class: Classes">
+				<h4 data-bind="html: Heading"></h4>
+				<div data-bind="html: Stats"></div>
+			</div>
+		</div>
+	</div>
+</div>

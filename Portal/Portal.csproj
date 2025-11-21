@@ -557,6 +557,8 @@
     <Compile Include="Areas\Credit-Control\ViewModels\StatementsViewModel.cs" />
     <Compile Include="Areas\Customers\Controllers\AdvertiserMaintenanceAPIController.cs" />
     <Compile Include="Areas\Customers\Controllers\AdvertiserMaintenanceController.cs" />
+    <Compile Include="Areas\Trade-Accounts\Controllers\TradeAccountContactsAPIController.cs" />
+    <Compile Include="Areas\Trade-Accounts\Controllers\TradeAccountContactsController.cs" />
     <Compile Include="Areas\Customers\Controllers\GiftVouchersAPIController.cs" />
     <Compile Include="Areas\Customers\Controllers\ContractPricingAPIController.cs" />
     <Compile Include="Areas\Customers\Controllers\GiftVouchersController.cs" />
@@ -664,6 +666,9 @@
     <Compile Include="Areas\Stock\Models\SalesHistoryDataSourceResult.cs" />
     <Compile Include="Areas\Stock\ViewModels\RangeManagementViewModel.cs" />
     <Compile Include="Areas\Stock\ViewModels\StockManagementViewModel.cs" />
+    <Compile Include="Areas\Trade-Accounts\TradeAccountsAreaRegistration.cs" />
+    <Compile Include="Areas\Trade-Accounts\ViewModels\TradeAccountContactsViewModel.cs" />
+    <None Include="Areas\Trade-Accounts\Views\TradeAccountContacts\TradeAccountContacts.cshtml" />
     <Compile Include="Controllers\IncomingEmailAttachmentController.cs" />
     <Compile Include="Controllers\ODataControllers\DocumentOutputModesController.cs" />
     <Compile Include="Controllers\ODataControllers\GeneralLedgerAnalysisGroupDsController.cs" />
@@ -1812,6 +1817,11 @@
     <Content Include="js\src\models\pager.js" />
     <Content Include="js\src\models\credit-control\statements.js" />
     <Content Include="js\src\models\stock-check-request.js" />
+    <Content Include="js\src\models\trade-accounts\trade-account-contacts-dashboard-pod.js" />
+    <Content Include="js\src\models\trade-accounts\trade-account-contact.js" />
+    <Content Include="js\src\models\trade-accounts\trade-account-contacts-filters.js" />
+    <Content Include="js\src\models\trade-accounts\trade-account-contacts.js" />
+    <Content Include="js\src\models\trade-accounts\trade-account.js" />
     <Content Include="js\src\models\_example-view-model.js" />
     <Content Include="js\src\models\neiman-marcus-order-status.js" />
     <Content Include="js\src\models\notifications.js" />
@@ -2640,8 +2650,12 @@
     <Content Include="Areas\Documents\Views\SentReport\DocumentsSentReport.cshtml" />
     <Content Include="Areas\Credit-Control\Views\web.config" />
     <Content Include="Areas\Credit-Control\Views\Statements\Statements.cshtml" />
+    <Content Include="Areas\Credit-Control\Views\_ViewStart.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
     <Content Include="Areas\Stock\Views\RangeManagement\RangeManagement.cshtml" />
+    <Content Include="Areas\Trade-Accounts\Views\web.config" />
+    <Content Include="Areas\Trade-Accounts\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Trade-Accounts\Views\TradeAccountContacts\_TradeAccountContactsPartial.cshtml" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
@@ -3058,6 +3072,7 @@
     <Content Include="css\src\models\documents-sent-report.scss" />
     <Content Include="css\src\lib\prettify\sunburst.scss" />
     <Content Include="css\src\models\statements.scss" />
+    <Content Include="css\src\models\trade-account-contacts.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -6562,6 +6577,7 @@
     <Folder Include="Areas\Pricing\Views\PricingWebApi\" />
     <Folder Include="Areas\Pricing\Views\Shared\" />
     <Folder Include="Areas\Retail\Views\Shared\" />
+    <Folder Include="Areas\Trade-Accounts\Views\Shared\" />
     <Folder Include="Content\fonts\trixie\" />
     <Folder Include="edge\x64\" />
     <Folder Include="edge\x86\" />

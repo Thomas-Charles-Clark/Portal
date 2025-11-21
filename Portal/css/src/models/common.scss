@@ -25,6 +25,18 @@ $battleship-blue: #31548B;
 
 $tinted-battleship-blue: tint-color($battleship-blue, 15%);
 
+$active-bg-color: $blue-700;
+$active-color: $white;
+$light-blue-bg: tint-color($blue-100, 80%);
+
+$multiselect-group-border-color: #4861b8;
+$multiselect-group-color: $white;
+
+$selected-background-color: $blue-700;
+$selected-color: $white;
+$disabled-background-color: $gray-300;
+
+
 :root {
     --vsm-gutter: #{$vsm-gutter};
     --sm-gutter: #{$sm-gutter};
@@ -153,5 +165,210 @@ $readonly-background: repeating-linear-gradient(-45deg, rgb(0 0 0 / 5%), transpa
 
     .controls {
         position: static;
+    }
+}
+
+.mdc-bootstrap-multiselect {
+
+    &.mdc-text-field {
+        .dropdown {
+            .dropdown-toggle {
+                &:after {
+                    display: none;
+                }
+            }
+        }
+    }
+
+    .dropdown {
+        .dropdown-toggle {
+            &:after {
+                /*display: inline-block;*/
+            }
+        }
+
+        .dropdown-toggle {
+            &.show {
+            }
+        }
+
+        .dropdown-menu {
+            min-width: 320px;
+            margin-bottom: $sm-gutter;
+
+            .form-check {
+                margin: 0;
+                padding-left: $m-gutter;
+
+                &.group-wrapper {
+                    margin-top: $sm-gutter;
+                    padding: $sm-gutter $m-gutter;
+                    background: $multiselect-group-border-color;
+                    color: $multiselect-group-color;
+                    /* border-top-left-radius: $border-radius;
+                    border-top-right-radius: $border-radius;*/
+
+                    a {
+                        color: $white;
+                        text-decoration: none;
+                    }
+
+                    &:hover,
+                    &:focus,
+                    &:focus-within {
+                        a {
+                            text-decoration: underline;
+                        }
+                    }
+                }
+
+                &.group-item {
+                    border-left: 2px solid $multiselect-group-border-color;
+                    border-right: 2px solid $multiselect-group-border-color;
+
+                    &.final-group-item {
+                        /*         border-bottom-left-radius: $border-radius;
+                        border-bottom-right-radius: $border-radius;*/
+                        border-bottom: 2px solid $multiselect-group-border-color;
+                    }
+                }
+            }
+
+            .dropdown-item {
+                padding: $sm-gutter $m-gutter;
+                display: flex;
+                align-items: center;
+                gap: $vsm-gutter;
+
+                .form-check-input {
+                    top: 0;
+                    cursor: pointer;
+                }
+            }
+
+            .form-check {
+                text-indent: 0;
+                padding-left: 0;
+
+                label {
+                    padding-left: $xl-gutter;
+                }
+            }
+        }
+    }
+}
+
+.mdc-validating-field {
+
+    .mdc-bootstrap-multiselect {
+        &.mdc-select--selected:not(.mdc-select--disabled) {
+
+            .dropdown-toggle {
+                background: $selected-background-color;
+                color: $selected-color;
+                border-radius: $border-radius;
+            }
+
+            .mdc-floating-label {
+                color: $selected-color;
+            }
+
+            .controls {
+                > div {
+                    color: $white;
+                    text-shadow: 0 1px 0 $black;
+                }
+            }
+        }
+
+        li:nth-of-type(2) {
+            border-top: 0;
+        }
+
+        li + li {
+            border-top: 1px solid $gray-400;
+        }
+    }
+    /* Why... not disabled - aha, because colouring...? */
+    .mdc-select, /* :not(.mdc-select--disabled) */
+    .mdc-text-field:not(.mdc-bootstrap-multiselect) {
+
+        .mdc-notched-outline__notch {
+            opacity: 1;
+            will-change: opacity, display;
+            transition: opacity 150ms ease-in-out;
+            transition-behavior: allow-discrete;
+        }
+
+        &.date-select--selected,
+        &.mdc-select--selected {
+
+            .k-dropdown-wrap.k-state-default {
+                position: relative;
+                z-index: 0;
+                background: $selected-background-color;
+                color: $selected-color;
+                border-radius: $border-radius;
+
+                .k-input {
+                    color: $selected-color;
+                }
+            }
+
+            .controls {
+                > div {
+                    color: $white;
+                    text-shadow: 0 1px 0 $black;
+                }
+            }
+
+            .mdc-notched-outline__notch {
+                opacity: 0;
+                display: none;
+            }
+        }
+
+        &.mdc-select--disabled,
+        &.mdc-text-field--disabled {
+            .k-dropdown-wrap.k-state-default {
+                color: $gray-600;
+
+                .k-input {
+                    color: $gray-600;
+                }
+            }
+
+            .controls {
+                > div {
+                    color: #000;
+                    text-shadow: none;
+                }
+            }
+        }
+    }
+
+    .date-select--selected {
+        &:not(.mdc-text-field--disabled) {
+            input {
+                position: relative;
+                z-index: 0;
+                background: $selected-background-color;
+                color: $selected-color;
+                border-radius: $border-radius;
+            }
+        }
+    }
+
+    .mdc-text-field--selected {
+        &:not(.mdc-text-field--disabled) {
+
+            input {
+                position: relative;
+                z-index: 0;
+                background: $selected-background-color;
+                color: $selected-color;
+                border-radius: $border-radius;
+            }
+        }
     }
 }
