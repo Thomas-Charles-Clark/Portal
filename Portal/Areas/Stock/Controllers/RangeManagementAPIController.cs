@@ -222,7 +222,17 @@ namespace Portal.Areas.Stock.Controllers
             return Ok(results);
         }
 
-        [HttpPost]
+		[HttpPost]
+		public async Task<IHttpActionResult> SendCurrentProductsNotification([FromBody] RangeManagementNotesDto objDto)
+		{
+			objDto.MemberID = User.Identity.GetUserId<int>();
+
+			var results = await PortalDb.RangeManagementSendCurrentProductsNotification(objDto);
+
+			return Ok(results);
+		}
+
+		[HttpPost]
         public async Task<IHttpActionResult> SendExitingProductsNotification([FromBody] RangeManagementNotesDto objDto)
         {
             objDto.MemberID = User.Identity.GetUserId<int>();

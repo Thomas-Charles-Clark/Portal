@@ -3429,10 +3429,10 @@ const holdReasonSummaryPod = ({ active, rec, parent } = { rec: {}, parent: {} })
             self.parent.heldOrdersHoldReasonsParams.multiSelectSettings.widget().value([]);
             self.parent.heldOrdersHoldReasonsParams.multiSelectSettings.widget().trigger('change');
 
-            //self.parent.heldOrdersGridWidget().dataSource.query({
-            //    page: 1,
-            //    pageSize: self.parent.heldOrdersGridWidget().dataSource.pageSize()
-            //});
+            self.parent.heldOrdersGridWidget().dataSource.query({
+                page: 1,
+                pageSize: self.parent.heldOrdersGridWidget().dataSource.pageSize()
+            });
 
         } else {
             self.parent.clearActiveHoldReasonOnNextSubscriptionFire = false;

@@ -492,23 +492,28 @@
                                     Send Email
                                     <i class="bi bi-send"></i>
                                 </button>
-                                <ul id="send-email-dropdown" class="dropdown-menu" aria-labelledby="send-email-dropdown">
-                                    <li>
-                                        <button id="send-new-season-notice-btn" class="dropdown-item" data-bind="click: sendNewSeasonNotification">
-                                            Send "New Season" Notification
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button id="refresh-transfers-btn" class="dropdown-item" data-bind="click: sendExitingProductsNotification">
-                                            Send "Exiting Products" Notification
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button id="carry-forward-btn" class="dropdown-item" data-bind="click: sendCarryForwardProductsNotification">
-                                            Send "Carry Forward Products" Notification
-                                        </button>
-                                    </li>
-                                </ul>
+								<ul id="send-email-dropdown" class="dropdown-menu" aria-labelledby="send-email-dropdown">
+									<li>
+										<button id="send-new-season-notice-btn" class="dropdown-item" data-bind="click: sendNewSeasonNotification">
+											Send "New Season" Notification
+										</button>
+									</li>
+									<li>
+										<button id="send-new-season-notice-btn" class="dropdown-item" data-bind="click: sendCurrentProductsNotification">
+											Send "Current Products" Notification
+										</button>
+									</li>
+									<li>
+										<button id="refresh-transfers-btn" class="dropdown-item" data-bind="click: sendExitingProductsNotification">
+											Send "Exiting Products" Notification
+										</button>
+									</li>
+									<li>
+										<button id="carry-forward-btn" class="dropdown-item" data-bind="click: sendCarryForwardProductsNotification">
+											Send "Carry Forward Products" Notification
+										</button>
+									</li>
+								</ul>
                             </li>
                         }
                     </ul>

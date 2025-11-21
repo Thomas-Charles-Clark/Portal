@@ -9,10 +9,24 @@
 
     self.unsavedChanges = ko.observable(false);
 
+    self.data = ko.observableArray([]);
+
     //#endregion
 
     //#region Computeds
 
+    self.dirty = ko.computed(() => {
+        let dirt = [];
+        let records = self.data();
+        records.forEach(r => {
+            dirt.push(r.dirty());
+        });
+        if (dirt.find(r => r === true)) {
+            self.unsavedChanges(true);
+        } else {
+            self.unsavedChanges(false);
+        }
+    }, self);
 
     //#endregion
 
@@ -159,6 +173,10 @@
             if (e.sender.options.editable == 'inline') {
                 e.sender.setOptions({ editable: 'incell' });
             }
+            self.data().filter(d => d.dirty()).forEach(d => {
+                d.translation(d.originalTranslation);
+                d.approval(d.originalApproval);
+            })
             self.unsavedChanges(false);
         },
         cellClose: (e) => {
@@ -294,13 +312,17 @@
             },
             requestEnd: (e) => {
                 console.log('requestEnd', e);
+
                 if (Object.hasOwn(e, 'response') && typeof e.response != 'undefined') {
-                    e.response.value = e.response.value.map(r => translationRecord({
+                    self.data(e.response.value.map(r => translationRecord({
                         record: r
-                    }))
+                    })));
+
+                    e.response.value = self.data();
                 }
                 self.busy(false);
                 self.unsavedChanges(false);
+
             },
             filter: (() => {
                 let languageId = self.languageId();
@@ -418,8 +440,7 @@
 const translationRecord = ({
     record
 } = {
-    record: {},
-    dataItemFn: (i) => i
+    record: {}
 }) => {
     let self = Object.assign({
 

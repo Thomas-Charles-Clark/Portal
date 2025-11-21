@@ -29,6 +29,12 @@ namespace Portal.Utilities.Document
 
         private static Regex TagMatch = new Regex(@"^\{([a-z]+)(?:[=()]([^{}]*)[)]?)?\}(.*)\{\/\1\}$", RegexOptions.Singleline | RegexOptions.IgnoreCase);
 
+        private static PortalPDFDocument[] NewlyFormattedDocumentTypes = new[]
+        {
+            PortalPDFDocument.TradeAccountStatement,
+            PortalPDFDocument.TradeQuote
+        };
+
         public static string GetResource(List<ResourceSelect> resources, string name)
         {
             return resources.Where(p => p.Name == name).Select(p => p.Value).SingleOrDefault();
@@ -127,7 +133,7 @@ namespace Portal.Utilities.Document
             // Rather annoyingly this does need to be a separate branch: Matt wants for Statements' "order" chunks to follow on in the same document,
             // Whereas for all other document types so far we have built multiple documents start-to-finish for each order chunk and then sewn them together afterwards
             // to ensure page breaks occur where we want them to
-            if ((int)inputWrapper.DocumentType != (int)PortalPDFDocument.TradeAccountStatement)
+            if (NewlyFormattedDocumentTypes.Contains(inputWrapper.DocumentType) == false)
             {
                 for (var orderHeadIndex = 0; orderHeadIndex < input.OrderHeaders.Count; orderHeadIndex++)
                 {
@@ -332,7 +338,13 @@ namespace Portal.Utilities.Document
 
                         if (input.PageFooter.PagePreFooterNote != null)
                         {
-                            var pageFooterParagraphs = ProcessTextBlock(rootPath, input.PageFooter.PagePreFooterNote);
+                            var pageFooterParagraphs = ProcessJsonParagraphs(rootPath,
+								new JsonParagraph[] {
+									new JsonParagraph() {
+										text = input.PageFooter.PagePreFooterNote, monospaced = false, textAlign = "left"
+									},
+								},
+								ProcessPhrase);
 
                             var footerParagraphWrapper = new Paragraph();
 
@@ -956,7 +968,13 @@ namespace Portal.Utilities.Document
 
                         if (orderFooter.OrderFooterValue2 != null)
                         {
-                            foreach (var ofvgp in ProcessTextBlock(rootPath, orderFooter.OrderFooterValue2))
+                            foreach (var ofvgp in ProcessJsonParagraphs(rootPath,
+                                new JsonParagraph[] {
+                                    new JsonParagraph() {
+                                        text = orderFooter.OrderFooterValue2, monospaced = false, textAlign = "left"
+                                    },
+                                },
+                                ProcessPhrase))
                             {
                                 orderFooterPhrase2.Add(ofvgp);
                             }
@@ -2000,7 +2018,13 @@ namespace Portal.Utilities.Document
 
                         if (orderFooter.OrderFooterValue2 != null)
                         {
-                            foreach (var ofvgp in ProcessTextBlock(rootPath, orderFooter.OrderFooterValue2))
+                            foreach (var ofvgp in ProcessJsonParagraphs(rootPath,
+								new JsonParagraph[] {
+									new JsonParagraph() {
+										text = orderFooter.OrderFooterValue2, monospaced = false, textAlign = "left"
+									},
+								},
+								ProcessPhrase))
                             {
                                 orderFooterPhrase2.Add(ofvgp);
                             }
@@ -2156,6 +2180,8 @@ namespace Portal.Utilities.Document
                             orderFooterTable.SetWidths(new float[] { 100.0f });
 
                             orderFooterTable.AddCell(orderFooterCell);
+
+                            orderFooterTable.SpacingAfter = 35.0f;
 
                             document.Add(orderFooterTable);
                         }
@@ -2332,9 +2358,15 @@ namespace Portal.Utilities.Document
 
                     if (input.PageFooter.PagePreFooterNote != null)
                     {
-                        var pageFooterParagraphs = ProcessTextBlock(rootPath, input.PageFooter.PagePreFooterNote);
+                        var pageFooterParagraphs = ProcessJsonParagraphs(rootPath,
+                                new JsonParagraph[] {
+                                    new JsonParagraph() {
+                                        text = input.PageFooter.PagePreFooterNote, monospaced = false, textAlign = "left"
+                                    },
+                                },
+                                ProcessPhrase);
 
-                        var footerParagraphWrapper = new Paragraph();
+						var footerParagraphWrapper = new Paragraph();
 
                         footerParagraphWrapper.SpacingAfter = 20.0f;
 
@@ -2747,136 +2779,6 @@ namespace Portal.Utilities.Document
             }
 
             return stamperStream;
-        }
-
-        internal static ICollection<Paragraph> ProcessTextBlock(string rootPath, string textBlock)
-        {
-            BaseFont gillSansMt = BaseFont.CreateFont(rootPath + "Content/fonts/Gill-Sans-MT.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
-
-            var normalFont = new Font(gillSansMt, 10, Font.NORMAL, BaseColor.BLACK);
-            var italicFont = new Font(gillSansMt, 10, Font.ITALIC, BaseColor.BLACK);
-            var boldFont = new Font(gillSansMt, 10, Font.BOLD, BaseColor.BLACK);
-            var underlined = new Font(gillSansMt, 10, Font.UNDERLINE, BaseColor.BLACK);
-
-            var smallerFont = new Font(gillSansMt, 9, Font.NORMAL, BaseColor.BLACK);
-
-            var smallerItalicFont = FontFactory.GetFont("Arial", 9, Font.ITALIC, BaseColor.BLACK);
-
-            var italicBold = FontFactory.GetFont("Arial", 10, Font.BOLDITALIC, BaseColor.BLACK);
-
-            var italicUnderlined = FontFactory.GetFont("Arial", 10, Font.ITALIC | Font.UNDERLINE, BaseColor.BLACK);
-
-            var boldUnderlined = FontFactory.GetFont("Arial", 10, Font.BOLD | Font.UNDERLINE, BaseColor.BLACK);
-
-            var italicBoldUnderlined = FontFactory.GetFont("Arial", 10, Font.UNDERLINE | Font.BOLDITALIC, BaseColor.BLACK);
-
-            var footerNormalFont = FontFactory.GetFont("Arial", 8, Font.NORMAL, BaseColor.BLACK);
-
-            var footerBoldFont = FontFactory.GetFont("Arial", 8, Font.BOLD, BaseColor.BLACK);
-
-            var boldTagOpen = "{b}";
-            var boldTagClose = "{/b}";
-
-            List<Paragraph> result = new List<Paragraph>();
-
-            if (!String.IsNullOrEmpty(textBlock))
-            {
-                textBlock = textBlock.Replace("\t", "").Replace("&gt;", ">").Replace("&lt;", "<");
-
-                string[] lines = textBlock.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-
-                for (var i = 0; i < lines.Length; i++)
-                {
-                    var line = lines[i];
-
-                    // right... how do we parse for smart tags then, smartguy?
-
-                    // each line will be formed of one or more Chunks.
-
-                    // REGEX to the rescue!
-
-                    var boldOpenings = Regex.Matches(line, "{b}").Count;
-
-                    List<Chunk> chunks = new List<Chunk>();
-
-                    while (line.Length > 0) // we'll have to loop to know when we've parsed the whole line; might as well parse it destructively
-                    {
-                        var boldTagStart = line.IndexOf(boldTagOpen);
-                        var boldTagEnd = line.IndexOf(boldTagClose);
-
-                        if (boldTagStart > -1)
-                        {
-                            // we have a bold tag in our line
-                            if (boldTagEnd > boldTagStart)
-                            {
-                                // we have a bold tag end, further along in our line than the start. valid bold tag. parse it into a new, bold chunk.
-
-                                // does our bold tag start at the start of the line? if not, we'll have some normal text to put into a chunk first.
-
-                                //if (boldTagStart > 0)
-                                //{
-                                var subString = line.Substring(0, boldTagStart);
-
-                                line = line.Substring(boldTagStart);
-
-                                Chunk c = new Chunk(subString, normalFont);
-
-                                chunks.Add(c);
-
-                                boldTagEnd = line.IndexOf("{/b}");
-
-                                var boldString = line.Substring(boldTagOpen.Length, boldTagEnd - boldTagClose.Length + 1);
-
-                                Chunk b = new Chunk(boldString, boldFont);
-
-                                chunks.Add(b);
-
-                                line = line.Substring(boldString.Length + boldTagOpen.Length + boldTagClose.Length);
-                                //}
-                                //else
-                                //{
-                                //    // our bold tag starts right at the start of the line, begin consumption into a bold chunk.
-
-                                //}
-                            }
-                            else
-                            {
-                                // we have some positioning error with our bold start and end tags (at least the first ones). Ignore all of them and consume the line.
-                                Chunk c = new Chunk(line, normalFont);
-                                chunks.Add(c);
-                                line = "";
-                            }
-                        }
-                        else
-                        {
-                            // we have no bold tag, turn this line directly into a chunk and add it to the list.
-                            // remember to set the length to 0 so our while loop ends.
-                            Chunk c = new Chunk(line, normalFont);
-                            chunks.Add(c);
-                            line = "";
-                        }
-
-                    } // as long as we remember to actually destroy it as we go
-
-                    var phrase = new Phrase();
-
-                    foreach (var c in chunks)
-                    {
-                        phrase.Add(c);
-                    }
-
-                    var paragraph = new Paragraph();
-
-                    paragraph.SpacingBefore = 0.0f;
-                    paragraph.SpacingAfter = 10.0f;
-
-                    paragraph.Add(phrase);
-
-                    result.Add(paragraph);
-                }
-            }
-
-            return result;
         }
 
         internal static ICollection<Paragraph> ProcessJsonParagraphs(string rootPath, ICollection<JsonParagraph> paragraphs, Func<string, Font, Phrase> ProcessPhrase, bool trimTrailingNewline = false)

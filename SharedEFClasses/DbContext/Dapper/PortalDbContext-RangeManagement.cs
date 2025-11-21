@@ -251,7 +251,28 @@ namespace SharedEFClasses.Models
             return 0;
         }
 
-        public async Task<int> RangeManagementSendExitingProductsNotification(RangeManagementNotesDto dto)
+		public async Task<int> RangeManagementSendCurrentProductsNotification(RangeManagementNotesDto dto)
+		{
+			var credentials = new UserCredentials("DESIGNERSGUILD\\SQLAgentFileAccess", "34949C02-4677-4711-999C-8E038E26B10F");
+
+			var token = credentials.LogonUser(LogonType.Interactive);
+
+			await WindowsIdentity.RunImpersonated(token, async () =>
+			{
+				using (var conn = new SqlConnection(ConfigurationManager.ConnectionStrings["VM-SQL-IntegratedConnectionString"].ConnectionString))
+				{
+					var _ = await this.Database.Connection.QueryAsync("[portal].[RangeManagement_InventoryNotification_CurrentStockedProducts]", new
+					{
+						dto.BranchID,
+						dto.MemberID
+					}, null, null, CommandType.StoredProcedure);
+				}
+			});
+
+			return 0;
+		}
+
+		public async Task<int> RangeManagementSendExitingProductsNotification(RangeManagementNotesDto dto)
         {
             var credentials = new UserCredentials("DESIGNERSGUILD\\SQLAgentFileAccess", "34949C02-4677-4711-999C-8E038E26B10F");
 
