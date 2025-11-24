@@ -54,7 +54,7 @@
     self.paymentTermsType = ko.observable();
     self.paymentTermsTypeAwaitingBinding = ko.observable(params.paymentTermsTypeId != null && params.paymentTermsTypeId != '');
 
-    self.creditStoppedId = ko.observable(params.creditStoppedId ?? '');
+    self.creditStoppedId = ko.observable(params.creditStopped ?? '');
     self.creditStopped = ko.observable();
     self.creditStoppedAwaitingBinding = ko.observable(params.creditStoppedId != null && params.creditStoppedId != '');
 
@@ -844,9 +844,20 @@
 
     //#region Computeds
 
+    self.salesMarketIdsCount = ko.computed(() => self.salesMarketIds().length, self);
+
     self.getData = ko.computed(() => {
+
+        let salesMarketIds = [];
+
+        ko.ignoreDependencies(() => {
+            salesMarketIds = self.salesMarketIds();
+        });
+
+        let salesMarketIdsCount = self.salesMarketIdsCount();
+
         let result = {
-            salesMarketId: self.salesMarketIds().length ? self.salesMarketIds()[0] : null,
+            salesMarketIds: salesMarketIds,
             salesRepresentativeId: self.salesRepresentativeId(),
             salesAgentId: self.salesAgentId(),
             salesAreaId: self.salesAreaId(),

@@ -11,7 +11,7 @@ namespace SharedEFClasses.Models.TradeAccounts
 {
 	public class TradeAccountMaintenance_TradeAccount_Search_DTO
 	{
-		public byte? SalesMarketID { get; set; }
+		public IEnumerable<byte> SalesMarketIDs { get; set; }
 
 		public short? SalesRepresentativeID { get; set; }
 

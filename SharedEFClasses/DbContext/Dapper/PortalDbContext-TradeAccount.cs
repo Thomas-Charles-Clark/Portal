@@ -149,12 +149,44 @@ namespace SharedEFClasses.Models
 
 		public async Task<TradeAccountMaintenance_TradeAccount_Search_Result> TradeAccountMaintenance_TradeAccount_Search(TradeAccountMaintenance_TradeAccount_Search_DTO dto)
 		{
-			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[TradeAccountMaintenance_TradeAccount_Search]", dto, null, 30, CommandType.StoredProcedure);
+			var SalesMarketIDs = new DataTable();
+
+			SalesMarketIDs.Columns.Add("ID", typeof(byte));
+
+            foreach (var sm in dto.SalesMarketIDs)
+            {
+                SalesMarketIDs.Rows.Add(sm);
+            }
+
+            var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[TradeAccountMaintenance_TradeAccount_Search]", new { 
+                SalesMarketIDs,
+                dto.SalesRepresentativeID,
+                dto.SalesAgentID,
+                dto.SalesAreaID,
+                dto.CountryID,
+                dto.TradeAccountGroupID,
+                dto.TradeAccountTypeID,
+                dto.PaymentTermsID,
+                dto.PaymentTermsTypeID,
+                dto.CreditStopped,
+                dto.Open,
+                dto.SearchTerm
+            }, null, 30, CommandType.StoredProcedure);
 
 			return new TradeAccountMaintenance_TradeAccount_Search_Result()
 			{
 				DashboardPods = await reply.ReadAsync<TradeAccountMaintenance_TradeAccount_Search_DashboardPod>(),
                 Results = await reply.ReadAsync<TradeAccountMaintenance_TradeAccount_Search_Record>()
+			};
+		}
+
+		public async Task<TradeAccountMaintenance_TradeAccount_Member_Select_Result> TradeAccountMaintenance_TradeAccount_Member_Select(TradeAccountMaintenance_TradeAccount_Member_Select_DTO dto)
+		{
+			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[TradeAccountMaintenance_TradeAccount_Member_Select]", dto, null, 30, CommandType.StoredProcedure);
+
+			return new TradeAccountMaintenance_TradeAccount_Member_Select_Result()
+			{
+				Records = await reply.ReadAsync<TradeAccountMaintenance_TradeAccount_Member_Select_Record>()
 			};
 		}
 	}

@@ -37,7 +37,13 @@
 
     //#region Computeds
 
+    self.title = ko.computed(() => {
+        return `Trade Account ID: ${self.TradeAccountID}`;
+    }, self);
 
+    self.label = ko.computed(() => {
+        return `${self.Code} - ${self.Name}`;
+    }, self);
 
     //#endregion
 

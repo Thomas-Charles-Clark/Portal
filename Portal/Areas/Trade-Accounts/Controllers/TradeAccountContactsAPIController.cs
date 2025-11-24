@@ -26,9 +26,15 @@ namespace Portal.Areas.Customers.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> TradeAccountSearch([FromBody]TradeAccountMaintenance_TradeAccount_Search_DTO dto)
+        public async Task<IHttpActionResult> TradeAccountSearch([FromBody] TradeAccountMaintenance_TradeAccount_Search_DTO dto)
         {
             return Ok(await PortalDb.TradeAccountMaintenance_TradeAccount_Search(dto));
-        }
-    }
+		}
+
+		[HttpPost]
+		public async Task<IHttpActionResult> FetchContacts([FromBody] TradeAccountMaintenance_TradeAccount_Member_Select_DTO dto)
+		{
+			return Ok(await PortalDb.TradeAccountMaintenance_TradeAccount_Member_Select(dto));
+		}
+	}
 }

@@ -9,15 +9,21 @@
 
     self.busyMessage = ko.observable('Please Wait')
 
-    self.tradeAccount = ko.observable();
+    self.selectedTradeAccount = ko.observable();
 
-    self.tradeAccountContacts = ko.observableArray([]);
+    self.selectedTradeAccountContacts = ko.observableArray([]);
 
     self.filters = tradeAccountContactsFiltersViewModel(typeof getContactFilterParams === 'function' ? getContactFilterParams() : undefined);
 
     self.dashboardPods = ko.observableArray([]);
 
     self.tradeAccounts = ko.observableArray([]);
+
+    self.tradeAccountContactsModalElement = document.querySelector('#trade-account-contacts-modal');
+
+    self.tradeAccountContactsModal = bootstrap.Modal.getOrCreateInstance(self.tradeAccountContactsModalElement);
+
+    self.unsavedChanges = ko.observableArray([]);
 
     //#endregion
 
@@ -27,6 +33,120 @@
     self.errors = new ko.validation.group([
 
     ]);
+
+    self.gridParams = {
+        autoBind: true,
+        widget: ko.observable(),
+        columns: [{
+            field: 'TradeAccountID',
+            title: 'TradeAccountID',
+            filterable: {
+                extra: false
+            },
+            hidden: true
+        }, {
+            field: 'Code',
+            title: 'Code',
+            filterable: {
+                extra: false
+            }
+        }, {
+            field: 'Name',
+            title: 'Name',
+            filterable: {
+                extra: false
+            }
+        }, {
+            field: 'Email',
+            title: 'Email',
+            filterable: {
+                extra: false
+            }
+        }, {
+            field: 'Status',
+            title: 'Status',
+            width: 140,
+            filterable: {
+                extra: false
+            }
+        }, {
+            field: 'CreditStop',
+            title: 'Credit Stopped',
+            width: 140,
+            filterable: {
+                extra: false
+            }
+        }, {
+            field: 'Advisory',
+            title: 'Advisory',
+            width: 140,
+            filterable: {
+                extra: false
+            }
+        }],
+        data: self.tradeAccounts,
+        dataSource: new kendo.data.DataSource({
+            sortable: true,
+            filterable: true,
+            grouping: false,
+            serverGrouping: false,
+            serverFiltering: false,
+            serverPaging: false,
+            pageSize: 10,
+            pageable: {
+                pageSize: 10,
+                pageSizes: [10, 20, 50, 100, 250, 500, 'all']
+            },
+            schema: $.extend({}, kendo.data.schemas.webapi, {
+                data: "Data",
+                total: "Total",
+                errors: "Errors",
+                aggregates: "Aggregates",
+                model: {
+                    id: 'TradeAccountID',
+                    fields: {
+                        TradeAccountID: { type: 'number' },
+                        Code: { type: 'string' },
+                        Name: { type: 'string' },
+                        Status: { type: 'string' },
+                        CreditStop: { type: 'boolean' },
+                        Email: { type: 'string' },
+                        Address: { type: 'string' },
+                        Advisory: { type: 'string' }
+                    }
+                }
+            }),
+            requestStart: (e) => {
+                self.busy(true);
+            },
+            requestEnd: (e) => {
+                self.busy(false);
+            }
+        }),
+        useKOTemplates: true,
+        rowTemplate: 'trade-account-contact-row-template',
+        scrollable: false,
+        sortable: true,
+        filterable: true,
+        reorderable: false,
+        paging: true,
+        pageSize: 10,
+        pageable: {
+            pageSize: 10,
+            pageSizes: [10, 20, 50, 100, 250, 500, 'all']
+        },
+        selectable: 'single',
+        change: function (e) {
+            let dataItem = e.sender.dataItem(e.sender.select());
+
+            console.log('change', dataItem);
+
+            self.selectedTradeAccount(dataItem);
+        },
+        dataBound: function (e) {
+
+        }
+    };
 
     //#endregion
 
@@ -53,7 +173,7 @@
                 self.dashboardPods(data.DashboardPods.map(p => tradeAccountContactsDashboardPodViewModel({
                     rec: p
                 })));
-                self.tradeAccounts(data.Results.map(d => tradeAccountContactViewModel({
+                self.tradeAccounts(data.Results.map(d => tradeAccountViewModel({
                     rec: d,
                 })));
             })
@@ -64,11 +184,12 @@
     }
 
     self.fetchContacts = (tradeAccountId) => {
+        self.tradeAccountContactsModal.show();
         self.busy(true);
         let data = {
             tradeAccountId
         };
-        console.log('FetchContacts calling with', data);
+        console.log('fetchContacts calling with', data);
         fetch('/api/tradeaccountcontactsapi/FetchContacts', {
             method: 'POST',
             headers: window.fetchHeaders,
@@ -78,16 +199,61 @@
         })
             .then(window.handleFetchResponse)
             .then(data => {
+                console.log('fetchContacts returned', data);
                 self.busy(false);
-                self.tradeAccountContacts(data.map(d => tradeAccountContactViewModel({
+                self.selectedTradeAccountContacts(data.Records.map(d => tradeAccountContactViewModel({
                     rec: d,
                 })));
+                self.unsavedChanges([]);
             })
             .catch(err => {
                 self.busy(false);
                 window.catchFetchError(err);
             });
+    }
+
+    self.saveTradeAccountContacts = () => {
+        self.busy(true);
+
+        let data = {
+            tradeAccountId: self.selectedTradeAccount().TradeAccountID,
+            contact: self.tradeAccountContacts().map(c => c.toJS())
+        };
+
+        fetch('/api/tradeaccountcontactsapi/SaveChanges', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            body: JSON.stringify(data)
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                self.busy(false);
+            })
+            .catch(err => {
+                self.busy(false);
+                window.catchFetchError(err);
+            })
+    }
+
+    self.cancelTradeAccountContactsModal = () => {
+        if (self.unsavedChanges()) {
+            if (typeof window.showConfirm === 'function') {
+                window.showConfirm('Are you sure?', 'You have unsaved changes. If you click yes, those changes will be lost.', () => {
+                    self.tradeAccountContactsModal.hide();
+                }, null);
+            } else {
+                let conf = window.confirm('You have unsaved changes. If you click yes, those changes will be lost.');
+
+                if (conf) {
+                    self.tradeAccountContactsModal.hide();
+                }
+            }
+        } else {
+            self.tradeAccountContactsModal.hide();
         }
+    }
 
     //#endregion
 
@@ -95,7 +261,17 @@
 
     //#region Computeds
 
-
+    self.unsavedChangesComputer = ko.computed(() => {
+        self.selectedTradeAccountContacts().forEach(tac => {
+            tac.unsavedChanges.subscribe(nv => {
+                if (nv) {
+                    self.unsavedChanges.push(tac)
+                } else {
+                    self.unsavedChanges(self.unsavedChanges.filter(cc => cc != tac));
+                }
+            });
+        });
+    });
 
     //#endregion
 
@@ -105,15 +281,19 @@
 
     //#region Subscriptions
 
-    self.tradeAccount.subscribe(nv => {
+    self.selectedTradeAccount.subscribe(nv => {
         if (nv) {
-            self.fetchContacts();
+            self.fetchContacts(nv.TradeAccountID);
         }
-    })
+    });
 
     self.filters.getData.subscribe(nv => {
         self.tradeAccountSearch(nv);
-    })
+    });
+
+    self.unsavedChanges.subscribe(nv => {
+        console.log('unsavedChanges', nv);
+    }, 'arrayChange', self);
 
     //#endregion
 
@@ -121,7 +301,10 @@
 
     //#region Events
 
-
+    self.tradeAccountContactsModalElement.addEventListener('hidden.bs.modal', () => {
+        self.selectedTradeAccount(undefined);
+        self.selectedTradeAccountContacts([]);
+    })
 
     //#endregion
 
