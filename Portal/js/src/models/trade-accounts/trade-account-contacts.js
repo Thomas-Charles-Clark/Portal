@@ -217,7 +217,7 @@
 
         let data = {
             tradeAccountId: self.selectedTradeAccount().TradeAccountID,
-            contact: self.tradeAccountContacts().map(c => c.toJS())
+            contacts: self.selectedTradeAccountContacts().map(c => c.toJS())
         };
 
         fetch('/api/tradeaccountcontactsapi/SaveChanges', {
@@ -230,6 +230,7 @@
             .then(window.handleFetchResponse)
             .then(data => {
                 self.busy(false);
+                self.tradeAccountContactsModal.hide();
             })
             .catch(err => {
                 self.busy(false);
@@ -238,7 +239,7 @@
     }
 
     self.cancelTradeAccountContactsModal = () => {
-        if (self.unsavedChanges()) {
+        if (self.unsavedChanges().length) {
             if (typeof window.showConfirm === 'function') {
                 window.showConfirm('Are you sure?', 'You have unsaved changes. If you click yes, those changes will be lost.', () => {
                     self.tradeAccountContactsModal.hide();

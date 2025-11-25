@@ -36,5 +36,13 @@ namespace Portal.Areas.Customers.Controllers
 		{
 			return Ok(await PortalDb.TradeAccountMaintenance_TradeAccount_Member_Select(dto));
 		}
+
+        [HttpPost]
+        public async Task<IHttpActionResult> SaveChanges([FromBody] TradeAccountMaintenance_TradeAccount_Member_Save_DTO dto)
+        {
+            await Task.Run(() => { });
+
+            return Ok(new { });
+        }
 	}
 }

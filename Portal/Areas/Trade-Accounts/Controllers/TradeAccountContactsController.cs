@@ -36,6 +36,20 @@ namespace Portal.Areas.Customers.Controllers
                 application.SubHeading);
 
             return View(viewName: "TradeAccountContacts", model);
-        }
-    }
+		}
+
+		public ActionResult Partial()
+		{
+			var application = PortalDb.Applications.Where(p => p.ControllerName == "contacts" && p.AreaName == "trade-accounts" && p.ActionName == "index").Single();
+
+			var user = UserManager.FindById(User.Identity.GetUserId<int>());
+
+			var model = new TradeAccountContactsViewModel(
+				user.GetActiveRoleProperties(),
+				application.Heading,
+				application.SubHeading);
+
+			return PartialView(viewName: "_TradeAccountContactsPartial", model);
+		}
+	}
 }

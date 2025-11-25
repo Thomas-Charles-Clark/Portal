@@ -706,6 +706,7 @@
     <Compile Include="Models\TradeAccountCreationEmailAttachment.cs" />
     <Compile Include="Models\TradeAccountCreationEmail_TradeAccountCreationEmailAttachment.cs" />
     <Compile Include="Models\TradeAccounts\TradeAccountMaintenance_Select_DTO.cs" />
+    <Compile Include="Models\TradeAccounts\TradeAccountMaintenance_TradeAccount_Member_Save_DTO.cs" />
     <Compile Include="Models\TradeAccounts\TradeAccountMaintenance_TradeAccount_Member_Select_Record.cs" />
     <Compile Include="Models\TradeAccounts\TradeAccountMaintenance_TradeAccount_Member_Select_Result.cs" />
     <Compile Include="Models\TradeAccounts\TradeAccountMaintenance_TradeAccount_Search_DashboardPod.cs" />
