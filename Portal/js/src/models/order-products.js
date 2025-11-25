@@ -13683,7 +13683,7 @@ var bespokeFurnitureFactory = function (parent) {
         showClear: true,
         permitRevert: false,
         afterClear: function () {
-            //self.clearModelOptions('model');
+            self.clearModelOptions('model');
         },
         height: 300,
         filter: null
@@ -14003,6 +14003,21 @@ var bespokeFurnitureFactory = function (parent) {
 
     self.modelId.subscribe(function (newValue) {
         console.log('bespokeFurnitureFactory modelId subscribe hit', newValue);
+
+        if (self.destinationId()) {
+            self.fetchModelOptions(() => {
+
+                self.fetchMaterialBreakdown(function () {
+                    if (self.upholsteryTypeIdToLoad()) {
+                        self.upholsteryTypeId(self.upholsteryTypeIdToLoad());
+                    } else if (self.upholsteryTypeId()) {
+                        self.availableComponents(self.determineAvailableComponents());
+                    }
+
+                    self.determineMaterialRequirements();
+                });
+            });
+        }
 
         if (self.cascadeActive()) {
 
@@ -14435,6 +14450,8 @@ var bespokeFurnitureFactory = function (parent) {
                 self.modelDetails(data.json);
                 if (typeof onComplete === 'function')
                     onComplete();
+                else
+                    self.busy(false);
             }
         });
     }

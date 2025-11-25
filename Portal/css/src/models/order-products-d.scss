@@ -1226,12 +1226,65 @@ a.supplier-link {
 }
 
 .bespoke-furniture-stage {
+    .product-information-heading {
+        margin: 0 0 $m-gutter 0;
+        border-bottom: 2px solid $body-color;
+        padding: 0 0 $m-gutter 0;
+        font-weight: bold;
+    }
+
+    .blocker {
+        &.d-none {
+            display: none !important;
+        }
+    }
+
     .flex-container {
         > div {
             flex: 0 1 50%;
+        }
 
-            > div {
+        .model-details-container {
+            padding: 15px;
+
+            .bespoke-furniture-info {
                 padding: 15px;
+                border: 1px solid $gray-300;
+                background-color: $gray-100;
+                border-radius: $border-radius;
+
+                & + .model-details-body {
+                    margin-top: 15px;
+                }
+            }
+
+            .model-details-body {
+                padding: 15px;
+                border: 1px solid $gray-300;
+                background-color: $gray-100;
+                border-radius: $border-radius;
+
+                .model-details-body-inner {
+                    > h5 {
+                        margin: 0 0 15px 0;
+                    }
+
+                    h3 + h5 {
+                        margin-top: $l-gutter;
+                    }
+
+                    .dl-horizontal {
+                        margin-bottom: 0;
+                    }
+
+                    .mdc-validating-field {
+                        .k-dropdown-wrap {
+                            &.k-state-hover {
+                                background-color: $white;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -1299,11 +1352,17 @@ a.supplier-link {
     display: block;
     margin-bottom: 30px;
 
+
     h5 {
         font-weight: bold;
         font-size: 16px;
-        margin-top: 30px;
-        margin-bottom: 15px;
+    }
+
+    .bespoke-furniture-info-inner {
+        h5 {
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
     }
 
     dl.dl-horizontal {
@@ -1367,6 +1426,12 @@ a.supplier-link {
     img {
         border: 1px solid #ccc;
         margin-bottom: 10px;
+    }
+
+    .bespoke-furniture-info-notes {
+        p {
+            margin-bottom: 0;
+        }
     }
 }
 
@@ -1687,6 +1752,9 @@ pre.prettyprint {
 
 #bespoke-furniture-controls {
     position: relative;
+    > div + div {
+        margin-top: 15px;
+    }
 }
 
 .component-requirements {

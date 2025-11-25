@@ -1858,74 +1858,79 @@
 
 <script id="bespoke-furniture-info-template" type="text/html">
     <div class="bespoke-furniture-info">
-        <img data-bind="attr: { src: 'https://www.designersguild.com/image/322/' + imageId }" />
-        <h4 class="model-name" data-bind="text: name"></h4>
-        <!-- ko if: priceMessage -->
-        <span class="bespoke-furniture-price" data-bind="html: priceMessage"></span>
-        <!-- /ko -->
-        <div class="flex-container">
-            <div>
-                <!-- ko if: upholsteryGradePricing.length -->
-                <h5>
-                    Upholstery Grade Pricing
-                </h5>
-                <dl class="dl-horizontal">
-                    <!-- ko foreach: upholsteryGradePricing -->
-                    <dt data-bind="text: label"></dt>
-                    <dd data-bind="text: value"></dd>
-                    <!-- /ko -->
-                </dl>
-                <!-- /ko -->
-            </div>
-            <div>
-                <h5>
-                    Dimensions
-                </h5>
-                <!-- ko with: dimensions -->
-                <dl class="dl-horizontal">
-                    <dt>
-                        Width
-                    </dt>
-                    <dd>
-                        <span data-bind="text: width"></span>
-                    </dd>
-                    <dt>
-                        Height
-                    </dt>
-                    <dd>
-                        <span data-bind="text: height"></span>
-                    </dd>
-                    <dt>
-                        Depth
-                    </dt>
-                    <dd>
-                        <span data-bind="text: depth"></span>
-                    </dd>
-                    <dt>
-                        Seat Count
-                    </dt>
-                    <dd>
-                        <span data-bind="text: seatCount"></span>
-                    </dd>
-                    <dt>
-                        Seat Height
-                    </dt>
-                    <dd>
-                        <span data-bind="text: seatHeight"></span>
-                    </dd>
-                    <dt>
-                        Seat Depth
-                    </dt>
-                    <dd>
-                        <span data-bind="text: seatDepth"></span>
-                    </dd>
-                </dl>
-                <!-- /ko -->
-            </div>
-        </div>
-        <!-- ko if: typeof notes != 'undefined' -->
-        <div style="margin-bottom: -25px" class="margin-top-0" data-bind="html: notes"></div>
-        <!-- /ko -->
+		<div class="bespoke-furniture-info-inner">
+            <h3 class="product-information-heading">
+                Product Information
+            </h3>
+			<img data-bind="attr: { src: 'https://www.designersguild.com/image/322/' + imageId }" />
+			<h4 class="model-name" data-bind="text: name"></h4>
+			<!-- ko if: priceMessage -->
+			<span class="bespoke-furniture-price" data-bind="html: priceMessage"></span>
+			<!-- /ko -->
+			<div class="flex-container">
+				<div>
+					<!-- ko if: upholsteryGradePricing.length -->
+					<h5>
+						Upholstery Grade Pricing
+					</h5>
+					<dl class="dl-horizontal">
+						<!-- ko foreach: upholsteryGradePricing -->
+						<dt data-bind="text: label"></dt>
+						<dd data-bind="text: value"></dd>
+						<!-- /ko -->
+					</dl>
+					<!-- /ko -->
+				</div>
+				<div>
+					<h5>
+						Dimensions
+					</h5>
+					<!-- ko with: dimensions -->
+					<dl class="dl-horizontal">
+						<dt>
+							Width
+						</dt>
+						<dd>
+							<span data-bind="text: width"></span>
+						</dd>
+						<dt>
+							Height
+						</dt>
+						<dd>
+							<span data-bind="text: height"></span>
+						</dd>
+						<dt>
+							Depth
+						</dt>
+						<dd>
+							<span data-bind="text: depth"></span>
+						</dd>
+						<dt>
+							Seat Count
+						</dt>
+						<dd>
+							<span data-bind="text: seatCount"></span>
+						</dd>
+						<dt>
+							Seat Height
+						</dt>
+						<dd>
+							<span data-bind="text: seatHeight"></span>
+						</dd>
+						<dt>
+							Seat Depth
+						</dt>
+						<dd>
+							<span data-bind="text: seatDepth"></span>
+						</dd>
+					</dl>
+					<!-- /ko -->
+				</div>
+			</div>
+			<!-- ko if: typeof notes != 'undefined' -->
+			<div class="bespoke-furniture-info-notes" data-bind="html: notes"></div>
+			<!-- /ko -->
+		</div>
     </div>
 </script>
 
@@ -3581,7 +3586,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="product-progression-stage bespoke-furniture-stage" data-bind="fadeBetweenMany: {
+				<div class="product-progression-stage bespoke-furniture-stage" data-bind="fadeBetweenMany: {
                          observable: stageInformation().currentStage,
                          visibleWhen: function (stage) {
                             return stage.StepID == ADVANCED_STAGE_BESPOKE_FURNITURE
@@ -3589,112 +3594,108 @@
                          swapWith: '.product-progression-stage'
                      },
                      with: parent.orderFactory.bespokeFurnitureFactory">
-                    <div class="flex-container">
-                        <div id="bespoke-furniture-controls">
-                            <div class="blocker" style="min-height: 300px;" data-bind="visible: busy()">
-                                <div class="busy-bars">
-                                    <div class="rect1 alert alert-info"></div>
-                                    <div class="rect2 alert alert-info"></div>
-                                    <div class="rect3 alert alert-info"></div>
-                                    <div class="rect4 alert alert-info"></div>
-                                    <div class="rect5 alert alert-info"></div>
-                                </div>
-                                <h3>
-                                    Working...
-                                </h3>
-                            </div>
-                            <h4 class="component-heading">
-                                Furniture Selection
-                            </h4>
-                            <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: designParams }"></div>
-                            <!-- ko if: designId() -->
-                            <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: modelParams }"></div>
-                            <!-- /ko -->
-                            <!-- ko if: modelId() -->
-                            <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
-                            <!-- ko if: madeToUKFRStandardsVisible() -->
-                            <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: madeToUKFRStandardsParams }"></div>
-                            <!-- /ko -->
-                            <h4 class="component-heading margin-top-30">
-                                Deliver Completed Furniture to
-                            </h4>
-                            <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: destinationParams }"></div>
-                            <!-- /ko -->
-                            <!-- ko if: modelDetails() -->
-                            <h4 class="component-heading margin-top-30">
-                                Freight Shipper
-                            </h4>
-                            <p class="bold">
-                                If you are unsure, please ask Rob Nolan which shipper you should select.
-                            </p>
-                            <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: shipperParams }"></div>
-                            <h4 class="component-heading margin-top-30">
-                                FR Requirements
-                            </h4>
-                            <p class="bold">
-                                To help us meet local fire regulations, please provide accurate answers to the following questions:
-                            </p>
-                            <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: domesticOrCommercialParams }"></div>
-                            <div id="destination-country-container">
-                                <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: destinationCountryDropDownList }"></div>
-                            </div>
-                            <h4 class="component-heading margin-top-30">
-                                Model Options
-                            </h4>
-                            <!-- ko if: availableSeatFillings().length -->
-                            <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: seatFillingParams }"></div>
-                            <!-- /ko -->
-                            <!-- ko if: availableBackFillings().length -->
-                            <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: backFillingParams }"></div>
-                            <!-- /ko -->
-                            <!-- ko if: availableCoverTypes().length -->
-                            <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: coverTypeParams }"></div>
-                            <!-- /ko -->
-                            <!-- ko if: availableLegs().length -->
-                            <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: legParams }"></div>
-                            <!-- /ko -->
-                            <!-- ko if: availableHeadboardFixings().length -->
-                            <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: headboardFixingParams }"></div>
-                            <!-- /ko -->
-                            <!-- ko if: mixedFabricPermitted() -->
-                            <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: upholsteryTypeParams }"></div>
-                            <!-- /ko -->
-                            <!-- ko if: buttonsVisible() -->
-                            <div data-bind="component: { name: 'mdc-checkbox-component', params: buttonParams }"></div>
-                            <!-- /ko -->
-                            <!-- ko if: trimVisible() -->
-                            <div data-bind="component: { name: 'mdc-checkbox-component', params: trimParams }"></div>
-                            <!-- /ko -->
-                            <!-- /ko -->
-                        </div>
-                        <div data-bind="with: modelDetails">
-                            <!-- ko template: { name: 'bespoke-furniture-info-template' } --><!-- /ko -->
-                            <!-- ko if: $root.orderProductsDrilldown.stageInformation().currentStage().StepID == ADVANCED_STAGE_BESPOKE_FURNITURE -->
-                            <div style="padding-top: 0;">
-                                <h5>
-                                    Component Options &amp; Material Requirements
-                                </h5>
-                                <div class="margin-bottom-15" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: $parent.materialRequirementParams }"></div>
-                                <!-- ko with: $parent.materialRequirement -->
-                                <!-- ko foreach: componentRequirements -->
-                                <!-- ko if: name -->
-                                <label class="margin-bottom-10">
-                                    <span data-bind="text: name"></span>
-                                </label>
-                                <!-- /ko -->
-                                <dl class="dl-horizontal" data-bind="css: { 'margin-top-15': name == null }">
-                                    <!-- ko foreach: componentRequirements -->
-                                    <dt data-bind="text: Component"></dt>
-                                    <dd data-bind="text: QuantityRequired"></dd>
-                                    <!-- /ko -->
-                                </dl>
-                                <!-- /ko -->
-                                <!-- /ko -->
-                            </div>
-                            <!-- /ko-->
-                        </div>
-                    </div>
-                </div>
+					<div class="blocker" data-bind="flexFadeVisible: busy">
+                        <div class="loading-spinner"></div>
+						<h3>
+							Please Wait...
+						</h3>
+					</div>
+					<div class="flex-container">
+						<div id="bespoke-furniture-controls">
+							<h4 class="component-heading">
+								Furniture Selection
+							</h4>
+							<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: designParams }"></div>
+							<!-- ko if: designId() -->
+							<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: modelParams }"></div>
+							<!-- /ko -->
+							<!-- ko if: modelId() -->
+							<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+							<!-- ko if: madeToUKFRStandardsVisible() -->
+							<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: madeToUKFRStandardsParams }"></div>
+							<!-- /ko -->
+							<h4 class="component-heading margin-top-30">
+								Deliver Completed Furniture to
+							</h4>
+							<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: destinationParams }"></div>
+							<!-- /ko -->
+							<!-- ko if: modelDetails() -->
+							<h4 class="component-heading margin-top-30">
+								Freight Shipper
+							</h4>
+							<p class="bold">
+								If you are unsure, please ask Rob Nolan which shipper you should select.
+							</p>
+							<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: shipperParams }"></div>
+							<h4 class="component-heading margin-top-30">
+								FR Requirements
+							</h4>
+							<p class="bold">
+								To help us meet local fire regulations, please provide accurate answers to the following questions:
+							</p>
+							<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: domesticOrCommercialParams }"></div>
+							<div id="destination-country-container">
+								<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: destinationCountryDropDownList }"></div>
+							</div>
+							<h4 class="component-heading margin-top-30">
+								Model Options
+							</h4>
+							<!-- ko if: availableSeatFillings().length -->
+							<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: seatFillingParams }"></div>
+							<!-- /ko -->
+							<!-- ko if: availableBackFillings().length -->
+							<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: backFillingParams }"></div>
+							<!-- /ko -->
+							<!-- ko if: availableCoverTypes().length -->
+							<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: coverTypeParams }"></div>
+							<!-- /ko -->
+							<!-- ko if: availableLegs().length -->
+							<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: legParams }"></div>
+							<!-- /ko -->
+							<!-- ko if: availableHeadboardFixings().length -->
+							<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: headboardFixingParams }"></div>
+							<!-- /ko -->
+							<!-- ko if: mixedFabricPermitted() -->
+							<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: upholsteryTypeParams }"></div>
+							<!-- /ko -->
+							<!-- ko if: buttonsVisible() -->
+							<div data-bind="component: { name: 'mdc-checkbox-component', params: buttonParams }"></div>
+							<!-- /ko -->
+							<!-- ko if: trimVisible() -->
+							<div data-bind="component: { name: 'mdc-checkbox-component', params: trimParams }"></div>
+							<!-- /ko -->
+							<!-- /ko -->
+						</div>
+						<div data-bind="with: modelDetails" class="model-details-container">
+							<!-- ko template: { name: 'bespoke-furniture-info-template' } --><!-- /ko -->
+							<!-- ko if: $root.orderProductsDrilldown.stageInformation().currentStage().StepID == ADVANCED_STAGE_BESPOKE_FURNITURE -->
+							<div class="model-details-body">
+								<div class="model-details-body-inner">
+									<h5>
+										Component Options &amp; Material Requirements
+									</h5>
+									<div class="margin-bottom-15" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: $parent.materialRequirementParams }"></div>
+									<!-- ko with: $parent.materialRequirement -->
+									<!-- ko foreach: componentRequirements -->
+									<!-- ko if: name -->
+									<label class="margin-bottom-10">
+										<span data-bind="text: name"></span>
+									</label>
+									<!-- /ko -->
+									<dl class="dl-horizontal" data-bind="css: { 'margin-top-15': name == null }">
+										<!-- ko foreach: componentRequirements -->
+										<dt data-bind="text: Component"></dt>
+										<dd data-bind="text: QuantityRequired"></dd>
+										<!-- /ko -->
+									</dl>
+									<!-- /ko -->
+									<!-- /ko -->
+								</div>
+							</div>
+							<!-- /ko-->
+						</div>
+					</div>
+				</div>
                 <div class="product-progression-stage bespoke-furniture-stage" data-bind="fadeBetweenMany: {
                         observable: stageInformation().currentStage,
                         visibleWhen: function (stage) {
@@ -3729,34 +3730,36 @@
                                 <!-- /ko -->
                             </div>
                         </div>
-                        <div data-bind="with: modelDetails">
+                        <div data-bind="with: modelDetails" class="model-details-container">
                             <!-- ko template: { name: 'bespoke-furniture-info-template' } --><!-- /ko -->
                             <!-- ko if: $root.orderProductsDrilldown.stageInformation().currentStage().StepID == ADVANCED_STAGE_BESPOKE_FURNITURE_FABRIC -->
-                            <div style="padding-top: 0;">
-                                <h5>
-                                    Component Options &amp; Material Requirements
-                                </h5>
-                                <div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: $parent.materialRequirementParams }"></div> <!-- ko with: $parent.materialRequirement -->
-                                <!-- ko foreach: componentRequirements -->
-                                <!-- ko if: name -->
-                                <label class="margin-bottom-10 margin-top-15">
-                                    <span data-bind="text: name"></span>
-                                </label>
-                                <!-- /ko -->
-                                <dl class="dl-horizontal" data-bind="css: { 'margin-top-15': name == null }">
-                                    <!-- ko foreach: componentRequirements -->
-                                    <dt data-bind="text: Component"></dt>
-                                    <dd data-bind="text: QuantityRequired"></dd>
-                                    <!-- /ko -->
-                                </dl>
-                                <!-- /ko -->
-                                <!-- /ko -->
+                            <div class="model-details-body">
+								<div class="model-details-body-inner">
+									<h5>
+										Component Options &amp; Material Requirements
+									</h5>
+									<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: $parent.materialRequirementParams }"></div> <!-- ko with: $parent.materialRequirement -->
+									<!-- ko foreach: componentRequirements -->
+									<!-- ko if: name -->
+									<label class="margin-bottom-10 margin-top-15">
+										<span data-bind="text: name"></span>
+									</label>
+									<!-- /ko -->
+									<dl class="dl-horizontal" data-bind="css: { 'margin-top-15': name == null }">
+										<!-- ko foreach: componentRequirements -->
+										<dt data-bind="text: Component"></dt>
+										<dd data-bind="text: QuantityRequired"></dd>
+										<!-- /ko -->
+									</dl>
+									<!-- /ko -->
+									<!-- /ko -->
+								</div>
                             </div>
                             <!-- /ko-->
                         </div>
                     </div>
                 </div>
-                <div class="product-progression-stage bespoke-furniture-stage" data-bind="fadeBetweenMany: {
+				<div class="product-progression-stage bespoke-furniture-stage" data-bind="fadeBetweenMany: {
                         observable: stageInformation().currentStage,
                         visibleWhen: function (stage) {
                             return stage.StepID == ADVANCED_STAGE_BESPOKE_FURNITURE_FABRIC_ALLOCATION
@@ -3764,38 +3767,33 @@
                         swapWith: '.product-progression-stage'
                      },
                      with: parent.orderFactory.bespokeFurnitureFactory">
-                    <div>
-                        <h4 class="component-heading">
-                            Fabric Allocation
-                            <!-- ko if: currentlyProcessingBasketItem() && !busy() -->
-                            - Bespoke Furniture Component Material Allocation
-                            [
-                            <span data-bind="text: currentlyProcessingBasketItem().sortOrder"></span>
-                            of
-                            <span data-bind="text: basketItemsToProcess().length"></span>
-                            ]
-                            <!-- /ko -->
-                        </h4>
-                        <div style="position: relative;">
-                            <div class="blocker" style="min-height: 300px;" data-bind="visible: busy() ||$root.orderProductsDrilldownFurnitureComponents.processingBusy()">
-                                <div class="busy-bars">
-                                    <div class="rect1 alert alert-info"></div>
-                                    <div class="rect2 alert alert-info"></div>
-                                    <div class="rect3 alert alert-info"></div>
-                                    <div class="rect4 alert alert-info"></div>
-                                    <div class="rect5 alert alert-info"></div>
-                                </div>
-                                <h3>
-                                    Please wait...
-                                </h3>
-                            </div>
-                            <!-- ko ifnot: busy() -->
-                            <!-- ko template: { name: 'processing-progression', data: $.extend($root.orderProductsDrilldownFurnitureComponents, { alt: true }) } --><!-- /ko -->
-                            <!-- /ko -->
-                            <!-- ko template: { name: 'allocation-pricing-treatments-memos-template', data: $.extend($root.orderProductsDrilldownFurnitureComponents, { alt: true }) } --><!-- /ko -->
-                        </div>
-                    </div>
-                </div>
+
+					<div class="blocker d-none" data-bind="flexFadeVisible: ko.unwrap(busy) || ko.unwrap($root.orderProductsDrilldownFurnitureComponents.processingBusy)">
+                        <div class="loading-spinner"></div>
+						<h3>
+							Please wait...
+						</h3>
+					</div>
+					<div>
+						<h4 class="component-heading">
+							Fabric Allocation
+							<!-- ko if: currentlyProcessingBasketItem() && !busy() -->
+							- Bespoke Furniture Component Material Allocation
+							[
+							<span data-bind="text: currentlyProcessingBasketItem().sortOrder"></span>
+							of
+							<span data-bind="text: basketItemsToProcess().length"></span>
+							]
+							<!-- /ko -->
+						</h4>
+						<div style="position: relative;">
+							<!-- ko ifnot: busy() -->
+							<!-- ko template: { name: 'processing-progression', data: $.extend($root.orderProductsDrilldownFurnitureComponents, { alt: true }) } --><!-- /ko -->
+							<!-- /ko -->
+							<!-- ko template: { name: 'allocation-pricing-treatments-memos-template', data: $.extend($root.orderProductsDrilldownFurnitureComponents, { alt: true }) } --><!-- /ko -->
+						</div>
+					</div>
+				</div>
                 <div class="product-progression-stage" data-bind="fadeBetweenMany: {
                          observable: stageInformation().currentStage,
                          visibleWhen: function (stage) {

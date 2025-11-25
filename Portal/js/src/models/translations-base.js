@@ -390,6 +390,9 @@
         pageable: {
             pageSize: 20,
             pageSizes: [10, 20, 50, 100, 200]
+        },
+        dataBound: (e) => {
+            console.log('dataBound', e);
         }
     };
 
@@ -483,7 +486,7 @@ const translationRecord = ({
         showClear: true,
         rows: 10,
         clearFunction: function () {
-            self.body('');
+            self.translation('');
             window.setTimeout(() => {
                 //self.translationParams.editorParams.widget().value('');
                 //self.translationParams.editorParams.widget().trigger('change');
@@ -571,7 +574,6 @@ const translationRecord = ({
     //});
 
     self.dirty.subscribe(nv => {
-
         let item = viewModel.resourceGridSettings.widget().dataItem(self.element.DOMElement);
 
         if (self.originalTranslation != self.translation()) {

@@ -43,12 +43,12 @@
                                 </span>
                             </div>
                             <!-- /ko -->
-                            <!-- ko if: supplierAvailabilityMessage() -->
+                            <!-- ko if: typeof supplierAvailabilityMessage != 'undefined' && supplierAvailabilityMessage() -->
                             <div class="alert alert-warning">
                                 <div data-bind="html: supplierAvailabilityMessage"></div>
                             </div>
                             <!-- /ko -->
-                            <!-- ko if: showStockCheckRequester -->
+                            <!-- ko if: typeof showStockCheckRequester != 'undefined' && showStockCheckRequester() -->
                             <!-- ko with: $root.orderProductsDrilldown.stockCheckRequester -->
                             <div class="alert" data-bind="class: cssClass">
                                 <div data-bind="html: message"></div>
@@ -58,7 +58,7 @@
                             </div>
                             <!-- /ko -->
                             <!-- /ko -->
-                            <!-- ko if: stockInfo() -->
+                            <!-- ko if: typeof stockInfo != 'undefined' && stockInfo() -->
                             <table class="stock-allocation-table allocation-table table table-condensed" data-bind="with: stockInfo">
                                 <colgroup>
                                     <col style="width: 25%" />
@@ -246,7 +246,7 @@
                                 <sup class="font-normal">3</sup> "Ring Fenced" = Stock Ring Fenced for other Customers
                             </p>
                             <!-- /ko -->
-                            <!-- ko if: stockInfo() ? stockInfo().length == 0 : true -->
+                            <!-- ko if: typeof stockInfo != 'undefined' && (stockInfo() ? stockInfo().length == 0 : true) -->
                             <label data-bind="text: stockStatus"></label>
                             <!-- /ko -->
                         </td>
